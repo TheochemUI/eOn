@@ -149,7 +149,8 @@ MinModeSaddleSearch::MinModeSaddleSearch(
     std::shared_ptr<Matter> matterPassed, AtomMatrix modePassed,
     double reactantEnergyPassed, std::shared_ptr<Parameters> parametersPassed,
     std::shared_ptr<Potential> potPassed)
-    : SaddleSearchMethod(potPassed, parametersPassed), matter{matterPassed} {
+    : SaddleSearchMethod(potPassed, parametersPassed),
+      matter{matterPassed} {
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
   status = STATUS_GOOD;
@@ -233,19 +234,20 @@ int MinModeSaddleSearch::run() {
 
     AtomMatrix initialPosition = matter->getPositions();
 
-    MinModeObjectiveFunction objf(matter, minModeMethod, mode, params);
-    // objf.getGradient();
+    auto objf = std::make_shared<MinModeObjectiveFunction>(
+        matter, minModeMethod, mode, params);
+    // objf->getGradient();
     if (params->saddleNonnegativeDisplacementAbort) {
-      objf.getGradient();
+      objf->getGradient();
       if (minModeMethod->getEigenvalue() > 0) {
         printf("%f\n", minModeMethod->getEigenvalue());
         return STATUS_NONNEGATIVE_ABORT;
       }
     }
 
-    Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
+    auto optim = helpers::create::mkOptim(objf, params->optMethod, params);
 
-    while (!objf.isConverged() || iteration == 0) {
+    while (!objf->isConverged() || iteration == 0) {
 
       if (!firstIteration) {
 
@@ -281,13 +283,13 @@ int MinModeSaddleSearch::run() {
         // use negative step to communicate that the system is the negative
         // region and a max step should be performed
         if ((minModeMethod->getEigenvalue() > 0) and
-            (params->optMethod == "cg")) {
-          optStatus = optimizer->step(-params->optMaxMove);
+            (params->optMethod == OptType::ConjugateGradient)) {
+          optStatus = optim->step(-params->optMaxMove);
         } else {
-          optStatus = optimizer->step(params->optMaxMove);
+          optStatus = optim->step(params->optMaxMove);
         }
       } else {
-        optStatus = optimizer->step(params->optMaxMove);
+        optStatus = optim->step(params->optMaxMove);
       }
 
       if (optStatus < 0) {
@@ -295,7 +297,7 @@ int MinModeSaddleSearch::run() {
         break;
       }
 
-      double de = objf.getEnergy() - reactantEnergy;
+      double de = objf->getEnergy() - reactantEnergy;
       // should be the total displacement of the system not just a single atom
       // double stepSize =
       // helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() -
@@ -318,7 +320,7 @@ int MinModeSaddleSearch::run() {
             "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
             "  {:6.3f}   {:4}\n",
             iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
-            objf.getConvergence(), minModeMethod->getEigenvalue(),
+            objf->getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else if (params->saddleMinmodeMethod ==
@@ -328,7 +330,7 @@ int MinModeSaddleSearch::run() {
             "[Lanczos]  {:9} {:9.6f} {:10.4f} {:18.5e} {:9.4f} {:10.6f} "
             "{:7.3f} {:5}\n",
             iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
-            objf.getConvergence(), minModeMethod->getEigenvalue(),
+            objf->getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else if (params->saddleMinmodeMethod ==
@@ -338,7 +340,7 @@ int MinModeSaddleSearch::run() {
             "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
             "  {:6.3f}   {:4}\n",
             iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
-            objf.getConvergence(), minModeMethod->getEigenvalue(),
+            objf->getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else {
@@ -374,8 +376,6 @@ int MinModeSaddleSearch::run() {
       SPDLOG_LOGGER_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
-
-    delete optimizer;
   }
 
   return status;
