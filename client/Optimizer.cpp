@@ -15,10 +15,10 @@ std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
     return std::make_unique<FIRE>(a_objf, a_params);
   }
   case OptType::QuickMin: {
-    return std::make_unique<QuickMin>(a_objf, a_params);
+    return std::make_unique<Quickmin>(a_objf, a_params);
   }
   case OptType::ConjugateGradient: {
-    return std::make_unique<ConjugateGradient>(a_objf, a_params);
+    return std::make_unique<ConjugateGradients>(a_objf, a_params);
   }
   case OptType::LBFGS: {
     return std::make_unique<LBFGS>(a_objf, a_params);
