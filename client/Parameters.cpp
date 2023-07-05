@@ -454,13 +454,9 @@ int Parameters::load(FILE *file) {
     // [Optimizers] //
     optMethod = helper_functions::getOptType(
         toLowerCase(ini.GetValue("Optimizer", "opt_method")));
-    refineOptMethod = helper_functions::getOptType(
-        toLowerCase(ini.GetValue("Optimizer", "refine_opt_method")));
-    refineThreshold =
-        ini.GetValueF("Optimizer", "refine_threshold", refineThreshold);
+
     optConvergenceMetric = toLowerCase(
         ini.GetValue("Optimizer", "convergence_metric", optConvergenceMetric));
-
     if (optConvergenceMetric == "max_atom") {
       optConvergenceMetricLabel = "Max atom force";
     } else if (optConvergenceMetric == "max_component") {
@@ -472,6 +468,12 @@ int Parameters::load(FILE *file) {
       fprintf(stderr, "unknown convergence_metric %s\n",
               optConvergenceMetric.c_str());
       exit(1);
+    }
+
+    if (ini.FindKey("Refine") != -1) {
+      refineOptMethod = helper_functions::getOptType(
+          toLowerCase(ini.GetValue("Refine", "opt_method")));
+      refineThreshold = ini.GetValueF("Refine", "threshold", refineThreshold);
     }
 
     optConvergedForce =
