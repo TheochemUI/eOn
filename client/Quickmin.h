@@ -27,8 +27,8 @@ public:
   }
   ~Quickmin() = default;
 
-  int step(double m_maxMove) override;
-  int run(size_t m_maxIterations, double m_maxMove) override;
+  int step(double a_maxMove) override;
+  int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
   double m_dt, m_dt_max, m_max_move;
