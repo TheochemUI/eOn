@@ -38,7 +38,10 @@ private:
   const OptType m_otype;
 
 protected:
+  //! Parameters set by the config.init file
   std::shared_ptr<Parameters> m_params;
+  //! An objective function relating a certain job method to the conjugate
+  //! gradient optimizer
   std::shared_ptr<ObjectiveFunction> m_objf;
 
 public:
