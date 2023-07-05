@@ -33,10 +33,9 @@ public:
    */
   ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
                      std::shared_ptr<Parameters> a_params)
-      : m_objf{a_objf},
-        m_params{a_params},
-        m_directionOld{a_objf->getPositions() * 0.0},
-        m_forceOld{a_objf->getPositions() * 0.0}, // use setZero instead
+      : Optimizer(a_objf, OptType::ConjugateGradient, a_params),
+        m_directionOld{(a_objf->getPositions()).setZero()},
+        m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
         m_cg_i{0} {
     if (spdlog::get("cg")) {
       m_log = spdlog::get("cg");
@@ -53,23 +52,17 @@ public:
    * Either calls the single_step or line_search method depending on the
    * parameters \return whether or not the algorithm has converged
    */
-  int step(double maxMove);
+  int step(double maxMove) override;
   //! Runs the conjugate gradient
   /**
    * \todo method should also return an error code and message if the algorithm
    * errors out \return algorithm convergence
    */
-  int run(int maxIterations, double maxMove);
+  int run(size_t maxIterations, double maxMove) override;
   //! Gets the direction of the next step
   Eigen::VectorXd getStep();
 
 private:
-  //! An objective function relating a certain job method to the conjugate
-  //! gradient optimizer
-  std::shared_ptr<ObjectiveFunction> m_objf;
-  //! Parameters set by the config.init file
-  std::shared_ptr<Parameters> m_params;
-
   //! Current step direction of the conjugate gradient
   Eigen::VectorXd m_direction;
   //! Algorithms previous step direction
