@@ -13,7 +13,7 @@ most cases executing these commands from the LAMMPS ``src`` folder should work::
     $ cd STUBS
     $ make
     $ cd ..
-    $ make serial mode=lib
+    $ make yes-manybody serial mode=lib
 
 Once you have compiled the library copy ``liblammps_serial.a`` and
 ``STUBS/libmpi_stubs.a`` to the client/potentials/LAMMPS directory in the Eon
@@ -63,3 +63,4 @@ LAMMPS will log to the file ``log.lammps``.
 compiled with OpenMP support via the USER-OMP LAMMPS package.
 
     default: ``0``
+
