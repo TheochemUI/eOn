@@ -9,7 +9,7 @@ int Quickmin::step(double a_maxMove) {
     if (m_vel.dot(force) < 0) {
       m_vel.setZero();
     } else {
-      Eigen::VectorXd f_unit = force / force.norm();
+      Eigen::VectorXd f_unit = force.normalized();
       m_vel = m_vel.dot(f_unit) * f_unit;
     }
   }
@@ -21,20 +21,12 @@ int Quickmin::step(double a_maxMove) {
                      fmt::streamed(m_vel));
   m_objf->setPositions(m_objf->getPositions() + dr);
   m_iteration++;
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }
 
 int Quickmin::run(size_t a_maxSteps, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxSteps) {
     step(a_maxMove);
   }
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }
