@@ -10,5 +10,6 @@ asap = shared_library('asap',
            'EMT.cpp',
            'stacktrace.c',
            'SuperCell.cpp',
-           dependencies : eigen_dep,
+           dependencies : _deps,
+           cpp_args : _args,
            install : true)

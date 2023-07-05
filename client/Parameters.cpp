@@ -117,9 +117,9 @@ Parameters::Parameters() {
   saddleZeroModeAbortCurvature = 0.0;   // eV/Ang^2
 
   // [Optimizers] //
-  optMethod = "cg"s;
+  optMethod = OptType::ConjugateGradient;
   optConvergenceMetric = "norm"s;
-  refineOptMethod = "none"s;
+  refineOptMethod = OptType::None;
   refineThreshold = 0.5;
   optMaxIterations = 1000;
   optConvergedForce = 0.01;
@@ -452,9 +452,10 @@ int Parameters::load(FILE *file) {
                       processSearchMinimizationOffset);
 
     // [Optimizers] //
-    optMethod = toLowerCase(ini.GetValue("Optimizer", "opt_method", optMethod));
-    refineOptMethod = toLowerCase(
-        ini.GetValue("Optimizer", "refine_opt_method", refineOptMethod));
+    optMethod = helper_functions::getOptType(
+        toLowerCase(ini.GetValue("Optimizer", "opt_method")));
+    refineOptMethod = helper_functions::getOptType(
+        toLowerCase(ini.GetValue("Optimizer", "refine_opt_method")));
     refineThreshold =
         ini.GetValueF("Optimizer", "refine_threshold", refineThreshold);
     optConvergenceMetric = toLowerCase(
@@ -475,13 +476,13 @@ int Parameters::load(FILE *file) {
 
     optConvergedForce =
         ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
-    optMaxIterations =
-        ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
+    optMaxIterations = static_cast<size_t>(
+        ini.GetValueL("Optimizer", "max_iterations", optMaxIterations));
     optMaxMove = ini.GetValueF("Optimizer", "max_move", optMaxMove);
     processSearchMinimizationOffset = optMaxMove;
     // Handle each optimizer separately
     if (ini.FindKey("QuickMin") != -1) {
-    optTimeStepInput =
+      optTimeStepInput =
           ini.GetValueF("QuickMin", "time_step", optTimeStepInput);
       optTimeStep = optTimeStepInput / timeUnit;
       optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent",
@@ -489,29 +490,29 @@ int Parameters::load(FILE *file) {
     } else if (ini.FindKey("FIRE") != -1) {
       SPDLOG_WARN("Overwriting QuickMin timestep with Fire timestep!!");
       optTimeStepInput = ini.GetValueF("FIRE", "time_step", optTimeStepInput);
-    optTimeStep = optTimeStepInput / timeUnit;
-    optMaxTimeStepInput =
+      optTimeStep = optTimeStepInput / timeUnit;
+      optMaxTimeStepInput =
           ini.GetValueF("FIRE", "time_step_max", optMaxTimeStepInput);
-    optMaxTimeStep = optMaxTimeStepInput / timeUnit;
+      optMaxTimeStep = optMaxTimeStepInput / timeUnit;
     } else if (ini.FindKey("LBFGS") != -1) {
       optLBFGSMemory = ini.GetValueL("LBFGS", "lbfgs_memory", optLBFGSMemory);
-    optLBFGSInverseCurvature = ini.GetValueF(
+      optLBFGSInverseCurvature = ini.GetValueF(
           "LBFGS", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
       optLBFGSMaxInverseCurvature = ini.GetValueF(
           "LBFGS", "lbfgs_max_inverse_curvature", optLBFGSMaxInverseCurvature);
-    optLBFGSAutoScale =
+      optLBFGSAutoScale =
           ini.GetValueB("LBFGS", "lbfgs_auto_scale", optLBFGSAutoScale);
-    optLBFGSAngleReset =
+      optLBFGSAngleReset =
           ini.GetValueB("LBFGS", "lbfgs_angle_reset", optLBFGSAngleReset);
       optLBFGSDistanceReset =
           ini.GetValueB("LBFGS", "lbfgs_distance_reset", optLBFGSDistanceReset);
     } else if (ini.FindKey("CG") != -1) {
-    optCGNoOvershooting =
+      optCGNoOvershooting =
           ini.GetValueB("CG", "cg_no_overshooting", optCGNoOvershooting);
       optCGKnockOutMaxMove =
           ini.GetValueB("CG", "cg_knock_out_max_move", optCGKnockOutMaxMove);
       optCGLineSearch = ini.GetValueB("CG", "cg_line_search", optCGLineSearch);
-    optCGLineConverged =
+      optCGLineConverged =
           ini.GetValueF("CG", "cg_line_converged", optCGLineConverged);
       optCGMaxIterBeforeReset = ini.GetValueL("CG", "cg_max_iter_before_reset",
                                               optCGMaxIterBeforeReset);
