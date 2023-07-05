@@ -15,6 +15,11 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
+# Platform detection
+host_system = host_machine.system()
+is_windows = host_system == 'windows'
+is_mingw = is_windows and cc.get_id() == 'gcc'
+
 # Add conditionals
 if host_system == 'darwin'
   _args += ['-DOSX=TRUE']
@@ -25,6 +30,18 @@ if host_system == 'darwin'
 endif
 
 # Dependencies
+if not is_windows
+  # libm for Unix systems
+  m_dep = cppc.find_library('m', required: false)
+  _deps += m_dep
+  # For building with clang
+  _deps += [declare_dependency(link_args: '-lstdc++')]
+endif
+
+threads_dep = dependency('threads',
+                         required: true)
+_deps += threads_dep
+
 eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
 _deps += [ eigen_dep ]
 
