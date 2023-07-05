@@ -1,42 +1,53 @@
 #ifndef LBFGS_H
 #define LBFGS_H
 
-#include "Eigen.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "Parameters.h"
-#include <vector>
 
 #define LBFGS_EPS 1e-30
 
-class LBFGS : public Optimizer {
+class LBFGS final : public Optimizer {
 
 public:
-  LBFGS(ObjectiveFunction *objf, Parameters *parameters);
+  LBFGS(std::shared_ptr<ObjectiveFunction> a_objf,
+        std::shared_ptr<Parameters> a_params)
+      : Optimizer(a_objf, OptType::LBFGS, a_params),
+        m_iteration{0},
+        m_memory{min(a_objf->degreesOfFreedom(),
+                     static_cast<int>(a_params->optLBFGSMemory))} {
+
+    if (spdlog::get("lbfgs")) {
+      m_log = spdlog::get("lbfgs");
+    } else {
+      m_log = spdlog::basic_logger_st("lbfgs", "_lbfgs.log", true);
+    }
+    m_log->set_pattern("[%l] [LBFGS] %v");
+  }
+
   ~LBFGS() = default;
 
-  int step(double maxMove);
-  int run(int maxIterations, double maxMove);
-  int update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0);
+  int step(double a_maxMove) override;
+  int run(size_t a_maxIterations, double a_maxMove) override;
+  int update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0, Eigen::VectorXd a_f1,
+             Eigen::VectorXd a_f0);
   void reset(void);
 
 private:
-  VectorXd getStep(double maxMove, VectorXd f);
-  Parameters *parameters;
-  ObjectiveFunction *objf;
+  Eigen::VectorXd getStep(double a_maxMove, Eigen::VectorXd a_f);
 
-  int iteration;
-  int memory;
+  int m_iteration;
+  int m_memory;
 
-  std::vector<VectorXd> s;
-  std::vector<VectorXd> y;
-  std::vector<double> rho;
+  std::vector<Eigen::VectorXd> m_s;
+  std::vector<Eigen::VectorXd> m_y;
+  std::vector<double> m_rho;
 
-  VectorXd rPrev;
-  VectorXd fPrev;
-  shared_ptr<spdlog::logger> log;
+  Eigen::VectorXd m_rPrev;
+  Eigen::VectorXd m_fPrev;
+  std::shared_ptr<spdlog::logger> m_log;
 };
 
 #endif

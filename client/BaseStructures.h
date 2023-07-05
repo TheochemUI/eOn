@@ -82,6 +82,17 @@ enum class JobType {
   GPSurrogate
 };
 
+enum class OptType {
+  // Only add to the end of this!!!
+  Unknown = -1, // an error case
+  None = 0,
+  QuickMin,
+  ConjugateGradient,
+  LBFGS,
+  FIRE,
+  SteepestDescent
+};
+
 enum class RunStatus { GOOD = 0, MAX_ITERATIONS, POTENTIAL_FAILED };
 
 namespace helper_functions {
@@ -89,5 +100,7 @@ PotType getPotentialType(std::string pname);
 std::string getPotentialName(PotType ptype);
 JobType getJobType(std::string jname);
 std::string getJobName(JobType jtype);
+OptType getOptType(std::string a_oname);
+std::string getOptName(OptType a_otype);
 std::string getRunStatusName(RunStatus rstype);
 } // namespace helper_functions
