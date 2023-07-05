@@ -64,3 +64,21 @@ compiled with OpenMP support via the USER-OMP LAMMPS package.
 
     default: ``0``
 
+
+Notes for Intel Compilers
+=========================
+
+To build the LAMMPS serial library with Intel compilers, make these following
+modifications (from the LAMMPS ``src`` directory):
+
+* ``STUBS/Makefile``       : set ``CC`` to ``icpc`` or ``icpx``
+* ``MAKE/Makefile.serial`` : set ``CC`` and ``LINK`` to ``icpc`` or ``icpx``
+
+To build the EON client with Intel compilers, make these following modifications
+to EON's ``client/Makefile``:
+
+* Set ``CC`` to ``icc``
+* Set ``CXX`` to ``icpc``
+* Add ``-std=c++11`` to ``CXXFLAGS``
+* In the ``Fortran compiler settings`` section, comment out the ``FC``, ``FFLAGS``, ``FAR``, and ``LDFLAGS`` lines under ``#gfortran``, and uncomment them under ``#ifort``
+
