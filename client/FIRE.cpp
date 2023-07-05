@@ -48,12 +48,20 @@ int FIRE::step(double a_maxMove) {
   }
 
   m_iteration++;
-  return m_objf->isConverged();
+  if (m_objf->isConverged()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int FIRE::run(int a_maxIterations, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxIterations) {
     step(a_maxMove);
   }
-  return m_objf->isConverged();
+  if (m_objf->isConverged()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
