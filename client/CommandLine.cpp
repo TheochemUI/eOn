@@ -127,7 +127,7 @@ void commandLine(int argc, char **argv) {
   if (!cflag) {
     params->potential = helper_functions::getPotentialType(potential);
   }
-  params->optMethod = optimizer;
+  params->optMethod = helper_functions::getOptType(optimizer);
   params->optConvergedForce = optConvergedForce;
 
   auto pot = helper_functions::makePotential(params);

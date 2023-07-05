@@ -237,7 +237,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         } else {
           if (!switched) {
             switched = true;
-            SPDLOG_DEBUG("Switched to {}", params->refineOptMethod);
+            SPDLOG_DEBUG("Switched to {}",
+                         helper_functions::getOptName(params->refineOptMethod));
           }
           refine_optim->step(params->optMaxMove);
         }
