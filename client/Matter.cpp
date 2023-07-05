@@ -305,7 +305,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
     SPDLOG_LOGGER_DEBUG(log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
                         "Iter", "Step size",
                         parameters->optConvergenceMetricLabel, "Energy");
-    SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+    SPDLOG_LOGGER_DEBUG(log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
                         "[Matter]", iteration, 0.0, objf->getConvergence(),
                         getPotentialEnergy());
   }
@@ -321,7 +321,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
         helper_functions::maxAtomMotion(pbc(getPositions() - pos));
 
     if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
+      SPDLOG_LOGGER_DEBUG(log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
                           "[Matter]", iteration, stepSize,
                           objf->getConvergence(), getPotentialEnergy());
     }
@@ -339,7 +339,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
 
   if (iteration == 0) {
     if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
+      SPDLOG_LOGGER_DEBUG(log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
                           "[Matter]", iteration, 0.0, objf->getConvergence(),
                           getPotentialEnergy());
     }

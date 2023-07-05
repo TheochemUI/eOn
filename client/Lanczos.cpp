@@ -98,7 +98,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       evOldEst = evEst;
       SPDLOG_LOGGER_INFO(log,
                          "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
-                         "{:10.6f} {:7.3f} {:5i}",
+                         "{:10.6f} {:7.3f} {:5}",
                          "----", "----", "----", "----", ew, ewAbsRelErr,
                          statsAngle, i);
       if (ewAbsRelErr < params->lanczosTolerance) {
