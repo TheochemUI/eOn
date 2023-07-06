@@ -4,12 +4,17 @@ project('eonclient', 'cpp',
 # IMPORTANT!! warning_level=3 passes -fimplicit-none
 # EON needs implicit typing!!
 
+
 host_system = host_machine.system()
 
 _args = [] # Extra arguments
 _deps = [] # Dependencies
 _linkto = [] # All the sub-libraries
 _incdirs = [] # All the includes
+
+# Someday these should be removed and things should be fixed..
+_args += ['-Wno-unused-result',
+         '-Wunused-but-set-parameter']
 
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
