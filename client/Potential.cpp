@@ -14,7 +14,7 @@
 #include "potentials/IMD/IMD.h"
 #endif
 
-#ifdef WITH_GPRD
+#ifdef WITH_GPR_OPTIM
 #include "potentials/GPRPotential/GPRPotential.h"
 #endif
 
@@ -248,7 +248,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-#ifdef WITH_GPRD
+#ifdef WITH_GPR_OPTIM
   // case PotType::GPR: {
   //   return "gpr"s;
   //   break;

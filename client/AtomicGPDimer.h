@@ -40,9 +40,9 @@ public:
   ~AtomicGPDimer() = default;
 
   void compute(std::shared_ptr<Matter> a_matter,
-               AtomMatrix a_initialDirectionMatrix);
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
+               AtomMatrix a_initialDirectionMatrix) override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
 
 private:
   std::shared_ptr<Matter> m_dimer_center; // initial center of the dimer

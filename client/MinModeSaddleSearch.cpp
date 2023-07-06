@@ -7,7 +7,7 @@
 #include "LowestEigenmode.h"
 #include "SaddleSearchJob.h"
 #include <memory>
-#ifdef WITH_GPRD
+#ifdef WITH_GPR_OPTIM
 #include "AtomicGPDimer.h"
 #endif
 #include "EpiCenters.h"
@@ -166,7 +166,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(
   } else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = std::make_shared<Lanczos>(matter, params, pot);
   }
-#ifdef WITH_GPRD
+#ifdef WITH_GPR_OPTIM
   else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
     minModeMethod = std::make_shared<AtomicGPDimer>(matter, params, pot);
   }

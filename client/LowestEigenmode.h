@@ -26,8 +26,9 @@ public:
 
   LowestEigenmode(std::shared_ptr<Potential> potPassed,
                   std::shared_ptr<Parameters> parameters)
-      : pot{potPassed}, params{parameters} {}
-  virtual ~LowestEigenmode() {}
+      : pot{potPassed},
+        params{parameters} {}
+  virtual ~LowestEigenmode() = default;
 
   // void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
   virtual void compute(std::shared_ptr<Matter> matter,
