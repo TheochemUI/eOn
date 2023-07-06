@@ -56,13 +56,12 @@ void GPRPotential::registerGPRObject(
 void GPRPotential::force(long N, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
-  variance = nullptr;
-  gpr::Observation observation;
+  gpr::Observation eg_obs, var_obs;
 
   // Copy R points. Note, R should correspond to the moving atoms only.
-  observation.R.resize(1, N * 3);
+  eg_obs.R.resize(1, N * 3);
   for (int i = 0; i < N; i++) {
-    observation.R.set(i, {R[3 * i], R[3 * i + 1], R[3 * i + 2]});
+    eg_obs.R.set(i, {R[3 * i], R[3 * i + 1], R[3 * i + 2]});
   }
 
   // Note, the following functions should be called before calling for
@@ -70,14 +69,16 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
   // ind) - takes covariance matrix and vector of repetitive indices
   // gpr_model->calculateMeanPrediction() - takes a vector of combined energy
   // and force gpr_model->calculatePosteriorMeanPrediction() - no arguments
-  m_gprm->calculatePotential(observation);
+  m_gprm->calculatePotential(eg_obs);
+  m_gprm->calculateVariance(var_obs);
 
   for (int i = 0; i < N; i++) {
-    F[3 * i] = observation.G[3 * i];
-    F[3 * i + 1] = observation.G[3 * i + 1];
-    F[3 * i + 2] = observation.G[3 * i + 2];
+    F[3 * i] = eg_obs.G[3 * i];
+    F[3 * i + 1] = eg_obs.G[3 * i + 1];
+    F[3 * i + 2] = eg_obs.G[3 * i + 2];
   }
 
   // FIXME: Test conversion, E should only have one element here
-  *U = observation.E[0];
+  *U = eg_obs.E[0];
+  *variance = var_obs.E[0];
 }
