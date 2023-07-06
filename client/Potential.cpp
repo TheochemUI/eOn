@@ -105,6 +105,7 @@ std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params) {
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          std::shared_ptr<Parameters> params) {
   switch (ptype) {
+  // TODO: Every potential must know their own type
   case PotType::EMT: {
     return (std::make_shared<EffectiveMediumTheory>(params));
     break;

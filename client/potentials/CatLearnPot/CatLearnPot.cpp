@@ -11,12 +11,10 @@
 #include "CatLearnPot.h"
 #include "Eigen/src/Core/Matrix.h"
 
-CatLearnPot::CatLearnPot(shared_ptr<Parameters> p)
-    : Potential(p) {
+CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
+    : Potential(PotType::CatLearn, a_params) {
   py::module_ sys = py::module_::import("sys");
-  // TODO: Make a parameter out of this
-  py::exec(
-      R"(sys.path.insert(0, "/home/rgoswami/Git/Github/Python/DTU_CatLearn"))");
+  py::exec(fmt::format("sys.path.insert(0, {})", a_params->catl_path));
 
   // Import the required modules
   py::module np = py::module::import("numpy");
