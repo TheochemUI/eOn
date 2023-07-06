@@ -16,7 +16,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto true_job =
       helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
   auto pyparams = std::make_shared<Parameters>(*params);
-  pyparams->potential = PotType::PYSURROGATE;
+  pyparams->potential = PotType::CatLearn;
 
   // Get possible initial data source
   auto initial = std::make_shared<Matter>(pot, true_params);
@@ -32,7 +32,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
-  auto pypot = std::make_shared<PySurrogate>(pyparams);
+  auto pypot = std::make_shared<CatLearnPot>(pyparams);
   pypot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  pypot);

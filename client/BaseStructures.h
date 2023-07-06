@@ -55,7 +55,7 @@ enum class PotType {
   AMS_IO,
   GPR,
   PYTHON,
-  PYSURROGATE
+  CatLearn
 };
 
 enum class JobType {
