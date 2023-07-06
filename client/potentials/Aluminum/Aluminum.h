@@ -33,7 +33,10 @@ void potinit_();
 /** Aluminum potential.*/
 class Aluminum : public Potential {
 public:
-  Aluminum(Parameters *params) : Potential(params) { potinit_(); };
+  Aluminum(std::shared_ptr<Parameters> params)
+      : Potential(PotType::Aluminum, params) {
+    potinit_();
+  };
   ~Aluminum(void){};
   // To satisfy interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
