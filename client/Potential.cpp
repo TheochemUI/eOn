@@ -6,8 +6,8 @@
 #include "HelperFunctions.h"
 #include "Parameters.h"
 #include "Potential.h"
-#ifdef WITH_PYSURROGATE
-#include "potentials/PySurrogate/PySurrogate.h"
+#ifdef WITH_CATLEARN
+#include "potentials/CatLearnPot/CatLearnPot.h"
 #endif
 
 #ifdef IMD_POT
@@ -35,9 +35,11 @@
 #endif
 
 #ifdef WITH_PYTHON
+
 #ifdef PYAMFF_POT
 #include "potentials/PyAMFF/PyAMFF.h"
 #endif
+
 #include "potentials/QSC/QSC.h"
 #endif
 
@@ -249,9 +251,9 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   //   return "python"s;
   //   break;
   // }
-#ifdef WITH_PYSURROGATE
-  case PotType::PYSURROGATE: {
-    return (std::make_shared<PySurrogate>(params));
+#ifdef WITH_CATLEARN
+  case PotType::CatLearn: {
+    return (std::make_shared<CatLearnPot>(params));
     break;
   }
 #endif

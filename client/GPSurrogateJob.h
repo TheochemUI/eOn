@@ -4,7 +4,9 @@
 #include "Job.h"
 #include "Parameters.h"
 
-#include "potentials/PySurrogate/PySurrogate.h"
+#ifdef WITH_CATLEARN
+#include "potentials/CatLearnPot/CatLearnPot.h"
+#endif
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <pybind11/eigen.h>
