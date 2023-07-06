@@ -8,10 +8,11 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include "PySurrogate.h"
+#include "CatLearnPot.h"
 #include "Eigen/src/Core/Matrix.h"
 
-PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
+CatLearnPot::CatLearnPot(shared_ptr<Parameters> p)
+    : Potential(p) {
   py::module_ sys = py::module_::import("sys");
   // TODO: Make a parameter out of this
   py::exec(
@@ -81,19 +82,19 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
                py::arg("use_derivatives") = true, py::arg("hpfitter") = hpfit);
 };
 
-void PySurrogate::train_optimize(Eigen::MatrixXd features,
+void CatLearnPot::train_optimize(Eigen::MatrixXd features,
                                  Eigen::MatrixXd targets) {
 
   gpmod.attr("optimize")(features, targets, py::arg("retrain") = true,
                          py::arg("prior") = _prior);
   return;
 }
-void PySurrogate::cleanMemory(void) { return; }
+void CatLearnPot::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
-void PySurrogate::force(long N, const double *R, const int *atomicNrs,
+void CatLearnPot::force(long N, const double *R, const int *atomicNrs,
                         double *F, double *U, double *variance,
                         const double *box) {
   Eigen::MatrixXd features =

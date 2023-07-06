@@ -155,16 +155,18 @@ endif
 if get_option('with_gp_surrogate')
   _args += ['-DWITH_GP_SURROGATE']
   eonclib_sources += ['GPSurrogateJob.cpp']
-  # Embedding the interpreter
-  py = import('python').find_installation()
-  python_dep = py.dependency(embed: true)
-  pyb11f_deps = [ python_dep,
-                  dependency('pybind11'),
-                  declare_dependency(link_args: '-lstdc++') ]
-  _deps += [ pyb11f_deps ]
-  subdir('potentials/PySurrogate')
-  potentials += [ pysurrpot ]
-  _args += ['-DWITH_PYSURROGATE']
+    if get_option('with_catlearn')
+      # Embedding the interpreter
+      py = import('python').find_installation()
+      python_dep = py.dependency(embed: true)
+      pyb11f_deps = [ python_dep,
+                      dependency('pybind11'),
+                      declare_dependency(link_args: '-lstdc++') ]
+      _deps += [ pyb11f_deps ]
+      subdir('potentials/CatLearnPot')
+      potentials += [ catlearnpot ]
+      _args += ['-DWITH_CATLEARN']
+    endif
 endif
 
 if get_option('with_vasp')
