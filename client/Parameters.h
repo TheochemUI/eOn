@@ -269,6 +269,7 @@ public:
   JobType sub_job;
   double gp_uncertainity;
   bool gp_linear_path_always;
+  PotType surrogatePotential; // ONLY: catlearn for now
 
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
