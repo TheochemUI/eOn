@@ -11,12 +11,12 @@ using namespace std::string_literals; // For ""s
 
 int main(void) {
   Parameters *parameters = new Parameters;
-  // parameters->potential = PotType::PYSURROGATE;
+  // parameters->potential = PotType::CatLearn;
   // Potential *pot = helper_functions::makePotential(parameters);
   string confile("pos.con");
   auto params = std::make_shared<Parameters>();
   pybind11::scoped_interpreter guard{}; // Initialize the Python interpreter
-  params->potential = PotType::PYSURROGATE;
+  params->potential = PotType::CatLearn;
   auto pot = helper_functions::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   matter->con2matter(confile);
