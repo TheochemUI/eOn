@@ -31,7 +31,10 @@ public:
   // Functions
   // constructor
   LJ(std::shared_ptr<Parameters> params)
-      : Potential(params), u0{1.0}, cuttOffR{15.0}, psi{1.0} {};
+      : Potential(PotType::LJ, params),
+        u0{1.0},
+        cuttOffR{15.0},
+        psi{1.0} {};
   // LJ(double r0Recieved, double u0Recieved, double psiRecieved);
 
   ~LJ();

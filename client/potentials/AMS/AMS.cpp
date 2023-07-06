@@ -14,7 +14,8 @@
 
 namespace bp = boost::process;
 
-AMS::AMS(std::shared_ptr<Parameters> p) : Potential(p) {
+AMS::AMS(std::shared_ptr<Parameters> p)
+    : Potential(PotType::AMS, p) {
   // Get the values from the configuration
   // All the parameter values are converted to lowercase in generate_run
   this->engine = p->engine;
