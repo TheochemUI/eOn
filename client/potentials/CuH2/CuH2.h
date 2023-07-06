@@ -22,7 +22,8 @@ class CuH2 : public Potential {
 public:
   // Functions
   // constructor and destructor
-  CuH2(std::shared_ptr<Parameters> p) : Potential(p) {}
+  CuH2(std::shared_ptr<Parameters> p)
+      : Potential(PotType::CUH2, p) {}
 
   // To satisfy interface
   void cleanMemory(void);
