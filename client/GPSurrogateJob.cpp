@@ -2,9 +2,7 @@
 #include "BaseStructures.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
-#include "SurrogatePotential.h"
 #include "helpers/Create.hpp"
-#include "potentials/CatLearnPot/CatLearnPot.h"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
@@ -19,7 +17,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto true_job =
       helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
   auto pyparams = std::make_shared<Parameters>(*params);
-  pyparams->potential = PotType::CatLearn;
+  pyparams->potential = params->surrogatePotential;
 
   // Get possible initial data source
   auto initial = std::make_shared<Matter>(pot, true_params);

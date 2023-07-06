@@ -601,9 +601,11 @@ int Parameters::load(FILE *file) {
     if (ini.FindKey("Surrogate") != -1) {
       surrogatePotential = helper_functions::getPotentialType(
           toLowerCase(ini.GetValue("Surrogate", "potential")));
-      if (surrogatePotential != PotType::CatLearn) {
-        throw std::runtime_error("We only support catlearn for GP right now");
-      }
+      // if (!((surrogatePotential == PotType::CatLearn) ||
+      //       (surrogatePotential == PotType::GPR_Optim))) {
+      //   throw std::runtime_error(
+      //       "We only support catlearn and for GP right now");
+      // }
     }
     // [CatLearn]
     if (ini.FindKey("CatLearn") != -1) {
