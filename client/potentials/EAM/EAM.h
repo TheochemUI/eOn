@@ -11,7 +11,8 @@ class EAM
 #endif
 {
 public:
-  EAM(std::shared_ptr<Parameters> params) : Potential(params) {
+  EAM(std::shared_ptr<Parameters> params)
+      : Potential(PotType::EAM_AL, params) {
     celllist_new = 0;
     neigh_list = 0;
     initialized = false;
