@@ -19,15 +19,15 @@ CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
   py::module_ gp_module = py::module_::import(
       "catlearn.regression.gaussianprocess.calculator.mlmodel");
 
-  // Import the required modules
   // GP Model
-  this->m_gpmod =
-      gp_module.attr("get_default_model")("model"_a = a_params->catl_model);
+  this->m_gpmod = gp_module.attr("get_default_model")(
+      a_params->catl_model, a_params->catl_prior, a_params->catl_use_deriv,
+      a_params->catl_use_fingerprint, a_params->catl_parallel);
 };
 
 void CatLearnPot::train_optimize(Eigen::MatrixXd features,
                                  Eigen::MatrixXd targets) {
-  m_gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
+  this->m_gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
   return;
 }
 
