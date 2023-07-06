@@ -31,7 +31,7 @@ private:
   py::dict _prior; //
 
 public:
-  CatLearnPot(shared_ptr<Parameters> p);
+  CatLearnPot(shared_ptr<Parameters> a_params);
 
   // Functions
   void train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets);
