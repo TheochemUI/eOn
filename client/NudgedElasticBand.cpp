@@ -264,7 +264,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                         iteration, stepSize, convergenceForce(), maxEnergyImage,
                         dE);
 
-    if (pot->getType() == PotType::CatLearn) {
+    if (pot->getType() == PotType::CatLearn ||
+        pot->getType() == PotType::GPR_Optim) {
       if (objf->isUncertain()) {
         SPDLOG_LOGGER_DEBUG(log, "NEB failed due to high uncertainity");
         status = NEBStatus::MAX_UNCERTAINITY;

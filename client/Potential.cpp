@@ -249,10 +249,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #ifdef WITH_GPR_OPTIM
-  // case PotType::GPR: {
-  //   return "gpr"s;
-  //   break;
-  // }
+  case PotType::GPR_Optim: {
+    return (std::make_shared<GPRPotential>(params));
+    break;
+  }
 #endif
   // case PotType::PYTHON: {
   //   TODO: Implement

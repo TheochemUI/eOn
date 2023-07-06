@@ -24,7 +24,7 @@ public:
   // Functions
   // constructor and destructor
   GPRPotential(std::shared_ptr<Parameters> a_params)
-      : Potential(a_params),
+      : Potential(PotType::GPR_Optim, a_params),
         m_gprm{nullptr} {};
 
   void

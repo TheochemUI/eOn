@@ -53,7 +53,7 @@ enum class PotType {
   // Add newer entries here
   AMS,
   AMS_IO,
-  GPR,
+  GPR_Optim,
   PYTHON,
   CatLearn,
   XTB,
