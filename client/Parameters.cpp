@@ -452,8 +452,11 @@ int Parameters::load(FILE *file) {
                       processSearchMinimizationOffset);
 
     // [Optimizers] //
-    optMethod = helper_functions::getOptType(
+    auto inp_optMethod = helper_functions::getOptType(
         toLowerCase(ini.GetValue("Optimizer", "opt_method")));
+    if (inp_optMethod != OptType::None) {
+      optMethod = inp_optMethod;
+    }
 
     optConvergenceMetric = toLowerCase(
         ini.GetValue("Optimizer", "convergence_metric", optConvergenceMetric));
