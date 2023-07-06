@@ -9,8 +9,8 @@
 //-----------------------------------------------------------------------------------
 
 #include "GPRPotential.h"
-#include "../../subprojects/gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
-#include "../../subprojects/gprdimer/structures/Structures.h"
+#include "../../subprojects/gpr_optim/gpr/auxiliary/AdditionalFunctionality.h"
+#include "../../subprojects/gpr_optim/structures/Structures.h"
 
 namespace {
 
@@ -45,16 +45,10 @@ int symbol2atomicNumber(char const *symbol) {
 char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
-GPRPotential::GPRPotential(Parameters *p) { gpr_model = nullptr; }
-
 void GPRPotential::registerGPRObject(
-    gpr::GaussianProcessRegression *_gpr_model) {
-  gpr_model = _gpr_model;
+    std::shared_ptr<gpr::GaussianProcessRegression> a_gprm) {
+  m_gprm = a_gprm;
 }
-
-void GPRPotential::initialize(void) {}
-
-void GPRPotential::cleanMemory(void) {}
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
@@ -76,7 +70,7 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
   // ind) - takes covariance matrix and vector of repetitive indices
   // gpr_model->calculateMeanPrediction() - takes a vector of combined energy
   // and force gpr_model->calculatePosteriorMeanPrediction() - no arguments
-  gpr_model->calculatePotential(observation);
+  m_gprm->calculatePotential(observation);
 
   for (int i = 0; i < N; i++) {
     F[3 * i] = observation.G[3 * i];

@@ -12,26 +12,25 @@
 #define GPRPOT_INTERFACE
 
 #include "../../Potential.h"
-#include "../../subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
+#include "../../subprojects/gpr_optim/gpr/ml/GaussianProcessRegression.h"
 
 /** Template to use if user want to provide potential. */
-class GPRPotential : public Potential {
+class GPRPotential final : public Potential {
 
 private:
-  gpr::GaussianProcessRegression *gpr_model;
+  std::shared_ptr<gpr::GaussianProcessRegression> m_gprm;
 
 public:
   // Functions
   // constructor and destructor
-  GPRPotential(Parameters *p);
+  GPRPotential(std::shared_ptr<Parameters> a_params)
+      : Potential(a_params),
+        m_gprm{nullptr} {};
 
-  void registerGPRObject(gpr::GaussianProcessRegression *_gpr_model);
-
-  // To satisfy interface
-  void initialize(void);
-  void cleanMemory(void);
+  void
+  registerGPRObject(std::shared_ptr<gpr::GaussianProcessRegression> a_gprm);
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+             double *U, double *variance, const double *box) override;
 };
 #endif

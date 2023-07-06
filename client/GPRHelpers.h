@@ -4,10 +4,10 @@
 #include "Matter.h"
 #include "Parameters.h"
 
-#include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
-#include "subprojects/gprdimer/structures/Structures.h"
+#include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
+#include "subprojects/gpr_optim/structures/Structures.h"
 
-namespace helper_functions {
+namespace helpers::gproptim::input {
 /**
  * \brief Create a parameters object for gpr_dimer
  *
@@ -15,14 +15,15 @@ namespace helper_functions {
  *
  * @param *parameters An EON parameters object
  */
-gpr::InputParameters eon_parameters_to_gpr(Parameters *parameters);
+gpr::InputParameters
+eon_parameters_to_gpr(std::shared_ptr<Parameters> a_params);
 
 /**
  * \brief Create a configuration of atoms for gpr_dimer
  *
  * @param *Matter An EON Matter object
  */
-gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
+gpr::AtomsConfiguration eon_matter_to_atmconf(std::shared_ptr<Matter> a_matter);
 
 /**
  * \brief Create an initial Observation object for gpr_dimer
@@ -33,7 +34,7 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
  *
  * @param *Matter An EON Matter object
  */
-gpr::Observation eon_matter_to_init_obs(Matter *matter);
+gpr::Observation eon_matter_to_init_obs(std::shared_ptr<Matter> a_matter);
 
-} // namespace helper_functions
+} // namespace helpers::gproptim::input
 #endif /* GPRHELPERS_H */
