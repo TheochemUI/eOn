@@ -567,6 +567,11 @@ int Parameters::load(FILE *file) {
         throw std::runtime_error("We only support catlearn for GP right now");
       }
     }
+    // [CatLearn]
+    if (ini.FindKey("CatLearn") != -1) {
+      // Case sensitive!!
+      catl_path = ini.GetValue("CatLearn", "catl_path");
+    }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
                                           gp_linear_path_always);
