@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef PYSURROGATE_INTERFACE
-#define PYSURROGATE_INTERFACE
+#ifndef CATLEARNPOT_INTERFACE
+#define CATLEARNPOT_INTERFACE
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
@@ -23,7 +23,7 @@ namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 // TODO: Use a better name, say, CatLearnPot
-class PySurrogate : public Potential {
+class CatLearnPot : public Potential {
 
 private:
   py::object hpfit;
@@ -31,7 +31,7 @@ private:
   py::dict _prior; //
 
 public:
-  PySurrogate(shared_ptr<Parameters> p);
+  CatLearnPot(shared_ptr<Parameters> a_params);
 
   // Functions
   void train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets);
