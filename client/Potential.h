@@ -17,6 +17,9 @@ protected:
   std::shared_ptr<Parameters> m_params;
 
 public:
+  Potential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
+      : ptype{a_ptype},
+        m_params{a_params} {}
   Potential(std::shared_ptr<Parameters> a_params)
       : ptype{a_params->potential},
         m_params{a_params} {}

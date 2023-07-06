@@ -1,4 +1,5 @@
 #include "Parameters.h"
+#include "BaseStructures.h"
 #include "BondBoost.h"
 #include "Dynamics.h"
 #include "EpiCenters.h"
@@ -14,6 +15,7 @@
 #include "ReplicaExchangeJob.h"
 #include <errno.h>
 #include <float.h>
+#include <stdexcept>
 #include <time.h>
 
 Parameters::Parameters() {
@@ -221,6 +223,7 @@ Parameters::Parameters() {
   sub_job = JobType::Unknown;
   gp_uncertainity = 0.05;
   gp_linear_path_always = true;
+  surrogatePotential = PotType::CatLearn;
 
   // [Hessian] //
   hessianAtomList = string("All");
@@ -555,6 +558,21 @@ int Parameters::load(FILE *file) {
         toLowerCase(ini.GetValue("Surrogate", "sub_job")));
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
+    sub_job = helper_functions::getJobType(
+        toLowerCase(ini.GetValue("Surrogate", "sub_job")));
+    if (ini.FindKey("Surrogate") != -1) {
+      surrogatePotential = helper_functions::getPotentialType(
+          toLowerCase(ini.GetValue("Surrogate", "potential")));
+      if (surrogatePotential != PotType::CatLearn) {
+        throw std::runtime_error("We only support catlearn for GP right now");
+      }
+    }
+    // [CatLearn]
+    if (ini.FindKey("CatLearn") != -1) {
+      // Case sensitive!!
+      catl_path = ini.GetValue("CatLearn", "catl_path");
+    }
+    // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
                                           gp_linear_path_always);
     // [Lanczos] //

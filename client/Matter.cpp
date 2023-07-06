@@ -833,7 +833,7 @@ void Matter::computePotential() {
     }
     // SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(
     //                                     this->potential->getType()));
-    if (potential->getType() != PotType::PYSURROGATE) {
+    if (potential->getType() != PotType::CatLearn) {
       // Default value for true_pot, so not a surrogate run
       // potcall_logger->info(
       //     "Calling potential {}",

@@ -121,8 +121,8 @@ std::string getPotentialName(PotType ptype) {
     return "python"s;
     break;
   }
-  case PotType::PYSURROGATE: {
-    return "py_surrogate"s;
+  case PotType::CatLearn: {
+    return "catlearn"s;
     break;
   }
   default:
@@ -183,8 +183,8 @@ PotType getPotentialType(const std::string pname) {
     return PotType::BOP;
   } else if (pname == "python"s) {
     return PotType::PYTHON;
-  } else if (pname == "py_surrogate") {
-    return PotType::PYSURROGATE;
+  } else if (pname == "catlearn") {
+    return PotType::CatLearn;
   } else {
     return PotType::UNKNOWN;
   }
