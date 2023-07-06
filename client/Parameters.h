@@ -271,6 +271,9 @@ public:
   bool gp_linear_path_always;
   PotType surrogatePotential; // ONLY: catlearn for now
 
+  // [CatLearn]
+  std::string catl_path;
+
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
                              // successive iterations
