@@ -155,9 +155,11 @@ if get_option('with_gpr_optim')
   gprd_dep = libgprd_proj.get_variable('libgprd_dep')
   _deps += [ gprd_dep ]
   _args += ['-DWITH_GPR_OPTIM']
-  subdir('potentials/GPRPotential')
-  potentials += [ gprpot ]
   eonclib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
+  # The GPR potential cannot be built alone
+  eonclib_sources += ['potentials/GPRPotential/GPRPotential.cpp']
+  # subdir('potentials/GPRPotential')
+  # potentials += [ gprpot ]
 endif
 
 if get_option('with_gp_surrogate')
