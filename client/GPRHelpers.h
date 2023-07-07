@@ -36,5 +36,12 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(std::shared_ptr<Matter> a_matter);
  */
 gpr::Observation eon_matter_to_init_obs(std::shared_ptr<Matter> a_matter);
 
+/**
+ * \brief Prepare the atoms configuration data
+ */
+std::pair<gpr::AtomsConfiguration, gpr::Coord>
+eon_matter_to_frozen_conf_info(std::shared_ptr<Matter> a_matter,
+                               double a_activeRadius);
+
 } // namespace helpers::gproptim::input
 #endif /* GPRHELPERS_H */

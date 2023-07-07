@@ -4,8 +4,8 @@
 #include <set>
 #include <unordered_map>
 
-gpr::InputParameters helpers::gproptim::input::eon_parameters_to_gpr(
-    std::shared_ptr<Parameters> a_params) {
+namespace helpers::gproptim::input {
+gpr::InputParameters eon_parameters_to_gpr(shared_ptr<Parameters> a_params) {
   gpr::InputParameters gppi;
   // Problem parameters
   gppi.actdist_fro.value = a_params->gprActiveRadius;
@@ -58,10 +58,8 @@ gpr::InputParameters helpers::gproptim::input::eon_parameters_to_gpr(
   gppi.debug_dz.value = a_params->gprDebugDz;
   return gppi;
 }
-
 // FIXME: Take in the active / inactive pairs / atomtypes
-gpr::AtomsConfiguration helpers::gproptim::input::eon_matter_to_atmconf(
-    std::shared_ptr<Matter> a_matter) {
+gpr::AtomsConfiguration eon_matter_to_atmconf(shared_ptr<Matter> a_matter) {
   //   AtomsConfiguration a;
   //   aux::ProblemSetUp problem_setup;
   //   std::vector<int> atomnrs;
@@ -105,8 +103,8 @@ gpr::AtomsConfiguration helpers::gproptim::input::eon_matter_to_atmconf(
   gpr::Index_t number_of_fro_atoms;
   std::set<int> unique_atomtypes;
   gpr::Index_t n_at;
-  std::vector<int> atomnrs;
-  std::unordered_map<int, int>
+  vector<int> atomnrs;
+  unordered_map<int, int>
       atype_to_gprd_atype; //!> Remember that the atom type in EON is the real
                            //! atomic number, while in GPR Dimer it is a set of
                            //! values from 0 to n-1 so this is EON
@@ -189,7 +187,7 @@ gpr::AtomsConfiguration helpers::gproptim::input::eon_matter_to_atmconf(
       SPDLOG_CRITICAL(
           " You need to have atoms move!!!\nIn stillness there is only "
           "death\n");
-      std::exit(1);
+      ::exit(1);
     }
     //!> Now we will consider the case when everything is moving
     //! Everything is almost exactly the same, only we don't have frozen atoms
@@ -228,8 +226,7 @@ gpr::AtomsConfiguration helpers::gproptim::input::eon_matter_to_atmconf(
   return atoms_config;
 }
 
-gpr::Observation helpers::gproptim::input::eon_matter_to_init_obs(
-    std::shared_ptr<Matter> a_matter) {
+gpr::Observation eon_matter_to_init_obs(shared_ptr<Matter> a_matter) {
   gpr::Observation o;
   o.clear();
   o.R.resize(a_matter->getPositions().rows(), a_matter->getPositions().cols());
@@ -240,3 +237,20 @@ gpr::Observation helpers::gproptim::input::eon_matter_to_init_obs(
   o.G.assignFromEigenMatrix(a_matter->getForces());
   return o;
 }
+
+std::pair<gpr::AtomsConfiguration, gpr::Coord>
+eon_matter_to_frozen_conf_info(std::shared_ptr<Matter> a_matter,
+                               double a_activeRadius) {
+  gpr::Coord R_init;
+  aux::ProblemSetUp problem_setup;
+  auto retconf = eon_matter_to_atmconf(a_matter);
+  gpr::EigenMatrix freePos = a_matter->getPositionsFree();
+  R_init.resize(1, freePos.size());
+  for (size_t idx{0}; idx < freePos.size(); ++idx) {
+    R_init(0, idx) = freePos.reshaped<Eigen::RowMajor>()[idx];
+  }
+  problem_setup.activateFrozenAtoms(R_init, a_activeRadius, retconf);
+
+  return make_pair(retconf, R_init);
+}
+} // namespace helpers::gproptim::input
