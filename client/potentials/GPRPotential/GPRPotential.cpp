@@ -9,50 +9,35 @@
 //-----------------------------------------------------------------------------------
 
 #include "GPRPotential.h"
-#include "../../subprojects/gpr_optim/gpr/auxiliary/AdditionalFunctionality.h"
-#include "../../subprojects/gpr_optim/structures/Structures.h"
 
-namespace {
-
-const char *elementArray[] = {
-    "Unknown", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na",
-    "Mg",      "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",
-    "Cr",      "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
-    "Kr",      "Rb", "Sr", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag",
-    "Cd",      "In", "Sn", "Sb", "Te", "I",  "Xe", "Cs", "Ba", "La", "Ce", "Pr",
-    "Nd",      "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
-    "Hf",      "Ta", "W",  "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi",
-    "Po",      "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U",  NULL};
-
-// guess the atom type from the atomic mass,
-std::string mass2atom(double atomicmass) {
-  return elementArray[int(atomicmass + .5)];
-}
-
-int symbol2atomicNumber(char const *symbol) {
-  int i = 0;
-
-  while (elementArray[i] != NULL) {
-    if (strcmp(symbol, elementArray[i]) == 0) {
-      return i;
-    }
-    i++;
+void GPRPotential::prepare(std::shared_ptr<Matter> a_matter) {
+  auto [initAtmConf, RinitObs] =
+      helpers::gproptim::input::eon_matter_to_frozen_conf_info(
+          a_matter, m_params->gprActiveRadius);
+  m_atmconf = initAtmConf;
+  for (int i = 0; i < 9; i++) {
+    m_inp_gpp.cell_dimensions.value[i] = a_matter->getCell()(i);
   }
-  // invalid symbol
-  return -1;
+  m_gprm.initialize(m_inp_gpp, m_atmconf);
 }
 
-char const *atomicNumber2symbol(int n) { return elementArray[n]; }
-} // namespace
-
-void GPRPotential::registerGPRObject(
-    std::shared_ptr<gpr::GaussianProcessRegression> a_gprm) {
-  m_gprm = a_gprm;
+void GPRPotential::train_optimize(Eigen::MatrixXd a_features,
+                                  Eigen::MatrixXd a_targets) {
+  const size_t n_rows(a_features.rows()), n_feature_cols(a_features.cols());
+  auto energies{a_targets.block(0, 0, n_rows, 1)};
+  auto gradients{a_targets.block(0, 1, n_rows, n_feature_cols)};
+  gpr::Observation obs;
+  obs.R.resize(n_rows, n_feature_cols);
+  obs.G.resize(n_rows, n_feature_cols);
+  obs.E.resize(n_rows);
+  obs.E.assignFromEigenMatrix(energies);
+  obs.R.assignFromEigenMatrix(a_features);
+  obs.G.assignFromEigenMatrix(gradients);
+  m_gprm.setHyperparameters(obs, m_atmconf);
+  m_gprm.optimize(obs);
+  return;
 }
 
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// adress to supercell size
 void GPRPotential::force(long N, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
@@ -69,8 +54,8 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
   // ind) - takes covariance matrix and vector of repetitive indices
   // gpr_model->calculateMeanPrediction() - takes a vector of combined energy
   // and force gpr_model->calculatePosteriorMeanPrediction() - no arguments
-  m_gprm->calculatePotential(eg_obs);
-  m_gprm->calculateVariance(var_obs);
+  m_gprm.calculatePotential(eg_obs);
+  m_gprm.calculateVariance(var_obs);
 
   for (int i = 0; i < N; i++) {
     F[3 * i] = eg_obs.G[3 * i];
