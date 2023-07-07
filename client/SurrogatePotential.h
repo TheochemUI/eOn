@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Matter.h"
 #include "Potential.h"
 
 class SurrogatePotential : public Potential {

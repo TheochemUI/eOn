@@ -22,7 +22,7 @@
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-class CatLearnPot : public SurrogatePotential {
+class CatLearnPot final : public SurrogatePotential {
 
 public:
   CatLearnPot(shared_ptr<Parameters> a_params);
