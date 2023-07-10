@@ -1,4 +1,5 @@
 #include "GPSurrogateJob.h"
+#include "BaseStructures.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
 #include "Potential.h"
@@ -32,10 +33,17 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
-  auto pypot = std::make_shared<CatLearnPot>(pyparams);
-  pypot->train_optimize(features, targets);
+  auto _pot =
+      helper_functions::makePotential(params->surrogatePotential, params);
+  auto surpot = dynamic_pointer_cast<SurrogatePotential>(_pot);
+  if (!surpot) {
+    throw std::runtime_error(fmt::format(
+        "Should have gotten a surrogate potential but got {}",
+        helper_functions::getPotentialName(params->surrogatePotential)));
+  }
+  surpot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
-                                                 pypot);
+                                                 surpot);
   auto status_neb{neb->compute()};
   bool job_not_finished{true};
   size_t n_gp{0};
@@ -55,19 +63,19 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         helper_functions::surrogate::getNewDataPoint(neb->path, pot);
     helper_functions::eigen::addVectorRow(features, feature);
     helper_functions::eigen::addVectorRow(targets, target);
-    pypot->train_optimize(features, targets);
+    surpot->train_optimize(features, targets);
     pyparams->nebClimbingImageMethod = false;
     pyparams->optConvergedForce = params->optConvergedForce * 0.8;
     for (auto &&obj : neb->path) {
-      obj->setPotential(pypot);
+      obj->setPotential(surpot);
     }
     if (!(pyparams->gp_linear_path_always)) {
       SPDLOG_TRACE("Using previous path");
-      neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, pypot);
+      neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
     } else {
       SPDLOG_TRACE("Using linear interpolation");
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
-                                                pypot);
+                                                surpot);
     }
     status_neb = neb->compute();
 
