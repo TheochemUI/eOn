@@ -153,8 +153,8 @@ if get_option('with_gprd')
 endif
 
 if get_option('with_gp_surrogate')
-  eon_extra_args += ['-DWITH_GP_SURROGATE']
-  eonclib_sources += ['GPSurrogateJob.cpp']
+  _args += ['-DWITH_GP_SURROGATE']
+  eonclib_sources += ['GPSurrogateJob.cpp', 'SurrogatePotential.cpp']
     if get_option('with_catlearn')
   # Embedding the interpreter
   py = import('python').find_installation()
