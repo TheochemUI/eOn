@@ -309,7 +309,7 @@ eclib = library('eonclib',
 
 _linkto += eclib
 
-# ---------------------- Executable
+# ---------------------- Executables
 
 ec = executable('eonclient',
                 sources : eonclient_sources,
@@ -330,6 +330,13 @@ ec2 = executable('testWriteR',
                 link_with : _linkto,
                 )
 
+
+ec3 = executable('gptestPot',
+                'testgppot.cpp',
+                dependencies : _deps,
+                link_with : eclib,
+                cpp_args : _args,
+                )
 # ------------------------ Tests
 
 if get_option('with_tests')
