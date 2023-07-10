@@ -830,8 +830,7 @@ bool Matter::con2matter(FILE *file) {
 void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
-      potential =
-          helper_functions::makePotential(parameters->potential, parameters);
+      throw std::runtime_error("You should have had a potential");
     }
     auto surrogatePotential =
         std::dynamic_pointer_cast<SurrogatePotential>(potential);
