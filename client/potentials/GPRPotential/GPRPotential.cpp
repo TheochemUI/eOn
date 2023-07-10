@@ -11,10 +11,15 @@
 #include "GPRPotential.h"
 
 void GPRPotential::prepare(std::shared_ptr<Matter> a_matter) {
-  auto [initAtmConf, RinitObs] =
-      helpers::gproptim::input::eon_matter_to_frozen_conf_info(
-          a_matter, m_params->gprActiveRadius);
-  m_atmconf = initAtmConf;
+  m_atmconf = helpers::gproptim::input::eon_matter_to_atmconf(a_matter);
+  auto freePos = a_matter->getPositionsFreeV();
+  gpr::Coord RinitObs;
+  RinitObs.resize(1, freePos.size());
+  for (size_t idx{0}; idx < freePos.size(); ++idx) {
+    RinitObs(0, idx) = freePos[idx];
+  }
+  m_problem_setup.activateFrozenAtoms(RinitObs, m_params->gprActiveRadius,
+                                      m_atmconf);
   for (int i = 0; i < 9; i++) {
     m_inp_gpp.cell_dimensions.value[i] = a_matter->getCell()(i);
   }
@@ -24,8 +29,33 @@ void GPRPotential::prepare(std::shared_ptr<Matter> a_matter) {
 void GPRPotential::train_optimize(Eigen::MatrixXd a_features,
                                   Eigen::MatrixXd a_targets) {
   const size_t n_rows(a_features.rows()), n_feature_cols(a_features.cols());
+  // auto energies{a_targets.block(0, 0, n_rows, 1)};
+  // auto gradients{a_targets.block(0, 1, n_rows, n_feature_cols)};
+  // gpr::Observation obspath, obs;
+  // for (size_t idx{0}; idx < n_rows; idx++){
+  //   auto eg_row = a_targets.row(idx);
+  //   auto energy = eg_row[0];
+  //   auto gradients = eg_row.segment(1, n_feature_cols);
+  //   auto feat_row = a_features.row(idx);
+  //   obs.clear();
+  //   obs.R.resize(1, n_feature_cols);
+  //   obs.G.resize(1, n_feature_cols);
+  //   obs.E.resize(1);
+  //   obs.E.set(energy);
+  //   for (size_t jdx{0}; jdx < n_feature_cols; jdx++){
+  //     obs.R[jdx] = feat_row[jdx];
+  //     obs.G[jdx] = gradients[jdx];
+  //   }
+  //   obspath.append(obs);
+  // }
+  // m_gprm.setHyperparameters(obspath, m_atmconf);
+  // m_gprm.optimize(obspath);
+
   auto energies{a_targets.block(0, 0, n_rows, 1)};
   auto gradients{a_targets.block(0, 1, n_rows, n_feature_cols)};
+  // fmt::print("Energies: {}\n", fmt::streamed(energies));
+  // fmt::print("Gradients: {}\n", fmt::streamed(gradients));
+  // fmt::print("R: {}\n", fmt::streamed(a_features));
   gpr::Observation obs;
   obs.R.resize(n_rows, n_feature_cols);
   obs.G.resize(n_rows, n_feature_cols);
@@ -45,8 +75,10 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
 
   // Copy R points. Note, R should correspond to the moving atoms only.
   eg_obs.R.resize(1, N * 3);
+  var_obs.R.resize(1, N * 3);
   for (int i = 0; i < N; i++) {
     eg_obs.R.set(i, {R[3 * i], R[3 * i + 1], R[3 * i + 2]});
+    var_obs.R.set(i, {R[3 * i], R[3 * i + 1], R[3 * i + 2]});
   }
 
   // Note, the following functions should be called before calling for
@@ -66,4 +98,23 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
   // FIXME: Test conversion, E should only have one element here
   *U = eg_obs.E[0];
   *variance = var_obs.E[0];
+  // fmt::print("\n Got predicted energy from gpr {}\n", *U);
+  // fmt::print("Got predicted variance [energy] from gpr {}\n", var_obs.E[0]);
 }
+
+std::tuple<double, AtomMatrix, Eigen::VectorXd>
+GPRPotential::get_ef_var(const AtomMatrix pos, const VectorXi atmnrs,
+                         const Matrix3d box) {
+  double energy{std::numeric_limits<double>::infinity()};
+  long nAtoms{pos.rows()};
+  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
+  // This can never be negative
+  Eigen::VectorXd var{Eigen::VectorXd::Zero(1 + (3 * nAtoms))};
+  // Override and return variance where needed!!!
+  this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy,
+              var.data(), box.data());
+  if (!var.data()) {
+    SPDLOG_TRACE("Got a nullptr");
+  }
+  return std::make_tuple(energy, forces, var);
+};

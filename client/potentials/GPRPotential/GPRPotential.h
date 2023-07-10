@@ -22,12 +22,13 @@
 class GPRPotential final : public SurrogatePotential {
 
 private:
-  gpr::GaussianProcessRegression m_gprm;
   gpr::AtomsConfiguration m_atmconf;
+  aux::ProblemSetUp m_problem_setup;
   std::shared_ptr<spdlog::logger> m_log;
   gpr::InputParameters m_inp_gpp;
 
 public:
+  gpr::GaussianProcessRegression m_gprm;
   GPRPotential(std::shared_ptr<Parameters> a_params)
       : SurrogatePotential(PotType::GPR_Optim, a_params) {
     m_inp_gpp = helpers::gproptim::input::eon_parameters_to_gpr(a_params);
@@ -51,5 +52,9 @@ public:
 
   void train_optimize(Eigen::MatrixXd features,
                       Eigen::MatrixXd targets) override;
+
+  std::tuple<double, AtomMatrix, Eigen::VectorXd>
+  get_ef_var(const AtomMatrix pos, const VectorXi atmnrs,
+             const Matrix3d box) override;
 };
 #endif
