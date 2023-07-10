@@ -111,11 +111,8 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(shared_ptr<Matter> a_matter) {
   int fake_atype;          //!> False "atomtype" for GPR Dimer
 
   atoms_config.clear();
-  atoms_config.positions.resize(a_matter->getPositions().rows(),
-                                a_matter->getPositions().cols());
   atoms_config.is_frozen.resize(a_matter->numberOfAtoms());
   atoms_config.id.resize(a_matter->numberOfAtoms());
-  atoms_config.positions.assignFromEigenMatrix(a_matter->getPositions());
   atoms_config.atomicNrs.resize(a_matter->numberOfAtoms());
   for (auto i = 0; i < a_matter->numberOfAtoms(); i++) {
     atomnrs.push_back(a_matter->getAtomicNr(i));
@@ -123,6 +120,9 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(shared_ptr<Matter> a_matter) {
     atoms_config.is_frozen[i] = a_matter->getFixed(i);
     atoms_config.id[i] = i + 1;
   }
+
+  gpr::Field<double> falseConDat = generateAtomsConfigField(*a_matter);
+  atoms_config.assignFromField(falseConDat);
 
   unique_atomtypes = std::set<int>(atomnrs.begin(), atomnrs.end());
   n_at = unique_atomtypes.size();
@@ -132,16 +132,23 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(shared_ptr<Matter> a_matter) {
         std::pair<int, int>(static_cast<int>(uatom), fake_atype));
     fake_atype++;
   }
+  // for (const auto& pair : atype_to_gprd_atype) {
+  //     fmt::print("{}: {}\n", pair.first, pair.second);
+  // }
 
   number_of_mov_atoms = atoms_config.countMovingAtoms();
   number_of_fro_atoms = atoms_config.is_frozen.getSize() - number_of_mov_atoms;
+
+  // fmt::print("Number of moving atoms: {}\n", number_of_mov_atoms);
+  // fmt::print("Number of frozen atoms: {}\n", number_of_fro_atoms);
 
   if (number_of_fro_atoms > 0 && number_of_mov_atoms > 0) {
     // Resize structures for moving and frozen atoms
     atoms_config.atoms_mov.resize(number_of_mov_atoms);
     atoms_config.atoms_froz_inactive.resize(number_of_fro_atoms);
 
-    //!> Does a horrible to ensure that this is filled correctly. Essentially we
+    //!> Does a horrible hack to ensure that this is filled correctly.
+    //! Essentially we
     //! use the Map of <EON atomtype, GPR faketype> to generate the fully filled
     //! vectors for moving and frozen_inactive
     //! FIXME: We should really just use the EON atomtype everywhere
@@ -211,19 +218,48 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(shared_ptr<Matter> a_matter) {
   // Pairtype indices for pairs of atomtypes (n_at x n_at)
   // Active pairtypes are indexed as 0,1,...,n_pt-1. Inactive pairtypes are
   // given index EMPTY.
+  atoms_config.n_pt = n_at;
   atoms_config.pairtype.resize(n_at, n_at);
   atoms_config.pairtype.set(EMPTY);
+
+  // fmt::print("We have the following moving atom types");
+  // atoms_config.atoms_mov.type.print();
 
   // Set pairtype indices for moving+moving atom pairs (and update number of
   // active pairtypes)
   problem_setup.setPairtypeForMovingAtoms(
       atoms_config.atoms_mov.type, atoms_config.n_pt, atoms_config.pairtype);
 
+  // atoms_config.pairtype(0, 0) = 0;
+  // atoms_config.pairtype(0, 1) = 1;
+  // atoms_config.pairtype(1, 0) = 1;
+  // atoms_config.pairtype(1, 1) = -1;
+  // fmt::print("We have the following pairtypes indices");
+  // atoms_config.pairtype.print();
+
   // // Activate frozen atoms within activation distance
+  //   // This is now in AtomicGPDimer.cpp
   // problem_setup.activateFrozenAtoms(R_init, parameters.actdist_fro.value,
   //                                 atoms_config);
 
   return atoms_config;
+}
+
+gpr::Field<double> generateAtomsConfigField(const Matter &mat) {
+  const size_t natoms = mat.numberOfAtoms();
+  gpr::Field<double> conf_prim; // always takes a 5 membered field
+  conf_prim.resize(natoms, 5);
+  gpr::EigenMatrix positions = mat.getPositions();
+  positions.conservativeResize(positions.rows(), 5);
+  for (size_t idx{0}; idx < natoms; idx++) {
+    positions(idx, 3) = mat.getFixed(idx);
+    positions(idx, 4) = idx;
+  }
+  for (size_t idx{0}; idx < positions.size(); idx++) {
+    conf_prim.getInternalVector()[idx] =
+        positions.reshaped<Eigen::RowMajor>()[idx];
+  }
+  return conf_prim;
 }
 
 gpr::Observation eon_matter_to_init_obs(shared_ptr<Matter> a_matter) {

@@ -43,5 +43,7 @@ std::pair<gpr::AtomsConfiguration, gpr::Coord>
 eon_matter_to_frozen_conf_info(std::shared_ptr<Matter> a_matter,
                                double a_activeRadius);
 
+gpr::Field<double> generateAtomsConfigField(const Matter &mat);
+
 } // namespace helpers::gproptim::input
 #endif /* GPRHELPERS_H */
