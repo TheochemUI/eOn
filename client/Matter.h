@@ -4,6 +4,7 @@
 #include "Eigen.h"
 #include "Parameters.h"
 #include "Potential.h"
+#include "SurrogatePotential.h"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
 
@@ -31,7 +32,7 @@ struct MatterPrivateData {
   VectorXi isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3d cell;
   Matrix3d cellInverse;
-  VectorXd variance;
+  mutable double energyVariance;
   mutable double potentialEnergy;
 };
 
@@ -141,8 +142,8 @@ public:
                 int isFixed); // set the atom to fixed (true) or movable (false)
   // void setPotentialEnergy(double);
   double getEnergyVariance();
-  Eigen::VectorXd getForceVariance();
-  double getMaxVariance();
+  // Eigen::VectorXd getForceVariance();
+  // double getMaxVariance();
   double getPotentialEnergy();
   double getKineticEnergy() const;
   double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic
