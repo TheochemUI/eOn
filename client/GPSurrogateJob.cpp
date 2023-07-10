@@ -51,13 +51,6 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
         helper_functions::surrogate::getMaxUncertainty(neb->path);
-    // if ( pyparams->gp_uncertainity < unc_conv ){
-    //   pyparams->gp_uncertainity = unc_conv;
-    // } else {
-    //   pyparams->gp_uncertainity = ( maxUnc + unc_conv ) / n_gp++;
-    // }
-    // SPDLOG_TRACE("New allowed uncertainity is {}",
-    // pyparams->gp_uncertainity);
     auto [feature, target] =
         helper_functions::surrogate::getNewDataPoint(neb->path, pot);
     helper_functions::eigen::addVectorRow(features, feature);
