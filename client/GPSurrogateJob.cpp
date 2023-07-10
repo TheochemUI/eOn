@@ -96,60 +96,67 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   }
   neb->printImageData();
   neb->findExtrema();
-  saveData(status_neb, pot, std::move(neb));
+  saveData(status_neb, std::move(neb));
   return returnFiles;
 }
 
 void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
-                              std::shared_ptr<Potential> true_pot,
                               std::unique_ptr<NudgedElasticBand> neb) {
-  FILE *fileResults, *fileNEB;
-
-  std::string resultsFilename("results.dat");
+  std::string resultsFilename = "results.dat";
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  // for (auto&& nebo : neb->path){
-  //     nebo->setPotential(true_pot);
-  // }
-  fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
-  fprintf(fileResults, "%s potential_type\n",
-          helper_functions::getPotentialName(params->potential).c_str());
-  // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
-  // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
-  fprintf(fileResults, "%f energy_reference\n",
-          neb->path[0]->getPotentialEnergy());
-  fprintf(fileResults, "%li number_of_images\n", neb->numImages);
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    fprintf(fileResults, "%f image%li_energy\n",
-            neb->path[i]->getPotentialEnergy() -
-                neb->path[0]->getPotentialEnergy(),
-            i);
-    fprintf(fileResults, "%f image%li_force\n",
-            neb->path[i]->getForces().norm(), i);
-    fprintf(fileResults, "%f image%li_projected_force\n",
-            neb->projectedForce[i]->norm(), i);
+
+  std::ofstream fileResults(resultsFilename);
+  if (!fileResults) {
+    // Handle file open error
+    throw std::runtime_error("Failed to open file: " + resultsFilename);
   }
-  fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
+
+  fileResults << static_cast<int>(status) << " termination_reason\n";
+  fileResults << helper_functions::getPotentialName(params->potential)
+              << " potential_type\n";
+  fileResults << fmt::format("{:.6f} energy_reference\n",
+                             neb->path[0]->getPotentialEnergy());
+  fileResults << neb->numImages << " number_of_images\n";
+
+  for (long i = 0; i <= neb->numImages + 1; i++) {
+    fileResults << fmt::format("{:.6f} image{}_energy\n",
+                               neb->path[i]->getPotentialEnergy() -
+                                   neb->path[0]->getPotentialEnergy(),
+                               i);
+    fileResults << fmt::format("{:.6f} image{}_force\n",
+                               neb->path[i]->getForces().norm(), i);
+    fileResults << fmt::format("{:.6f} image{}_projected_force\n",
+                               neb->projectedForce[i]->norm(), i);
+  }
+
+  fileResults << neb->numExtrema << " number_of_extrema\n";
   for (long i = 0; i < neb->numExtrema; i++) {
-    fprintf(fileResults, "%f extremum%li_position\n", neb->extremumPosition[i],
-            i);
-    fprintf(fileResults, "%f extremum%li_energy\n", neb->extremumEnergy[i], i);
+    fileResults << fmt::format("{:.6f} extremum{}_position\n",
+                               neb->extremumPosition[i], i);
+    fileResults << fmt::format("{:.6f} extremum{}_energy\n",
+                               neb->extremumEnergy[i], i);
   }
 
-  fclose(fileResults);
+  fileResults.close();
 
-  std::string nebFilename(fmt::format("neb.con"));
+  std::string nebFilename = "neb.con";
   returnFiles.push_back(nebFilename);
-  fileNEB = fopen(nebFilename.c_str(), "wb");
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    neb->path[i]->matter2con(fileNEB);
+
+  std::ofstream fileNEB(nebFilename);
+  if (!fileNEB) {
+    // Handle file open error
+    throw std::runtime_error("Failed to open file: " + nebFilename);
   }
-  fclose(fileNEB);
+
+  for (long i = 0; i <= neb->numImages + 1; i++) {
+    neb->path[i]->matter2con(nebFilename, true);
+  }
+
+  fileNEB.close();
 
   returnFiles.push_back("neb.dat");
   neb->printImageData(true);
 }
-
 namespace helper_functions::surrogate {
 Eigen::MatrixXd get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions
