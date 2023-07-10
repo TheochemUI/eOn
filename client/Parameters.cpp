@@ -220,9 +220,10 @@ Parameters::Parameters() {
   gprDebugDz = 0.1;              // debug_dz
 
   // GP Surrogate Parameters
+  use_surrogate = false;
   sub_job = JobType::Unknown;
   gp_uncertainity = 0.05;
-  gp_linear_path_always = true;
+  gp_linear_path_always = false;
   surrogatePotential = PotType::CatLearn;
 
   // [Hessian] //
@@ -554,8 +555,13 @@ int Parameters::load(FILE *file) {
         ini.GetValueB("Dimer", "remove_rotation", dimerRemoveRotation);
 
     // GP Surrogate Parameters
-    sub_job = helper_functions::getJobType(
-        toLowerCase(ini.GetValue("Surrogate", "sub_job")));
+    use_surrogate = ini.GetValueB("Surrogate", "use_surrogate", false);
+    // If use_surrogate is true, job -> gp_surrogate and sub_job->job
+    if (use_surrogate) {
+      // TODO: What about other jobs
+      sub_job = job;
+      job = JobType::GPSurrogate;
+    }
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
     sub_job = helper_functions::getJobType(
