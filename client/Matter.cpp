@@ -4,9 +4,11 @@
 #include "HelperFunctions.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
+#include "SurrogatePotential.h"
 
 // To write the R style data frame
 #include <fmt/os.h>
+#include <memory>
 #include <spdlog/spdlog.h>
 
 using namespace std;
@@ -831,36 +833,26 @@ void Matter::computePotential() {
       potential =
           helper_functions::makePotential(parameters->potential, parameters);
     }
-    // SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(
-    //                                     this->potential->getType()));
-    if (potential->getType() != PotType::CatLearn) {
-      // Default value for true_pot, so not a surrogate run
-      // potcall_logger->info(
-      //     "Calling potential {}",
-      //     helper_functions::getPotentialName(potential->getType()));
-      auto [pE, frcs, var_none] = potential->get_ef(positions, atomicNrs, cell);
-      potentialEnergy = pE;
-      forces = frcs;
-    } else {
-      // For the Surrogates, only use free data
-      // potcall_logger->info(
-      //     "Calling potential {}",
-      //     helper_functions::getPotentialName(potential->getType()));
-      auto [freePE, freeForces, vari] = potential->get_ef(
+    auto surrogatePotential =
+        std::dynamic_pointer_cast<SurrogatePotential>(potential);
+    if (surrogatePotential) {
+      // Surrogate potential case
+      auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
           this->getPositionsFree(), this->getAtomicNrsFree(), cell);
       // Now populate full structures
       this->potentialEnergy = freePE;
-      if (vari.has_value()) {
-        this->variance = vari.value();
-      } else {
-        throw std::runtime_error("You should have gotten a value\n");
-      }
+      this->energyVariance = vari;
       for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
         if (!isFixed(idx)) {
           forces.row(idx) = freeForces.row(jdx);
           jdx++;
         }
       }
+    } else {
+      // Non-surrogate potential case
+      auto [pE, frcs] = potential->get_ef(positions, atomicNrs, cell);
+      potentialEnergy = pE;
+      forces = frcs;
     }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
@@ -1243,12 +1235,12 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   recomputePotential = true;
 }
 
-double Matter::getEnergyVariance() { return this->variance(0, 0); }
+double Matter::getEnergyVariance() { return this->energyVariance; }
 
-Eigen::VectorXd Matter::getForceVariance() {
-  return this->variance.segment(1, numberOfFreeAtoms() * 3);
-}
+// Eigen::VectorXd Matter::getForceVariance() {
+//   return this->variance.segment(1, numberOfFreeAtoms() * 3);
+// }
 
-double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
+// double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
