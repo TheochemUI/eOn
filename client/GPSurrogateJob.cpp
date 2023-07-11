@@ -2,6 +2,7 @@
 #include "BaseStructures.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
+#include "SurrogatePotential.h"
 #include "helpers/Create.hpp"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
@@ -34,7 +35,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
   // Setup a GPR Potential
   auto surpot = helpers::create::makeSurrogatePotential(
-      params->surrogatePotential, params);
+      params->surrogatePotential, params, initial);
   surpot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
