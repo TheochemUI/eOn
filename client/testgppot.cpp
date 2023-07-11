@@ -3,8 +3,7 @@
 #include "Matter.h"
 #include "NudgedElasticBand.h"
 #include "Parameters.h"
-#include "Potential.h"
-#include "SurrogatePotential.h"
+#include "helpers/Create.hpp"
 #include "potentials/GPRPotential/GPRPotential.h"
 #include <cstdlib>
 #include <fmt/format.h>
@@ -29,24 +28,26 @@ int main(void) {
   auto targets = helper_functions::surrogate::get_targets(init_data, true_pot);
   // pybind11::scoped_interpreter guard{}; // Initialize the Python interpreter
   params->potential = PotType::GPR_Optim;
-  auto pot = helper_functions::makePotential(PotType::GPR_Optim, params);
-  std::shared_ptr<SurrogatePotential> gp_pot =
-      std::dynamic_pointer_cast<SurrogatePotential>(pot);
-
-  if (!dynamic_cast<SurrogatePotential *>(gp_pot.get())) {
-    throw "Ouch";
-  }
-  gp_pot->prepare(initial);
-  gp_pot->train_optimize(features, targets);
-  auto matter = std::make_shared<Matter>(gp_pot, params);
+  auto surpot = helpers::create::makeSurrogatePotential(PotType::GPR_Optim,
+                                                        params, initial);
+  surpot->train_optimize(features, targets);
+  auto matter = std::make_shared<Matter>(surpot, params);
   matter->con2matter("reactant.con");
-  auto [energy, forces, vari] = gp_pot->get_ef_var(
-      init_path[2].getPositionsFree(), init_path[2].getAtomicNrsFree(),
-      init_path[2].getCell());
-  auto execString = fmt::format("Got {energy:}\n{forces:}\n{variance:}\n",
-                                fmt::arg("energy", energy),
-                                fmt::arg("forces", fmt::streamed(forces)),
-                                fmt::arg("variance", fmt::streamed(vari)));
+  // auto [energy, forces, vari] = surpot->get_ef_var(
+  //     init_path[0].getPositionsFree(), init_path[0].getAtomicNrsFree(),
+  //     init_path[0].getCell());
+  // auto execString = fmt::format("Got energy: {energy:}\n For
+  // forces\n{forces:}\n With an energy variance of {variance:}\n",
+  //                               fmt::arg("energy", energy),
+  //                               fmt::arg("forces", fmt::streamed(forces)),
+  //                               fmt::arg("variance", vari));
+  // init_path[0].setPotential(surpot);
+  auto execString = fmt::format(
+      "Got energy: {energy:}\n For forces\n{forces:}\n With an energy variance "
+      "of {variance:}\n",
+      fmt::arg("energy", init_path[0].getPotentialEnergy()),
+      fmt::arg("forces", fmt::streamed(init_path[0].getForcesFree())),
+      fmt::arg("variance", init_path[0].getEnergyVariance()));
   std::cout << execString << "\n";
   return EXIT_SUCCESS;
 }
