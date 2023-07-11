@@ -37,10 +37,6 @@ public:
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override;
-  void prepare(const std::any &data) override{
-      // doesn't need an implementation here
-  };
-
   // Variables [public]
   py::object gpmod;
   Eigen::MatrixXd

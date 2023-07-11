@@ -2,7 +2,9 @@
 #include "BaseStructures.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
-#include "Potential.h"
+#include "SurrogatePotential.h"
+#include "helpers/Create.hpp"
+#include "potentials/CatLearnPot/CatLearnPot.h"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
@@ -33,14 +35,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
-  auto _pot =
-      helper_functions::makePotential(params->surrogatePotential, params);
-  auto surpot = dynamic_pointer_cast<SurrogatePotential>(_pot);
-  if (!surpot) {
-    throw std::runtime_error(fmt::format(
-        "Should have gotten a surrogate potential but got {}",
-        helper_functions::getPotentialName(params->surrogatePotential)));
-  }
+  auto surpot = helpers::create::makeSurrogatePotential(
+      params->surrogatePotential, params);
   surpot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
