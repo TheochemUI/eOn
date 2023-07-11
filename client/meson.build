@@ -153,15 +153,15 @@ if get_option('with_gprd')
 endif
 
 if get_option('with_gp_surrogate')
-  eon_extra_args += ['-DWITH_GP_SURROGATE']
-  eonclib_sources += ['GPSurrogateJob.cpp']
+  _args += ['-DWITH_GP_SURROGATE']
+  eonclib_sources += ['SurrogatePotential.cpp', 'GPSurrogateJob.cpp']
     if get_option('with_catlearn')
-  # Embedding the interpreter
-  py = import('python').find_installation()
-  python_dep = py.dependency(embed: true)
-  pyb11f_deps = [ python_dep,
-                  dependency('pybind11'),
-                  declare_dependency(link_args: '-lstdc++') ]
+      # Embedding the interpreter
+      py = import('python').find_installation()
+      python_dep = py.dependency(embed: true)
+      pyb11f_deps = [ python_dep,
+                      dependency('pybind11'),
+                      declare_dependency(link_args: '-lstdc++') ]
       _deps += [ pyb11f_deps ]
       subdir('potentials/CatLearnPot')
       potentials += [ catlearnpot ]

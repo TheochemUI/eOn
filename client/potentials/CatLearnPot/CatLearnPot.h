@@ -13,7 +13,7 @@
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
-#include "../../Potential.h"
+#include "../../SurrogatePotential.h"
 
 #include <pybind11/eigen.h>
 #include <pybind11/embed.h>
@@ -22,8 +22,7 @@
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-// TODO: Use a better name, say, CatLearnPot
-class CatLearnPot : public Potential {
+class CatLearnPot : public SurrogatePotential {
 
 private:
   py::object hpfit;
@@ -35,11 +34,9 @@ public:
 
   // Functions
   void train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets);
-  // To satisfy interface
-  void cleanMemory(void);
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
-
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override;
   // Variables [public]
   py::object gpmod;
   Eigen::MatrixXd

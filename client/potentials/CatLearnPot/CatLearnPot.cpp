@@ -12,7 +12,7 @@
 #include "Eigen/src/Core/Matrix.h"
 
 CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
-    : Potential(PotType::CatLearn, a_params) {
+    : SurrogatePotential(PotType::CatLearn, a_params) {
   py::module_ sys = py::module_::import("sys");
   py::exec(fmt::format("sys.path.insert(0, {})", a_params->catl_path));
 
@@ -82,36 +82,27 @@ CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
 
 void CatLearnPot::train_optimize(Eigen::MatrixXd features,
                                  Eigen::MatrixXd targets) {
-
   gpmod.attr("optimize")(features, targets, py::arg("retrain") = true,
                          py::arg("prior") = _prior);
   return;
 }
-void CatLearnPot::cleanMemory(void) { return; }
 
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// address to supercell size
-void CatLearnPot::force(long N, const double *R, const int *atomicNrs,
-                        double *F, double *U, double *variance,
-                        const double *box) {
-  Eigen::MatrixXd features =
-      Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(R), 1, N * 3);
+void CatLearnPot::force(long nAtoms, const double *positions,
+                        const int *atomicNrs, double *forces, double *energy,
+                        double *variance, const double *box) {
+  Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(
+      const_cast<double *>(positions), 1, nAtoms * 3);
   py::tuple ef_and_unc =
       (this->gpmod.attr("predict")(features, "get_variance"_a = true));
   auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
   auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
-  auto gradients = ef_dat.block(0, 1, 1, N * 3);
-  for (int idx = 0; idx < N; idx++) {
-    F[3 * idx] = gradients(0, 3 * idx) * -1;
-    F[3 * idx + 1] = gradients(0, 3 * idx + 1) * -1;
-    F[3 * idx + 2] = gradients(0, 3 * idx + 2) * -1;
+  auto gradients = ef_dat.block(0, 1, 1, nAtoms * 3);
+  for (int idx = 0; idx < nAtoms; idx++) {
+    forces[3 * idx] = gradients(0, 3 * idx) * -1;
+    forces[3 * idx + 1] = gradients(0, 3 * idx + 1) * -1;
+    forces[3 * idx + 2] = gradients(0, 3 * idx + 2) * -1;
   }
-  for (int idx = 0; idx < 1 + (N * 3); idx++) {
-    variance[idx] = vari(0, idx);
-  }
-  *U = ef_dat(0, 0);
-  // SPDLOG_TRACE("Energy and Forces: {}\nVariance: {}", fmt::streamed(ef_dat),
-  // fmt::streamed(vari));
+  *variance = vari(0, 0); // energy variance only
+  *energy = ef_dat(0, 0);
   return;
 }
