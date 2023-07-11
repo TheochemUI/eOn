@@ -125,7 +125,7 @@ NudgedElasticBand::NudgedElasticBand(
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
   log = spdlog::get("combi");
-  SPDLOG_DEBUG("\nNEB: initialize\n");
+  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initialized with old path\n");
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
     *path[i] = linear_path[i];
@@ -209,7 +209,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   SPDLOG_DEBUG(
       "---------------------------------------------------------------\n");
 
-  while (objf->status != NEBStatus::GOOD) {
+  while (this->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
       bool append = true;
       if (iteration == 0) {

@@ -564,8 +564,6 @@ int Parameters::load(FILE *file) {
     }
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
-    sub_job = helper_functions::getJobType(
-        toLowerCase(ini.GetValue("Surrogate", "sub_job")));
     if (ini.FindKey("Surrogate") != -1) {
       surrogatePotential = helper_functions::getPotentialType(
           toLowerCase(ini.GetValue("Surrogate", "potential")));
