@@ -30,7 +30,6 @@ public:
 
 private:
   void saveData(NudgedElasticBand::NEBStatus status,
-                std::shared_ptr<Potential> true_pot,
                 std::unique_ptr<NudgedElasticBand> neb);
   std::vector<std::string> returnFiles;
   pybind11::scoped_interpreter guard{};
