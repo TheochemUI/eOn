@@ -11,6 +11,7 @@ option('with_cuh2', type : 'boolean', value : true)
 option('with_tests', type : 'boolean', value : true)
 option('with_gp_surrogate', type : 'boolean', value : true)
 option('with_catlearn', type : 'boolean', value : true)
+option('with_gpr_optim', type : 'boolean', value : true)
 
 # option('someoption', type : 'string', value : 'optval', description : 'An option')
 # option('combo_opt', type : 'combo', choices : ['one', 'two', 'three'], value : 'three')
