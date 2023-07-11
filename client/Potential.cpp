@@ -81,21 +81,16 @@
 
 #include <limits>
 
-std::tuple<double, AtomMatrix, std::optional<Eigen::VectorXd>>
-Potential::get_ef(const AtomMatrix pos, const VectorXi atmnrs,
-                  const Matrix3d box) {
+std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
+                                                 const VectorXi atmnrs,
+                                                 const Matrix3d box) {
   double energy{std::numeric_limits<double>::infinity()};
   long nAtoms{pos.rows()};
   AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
-  // This can never be negative
-  Eigen::VectorXd var{Eigen::VectorXd::Zero(1 + (3 * nAtoms))};
-  // Override and return variance where needed!!!
-  this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy,
-              var.data(), box.data());
-  if (!var.data()) {
-    SPDLOG_TRACE("Got a nullptr");
-  }
-  return std::make_tuple(energy, forces, var);
+  double var{0}; // no variance for true potentials
+  this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
+              box.data());
+  return std::make_tuple(energy, forces);
 };
 
 namespace helper_functions {

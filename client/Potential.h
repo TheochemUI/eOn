@@ -35,14 +35,7 @@ public:
   void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
                      double *forces, double *energy, double *variance,
                      const double *box) = 0;
-  // // Optional function, later
-  // std::tuple<double, AtomMatrix, Eigen::MatrixXd>
-  // get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box)
-  // {
-  //   // Default implementation, can be overridden in child classes
-  //   throw std::runtime_error("get_ef_var not implemented");
-  // }
-  std::tuple<double, AtomMatrix, std::optional<Eigen::VectorXd>>
+  std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
   PotType getType() { return this->ptype; };
 };
