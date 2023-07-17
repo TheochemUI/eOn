@@ -47,7 +47,15 @@ threads_dep = dependency('threads',
                          required: true)
 _deps += threads_dep
 
-eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
+# Handle Eigen dependencies gracefully
+eigen = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : false)
+if eigen.found()
+  eigen_dep = eigen
+else
+  eigen_proj = subproject('eigen')
+  eigen_dep = eigen_proj.get_variable('eigen_dep')
+endif
+
 _deps += [ eigen_dep ]
 
 fmt_dep = dependency('fmt',
