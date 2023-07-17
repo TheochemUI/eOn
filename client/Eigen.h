@@ -11,6 +11,7 @@
 #ifndef EIGEN_H
 #define EIGEN_H
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
+#define EIGEN_NO_DEBUG
 // #define EIGEN2_SUPPORT
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
