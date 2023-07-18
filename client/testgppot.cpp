@@ -33,11 +33,13 @@ int main(void) {
   surpot->train_optimize(features, targets);
   auto matter = std::make_shared<Matter>(surpot, params);
   matter->con2matter("reactant.con");
+  for (auto&& img : init_path){
+    img.setPotential(surpot);
+  }
   // auto [energy, forces, vari] = surpot->get_ef_var(
   //     init_path[0].getPositionsFree(), init_path[0].getAtomicNrsFree(),
   //     init_path[0].getCell());
-  // auto execString = fmt::format("Got energy: {energy:}\n For
-  // forces\n{forces:}\n With an energy variance of {variance:}\n",
+  // auto execString = fmt::format("Got energy: {energy:}\n For forces\n{forces:}\n With an energy variance of {variance:}\n",
   //                               fmt::arg("energy", energy),
   //                               fmt::arg("forces", fmt::streamed(forces)),
   //                               fmt::arg("variance", vari));
