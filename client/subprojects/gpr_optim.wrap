@@ -1,7 +1,7 @@
 [wrap-git]
 directory=gpr_optim
 url=https://github.com/TheochemUI/gpr_optim.git
-revision=392e411
+revision=48926ea
 
 [provide]
 gpr_optim=git
