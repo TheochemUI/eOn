@@ -13,30 +13,8 @@
 void GPRPotential::train_optimize(Eigen::MatrixXd a_features,
                                   Eigen::MatrixXd a_targets) {
   const size_t n_rows(a_features.rows()), n_feature_cols(a_features.cols());
-  // auto energies{a_targets.block(0, 0, n_rows, 1)};
-  // auto gradients{a_targets.block(0, 1, n_rows, n_feature_cols)};
-  // gpr::Observation obspath, obs;
-  // for (size_t idx{0}; idx < n_rows; idx++){
-  //   auto eg_row = a_targets.row(idx);
-  //   auto energy = eg_row[0];
-  //   auto gradients = eg_row.segment(1, n_feature_cols);
-  //   auto feat_row = a_features.row(idx);
-  //   obs.clear();
-  //   obs.R.resize(1, n_feature_cols);
-  //   obs.G.resize(1, n_feature_cols);
-  //   obs.E.resize(1);
-  //   obs.E.set(energy);
-  //   for (size_t jdx{0}; jdx < n_feature_cols; jdx++){
-  //     obs.R[jdx] = feat_row[jdx];
-  //     obs.G[jdx] = gradients[jdx];
-  //   }
-  //   obspath.append(obs);
-  // }
-  // m_gprm.setHyperparameters(obspath, m_atmconf);
-  // m_gprm.optimize(obspath);
-
-  auto energies{a_targets.block(0, 0, n_rows, 1)};
-  auto gradients{a_targets.block(0, 1, n_rows, n_feature_cols)};
+  auto energies{a_targets(Eigen::placeholders::all, 0)};
+  auto gradients{a_targets(Eigen::placeholders::all, Eigen::seqN(1, n_feature_cols))};
   // fmt::print("Energies: {}\n", fmt::streamed(energies));
   // fmt::print("Gradients: {}\n", fmt::streamed(gradients));
   // fmt::print("R: {}\n", fmt::streamed(a_features));
@@ -81,7 +59,8 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
 
   // FIXME: Test conversion, E should only have one element here
   *U = eg_obs.E[0];
-  *variance = var_obs.E[0];
+  // Variance is the max normalized force + energy
+  *variance = var_obs.E[0] + var_obs.G.getMean()/var_obs.G.getMaxElt();
   // fmt::print("\n Got predicted energy from gpr {}\n", *U);
   // fmt::print("Got predicted variance [energy] from gpr {}\n", var_obs.E[0]);
 }
