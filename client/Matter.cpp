@@ -285,8 +285,17 @@ AtomMatrix Matter::getPositionsFree() const {
   return ret;
 }
 
-VectorXi Matter::getAtomicNrsFree() const {
-  return this->atomicNrs.array() * getFreeV().cast<int>().array();
+Eigen::VectorXi Matter::getAtomicNrsFree() const {
+    Eigen::VectorXi freeV = getFreeV().cast<int>();
+    std::vector<int> atomicNrsFree;
+
+    for (int i = 0; i < atomicNrs.size(); ++i) {
+        if (freeV[i]) {
+            atomicNrsFree.push_back(atomicNrs[i]);
+        }
+    }
+
+    return Eigen::Map<Eigen::VectorXi>(atomicNrsFree.data(), atomicNrsFree.size());
 }
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
