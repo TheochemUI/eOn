@@ -37,6 +37,9 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto surpot = helpers::create::makeSurrogatePotential(
       params->surrogatePotential, params, initial);
   surpot->train_optimize(features, targets);
+  pyparams->nebClimbingImageMethod = false;
+  pyparams->nebClimbingImageConvergedOnly = false;
+  pyparams->optConvergedForce = params->optConvergedForce * 0.8;
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
   auto status_neb{neb->compute()};
@@ -60,8 +63,6 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     helper_functions::eigen::addVectorRow(features, feature);
     helper_functions::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
-    pyparams->nebClimbingImageMethod = false;
-    pyparams->optConvergedForce = params->optConvergedForce * 0.8;
     for (auto &&obj : neb->path) {
       obj->setPotential(surpot);
     }
@@ -86,7 +87,12 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     // } else
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
         helper_functions::surrogate::accuratePES(neb->path, pot)) {
-      break;
+      if (pyparams->nebClimbingImageMethod){
+        break;
+      }
+      pyparams->nebClimbingImageMethod = true;
+      pyparams->nebClimbingImageConvergedOnly = true;
+      continue;
     } else {
       continue;
     }
