@@ -52,7 +52,7 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot);
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs);
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
-                 std::shared_ptr<Potential> true_pot);
+                 std::shared_ptr<Potential> true_pot, double max_accuracy=0.05);
 std::pair<double, Eigen::VectorXd::Index>
 getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs);
 } // namespace helper_functions::surrogate

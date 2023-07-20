@@ -235,6 +235,7 @@ Parameters::Parameters() {
   use_surrogate = false;
   sub_job = JobType::Unknown;
   gp_uncertainity = 0.05;
+  gp_accuracy= 0.05;
   gp_linear_path_always = false;
   surrogatePotential = PotType::CatLearn;
 

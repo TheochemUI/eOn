@@ -39,11 +39,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   surpot->train_optimize(features, targets);
   pyparams->nebClimbingImageMethod = false;
   pyparams->nebClimbingImageConvergedOnly = false;
-  pyparams->optConvergedForce = params->optConvergedForce * 0.8;
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
   auto status_neb{neb->compute()};
-  helper_functions::surrogate::accuratePES(neb->path, pot);
+  helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy);
   bool job_not_finished{true};
   size_t n_gp{0};
   double unc_conv{pyparams->gp_uncertainity};
@@ -75,7 +74,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
                                                 surpot);
     }
     status_neb = neb->compute();
-    helper_functions::surrogate::accuratePES(neb->path, pot);
+    helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy);
 
     std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
@@ -86,7 +85,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     fclose(fileNEB);
     // } else
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
-        helper_functions::surrogate::accuratePES(neb->path, pot)) {
+        helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy)) {
       if (pyparams->nebClimbingImageMethod){
         break;
       }
@@ -260,7 +259,7 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
       candidate.getPositionsFreeV(), make_target(candidate, true_pot));
 }
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
-                 std::shared_ptr<Potential> true_pot) {
+                 std::shared_ptr<Potential> true_pot, double max_accuracy) {
   Eigen::VectorXd predEnergies(matobjs.size());
   Eigen::VectorXd trueEnergies(matobjs.size());
 
@@ -278,7 +277,7 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
                fmt::streamed(difference), mse, mae);
 
-  return mae < 0.05;
+  return mae < max_accuracy;
 }
 } // namespace helper_functions::surrogate
 
