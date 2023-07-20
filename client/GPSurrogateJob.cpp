@@ -181,15 +181,15 @@ get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
 Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
                             std::shared_ptr<Potential> true_pot) {
   // Always with derivatives for now
-  // Energy + Derivatives for each row
+  // Energy + gradients for each row
   const auto nrows = matobjs.size();
   const auto ncols = (matobjs.front().numberOfFreeAtoms() * 3) + 1;
   Eigen::MatrixXd targets(nrows, ncols);
   for (long idx{0}; idx < targets.rows(); idx++) {
     matobjs[idx].setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
-    targets.block(idx, 1, 1, ncols - 1) =
-        matobjs[idx].getForcesFree().array() * -1;
+    targets(idx, Eigen::placeholders::lastN(ncols-1)) =
+        matobjs[idx].getForcesFreeV() * -1; // gradients
   }
   SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
   return targets;
