@@ -59,8 +59,7 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
 
   // FIXME: Test conversion, E should only have one element here
   *U = eg_obs.E[0];
-  // Variance is the max normalized force + energy
-  *variance = var_obs.E[0] + var_obs.G.getMean()/var_obs.G.getMaxElt();
+  *variance = var_obs.E[0];
   // fmt::print("\n Got predicted energy from gpr {}\n", *U);
   // fmt::print("Got predicted variance [energy] from gpr {}\n", var_obs.E[0]);
 }
