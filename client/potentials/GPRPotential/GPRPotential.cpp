@@ -74,9 +74,9 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
   m_gprm.calculateVariance(var_obs);
 
   for (int i = 0; i < N; i++) {
-    F[3 * i] = eg_obs.G[3 * i];
-    F[3 * i + 1] = eg_obs.G[3 * i + 1];
-    F[3 * i + 2] = eg_obs.G[3 * i + 2];
+    F[3 * i] = eg_obs.G[3 * i] * -1;
+    F[3 * i + 1] = eg_obs.G[3 * i + 1] * -1;
+    F[3 * i + 2] = eg_obs.G[3 * i + 2] * -1;
   }
 
   // FIXME: Test conversion, E should only have one element here
