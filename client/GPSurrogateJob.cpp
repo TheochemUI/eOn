@@ -40,6 +40,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
   auto status_neb{neb->compute()};
+  helper_functions::surrogate::accuratePES(neb->path, pot);
   bool job_not_finished{true};
   size_t n_gp{0};
   double unc_conv{pyparams->gp_uncertainity};
@@ -73,6 +74,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
                                                 surpot);
     }
     status_neb = neb->compute();
+    helper_functions::surrogate::accuratePES(neb->path, pot);
 
     std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
