@@ -196,7 +196,7 @@ Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
   for (long idx{0}; idx < targets.rows(); idx++) {
     matobjs[idx].setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
-    targets(idx, Eigen::placeholders::lastN(ncols-1)) =
+    targets(idx, Eigen::seqN(1, ncols-1)) =
         matobjs[idx].getForcesFreeV() * -1; // gradients
   }
   SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
