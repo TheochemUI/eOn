@@ -253,24 +253,23 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
 }
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot) {
-  Eigen::VectorXd predEnergies{Eigen::VectorXd::Zero(matobjs.size())};
-  Eigen::VectorXd trueEnergies{Eigen::VectorXd::Zero(matobjs.size())};
-  Eigen::VectorXd accuracy{Eigen::VectorXd::Zero(matobjs.size())};
-  for (auto idx{0}; idx < predEnergies.size(); idx++) {
+  Eigen::VectorXd predEnergies(matobjs.size());
+  Eigen::VectorXd trueEnergies(matobjs.size());
+
+  for (int idx = 0; idx < matobjs.size(); idx++) {
     predEnergies[idx] = matobjs[idx]->getPotentialEnergy();
     matobjs[idx]->setPotential(true_pot);
     trueEnergies[idx] = matobjs[idx]->getPotentialEnergy();
-
-    accuracy[idx] = std::sqrt(predEnergies[idx] * predEnergies[idx] -
-                              trueEnergies[idx] * trueEnergies[idx]);
   }
+
   Eigen::VectorXd difference = predEnergies - trueEnergies;
-  auto mae = difference.array()
-                 .abs()
-                 .maxCoeff(); //.squaredNorm() / predEnergies.size();
-  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
+  double mse = difference.squaredNorm() / matobjs.size();
+  double mae = difference.array().abs().mean();
+
+  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MSE: {}\n MAE: {}",
                fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-               fmt::streamed(difference), mae);
+               fmt::streamed(difference), mse, mae);
+
   return mae < 0.05;
 }
 } // namespace helper_functions::surrogate
