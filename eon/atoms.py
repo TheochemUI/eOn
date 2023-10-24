@@ -309,8 +309,8 @@ def rot_match(a, b):
     bcm = sum(b.r)/len(b)
 
     # SVD algorithm ("Least-Squares Fitting of Two 3-D Point Sets" by Arun, Huang, and Blostein)
-    ta_r = ta.r - acm
-    tb_r = tb.r - bcm
+    ta_r = a.r - acm
+    tb_r = b.r - bcm
     H = numpy.dot(ta_r.transpose() , tb_r)
     U, S, V = numpy.linalg.svd(H)
     R = numpy.dot(U, V)
