@@ -104,7 +104,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
 void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
                               std::unique_ptr<NudgedElasticBand> neb) {
-  std::string resultsFilename = "results.dat";
+  std::string resultsFilename = "results_gpr.dat";
   returnFiles.push_back(resultsFilename);
 
   std::ofstream fileResults(resultsFilename);
@@ -141,7 +141,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
 
   fileResults.close();
 
-  std::string nebFilename = "neb.con";
+  std::string nebFilename = "neb_gpr.con";
   returnFiles.push_back(nebFilename);
 
   std::ofstream fileNEB(nebFilename);
@@ -156,7 +156,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
 
   fileNEB.close();
 
-  returnFiles.push_back("neb.dat");
+  returnFiles.push_back("neb_gpr.dat");
   neb->printImageData(true);
 }
 namespace helper_functions::surrogate {
