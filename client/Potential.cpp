@@ -275,7 +275,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef WITH_ASE_ORCA
   case PotType::ASE_ORCA: {
     return (std::make_shared<ASEOrcaPot>(params));
-    break;
+  }
+#endif
+#ifdef WITH_XTB
+// TODO: Handle Fortran interaction
+  case PotType::XTB: {
+    return (std::make_shared<XTBPot>(params));
   }
 #endif
   default:
