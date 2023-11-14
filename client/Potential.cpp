@@ -79,6 +79,12 @@
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
+// Should respect Fortran availability
+
+#ifdef WITH_XTB
+#include "potentials/XTBPot/XTBPot.h"
+#endif
+
 #include <limits>
 
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
@@ -250,6 +256,13 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef WITH_CATLEARN
   case PotType::CatLearn: {
     return (std::make_shared<CatLearnPot>(params));
+    break;
+  }
+#endif
+// TODO: Handle Fortran interaction
+#ifdef WITH_XTB
+  case PotType::XTB: {
+    return (std::make_shared<XTBPot>(params));
     break;
   }
 #endif
