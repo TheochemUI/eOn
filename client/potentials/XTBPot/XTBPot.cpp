@@ -59,6 +59,7 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   }
 
   xtb_singlepoint(env, mol, calc, res);
+  counter++;
 
   // Extract energy
   xtb_getEnergy(env, res, U);
