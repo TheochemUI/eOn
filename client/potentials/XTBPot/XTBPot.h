@@ -12,6 +12,7 @@
 
 #include "../../Potential.h"
 #include "xtb.h"
+#include "units.hpp"
 
 class XTBPot final : public Potential {
 
