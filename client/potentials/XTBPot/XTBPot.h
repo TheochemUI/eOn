@@ -20,6 +20,7 @@ public:
   // Functions
   XTBPot(std::shared_ptr<Parameters> p)
       : Potential(PotType::XTB, p) {
+    counter = 0;
     env = xtb_newEnvironment();
     xtb_setVerbosity(env, XTB_VERBOSITY_MUTED);
     if (!env) {
@@ -39,6 +40,7 @@ public:
     if (env) {
       xtb_delEnvironment(&env);
     }
+    SPDLOG_INFO("[XTB] called potential {} times", counter++);
   }
 
   // To satisfy interface
@@ -50,4 +52,5 @@ public:
 private:
   xtb_TEnvironment env;
   xtb_TCalculator calc;
+  size_t counter;
 };
