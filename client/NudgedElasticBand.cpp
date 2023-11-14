@@ -126,7 +126,7 @@ NudgedElasticBand::NudgedElasticBand(
   numExtrema = 0;
   this->status = NEBStatus::INIT;
   log = spdlog::get("combi");
-  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initialized with old path\n");
+  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initializing with linear path\n");
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
     *path[i] = linear_path[i];
