@@ -19,6 +19,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
   auto pyparams = std::make_shared<Parameters>(*params);
   pyparams->potential = params->surrogatePotential;
+  // pyparams->nebImages = params->nebImages + 2;
 
   // Get possible initial data source
   auto initial = std::make_shared<Matter>(pot, true_params);
@@ -45,7 +46,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy);
   bool job_not_finished{true};
   size_t n_gp{0};
-  double unc_conv{pyparams->gp_uncertainity};
+  double unc_high{10};
+  int nrow{5};
+  pyparams->gp_uncertainity = 0.1; // Start out high
+  bool retrainGPR = true;
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
@@ -54,24 +58,33 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     }
     // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY ||
     // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
-    SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
-    auto [maxUnc, maxIndex] =
-        helper_functions::surrogate::getMaxUncertainty(neb->path);
-    auto [feature, target] =
-        helper_functions::surrogate::getNewDataPoint(neb->path, pot);
-    helper_functions::eigen::addVectorRow(features, feature);
-    helper_functions::eigen::addVectorRow(targets, target);
-    surpot->train_optimize(features, targets);
-    for (auto &&obj : neb->path) {
-      obj->setPotential(surpot);
+    if (retrainGPR) {
+        SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+        auto [feature, target] = helper_functions::surrogate::getNewDataPoint(neb->path, pot);
+        helper_functions::eigen::addVectorRow(features, feature);
+        helper_functions::eigen::addVectorRow(targets, target);
+        if (n_gp % 3 == 2) {
+          if (helper_functions::surrogate::pruneHighForceData(features, targets,
+                                                              nrow)) {
+            pyparams->gp_uncertainity /= 2;
+            unc_high /= 2;
+            unc_high = max(unc_high, 0.5);
+            nrow *= 2;
+            nrow = max(nrow, 36000);
+            pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
+          }
+        }
+        surpot->train_optimize(features, targets);
+        for (auto &&obj : neb->path) {
+            obj->setPotential(surpot);
+        }
     }
-    if (!(pyparams->gp_linear_path_always)) {
-      SPDLOG_TRACE("Using previous path");
-      neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
-    } else {
-      SPDLOG_TRACE("Using linear interpolation");
-      neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
-                                                surpot);
+    if (!(pyparams->gp_linear_path_always) && retrainGPR) {
+        SPDLOG_TRACE("Using previous path");
+        neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
+    } else if (retrainGPR) {
+        SPDLOG_TRACE("Using linear interpolation");
+        neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, surpot);
     }
     status_neb = neb->compute();
     helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy);
@@ -84,16 +97,24 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     }
     fclose(fileNEB);
     // } else
+
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
         helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy)) {
-      if (pyparams->nebClimbingImageMethod){
-        break;
-      }
-      pyparams->nebClimbingImageMethod = true;
-      pyparams->nebClimbingImageConvergedOnly = true;
-      continue;
+        if (!pyparams->nebClimbingImageMethod) {
+            SPDLOG_TRACE("Turning on CI");
+            pyparams->nebClimbingImageMethod = true;
+            pyparams->nebClimbingImageConvergedOnly = true;
+            pyparams->gp_uncertainity = 0.01;
+            pyparams->gp_linear_path_always = false;
+            retrainGPR = false; // Do not retrain after first convergence
+            pyparams->nebImages = params->nebImages;
+            neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
+            continue;
+        } else {
+            break; // Exit the loop if converged with climbing image method active
+        }
     } else {
-      continue;
+        retrainGPR = true; // Set flag to retrain GPR if not converged
     }
   }
   neb->printImageData();
@@ -279,6 +300,90 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
 
   return mae < max_accuracy;
 }
+
+bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, int fixedRowsToKeep) {
+    assert(features.rows() == targets.rows());
+
+    // If the number of rows is less than or equal to the fixed size, return early
+    if (features.rows() <= fixedRowsToKeep) {
+        return false;
+    }
+
+    std::vector<std::pair<double, int>> forceNorms;
+    for (int i = 0; i < targets.rows(); ++i) {
+        double forceNorm = targets.row(i).tail(targets.cols() - 1).norm();
+        forceNorms.emplace_back(forceNorm, i);
+    }
+
+    // Sort the pairs by force norm in ascending order
+    std::sort(forceNorms.begin(), forceNorms.end());
+
+    // Keep only the fixed number of rows with the lowest force norms
+    std::vector<int> rowsToKeep;
+    for (int i = 0; i < fixedRowsToKeep; ++i) {
+        rowsToKeep.push_back(forceNorms[i].second);
+    }
+
+    // Create new matrices for pruned features and targets
+    Eigen::MatrixXd newFeatures(fixedRowsToKeep, features.cols());
+    Eigen::MatrixXd newTargets(fixedRowsToKeep, targets.cols());
+
+    for (size_t i = 0; i < rowsToKeep.size(); ++i) {
+        newFeatures.row(i) = features.row(rowsToKeep[i]);
+        newTargets.row(i) = targets.row(rowsToKeep[i]);
+    }
+    fmt::print("Post pruning {}\n", rowsToKeep.size());
+
+    // Replace the old matrices with the new pruned ones
+    features = std::move(newFeatures);
+    targets = std::move(newTargets);
+    return true;
+}
+
+// bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, double forceThreshold) {
+//     assert(features.rows() == targets.rows());
+
+//     // If there are fewer than 10 rows, keep all and return early
+//     if (features.rows() < 10) {
+//         return false;
+//     }
+
+//     std::vector<std::pair<double, int>> forceNorms;
+//     for (int i = 0; i < targets.rows(); ++i) {
+//         // Calculate the norm of the force components (ignoring the first element)
+//         double forceNorm = targets.row(i).tail(targets.cols() - 1).norm();
+//         forceNorms.emplace_back(forceNorm, i);
+//     }
+
+//     // Sort the pairs by force norm
+//     std::sort(forceNorms.begin(), forceNorms.end());
+
+//     // Keep at least 10 rows, or more if their force norms are below the threshold
+//     std::vector<int> rowsToKeep;
+//     for (int i = 0; i < std::min(10, static_cast<int>(forceNorms.size())); ++i) {
+//         rowsToKeep.push_back(forceNorms[i].second);
+//     }
+//     for (int i = 10; i < forceNorms.size(); ++i) {
+//         if (forceNorms[i].first < forceThreshold) {
+//             rowsToKeep.push_back(forceNorms[i].second);
+//         }
+//     }
+
+//     // Create new matrices for pruned features and targets
+//     Eigen::MatrixXd newFeatures(rowsToKeep.size(), features.cols());
+//     Eigen::MatrixXd newTargets(rowsToKeep.size(), targets.cols());
+
+//     for (size_t i = 0; i < rowsToKeep.size(); ++i) {
+//         newFeatures.row(i) = features.row(rowsToKeep[i]);
+//         newTargets.row(i) = targets.row(rowsToKeep[i]);
+//     }
+//     fmt::print("Post pruning {}\n", rowsToKeep.size());
+
+//     // Replace the old matrices with the new pruned ones
+//     features = std::move(newFeatures);
+//     targets = std::move(newTargets);
+//     return true;
+// }
 } // namespace helper_functions::surrogate
 
 namespace helper_functions::eigen {

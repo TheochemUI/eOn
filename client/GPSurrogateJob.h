@@ -55,6 +55,7 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot, double max_accuracy=0.05);
 std::pair<double, Eigen::VectorXd::Index>
 getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs);
+bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, int fixedRowsToKeep);
 } // namespace helper_functions::surrogate
 
 namespace helper_functions::eigen {
