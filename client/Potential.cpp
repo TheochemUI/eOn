@@ -71,6 +71,10 @@
 #include "potentials/AMS_IO/AMS_IO.h"
 #endif
 
+#ifdef WITH_ASE_ORCA
+#include "potentials/ASE_ORCA/ASE_ORCA.h"
+#endif
+
 #ifdef WITH_WATER
 #include "potentials/Water/Water.hpp"
 #ifdef WITH_FORTRAN
@@ -264,6 +268,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef WITH_XTB
   case PotType::XTB: {
     return (std::make_shared<XTBPot>(params));
+    break;
+  }
+#endif
+#ifdef WITH_ASE_ORCA
+  case PotType::ASE_ORCA: {
+    return (std::make_shared<ASEOrcaPot>(params));
     break;
   }
 #endif

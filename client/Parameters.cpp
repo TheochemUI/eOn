@@ -593,6 +593,11 @@ int Parameters::load(FILE *file) {
       // Case sensitive!!
       catl_path = ini.GetValue("CatLearn", "catl_path");
     }
+    // [ASE_ORCA]
+    if (ini.FindKey("ASE_ORCA") != -1) {
+      // Case sensitive!!
+      catl_path = ini.GetValue("ASE_ORCA", "orca_path");
+    }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
                                           gp_linear_path_always);
