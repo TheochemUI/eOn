@@ -56,7 +56,8 @@ enum class PotType {
   GPR,
   PYTHON,
   CatLearn,
-  XTB
+  XTB,
+  ASE_ORCA
 };
 
 enum class JobType {
