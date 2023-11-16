@@ -22,6 +22,11 @@
 #include <stdlib.h>
 #endif
 
+
+#ifdef WITH_ASE_ORCA
+#include <pybind11/embed.h>
+#endif
+
 #ifdef EONMPIBGP
 #include <libgen.h>
 #endif
@@ -101,6 +106,11 @@ int main(int argc, char **argv) {
   spdlog::register_logger(_traceback);
   //--- End logging setup
   Parameters parameters;
+
+#ifdef WITH_ASE_ORCA
+  pybind11::scoped_interpreter guard{};
+
+#endif
 
 #ifdef EONMPI
   bool client_standalone = false;
