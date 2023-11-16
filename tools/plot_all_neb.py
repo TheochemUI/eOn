@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.interpolate import interp1d
+from scipy.interpolate import splrep, splev
 import glob
 from cmcrameri import cm
 
@@ -25,8 +25,9 @@ for idx, file_path in enumerate(file_paths):
     rc = data[1]
 
     # Cubic spline interpolation
-    cs_int_f = interp1d(rc, energy, kind="cubic")
     rc_fine = np.linspace(rc.min(), rc.max(), num=100)
+    spl = splrep(rc, energy, k = 3)
+    spl_y = splev(rc_fine, spl)
 
     # Color specification using colormap
     color = cmap(
@@ -37,7 +38,7 @@ for idx, file_path in enumerate(file_paths):
     alpha = 1 if idx == 0 or idx == num_files - 1 else 0.5
 
     # Plotting
-    ax.plot(rc_fine, cs_int_f(rc_fine), color=color, alpha=alpha)
+    ax.plot(rc_fine, spl_y, color=color, alpha=alpha)
     ax.plot(rc, energy, linestyle="", marker="o", color=color, alpha=alpha)
 
 # Labels and adjustments
