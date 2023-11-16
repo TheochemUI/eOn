@@ -596,7 +596,8 @@ int Parameters::load(FILE *file) {
     // [ASE_ORCA]
     if (ini.FindKey("ASE_ORCA") != -1) {
       // Case sensitive!!
-      catl_path = ini.GetValue("ASE_ORCA", "orca_path");
+      // TODO: This should be handled in clienteon so you can still call eonclient for single point calculations easily
+      orca_path = ini.GetValue("ASE_ORCA", "orca_path");
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",

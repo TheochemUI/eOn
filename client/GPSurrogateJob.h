@@ -32,7 +32,10 @@ private:
   void saveData(NudgedElasticBand::NEBStatus status,
                 std::unique_ptr<NudgedElasticBand> neb);
   std::vector<std::string> returnFiles;
+#ifndef WITH_ASE_ORCA
+  // When ASE_ORCA is used as a potential ClientEON.cpp holds lock in main
   pybind11::scoped_interpreter guard{};
+#endif
 };
 
 namespace helper_functions::surrogate {
