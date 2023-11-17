@@ -290,16 +290,17 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
 
   Eigen::VectorXd difference = predEnergies - trueEnergies;
   double mse = difference.squaredNorm() / matobjs.size();
-  double mae = difference.array().abs().mean();
+  // double mae = difference.array().abs().mean();
 
-  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MSE: {}\n MAE: {}",
-               fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-               fmt::streamed(difference), mse, mae);
+  // SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MSE: {}\n MAE: {}",
+  //              fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
+  //              fmt::streamed(difference), mse, mae);
 
-  return mae < max_accuracy;
+  return sqrt(mse) < max_accuracy;
 }
 
 bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, int fixedRowsToKeep) {
+  SPDLOG_TRACE("To keep: {}", fixedRowsToKeep);
     assert(features.rows() == targets.rows());
 
     // If the number of rows is less than or equal to the fixed size, return early
@@ -321,6 +322,7 @@ bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, int
     std::vector<int> rowsToKeep;
     for (int i = 0; i < fixedRowsToKeep; ++i) {
         rowsToKeep.push_back(forceNorms[i].second);
+        SPDLOG_TRACE("Force norms {} kept", forceNorms[i].second);
     }
 
     // Create new matrices for pruned features and targets
