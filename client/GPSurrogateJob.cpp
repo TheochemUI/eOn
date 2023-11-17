@@ -63,11 +63,12 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         helper_functions::eigen::addVectorRow(features, feature);
         helper_functions::eigen::addVectorRow(targets, target);
         if (n_gp % 3 == 2) {
+          SPDLOG_TRACE("Trying to prune");
           if (helper_functions::surrogate::pruneHighForceData(features, targets,
                                                               nrow)) {
             pyparams->gp_uncertainity /= 2;
             nrow *= 2;
-            nrow = max(nrow, 36000);
+            nrow = min(nrow, 36000);
             pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
           }
         }
