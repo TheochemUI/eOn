@@ -46,7 +46,6 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy);
   bool job_not_finished{true};
   size_t n_gp{0};
-  double unc_high{10};
   int nrow{5};
   pyparams->gp_uncertainity = 0.1; // Start out high
   bool retrainGPR = true;
@@ -67,8 +66,6 @@ std::vector<std::string> GPSurrogateJob::run(void) {
           if (helper_functions::surrogate::pruneHighForceData(features, targets,
                                                               nrow)) {
             pyparams->gp_uncertainity /= 2;
-            unc_high /= 2;
-            unc_high = max(unc_high, 0.5);
             nrow *= 2;
             nrow = max(nrow, 36000);
             pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
@@ -315,6 +312,7 @@ bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, int
         forceNorms.emplace_back(forceNorm, i);
     }
 
+    // TODO: Use the perpendicular forces
     // Sort the pairs by force norm in ascending order
     std::sort(forceNorms.begin(), forceNorms.end());
 
@@ -340,50 +338,6 @@ bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, int
     return true;
 }
 
-// bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, double forceThreshold) {
-//     assert(features.rows() == targets.rows());
-
-//     // If there are fewer than 10 rows, keep all and return early
-//     if (features.rows() < 10) {
-//         return false;
-//     }
-
-//     std::vector<std::pair<double, int>> forceNorms;
-//     for (int i = 0; i < targets.rows(); ++i) {
-//         // Calculate the norm of the force components (ignoring the first element)
-//         double forceNorm = targets.row(i).tail(targets.cols() - 1).norm();
-//         forceNorms.emplace_back(forceNorm, i);
-//     }
-
-//     // Sort the pairs by force norm
-//     std::sort(forceNorms.begin(), forceNorms.end());
-
-//     // Keep at least 10 rows, or more if their force norms are below the threshold
-//     std::vector<int> rowsToKeep;
-//     for (int i = 0; i < std::min(10, static_cast<int>(forceNorms.size())); ++i) {
-//         rowsToKeep.push_back(forceNorms[i].second);
-//     }
-//     for (int i = 10; i < forceNorms.size(); ++i) {
-//         if (forceNorms[i].first < forceThreshold) {
-//             rowsToKeep.push_back(forceNorms[i].second);
-//         }
-//     }
-
-//     // Create new matrices for pruned features and targets
-//     Eigen::MatrixXd newFeatures(rowsToKeep.size(), features.cols());
-//     Eigen::MatrixXd newTargets(rowsToKeep.size(), targets.cols());
-
-//     for (size_t i = 0; i < rowsToKeep.size(); ++i) {
-//         newFeatures.row(i) = features.row(rowsToKeep[i]);
-//         newTargets.row(i) = targets.row(rowsToKeep[i]);
-//     }
-//     fmt::print("Post pruning {}\n", rowsToKeep.size());
-
-//     // Replace the old matrices with the new pruned ones
-//     features = std::move(newFeatures);
-//     targets = std::move(newTargets);
-//     return true;
-// }
 } // namespace helper_functions::surrogate
 
 namespace helper_functions::eigen {
