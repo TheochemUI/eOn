@@ -1,4 +1,5 @@
 #include "NudgedElasticBand.h"
+#include "GPSurrogateJob.h"
 #include "Optimizer.h"
 #include <filesystem>
 
@@ -70,7 +71,7 @@ int NEBObjectiveFunction::degreesOfFreedom() {
   return 3 * neb->numImages * neb->atoms;
 }
 
-bool NEBObjectiveFunction::isUncertain() {
+double NEBObjectiveFunction::getMaxUncertainity() {
   double maxMaxUnc = std::numeric_limits<double>::lowest();
   double currentMaxUnc{0};
   for (long idx = 0; idx <= neb->numImages; idx++) {
@@ -79,8 +80,11 @@ bool NEBObjectiveFunction::isUncertain() {
       maxMaxUnc = currentMaxUnc;
     }
   }
-  fmt::print("maxMaxUnc: {}\n", maxMaxUnc);
-  bool unc_conv{maxMaxUnc > params->gp_uncertainity};
+  return maxMaxUnc;
+}
+
+bool NEBObjectiveFunction::isUncertain(double uncertainity_measure) {
+  bool unc_conv{uncertainity_measure > params->gp_uncertainity};
   if (unc_conv) {
     this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY;
   }
@@ -211,11 +215,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     refine_optim =
         helpers::create::mkOptim(objf, params->refineOptMethod, params);
   }
-  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
-               "step size", params->optConvergenceMetricLabel, "max image",
-               "max energy");
-  SPDLOG_DEBUG(
-      "---------------------------------------------------------------\n");
+  SPDLOG_DEBUG("{:>10} {:>12} {:>18} {:>20} {:>12} {:>12}", "iteration",
+               "step size", params->optConvergenceMetricLabel,
+               "max_uncertainity", "max image", "max energy");
+  SPDLOG_DEBUG("--------------------------------------------------------------------------------------------");
 
   while (this->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
@@ -257,17 +260,17 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     // }
     iteration++;
 
+    double current_uncertainity = objf->getMaxUncertainity();
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
                 path[0]->getPotentialEnergy();
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
-    SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
-                        iteration, stepSize, convergenceForce(), maxEnergyImage,
-                        dE);
-
+    SPDLOG_LOGGER_DEBUG(
+        log, "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12} {:>12.2f}", iteration,
+        stepSize, convergenceForce(), current_uncertainity, maxEnergyImage, dE);
     if (pot->getType() == PotType::CatLearn ||
         pot->getType() == PotType::GPR_Optim) {
-      if (objf->isUncertain()) {
+      if (objf->isUncertain(current_uncertainity)) {
         SPDLOG_LOGGER_DEBUG(log, "NEB failed due to high uncertainity");
         status = NEBStatus::MAX_UNCERTAINITY;
         break;

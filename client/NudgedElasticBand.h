@@ -79,7 +79,8 @@ public:
   VectorXd getPositions();
   int degreesOfFreedom();
   bool isConverged();
-  bool isUncertain();
+  bool isUncertain(double uncertainity_measure);
+  double getMaxUncertainity();
   double getConvergence();
   VectorXd difference(VectorXd a, VectorXd b);
   NudgedElasticBand::NEBStatus status;
