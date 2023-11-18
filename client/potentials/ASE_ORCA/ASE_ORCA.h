@@ -25,9 +25,13 @@ class ASEOrcaPot : public Potential {
 private:
   py::object calc;
   py::object ase;
+  size_t counter;
 
 public:
   ASEOrcaPot(shared_ptr<Parameters> a_params);
+  virtual ~ASEOrcaPot() {
+    SPDLOG_INFO("[ASEOrca] called potential {} times", counter);
+  }
 
   // Functions
   void force(long nAtoms, const double *R, const int *atomicNrs,
