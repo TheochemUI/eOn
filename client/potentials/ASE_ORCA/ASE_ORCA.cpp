@@ -13,6 +13,7 @@
 
 ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
     : Potential(PotType::ASE_ORCA, a_params) {
+  counter = 1;
   py::module_ sys = py::module_::import("sys");
   ase = py::module_::import("ase");
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
@@ -56,5 +57,6 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
     F[3 * i + 1] = py_force(i, 1);
     F[3 * i + 2] = py_force(i, 2);
   }
+  counter++;
   return;
 }
