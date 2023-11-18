@@ -290,12 +290,9 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
 
   Eigen::VectorXd difference = predEnergies - trueEnergies;
   double mse = difference.squaredNorm() / matobjs.size();
-  // double mae = difference.array().abs().mean();
-
-  // SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MSE: {}\n MAE: {}",
-  //              fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-  //              fmt::streamed(difference), mse, mae);
-
+  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n RMSE: {}\n",
+               fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
+               fmt::streamed(difference), sqrt(mse));
   return sqrt(mse) < max_accuracy;
 }
 
