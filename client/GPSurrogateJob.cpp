@@ -43,50 +43,53 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
   auto status_neb{neb->compute()};
-  // helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy);
   bool job_not_finished{true};
   size_t n_gp{0};
-  int nrow{5};
-  pyparams->gp_uncertainity = 0.1; // Start out high
+  size_t n_skipat{5};
   bool retrainGPR = true;
+  bool pruneOK = false;
+  double pruneIncrement = 0.3;
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
       SPDLOG_CRITICAL("Whoops, power level of problem too high!!");
       break;
     }
-    // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY ||
-    // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
     if (retrainGPR) {
-        SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
-        auto [feature, target] = helper_functions::surrogate::getNewDataPoint(neb->path, pot);
-        helper_functions::eigen::addVectorRow(features, feature);
-        helper_functions::eigen::addVectorRow(targets, target);
-        if (n_gp % 3 == 2) {
-          SPDLOG_TRACE("Trying to prune");
-          if (helper_functions::surrogate::pruneHighForceData(features, targets,
-                                                              nrow)) {
-            pyparams->gp_uncertainity /= 2;
-            nrow *= 2;
-            nrow = min(nrow, 36000);
-            pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
-          }
+      SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+      auto [feature, target] =
+          helper_functions::surrogate::getNewDataPoint(neb->path, pot);
+      helper_functions::eigen::addVectorRow(features, feature);
+      helper_functions::eigen::addVectorRow(targets, target);
+      if (n_gp % n_skipat == 0 && pruneOK) {
+        int nrow = std::min(
+            pyparams->nebImages + 2,
+            features.rows() -
+                std::max<int>(std::ceil(pruneIncrement * features.rows()),
+                              static_cast<int>(features.rows() / 2)));
+        SPDLOG_TRACE("Trying to keep {}", nrow);
+        if (helper_functions::surrogate::pruneHighForceData(features, targets,
+                                                            nrow)) {
+          pyparams->gp_uncertainity /= 2;
+          pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
+          n_skipat *= 2;
+          pruneOK = true;
         }
-        surpot->train_optimize(features, targets);
-        for (auto &&obj : neb->path) {
-            obj->setPotential(surpot);
-        }
+      }
+      surpot->train_optimize(features, targets);
+      for (auto &&obj : neb->path) {
+        obj->setPotential(surpot);
+      }
     }
     if (!(pyparams->gp_linear_path_always) && retrainGPR) {
-        SPDLOG_TRACE("Using previous path");
-        neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
+      SPDLOG_TRACE("Using previous path");
+      neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
     } else if (retrainGPR) {
-        SPDLOG_TRACE("Using linear interpolation");
-        neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, surpot);
+      SPDLOG_TRACE("Using linear interpolation");
+      neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
+                                                surpot);
     }
     status_neb = neb->compute();
-    // helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy);
-
     std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
     FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
@@ -96,23 +99,44 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     fclose(fileNEB);
     // } else
 
-    if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
-        helper_functions::surrogate::accuratePES(neb->path, pot, params->gp_accuracy)) {
-        if (!pyparams->nebClimbingImageMethod) {
-            SPDLOG_TRACE("Turning on CI");
-            pyparams->nebClimbingImageMethod = true;
-            pyparams->nebClimbingImageConvergedOnly = true;
-            pyparams->gp_uncertainity = 0.01;
-            pyparams->gp_linear_path_always = false;
-            retrainGPR = false; // Do not retrain after first convergence
-            pyparams->nebImages = params->nebImages;
-            neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
-            continue;
+    if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
+      if (!pyparams->nebClimbingImageMethod) {
+        SPDLOG_TRACE("Turning on CI");
+        pyparams->nebClimbingImageMethod = true;
+        pyparams->nebClimbingImageConvergedOnly = true;
+        retrainGPR = false; // Do not retrain after first convergence
+        pyparams->nebImages = params->nebImages;
+        pyparams->gp_linear_path_always = false;
+        pruneOK = false;
+        neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
+        continue;
+      } else {
+        // CI NEB converged, check the climbing image convergence
+        double pred_energy =
+            neb->path[neb->climbingImage]->getPotentialEnergy();
+        neb->path[neb->climbingImage]->setPotential(pot);
+        double true_energy =
+            neb->path[neb->climbingImage]->getPotentialEnergy();
+        double mae = abs(abs(pred_energy) - abs(true_energy));
+        SPDLOG_TRACE("Climbing image true energy is {} predicted {} mae {}",
+                     true_energy, pred_energy, mae);
+        if (mae < pyparams->gp_accuracy) {
+          break;
         } else {
-            break; // Exit the loop if converged with climbing image method active
+          SPDLOG_TRACE("Back to regular NEB");
+          pyparams->nebClimbingImageMethod = false;
+          pyparams->nebClimbingImageConvergedOnly = false;
+          pyparams->gp_uncertainity /= 2;
+          pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
+          pyparams->gp_linear_path_always = false;
+          pruneOK = false;
+          neb =
+              std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
         }
+        retrainGPR = true;
+      }
     } else {
-        retrainGPR = true; // Set flag to retrain GPR if not converged
+      retrainGPR = true; // Set flag to retrain GPR if not converged
     }
   }
   neb->printImageData();
@@ -214,7 +238,7 @@ Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
   for (long idx{0}; idx < targets.rows(); idx++) {
     matobjs[idx].setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
-    targets(idx, Eigen::seqN(1, ncols-1)) =
+    targets(idx, Eigen::seqN(1, ncols - 1)) =
         matobjs[idx].getForcesFreeV() * -1; // gradients
   }
   SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
