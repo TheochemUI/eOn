@@ -296,46 +296,47 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   return sqrt(mse) < max_accuracy;
 }
 
-bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, int fixedRowsToKeep) {
+bool pruneHighForceData(Eigen::MatrixXd &features, Eigen::MatrixXd &targets,
+                        int fixedRowsToKeep) {
   SPDLOG_TRACE("To keep: {}", fixedRowsToKeep);
-    assert(features.rows() == targets.rows());
+  assert(features.rows() == targets.rows());
 
-    // If the number of rows is less than or equal to the fixed size, return early
-    if (features.rows() <= fixedRowsToKeep) {
-        return false;
-    }
+  // If the number of rows is less than or equal to the fixed size, return early
+  if (features.rows() <= fixedRowsToKeep) {
+    return false;
+  }
 
-    std::vector<std::pair<double, int>> forceNorms;
-    for (int i = 0; i < targets.rows(); ++i) {
-        double forceNorm = targets.row(i).tail(targets.cols() - 1).norm();
-        forceNorms.emplace_back(forceNorm, i);
-    }
+  std::vector<std::pair<double, int>> forceNorms;
+  for (int i = 0; i < targets.rows(); ++i) {
+    double forceNorm = targets.row(i).tail(targets.cols() - 1).norm();
+    forceNorms.emplace_back(forceNorm, i);
+  }
 
-    // TODO: Use the perpendicular forces
-    // Sort the pairs by force norm in ascending order
-    std::sort(forceNorms.begin(), forceNorms.end());
+  // TODO: Use the perpendicular forces
+  // Sort the pairs by force norm in ascending order
+  std::sort(forceNorms.begin(), forceNorms.end());
 
-    // Keep only the fixed number of rows with the lowest force norms
-    std::vector<int> rowsToKeep;
-    for (int i = 0; i < fixedRowsToKeep; ++i) {
-        rowsToKeep.push_back(forceNorms[i].second);
-        SPDLOG_TRACE("Force norms {} kept", forceNorms[i].second);
-    }
+  // Keep only the fixed number of rows with the lowest force norms
+  std::vector<int> rowsToKeep;
+  for (int i = 0; i < fixedRowsToKeep; ++i) {
+    rowsToKeep.push_back(forceNorms[i].second);
+    SPDLOG_TRACE("Force norms {} kept", forceNorms[i].second);
+  }
 
-    // Create new matrices for pruned features and targets
-    Eigen::MatrixXd newFeatures(fixedRowsToKeep, features.cols());
-    Eigen::MatrixXd newTargets(fixedRowsToKeep, targets.cols());
+  // Create new matrices for pruned features and targets
+  Eigen::MatrixXd newFeatures(fixedRowsToKeep, features.cols());
+  Eigen::MatrixXd newTargets(fixedRowsToKeep, targets.cols());
 
-    for (size_t i = 0; i < rowsToKeep.size(); ++i) {
-        newFeatures.row(i) = features.row(rowsToKeep[i]);
-        newTargets.row(i) = targets.row(rowsToKeep[i]);
-    }
-    fmt::print("Post pruning {}\n", rowsToKeep.size());
+  for (size_t i = 0; i < rowsToKeep.size(); ++i) {
+    newFeatures.row(i) = features.row(rowsToKeep[i]);
+    newTargets.row(i) = targets.row(rowsToKeep[i]);
+  }
+  fmt::print("Post pruning {}\n", rowsToKeep.size());
 
-    // Replace the old matrices with the new pruned ones
-    features = std::move(newFeatures);
-    targets = std::move(newTargets);
-    return true;
+  // Replace the old matrices with the new pruned ones
+  features = std::move(newFeatures);
+  targets = std::move(newTargets);
+  return true;
 }
 
 } // namespace helper_functions::surrogate
