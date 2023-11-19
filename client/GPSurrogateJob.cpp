@@ -42,7 +42,11 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   pyparams->nebClimbingImageConvergedOnly = false;
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
+  auto start = std::chrono::steady_clock::now();
   auto status_neb{neb->compute()};
+  std::chrono::duration<double> elp_time =
+      std::chrono::steady_clock::now() - start;
+  SPDLOG_TRACE("Total Optimizer time for the NEB on the GP: {}s", elp_time.count());
   bool job_not_finished{true};
   size_t n_gp{0};
   size_t n_skipat{5};
@@ -89,7 +93,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                 surpot);
     }
+    start = std::chrono::steady_clock::now();
     status_neb = neb->compute();
+    elp_time = std::chrono::steady_clock::now() - start;
+    SPDLOG_TRACE("Total Optimizer time for the NEB on the GP: {}s", elp_time.count());
     std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
     FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
@@ -124,6 +131,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
           break;
         } else {
           SPDLOG_TRACE("Continuing NEB-CI");
+          pyparams->nebConvergedForce = 0.01;
           neb =
               std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
         }
