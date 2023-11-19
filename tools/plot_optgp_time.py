@@ -6,7 +6,7 @@ from matplotlib import offsetbox
 time_values = []
 with open("eon_orca_b3lyp_def2_svp_gpneb_low_force_conv.txt", "r") as file:
     for line in file:
-        match = re.search(r"optimize time: (\d+\.\d+)s", line)
+        match = re.search(r"Total Optimizer time for the NEB on the GP: (\d+\.\d+)s", line)
         if match:
             time_values.append(float(match.group(1)))
 
@@ -27,6 +27,6 @@ plt.plot(occurrences, time_values, marker='o')
 
 plt.xlabel('Occurrence')
 plt.ylabel('Time (s)')
-plt.title(f'Optimize Time per Occurrence - Cumulative Time: {cumulative_time:.2f}s')
+plt.title(f'GPR NEB Optimize Time per Occurrence - Cumulative Time: {cumulative_time:.2f}s')
 plt.grid(True)
 plt.show()

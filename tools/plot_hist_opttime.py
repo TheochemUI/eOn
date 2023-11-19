@@ -6,7 +6,7 @@ current_count = 0
 in_section = False
 
 # Read and process the file
-with open('eon_orca_b3lyp_def2_svp_gpneb_retry', 'r') as file:
+with open('eon_orca_b3lyp_def2_svp_gpneb_low_force_conv.txt', 'r') as file:
     for line in file:
         if "optimize time:" in line:
             if in_section:
