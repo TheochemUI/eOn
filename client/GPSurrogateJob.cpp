@@ -120,16 +120,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         double mae = abs(abs(pred_energy) - abs(true_energy));
         SPDLOG_TRACE("Climbing image true energy is {} predicted {} mae {}",
                      true_energy, pred_energy, mae);
-        if (mae < pyparams->gp_accuracy) {
+        if (mae < 0.01) {
           break;
         } else {
-          SPDLOG_TRACE("Back to regular NEB");
-          pyparams->nebClimbingImageMethod = false;
-          pyparams->nebClimbingImageConvergedOnly = false;
-          pyparams->gp_uncertainity /= 2;
-          pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
-          pyparams->gp_linear_path_always = false;
-          pruneOK = false;
+          SPDLOG_TRACE("Continuing NEB-CI");
           neb =
               std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
         }
