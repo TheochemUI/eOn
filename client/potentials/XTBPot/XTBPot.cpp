@@ -48,7 +48,7 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   // xtb_loadGFN1xTB(env, mol, calc, NULL);
   xtb_loadGFN2xTB(env, mol, calc, NULL);
   xtb_setAccuracy(env, calc, 1);
-  xtb_setElectronicTemp(env, calc, 300.0);
+  xtb_setElectronicTemp(env, calc, 0.0);
   xtb_setMaxIter(env, calc, 250);
 
   // Calculate
