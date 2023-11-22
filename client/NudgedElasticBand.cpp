@@ -299,6 +299,7 @@ double NudgedElasticBand::convergenceForce(void) {
 
   for (long i = 1; i <= numImages; i++) {
 
+    // For the climbing image, use the total force, not the projected!
     if (params->nebClimbingImageConvergedOnly == true &&
         params->nebClimbingImageMethod && climbingImage != 0) {
       i = climbingImage;
