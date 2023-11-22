@@ -15,8 +15,8 @@
 // const double angstromToBohr = 1.8897261349925714;
 // const double hartreeToEV = 27.21138386;
 // const double hartreeBohr_to_eVA = 14.399645472115932;
-using forcefields::unit_system::HARTREE;
 using forcefields::unit_system::BOHR;
+using forcefields::unit_system::HARTREE;
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
@@ -83,13 +83,12 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
 
   // Convert back to angstrom and eV based units
   for (int i = 0; i < N; i++) {
-    F[3 * i] *= -1*(HARTREE / BOHR);
-    F[3 * i + 1] *= -1*(HARTREE / BOHR);
-    F[3 * i + 2] *= -1*(HARTREE / BOHR);
+    F[3 * i] *= -1 * (HARTREE / BOHR);
+    F[3 * i + 1] *= -1 * (HARTREE / BOHR);
+    F[3 * i + 2] *= -1 * (HARTREE / BOHR);
   }
   *U *= HARTREE;
 
-  // Clean up molecule and results objects
+  // Clean up results
   xtb_delResults(&res);
-  xtb_delMolecule(&mol);
 }
