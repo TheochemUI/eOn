@@ -25,28 +25,42 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
                    double *U, double *variance, const double *box) {
   variance = nullptr;
   int intN = static_cast<int>(N);
+  // TODO: Periodicity shouldn't crash
   const bool periodicity[3]{false, false, false};
+  double box_bohr[3*3];
 
   // Allocate memory for converted positions
   double R_bohr[3 * N];
 
-  // Convert positions from Angstroms to Bohrs
-  for (long i = 0; i < 3 * N; ++i) {
-    R_bohr[i] = R[i] / BOHR;
+  // Convert positions from Angstrom to Bohr
+  for (long idx = 0; idx < 3 * N; ++idx) {
+    R_bohr[idx] = R[idx] / BOHR;
+  }
+  for (long idx = 0; idx < 9; ++idx) {
+    box_bohr[idx] = box[idx] / BOHR;
   }
 
-  xtb_TMolecule mol = xtb_newMolecule(env, &intN, atomicNrs, R_bohr, nullptr,
-                                      nullptr, nullptr, nullptr);
+  // Make or update molecule
+  if (!mol) {
+    mol = xtb_newMolecule(env, &intN, atomicNrs, R_bohr, nullptr, nullptr,
+                          box_bohr, periodicity);
+    if (!mol) {
+      throw std::runtime_error("Failed to create xtb molecule");
+    }
+  } else {
+    xtb_updateMolecule(env, mol, R_bohr, box_bohr);
+  }
+
   if (!mol) {
     throw std::runtime_error("Failed to create xtb molecule");
   }
 
   // Load a specific GFN-xTB calculator
   // Ordered from lowest accuracy to highest
-  // xtb_loadGFNFF(env, mol, calc, NULL);
-  // xtb_loadGFN0xTB(env, mol, calc, NULL);
-  // xtb_loadGFN1xTB(env, mol, calc, NULL);
-  xtb_loadGFN2xTB(env, mol, calc, NULL);
+  xtb_loadGFNFF(env, mol, calc, nullptr);
+  // xtb_loadGFN0xTB(env, mol, calc, nullptr);
+  // xtb_loadGFN1xTB(env, mol, calc, nullptr);
+  // xtb_loadGFN2xTB(env, mol, calc, nullptr);
   xtb_setAccuracy(env, calc, 1);
   xtb_setElectronicTemp(env, calc, 0.0);
   xtb_setMaxIter(env, calc, 250);
