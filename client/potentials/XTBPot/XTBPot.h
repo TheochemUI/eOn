@@ -11,8 +11,8 @@
 #pragma once
 
 #include "../../Potential.h"
-#include "xtb.h"
 #include "units.hpp"
+#include "xtb.h"
 
 class XTBPot final : public Potential {
 
@@ -32,8 +32,13 @@ public:
       xtb_delEnvironment(&env);
       throw std::runtime_error("Failed to create xtb calculator");
     }
+    mol = nullptr;
   }
   virtual ~XTBPot() {
+    // Clean up resources
+    if (mol) {
+      xtb_delMolecule(&mol);
+    }
     if (calc) {
       xtb_delCalculator(&calc);
     }
@@ -52,5 +57,6 @@ public:
 private:
   xtb_TEnvironment env;
   xtb_TCalculator calc;
+  xtb_TMolecule mol;
   size_t counter;
 };
