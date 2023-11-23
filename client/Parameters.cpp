@@ -237,6 +237,7 @@ Parameters::Parameters() {
   gp_uncertainity = 0.05;
   gp_accuracy= 0.05;
   gp_linear_path_always = false;
+  gp_mindist = 0.01;
   surrogatePotential = PotType::CatLearn;
 
   // [Hessian] //
@@ -599,6 +600,10 @@ int Parameters::load(FILE *file) {
     }
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
+    gp_accuracy =
+        ini.GetValueF("Surrogate", "gp_accuracy", gp_accuracy);
+    gp_mindist =
+        ini.GetValueF("Surrogate", "gp_mindist", gp_mindist);
     if (ini.FindKey("Surrogate") != -1) {
       surrogatePotential = helper_functions::getPotentialType(
           toLowerCase(ini.GetValue("Surrogate", "potential")));

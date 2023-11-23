@@ -276,6 +276,7 @@ public:
   JobType sub_job;
   double gp_uncertainity;
   double gp_accuracy;
+  double gp_mindist;
   bool gp_linear_path_always;
   PotType surrogatePotential; // ONLY: catlearn for now
 
