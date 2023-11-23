@@ -101,7 +101,7 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());
   forceCallCounter++;
-  m_log->info("[{}] called", helper_functions::getPotentialName(getType()));
+  m_log->info("{} called", helper_functions::getPotentialName(getType()));
   return std::make_tuple(energy, forces);
 };
 
