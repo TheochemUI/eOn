@@ -9,22 +9,30 @@
 #include <optional>
 
 class Potential {
-private:
-  // should be const
-  PotType ptype;
-
 protected:
+  PotType ptype;
+  size_t forceCallCounter;
   std::shared_ptr<Parameters> m_params;
+  std::shared_ptr<spdlog::logger> m_log;
 
 public:
   Potential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
       : ptype{a_ptype},
-        m_params{a_params} {}
+        forceCallCounter{0},
+        m_params{a_params} {
+    initializeLogger();
+  }
   Potential(std::shared_ptr<Parameters> a_params)
       : ptype{a_params->potential},
-        m_params{a_params} {}
-  virtual ~Potential() = default;
+        m_params{a_params} {
+    initializeLogger();
+  }
 
+  virtual ~Potential() {
+    std::string potentialName = helper_functions::getPotentialName(getType());
+    m_log->info("[{}] called potential {} times", potentialName,
+                forceCallCounter);
+  }
   static int fcalls;
   static int fcallsTotal;
   static int wu_fcallsTotal;
@@ -38,6 +46,18 @@ public:
   std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
   PotType getType() { return this->ptype; };
+  void initializeLogger() {
+    if (!spdlog::get("_potcalls")) {
+      // Create logger if it doesn't exist
+      m_log = spdlog::basic_logger_mt("_potcalls", "_potcalls.log", true);
+      m_log->set_pattern("[%l] [%Y-%m-%d %H:%M:%S] %v");
+    } else {
+      // Use existing logger
+      m_log = spdlog::get("_potcalls");
+    }
+    std::string potentialName = helper_functions::getPotentialName(getType());
+    m_log->info("[{}] created", potentialName);
+  }
 };
 
 namespace helper_functions {
