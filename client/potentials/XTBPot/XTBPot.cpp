@@ -44,6 +44,7 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   if (!mol) {
     mol = xtb_newMolecule(env, &intN, atomicNrs, R_bohr, nullptr, nullptr,
                           box_bohr, periodicity);
+    xtb_setParamSet();
     if (!mol) {
       throw std::runtime_error("Failed to create xtb molecule");
     }
@@ -54,16 +55,6 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   if (!mol) {
     throw std::runtime_error("Failed to create xtb molecule");
   }
-
-  // Load a specific GFN-xTB calculator
-  // Ordered from lowest accuracy to highest
-  xtb_loadGFNFF(env, mol, calc, nullptr);
-  // xtb_loadGFN0xTB(env, mol, calc, nullptr);
-  // xtb_loadGFN1xTB(env, mol, calc, nullptr);
-  // xtb_loadGFN2xTB(env, mol, calc, nullptr);
-  xtb_setAccuracy(env, calc, 1);
-  xtb_setElectronicTemp(env, calc, 0.0);
-  xtb_setMaxIter(env, calc, 250);
 
   // Calculate
   xtb_TResults res = xtb_newResults();
