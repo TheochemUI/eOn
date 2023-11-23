@@ -1,4 +1,5 @@
 # Booleans
+option('with_newpot', type : 'boolean', value : false)
 option('with_water', type : 'boolean', value : false)
 option('with_ams', type : 'boolean', value : false)
 option('with_lammps', type : 'boolean', value : false)
