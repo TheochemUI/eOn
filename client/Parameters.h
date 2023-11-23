@@ -77,6 +77,12 @@ public:
   string amsbin;
   string amsresources;
 
+  // [XTBPot] //
+  string xtb_paramset;
+  double xtb_elec_temperature;
+  size_t xtb_maxiter;
+  double xtb_acc;
+
   // [Structure Comparison] //
   double distanceDifference; // The distance criterion for comparing geometries
   double neighborCutoff; // radius used in the local atomic structure analysis
