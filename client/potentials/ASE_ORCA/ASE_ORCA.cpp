@@ -24,9 +24,9 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
 
   py::list orca_paths;
   orca_paths.append(py::str(a_params->orca_path));
+  std::string orca_simpleinput(fmt::format("ENGRAD {} {} {} {}", a_params->orca_pot, a_params->orca_basis, a_params->orca_grid, a_params->orca_extra_sline));
   this->calc = ORCA("profile"_a = OrcaProfile(orca_paths),
-                    // TODO: These can all be user parameters, except ENGRAD, which is needed for energy + forces
-                    "orcasimpleinput"_a = "ENGRAD B3LYP def2-SVP DefGrid2", // DefGrid2 is for ORCA > 5.x
+                    "orcasimpleinput"_a = orca_simpleinput,
                     "orcablocks"_a = py::str(fmt::format(
                         "%pal nprocs {} end",
                         py::cast<int>(psutil.attr("cpu_count")(false)))),

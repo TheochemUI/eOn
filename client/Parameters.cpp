@@ -167,6 +167,12 @@ Parameters::Parameters() {
   dimerRotationsMax = 10; // old dimer and new dimer
   dimerRemoveRotation = false;
 
+  // [ASE_ORCA] //
+  orca_path = "SET_ME"s;
+  orca_pot = "BLYP"s;
+  orca_basis = "3-21G"s;
+  orca_grid = "DefGrid2"s;
+
   // [Lanczos] //
   lanczosTolerance = 0.01;
   lanczosMaxIterations = 20;
@@ -598,6 +604,10 @@ int Parameters::load(FILE *file) {
       // Case sensitive!!
       // TODO: This should be handled in clienteon so you can still call eonclient for single point calculations easily
       orca_path = ini.GetValue("ASE_ORCA", "orca_path");
+      orca_pot = ini.GetValue("ASE_ORCA", "potential");
+      orca_basis = ini.GetValue("ASE_ORCA", "basis_set");
+      orca_grid = ini.GetValue("ASE_ORCA", "grid");
+      orca_extra_sline = ini.GetValue("ASE_ORCA", "simpleinput");
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
