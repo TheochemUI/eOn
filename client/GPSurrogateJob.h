@@ -49,7 +49,8 @@ Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
 Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot);
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
-                std::shared_ptr<Potential> true_pot);
+                std::shared_ptr<Potential> true_pot, double min_distance_threshold);
+void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, NudgedElasticBand* neb, double true_energy, Eigen::VectorXd true_forces);
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs);
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot, double max_accuracy=0.05);

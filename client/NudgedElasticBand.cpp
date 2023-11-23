@@ -275,14 +275,22 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         status = NEBStatus::MAX_UNCERTAINITY;
         break;
       } else if (objf->isConverged()) {
+        if (params->nebClimbingImageMethod) {
+        SPDLOG_LOGGER_DEBUG(log, "NEB CI converged\n");
+        } else {
         SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
+        }
         status = NEBStatus::GOOD;
         break;
       }
 
     } else {
       if (objf->isConverged()) {
+        if (params->nebClimbingImageMethod) {
+        SPDLOG_LOGGER_DEBUG(log, "NEB CI converged\n");
+        } else {
         SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
+        }
         status = NEBStatus::GOOD;
         break;
       }
