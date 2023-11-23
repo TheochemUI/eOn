@@ -271,12 +271,6 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     return (std::make_shared<ASEOrcaPot>(params));
   }
 #endif
-#ifdef WITH_XTB
-// TODO: Handle Fortran interaction
-  case PotType::XTB: {
-    return (std::make_shared<XTBPot>(params));
-  }
-#endif
   default:
     throw std::runtime_error("No known potential could be constructed");
     break;

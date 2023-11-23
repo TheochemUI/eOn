@@ -132,10 +132,6 @@ std::string getPotentialName(PotType ptype) {
   case PotType::ASE_ORCA: {
     return "ase_orca"s;
   }
-  case PotType::XTB: {
-    return "xtb"s;
-    break;
-  }
   default: {
     return "unknown potential"s;
     break;

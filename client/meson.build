@@ -342,7 +342,7 @@ ec2 = executable('testWriteR',
 ec3 = executable('gptestPot',
                 'testgppot.cpp',
                 dependencies : _deps,
-                link_with : eclib,
+                link_with : _linkto,
                 cpp_args : _args,
                 )
 # ------------------------ Tests
