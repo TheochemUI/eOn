@@ -71,10 +71,10 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   xtb_getGradient(env, res, F);
 
   // Convert back to angstrom and eV based units
-  for (int i = 0; i < N; i++) {
-    F[3 * i] *= -1 * (HARTREE / BOHR);
-    F[3 * i + 1] *= -1 * (HARTREE / BOHR);
-    F[3 * i + 2] *= -1 * (HARTREE / BOHR);
+  for (int idx = 0; idx < N; idx++) {
+    F[3 * idx] *= -1 * (HARTREE / BOHR);
+    F[3 * idx + 1] *= -1 * (HARTREE / BOHR);
+    F[3 * idx + 2] *= -1 * (HARTREE / BOHR);
   }
   *U *= HARTREE;
 
