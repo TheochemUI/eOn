@@ -6,6 +6,7 @@ from matplotlib.colors import Normalize
 # eV/A
 FORCE_NORM_CONVERGENCE = 0.025711
 
+
 # Function to parse data from the file
 def parse_data(file_path):
     with open(file_path, "r") as file:
@@ -34,12 +35,13 @@ def parse_data(file_path):
 # Parse the data
 file_path = "client_spdlog.log"  # Path to your log file
 data, switch_iteration = parse_data(file_path)
+is_switched = False
 
 # Check if data is empty
 if not data:
     raise ValueError("No data extracted from the file. Please check the file format.")
-if switch_iteration is None:
-    raise ValueError("Switch iteration not found in the file.")
+if switch_iteration is not None:
+    is_switched = True
 
 iterations, force_norms, max_energies = zip(*data)
 
@@ -81,9 +83,15 @@ ax.text(
 )
 
 # Adding a vertical line to indicate the switch iteration
-ax.axvline(
-    x=switch_iteration, color="red", linestyle="--", label="Switch to LBFGS", alpha=0.5
-)
+if is_switched:
+    ax.axvline(
+        x=switch_iteration,
+        color="red",
+        linestyle="--",
+        label="Switch to LBFGS",
+        alpha=0.5,
+    )
+
 ax.axhline(
     y=FORCE_NORM_CONVERGENCE,
     color="black",
