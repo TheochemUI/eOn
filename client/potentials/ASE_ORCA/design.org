@@ -1,0 +1,22 @@
+* Why?
+Because I couldn't be bothered to do another "on the fly" I/O parser like I did
+for ~AMS_IO~. Also because I don't want to deal with unit conversions and other
+annoyances. Just easier overall. In any case ~orca~ will be run in parallel. Here is the basic design guideline:
+#+begin_src python
+# ase version 3.23.0b1
+from ase.calculators.orca import OrcaProfile, ORCA
+import psutil
+from pathlib import Path
+EonOrcaProfile = OrcaProfile(["/home/rgoswami/Downloads/orca_5_0_4_linux_x86-64_openmpi411/orca"])
+calc = ORCA(profile=EonOrcaProfile,
+            orcasimpleinput='ENGRAD B3LYP', # optional basis, e.g. def2-TZVP
+            orcablocks=f'%pal nprocs {psutil.cpu_count(logical=False)} end',
+            directory = ".",  # Probably tmp
+            )
+# Example
+from ase.build import molecule
+h2 = molecule("H2")
+h2.set_calculator(calc)
+h2.get_potential_energy()
+h2.get_forces()
+#+end_src

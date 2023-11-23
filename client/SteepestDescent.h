@@ -17,7 +17,7 @@ public:
     if (spdlog::get("sd")) {
       m_log = spdlog::get("sd");
     } else {
-      m_log = spdlog::basic_logger_st("sd", "_sd.log", true);
+      m_log = spdlog::basic_logger_mt("sd", "_sd.log", true);
     }
     m_log->set_pattern("[%l] [SD] %v");
   }
