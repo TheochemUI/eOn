@@ -281,6 +281,13 @@ public:
   // [CatLearn]
   std::string catl_path;
 
+  // [ASE_ORCA] //
+  std::string orca_path;
+  std::string orca_pot;
+  std::string orca_basis;
+  std::string orca_grid;
+  std::string orca_extra_sline; // Other catchall values
+
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
                              // successive iterations

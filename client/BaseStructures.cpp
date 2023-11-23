@@ -129,6 +129,10 @@ std::string getPotentialName(PotType ptype) {
     return "xtb"s;
     break;
   }
+  case PotType::ASE_ORCA: {
+    return "ase_orca"s;
+    break;
+  }
   default:
     return "unknown potential"s;
     break;
@@ -191,6 +195,8 @@ PotType getPotentialType(const std::string pname) {
     return PotType::CatLearn;
   } else if (pname == "xtb") {
     return PotType::XTB;
+  } else if (pname == "ase_orca") {
+    return PotType::ASE_ORCA;
   } else {
     return PotType::UNKNOWN;
   }

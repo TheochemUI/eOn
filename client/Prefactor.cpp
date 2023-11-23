@@ -144,7 +144,7 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
 
 void Prefactor::logFreqs(VectorXd freqs, char *name) {
   std::shared_ptr<spdlog::logger> fileLogger;
-  fileLogger = spdlog::basic_logger_st("prefactor", "freqs.dat", true);
+  fileLogger = spdlog::basic_logger_mt("prefactor", "freqs.dat", true);
   fileLogger->set_pattern("%v");
   fileLogger->debug("[Prefactor] Frequencies at {}", name);
   int i;
