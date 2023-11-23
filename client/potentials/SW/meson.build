@@ -3,4 +3,5 @@ sw=shared_library('sw',
            'SW.cpp',
            dependencies : _deps,
            cpp_args : _args,
+           link_with : _linkto,
            install : true)

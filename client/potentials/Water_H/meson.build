@@ -3,4 +3,5 @@ water_h=shared_library('water_h',
            'potH_H2O.f',
            dependencies : _deps,
            cpp_args : _args,
+           link_with : _linkto,
            install : true)
