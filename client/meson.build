@@ -164,6 +164,7 @@ if get_option('with_gp_surrogate')
   _args += ['-DWITH_GP_SURROGATE']
   eonclib_sources += ['SurrogatePotential.cpp', 'GPSurrogateJob.cpp']
     if get_option('with_catlearn')
+      # TODO: Cleanup, used for ase_orca too
       # Embedding the interpreter
       py = import('python').find_installation()
       python_dep = py.dependency(embed: true)
@@ -277,6 +278,20 @@ if get_option('with_cuh2')
   subdir('potentials/CuH2')
   potentials += [cuh2]
   _args += ['-DCUH2_POT']
+endif
+
+if get_option('with_ase_orca')
+  # TODO: Cleanup, used for Catlearn too
+  # Embedding the interpreter
+  py = import('python').find_installation()
+  python_dep = py.dependency(embed: true, required: true)
+  pyb11f_deps = [ python_dep,
+                  dependency('pybind11'),
+                  declare_dependency(link_args: '-lstdc++') ]
+  _deps += [ pyb11f_deps ]
+  subdir('potentials/ASE_ORCA')
+  potentials += [ aseorca ]
+  _args += ['-DWITH_ASE_ORCA']
 endif
 
 _linkto += potentials

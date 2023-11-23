@@ -21,7 +21,7 @@ public:
     if (spdlog::get("qm")) {
       m_log = spdlog::get("qm");
     } else {
-      m_log = spdlog::basic_logger_st("qm", "_qm.log", true);
+      m_log = spdlog::basic_logger_mt("qm", "_qm.log", true);
     }
     m_log->set_pattern("[%l] [QM] %v");
   }
