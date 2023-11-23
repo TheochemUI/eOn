@@ -96,6 +96,7 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
   double var{0}; // no variance for true potentials
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());
+  forceCallCounter++;
   return std::make_tuple(energy, forces);
 };
 
