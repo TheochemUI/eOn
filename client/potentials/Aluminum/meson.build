@@ -9,4 +9,5 @@ aluminum = shared_library('aluminum',
            'sumembforce.f',
            dependencies : _deps,
            cpp_args : _args,
+          link_with : _linkto,
            install : true)

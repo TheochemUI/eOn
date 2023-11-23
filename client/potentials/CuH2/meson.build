@@ -3,5 +3,6 @@ cuh2 = shared_library('cuh2',
            'eam_isoc.f90',
            'eamroutines.f90',
            dependencies : _deps,
+           link_with: _linkto,
            cpp_args : _args,
            install : true)
