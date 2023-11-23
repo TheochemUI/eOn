@@ -16,7 +16,7 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
   direction.setZero();
   rotationalPlane.setZero();
   totalForceCalls = 0;
-  log = spdlog::basic_logger_st("dimer", "dimer.log", true);
+  log = spdlog::basic_logger_mt("dimer", "dimer.log", true);
   log->set_pattern("%v");
 }
 

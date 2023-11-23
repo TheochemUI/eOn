@@ -40,7 +40,7 @@ public:
     if (spdlog::get("cg")) {
       m_log = spdlog::get("cg");
     } else {
-      m_log = spdlog::basic_logger_st("cg", "_cg.log", true);
+      m_log = spdlog::basic_logger_mt("cg", "_cg.log", true);
     }
     m_log->set_pattern("[%l] [CG] %v");
   }
