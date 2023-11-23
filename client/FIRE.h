@@ -26,7 +26,7 @@ public:
     if (spdlog::get("fire")) {
       m_log = spdlog::get("fire");
     } else {
-      m_log = spdlog::basic_logger_st("fire", "_fire.log", true);
+      m_log = spdlog::basic_logger_mt("fire", "_fire.log", true);
     }
     m_log->set_pattern("[%l] [FIRE] %v");
   }

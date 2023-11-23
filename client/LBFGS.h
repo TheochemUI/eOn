@@ -22,7 +22,7 @@ public:
     if (spdlog::get("lbfgs")) {
       m_log = spdlog::get("lbfgs");
     } else {
-      m_log = spdlog::basic_logger_st("lbfgs", "_lbfgs.log", true);
+      m_log = spdlog::basic_logger_mt("lbfgs", "_lbfgs.log", true);
     }
     m_log->set_pattern("[%l] [LBFGS] %v");
   }

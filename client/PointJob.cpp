@@ -14,7 +14,7 @@ std::vector<std::string> PointJob::run(void) {
   SPDLOG_LOGGER_DEBUG(log, "Max atom force: {}", pos->maxForce());
 
   std::shared_ptr<spdlog::logger> fileLogger;
-  fileLogger = spdlog::basic_logger_st("point", "results.dat", true);
+  fileLogger = spdlog::basic_logger_mt("point", "results.dat", true);
 
   fileLogger->set_pattern("%v");
   fileLogger->info("{} Energy", pos->getPotentialEnergy());
