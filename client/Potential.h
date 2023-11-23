@@ -9,22 +9,23 @@
 #include <optional>
 
 class Potential {
-private:
-  // should be const
-  PotType ptype;
-
 protected:
+  PotType ptype;
+  size_t forceCallCounter;
   std::shared_ptr<Parameters> m_params;
 
 public:
   Potential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
-      : ptype{a_ptype},
+    : ptype{a_ptype}, forceCallCounter{0},
         m_params{a_params} {}
   Potential(std::shared_ptr<Parameters> a_params)
       : ptype{a_params->potential},
         m_params{a_params} {}
-  virtual ~Potential() = default;
-
+  virtual ~Potential() {
+    std::string potentialName = helper_functions::getPotentialName(getType());
+    SPDLOG_INFO("[{}] called potential {} times", potentialName,
+                forceCallCounter);
+  }
   static int fcalls;
   static int fcallsTotal;
   static int wu_fcallsTotal;
