@@ -27,7 +27,7 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   int intN = static_cast<int>(N);
   // TODO: Periodicity shouldn't crash
   const bool periodicity[3]{false, false, false};
-  double box_bohr[3*3];
+  double box_bohr[3 * 3];
 
   // Allocate memory for converted positions
   double R_bohr[3 * N];
@@ -40,36 +40,34 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
     box_bohr[idx] = box[idx] / BOHR;
   }
 
-  // Make or update molecule
-  if (!mol) {
-    mol = xtb_newMolecule(env, &intN, atomicNrs, R_bohr, nullptr, nullptr,
-                          box_bohr, periodicity);
-    xtb_setParamSet();
-    if (!mol) {
-      throw std::runtime_error("Failed to create xtb molecule");
-    }
-  } else {
-    xtb_updateMolecule(env, mol, R_bohr, box_bohr);
-  }
+  // Make molecule
+  xtb_TMolecule mol = xtb_newMolecule(env, &intN, atomicNrs, R_bohr, nullptr,
+                                      nullptr, box_bohr, periodicity);
 
-  if (!mol) {
-    throw std::runtime_error("Failed to create xtb molecule");
+  // Setup parameters
+  if (xtb_paramset == GFNMethod::GFNFF) {
+    xtb_loadGFNFF(env, mol, calc, nullptr);
+  } else if (xtb_paramset == GFNMethod::GFN0xTB) {
+    xtb_loadGFN0xTB(env, mol, calc, nullptr);
+  } else if (xtb_paramset == GFNMethod::GFN1xTB) {
+    xtb_loadGFN1xTB(env, mol, calc, nullptr);
+  } else if (xtb_paramset == GFNMethod::GFN2xTB) {
+    xtb_loadGFN2xTB(env, mol, calc, nullptr);
+  } else {
+    throw std::runtime_error("Parameter set for XTB must be one of GFNFF, "
+                             "GFN0xTB, GFN1xTB or GFN2xTB.\n");
   }
+  xtb_setAccuracy(env, calc, xtb_acc);
+  xtb_setElectronicTemp(env, calc, xtb_electronic_temperature);
+  xtb_setMaxIter(env, calc, xtb_max_iter);
 
   // Calculate
   xtb_TResults res = xtb_newResults();
-  if (!res) {
-    xtb_delMolecule(&mol);
-    throw std::runtime_error("Failed to create xtb results");
-  }
-
   xtb_singlepoint(env, mol, calc, res);
   counter++;
 
-  // Extract energy
+  // Extract results
   xtb_getEnergy(env, res, U);
-
-  // Extract forces
   xtb_getGradient(env, res, F);
 
   // Convert back to angstrom and eV based units
@@ -82,4 +80,5 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
 
   // Clean up results
   xtb_delResults(&res);
+  xtb_delMolecule(&mol);
 }

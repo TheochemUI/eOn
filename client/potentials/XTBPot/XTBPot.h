@@ -33,7 +33,6 @@ public:
       xtb_delEnvironment(&env);
       throw std::runtime_error("Failed to create xtb calculator");
     }
-    mol = nullptr;
     // Unmarshal parameters
     if (p->xtb_paramset == "GFNFF") {
       xtb_paramset = GFNMethod::GFNFF;
@@ -50,10 +49,6 @@ public:
   }
 
   virtual ~XTBPot() {
-    // Clean up resources
-    if (mol) {
-      xtb_delMolecule(&mol);
-    }
     if (calc) {
       xtb_delCalculator(&calc);
     }
@@ -73,29 +68,9 @@ private:
   enum class GFNMethod { GFNFF, GFN0xTB, GFN1xTB, GFN2xTB };
   xtb_TEnvironment env;
   xtb_TCalculator calc;
-  xtb_TMolecule mol;
   GFNMethod xtb_paramset;
   double xtb_acc;
   double xtb_electronic_temperature;
   size_t xtb_max_iter;
   size_t counter;
-
-  void xtb_setParamSet() {
-    // Ordered from lowest accuracy to highest
-    if (xtb_paramset == GFNMethod::GFNFF) {
-      xtb_loadGFNFF(env, mol, calc, nullptr);
-    } else if (xtb_paramset == GFNMethod::GFN0xTB) {
-      xtb_loadGFN0xTB(env, mol, calc, nullptr);
-    } else if (xtb_paramset == GFNMethod::GFN1xTB) {
-      xtb_loadGFN1xTB(env, mol, calc, nullptr);
-    } else if (xtb_paramset == GFNMethod::GFN2xTB) {
-      xtb_loadGFN2xTB(env, mol, calc, nullptr);
-    } else {
-      throw std::runtime_error("Parameter set for XTB must be one of GFNFF, "
-                               "GFN0xTB, GFN1xTB or GFN2xTB.\n");
-    }
-    xtb_setAccuracy(env, calc, xtb_acc);
-    xtb_setElectronicTemp(env, calc, xtb_electronic_temperature);
-    xtb_setMaxIter(env, calc, xtb_max_iter);
-  }
 };
