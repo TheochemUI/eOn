@@ -8,6 +8,7 @@
 #include "Potential.h"
 #include "version.h"
 
+#include <chrono>
 #include <errno.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -87,7 +88,8 @@ void printSystemInfo() {
 int main(int argc, char **argv) {
   // --- Start Logging setup
   // Sinks
-  auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
+  spdlog::flush_every(std::chrono::seconds(3));
+  auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
   auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
       "client_spdlog.log", true); // Overwrite existing
   auto logger = std::make_shared<spdlog::logger>(
@@ -97,7 +99,7 @@ int main(int argc, char **argv) {
   spdlog::set_default_logger(logger);
   // Traceback logger
   spdlog::set_level(spdlog::level::trace);
-  auto trace_csink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
+  auto trace_csink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
   auto trace_fsink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
       "client_traceback.log", true); // Overwrite existing
   auto _traceback = std::make_shared<spdlog::logger>(
