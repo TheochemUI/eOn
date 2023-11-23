@@ -66,3 +66,17 @@ Energy (eV): -365.26100391396983
  [ 0.12612649 -0.60497549  0.32630785]
  [-0.08989758 -0.24521783  0.24104635]]
 #+end_src
+
+Now additionally, we have the parameters exposed:
+#+begin_src ini
+[Potential]
+potential = xtb
+
+# Defaults listed below
+[XTBPot]
+# One of GFNFF, GFN0xTB, GFN1xTB, GFN2xTB
+paramset = GFNFF
+accuracy = 1.0
+electronic_temperature = 0.0
+max_iterations = 250
+#+end_src
