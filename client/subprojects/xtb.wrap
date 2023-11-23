@@ -1,0 +1,4 @@
+[wrap-git]
+directory=xtb
+url=https://github.com/grimme-lab/xtb.git
+revision=98043edb3c38f498fdaf9c889ab7b6aba3c7151c

@@ -212,6 +212,18 @@ if get_option('with_ams')
   _args += ['-DWITH_AMS']
 endif
 
+if get_option('with_xtb')
+  # TODO: Clean this up and integrate with with_fortran
+  add_languages('fortran', required: true)
+  fc = meson.get_compiler('fortran')
+  xtb_proj = subproject('xtb')
+  xtb_dep = xtb_proj.get_variable('xtb_dep')
+  _deps += [xtb_dep]
+  subdir('potentials/XTBPot')
+  potentials += xtb_eon
+  _args += ['-DWITH_XTB']
+endif
+
 if get_option('with_lammps')
   subdir('potentials/LAMMPS')
   potentials += [ lammps_pot ]

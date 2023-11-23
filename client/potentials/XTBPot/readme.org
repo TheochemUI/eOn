@@ -1,0 +1,82 @@
+* Manual Tests
+
+The idea is to source information from the ~xtb.h~ documentation and the
+~c_api_example.c~ file, along with the defaults in ~xtb-python~ (since ~ase~ also expects the same units as ~eon~).
+
+Note that the units XTB expects are in Hartree and Bohr, and need to be
+converted.
+
+The commands MUST center the molecule in the resulting ~con~ file, which makes
+it completely useless. More specifically, EON will attempt to "wrap around" the
+coordinates, making the result incorrect.
+
+#+begin_src bash
+# Use a system from the Baker test
+python -c "from ase.io import read, write; mol = read('system121-prod.xyz'); mol.set_cell([90, 90, 90]); mol.center(); write('product.con', mol)"
+python -c "from ase.io import read, write; mol = read('system121-react.xyz'); mol.set_cell([90, 90, 90]); mol.center(); write('reactant.con', mol)"
+#+end_src
+
+Or equally:
+
+#+begin_src bash
+xtb --scc system121-prod.xyz
+#+end_src
+
+Also note that the ORCA configuration has 0 electronic temperature.
+
+Anyway, with this centered setup:
+#+begin_src bash
+./eonclient -s product.con -p xtb
+Energy:         -365.2609852487
+(free) Forces:
+-0.00219862    0.225097   -0.112018
+ -0.0113545   -0.124805   0.0821139
+  0.0925669     0.23228    -0.23099
+  -0.136157    0.184586   -0.255125
+ -0.0147501    0.339785 -0.00213947
+  -0.615381    0.402479   -0.149111
+   0.170093    -0.41048   -0.438229
+   -0.58884  0.00149488    0.279328
+   0.511771   0.0655153    0.328453
+   0.675166    0.160081   -0.331562
+   0.315241   -0.156751   0.0898435
+  -0.432386  -0.0690873     0.17208
+   0.126127   -0.604977    0.326309
+ -0.0898981   -0.245219    0.241047
+Max atom force: 0.7690311723
+#+end_src
+
+Which should be the same as ASE:
+#+begin_src python
+python -c "from xtb.ase.calculator import XTB; import ase; import ase.io; atoms=ase.io.read('product.con'); atoms.calc = XTB(); print(f'Energy (eV): {atoms.get_potential_energy()}\n Forces (eV/A):\n{atoms.get_forces()}')"
+Energy (eV): -365.26100391396983
+ Forces (eV/A):
+[[-0.00219875  0.22509585 -0.11201623]
+ [-0.01135474 -0.12480509  0.08211369]
+ [ 0.09256791  0.23227992 -0.23099114]
+ [-0.13615589  0.18458735 -0.25512421]
+ [-0.01475167  0.33978516 -0.00214024]
+ [-0.61538163  0.40247916 -0.14911201]
+ [ 0.17009337 -0.41048005 -0.43822896]
+ [-0.58884002  0.00149449  0.27932841]
+ [ 0.51177112  0.06551484  0.3284538 ]
+ [ 0.67516656  0.16008166 -0.33156223]
+ [ 0.31524175 -0.15675207  0.08984414]
+ [-0.43238693 -0.06908791  0.17208077]
+ [ 0.12612649 -0.60497549  0.32630785]
+ [-0.08989758 -0.24521783  0.24104635]]
+#+end_src
+
+Now additionally, we have the parameters exposed:
+#+begin_src ini
+[Potential]
+potential = xtb
+
+# Defaults listed below
+[XTBPot]
+# One of GFNFF, GFN0xTB, GFN1xTB, GFN2xTB
+paramset = GFNFF
+accuracy = 1.0
+electronic_temperature = 0.0
+max_iterations = 250
+#+end_src
