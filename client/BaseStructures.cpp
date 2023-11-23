@@ -125,6 +125,10 @@ std::string getPotentialName(PotType ptype) {
     return "catlearn"s;
     break;
   }
+  case PotType::XTB: {
+    return "xtb"s;
+    break;
+  }
   default:
     return "unknown potential"s;
     break;
@@ -185,6 +189,8 @@ PotType getPotentialType(const std::string pname) {
     return PotType::PYTHON;
   } else if (pname == "catlearn") {
     return PotType::CatLearn;
+  } else if (pname == "xtb") {
+    return PotType::XTB;
   } else {
     return PotType::UNKNOWN;
   }
