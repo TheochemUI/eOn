@@ -26,7 +26,7 @@ int FIRE::step(double a_maxMove) {
   m_vel = (1 - m_alpha) * m_vel + m_alpha * f_unit * m_vel.norm();
   SPDLOG_LOGGER_DEBUG(
       m_log, "P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}", P,
-      fmt::streamed(m_vel), m_dt, m_alpha, m_N);
+      m_vel.norm(), m_dt, m_alpha, m_N);
   if (P >= 0) {
     m_N++;
     if (m_N > m_N_min) {
