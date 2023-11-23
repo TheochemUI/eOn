@@ -59,6 +59,18 @@ spdlog_dep = dependency('spdlog', required : true)
 _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
+eoncbase_sources = [
+  'BaseStructures.cpp',
+  'INIFile.cpp',
+]
+
+eoncbase = library('eoncbase',
+  sources : eoncbase_sources,
+  dependencies : _deps,
+  cpp_args : _args,
+  install : true)
+
+_linkto += eoncbase
 
 # Potentials
 subdir('potentials/EAM')
@@ -81,17 +93,14 @@ potentials = [
                newpot
              ]
 
-eon_pot = declare_dependency(link_with : potentials)
-
 eonclib_sources = [
+           'Parameters.cpp',
            'Optimizer.cpp',
            'PrefactorJob.cpp',
            'LBFGS.cpp',
-           'Parameters.cpp',
            'ReplicaExchangeJob.cpp',
            'BondBoost.cpp',
            'Job.cpp',
-           'INIFile.cpp',
            'GlobalOptimization.cpp',
            'LowestEigenmode.cpp',
            'MinModeSaddleSearch.cpp',
@@ -132,7 +141,6 @@ eonclib_sources = [
            'EpiCenters.cpp',
            'SaddleSearchJob.cpp',
            'BasinHoppingSaddleSearch.cpp',
-           'BaseStructures.cpp',
 ]
 
 eonclient_sources = [
@@ -271,34 +279,38 @@ if get_option('with_cuh2')
   _args += ['-DCUH2_POT']
 endif
 
+_linkto += potentials
+
 # --------------------- Library
 
 eclib = library('eonclib',
                 sources : eonclib_sources,
                 dependencies : _deps,
-                link_with : potentials,
+                link_with : _linkto,
                 cpp_args : _args,
                 install : true)
+
+_linkto += eclib
 
 # ---------------------- Executable
 
 ec = executable('eonclient',
                 sources : eonclient_sources,
                 dependencies : _deps,
-                link_with : eclib,
+                link_with : _linkto,
                 cpp_args : _args,
                 install : true)
 
 ec1 = executable('testPot',
                 'testpot.cpp',
                 dependencies : _deps,
-                link_with : eclib,
+                link_with : _linkto,
                 )
 
 ec2 = executable('testWriteR',
                 'testWriteR.cpp',
                 dependencies : _deps,
-                link_with : eclib,
+                link_with : _linkto,
                 )
 
 # ------------------------ Tests
@@ -320,7 +332,7 @@ foreach test : test_array
        executable(test.get(1),
           sources : ['gtests/'+test.get(2)],
           dependencies : _deps,
-          link_with : eclib,
+          link_with : _linkto,
           cpp_args : _args
                  ),
         workdir : meson.source_root() + test.get(3)
