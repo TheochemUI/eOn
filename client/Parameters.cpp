@@ -76,6 +76,12 @@ Parameters::Parameters() {
   scmlicense = "";    // amshome.append("license.txt");
   amsresources = "";  // amshome.append("/atomicdata");
 
+  // [XTBPot] //
+  xtb_paramset = "GFNFF";
+  xtb_acc = 1.0;
+  xtb_elec_temperature = 0.0;
+  xtb_maxiter = 250;
+
   // [Structure Comparison] //
   distanceDifference = 0.1;
   neighborCutoff = 3.3;
@@ -423,6 +429,13 @@ int Parameters::load(FILE *file) {
       scm_pythondir = ini.GetValue("AMS_ENV", "scm_pythondir", scm_pythondir);
       amsbin = ini.GetValue("AMS_ENV", "amsbin", amsbin);
       amsresources = ini.GetValue("AMS_ENV", "amsresources", amsresources);
+    }
+    // [XTBPot]
+    if (potential == PotType::XTB) {
+      xtb_paramset = ini.GetValue("XTBPot", "paramset", xtb_paramset);
+      xtb_acc = ini.GetValueF("XTBPot", "accuracy", xtb_acc);
+      xtb_elec_temperature = ini.GetValueF("XTBPot", "electronic_temperature", xtb_elec_temperature);
+      xtb_maxiter = ini.GetValueL("XTBPot", "max_iterations", xtb_maxiter);
     }
 
     // [Debug] //
