@@ -509,14 +509,16 @@ int Parameters::load(FILE *file) {
       optTimeStep = optTimeStepInput / timeUnit;
       optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent",
                                           optQMSteepestDecent);
-    } else if (ini.FindKey("FIRE") != -1) {
+    }
+    if (ini.FindKey("FIRE") != -1) {
       SPDLOG_WARN("Overwriting QuickMin timestep with Fire timestep!!");
       optTimeStepInput = ini.GetValueF("FIRE", "time_step", optTimeStepInput);
       optTimeStep = optTimeStepInput / timeUnit;
       optMaxTimeStepInput =
           ini.GetValueF("FIRE", "time_step_max", optMaxTimeStepInput);
       optMaxTimeStep = optMaxTimeStepInput / timeUnit;
-    } else if (ini.FindKey("LBFGS") != -1) {
+    }
+    if (ini.FindKey("LBFGS") != -1) {
       optLBFGSMemory = ini.GetValueL("LBFGS", "lbfgs_memory", optLBFGSMemory);
       optLBFGSInverseCurvature = ini.GetValueF(
           "LBFGS", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
@@ -528,7 +530,8 @@ int Parameters::load(FILE *file) {
           ini.GetValueB("LBFGS", "lbfgs_angle_reset", optLBFGSAngleReset);
       optLBFGSDistanceReset =
           ini.GetValueB("LBFGS", "lbfgs_distance_reset", optLBFGSDistanceReset);
-    } else if (ini.FindKey("CG") != -1) {
+    }
+    if (ini.FindKey("CG") != -1) {
       optCGNoOvershooting =
           ini.GetValueB("CG", "cg_no_overshooting", optCGNoOvershooting);
       optCGKnockOutMaxMove =
@@ -540,7 +543,8 @@ int Parameters::load(FILE *file) {
                                               optCGMaxIterBeforeReset);
       optCGLineSearchMaxIter = ini.GetValueL("CG", "cg_max_iter_line_search",
                                              optCGLineSearchMaxIter);
-    } else if (ini.FindKey("SD") != -1) {
+    }
+    if (ini.FindKey("SD") != -1) {
       optSDAlpha = ini.GetValueF("SD", "sd_alpha", optSDAlpha);
       optSDTwoPoint = ini.GetValueB("SD", "sd_twopoint", optSDTwoPoint);
     }
