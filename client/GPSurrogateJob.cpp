@@ -59,7 +59,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   bool retrainGPR = true;
   bool pruneOK = false;
   double pruneIncrement = 0.3;
-  while (job_not_finished) { // outer loop?
+  while (job_not_finished) {
     n_gp++;
     if (n_gp > 750) {
       SPDLOG_CRITICAL("Whoops, power level of problem too high!!");
@@ -68,24 +68,9 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     if (retrainGPR) {
       SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
       auto [feature, target] = helper_functions::surrogate::getNewDataPoint(
-          neb->path, pot, params->gp_mindist);
+          neb->path, pot, params->gp_mindist, surpot->failedOptim);
       helper_functions::eigen::addVectorRow(features, feature);
       helper_functions::eigen::addVectorRow(targets, target);
-      if (n_gp % n_skipat == 0 && pruneOK) {
-        int nrow = std::min(
-            pyparams->nebImages + 2,
-            features.rows() -
-                std::max<int>(std::ceil(pruneIncrement * features.rows()),
-                              static_cast<int>(features.rows() / 2)));
-        SPDLOG_TRACE("Trying to keep {}", nrow);
-        if (helper_functions::surrogate::pruneHighForceData(features, targets,
-                                                            nrow)) {
-          pyparams->gp_uncertainity /= 2;
-          pyparams->gp_uncertainity = max(pyparams->gp_uncertainity, 0.05);
-          n_skipat *= 2;
-          pruneOK = true;
-        }
-      }
       surpot->train_optimize(features, targets);
       for (auto &&obj : neb->path) {
         obj->setPotential(surpot);
@@ -99,6 +84,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                 surpot);
     }
+
     start = std::chrono::steady_clock::now();
     status_neb = neb->compute();
     elp_time = std::chrono::steady_clock::now() - start;
@@ -111,58 +97,55 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       neb->path[i]->matter2con(fileNEB);
     }
     fclose(fileNEB);
-    // } else
 
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
-      if (!pyparams->nebClimbingImageMethod || train_ci) {
-        SPDLOG_TRACE("Turning on CI");
-        pyparams->nebClimbingImageMethod = true;
-        pyparams->nebClimbingImageConvergedOnly = true;
-        retrainGPR = false; // Do not retrain after first convergence
-        pyparams->nebImages = params->nebImages;
-        pyparams->gp_linear_path_always = false;
-        pruneOK = false;
-        pyparams->gp_uncertainity = 0.25;
-        neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
-        SPDLOG_INFO("Free CI run!");
-        start = std::chrono::steady_clock::now();
-        neb->compute();
-        elp_time = std::chrono::steady_clock::now() - start;
-        SPDLOG_TRACE("Total Optimizer time for the NEB-CI on the GP: {}s",
-                     elp_time.count());
-        pyparams->gp_uncertainity = params->gp_uncertainity;
-        neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
-        // CI NEB converged, check the climbing image convergence
+      if (pyparams->nebClimbingImageMethod) {
+        // CI NEB converged
+        auto posv =
+            neb->path[neb->climbingImage]->getPositionsFreeV();
         double pred_energy =
             neb->path[neb->climbingImage]->getPotentialEnergy();
         auto pred_forces = neb->path[neb->climbingImage]->getForcesFreeV();
+        // Now get true energy, forces at CI
         neb->path[neb->climbingImage]->setPotential(pot);
         double true_energy =
             neb->path[neb->climbingImage]->getPotentialEnergy();
-        // double mae_energy = abs(abs(pred_energy) - abs(true_energy));
+        double rmse_energy = sqrt(abs(pow(true_energy, 2) - pow(pred_energy, 2))/2);
         auto true_forces = neb->path[neb->climbingImage]->getForcesFreeV();
-        // double true_force_norm = true_forces.norm();
-        double mae_forces = (pred_forces - true_forces).norm();
-        SPDLOG_TRACE(
-            "Climbing image true energy is {} predicted {} mae_forces {}",
-            true_energy, pred_energy, mae_forces);
-        if (mae_forces < pyparams->gp_accuracy) {
+        // Do the check
+        if (((true_forces - pred_forces).norm() < params->nebConvergedForce) && (rmse_energy < 0.01)) {
           break;
+          SPDLOG_INFO("Converged due to low force and energy differences on true surface at the CI");
         } else {
-          train_ci = true;
+        SPDLOG_TRACE(
+            "Climbing image true energy is {} predicted {} true_forcenorm {}",
+            true_energy, pred_energy, true_forces.norm());
+          // Add the point obtained anyway
+          auto orig_size = targets.rows();
+          auto ncols = targets.cols();
+          features.conservativeResize(orig_size+1, Eigen::NoChange);
+          features.row(orig_size - 1) = posv;
+          targets.conservativeResize(orig_size+1, Eigen::NoChange);
+          targets.row(orig_size - 1)[0] = true_energy;
+          targets(orig_size - 1, Eigen::seqN(1, ncols - 1)) = true_forces * -1; // gradients
+          retrainGPR = true; // Adds data again later!
+          neb=std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
+                                                 surpot);
         }
-        retrainGPR = false;
-        // Add the point evaluated, typically the CI
-        helper_functions::surrogate::addCI(features, targets, neb.get(),
-                                           true_energy, true_forces);
-        surpot->train_optimize(features, targets);
-        for (auto &&obj : neb->path) {
-          obj->setPotential(surpot);
-        }
+      } else {
+        pyparams->nebClimbingImageMethod = true;
+        pyparams->nebClimbingImageConvergedOnly = true;
+        retrainGPR = true;
+        pyparams->nebImages = params->nebImages;
+        pyparams->gp_linear_path_always = false;
+        neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
       }
-    } else {
-      retrainGPR = true; // Set flag to retrain GPR if not converged
     }
+  }
+  // Just to get better images, will use the true potential
+  pot->m_log->info("Switching to true potential for final extreum");
+  for (auto &&obj : neb->path) {
+    obj->setPotential(pot);
   }
   neb->printImageData();
   neb->findExtrema();
@@ -250,7 +233,7 @@ get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx]->getPositionsFreeV();
   }
-  SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
+  // SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
   return features;
 }
 Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
@@ -266,7 +249,7 @@ Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
     targets(idx, Eigen::seqN(1, ncols - 1)) =
         matobjs[idx].getForcesFreeV() * -1; // gradients
   }
-  SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
+  // SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
   return targets;
 }
 Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -318,21 +301,17 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
-void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets,
-           NudgedElasticBand *neb, double true_energy,
-           Eigen::VectorXd true_forces) {
-  features.conservativeResize(features.rows() + 1, Eigen::NoChange);
-  features.row(features.rows() - 1) =
-      neb->path[neb->climbingImage]->getPositionsV();
-  targets.conservativeResize(targets.rows() + 1, Eigen::NoChange);
-  targets(targets.rows() - 1, 0) = true_energy;
-  targets.block(targets.rows() - 1, 1, 1, true_forces.size()) =
-      -1 * true_forces;
+void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, NudgedElasticBand* neb, double true_energy, Eigen::VectorXd true_forces) {
+        features.conservativeResize(features.rows()+1, Eigen::NoChange);
+        features.row(features.rows()-1) = neb->path[neb->climbingImage]->getPositionsV();
+        targets.conservativeResize(targets.rows()+1, Eigen::NoChange);
+        targets(targets.rows()-1, 0) = true_energy;
+        targets.block(targets.rows()-1, 1, 1, true_forces.size()) = -1 * true_forces;
 }
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot,
-                double min_distance_threshold) {
+                double min_distance_threshold, bool optfail) {
 
   auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
   Matter candidate{*matobjs[maxIndex + 1]};
