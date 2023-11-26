@@ -266,7 +266,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
     SPDLOG_LOGGER_DEBUG(
-        log, "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12} {:>12.2f}", iteration,
+        log, "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12} {:>12.7f}", iteration,
         stepSize, convergenceForce(), current_uncertainity, maxEnergyImage, dE);
     if (pot->getType() == PotType::CatLearn ||
         pot->getType() == PotType::GPR_Optim) {

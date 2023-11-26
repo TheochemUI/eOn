@@ -13,8 +13,8 @@
 void GPRPotential::train_optimize(Eigen::MatrixXd a_features,
                                   Eigen::MatrixXd a_targets) {
   const size_t n_rows(a_features.rows()), n_feature_cols(a_features.cols());
-  auto energies{a_targets(Eigen::placeholders::all, 0)};
-  auto gradients{a_targets(Eigen::placeholders::all, Eigen::seqN(1, n_feature_cols))};
+  auto energies{a_targets(Eigen::all, 0)};
+  auto gradients{a_targets(Eigen::all, Eigen::seqN(1, n_feature_cols))};
   // fmt::print("Energies: {}\n", fmt::streamed(energies));
   // fmt::print("Gradients: {}\n", fmt::streamed(gradients));
   // fmt::print("R: {}\n", fmt::streamed(a_features));
