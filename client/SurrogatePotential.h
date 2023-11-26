@@ -6,8 +6,9 @@
 class SurrogatePotential : public Potential {
 
 public:
+  bool failedOptim;
   SurrogatePotential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
-      : Potential(a_ptype, a_params) {}
+    : Potential(a_ptype, a_params), failedOptim{false} {}
   virtual ~SurrogatePotential() = default;
   virtual void train_optimize(Eigen::MatrixXd a_features,
                               Eigen::MatrixXd a_targets) = 0;

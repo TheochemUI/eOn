@@ -353,15 +353,17 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
     tooClose = true;
   }
 
-  // If too close, select a random point along the path
-  if (tooClose) {
+  // If too close or optimizer failed, select a random point along the path
+  if (tooClose || optfail) {
     std::random_device rd;
     std::mt19937 gen(rd());
     // No endpoints
     std::uniform_int_distribution<> distrib(1, matobjs.size() - 2);
     int randomIndex = distrib(gen);
     candidate = *matobjs[randomIndex];
+    SPDLOG_INFO("Optimizer failed or points too close, picking random index {}", randomIndex);
   }
+  // SPDLOG_INFO("Got {}", fmt::streamed(candidate.getPositionsFreeV()));
 
   return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
       candidate.getPositionsFreeV(), make_target(candidate, true_pot));

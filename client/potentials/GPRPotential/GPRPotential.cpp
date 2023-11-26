@@ -27,6 +27,7 @@ void GPRPotential::train_optimize(Eigen::MatrixXd a_features,
   obs.G.assignFromEigenMatrix(gradients);
   m_gprm.setHyperparameters(obs, m_atmconf);
   m_gprm.optimize(obs);
+  this->failedOptim = m_gprm.failedOptimizer;
   return;
 }
 
