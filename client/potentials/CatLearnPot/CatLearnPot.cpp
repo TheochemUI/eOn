@@ -20,9 +20,8 @@ CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
       "catlearn.regression.gaussianprocess.calculator.mlmodel");
 
   // GP Model
-  this->m_gpmod = gp_module.attr("get_default_model")(
-      a_params->catl_model, a_params->catl_prior, a_params->catl_use_deriv,
-      a_params->catl_use_fingerprint, a_params->catl_parallel);
+  this->m_gpmod =
+      gp_module.attr("get_default_model")("model"_a = a_params->catl_model);
 };
 
 void CatLearnPot::train_optimize(Eigen::MatrixXd features,
