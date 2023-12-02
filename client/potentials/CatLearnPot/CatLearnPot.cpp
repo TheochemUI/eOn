@@ -16,74 +16,19 @@ CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
   py::module_ sys = py::module_::import("sys");
   py::exec(fmt::format("sys.path.insert(0, {})", a_params->catl_path));
 
+  py::module_ gp_module = py::module_::import(
+      "catlearn.regression.gaussianprocess.calculator.mlmodel");
+
   // Import the required modules
-  py::module np = py::module::import("numpy");
-  py::module_ hpfitter_module =
-      py::module_::import("catlearn.regression.gaussianprocess.hpfitter");
-  py::module_ objectfunctions_module =
-      py::module_::import("catlearn.regression.gaussianprocess."
-                          "objectfunctions.factorized_likelihood");
-  py::module_ optimizers_module =
-      py::module_::import("catlearn.regression.gaussianprocess.optimizers");
-  py::module_ gp_module =
-      py::module_::import("catlearn.regression.gaussianprocess.gp.gp");
-  py::module_ prior_max_module =
-      py::module_::import("catlearn.regression.gaussianprocess.means.max");
-  py::module_ _kernel =
-      py::module_::import("catlearn.regression.gaussianprocess.kernel.se");
-  py::module_ normal_module = py::module_::import(
-      "catlearn.regression.gaussianprocess.pdistributions.normal");
-
-  // Get the classes from the imported modules
-  py::object hpfitter_class = hpfitter_module.attr("HyperparameterFitter");
-  py::object objectfunctions_class =
-      objectfunctions_module.attr("FactorizedLogLikelihood");
-  py::object optimizers_class = optimizers_module.attr("run_golden");
-  py::object line_search_scale_class =
-      optimizers_module.attr("line_search_scale");
-  py::object gp_class = gp_module.attr("GaussianProcess");
-  py::object prior_max_class = prior_max_module.attr("Prior_max");
-  py::object kernel_class = _kernel.attr("SE_Derivative");
-
-  // Create the objects and set the arguments
-  py::dict local_kwargs;
-  local_kwargs["tol"] = 1e-5;
-  local_kwargs["optimize"] = true;
-  local_kwargs["multiple_max"] = true;
-
-  py::dict kwargs_optimize;
-  kwargs_optimize["local_run"] = optimizers_class;
-  kwargs_optimize["maxiter"] = 1000;
-  kwargs_optimize["jac"] = false;
-  kwargs_optimize["bounds"] = py::none(); // None
-  kwargs_optimize["ngrid"] = 80;
-  kwargs_optimize["use_bounds"] = true;
-  kwargs_optimize["local_kwargs"] = local_kwargs;
-
-  // Hyperparameter Prior
-  py::object normal_class = normal_module.attr("Normal_prior");
-  py::list lenlist, noiselist;
-  lenlist.append(normal_class(0.0, 2.0));
-  noiselist.append(normal_class(-9.0, 2.0));
-  _prior["length"] = np.attr("array")(lenlist);
-  _prior["noise"] = np.attr("array")(noiselist);
-
-  // Hyperparameter Fitter
-  this->hpfit = hpfitter_class(objectfunctions_class(), line_search_scale_class,
-                               py::arg("opt_kwargs") = kwargs_optimize,
-                               py::arg("distance_matrix") = true);
-  // Kernel
-  this->kernel = kernel_class(py::arg("use_fingerprint") = false);
   // GP Model
-  this->gpmod =
-      gp_class(py::arg("prior") = prior_max_class(), py::arg("kernel") = kernel,
-               py::arg("use_derivatives") = true, py::arg("hpfitter") = hpfit);
+  this->gpmod = gp_module.attr("get_default_model")(
+      a_params->catl_model, a_params->catl_prior, a_params->catl_use_deriv,
+      a_params->catl_use_fingerprint, a_params->catl_parallel);
 };
 
 void CatLearnPot::train_optimize(Eigen::MatrixXd features,
                                  Eigen::MatrixXd targets) {
-  gpmod.attr("optimize")(features, targets, py::arg("retrain") = true,
-                         py::arg("prior") = _prior);
+  gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
   return;
 }
 

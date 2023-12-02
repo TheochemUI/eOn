@@ -24,16 +24,12 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 
 class CatLearnPot : public SurrogatePotential {
 
-private:
-  py::object hpfit;
-  py::object kernel;
-  py::dict _prior; //
-
 public:
   CatLearnPot(shared_ptr<Parameters> a_params);
 
   // Functions
-  void train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets);
+  void train_optimize(Eigen::MatrixXd features,
+                      Eigen::MatrixXd targets) override;
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override;
