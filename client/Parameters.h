@@ -280,6 +280,11 @@ public:
 
   // [CatLearn]
   std::string catl_path;
+  std::string catl_model;
+  std::string catl_prior;
+  bool catl_use_deriv;
+  bool catl_use_fingerprint;
+  bool catl_parallel;
 
   // [ASE_ORCA] //
   std::string orca_path;
