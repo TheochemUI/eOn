@@ -34,7 +34,7 @@ public:
              double *forces, double *energy, double *variance,
              const double *box) override;
   // Variables [public]
-  py::object gpmod;
+  py::object m_gpmod;
   Eigen::MatrixXd
       variance; // XXX: This is a hacky way to populate and use this variable
 };
