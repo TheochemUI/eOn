@@ -137,7 +137,6 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         pyparams->nebClimbingImageConvergedOnly = true;
         retrainGPR = true;
         pyparams->nebImages = params->nebImages;
-        pyparams->gp_linear_path_always = false;
         neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
       }
     }
@@ -328,7 +327,7 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
   }
   SPDLOG_INFO("Got minimal distance {}, compared to {}", min_cdistext,
               min_distance_threshold);
-  if (min_cdistext < min_distance_threshold) {
+  if (min_cdistext > min_distance_threshold) {
     tooClose = true;
   }
 

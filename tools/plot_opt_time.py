@@ -4,7 +4,7 @@ from matplotlib import offsetbox
 
 # Step 1: Read the file and extract time values
 time_values = []
-with open("eon_orca_b3lyp_def2_svp_gpneb_low_force_conv.txt", "r") as file:
+with open("client_spdlog.log", "r") as file:
     for line in file:
         match = re.search(r"optimize time: (\d+\.\d+)s", line)
         if match:
