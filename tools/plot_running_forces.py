@@ -77,7 +77,7 @@ ax.text(
     iterations[-1],
     force_norms[-1],
     f"{max_energies[-1]:.4f}",
-    color=color[-1],
+    color="black",#color[-1],
     ha="left",
     va="bottom",
 )

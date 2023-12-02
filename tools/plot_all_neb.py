@@ -7,7 +7,7 @@ from cmcrameri import cm
 plt.style.use("bmh")
 
 # List all files matching the pattern 'neb_***.dat', excluding the last one
-file_paths = glob.glob("neb_*.dat")[:-1]
+file_paths = glob.glob("neb_*.dat")
 file_paths.sort()  # Sort the file paths to ensure correct order
 
 # Set up your figure and axes

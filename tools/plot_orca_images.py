@@ -27,7 +27,7 @@ def parse_file(filename):
             # Parse the image data
             parts = line.split()
             if len(parts) == 3:  # Ensure there are exactly 3 parts in the line
-                distance, energy_eh = float(parts[1]), float(parts[2])
+                distance, energy_eh = float(parts[0]), float(parts[2])
                 iterations[current_iteration].append((distance, energy_eh))
 
     return iterations
