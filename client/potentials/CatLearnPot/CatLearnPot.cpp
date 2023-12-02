@@ -21,9 +21,8 @@ CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
 
   // Import the required modules
   // GP Model
-  this->gpmod = gp_module.attr("get_default_model")(
-      a_params->catl_model, a_params->catl_prior, a_params->catl_use_deriv,
-      a_params->catl_use_fingerprint, a_params->catl_parallel);
+  this->m_gpmod =
+      gp_module.attr("get_default_model")("model"_a = a_params->catl_model);
 };
 
 void CatLearnPot::train_optimize(Eigen::MatrixXd features,
@@ -38,7 +37,7 @@ void CatLearnPot::force(long nAtoms, const double *positions,
   Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(
       const_cast<double *>(positions), 1, nAtoms * 3);
   py::tuple ef_and_unc =
-      (this->gpmod.attr("predict")(features, "get_variance"_a = true));
+      (this->m_gpmod.attr("predict")(features, "get_variance"_a = true, "get_derivatives"_a = true));
   auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
   auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
   auto gradients = ef_dat.block(0, 1, 1, nAtoms * 3);
