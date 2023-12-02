@@ -338,6 +338,14 @@ Parameters::Parameters() {
   Hforceconvergence = 0.01;
   grad2energyconvergence = 0.000001;
   grad2forceconvergence = 0.0001;
+
+  // [CatLearn] //
+  // No reasonable default for catl_path
+  catl_model = "gp";
+  catl_prior = "median";
+  catl_use_deriv = true;
+  catl_use_fingerprint = false;
+  catl_parallel = false;
 }
 
 string Parameters::toLowerCase(string s) {
@@ -598,6 +606,11 @@ int Parameters::load(FILE *file) {
     if (ini.FindKey("CatLearn") != -1) {
       // Case sensitive!!
       catl_path = ini.GetValue("CatLearn", "catl_path");
+      catl_model = ini.GetValue("CatLearn", "model", "catl_model");
+      catl_prior = ini.GetValue("CatLearn", "prior", "catl_prior");
+      catl_use_deriv = ini.GetValueB("CatLearn", "use_derivatives", "catl_deriv");
+      catl_use_fingerprint = ini.GetValueB("CatLearn", "use_fingerprint", "catl_fingerprint");
+      catl_parallel = ini.GetValueB("CatLearn", "parallel_hyperparameter_opt", "catl_parallel");
     }
     // [ASE_ORCA]
     if (ini.FindKey("ASE_ORCA") != -1) {
