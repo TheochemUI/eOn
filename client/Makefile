@@ -14,7 +14,7 @@ DEPFLAGS=-MMD
 #if building lammps with meam
 #LDFLAGS += potentials/LAMMPS/libmeam.a
 #LDFLAGS += potentials/LAMMPS/libreax.a
-LDFLAGS += -lcurl 
+LDFLAGS += -lcurl -ldl
 CXXFLAGS += -Wall -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors  $(OPT) #  -I flags depend on location of Python.h library
 
 #CXXFLAGS += -Wall -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors -lpython3 -I/export/tarpit/Python-3.7.4/ -I/export/tarpit/Python-3.7.4/Include/ $(OPT) #-I flags depend on location of Python.h library
