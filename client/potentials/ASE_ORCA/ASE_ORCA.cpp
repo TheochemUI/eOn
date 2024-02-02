@@ -22,10 +22,8 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
   py::object OrcaProfile = ase_orca.attr("OrcaProfile");
   py::object ORCA = ase_orca.attr("ORCA");
 
-  py::list orca_paths;
-  orca_paths.append(py::str(a_params->orca_path));
   std::string orca_simpleinput(fmt::format("ENGRAD {} {} {} {}", a_params->orca_pot, a_params->orca_basis, a_params->orca_grid, a_params->orca_extra_sline));
-  this->calc = ORCA("profile"_a = OrcaProfile(orca_paths),
+  this->calc = ORCA("profile"_a = OrcaProfile(py::str(a_params->orca_path)),
                     "orcasimpleinput"_a = orca_simpleinput,
                     "orcablocks"_a = py::str(fmt::format(
                         "%pal nprocs {} end",
