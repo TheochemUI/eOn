@@ -27,7 +27,7 @@ CatLearnPot::CatLearnPot(shared_ptr<Parameters> a_params)
 
 void CatLearnPot::train_optimize(Eigen::MatrixXd features,
                                  Eigen::MatrixXd targets) {
-  gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
+  m_gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
   return;
 }
 
