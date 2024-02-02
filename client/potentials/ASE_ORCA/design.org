@@ -7,7 +7,7 @@ annoyances. Just easier overall. In any case ~orca~ will be run in parallel. Her
 from ase.calculators.orca import OrcaProfile, ORCA
 import psutil
 from pathlib import Path
-EonOrcaProfile = OrcaProfile(["/home/rgoswami/Downloads/orca_5_0_4_linux_x86-64_openmpi411/orca"])
+EonOrcaProfile = OrcaProfile("/home/rgoswami/Downloads/orca_5_0_4_linux_x86-64_openmpi411/orca")
 calc = ORCA(profile=EonOrcaProfile,
             orcasimpleinput='ENGRAD B3LYP', # optional basis, e.g. def2-TZVP
             orcablocks=f'%pal nprocs {psutil.cpu_count(logical=False)} end',
