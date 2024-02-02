@@ -26,7 +26,6 @@ class CatLearnPot final : public SurrogatePotential {
 
 public:
   CatLearnPot(shared_ptr<Parameters> a_params);
-  py::object m_gpmod;
 
   // Functions
   void train_optimize(Eigen::MatrixXd a_features,
