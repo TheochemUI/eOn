@@ -218,7 +218,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   SPDLOG_DEBUG("{:>10} {:>12} {:>18} {:>20} {:>12} {:>12}", "iteration",
                "step size", params->optConvergenceMetricLabel,
                "max_uncertainity", "max image", "max energy");
-  SPDLOG_DEBUG("--------------------------------------------------------------------------------------------");
+  SPDLOG_DEBUG("---------------------------------------------------------------"
+               "-----------------------------");
 
   while (this->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
@@ -276,9 +277,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         break;
       } else if (objf->isConverged()) {
         if (params->nebClimbingImageMethod) {
-        SPDLOG_LOGGER_DEBUG(log, "NEB CI converged\n");
+          SPDLOG_LOGGER_DEBUG(log, "NEB CI converged\n");
         } else {
-        SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
+          SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
         }
         status = NEBStatus::GOOD;
         break;
@@ -287,9 +288,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     } else {
       if (objf->isConverged()) {
         if (params->nebClimbingImageMethod) {
-        SPDLOG_LOGGER_DEBUG(log, "NEB CI converged\n");
+          SPDLOG_LOGGER_DEBUG(log, "NEB CI converged\n");
         } else {
-        SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
+          SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
         }
         status = NEBStatus::GOOD;
         break;
