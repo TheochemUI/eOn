@@ -61,6 +61,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   bool pruneOK = false;
   double pruneIncrement = 0.3;
   // Tracking variables
+  std::vector<double> iterations_gp;
   std::vector<double> mae_energies;
   std::vector<double> true_force_norm_cis;
   std::vector<double> energy_variances;
@@ -130,23 +131,24 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         double rmsF_ci = true_force_ci_norm / std::sqrt(n_force_elements);
         double mae_energy = abs(true_energy - pred_energy);
         double maxF_ci = abs(true_forces.maxCoeff());
+        iterations_gp.push_back(n_gp);
         mae_energies.push_back(mae_energy);
         true_force_norm_cis.push_back(true_force_ci_norm);
         energy_variances.push_back(pred_energy_variance);
         rmsF_cis.push_back(rmsF_ci);
         maxF_cis.push_back(maxF_ci);
         // Display table header
-        SPDLOG_DEBUG("{:>10} {:>12} {:>18} {:>20} {:>12} {:>12}", "Iteration",
+        SPDLOG_TRACE("\n{:>10} {:>12} {:>18} {:>20} {:>12} {:>12} {:>12}", "Iteration",
                      "MAE Energy", "True Force Norm", "Energy Variance",
-                     "RMSF CI", "MaxF CI");
-        SPDLOG_DEBUG("---------------------------------------------------------"
-                     "------------------------------------------");
+                     "RMSF CI", "MaxF CI", "N_GP");
+        SPDLOG_TRACE("---------------------------------------------------------"
+                     "---------------------------------------------------------");
         // Display each row
         for (size_t idx = 0; idx < mae_energies.size(); ++idx) {
-          SPDLOG_DEBUG(
-              "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e}",
+          SPDLOG_TRACE(
+            "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e} {:12.4e}",
               idx + 1, mae_energies[idx], true_force_norm_cis[idx],
-              energy_variances[idx], rmsF_cis[idx], maxF_cis[idx]);
+              energy_variances[idx], rmsF_cis[idx], maxF_cis[idx], iterations_gp[idx]);
         }
 
         if ((rmsF_ci < 0.0003) || (maxF_ci < 0.0005)) {
