@@ -146,7 +146,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         // Display each row
         for (size_t idx = 0; idx < mae_energies.size(); ++idx) {
           SPDLOG_TRACE(
-            "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e} {:12.4e}",
+            "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e} {:>10}",
               idx + 1, mae_energies[idx], true_force_norm_cis[idx],
               energy_variances[idx], rmsF_cis[idx], maxF_cis[idx], iterations_gp[idx]);
         }
