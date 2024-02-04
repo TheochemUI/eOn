@@ -48,6 +48,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
                                                  surpot);
   auto start = std::chrono::steady_clock::now();
   auto status_neb{neb->compute()};
+  // Timer
   std::chrono::duration<double> elp_time =
       std::chrono::steady_clock::now() - start;
   SPDLOG_TRACE("Total Optimizer time for the NEB on the GP: {}s",
@@ -59,6 +60,12 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   bool retrainGPR = true;
   bool pruneOK = false;
   double pruneIncrement = 0.3;
+  // Tracking variables
+  std::vector<double> mae_energies;
+  std::vector<double> true_force_norm_cis;
+  std::vector<double> energy_variances;
+  std::vector<double> rmsF_cis;
+  std::vector<double> maxF_cis;
   while (job_not_finished) {
     n_gp++;
     if (n_gp > 750) {
@@ -123,10 +130,25 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         double rmsF_ci = true_force_ci_norm / std::sqrt(n_force_elements);
         double mae_energy = abs(true_energy - pred_energy);
         double maxF_ci = abs(true_forces.maxCoeff());
-        fmt::print(" mae_energy {}\n true_force_norm_ci {}\n energy_variance "
-                   "{}\n rmsF_ci {}\n maxF_ci {}\n",
-                   mae_energy, true_force_ci_norm, pred_energy_variance,
-                   rmsF_ci, maxF_ci);
+        mae_energies.push_back(mae_energy);
+        true_force_norm_cis.push_back(true_force_ci_norm);
+        energy_variances.push_back(pred_energy_variance);
+        rmsF_cis.push_back(rmsF_ci);
+        maxF_cis.push_back(maxF_ci);
+        // Display table header
+        SPDLOG_DEBUG("{:>10} {:>12} {:>18} {:>20} {:>12} {:>12}", "Iteration",
+                     "MAE Energy", "True Force Norm", "Energy Variance",
+                     "RMSF CI", "MaxF CI");
+        SPDLOG_DEBUG("---------------------------------------------------------"
+                     "------------------------------------------");
+        // Display each row
+        for (size_t idx = 0; idx < mae_energies.size(); ++idx) {
+          SPDLOG_DEBUG(
+              "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e}",
+              idx + 1, mae_energies[idx], true_force_norm_cis[idx],
+              energy_variances[idx], rmsF_cis[idx], maxF_cis[idx]);
+        }
+
         if ((rmsF_ci < 0.0003) || (maxF_ci < 0.0005)) {
           SPDLOG_INFO("Converged due to low force and energy differences on "
                       "true surface at the CI");
