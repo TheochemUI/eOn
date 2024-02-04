@@ -9,6 +9,28 @@
 #include <limits>
 #include <random>
 
+void writeDataToCSV(const std::string& filename,
+                    const std::vector<double>& iterations_gp,
+                    const std::vector<double>& mae_energies,
+                    const std::vector<double>& true_force_norm_cis,
+                    const std::vector<double>& energy_variances,
+                    const std::vector<double>& rmsF_cis,
+                    const std::vector<double>& maxF_cis) {
+    std::ofstream csvFile(filename, std::ios::out | std::ios::trunc);
+    csvFile << "Iteration,MAE Energy,True Force Norm,Energy Variance,RMSF CI,MaxF CI\n";
+    for (size_t i = 0; i < iterations_gp.size(); ++i) {
+        csvFile << fmt::format("{},{:.4e},{:.4e},{:.4e},{:.4e},{:.4e}\n",
+                            iterations_gp[i],
+                            mae_energies[i],
+                            true_force_norm_cis[i],
+                            energy_variances[i],
+                            rmsF_cis[i],
+                            maxF_cis[i]);
+    }
+
+    csvFile.close();
+}
+
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
   std::string reactantFilename =
@@ -137,6 +159,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         energy_variances.push_back(pred_energy_variance);
         rmsF_cis.push_back(rmsF_ci);
         maxF_cis.push_back(maxF_ci);
+        writeDataToCSV("conv_state_gp.csv", iterations_gp, mae_energies, true_force_norm_cis, energy_variances, rmsF_cis, maxF_cis);
+
         // Display table header
         SPDLOG_TRACE("\n{:>10} {:>12} {:>18} {:>20} {:>12} {:>12} {:>12}", "Iteration",
                      "MAE Energy", "True Force Norm", "Energy Variance",
