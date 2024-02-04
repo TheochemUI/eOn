@@ -58,7 +58,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   size_t n_gp{0};
   size_t n_skipat{5};
   bool retrainGPR = true;
-  bool pruneOK = false;
+  bool pruneOK = true;
   double pruneIncrement = 0.3;
   // Tracking variables
   std::vector<double> iterations_gp;
@@ -159,6 +159,13 @@ std::vector<std::string> GPSurrogateJob::run(void) {
           break;
         }
       } else {
+        if (iterations_gp.size() > 2) {
+          if ((n_gp > iterations_gp.front() + 3) && pruneOK) {
+            SPDLOG_INFO("Pruning since {} and we first converged at {}", n_gp, iterations_gp.front());
+            helper_functions::surrogate::pruneHighForceData(features, targets, n_gp - iterations_gp.front());
+            pruneOK = false;
+          }
+        }
         pyparams->nebClimbingImageMethod = true;
         pyparams->nebClimbingImageConvergedOnly = true;
         pyparams->gp_linear_path_always = false;
