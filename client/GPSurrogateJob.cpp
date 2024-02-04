@@ -76,6 +76,14 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         obj->setPotential(surpot);
       }
     }
+    if (n_gp > 20) {
+      // SPDLOG_TRACE("Using previous path due to enough data being present");
+      // pyparams->gp_linear_path_always = false;
+      if (n_gp % 4 == 0) {
+        SPDLOG_TRACE("Halving uncertainity");
+        pyparams->gp_uncertainity *= 0.5;
+      }
+    }
     if (!(pyparams->gp_linear_path_always) && retrainGPR) {
       SPDLOG_TRACE("Using previous path");
       neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
