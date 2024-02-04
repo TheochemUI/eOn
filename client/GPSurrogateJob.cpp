@@ -113,11 +113,9 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       neb->path[i]->matter2con(fileNEB);
     }
     fclose(fileNEB);
-
-    neb->printImageDataGP(true, 0, n_gp);
-
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
       if (pyparams->nebClimbingImageMethod) {
+        neb->printImageDataGP(true, 0, n_gp);
         double pred_energy =
             neb->path[neb->climbingImage]->getPotentialEnergy();
         double pred_energy_variance =
