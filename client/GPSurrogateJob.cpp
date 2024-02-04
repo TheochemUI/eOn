@@ -9,26 +9,24 @@
 #include <limits>
 #include <random>
 
-void writeDataToCSV(const std::string& filename,
-                    const std::vector<double>& iterations_gp,
-                    const std::vector<double>& mae_energies,
-                    const std::vector<double>& true_force_norm_cis,
-                    const std::vector<double>& energy_variances,
-                    const std::vector<double>& rmsF_cis,
-                    const std::vector<double>& maxF_cis) {
-    std::ofstream csvFile(filename, std::ios::out | std::ios::trunc);
-    csvFile << "Iteration,MAE Energy,True Force Norm,Energy Variance,RMSF CI,MaxF CI\n";
-    for (size_t i = 0; i < iterations_gp.size(); ++i) {
-        csvFile << fmt::format("{},{:.4e},{:.4e},{:.4e},{:.4e},{:.4e}\n",
-                            iterations_gp[i],
-                            mae_energies[i],
-                            true_force_norm_cis[i],
-                            energy_variances[i],
-                            rmsF_cis[i],
-                            maxF_cis[i]);
-    }
+void writeDataToCSV(const std::string &filename,
+                    const std::vector<double> &iterations_gp,
+                    const std::vector<double> &mae_energies,
+                    const std::vector<double> &true_force_norm_cis,
+                    const std::vector<double> &energy_variances,
+                    const std::vector<double> &rmsF_cis,
+                    const std::vector<double> &maxF_cis) {
+  std::ofstream csvFile(filename, std::ios::out | std::ios::trunc);
+  csvFile << "Iteration,MAE Energy,True Force Norm,Energy Variance,RMSF "
+             "CI,MaxF CI\n";
+  for (size_t i = 0; i < iterations_gp.size(); ++i) {
+    csvFile << fmt::format("{},{:.4e},{:.4e},{:.4e},{:.4e},{:.4e}\n",
+                           iterations_gp[i], mae_energies[i],
+                           true_force_norm_cis[i], energy_variances[i],
+                           rmsF_cis[i], maxF_cis[i]);
+  }
 
-    csvFile.close();
+  csvFile.close();
 }
 
 std::vector<std::string> GPSurrogateJob::run(void) {
@@ -159,20 +157,24 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         energy_variances.push_back(pred_energy_variance);
         rmsF_cis.push_back(rmsF_ci);
         maxF_cis.push_back(maxF_ci);
-        writeDataToCSV("conv_state_gp.csv", iterations_gp, mae_energies, true_force_norm_cis, energy_variances, rmsF_cis, maxF_cis);
+        writeDataToCSV("conv_state_gp.csv", iterations_gp, mae_energies,
+                       true_force_norm_cis, energy_variances, rmsF_cis,
+                       maxF_cis);
 
         // Display table header
-        SPDLOG_TRACE("\n{:>10} {:>12} {:>18} {:>20} {:>12} {:>12} {:>12}", "Iteration",
-                     "MAE Energy", "True Force Norm", "Energy Variance",
-                     "RMSF CI", "MaxF CI", "N_GP");
-        SPDLOG_TRACE("---------------------------------------------------------"
-                     "---------------------------------------------------------");
+        SPDLOG_TRACE("\n{:>10} {:>12} {:>18} {:>20} {:>12} {:>12} {:>12}",
+                     "Iteration", "MAE Energy", "True Force Norm",
+                     "Energy Variance", "RMSF CI", "MaxF CI", "N_GP");
+        SPDLOG_TRACE(
+            "---------------------------------------------------------"
+            "---------------------------------------------------------");
         // Display each row
         for (size_t idx = 0; idx < mae_energies.size(); ++idx) {
           SPDLOG_TRACE(
-            "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e} {:>10}",
+              "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e} {:>10}",
               idx + 1, mae_energies[idx], true_force_norm_cis[idx],
-              energy_variances[idx], rmsF_cis[idx], maxF_cis[idx], iterations_gp[idx]);
+              energy_variances[idx], rmsF_cis[idx], maxF_cis[idx],
+              iterations_gp[idx]);
         }
 
         if ((rmsF_ci < 0.0003) || (maxF_ci < 0.0005)) {
@@ -183,8 +185,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       } else {
         if (iterations_gp.size() > 2) {
           if ((n_gp > iterations_gp.front() + 3) && pruneOK) {
-            SPDLOG_INFO("Pruning since {} and we first converged at {}", n_gp, iterations_gp.front());
-            helper_functions::surrogate::pruneHighForceData(features, targets, n_gp - iterations_gp.front());
+            SPDLOG_INFO("Pruning since {} and we first converged at {}", n_gp,
+                        iterations_gp.front());
+            helper_functions::surrogate::pruneHighForceData(
+                features, targets, n_gp - iterations_gp.front());
             pruneOK = false;
           }
         }
