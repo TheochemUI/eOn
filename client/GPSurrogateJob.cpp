@@ -100,44 +100,35 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
       if (pyparams->nebClimbingImageMethod) {
-        // CI NEB converged
-        auto posv =
-            neb->path[neb->climbingImage]->getPositionsFreeV();
         double pred_energy =
             neb->path[neb->climbingImage]->getPotentialEnergy();
-        auto pred_forces = neb->path[neb->climbingImage]->getForcesFreeV();
+        double pred_energy_variance =
+            neb->path[neb->climbingImage]->getEnergyVariance();
         // Now get true energy, forces at CI
         neb->path[neb->climbingImage]->setPotential(pot);
         double true_energy =
             neb->path[neb->climbingImage]->getPotentialEnergy();
-        double rmse_energy = sqrt(abs(pow(true_energy, 2) - pow(pred_energy, 2))/2);
+        // np.abs(self.energy_pred-self.energy_true)<=2.0*unc_convergence
         auto true_forces = neb->path[neb->climbingImage]->getForcesFreeV();
-        // Do the check
-        if (((true_forces - pred_forces).norm() < params->nebConvergedForce) && (rmse_energy < 0.01)) {
+        double true_force_ci_norm = true_forces.norm();
+        size_t n_force_elements = true_forces.size();
+        double rmsF_ci = true_force_ci_norm / std::sqrt(n_force_elements);
+        double mae_energy = abs(true_energy - pred_energy);
+        double maxF_ci = abs(true_forces.maxCoeff());
+        fmt::print(" mae_energy {}\n true_force_norm_ci {}\n energy_variance "
+                   "{}\n rmsF_ci {}\n maxF_ci {}\n",
+                   mae_energy, true_force_ci_norm, pred_energy_variance,
+                   rmsF_ci, maxF_ci);
+        if ((rmsF_ci < 0.0003) || (maxF_ci < 0.0005)) {
+          SPDLOG_INFO("Converged due to low force and energy differences on "
+                      "true surface at the CI");
           break;
-          SPDLOG_INFO("Converged due to low force and energy differences on true surface at the CI");
-        } else {
-        SPDLOG_TRACE(
-            "Climbing image true energy is {} predicted {} true_forcenorm {}",
-            true_energy, pred_energy, true_forces.norm());
-          // Add the point obtained anyway
-          auto orig_size = targets.rows();
-          auto ncols = targets.cols();
-          features.conservativeResize(orig_size+1, Eigen::NoChange);
-          features.row(orig_size - 1) = posv;
-          targets.conservativeResize(orig_size+1, Eigen::NoChange);
-          targets.row(orig_size - 1)[0] = true_energy;
-          targets(orig_size - 1, Eigen::seqN(1, ncols - 1)) = true_forces * -1; // gradients
-          retrainGPR = true; // Adds data again later!
-          neb=std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
-                                                 surpot);
         }
       } else {
         pyparams->nebClimbingImageMethod = true;
         pyparams->nebClimbingImageConvergedOnly = true;
+        pyparams->gp_linear_path_always = false;
         retrainGPR = true;
-        pyparams->nebImages = params->nebImages;
-        neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
       }
     }
   }
