@@ -17,8 +17,8 @@ void writeDataToCSV(const std::string &filename,
                     const std::vector<double> &rmsF_cis,
                     const std::vector<double> &maxF_cis) {
   std::ofstream csvFile(filename, std::ios::out | std::ios::trunc);
-  csvFile << "Iteration,MAE Energy,True Force Norm,Energy Variance,RMSF "
-             "CI,MaxF CI\n";
+  csvFile << "Iteration,MAE_Energy,True_Force_Norm,Energy_Variance,RMSF_"
+             "CI,MaxF_CI\n";
   for (size_t i = 0; i < iterations_gp.size(); ++i) {
     csvFile << fmt::format("{},{:.4e},{:.4e},{:.4e},{:.4e},{:.4e}\n",
                            iterations_gp[i], mae_energies[i],
