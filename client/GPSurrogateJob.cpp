@@ -291,12 +291,16 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
-void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets, NudgedElasticBand* neb, double true_energy, Eigen::VectorXd true_forces) {
-        features.conservativeResize(features.rows()+1, Eigen::NoChange);
-        features.row(features.rows()-1) = neb->path[neb->climbingImage]->getPositionsV();
-        targets.conservativeResize(targets.rows()+1, Eigen::NoChange);
-        targets(targets.rows()-1, 0) = true_energy;
-        targets.block(targets.rows()-1, 1, 1, true_forces.size()) = -1 * true_forces;
+void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets,
+           NudgedElasticBand *neb, double true_energy,
+           Eigen::VectorXd true_forces) {
+  features.conservativeResize(features.rows() + 1, Eigen::NoChange);
+  features.row(features.rows() - 1) =
+      neb->path[neb->climbingImage]->getPositionsV();
+  targets.conservativeResize(targets.rows() + 1, Eigen::NoChange);
+  targets(targets.rows() - 1, 0) = true_energy;
+  targets.block(targets.rows() - 1, 1, 1, true_forces.size()) =
+      -1 * true_forces;
 }
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -330,7 +334,8 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
     std::uniform_int_distribution<> distrib(1, matobjs.size() - 2);
     int randomIndex = distrib(gen);
     candidate = *matobjs[randomIndex];
-    SPDLOG_INFO("Optimizer failed or points too close, picking random index {}", randomIndex);
+    SPDLOG_INFO("Optimizer failed or points too close, picking random index {}",
+                randomIndex);
   }
   // SPDLOG_INFO("Got {}", fmt::streamed(candidate.getPositionsFreeV()));
 
