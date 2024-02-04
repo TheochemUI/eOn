@@ -114,6 +114,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     }
     fclose(fileNEB);
 
+    neb->printImageDataGP(true, 0, n_gp);
+
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
       if (pyparams->nebClimbingImageMethod) {
         double pred_energy =

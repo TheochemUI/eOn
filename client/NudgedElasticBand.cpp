@@ -518,7 +518,8 @@ void NudgedElasticBand::updateForces(void) {
 }
 
 // Print NEB image data
-void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
+void NudgedElasticBand::printImageDataBase(const std::string &filename,
+                                           bool writeToFile) {
   double dist, distTotal = 0;
   AtomMatrix tangentStart =
       path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
@@ -532,13 +533,10 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   }
   if (writeToFile) {
     // Remove existing log file if it exists
-    auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
-    if (fs::exists(neb_dat_fs)) {
-      // SPDLOG_DEBUG(
-      //     "Removing the file since it exists, dropping existing logger");
-      fs::remove(neb_dat_fs);
+    if (fs::exists(filename)) {
+      fs::remove(filename);
     }
-    fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
+    fileLogger = spdlog::basic_logger_mt("file_logger", filename);
     fileLogger->set_pattern("%v");
   }
   for (long i = 0; i <= numImages + 1; i++) {
@@ -566,6 +564,17 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     }
   }
 }
+
+void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
+    std::string filename = fmt::format("neb_{:03}.dat", idx);
+    printImageDataBase(filename, writeToFile);
+}
+
+void NudgedElasticBand::printImageDataGP(bool writeToFile, size_t idx, size_t gpNumber) {
+    std::string filename = fmt::format("gp_{:03}_neb_{:03}.dat", gpNumber, idx);
+    printImageDataBase(filename, writeToFile);
+}
+
 
 // Estimate the barrier using a cubic spline
 void NudgedElasticBand::findExtrema(void) {
