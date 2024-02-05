@@ -140,6 +140,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
             neb->path[neb->climbingImage]->getPotentialEnergy();
         double pred_energy_variance =
             neb->path[neb->climbingImage]->getEnergyVariance();
+        auto pred_forces = neb->path[neb->climbingImage]->getForcesFreeV();
         // Now get true energy, forces at CI
         neb->path[neb->climbingImage]->setPotential(pot);
         double true_energy =
@@ -147,13 +148,16 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         // np.abs(self.energy_pred-self.energy_true)<=2.0*unc_convergence
         auto true_forces = neb->path[neb->climbingImage]->getForcesFreeV();
         double true_force_ci_norm = true_forces.norm();
+        double force_ci_norm_diff = (pred_forces - true_forces).norm();
         size_t n_force_elements = true_forces.size();
         double rmsF_ci = true_force_ci_norm / std::sqrt(n_force_elements);
+        // double rmsF_ci_diff = (true_forces - pred_forces).norm() / std::sqrt(n_force_elements);
         double mae_energy = abs(true_energy - pred_energy);
         double maxF_ci = abs(true_forces.maxCoeff());
         iterations_gp.push_back(n_gp);
         mae_energies.push_back(mae_energy);
-        true_force_norm_cis.push_back(true_force_ci_norm);
+        // true_force_norm_cis.push_back(true_force_ci_norm);
+        true_force_norm_cis.push_back(force_ci_norm_diff);
         energy_variances.push_back(pred_energy_variance);
         rmsF_cis.push_back(rmsF_ci);
         maxF_cis.push_back(maxF_ci);
@@ -163,7 +167,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
         // Display table header
         SPDLOG_TRACE("\n{:>10} {:>12} {:>18} {:>20} {:>12} {:>12} {:>12}",
-                     "Iteration", "MAE Energy", "True Force Norm",
+                     "Iteration", "MAE Energy", "Force Diff Norm",
                      "Energy Variance", "RMSF CI", "MaxF CI", "N_GP");
         SPDLOG_TRACE(
             "---------------------------------------------------------"
@@ -179,7 +183,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
         // 0.0003 Eh/Bohr is around 0.01543 eV/A
         // 0.0005 Eh/Bohr is around 0.02571 eV/A
-        if ((rmsF_ci < 0.01543) || (maxF_ci < 0.02571)) {
+        if ((mae_energies.back() < 0.01543) || (true_force_norm_cis.back() < 0.02571)) {
           SPDLOG_INFO("Converged due to low force and energy differences on "
                       "true surface at the CI");
           break;
