@@ -155,6 +155,11 @@ NudgedElasticBand::NudgedElasticBand(
   numImages = params->nebImages;
   k_u = params->nebKSPMax;
   k_l = params->nebKSPMin;
+  if (params->nebEnergyWeighted) {
+    ksp = k_l;
+  } else {
+    ksp = params->nebSpring;
+  }
   auto initialPassed = initPath.front();
   auto finalPassed = initPath.back();
   atoms = initialPassed->numberOfAtoms();
@@ -204,11 +209,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     refine_optim =
         helpers::create::mkOptim(objf, params->refineOptMethod, params);
   }
-  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
+  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s} {:>12s}", "iteration",
                "step size", params->optConvergenceMetricLabel, "max image",
-               "max energy");
-  SPDLOG_DEBUG(
-      "---------------------------------------------------------------\n");
+               "max energy", "spring_constant");
+  SPDLOG_DEBUG("---------------------------------------------------------------"
+               "------------------\n");
 
   while (this->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
@@ -253,9 +258,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                 path[0]->getPotentialEnergy();
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
-    SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
-                        iteration, stepSize, convergenceForce(), maxEnergyImage,
-                        dE);
+    SPDLOG_LOGGER_DEBUG(
+        log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4} {:>12.4}", iteration,
+        stepSize, convergenceForce(), maxEnergyImage, dE, this->ksp);
 
     if (pot->getType() == PotType::CatLearn) {
       if (objf->isUncertain()) {
@@ -411,22 +416,16 @@ void NudgedElasticBand::updateForces(void) {
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
     if (params->nebEnergyWeighted) {
-      forceSpring = springConstants[i - 1] *
-                    path[i]->pbc((posNext - pos) - (pos - posPrev));
+      this->ksp = springConstants[i - 1];
     } else {
-    forceSpring =
-        params->nebSpring * path[i]->pbc((posNext - pos) - (pos - posPrev));
+      this->ksp = params->nebSpring;
     }
+    forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
 
     // calculate the spring force
     distPrev = path[i]->pbc(posPrev - pos).squaredNorm();
     distNext = path[i]->pbc(posNext - pos).squaredNorm();
-    if (params->nebEnergyWeighted) {
-      forceSpringPar =
-          springConstants[i - 1] * (distNext - distPrev) * *tangent[i];
-    } else {
-    forceSpringPar = params->nebSpring * (distNext - distPrev) * *tangent[i];
-    }
+    forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
 
     if (params->nebDoublyNudged) {
       forceSpringPerp =
