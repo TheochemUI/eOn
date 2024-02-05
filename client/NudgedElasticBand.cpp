@@ -438,6 +438,7 @@ void NudgedElasticBand::updateForces(void) {
     }
 
     if (params->nebDoublyNudged) {
+      if (not params->nebEnergyWeighted) {
       forceSpringPerp =
           forceSpring -
           (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
@@ -451,6 +452,9 @@ void NudgedElasticBand::updateForces(void) {
             2.0 / M_PI *
             atan(pow(forcePerp.norm(), 2) / pow(forceSpringPerp.norm(), 2));
         forceDNEB *= switching;
+      }
+    } else {
+        SPDLOG_WARN("Not using doubly nudged since energy_weighted is set");
       }
     } else {
       forceDNEB.setZero();
@@ -467,7 +471,11 @@ void NudgedElasticBand::updateForces(void) {
     {
       // sum the spring and potential forces for the neb force
       if (params->nebElasticBand) {
+        if (not params->nebEnergyWeighted) {
         *projectedForce[i] = forceSpring + force;
+      } else {
+          SPDLOG_WARN("Not using elastic_band  since energy_weighted is set");
+        }
       } else {
         *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
       }
