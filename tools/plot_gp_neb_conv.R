@@ -22,7 +22,7 @@ plot_gp_neb_conv <- function(csv_path) {
     geom_hline(yintercept = 0.01, color = "red", linetype = "dashed") +
     scale_y_continuous(breaks = pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = pretty_breaks(n = 10)) +
-    labs(y = "MAE_Energy", x = "Iteration")
+    labs(y = "MAE Energy", x = "Iteration")
 
   # Plot for RMSF_CI
   plot_rmsf_ci <- ggplot(data, aes(x = Iteration, y = `RMSF_CI`)) +
@@ -31,10 +31,18 @@ plot_gp_neb_conv <- function(csv_path) {
     geom_hline(yintercept = 0.01543, color = "red", linetype = "dashed") +
     scale_y_continuous(breaks = pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = pretty_breaks(n = 10)) +
-    labs(y = "RMSF_CI", x = "Iteration")
+    labs(y = "RMSF CI", x = "Iteration")
+
+  plot_force_norm_diff <- ggplot(data, aes(x = Iteration, y = `Force_Diff_Norm`)) +
+    geom_point() +
+    geom_line() +
+    geom_hline(yintercept = 0.02571, color = "red", linetype = "dashed") +
+    scale_y_continuous(breaks = pretty_breaks(n = 10)) +
+    scale_x_continuous(breaks = pretty_breaks(n = 10)) +
+    labs(y = "||ForceDiff||", x = "Iteration")
 
   # Combine plots side by side
-  combined_plot <- plot_mae_energy + plot_rmsf_ci + plot_layout(ncol = 2)
+  combined_plot <- plot_mae_energy + plot_force_norm_diff + plot_layout(ncol = 2)
 
   # Add a combined title
   combined_plot <- combined_plot + plot_annotation(title = "GP NEB CI Convergence Plots", theme = theme(plot.title = element_text(hjust = 0.5)))
