@@ -209,11 +209,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     refine_optim =
         helpers::create::mkOptim(objf, params->refineOptMethod, params);
   }
-  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s} {:>12s}", "iteration",
+  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
                "step size", params->optConvergenceMetricLabel, "max image",
-               "max energy", "spring_constant");
-  SPDLOG_DEBUG("---------------------------------------------------------------"
-               "------------------\n");
+               "max energy");
+  SPDLOG_DEBUG(
+      "---------------------------------------------------------------\n");
 
   while (this->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
@@ -258,9 +258,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                 path[0]->getPotentialEnergy();
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
-    SPDLOG_LOGGER_DEBUG(
-        log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4} {:>12.4}", iteration,
-        stepSize, convergenceForce(), maxEnergyImage, dE, this->ksp);
+    SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
+                        iteration, stepSize, convergenceForce(), maxEnergyImage,
+                        dE);
 
     if (pot->getType() == PotType::CatLearn) {
       if (objf->isUncertain()) {
