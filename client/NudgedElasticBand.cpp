@@ -153,6 +153,8 @@ NudgedElasticBand::NudgedElasticBand(
     : params{parametersPassed},
       pot{potPassed} {
   numImages = params->nebImages;
+  k_u = params->nebKSPMax;
+  k_l = params->nebKSPMin;
   auto initialPassed = initPath.front();
   auto finalPassed = initPath.back();
   atoms = initialPassed->numberOfAtoms();
@@ -179,10 +181,9 @@ NudgedElasticBand::NudgedElasticBand(
   movedAfterForceCall = true;
 
   // Make sure that the endpoints know their energy
-  path[0]->getPotentialEnergy();
-  path[numImages + 1]->getPotentialEnergy();
+  E_ref = std::max(path[0]->getPotentialEnergy(),
+                   path[numImages + 1]->getPotentialEnergy());
   climbingImage = 0;
-
   return;
 }
 
@@ -325,6 +326,9 @@ void NudgedElasticBand::updateForces(void) {
   // variables for climbing image
   double maxEnergy;
 
+  // variables for the energy weighted springs
+  std::vector<double> springConstants(numImages + 2, k_l);
+
   // variables for force projections
   AtomMatrix force(atoms, 3), forcePerp(atoms, 3), forcePar(atoms, 3);
   AtomMatrix forceSpringPar(atoms, 3), forceSpring(atoms, 3),
@@ -341,6 +345,18 @@ void NudgedElasticBand::updateForces(void) {
     if (path[i]->getPotentialEnergy() > maxEnergy) {
       maxEnergy = path[i]->getPotentialEnergy();
       maxEnergyImage = i;
+    }
+  }
+
+  if (params->nebEnergyWeighted) {
+    for (int i = 1; i <= numImages; i++) {
+      double Ei = std::max(path[i]->getPotentialEnergy(),
+                           path[i - 1]->getPotentialEnergy());
+      if (Ei > E_ref) {
+        double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
+        springConstants[i] =
+            (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
+      } // else always k_l
     }
   }
 
@@ -394,13 +410,22 @@ void NudgedElasticBand::updateForces(void) {
     // calculate the force perpendicular to the tangent
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
+    if (params->nebEnergyWeighted) {
+      forceSpring =
+          springConstants[i] * path[i]->pbc((posNext - pos) - (pos - posPrev));
+    } else {
     forceSpring =
         params->nebSpring * path[i]->pbc((posNext - pos) - (pos - posPrev));
+    }
 
     // calculate the spring force
     distPrev = path[i]->pbc(posPrev - pos).squaredNorm();
     distNext = path[i]->pbc(posNext - pos).squaredNorm();
+    if (params->nebEnergyWeighted) {
+      forceSpringPar = springConstants[i] * (distNext - distPrev) * *tangent[i];
+    } else {
     forceSpringPar = params->nebSpring * (distNext - distPrev) * *tangent[i];
+    }
 
     if (params->nebDoublyNudged) {
       forceSpringPerp =
