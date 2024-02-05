@@ -7,7 +7,7 @@ from cmcrameri import cm
 plt.style.use("bmh")
 
 # Early ones are too large
-file_paths = glob.glob("gp_*_neb_*.dat")[3:]
+file_paths = glob.glob("gp_*_neb_*.dat")
 file_paths.sort()  # Sort the file paths to ensure correct order
 
 fig, ax = plt.subplots(figsize=(3.2, 2.5), dpi=200)
