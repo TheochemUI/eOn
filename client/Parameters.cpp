@@ -254,8 +254,8 @@ Parameters::Parameters() {
   nebElasticBand = false;
   nebConvergedForce = optConvergedForce;
   nebEnergyWeighted = false;
-  nebKSPMin = 0.01;
-  nebKSPMax = 0.1;
+  nebKSPMin = 0.97;
+  nebKSPMax = 9.7;
 
   // [Dynamics] //
   mdTimeStepInput = 1.0;
