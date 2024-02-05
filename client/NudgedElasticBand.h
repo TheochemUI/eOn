@@ -50,6 +50,7 @@ public:
 
   long maxEnergyImage;
   bool movedAfterForceCall;
+  double ksp;
   double k_u;   // Upper-bound value for the spring constant
   double k_l;   // Lower-bound value for the spring constant
   double E_ref; // Reference energy chosen to be equal to the max energy of the
