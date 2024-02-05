@@ -359,12 +359,12 @@ void NudgedElasticBand::updateForces(void) {
   // Energy weighted springs, calculated here since all the springs are used
   // internally
   if (params->nebEnergyWeighted) {
-    for (int i = 1; i <= numImages; i++) {
-      double Ei = std::max(path[i]->getPotentialEnergy(),
-                           path[i - 1]->getPotentialEnergy());
+    for (int idx = 1; idx <= numImages + 1; idx++) {
+      double Ei = std::max(path[idx]->getPotentialEnergy(),
+                           path[idx - 1]->getPotentialEnergy());
       if (Ei > E_ref) {
         double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
-        springConstants[i - 1] =
+        springConstants[idx - 1] =
             (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
       }                                          // else always k_l
     }
@@ -425,14 +425,17 @@ void NudgedElasticBand::updateForces(void) {
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
     if (params->nebEnergyWeighted) {
-      this->ksp = springConstants[i - 1];
+      double kspPrev =
+          (i > 1) ? springConstants[i - 2] : springConstants.front();
+      double kspNext =
+          (i < numImages) ? springConstants[i] : springConstants.front();
+      forceSpringPar =
+          ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
     } else {
       this->ksp = params->nebSpring;
-    }
-    forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
-
-    // calculate the spring force
     forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
+      forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
+    }
 
     if (params->nebDoublyNudged) {
       forceSpringPerp =
