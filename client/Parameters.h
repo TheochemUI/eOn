@@ -340,6 +340,10 @@ public:
   bool nebElasticBand;
   double nebConvergedForce; // force convergence criterion required for an
                             // optimization
+  // For energy weighted
+  double nebKSPMin;
+  double nebKSPMax;
+  bool nebEnergyWeighted;
 
   // [Molecular Dynamics] //
   double mdTimeStepInput;
