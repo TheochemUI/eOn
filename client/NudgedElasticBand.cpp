@@ -357,9 +357,9 @@ void NudgedElasticBand::updateForces(void) {
                            path[i - 1]->getPotentialEnergy());
       if (Ei > E_ref) {
         double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
-        springConstants[i] =
+        springConstants[i - 1] =
             (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
-      } // else always k_l
+      }                                          // else always k_l
     }
   }
 
@@ -414,8 +414,8 @@ void NudgedElasticBand::updateForces(void) {
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
     if (params->nebEnergyWeighted) {
-      forceSpring =
-          springConstants[i] * path[i]->pbc((posNext - pos) - (pos - posPrev));
+      forceSpring = springConstants[i - 1] *
+                    path[i]->pbc((posNext - pos) - (pos - posPrev));
     } else {
       forceSpring =
           params->nebSpring * path[i]->pbc((posNext - pos) - (pos - posPrev));
@@ -425,7 +425,8 @@ void NudgedElasticBand::updateForces(void) {
     distPrev = path[i]->pbc(posPrev - pos).squaredNorm();
     distNext = path[i]->pbc(posNext - pos).squaredNorm();
     if (params->nebEnergyWeighted) {
-      forceSpringPar = springConstants[i] * (distNext - distPrev) * *tangent[i];
+      forceSpringPar =
+          springConstants[i - 1] * (distNext - distPrev) * *tangent[i];
     } else {
       forceSpringPar = params->nebSpring * (distNext - distPrev) * *tangent[i];
     }
