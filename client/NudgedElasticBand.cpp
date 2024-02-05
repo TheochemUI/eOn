@@ -332,7 +332,9 @@ void NudgedElasticBand::updateForces(void) {
   double maxEnergy;
 
   // variables for the energy weighted springs
-  std::vector<double> springConstants(numImages + 2, k_l);
+  k_l = params->nebKSPMin;
+  k_u = params->nebKSPMax;
+  std::vector<double> springConstants(numImages + 1, k_l);
 
   // variables for force projections
   AtomMatrix force(atoms, 3), forcePerp(atoms, 3), forcePar(atoms, 3);
@@ -353,18 +355,6 @@ void NudgedElasticBand::updateForces(void) {
     }
   }
 
-  if (params->nebEnergyWeighted) {
-    for (int i = 1; i <= numImages; i++) {
-      double Ei = std::max(path[i]->getPotentialEnergy(),
-                           path[i - 1]->getPotentialEnergy());
-      if (Ei > E_ref) {
-        double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
-        springConstants[i - 1] =
-            (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
-      } // else always k_l
-    }
-  }
-
   for (long i = 1; i <= numImages; i++) {
     // set local variables
     force = path[i]->getForces();
@@ -374,6 +364,16 @@ void NudgedElasticBand::updateForces(void) {
     energy = path[i]->getPotentialEnergy();
     energyPrev = path[i - 1]->getPotentialEnergy();
     energyNext = path[i + 1]->getPotentialEnergy();
+
+    // Setup spring constant
+    if (params->nebEnergyWeighted) {
+      double Ei = std::max(energy, energyPrev);
+      if (Ei > E_ref) {
+        double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
+        springConstants[i - 1] =
+            (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
+      } // else k_l
+    }
 
     // determine the tangent
     if (params->nebOldTangent) {
