@@ -12,17 +12,17 @@
 void writeDataToCSV(const std::string &filename,
                     const std::vector<double> &iterations_gp,
                     const std::vector<double> &mae_energies,
-                    const std::vector<double> &true_force_norm_cis,
+                    const std::vector<double> &force_norm_cis,
                     const std::vector<double> &energy_variances,
                     const std::vector<double> &rmsF_cis,
                     const std::vector<double> &maxF_cis) {
   std::ofstream csvFile(filename, std::ios::out | std::ios::trunc);
-  csvFile << "Iteration,MAE_Energy,True_Force_Norm,Energy_Variance,RMSF_"
+  csvFile << "Iteration,MAE_Energy,Force_Diff_Norm,Energy_Variance,RMSF_"
              "CI,MaxF_CI\n";
   for (size_t i = 0; i < iterations_gp.size(); ++i) {
     csvFile << fmt::format("{},{:.4e},{:.4e},{:.4e},{:.4e},{:.4e}\n",
                            iterations_gp[i], mae_energies[i],
-                           true_force_norm_cis[i], energy_variances[i],
+                           force_norm_cis[i], energy_variances[i],
                            rmsF_cis[i], maxF_cis[i]);
   }
 
@@ -83,7 +83,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   // Tracking variables
   std::vector<double> iterations_gp;
   std::vector<double> mae_energies;
-  std::vector<double> true_force_norm_cis;
+  std::vector<double> force_norm_cis;
   std::vector<double> energy_variances;
   std::vector<double> rmsF_cis;
   std::vector<double> maxF_cis;
@@ -156,13 +156,13 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         double maxF_ci = abs(true_forces.maxCoeff());
         iterations_gp.push_back(n_gp);
         mae_energies.push_back(mae_energy);
-        // true_force_norm_cis.push_back(true_force_ci_norm);
-        true_force_norm_cis.push_back(force_ci_norm_diff);
+        // force_norm_cis.push_back(true_force_ci_norm);
+        force_norm_cis.push_back(force_ci_norm_diff);
         energy_variances.push_back(pred_energy_variance);
         rmsF_cis.push_back(rmsF_ci);
         maxF_cis.push_back(maxF_ci);
         writeDataToCSV("conv_state_gp.csv", iterations_gp, mae_energies,
-                       true_force_norm_cis, energy_variances, rmsF_cis,
+                       force_norm_cis, energy_variances, rmsF_cis,
                        maxF_cis);
 
         // Display table header
@@ -176,14 +176,14 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         for (size_t idx = 0; idx < mae_energies.size(); ++idx) {
           SPDLOG_TRACE(
               "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e} {:>10}",
-              idx + 1, mae_energies[idx], true_force_norm_cis[idx],
+              idx + 1, mae_energies[idx], force_norm_cis[idx],
               energy_variances[idx], rmsF_cis[idx], maxF_cis[idx],
               iterations_gp[idx]);
         }
 
         // 0.0003 Eh/Bohr is around 0.01543 eV/A
         // 0.0005 Eh/Bohr is around 0.02571 eV/A
-        if ((mae_energies.back() < 0.01543) || (true_force_norm_cis.back() < 0.02571)) {
+        if ((mae_energies.back() < 0.01543) || (force_norm_cis.back() < 0.02571)) {
           SPDLOG_INFO("Converged due to low force and energy differences on "
                       "true surface at the CI");
           break;
