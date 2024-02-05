@@ -177,7 +177,9 @@ std::vector<std::string> GPSurrogateJob::run(void) {
               iterations_gp[idx]);
         }
 
-        if ((rmsF_ci < 0.0003) || (maxF_ci < 0.0005)) {
+        // 0.0003 Eh/Bohr is around 0.01543 eV/A
+        // 0.0005 Eh/Bohr is around 0.02571 eV/A
+        if ((rmsF_ci < 0.01543) || (maxF_ci < 0.02571)) {
           SPDLOG_INFO("Converged due to low force and energy differences on "
                       "true surface at the CI");
           break;

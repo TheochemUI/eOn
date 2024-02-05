@@ -19,7 +19,7 @@ plot_gp_neb_conv <- function(csv_path) {
   plot_mae_energy <- ggplot(data, aes(x = Iteration)) +
     geom_point(aes(y = `MAE Energy`)) +
     geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0.1) +
-    geom_hline(yintercept = 0.001, color = "red", linetype = "dashed") +
+    geom_hline(yintercept = 0.01, color = "red", linetype = "dashed") +
     scale_y_continuous(breaks = pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = pretty_breaks(n = 10)) +
     labs(y = "MAE Energy", x = "Iteration")
@@ -28,7 +28,7 @@ plot_gp_neb_conv <- function(csv_path) {
   plot_rmsf_ci <- ggplot(data, aes(x = Iteration, y = `RMSF CI`)) +
     geom_point() +
     geom_line() +
-    geom_hline(yintercept = 0.003, color = "red", linetype = "dashed") +
+    geom_hline(yintercept = 0.01543, color = "red", linetype = "dashed") +
     scale_y_continuous(breaks = pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = pretty_breaks(n = 10)) +
     labs(y = "RMSF CI", x = "Iteration")
