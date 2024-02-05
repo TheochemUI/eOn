@@ -13,25 +13,25 @@ plot_gp_neb_conv <- function(csv_path) {
   data <- read_csv(csv_path)
 
   # Calculate upper and lower limits for the energy variance
-  data <- data %>% mutate(Upper = `MAE Energy` + `Energy Variance`, Lower = `MAE Energy` - `Energy Variance`)
+  data <- data %>% mutate(Upper = `MAE_Energy` + `Energy_Variance`, Lower = `MAE_Energy` - `Energy_Variance`)
 
-  # Plot for MAE Energy with Energy Variance
+  # Plot for MAE_Energy with Energy_Variance
   plot_mae_energy <- ggplot(data, aes(x = Iteration)) +
-    geom_point(aes(y = `MAE Energy`)) +
+    geom_point(aes(y = `MAE_Energy`)) +
     geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0.1) +
     geom_hline(yintercept = 0.01, color = "red", linetype = "dashed") +
     scale_y_continuous(breaks = pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = pretty_breaks(n = 10)) +
-    labs(y = "MAE Energy", x = "Iteration")
+    labs(y = "MAE_Energy", x = "Iteration")
 
-  # Plot for RMSF CI
-  plot_rmsf_ci <- ggplot(data, aes(x = Iteration, y = `RMSF CI`)) +
+  # Plot for RMSF_CI
+  plot_rmsf_ci <- ggplot(data, aes(x = Iteration, y = `RMSF_CI`)) +
     geom_point() +
     geom_line() +
     geom_hline(yintercept = 0.01543, color = "red", linetype = "dashed") +
     scale_y_continuous(breaks = pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = pretty_breaks(n = 10)) +
-    labs(y = "RMSF CI", x = "Iteration")
+    labs(y = "RMSF_CI", x = "Iteration")
 
   # Combine plots side by side
   combined_plot <- plot_mae_energy + plot_rmsf_ci + plot_layout(ncol = 2)
