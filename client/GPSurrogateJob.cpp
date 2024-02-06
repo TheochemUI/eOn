@@ -391,8 +391,9 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
     tooClose = true;
   }
 
-  // If too close or optimizer failed, select a random point along the path
-  if (tooClose || optfail) {
+  // If too close on the NEB, select a random point along the path
+  // This will likely only make sense for vanilla NEB
+  if (tooClose) {
     std::random_device rd;
     std::mt19937 gen(rd());
     // No endpoints
@@ -401,6 +402,9 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
     candidate = *matobjs[randomIndex];
     SPDLOG_INFO("Optimizer failed or points too close, picking random index {}",
                 randomIndex);
+  }
+  if (optfail) {
+    SPDLOG_INFO("Optimizer failed, continuing but things are likely wrong");
   }
   // SPDLOG_INFO("Got {}", fmt::streamed(candidate.getPositionsFreeV()));
 
