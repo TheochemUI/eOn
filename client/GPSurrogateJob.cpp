@@ -4,10 +4,13 @@
 #include "Eigen/src/Core/util/Constants.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
+#include "Parameters.h"
+#include "Potential.h"
 #include "SurrogatePotential.h"
 #include "helpers/Create.hpp"
 #include <limits>
 #include <random>
+#include <spdlog/spdlog.h>
 
 void writeDataToCSV(const std::string &filename,
                     const std::vector<double> &iterations_gp,
@@ -56,6 +59,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   SPDLOG_TRACE("Potential is {}",
                helper_functions::getPotentialName(pot->getType()));
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
+  SPDLOG_TRACE("Initial targets\n{}", fmt::streamed(targets));
 
   // Setup a GPR Potential
   auto surpot = helpers::create::makeSurrogatePotential(
@@ -91,8 +95,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     if (retrainGPR) {
       SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
       auto [feature, target] = helper_functions::surrogate::getNewDataPoint(
-          neb->path, pot, params->gp_mindist, surpot->failedOptim,
-          neb->climbingImage);
+          neb->path, pot, params->gp_mindist, surpot->failedOptim);
       helper_functions::eigen::addVectorRow(features, feature);
       helper_functions::eigen::addVectorRow(targets, target);
       surpot->train_optimize(features, targets);
@@ -155,9 +158,12 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         double force_ci_norm_diff = (pred_forces - true_forces).norm();
         size_t n_force_elements = true_forces.size();
         double rmsF_ci = true_force_ci_norm / std::sqrt(n_force_elements);
-        // double rmsF_ci_diff = (true_forces - pred_forces).norm() / std::sqrt(n_force_elements);
+        // double rmsF_ci_diff = (true_forces - pred_forces).norm() /
+        // std::sqrt(n_force_elements);
         double mae_energy = abs(true_energy - pred_energy);
         double maxF_ci = abs(true_forces.maxCoeff());
+        // TODO(rg): max over norm(atom_line)
+        // max (sq.rt(x^2 + y^2 + z^2))
         iterations_gp.push_back(n_gp);
         mae_energies.push_back(mae_energy);
         // force_norm_cis.push_back(true_force_ci_norm);
@@ -318,8 +324,7 @@ Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
   for (long idx{0}; idx < targets.rows(); idx++) {
     matobjs[idx]->setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
-    targets.block(idx, 1, 1, ncols - 1) =
-        matobjs[idx]->getForcesFree().array() * -1;
+    targets.block(idx, 1, 1, ncols - 1) = matobjs[idx]->getForcesFree().array();
   }
   SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
   return targets;
@@ -343,7 +348,7 @@ Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   m1.setPotential(true_pot);
   target(0) = m1.getPotentialEnergy();
   target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
-  // SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
+  SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
   return target;
 }
 std::pair<double, Eigen::VectorXd::Index>
@@ -355,8 +360,16 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
-  // SPDLOG_TRACE("Uncertainity along path is {}\nmax_index: {}, maxVal: {}",
-  //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
+  SPDLOG_TRACE("Uncertainity along path is {}\nmax_index: {}, maxVal: {}",
+               fmt::streamed(pathUncertainty), maxIndex, maxUnc);
+  SPDLOG_TRACE("Target at max uncertainity is energy {}\n forces {}",
+               matobjs[maxIndex + 1]->getPotentialEnergy(),
+               fmt::streamed(matobjs[maxIndex + 1]->getForcesFreeV()));
+  matobjs[maxIndex + 1]->setPotential(
+      makePotential(PotType::CUH2, make_shared<Parameters>()));
+  SPDLOG_TRACE("Target at max uncertainity should be energy {}\n forces {}",
+               matobjs[maxIndex + 1]->getPotentialEnergy(),
+               fmt::streamed(matobjs[maxIndex + 1]->getForcesFreeV()));
   return std::make_pair(maxUnc, maxIndex);
 }
 void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets,
@@ -373,17 +386,16 @@ void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets,
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot,
-                double min_distance_threshold, bool optfail,
-                int climbingImage) {
+                double min_distance_threshold, bool optfail) {
 
   Matter candidate{*matobjs.front()};
-  if (climbingImage != 0) {
-    candidate = *matobjs[climbingImage];
-    SPDLOG_INFO("Using the climbing image");
-  } else {
-    auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
-    candidate = *matobjs[maxIndex + 1];
-  }
+  // if (climbingImage != 0) {
+  //   candidate = *matobjs[climbingImage];
+  //   SPDLOG_INFO("Using the climbing image");
+  // } else {
+  auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
+  candidate = *matobjs[maxIndex + 1];
+  // }
 
   // Check if the point is too close to existing points
   bool tooClose = false;
