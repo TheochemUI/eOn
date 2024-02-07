@@ -514,6 +514,13 @@ void NudgedElasticBand::updateForces(void) {
     }
   }
 
+  if (path.size() > 1) {
+    path.front()->setForces(path.front()->getForces().setZero());
+    path.back()->setForces(path.front()->getForces().setZero());
+    projectedForce[0]->setZero();
+    projectedForce[path.size() - 1]->setZero();
+  }
+
   return;
 }
 

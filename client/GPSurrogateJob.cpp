@@ -106,9 +106,25 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     }
     if (!(pyparams->gp_linear_path_always) && retrainGPR) {
       SPDLOG_TRACE("Using previous path");
+      auto initial = std::make_shared<Matter>(pot, true_params);
+      initial->con2matter(reactantFilename);
+      auto final_state = std::make_shared<Matter>(pot, true_params);
+      final_state->con2matter(productFilename);
+      neb->path.front() = initial;
+      neb->path.back() = final_state;
+      SPDLOG_TRACE("Reactant energy is {} and product energy is {}",
+                   initial->getPotentialEnergy(),
+                   final_state->getPotentialEnergy());
       neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
     } else if (retrainGPR) {
       SPDLOG_TRACE("Using linear interpolation");
+      auto initial = std::make_shared<Matter>(pot, true_params);
+      initial->con2matter(reactantFilename);
+      auto final_state = std::make_shared<Matter>(pot, true_params);
+      final_state->con2matter(productFilename);
+      SPDLOG_TRACE("Reactant energy is {} and product energy is {}",
+                   initial->getPotentialEnergy(),
+                   final_state->getPotentialEnergy());
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                 surpot);
     }
