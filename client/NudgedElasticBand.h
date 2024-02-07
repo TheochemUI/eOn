@@ -50,6 +50,11 @@ public:
 
   long maxEnergyImage;
   bool movedAfterForceCall;
+  double ksp;
+  double k_u;   // Upper-bound value for the spring constant
+  double k_l;   // Lower-bound value for the spring constant
+  double E_ref; // Reference energy chosen to be equal to the max energy of the
+                // reactant or product energy minimum
 
 private:
   std::shared_ptr<Parameters> params;
@@ -61,7 +66,8 @@ class NEBObjectiveFunction : public ObjectiveFunction {
 public:
   NEBObjectiveFunction(NudgedElasticBand *nebPassed,
                        std::shared_ptr<Parameters> parametersPassed)
-      : ObjectiveFunction(nullptr, parametersPassed), neb{nebPassed} {}
+      : ObjectiveFunction(nullptr, parametersPassed),
+        neb{nebPassed} {}
   // This is the odd one out, doesn't take a Matter so we null it
 
   ~NEBObjectiveFunction(void){};
