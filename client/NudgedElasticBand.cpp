@@ -144,9 +144,10 @@ NudgedElasticBand::NudgedElasticBand(
 
   movedAfterForceCall = true;
 
+  SPDLOG_TRACE("GP Potential Reactant energy is {} and product energy is {}", path.front()->getPotentialEnergy(), path.back()->getPotentialEnergy());
   // Make sure that the endpoints know their energy
-  path[0]->getPotentialEnergy();
-  path[numImages + 1]->getPotentialEnergy();
+  E_ref = std::max(path.front()->getPotentialEnergy(),
+                   path.back()->getPotentialEnergy());
   climbingImage = 0;
 
   return;
@@ -191,9 +192,10 @@ NudgedElasticBand::NudgedElasticBand(
 
   movedAfterForceCall = true;
 
+  SPDLOG_TRACE("GP Potential Reactant energy is {} and product energy is {}", path.front()->getPotentialEnergy(), path.back()->getPotentialEnergy());
   // Make sure that the endpoints know their energy
-  E_ref = std::max(path[0]->getPotentialEnergy(),
-                   path[numImages + 1]->getPotentialEnergy());
+  E_ref = std::max(path.front()->getPotentialEnergy(),
+                   path.back()->getPotentialEnergy());
   climbingImage = 0;
   return;
 }

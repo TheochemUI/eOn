@@ -21,9 +21,8 @@ void writeDataToCSV(const std::string &filename,
              "CI,MaxF_CI\n";
   for (size_t i = 0; i < iterations_gp.size(); ++i) {
     csvFile << fmt::format("{},{:.4e},{:.4e},{:.4e},{:.4e},{:.4e}\n",
-                           iterations_gp[i], mae_energies[i],
-                           force_norm_cis[i], energy_variances[i],
-                           rmsF_cis[i], maxF_cis[i]);
+                           iterations_gp[i], mae_energies[i], force_norm_cis[i],
+                           energy_variances[i], rmsF_cis[i], maxF_cis[i]);
   }
 
   csvFile.close();
@@ -171,8 +170,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
         rmsF_cis.push_back(rmsF_ci);
         maxF_cis.push_back(maxF_ci);
         writeDataToCSV("conv_state_gp.csv", iterations_gp, mae_energies,
-                       force_norm_cis, energy_variances, rmsF_cis,
-                       maxF_cis);
+                       force_norm_cis, energy_variances, rmsF_cis, maxF_cis);
 
         // Display table header
         SPDLOG_TRACE("\n{:>10} {:>12} {:>18} {:>20} {:>12} {:>12} {:>12}",
@@ -192,7 +190,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
         // 0.0003 Eh/Bohr is around 0.01543 eV/A
         // 0.0005 Eh/Bohr is around 0.02571 eV/A
-        if ((mae_energies.back() < 0.01543) && (force_norm_cis.back() < 0.02571)) {
+        if ((mae_energies.back() < 0.01543) &&
+            (force_norm_cis.back() < 0.02571)) {
           SPDLOG_INFO("Converged due to low force and energy differences on "
                       "true surface at the CI");
           break;
@@ -441,7 +440,7 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   Eigen::VectorXd predEnergies(matobjs.size());
   Eigen::VectorXd trueEnergies(matobjs.size());
 
-  for (int idx = 0; idx < matobjs.size(); idx++) {
+  for (size_t idx = 0; idx < matobjs.size(); idx++) {
     predEnergies[idx] = matobjs[idx]->getPotentialEnergy();
     matobjs[idx]->setPotential(true_pot);
     trueEnergies[idx] = matobjs[idx]->getPotentialEnergy();
