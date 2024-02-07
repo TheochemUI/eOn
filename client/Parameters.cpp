@@ -253,6 +253,9 @@ Parameters::Parameters() {
   nebDoublyNudgedSwitching = false;
   nebElasticBand = false;
   nebConvergedForce = optConvergedForce;
+  nebEnergyWeighted = false;
+  nebKSPMin = 0.97;
+  nebKSPMax = 9.7;
 
   // [Dynamics] //
   mdTimeStepInput = 1.0;
@@ -780,6 +783,11 @@ int Parameters::load(FILE *file) {
         ini.GetValueB("Nudged Elastic Band", "elastic_band", nebElasticBand);
     nebConvergedForce = ini.GetValueF("Nudged Elastic Band", "converged_force",
                                       optConvergedForce);
+    nebEnergyWeighted =
+        ini.GetValueB("Nudged Elastic Band", "energy_weighted",
+                      nebEnergyWeighted);
+    nebKSPMin = ini.GetValueF("Nudged Elastic Band", "ew_ksp_min", nebKSPMin);
+    nebKSPMax = ini.GetValueF("Nudged Elastic Band", "ew_ksp_max", nebKSPMax);
 
     // [Dynamics] //
 
