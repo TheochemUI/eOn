@@ -96,7 +96,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     if (retrainGPR) {
       SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
       auto [feature, target] = helper_functions::surrogate::getNewDataPoint(
-          neb->path, pot, params->gp_mindist, surpot->failedOptim);
+          neb->path, pot, params->gp_mindist, surpot->failedOptim,
+          neb->climbingImage);
       helper_functions::eigen::addVectorRow(features, feature);
       helper_functions::eigen::addVectorRow(targets, target);
       surpot->train_optimize(features, targets);
@@ -386,10 +387,17 @@ void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets,
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot,
-                double min_distance_threshold, bool optfail) {
+                double min_distance_threshold, bool optfail,
+                int climbingImage) {
 
-  auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
-  Matter candidate{*matobjs[maxIndex + 1]};
+  Matter candidate{*matobjs.front()};
+  if (climbingImage != 0) {
+    candidate = *matobjs[climbingImage];
+    SPDLOG_INFO("Using the climbing image");
+  } else {
+    auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
+    candidate = *matobjs[maxIndex + 1];
+  }
 
   // Check if the point is too close to existing points
   bool tooClose = false;
