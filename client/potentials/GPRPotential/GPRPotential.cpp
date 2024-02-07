@@ -60,7 +60,7 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
 
   // FIXME: Test conversion, E should only have one element here
   *U = eg_obs.E[0];
-  *variance = var_obs.E[0];
+  *variance = var_obs.G.extractEigenVector().norm() + var_obs.E[0];
   // fmt::print("\n Got predicted energy from gpr {}\n", *U);
   // fmt::print("Got predicted variance [energy] from gpr {}\n", var_obs.E[0]);
 }
