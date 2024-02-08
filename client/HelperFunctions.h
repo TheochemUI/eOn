@@ -86,5 +86,6 @@ bool sortedR(const Matter &m1, const Matter &m2,
              const double distanceDifference);
 void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
+double computeMinInteratomicDistance(const std::shared_ptr<Matter> &matter);
 } // namespace helper_functions
 #endif

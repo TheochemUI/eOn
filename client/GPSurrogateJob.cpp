@@ -2,6 +2,7 @@
 #include "BaseStructures.h"
 #include "Eigen/src/Core/Matrix.h"
 #include "Eigen/src/Core/util/Constants.h"
+#include "HelperFunctions.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
 #include "Parameters.h"
@@ -52,6 +53,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   initial->con2matter(reactantFilename);
   auto final_state = std::make_shared<Matter>(pot, true_params);
   final_state->con2matter(productFilename);
+  SPDLOG_TRACE("Minimum interatomic distance in reactant is {} and for product is {}", helper_functions::computeMinInteratomicDistance(initial), helper_functions::computeMinInteratomicDistance(final_state));
   auto init_path = helper_functions::neb_paths::linearPath(
       *initial, *final_state, params->nebImages);
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
