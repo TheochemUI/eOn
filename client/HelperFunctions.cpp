@@ -784,20 +784,20 @@ void helper_functions::pushApart(std::shared_ptr<Matter> m1,
   }
 }
 
+double helper_functions::computeMinInteratomicDistance(
+    const std::shared_ptr<Matter> &matter) {
+  double minDistance = std::numeric_limits<double>::max();
+  long numAtoms = matter->numberOfAtoms();
 
-double helper_functions::computeMinInteratomicDistance(const std::shared_ptr<Matter>& matter) {
-    double minDistance = std::numeric_limits<double>::max();
-    long numAtoms = matter->numberOfAtoms();
-
-    // Iterate over all unique pairs of atoms
-    for (long i = 0; i < numAtoms - 1; ++i) {
-        for (long j = i + 1; j < numAtoms; ++j) {
-            double distance = matter->distance(i, j);
-            if (distance < minDistance) {
-                minDistance = distance;
-            }
-        }
+  // Iterate over all unique pairs of atoms
+  for (long i = 0; i < numAtoms - 1; ++i) {
+    for (long j = i + 1; j < numAtoms; ++j) {
+      double distance = matter->distance(i, j);
+      if (distance < minDistance) {
+        minDistance = distance;
+      }
     }
+  }
 
     return minDistance;
 }
