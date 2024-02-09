@@ -808,8 +808,8 @@ double helper_functions::computeMinInteratomicDistance(
 }
 
 void helper_functions::cuh2_scan_grid_surr(
-    const Matter refMat, const Eigen::VectorXd &hcu_dists,
-    const Eigen::VectorXd &hh_dists,
+    const size_t n_surrogate, const Eigen::VectorXd &hcu_dists,
+    const Eigen::VectorXd &hh_dists, const Matter refMat,
     const std::shared_ptr<SurrogatePotential> pot) {
   const Eigen::Matrix3d DEFAULT_BOX{{15.345599999999999, 0, 0},
                                     {0, 21.702000000000002, 0},
@@ -844,7 +844,7 @@ void helper_functions::cuh2_scan_grid_surr(
   }
   // Write results to CSV file
   std::string filename =
-      fmt::format("pot_{}_scan_cuh2.csv",
+      fmt::format("gp_{:03}_pot_{}_scan_cuh2.csv", n_surrogate,
                   helper_functions::getPotentialName(pot->getType()));
   std::ofstream csvFile(filename, std::ios::out | std::ios::trunc);
   if (!csvFile.is_open()) {
@@ -852,12 +852,12 @@ void helper_functions::cuh2_scan_grid_surr(
   }
 
   // Write the header
-  csvFile << "HCu_Distance,HH_Distance,Energy\n";
+  csvFile << "HCu_Distance,HH_Distance,Energy,Variance\n";
 
   // Write the data
   for (size_t i = 0; i < energyVector.size(); ++i) {
-    csvFile << fmt::format("{:.4f},{:.4f},{:.4e}\n", hcu_distVector[i],
-                           hh_distVector[i], energyVector[i]);
+    csvFile << fmt::format("{:.4f},{:.4f},{:.4e},{:.4e}\n", hcu_distVector[i],
+                           hh_distVector[i], energyVector[i], variVector[i]);
   }
 
   csvFile.close();

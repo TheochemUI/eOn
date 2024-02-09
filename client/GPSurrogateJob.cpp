@@ -142,6 +142,12 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       neb->path[i]->matter2con(fileNEB);
     }
     fclose(fileNEB);
+    // SurPot only works with free vectors!!
+    SPDLOG_TRACE("The potential is {}",
+                 helper_functions::getPotentialName(surpot->getType()));
+    helper_functions::cuh2_scan_grid_surr(
+        n_gp, Eigen::VectorXd::LinSpaced(60, -0.05, 5.1),
+        Eigen::VectorXd::LinSpaced(60, 0.4, 3.2), *initial, surpot);
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
       if (pyparams->nebClimbingImageMethod) {
         neb->printImageDataGP(true, 0, n_gp);
