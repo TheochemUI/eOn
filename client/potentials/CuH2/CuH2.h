@@ -29,5 +29,9 @@ public:
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+
+  static void peturb_positions(AtomMatrix &positions,
+                               const Eigen::VectorXi &atmNumVec,
+                               const double hcu_dist, const double hh_dist);
 };
 #endif

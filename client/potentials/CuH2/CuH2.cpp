@@ -55,3 +55,54 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
                     // the CuH2 slab
   return;
 }
+
+void CuH2::peturb_positions(AtomMatrix &positions,
+                            const Eigen::VectorXi &atmNumVec,
+                            const double hcu_dist, const double hh_dist) {
+  std::vector<int> hIndices, cuIndices;
+  for (int i = 0; i < atmNumVec.size(); ++i) {
+    if (atmNumVec[i] == 1) { // Hydrogen atom
+      hIndices.push_back(i);
+    } else if (atmNumVec[i] == 29) { // Copper atom
+      cuIndices.push_back(i);
+    } else {
+      throw std::runtime_error("Unexpected atomic number");
+    }
+  }
+
+  if (hIndices.size() != 2) {
+    throw std::runtime_error("Expected exactly two hydrogen atoms");
+  }
+
+  // Compute the midpoint of the hydrogens
+  Eigen::VectorXd hMidpoint =
+      (positions.row(hIndices[0]) + positions.row(hIndices[1])) / 2;
+
+  // Compute the HH direction
+  Eigen::VectorXd hh_direction;
+  if (positions(hIndices[0], 0) < positions(hIndices[1], 0)) {
+    hh_direction =
+        (positions.row(hIndices[1]) - positions.row(hIndices[0])).normalized();
+  } else {
+    hh_direction =
+        (positions.row(hIndices[0]) - positions.row(hIndices[1])).normalized();
+  }
+
+  // Set the new position of the hydrogens
+  positions.row(hIndices[0]) = hMidpoint - (0.5 * hh_dist) * hh_direction;
+  positions.row(hIndices[1]) = hMidpoint + (0.5 * hh_dist) * hh_direction;
+
+  // Find the z-coordinate of the topmost Cu layer
+  double maxCuZ = std::numeric_limits<double>::lowest();
+  for (int cuIndex : cuIndices) {
+    maxCuZ = std::max(maxCuZ, positions(cuIndex, 2));
+  }
+
+  // Compute the new z-coordinate for the H atoms
+  double new_z = maxCuZ + hcu_dist;
+
+  // Update the z-coordinates of the H atoms
+  for (int hIndex : hIndices) {
+    positions(hIndex, 2) = new_z;
+  }
+}
