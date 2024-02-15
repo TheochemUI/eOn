@@ -144,7 +144,9 @@ NudgedElasticBand::NudgedElasticBand(
 
   movedAfterForceCall = true;
 
-  SPDLOG_TRACE("GP Potential Reactant energy is {} and product energy is {}", path.front()->getPotentialEnergy(), path.back()->getPotentialEnergy());
+  SPDLOG_TRACE("GP Potential Reactant energy is {} and product energy is {}",
+               path.front()->getPotentialEnergy(),
+               path.back()->getPotentialEnergy());
   // Make sure that the endpoints know their energy
   E_ref = std::max(path.front()->getPotentialEnergy(),
                    path.back()->getPotentialEnergy());
@@ -192,7 +194,9 @@ NudgedElasticBand::NudgedElasticBand(
 
   movedAfterForceCall = true;
 
-  SPDLOG_TRACE("GP Potential Reactant energy is {} and product energy is {}", path.front()->getPotentialEnergy(), path.back()->getPotentialEnergy());
+  SPDLOG_TRACE("GP Potential Reactant energy is {} and product energy is {}",
+               path.front()->getPotentialEnergy(),
+               path.back()->getPotentialEnergy());
   // Make sure that the endpoints know their energy
   E_ref = std::max(path.front()->getPotentialEnergy(),
                    path.back()->getPotentialEnergy());
@@ -575,15 +579,15 @@ void NudgedElasticBand::printImageDataBase(const std::string &filename,
 }
 
 void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
-    std::string filename = fmt::format("neb_{:03}.dat", idx);
-    printImageDataBase(filename, writeToFile);
+  std::string filename = fmt::format("neb_{:03}.dat", idx);
+  printImageDataBase(filename, writeToFile);
 }
 
-void NudgedElasticBand::printImageDataGP(bool writeToFile, size_t idx, size_t gpNumber) {
-    std::string filename = fmt::format("gp_{:03}_neb_{:03}.dat", gpNumber, idx);
-    printImageDataBase(filename, writeToFile);
+void NudgedElasticBand::printImageDataGP(bool writeToFile, size_t idx,
+                                         size_t gpNumber) {
+  std::string filename = fmt::format("gp_{:03}_neb_{:03}.dat", gpNumber, idx);
+  printImageDataBase(filename, writeToFile);
 }
-
 
 // Estimate the barrier using a cubic spline
 void NudgedElasticBand::findExtrema(void) {
