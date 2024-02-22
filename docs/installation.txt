@@ -35,7 +35,7 @@ We recommend installing Eon to your ``$HOME`` folder. To download the
 latest developer version to your home folder::
 
     $ cd $HOME
-    $ svn co http://theory.cm.utexas.edu/svn/eon
+    $ svn co https://theory.cm.utexas.edu/svn/eon
 
 The directory ``$HOME/eon`` needs to be added to your ``$PYTHONPATH``
 environment variable. It is also recommended to add ``$HOME/eon/bin`` to your
