@@ -67,11 +67,11 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   SPDLOG_TRACE("Initial targets\n{}", fmt::streamed(targets));
 
   // Setup a GPR Potential
-  auto surpot = helpers::create::makeSurrogatePotential(
+  surpot = helpers::create::makeSurrogatePotential(
       params->surrogatePotential, params, initial);
   surpot->train_optimize(features, targets);
-  pyparams->nebClimbingImageMethod = false;
-  pyparams->nebClimbingImageConvergedOnly = false;
+  // pyparams->nebClimbingImageMethod = false;
+  // pyparams->nebClimbingImageConvergedOnly = false;
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                  surpot);
   auto start = std::chrono::steady_clock::now();
@@ -83,140 +83,64 @@ std::vector<std::string> GPSurrogateJob::run(void) {
                elp_time.count());
   bool job_not_finished{true};
   size_t n_gp{0};
-  bool retrainGPR = true;
-  // Tracking variables
-  std::vector<double> iterations_gp;
-  std::vector<double> mae_energies;
-  std::vector<double> force_norm_cis;
-  std::vector<double> energy_variances;
-  std::vector<double> rmsF_cis;
-  std::vector<double> maxF_cis;
   while (job_not_finished) {
     n_gp++;
     if (n_gp > 750) {
       SPDLOG_CRITICAL("Whoops, power level of problem too high!!");
       break;
     }
-    if (retrainGPR) {
-      SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
-      auto [feature, target] = helper_functions::surrogate::getNewDataPoint(
-          neb->path, pot, params->gp_mindist, surpot->failedOptim);
-      helper_functions::eigen::addVectorRow(features, feature);
-      helper_functions::eigen::addVectorRow(targets, target);
-      surpot->train_optimize(features, targets);
-      for (auto &&obj : neb->path) {
-        obj->setPotential(surpot);
-      }
-    }
-    if (!(pyparams->gp_linear_path_always) && retrainGPR) {
+    SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+    auto [feature, target] = helper_functions::surrogate::getNewDataPoint(
+        neb->path, pot, params->gp_mindist, surpot->failedOptim,
+        neb->climbingImage, features);
+    helper_functions::eigen::addVectorRow(features, feature);
+    helper_functions::eigen::addVectorRow(targets, target);
+    SPDLOG_TRACE("We have {} features and {} targets", features.rows(),
+                 targets.rows());
+    auto surpot = helpers::create::makeSurrogatePotential(
+        params->surrogatePotential, pyparams, initial);
+    surpot->train_optimize(features, targets);
+    if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
       SPDLOG_TRACE("Using previous path");
-      auto initial = std::make_shared<Matter>(pot, true_params);
-      initial->con2matter(reactantFilename);
-      auto final_state = std::make_shared<Matter>(pot, true_params);
-      final_state->con2matter(productFilename);
-      neb->path.front() = initial;
-      neb->path.back() = final_state;
-      SPDLOG_TRACE("Reactant energy is {} and product energy is {}",
-                   initial->getPotentialEnergy(),
-                   final_state->getPotentialEnergy());
       neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
-    } else if (retrainGPR) {
+    } else {
       SPDLOG_TRACE("Using linear interpolation");
-      auto initial = std::make_shared<Matter>(pot, true_params);
-      initial->con2matter(reactantFilename);
-      auto final_state = std::make_shared<Matter>(pot, true_params);
-      final_state->con2matter(productFilename);
-      SPDLOG_TRACE("Reactant energy is {} and product energy is {}",
-                   initial->getPotentialEnergy(),
-                   final_state->getPotentialEnergy());
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
                                                 surpot);
     }
+    auto status_neb{neb->compute()};
 
-    start = std::chrono::steady_clock::now();
-    status_neb = neb->compute();
-    elp_time = std::chrono::steady_clock::now() - start;
-    SPDLOG_TRACE("Total Optimizer time for the NEB on the GP: {}s",
-                 elp_time.count());
-    std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
-    returnFiles.push_back(nebFilename);
-    FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
-    for (long i = 0; i <= neb->numImages + 1; i++) {
-      neb->path[i]->matter2con(fileNEB);
-    }
-    fclose(fileNEB);
-    // SurPot only works with free vectors!!
+    // Print surface
     SPDLOG_TRACE("The potential is {}",
                  helper_functions::getPotentialName(surpot->getType()));
-    helper_functions::cuh2_scan_grid_surr(
+
+    Matter mat{*initial};
+    helper_functions::cuh2_scan_grid(
         n_gp, Eigen::VectorXd::LinSpaced(60, -0.05, 5.1),
-        Eigen::VectorXd::LinSpaced(60, 0.4, 3.2), *initial, surpot);
+        Eigen::VectorXd::LinSpaced(60, 0.4, 3.2), mat, pot);
+    helper_functions::cuh2_scan_grid(
+        n_gp, Eigen::VectorXd::LinSpaced(60, -0.05, 5.1),
+        Eigen::VectorXd::LinSpaced(60, 0.4, 3.2), mat, surpot);
+
+    SPDLOG_TRACE("Features are \n{}\nTargets are \n{}", fmt::streamed(features),
+                 fmt::streamed(targets));
+
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
-      if (pyparams->nebClimbingImageMethod) {
-        neb->printImageDataGP(true, 0, n_gp);
-        double pred_energy =
-            neb->path[neb->climbingImage]->getPotentialEnergy();
-        double pred_energy_variance =
-            neb->path[neb->climbingImage]->getEnergyVariance();
-        auto pred_forces = neb->path[neb->climbingImage]->getForcesFreeV();
-        // Now get true energy, forces at CI
-        neb->path[neb->climbingImage]->setPotential(pot);
-        double true_energy =
-            neb->path[neb->climbingImage]->getPotentialEnergy();
-        // np.abs(self.energy_pred-self.energy_true)<=2.0*unc_convergence
-        auto true_forces = neb->path[neb->climbingImage]->getForcesFreeV();
-        double true_force_ci_norm = true_forces.norm();
-        double force_ci_norm_diff = (pred_forces - true_forces).norm();
-        size_t n_force_elements = true_forces.size();
-        double rmsF_ci = true_force_ci_norm / std::sqrt(n_force_elements);
-        // double rmsF_ci_diff = (true_forces - pred_forces).norm() /
-        // std::sqrt(n_force_elements);
-        double mae_energy = abs(true_energy - pred_energy);
-        double maxF_ci = abs(true_forces.maxCoeff());
-        // TODO(rg): max over norm(atom_line)
-        // max (sq.rt(x^2 + y^2 + z^2))
-        iterations_gp.push_back(n_gp);
-        mae_energies.push_back(mae_energy);
-        // force_norm_cis.push_back(true_force_ci_norm);
-        force_norm_cis.push_back(force_ci_norm_diff);
-        energy_variances.push_back(pred_energy_variance);
-        rmsF_cis.push_back(rmsF_ci);
-        maxF_cis.push_back(maxF_ci);
-        writeDataToCSV("conv_state_gp.csv", iterations_gp, mae_energies,
-                       force_norm_cis, energy_variances, rmsF_cis, maxF_cis);
-
-        // Display table header
-        SPDLOG_TRACE("\n{:>10} {:>12} {:>18} {:>20} {:>12} {:>12} {:>12}",
-                     "Iteration", "MAE Energy", "Force Diff Norm",
-                     "Energy Variance", "RMSF CI", "MaxF CI", "N_GP");
-        SPDLOG_TRACE(
-            "---------------------------------------------------------"
-            "---------------------------------------------------------");
-        // Display each row
-        for (size_t idx = 0; idx < mae_energies.size(); ++idx) {
-          SPDLOG_TRACE(
-              "{:>10} {:>12.4e} {:>18.4e} {:>20.4e} {:>12.4e} {:>12.4e} {:>10}",
-              idx + 1, mae_energies[idx], force_norm_cis[idx],
-              energy_variances[idx], rmsF_cis[idx], maxF_cis[idx],
-              iterations_gp[idx]);
-        }
-
-        // 0.0003 Eh/Bohr is around 0.01543 eV/A
-        // 0.0005 Eh/Bohr is around 0.02571 eV/A
-        if ((mae_energies.back() < 0.01543) &&
-            (force_norm_cis.back() < 0.02571)) {
-          SPDLOG_INFO("Converged due to low force and energy differences on "
-                      "true surface at the CI");
-          break;
-        }
-      } else {
-        pyparams->nebClimbingImageMethod = true;
-        pyparams->nebClimbingImageConvergedOnly = true;
-        pyparams->gp_linear_path_always = false;
-        retrainGPR = true;
+      neb->path[neb->climbingImage]->setPotential(pot);
+      auto true_forces = neb->path[neb->climbingImage]->getForcesFreeV();
+      double maxForceNorm = true_forces.rowwise().norm().maxCoeff();
+      SPDLOG_TRACE("Maximum force norm on a single atom is {}", maxForceNorm);
+      // SPDLOG_TRACE("Got true force norm as {}", true_forces.norm());
+      if (maxForceNorm < 1e-3) {
+        SPDLOG_TRACE("Converged");
+        break;
       }
     }
   }
+
+  start = std::chrono::steady_clock::now();
+  status_neb = neb->compute();
+  elp_time = std::chrono::steady_clock::now() - start;
   // Just to get better images, will use the true potential
   pot->m_log->info("Switching to true potential for final extreum");
   for (auto &&obj : neb->path) {
@@ -394,55 +318,66 @@ void addCI(Eigen::MatrixXd &features, Eigen::MatrixXd &targets,
   targets.block(targets.rows() - 1, 1, 1, true_forces.size()) =
       -1 * true_forces;
 }
+
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot,
-                double min_distance_threshold, bool optfail) {
+                double min_distance_threshold, bool optfail, int climbingImage,
+                const Eigen::MatrixXd &features) {
 
-  Matter candidate{*matobjs.front()};
-  // if (climbingImage != 0) {
-  //   candidate = *matobjs[climbingImage];
-  //   SPDLOG_INFO("Using the climbing image");
-  // } else {
+  // Initially select a candidate based on maximum uncertainty
   auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
-  candidate = *matobjs[maxIndex + 1];
-  // }
+  Matter candidate = *matobjs[maxIndex + 1];
 
-  // Check if the point is too close to existing points
-  bool tooClose = false;
-  double min_cdistext = std::numeric_limits<double>::infinity();
-  for (const auto &existing_obj : matobjs) {
-    double cdistext = candidate.distanceTo(*existing_obj);
-    if (cdistext < 1e-8) { // the point itself
-      continue;
+  // Function to check if the candidate is too close to any existing point
+  auto isTooClose = [&matobjs, &candidate, min_distance_threshold]() {
+    for (const auto &existing_obj : matobjs) {
+      double distance = candidate.distanceTo(*existing_obj);
+      if (distance < min_distance_threshold) {
+        return true;
+      }
     }
-    min_cdistext = std::min(min_cdistext, cdistext);
-  }
-  SPDLOG_INFO("Got minimal distance {}, compared to {}", min_cdistext,
-              min_distance_threshold);
-  if (min_cdistext > min_distance_threshold) {
-    tooClose = true;
+    return false;
+  };
+
+  // Adjust the candidate if it's too close to existing points
+  double uniquenessThreshold = 0.1; // Adjust based on your dataset's scale
+  if (features.rows() > 0 &&
+      helper_functions::eigen::minEuclideanDist(
+          candidate.getPositionsFreeV(), features) < uniquenessThreshold) {
+    if (climbingImage > 0 && climbingImage < matobjs.size() - 1) {
+      // Consider the Climbing Image (CI) as a fallback
+      candidate = *matobjs[climbingImage];
+      if (isTooClose()) {
+        // Adjust from the Climbing Image by random draw if still too close
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distrib(-1, 1); // Include -1, 0, +1
+        int offset = distrib(gen);
+        int newIndex = std::clamp(climbingImage + offset, 1,
+                                  static_cast<int>(matobjs.size()) - 2);
+        candidate = *matobjs[newIndex];
+      }
+    } else {
+      // Select a random point if no CI or still too close
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      std::uniform_int_distribution<> distrib(1, matobjs.size() -
+                                                     2); // Avoid endpoints
+      int randomIndex = distrib(gen);
+      candidate = *matobjs[randomIndex];
+    }
   }
 
-  // If too close on the NEB, select a random point along the path
-  // This will likely only make sense for vanilla NEB
-  if (tooClose) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    // No endpoints
-    std::uniform_int_distribution<> distrib(1, matobjs.size() - 2);
-    int randomIndex = distrib(gen);
-    candidate = *matobjs[randomIndex];
-    SPDLOG_INFO("Optimizer failed or points too close, picking random index {}",
-                randomIndex);
-  }
+  // Log and continue if the optimizer failed previously
   if (optfail) {
     SPDLOG_INFO("Optimizer failed, continuing but things are likely wrong");
   }
-  // SPDLOG_INFO("Got {}", fmt::streamed(candidate.getPositionsFreeV()));
 
-  return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
-      candidate.getPositionsFreeV(), make_target(candidate, true_pot));
+  // Prepare and return the feature-target pair for the selected candidate
+  Eigen::VectorXd feature = candidate.getPositionsFreeV();
+  Eigen::VectorXd target = make_target(candidate, true_pot);
+  return {feature, target};
 }
 
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -521,4 +456,14 @@ void addVectorRow(Eigen::MatrixXd &data, const Eigen::VectorXd &newrow) {
   data.conservativeResize(data.rows() + 1, data.cols());
   data.row(data.rows() - 1) = newrow;
 }
+double minEuclideanDist(const Eigen::VectorXd &candidate,
+                        const Eigen::MatrixXd &features) {
+  double minDist = std::numeric_limits<double>::max();
+  for (int i = 0; i < features.rows(); ++i) {
+    double dist = (features.row(i) - candidate.transpose()).norm();
+    minDist = std::min(minDist, dist);
+  }
+  return minDist;
+}
+
 } // namespace helper_functions::eigen

@@ -21,7 +21,7 @@ plot_cuh2_pes <- function(csv_path) {
 plot_cuh2_pes <- ggplot(data, ggplot2::aes(x = HH_Distance, y = HCu_Distance, z = Energy)) + ggplot2::geom_raster(interpolate = T, ggplot2::aes(fill = Energy)) +
     ggplot2::geom_contour(color = "white") +
     ggplot2::scale_fill_gradientn(colors = khroma::color("batlow")(10)) +
-    ggplot2::labs(x = "H-H distance", y = "Cu-H2 distance", title = "CuH2 Potential Energy")
+    ggplot2::labs(x = "H-H distance", y = "Cu-H2 distance", title = "CuH2 Potential Energy (True)")
 
   # Define the output file name based on the input CSV file name
   output_file_name <- gsub("csv$", "pdf", basename(csv_path))

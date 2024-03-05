@@ -807,7 +807,7 @@ double helper_functions::computeMinInteratomicDistance(
   return minDistance;
 }
 
-void helper_functions::cuh2_scan_grid_surr(
+void helper_functions::cuh2_scan_grid(
     const size_t n_surrogate, const Eigen::VectorXd &hcu_dists,
     const Eigen::VectorXd &hh_dists, const Matter refMat,
     const std::shared_ptr<SurrogatePotential> pot) {
@@ -858,6 +858,59 @@ void helper_functions::cuh2_scan_grid_surr(
   for (size_t i = 0; i < energyVector.size(); ++i) {
     csvFile << fmt::format("{:.4f},{:.4f},{:.4e},{:.4e}\n", hcu_distVector[i],
                            hh_distVector[i], energyVector[i], variVector[i]);
+  }
+
+  csvFile.close();
+}
+
+void helper_functions::cuh2_scan_grid(
+    const size_t n_surrogate, const Eigen::VectorXd &hcu_dists,
+    const Eigen::VectorXd &hh_dists, const Matter refMat,
+    const std::shared_ptr<Potential> pot) {
+  const Eigen::Matrix3d DEFAULT_BOX{{15.345599999999999, 0, 0},
+                                    {0, 21.702000000000002, 0},
+                                    {0, 0, 100.00000000000000}};
+
+  std::vector<double> energyVector;
+  std::vector<double> hcu_distVector;
+  std::vector<double> hh_distVector;
+  Matter m1{refMat};
+  AtomMatrix curpos = refMat.getPositions();
+  const Eigen::VectorXi atmNumVec = refMat.getAtomicNrs();
+
+  // Create a potential
+  for (double hcu_dist : hcu_dists) {
+    for (double hh_dist : hh_dists) {
+      // Here, adjust the positions of the atoms based on hcu_dist and hh_dist
+      CuH2::peturb_positions(curpos, atmNumVec, hcu_dist, hh_dist);
+      m1.setPositions(curpos);
+
+      // Compute the energy for this configuration
+      auto [energy, forces] =
+          pot->get_ef(m1.getPositions(), atmNumVec, DEFAULT_BOX);
+
+      // Store the results
+      energyVector.push_back(energy);
+      hcu_distVector.push_back(hcu_dist);
+      hh_distVector.push_back(hh_dist);
+    }
+  }
+  // Write results to CSV file
+  std::string filename =
+      fmt::format("{:03}_pot_{}_scan_cuh2.csv", n_surrogate,
+                  helper_functions::getPotentialName(pot->getType()));
+  std::ofstream csvFile(filename, std::ios::out | std::ios::trunc);
+  if (!csvFile.is_open()) {
+    throw std::runtime_error("Failed to open file for writing: " + filename);
+  }
+
+  // Write the header
+  csvFile << "HCu_Distance,HH_Distance,Energy\n";
+
+  // Write the data
+  for (size_t i = 0; i < energyVector.size(); ++i) {
+    csvFile << fmt::format("{:.4f},{:.4f},{:.4e}\n", hcu_distVector[i],
+                           hh_distVector[i], energyVector[i]);
   }
 
   csvFile.close();
