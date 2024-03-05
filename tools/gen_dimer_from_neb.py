@@ -1,6 +1,6 @@
 import click
 import numpy as np
-from ase.io import read, write
+import ase.io
 
 
 def find_climbing_image(dat_file):
@@ -11,12 +11,17 @@ def find_climbing_image(dat_file):
     return ci_index
 
 
-def generate_dimer_inputs(neb_path_file, dat_file):
+def generate_dimer_inputs(
+    neb_path_file, dat_file, displacement_magnitude=0.01, box_size=10.0
+):
     ci_index = find_climbing_image(dat_file)
-    neb_path = read(neb_path_file, index=":")
+    neb_path = ase.io.read(neb_path_file, index=":")
 
     ci_atoms = neb_path[ci_index]
-    write("pos.con", ci_atoms)
+    # Set a large box around the atoms to prevent unwanted interactions
+    ci_atoms.set_cell([box_size, box_size, box_size])
+    ci_atoms.center()
+    ase.io.write("pos.con", ci_atoms)
 
     # Calculate displacement vector based on difference with next or previous image
     if ci_index > 0:
@@ -26,15 +31,22 @@ def generate_dimer_inputs(neb_path_file, dat_file):
         next_image = neb_path[ci_index + 1]
         displacement_vector = next_image.positions - ci_atoms.positions
 
-    # Apply displacement to CI atoms for displacement.con
-    displaced_atoms = ci_atoms.copy()
-    displaced_atoms.positions += displacement_vector
-    write("displacement.con", displaced_atoms)
-
     # Normalize and save the displacement vector as direction.dat
     norm_displacement_vector = (
         displacement_vector / np.linalg.norm(displacement_vector, axis=1)[:, None]
     )
+
+    # Scale to fixed magnitude
+    scaled_displacement_vector = norm_displacement_vector * displacement_magnitude
+
+    # Apply displacement to CI atoms for displacement.con
+    displaced_atoms = ci_atoms.copy()
+    displaced_atoms.set_cell([box_size, box_size, box_size])
+    displaced_atoms.center()
+    displaced_atoms.positions += scaled_displacement_vector
+    ase.io.write("displacement.con", displaced_atoms)
+
+    # Save the scaled displacement vector
     np.savetxt("direction.dat", norm_displacement_vector, fmt="%f")
 
 
