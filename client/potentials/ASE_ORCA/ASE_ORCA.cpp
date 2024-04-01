@@ -23,12 +23,12 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
   py::object OrcaProfile = ase_orca.attr("OrcaProfile");
   py::object ORCA = ase_orca.attr("ORCA");
 
-  std::string orca_simpleinput(fmt::format("ENGRAD {} {} {} {} UHF NOSOSCF", a_params->orca_pot, a_params->orca_basis, a_params->orca_grid, a_params->orca_extra_sline));
+  std::string orca_simpleinput(fmt::format("{}", a_params->orca_extra_sline));
   this->calc = ORCA("profile"_a = OrcaProfile(py::str(a_params->orca_path)),
                     "orcasimpleinput"_a = orca_simpleinput,
                     "orcablocks"_a = py::str(fmt::format(
-                        "%pal nprocs {} end",
-                        py::cast<int>(psutil.attr("cpu_count")(false)))),
+                        "%pal nprocs 4 end")),
+                        // py::cast<int>(psutil.attr("cpu_count")(false)))),
                     "directory"_a = ".");
 };
 

@@ -19,7 +19,11 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> a_matter,
   }
   m_init_middle_point.clear();
   m_init_middle_point.R = m_R_init;
-  m_init_observations.clear();
+  // TODO: This is now conditional! Only if there's no existing data.
+  // HACK: Obviously this can be improved, add it as a parameter, check for existence etc.
+  // m_init_observations.clear();
+  // m_problem_setup.cutOffEnergy(E_level, middle_point.E);
+
   m_problem_setup.activateFrozenAtoms(m_R_init, params->gprActiveRadius,
                                       m_atoms_config);
   m_orient_init.clear();
