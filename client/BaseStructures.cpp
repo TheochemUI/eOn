@@ -380,6 +380,8 @@ OptType getOptType(std::string a_oname) {
     return OptType::LBFGS;
   } else if (a_oname == "fire"s) {
     return OptType::FIRE;
+  } else if (a_oname == "sd"s) {
+    return OptType::SteepestDescent;
   } else if (a_oname == "none"s) {
     return OptType::None;
   } else if (a_oname == "unknown"s) {
