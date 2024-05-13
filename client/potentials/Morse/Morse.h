@@ -23,8 +23,13 @@
 class Morse : public Potential {
 public:
   Morse(std::shared_ptr<Parameters> params)
-      : Potential(params), De_{0.7102}, a_{1.6047}, re_{2.8970}, cutoff_{
-                                                                     9.5} {};
+      : Potential(params),
+        De_{0.7102},
+        a_{1.6047},
+        re_{2.8970},
+        cutoff_{9.5} {
+    setParameters(De_, a_, re_, cutoff_);
+  };
   // Parameters De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
   // Morse(double re, double De, double a, double cutoff);
   void cleanMemory(void); // required by PotentialsInterface
