@@ -50,7 +50,7 @@ void Morse::force(long N, const double *R, const int *, double *F, double *U,
                   double *variance, const double *box) {
   variance = nullptr;
   assert((box[0] > 0) and (box[4] > 0) and (box[8] > 0));
-  double diffR = 0, diffRX, diffRY, diffRZ;
+  double diffR = 0, diffRX{0}, diffRY{0}, diffRZ{0};
   *U = 0;
   for (int i = 0; i < N; i++) {
     F[3 * i] = 0;
@@ -73,7 +73,7 @@ void Morse::force(long N, const double *R, const int *, double *F, double *U,
       diffR = sqrt(diffRX * diffRX + diffRY * diffRY + diffRZ * diffRZ);
       assert(std::isnormal(diffR));
       if (diffR < cutoff_) {
-        double force, energy;
+        double force{0}, energy{0};
         morse(diffR, energy, force);
         *U += energy;
         F[3 * i] += force * diffRX / diffR;
