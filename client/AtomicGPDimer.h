@@ -24,18 +24,19 @@ public:
   static const char OPT_SCG[];
   static const char OPT_LBFGS[];
 
-  AtomicGPDimer(Matter *matter, Parameters *parameters);
-  ~AtomicGPDimer();
+  AtomicGPDimer(std::shared_ptr<Matter> matter,
+                std::shared_ptr<Parameters> params,
+                std::shared_ptr<Potential> pot);
+  ~AtomicGPDimer() = default;
 
-  void compute(Matter *matter, AtomMatrix initialDirectionMatrix);
+  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
 private:
-  Matter *matterCenter;       // initial center of the dimer
+  std::shared_ptr<Matter> matterCenter;       // initial center of the dimer
   AtomMatrix direction;       // direction along the dimer
   AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation
-  Parameters *parameters;
 
   gpr::InputParameters p;
   atmd::AtomicDimer atomic_dimer;
