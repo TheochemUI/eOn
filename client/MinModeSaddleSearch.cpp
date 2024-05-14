@@ -168,7 +168,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(
   }
 #ifdef WITH_GPRD
   else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    minModeMethod = new AtomicGPDimer(matter, params);
+    minModeMethod = std::make_shared<AtomicGPDimer>(matter, params, pot);
   }
 #endif
 }

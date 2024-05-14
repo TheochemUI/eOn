@@ -17,22 +17,21 @@
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
-AtomicGPDimer::AtomicGPDimer(Matter *matter, Parameters *params) {
-  parameters = params;
-  matterCenter = new Matter(parameters);
+AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
+                 std::shared_ptr<Parameters> params,
+                 std::shared_ptr<Potential> pot)
+    : LowestEigenmode(pot, params) {
+  matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
-  p = helper_functions::eon_parameters_to_gpr(params);
+  p = helper_functions::eon_parameters_to_gpr(params.get());
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = matter->getCell()(i);
   }
 }
 
-AtomicGPDimer::~AtomicGPDimer() { delete matterCenter; }
-
-void AtomicGPDimer::compute(Matter *matter,
+void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
-  atoms_config = helper_functions::eon_matter_to_atmconf(matter);
-  *matterCenter = *matter;
+  atoms_config = helper_functions::eon_matter_to_atmconf(matter.get());
   // R_init.resize(1, matterCenter->getPositionsFree().size());
   // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());
   R_init.resize(1, matterCenter->getPositionsFree().rows() *
@@ -46,7 +45,7 @@ void AtomicGPDimer::compute(Matter *matter,
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
-  problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
+  problem_setup.activateFrozenAtoms(R_init, params->gprActiveRadius,
                                     atoms_config);
   orient_init.clear();
   orient_init.resize(matterCenter->getPositionsFree().rows(),
@@ -73,12 +72,14 @@ void AtomicGPDimer::compute(Matter *matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
-  Potential *potential = Potential::getPotential(parameters);
-  atomic_dimer.execute(*potential);
+  // Potential *potential = Potential::getPotential(parameters);
+  auto potential = helper_functions::makePotential(params);
+  atomic_dimer.execute(*potential.get());
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();
   this->totalForceCalls = atomic_dimer.getTotalForceCalls();
+  pot->forceCallCounter = atomic_dimer.getTotalForceCalls();
   return;
 }
 
