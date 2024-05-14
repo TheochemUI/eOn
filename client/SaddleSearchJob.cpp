@@ -61,8 +61,8 @@ std::vector<std::string> SaddleSearchJob::run(void) {
 int SaddleSearchJob::doSaddleSearch() {
   Matter matterTemp(pot, params);
   long status;
-  int f1;
-  // f1 = Potential::fcalls;
+  int f1{0};
+  f1 = this->pot->forceCallCounter;
   try {
     status = saddleSearch->run();
   } catch (int e) {
@@ -75,10 +75,10 @@ int SaddleSearchJob::doSaddleSearch() {
   }
 
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    // fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this
+    fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this
     // works
   } else {
-    // fCallsSaddle += Potential::fcalls - f1;
+    fCallsSaddle += this->pot->forceCallCounter - f1;
   }
 
   return status;
@@ -100,11 +100,11 @@ void SaddleSearchJob::saveData(int status) {
   fprintf(fileResults, "%s potential_type\n",
           helper_functions::getPotentialName(params->potential).c_str());
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    fprintf(fileResults, "%d total_force_calls\n", saddleSearch->forcecalls);
+    // fprintf(fileResults, "%d total_force_calls\n", saddleSearch->forcecalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
   } else {
-    // fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
+    fprintf(fileResults, "%d total_force_calls\n", this->pot->forceCallCounter);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
   }
