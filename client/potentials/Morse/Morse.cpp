@@ -27,8 +27,6 @@
       http://en.wikipedia.org/wiki/Morse_potential .
       */
 
-void Morse::cleanMemory(void) { return; }
-
 void Morse::setParameters(double De, double a, double re, double cutoff) {
   re_ = re;
   De_ = De;
