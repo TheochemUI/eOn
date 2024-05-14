@@ -32,7 +32,6 @@ public:
   };
   // Parameters De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
   // Morse(double re, double De, double a, double cutoff);
-  void cleanMemory(void); // required by PotentialsInterface
   void force(long N, const double *R, const int *, double *F, double *U,
              double *variance, const double *box) override;
   void setParameters(double De, double a, double re, double cutoff);
