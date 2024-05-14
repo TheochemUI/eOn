@@ -11,11 +11,11 @@
 class Potential {
 protected:
   PotType ptype;
-  size_t forceCallCounter;
   std::shared_ptr<Parameters> m_params;
   std::shared_ptr<spdlog::logger> m_log;
 
 public:
+  size_t forceCallCounter;
   Potential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
       : ptype{a_ptype},
         forceCallCounter{0},
