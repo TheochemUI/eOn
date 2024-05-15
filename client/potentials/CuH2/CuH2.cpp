@@ -19,31 +19,39 @@ void CuH2::cleanMemory(void) { return; }
 void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
                  double *U, double *variance, const double *box) {
   variance = nullptr;
-  std::multiset<double> natmc;
+  std::multiset<int> natmc;
   int natms[2]{0, 0}; // Always Cu, then H
   int ndim{3 * static_cast<int>(N)};
-  for (auto idx{0}; idx < N; idx++) {
+
+  for (long idx{0}; idx < N; ++idx) {
     natmc.insert(atomicNrs[idx]);
   }
-  if (natmc.count(29) <= 0 || natmc.count(1) <= 0) {
+
+#ifndef NDEBUG
+  // Check for Copper (29) and Hydrogen (1)
+  if (natmc.count(29) == 0 || natmc.count(1) == 0) {
     throw std::runtime_error("The system does not have Copper or Hydrogen, but "
                              "the CuH2 potential was requested");
   }
-  natms[0] = natmc.count(29); // Cu
-  natms[1] = natmc.count(1);  // H
+#endif
+
+  // Count Copper (29) and Hydrogen (1)
+  natms[0] = static_cast<int>(natmc.count(29)); // Cu
+  natms[1] = static_cast<int>(natmc.count(1));  // H
+
+#ifndef NDEBUG
+  // Check for other atom types
   if (natms[0] + natms[1] != N) {
     throw std::runtime_error("The system has other atom types, but the CuH2 "
                              "potential was requested");
   }
+#endif
 
   // The box only takes the diagonal (assumes cubic)
   double box_eam[]{box[0], box[4], box[8]};
 
   c_force_eam(natms, ndim, box_eam, const_cast<double *>(R), F, U);
-  *U -= -697.311695;
-
-  // for(int i=0; i<N; i++){
-  //     std::cout<<F[ 3*i ]<<" "<<F[3*i+1]<<" "<<F[3*i+2]<<"\n";
-  // }
+  *U += 697.311695; // Adjust U by a constant value, approximately minimum for
+                    // the CuH2 slab
   return;
 }
