@@ -151,12 +151,12 @@ eonclient_sources = [
 # ------------------- Options
 
 if get_option('with_gprd')
-  libgprd_proj = subproject('gprdimer')
+  libgprd_proj = subproject('gpr_optim')
   gprd_dep = libgprd_proj.get_variable('libgprd_dep')
-  subdir('potentials/GPRPotential')
-  potentials += [ gprpot ]
+  # subdir('potentials/GPRPotential')
+  # potentials += [ gprpot ]
   _args += ['-DWITH_GPRD']
-  eonclient_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
+  eonclib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
   _deps += [ gprd_dep ]
 endif
 
