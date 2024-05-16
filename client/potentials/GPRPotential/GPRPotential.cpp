@@ -25,7 +25,12 @@ void GPRPotential::train_optimize(Eigen::MatrixXd a_features,
   obs.E.assignFromEigenMatrix(energies);
   obs.R.assignFromEigenMatrix(a_features);
   obs.G.assignFromEigenMatrix(gradients);
-  m_gprm.setHyperparameters(obs, m_atmconf);
+  bool update_sexpat_param = false;
+  if (m_atmconf.n_pt >
+      m_gprm.getSexpAtCovarianceFunction()->getLengthScaleRef().getNumCols()) {
+    update_sexpat_param = true;
+  }
+  m_gprm.setHyperparameters(obs, m_atmconf, update_sexpat_param);
   m_gprm.optimize(obs);
   this->failedOptim = m_gprm.failedOptimizer;
   return;
