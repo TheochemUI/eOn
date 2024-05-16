@@ -100,11 +100,11 @@ void SaddleSearchJob::saveData(int status) {
   fprintf(fileResults, "%s potential_type\n",
           helper_functions::getPotentialName(params->potential).c_str());
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    // fprintf(fileResults, "%d total_force_calls\n", saddleSearch->forcecalls);
+    fprintf(fileResults, "%li total_force_calls\n", this->pot->forceCallCounter);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
   } else {
-    fprintf(fileResults, "%d total_force_calls\n", this->pot->forceCallCounter);
+    fprintf(fileResults, "%li total_force_calls\n", this->pot->forceCallCounter);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
   }
