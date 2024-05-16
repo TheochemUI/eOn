@@ -51,8 +51,8 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
   double box_eam[]{box[0], box[4], box[8]};
 
   c_force_eam(natms, ndim, box_eam, const_cast<double *>(R), F, U);
-  *U += 697.311695; // Adjust U by a constant value, approximately minimum for
-                    // the CuH2 slab
+  // *U += 697.311695; // Adjust U by a constant value, approximately minimum for
+  //                   // the CuH2 slab
   return;
 }
 
