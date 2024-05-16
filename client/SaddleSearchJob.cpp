@@ -38,7 +38,8 @@ std::vector<std::string> SaddleSearchJob::run(void) {
   } else {
     // displacement and mode will be made on the client
     // in saddleSearch->initialize(...)
-    *saddle = *initial;
+    std::cout << "Saddle is the same as initial!";
+    saddle->con2matter(reactantFilename);
   }
   AtomMatrix mode;
   if (params->saddleDisplaceType == EpiCenters::DISP_LOAD) {
@@ -100,11 +101,13 @@ void SaddleSearchJob::saveData(int status) {
   fprintf(fileResults, "%s potential_type\n",
           helper_functions::getPotentialName(params->potential).c_str());
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    fprintf(fileResults, "%li total_force_calls\n", this->pot->forceCallCounter);
+    fprintf(fileResults, "%li total_force_calls\n",
+            this->pot->forceCallCounter);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
   } else {
-    fprintf(fileResults, "%li total_force_calls\n", this->pot->forceCallCounter);
+    fprintf(fileResults, "%li total_force_calls\n",
+            this->pot->forceCallCounter);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
   }
