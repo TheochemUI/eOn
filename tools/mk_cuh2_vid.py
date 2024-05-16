@@ -34,9 +34,13 @@ gitroot = Path(
 cuh2_min1 = ase.io.read("min1_0Cu.con")
 cuh2_min1.calc = cuh2slab.CuH2PotSlab()
 true_e_dat = cuh2slab.plt_data(
-    cuh2_min1, n_points=cuh2slab.PlotPoints(x_npt=20, y_npt=20)
+    cuh2_min1,
+    hh_range=cuh2slab.PltRange(low=-0.05, high=5),
+    h2slab_range=cuh2slab.PltRange(low=-0.05, high=5),
+    n_points=cuh2slab.PlotPoints(x_npt=40, y_npt=40)
 )
 
+# print([x.energy for x in true_e_dat.pltpts])
 
 def plot_band(_index, _band, _k, _method="EON", _opt="QM", _ci="False"):
     plot_last = [ASE_MoveCoordTrain().transform(x) for x in _band]
