@@ -5,8 +5,10 @@ using namespace helper_functions;
 Dimer::Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
-  matterCenter = std::make_shared<Matter>(*matter);
-  matterDimer = std::make_shared<Matter>(*matter);
+  matterCenter = std::make_shared<Matter>(pot, params);
+  matterDimer = std::make_shared<Matter>(pot, params);
+  *matterCenter = *matter;
+  *matterDimer = *matter;
   nAtoms = matter->numberOfAtoms();
 
   direction.resize(nAtoms, 3);
@@ -31,6 +33,7 @@ LowestEigenmode::LEMStatus Dimer::compute(std::shared_ptr<Matter> matter,
   double torque = 0;
   bool doneRotating = false;
 
+  *matterCenter = *matter;
   rotationalForceChange = forceDimer = rotationAngle = curvature = 0;
   rotationalForce1 = 0;
   rotationalForce2 = 0;
