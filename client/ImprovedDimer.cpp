@@ -29,8 +29,9 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   log = spdlog::get("combi");
 }
 
-void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
-                            AtomMatrix initialDirectionAtomMatrix) {
+LowestEigenmode::LEMStatus
+ImprovedDimer::compute(std::shared_ptr<Matter> matter,
+                       AtomMatrix initialDirectionAtomMatrix) {
 
   VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),
                                             3 * matter->numberOfAtoms());
@@ -288,6 +289,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   } while (abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and
            statsRotations < params->dimerRotationsMax);
+  return LowestEigenmode::LEMStatus::GOOD;
 }
 
 double ImprovedDimer::getEigenvalue() { return C_tau; }

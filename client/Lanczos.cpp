@@ -18,7 +18,8 @@ Lanczos::Lanczos(std::shared_ptr<Matter> matter,
 
 // The 1 character variables in this method match the variables in the
 // equations in the paper given at the top of this file.
-void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
+LowestEigenmode::LEMStatus Lanczos::compute(std::shared_ptr<Matter> matter,
+                                            AtomMatrix direction) {
   int size = 3 * matter->numberOfFreeAtoms();
   MatrixXd T(size, params->lanczosMaxIterations),
       Q(size, params->lanczosMaxIterations);
@@ -142,6 +143,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       j += 3;
     }
   }
+  return LowestEigenmode::LEMStatus::GOOD;
 }
 
 double Lanczos::getEigenvalue() { return lowestEw; }

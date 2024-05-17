@@ -27,7 +27,8 @@ public:
                 std::shared_ptr<Potential> pot);
   ~ImprovedDimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  LowestEigenmode::LEMStatus compute(std::shared_ptr<Matter> matter,
+                                     AtomMatrix initialDirection);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 

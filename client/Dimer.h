@@ -16,10 +16,11 @@ public:
   ~Dimer() = default;
 
   void initialize(Matter *matter, AtomMatrix); // initialize the dimer
-  void compute(std::shared_ptr<Matter> matter,
-               AtomMatrix initialDirection); // compute the lowest eigenmode
-  double getEigenvalue();                    // return the current eigenvalue
-  AtomMatrix getEigenvector();               // return the current eigenvector
+  LowestEigenmode::LEMStatus
+  compute(std::shared_ptr<Matter> matter,
+          AtomMatrix initialDirection); // compute the lowest eigenmode
+  double getEigenvalue();               // return the current eigenvalue
+  AtomMatrix getEigenvector();          // return the current eigenvector
 
 private:
   std::shared_ptr<spdlog::logger> log;

@@ -1,12 +1,14 @@
 // An interface to the GPDimer library
 
 #include "AtomicGPDimer.h"
+#include "LowestEigenmode.h"
 
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
-void AtomicGPDimer::compute(std::shared_ptr<Matter> a_matter,
-                            AtomMatrix a_initialDirectionAtomMatrix) {
+LowestEigenmode::LEMStatus
+AtomicGPDimer::compute(std::shared_ptr<Matter> a_matter,
+                       AtomMatrix a_initialDirectionAtomMatrix) {
   m_atoms_config = helpers::gproptim::input::eon_matter_to_atmconf(a_matter);
   *m_dimer_center = *a_matter;
   m_R_init.resize(1, m_dimer_center->getPositionsFree().rows() *
@@ -20,8 +22,8 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> a_matter,
   m_init_middle_point.clear();
   m_init_middle_point.R = m_R_init;
   // TODO: This is now conditional! Only if there's no existing data.
-  // HACK: Obviously this can be improved, add it as a parameter, check for existence etc.
-  // m_init_observations.clear();
+  // HACK: Obviously this can be improved, add it as a parameter, check for
+  // existence etc. m_init_observations.clear();
   // m_problem_setup.cutOffEnergy(E_level, middle_point.E);
 
   m_problem_setup.activateFrozenAtoms(m_R_init, params->gprActiveRadius,
@@ -56,7 +58,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> a_matter,
   a_matter->setPositionsFreeV(m_atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = m_atomic_dimer.getIterations();
   this->totalForceCalls = m_atomic_dimer.getTotalForceCalls();
-  return;
+  return LowestEigenmode::LEMStatus::GOOD;
 }
 
 double AtomicGPDimer::getEigenvalue() {

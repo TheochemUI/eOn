@@ -5,10 +5,8 @@ using namespace helper_functions;
 Dimer::Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
-  matterCenter = std::make_shared<Matter>(pot, params);
-  matterDimer = std::make_shared<Matter>(pot, params);
-  *matterCenter = *matter;
-  *matterDimer = *matter;
+  matterCenter = std::make_shared<Matter>(*matter);
+  matterDimer = std::make_shared<Matter>(*matter);
   nAtoms = matter->numberOfAtoms();
 
   direction.resize(nAtoms, 3);
@@ -21,8 +19,8 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
 }
 
 // was estimateLowestEigenmode. rename to compute
-void Dimer::compute(std::shared_ptr<Matter> matter,
-                    AtomMatrix initialDirection) {
+LowestEigenmode::LEMStatus Dimer::compute(std::shared_ptr<Matter> matter,
+                                          AtomMatrix initialDirection) {
   long rotations = 0;
   long forceCallsCenter;
   long forceCallsDimer;
@@ -33,7 +31,6 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   double torque = 0;
   bool doneRotating = false;
 
-  *matterCenter = *matter;
   rotationalForceChange = forceDimer = rotationAngle = curvature = 0;
   rotationalForce1 = 0;
   rotationalForce2 = 0;
@@ -134,7 +131,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
 
   totalForceCalls += forceCallsCenter + forceCallsDimer;
 
-  return;
+  return LowestEigenmode::LEMStatus::GOOD;
 }
 
 double Dimer::getEigenvalue() { return eigenvalue; }
