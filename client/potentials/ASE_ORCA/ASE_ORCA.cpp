@@ -22,14 +22,20 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
   // Set up ORCA profile and calculator
   py::object OrcaProfile = ase_orca.attr("OrcaProfile");
   py::object ORCA = ase_orca.attr("ORCA");
+  size_t nproc{0};
 
-  std::string orca_simpleinput(fmt::format("ENGRAD {} {} {} {} UHF NOSOSCF", a_params->orca_pot, a_params->orca_basis, a_params->orca_grid, a_params->orca_extra_sline));
-  this->calc = ORCA("profile"_a = OrcaProfile(py::str(a_params->orca_path)),
-                    "orcasimpleinput"_a = orca_simpleinput,
-                    "orcablocks"_a = py::str(fmt::format(
-                        "%pal nprocs {} end",
-                        py::cast<int>(psutil.attr("cpu_count")(false)))),
-                    "directory"_a = ".");
+  if (a_params->orca_nproc == "auto") {
+    nproc = py::cast<int>(psutil.attr("cpu_count")(false));
+  } else {
+    nproc = std::stoi(a_params->orca_nproc);
+  }
+
+  std::string orca_simpleinput(fmt::format("{}", a_params->orca_extra_sline));
+  this->calc =
+      ORCA("profile"_a = OrcaProfile(py::str(a_params->orca_path)),
+           "orcasimpleinput"_a = orca_simpleinput,
+           "orcablocks"_a = py::str(fmt::format("%pal nprocs {} end", nproc)),
+           "directory"_a = ".");
 };
 
 void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,

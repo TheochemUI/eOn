@@ -291,6 +291,7 @@ public:
   std::string orca_pot;
   std::string orca_basis;
   std::string orca_grid;
+  std::string orca_nproc;
   std::string orca_extra_sline; // Other catchall values
 
   // [Lanczos] //
