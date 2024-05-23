@@ -172,6 +172,7 @@ Parameters::Parameters() {
   orca_pot = "BLYP"s;
   orca_basis = "3-21G"s;
   orca_grid = "DefGrid2"s;
+  orca_nproc = "1"s;
 
   // [Lanczos] //
   lanczosTolerance = 0.01;
@@ -623,6 +624,7 @@ int Parameters::load(FILE *file) {
       orca_pot = ini.GetValue("ASE_ORCA", "potential");
       orca_basis = ini.GetValue("ASE_ORCA", "basis_set");
       orca_grid = ini.GetValue("ASE_ORCA", "grid");
+      orca_nproc = ini.GetValue("ASE_ORCA", "nproc");
       orca_extra_sline = ini.GetValue("ASE_ORCA", "simpleinput");
     }
     // GP_NEB only
