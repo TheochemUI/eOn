@@ -45,7 +45,7 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
   py::object atoms = this->ase.attr("Atoms")(
       "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
   atoms.attr("set_calculator")(this->calc);
-  atoms.attr("set_pbc")();
+  atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
   Eigen::MatrixXd py_force =
       py::cast<Eigen::MatrixXd>(atoms.attr("get_forces")());
