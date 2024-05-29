@@ -39,6 +39,9 @@
 #ifdef PYAMFF_POT
 #include "potentials/PyAMFF/PyAMFF.h"
 #endif
+#ifdef ASE_POT
+    #include "potentials/ASE/ASE.h"
+#endif
 
 #include "potentials/QSC/QSC.h"
 #endif
@@ -49,6 +52,11 @@
 
 #ifdef LAMMPS_POT
 #include "potentials/LAMMPS/LAMMPS.h"
+#endif
+
+#ifdef ASE_POT
+    else if(parameters->potential == POT_ASE){
+        pot = new ASE(parameters);}
 #endif
 
 #ifdef NEW_POT
