@@ -33,8 +33,12 @@
 #include <libgen.h>
 #endif
 
-// Includes for FPE trapping
-#include "fpe_handler.h"
+//Includes for FPE trapping
+#include "ExceptionsEON.h"
+
+#ifdef WIN32
+    #include <float.h>
+#endif
 
 #ifndef WIN32
 #include <sys/resource.h>
@@ -274,7 +278,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-  // enableFPE();
+    enableFPE();  // from ExceptionsEON.h
 
   double beginTime = 0.0;
   helper_functions::getTime(&beginTime, NULL, NULL);
