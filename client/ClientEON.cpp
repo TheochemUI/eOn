@@ -26,14 +26,8 @@
 #endif
 
 //Includes for FPE trapping
-#ifdef OSX
-    #include <xmmintrin.h>
-    #include <mach/mach_init.h>
-    #include <mach/task.h>
-#endif
-#ifdef LINUX
-    #include <fenv.h>
-#endif
+#include "ExceptionsEON.h"
+
 #ifdef WIN32
     #include <float.h>
 #endif
@@ -45,21 +39,6 @@
     #include <unistd.h>
 #endif
 
-void enableFPE(void)
-{
-    // Floating Point Trapping. It is platform specific!
-    // This causes the program to crash on divison by zero,
-    // invalid operations, and overflows.
-    #ifdef LINUX
-        feenableexcept(FE_DIVBYZERO|FE_INVALID|FE_OVERFLOW);
-    #endif
-    #ifdef OSX
-        _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK()
-                               & ~_MM_MASK_INVALID 
-                               & ~_MM_MASK_DIV_ZERO
-                               & ~_MM_MASK_OVERFLOW);
-    #endif 
-}
 
 void printSystemInfo()
 {
@@ -255,7 +234,7 @@ int main(int argc, char **argv)
         }
     #endif
 
-    enableFPE();
+    enableFPE();  // from ExceptionsEON.h
 
     double beginTime = 0.0;
     helper_functions::getTime(&beginTime, NULL, NULL);
