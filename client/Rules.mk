@@ -94,6 +94,19 @@ else
    POTENTIALS += "-LAMMPS"
 endif
 
+ifdef ASE_POT
+   # first -I for pybind11, second -I for Python.h
+   CXXFLAGS += -DASE_POT -I/path/to/python/rootdir/include -I/path/to/python/rootdir/include/python3.xx  # EDIT
+   # for libpython3.xx.so
+   LDFLAGS += -L/path/to/python/rootdir/lib -lpython3.xx  # EDIT
+   POTDIRS += ./potentials/ASE
+   LIBS += ./potentials/ASE/libASE.a
+   POTENTIALS += "+ASE"
+else
+   OPOTDIRS += ./potentials/ASE
+   POTENTIALS += "-ASE"
+endif
+
 ifdef NEW_POT
    CXXFLAGS += -DNEW_POT
    POTDIRS += ./potentials/New
