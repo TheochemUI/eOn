@@ -91,5 +91,7 @@ Otherwise you will need to give the path to the client binary in your
 ``config.ini``. 
 
 
+
 .. [#ase] `"Atomic Simulation Environment" <https://wiki.fysik.dtu.dk/ase/>`_ 
+
 .. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 

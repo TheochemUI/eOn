@@ -18,7 +18,7 @@ installation of the dependencies.
 ``CXXFLAGS``
 ============
 
-There are 2 directories included here:
+There are 2 directories included here::
     
     CXXFLAGS += -DASE_POT -I/path/to/python/rootdir/include -I/path/to/python/rootdir/include/python3.xx
 
@@ -43,7 +43,7 @@ it may be ``/usr/include/python3.xx`` or something similar, depending on the typ
 ``LDFLAGS``
 ============
 
-The ``LDFLAGS`` line looks like this:
+The ``LDFLAGS`` line looks like this::
 
     LDFLAGS += -L/path/to/python/rootdir/lib -lpython3.xx
 
@@ -63,7 +63,7 @@ The second part ``-lpython3.xx`` is referring to the dynamic library. Once again
 Compilation
 ============
 
-Once the above is completed, build EON client with the ASE interface enabled:
+Once the above is completed, build EON client with the ASE interface enabled::
 
     $ make ASE_POT=1
 
@@ -75,7 +75,7 @@ Using the ASE interface
 
 When using EON's ASE interface, the Python dynamic library must still be visible to the ``eonclient``
 executable. This can be done by adding the directory from ``LDFLAGS`` above to the ``LD_LIBRARY_PATH``
-environmental variable:
+environmental variable::
 
     $ export LD_LIBRARY_PATH=/path/to/python/rootdir/lib:$LD_LIBRARY_PATH
 
@@ -85,7 +85,7 @@ so that it is automatically prepended when logged on.
 Python version used to build EON client.*
 
 
-To use ASE calculators, ``config.ini`` should contain:
+To use ASE calculators, ``config.ini`` should contain::
 
     [Potential]
     potential = ase
@@ -99,7 +99,7 @@ Python script contents
 ======================
 
 EON client imports this Python script (default name: ``ase_eon.py``) to get the energy and forces.
-The script should look like this (e.g. using ASE's Lennard Jones calculator):
+The script should look like this (e.g. using ASE's Lennard Jones calculator)::
 
     from ase import Atoms
     from ase.calculators.lj import LennardJones
