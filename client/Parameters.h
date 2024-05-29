@@ -56,6 +56,7 @@ public:
     bool   EMTRasmussen;
     bool   LogPotential;
     string extPotPath;
+    string ASEScript;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries

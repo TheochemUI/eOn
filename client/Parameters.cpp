@@ -56,6 +56,7 @@ Parameters::Parameters(){
     LAMMPSThreads = 0;
     EMTRasmussen = false;
     extPotPath = "./ext_pot";
+    ASEScript = "ase_eon.py";
     
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -308,6 +309,7 @@ int Parameters::load(FILE *file){
         LAMMPSThreads = (int)ini.GetValueL("Potential", "lammps_threads", LAMMPSThreads);
         EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
         extPotPath = ini.GetValue("Potential", "ext_pot_path", extPotPath);
+        ASEScript = ini.GetValue("Potential", "ase_script", ASEScript);
 
         if (potential == "mpi"    || 
             potential == "vasp"   ||

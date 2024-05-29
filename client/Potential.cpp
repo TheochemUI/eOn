@@ -39,6 +39,9 @@
 #ifdef PYAMFF_POT
     #include "potentials/PyAMFF/PyAMFF.h"
 #endif
+#ifdef ASE_POT
+    #include "potentials/ASE/ASE.h"
+#endif
 
 #include <cstdlib>
 
@@ -63,7 +66,8 @@ const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
 const char Potential::POT_EXT[] =         "ext_pot";
 const char Potential::POT_NEW[] =         "new_pot";
-const char Potential::POT_PYAMFF[] =       "pyamff";
+const char Potential::POT_PYAMFF[] =      "pyamff";
+const char Potential::POT_ASE[] =         "ase";
 
 Potential* Potential::pot = NULL;
 
@@ -124,6 +128,11 @@ Potential *Potential::getPotential(Parameters *parameters)
 #ifdef LAMMPS_POT
     else if(parameters->potential == POT_LAMMPS)
         pot = new lammps(parameters);
+#endif
+
+#ifdef ASE_POT
+    else if(parameters->potential == POT_ASE){
+        pot = new ASE(parameters);}
 #endif
 
 #ifdef NEW_POT

@@ -316,7 +316,7 @@ int main(int argc, char **argv)
             printf("error: Unknown job: %s\n", parameters.job.c_str());
             return 1;
         }
-        
+
         std::vector<std::string> filenames;
         try {
             filenames = job->run();
