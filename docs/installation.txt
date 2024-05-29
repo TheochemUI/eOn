@@ -92,6 +92,6 @@ Otherwise you will need to give the path to the client binary in your
 
 
 
-.. [#ase] `"Atomic Simulation Environment" <https://wiki.fysik.dtu.dk/ase/>`_ 
+.. [#ase] `"Atomic Simulation Environment" <http://https://wiki.fysik.dtu.dk/ase/>`_ 
 
 .. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 

@@ -24,7 +24,7 @@ There are 2 directories included here::
 
 The first is where the directory ``pybind11/`` is located, which contains pybind11 header files.
 To be clear, the header file ``/path/to/python/rootdir/include/pybind11/pybind.h`` should exist,
-but write only ``-I/path/to/python/rootdir/include``, not anything after.
+but write only ``-I/path/to/python/rootdir/include``, not anything after (i.e. ``pybind11/pybind11.h``).
 
 It is usually located in the ``include/`` directory of the Python installation.
 If using Python through a `Conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_
@@ -38,7 +38,7 @@ If using Python through a `Conda <https://conda.io/projects/conda/en/latest/user
 environment, this directory is at ``$CONDA_PREFIX/include/python3.xx``. If using a systemwide Python,
 it may be ``/usr/include/python3.xx`` or something similar, depending on the type of OS and the distro.
 
-**MAKE SURE TO CHANGE THE ``xx`` IN ``python3.xx`` TO THE PYTHON VERSION YOU'RE USING!**
+**MAKE SURE TO CHANGE THE xx IN python3.xx TO THE PYTHON VERSION YOU'RE USING!**
 
 ``LDFLAGS``
 ============
@@ -57,7 +57,7 @@ it may be ``/usr/lib``, ``/usr/lib/x86_64-linux-gnu``, ``/usr/lib64``, or someth
 the OS.
 
 The second part ``-lpython3.xx`` is referring to the dynamic library. Once again,
-**MAKE SURE TO CHANGE THE ``xx`` IN ``python3.xx`` TO THE PYTHON VERSION YOU'RE USING!**
+**MAKE SURE TO CHANGE THE xx IN python3.xx TO THE PYTHON VERSION YOU'RE USING!**
 
 
 Compilation
