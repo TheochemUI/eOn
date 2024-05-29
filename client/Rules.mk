@@ -155,7 +155,7 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
            DynamicsSaddleSearch.o PrefactorJob.o FIRE.o \
            GlobalOptimizationJob.o GlobalOptimization.o StructureComparisonJob.o \
            MonteCarloJob.o MonteCarlo.o SteepestDescent.o BasinHoppingSaddleSearch.o \
-           BiasedGradientSquaredDescent.o
+           BiasedGradientSquaredDescent.o ExceptionsEON.o
 
 
 #ifneq ($(or unitTests,check),)
