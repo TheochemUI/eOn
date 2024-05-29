@@ -1,0 +1,123 @@
+
+.. _ase_interface:
+
+=============
+ASE Interface
+=============
+
+In order to build EON client with the ability to use ASE calculators as a potential,
+one must have `Python3 <https://www.python.org/downloads/>`_ and
+`pybind11 <https://pybind11.readthedocs.io/en/stable/index.html>`_ installed.
+
+Then, EON client's ``Rules.mk`` must be slightly modified. With EON's installed at
+``$EON_DIR``, open the file ``$EON_DIR/client/Rules.mk`` with a text editor and
+find the section that begins with ``ifdef ASE_POT``.
+In this section, ``CXXFLAGS`` and ``LDFLAGS`` must be customized according to the
+installation of the dependencies.
+
+``CXXFLAGS``
+============
+
+There are 2 directories included here:
+    
+    CXXFLAGS += -DASE_POT -I/path/to/python/rootdir/include -I/path/to/python/rootdir/include/python3.xx
+
+The first is where the directory ``pybind11/`` is located, which contains pybind11 header files.
+To be clear, the header file ``/path/to/python/rootdir/include/pybind11/pybind.h`` should exist,
+but write only ``-I/path/to/python/rootdir/include``, not anything after.
+
+It is usually located in the ``include/`` directory of the Python installation.
+If using Python through a `Conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_
+environment, this directory is at ``$CONDA_PREFIX/include``. If using a systemwide Python,
+it may be ``/usr/include`` or something similar, depending on the type of OS and the distro.
+
+The second is the directory where the header file ``Python.h`` is located. The directory ``python3.xx/`` is
+typically in the same parent directory as ``pybind11``.
+
+If using Python through a `Conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_
+environment, this directory is at ``$CONDA_PREFIX/include/python3.xx``. If using a systemwide Python,
+it may be ``/usr/include/python3.xx`` or something similar, depending on the type of OS and the distro.
+
+**MAKE SURE TO CHANGE THE ``xx`` IN ``python3.xx`` TO THE PYTHON VERSION YOU'RE USING!**
+
+``LDFLAGS``
+============
+
+The ``LDFLAGS`` line looks like this:
+
+    LDFLAGS += -L/path/to/python/rootdir/lib -lpython3.xx
+
+The directory ``/path/to/python/rootdir/lib`` contains the Python dynamic library ``libpython3.xx.so``.
+It is usually located in the ``lib/`` directory of the Python installation, thus sharing the same parent
+directory as ``/path/to/python/rootdir/include`` from the ``CXXFLAGS`` line above.
+
+If using Python through a `Conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_
+environment, this directory is at ``$CONDA_PREFIX/lib``. If using a systemwide Python
+it may be ``/usr/lib``, ``/usr/lib/x86_64-linux-gnu``, ``/usr/lib64``, or something similar depending on
+the OS.
+
+The second part ``-lpython3.xx`` is referring to the dynamic library. Once again,
+**MAKE SURE TO CHANGE THE ``xx`` IN ``python3.xx`` TO THE PYTHON VERSION YOU'RE USING!**
+
+
+Compilation
+============
+
+Once the above is completed, build EON client with the ASE interface enabled:
+
+    $ make ASE_POT=1
+
+If the compilation is successful, you should see a line containing ``+ASE`` at the very bottom
+of the terminal.
+
+Using the ASE interface
+=======================
+
+When using EON's ASE interface, the Python dynamic library must still be visible to the ``eonclient``
+executable. This can be done by adding the directory from ``LDFLAGS`` above to the ``LD_LIBRARY_PATH``
+environmental variable:
+
+    $ export LD_LIBRARY_PATH=/path/to/python/rootdir/lib:$LD_LIBRARY_PATH
+
+To avoid repeating this step, this line can be included in ``~/.bash_profile`` or ``~/.bashrc``
+so that it is automatically prepended when logged on.
+*It is recommended that the Python version used to run EON client is the same as the
+Python version used to build EON client.*
+
+
+To use ASE calculators, ``config.ini`` should contain:
+
+    [Potential]
+    potential = ase
+    ase_script = ase_eon.py
+
+The very last line (``ase_script = ase_eon.py``) is optional, unless a custom name for the Python
+script containing the ASE calculator definition is desired. In the current version of EON,
+**this script MUST be in the same directory as where the EON client executable is run**.
+
+Python script contents
+======================
+
+EON client imports this Python script (default name: ``ase_eon.py``) to get the energy and forces.
+The script should look like this (e.g. using ASE's Lennard Jones calculator):
+
+    from ase import Atoms
+    from ase.calculators.lj import LennardJones
+
+    def ase_calc():
+        calc = LennardJones(epsilon=0.0103, sigma=3.40, rc=10.0, ro=0.0, smooth=True)
+        return calc
+
+    def _calculate(R, atomicNrs, box, calc):
+        system = Atoms(symbols=atomicNrs, positions=R, pbc=True, cell=box)
+        system.set_calculator(calc)
+        forces = system.get_forces()
+        energy = system.get_potential_energy()
+        return energy, forces
+
+The user should customize the content of the function ``ase_calc()`` to use the desired ASE calculator,
+**but not that of ``_calculate()`` nor the function names**.
+
+Before using it, make sure that this script contains no errors on the Python side and that it is in
+the **same directory** as where the EON client executable is run.
+
