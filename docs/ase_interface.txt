@@ -15,6 +15,17 @@ find the section that begins with ``ifdef ASE_POT``.
 In this section, ``CXXFLAGS`` and ``LDFLAGS`` must be customized according to the
 installation of the dependencies.
 
+**Before starting**: it may be possible that no customization is necessary because
+the relevant directories are already visible to the compiler.
+In the sections below, try to comment out the ``CXXFLAGS`` and ``LDFLAGS``
+lines first and then run::
+
+    make ASE_POT=1
+
+Only when the compilation is unsuccessful, follow the instructions in the next 2
+sections.
+
+
 ``CXXFLAGS``
 ============
 
