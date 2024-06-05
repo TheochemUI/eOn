@@ -30,6 +30,7 @@ Contents
    potential
    mpi_potential
    lammps_potential
+   ase_interface
    optimizer
    structure_comparison
    paths
