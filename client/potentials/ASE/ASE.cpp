@@ -23,15 +23,7 @@ namespace py = pybind11;
 
 ASE::ASE(Parameters *p) : guard{} {
     parameters = p;
-    
-    // strip the .py extension
-    std::string py_file = parameters->ASEScript;
-    const std::string extension = ".py";
-    size_t pos = py_file.rfind(extension);
-    if (pos != std::string::npos && pos == py_file.length() - extension.length()) {
-        // Erase the ".py" extension
-        py_file.erase(pos, extension.length());
-    }
+    std::string py_file = parameters->extPotPath;
     
     // import
     try {
@@ -40,7 +32,25 @@ ASE::ASE(Parameters *p) : guard{} {
         if (FPE_WAS_ENABLED) {
             disableFPE();
         }
-        py_module = py::module_::import(py_file.c_str());
+
+        // Create a Python script to use importlib.util to load the module
+        py::exec(R"(
+            import sys
+            import importlib.util
+
+            def load_module_from_path(module_name, file_path):
+                spec = importlib.util.spec_from_file_location(module_name, file_path)
+                module = importlib.util.module_from_spec(spec)
+                sys.modules[module_name] = module
+                spec.loader.exec_module(module)
+                return module
+        )");
+
+        // Prepare the module name and file path
+        std::string module_name = "ase_eon";
+        py::object load_module = py::globals()["load_module_from_path"];
+        py_module = load_module(module_name, py_file);
+
         if (FPE_WAS_ENABLED) {
             enableFPE();
         }
@@ -50,8 +60,7 @@ ASE::ASE(Parameters *p) : guard{} {
 
     } catch (const std::exception &e) {
         fprintf(stderr, "ASE Calculator: Exception during Python module import: %s\n", e.what());
-        fprintf(stderr, "%s.py should be a valid script in the same directory"
-                         " as where eonclient is run.\n", py_file.c_str());
+        fprintf(stderr, "%s should exist and have no errors on the Python side.\n", py_file.c_str());
         exit(1);
     }
     return;
