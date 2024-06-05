@@ -41,6 +41,8 @@ It is usually located in the ``include/`` directory of the Python installation.
 If using Python through a `Conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_
 environment, this directory is at ``$CONDA_PREFIX/include``. If using a systemwide Python,
 it may be ``/usr/include`` or something similar, depending on the type of OS and the distro.
+If pybind11 is a user pip installation for a systemwide Python, it may be located at
+``$HOME/.local/lib/python3.xx/site-packages/pybind11/include``.
 
 The second is the directory where the header file ``Python.h`` is located. The directory ``python3.xx/`` is
 typically in the same parent directory as ``pybind11``.
@@ -100,25 +102,29 @@ To use ASE calculators, ``config.ini`` should contain::
 
     [Potential]
     potential = ase
-    ase_script = ase_eon.py
+    ext_pot_path = /full/path/to/the/ase_script.py
 
-The very last line (``ase_script = ase_eon.py``) is optional, unless a custom name for the Python
-script containing the ASE calculator definition is desired. In the current version of EON,
-**this script MUST be in the same directory as where the EON client executable is run**.
+The last line (``ext_pot_path``) is required, and it may be the relative or the absolute
+path to the Python script containing the desired ASE calculator (see next section).
+When running EON (e.g. AKMC jobs), which calls ``eonclient`` in the back, **it is highly
+recommended to write the full absolute path to the script**.
 
 Python script contents
 ======================
 
-EON client imports this Python script (default name: ``ase_eon.py``) to get the energy and forces.
+EON client imports this Python script to get the energy and forces.
 The script should look like this (e.g. using ASE's Lennard Jones calculator)::
 
     from ase import Atoms
     from ase.calculators.lj import LennardJones
 
     def ase_calc():
+        # MODIFY THIS SECTION
         calc = LennardJones(epsilon=0.0103, sigma=3.40, rc=10.0, ro=0.0, smooth=True)
         return calc
 
+    #=======================================================================
+    # DO NOT EDIT
     def _calculate(R, atomicNrs, box, calc):
         system = Atoms(symbols=atomicNrs, positions=R, pbc=True, cell=box)
         system.set_calculator(calc)
@@ -129,6 +135,5 @@ The script should look like this (e.g. using ASE's Lennard Jones calculator)::
 The user should customize the content of the function ``ase_calc()`` to use the desired ASE calculator,
 **but not that of ``_calculate()`` nor the function names**.
 
-Before using it, make sure that this script contains no errors on the Python side and that it is in
-the **same directory** as where the EON client executable is run.
+Before using it, make sure that this script contains no errors on the Python side.
 
