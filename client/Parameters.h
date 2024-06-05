@@ -60,7 +60,6 @@ public:
   bool EMTRasmussen;
   bool LogPotential;
   string extPotPath;
-    string ASEScript;
 
   // [AMS] and [AMS_IO] //
   string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
