@@ -136,7 +136,7 @@ The user should customize the content of the function ``ase_calc()`` to use the 
 **but not that of ``_calculate()`` nor the function names**.
 
 Often, the ASE calculator may require an external potential file. When running EON (e.g. AKMC jobs) and
-an external file name is used in this script, ** it is highly recommended to write the full absolute
+an external file name is used in this script, **it is highly recommended to write the full absolute
 path to the external file**.
 
 Before using it, make sure that this script contains no errors on the Python side.
