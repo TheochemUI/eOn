@@ -87,6 +87,7 @@ Potential:
                 - ext_pot
                 - new_pot
                 - pyamff
+                - ase
 
         mpi_poll_period:
             kind: float
@@ -108,7 +109,7 @@ Potential:
             kind: boolean
             default: false
 
-        external_potential_path:
+        ext_pot_path:
             kind: string
             default: ext_pot
 
