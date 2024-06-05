@@ -1,4 +1,3 @@
-
 .. _installation:
 
 ============
@@ -24,7 +23,7 @@ Dependencies
     * GNU Make
     * G++ (>=4.0, other C++ compilers might work)
     * (optional) gfortran or Intel Fortran Compiler
-    * (optional, for LAMMPS potentials) `LAMMPS <http://lammps.sandia.gov/doc/>`__
+    * (optional, for LAMMPS potentials) `LAMMPS <http://lammps.sandia.gov/doc/>`_
     * (optional, for ASE interface) `Python <http://www.python.org/download>`_ , `pybind11 <https://pybind11.readthedocs.io/en/stable/index.html>`_
 
 .. highlight:: bash
@@ -40,7 +39,7 @@ latest developer version to your home folder::
 
 The directory ``$HOME/eon`` needs to be added to your ``$PYTHONPATH``
 environment variable. It is also recommended to add ``$HOME/eon/bin`` to your
-``$PATH``. This can be done permanetly by appending the following to your
+``$PATH``. This can be done permanently by appending the following to your
 ``~/.profile`` file::
 
     export PYTHONPATH=$HOME/eon:$PYTHONPATH
@@ -58,7 +57,7 @@ Client Installation
 ===================
 
 The client source code is located in a folder named ``client`` under the main
-eon directory.  For most situations you will only need to run the make command
+eon directory. For most situations, you will only need to run the make command
 and a binary named ``client`` will be built in this directory::
 
     $ cd client
@@ -73,25 +72,21 @@ change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
 ``FAR`` (fortran archiver) variables to work for your system.
 
 If you wish to use ASE calculators in EON, the additional dependencies (see above) and a modified Makefile is necessary.
-Detailed documentation can be found on the :ref:`ASE Interface<ase_interface>` page. [#ase]_
+Detailed documentation can be found on the :ref:`ASE Interface<ase_interface>` page. [#ase1]_
 
-If you wish to use a LAMMPS potential, you must first build the appropriate library version of LAMMPS.  If the library will be used with a serial version of EON, then build the serial version of LAMMPS--likewise for MPI use. 
-Detailed documentation can be found on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps]_
+If you wish to use a LAMMPS potential, you must first build the appropriate library version of LAMMPS. If the library will be used with a serial version of EON, then build the serial version of LAMMPS--likewise for MPI use.
+Detailed documentation can be found on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps1]_
 
-If you want to use the MPI communicator, see the :ref:`MPI
-Communicator<communicator-mpi>` page for instructions.
+If you want to use the MPI communicator, see the :ref:`MPI Communicator<communicator-mpi>` page for instructions.
 
 For most installations, the binary ``eonclient`` can be copied to a directory in your
-``$PATH``. If you added ``$HOME/eon/bin`` to your path
-during the server installation the following command will install the client::
+``$PATH``. If you added ``$HOME/eon/bin`` to your path during the server installation the following command will install the client::
 
     $ cp eonclient ../bin/eonclient
 
 Otherwise you will need to give the path to the client binary in your
 ``config.ini``. 
 
+.. [#ase1] `"Atomic Simulation Environment" <https://wiki.fysik.dtu.dk/ase/>`_
+.. [#lammps1] `"Large-scale Atomic/Molecular Massively Parallel Simulator, Sandia National Laboratories" <http://lammps.sandia.gov/>`_
 
-
-.. [#ase] `"Atomic Simulation Environment" <http://https://wiki.fysik.dtu.dk/ase/>`_ 
-
-.. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 
