@@ -62,7 +62,7 @@ public:
   virtual ~Optimizer(){};
   //! Template for stepping the optimizer, returns convergence
   virtual int step(double a_maxMove) = 0;
-  //! Template for runnning the optimizer; uses a series of steps, checking for
+  //! Template for running the optimizer; uses a series of steps, checking for
   //! convergence each time
   virtual int run(size_t a_maxIterations, double a_maxMove) = 0;
 };
