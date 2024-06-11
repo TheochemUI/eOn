@@ -169,9 +169,7 @@ Parameters::Parameters() {
 
   // [ASE_ORCA] //
   orca_path = "SET_ME"s;
-  orca_pot = "BLYP"s;
-  orca_basis = "3-21G"s;
-  orca_grid = "DefGrid2"s;
+  orca_nproc = "1"s;
 
   // [Lanczos] //
   lanczosTolerance = 0.01;
@@ -451,7 +449,8 @@ int Parameters::load(FILE *file) {
     if (potential == PotType::XTB) {
       xtb_paramset = ini.GetValue("XTBPot", "paramset", xtb_paramset);
       xtb_acc = ini.GetValueF("XTBPot", "accuracy", xtb_acc);
-      xtb_elec_temperature = ini.GetValueF("XTBPot", "electronic_temperature", xtb_elec_temperature);
+      xtb_elec_temperature = ini.GetValueF("XTBPot", "electronic_temperature",
+                                           xtb_elec_temperature);
       xtb_maxiter = ini.GetValueL("XTBPot", "max_iterations", xtb_maxiter);
     }
 
@@ -487,7 +486,7 @@ int Parameters::load(FILE *file) {
 
     // [Optimizers] //
     auto inp_optMethod = helper_functions::getOptType(
-        toLowerCase(ini.GetValue("Optimizer", "opt_method")));
+        toLowerCase(ini.GetValue("Optimizer", "opt_method", "none")));
     if (inp_optMethod != OptType::None) {
       optMethod = inp_optMethod;
     }
@@ -611,19 +610,21 @@ int Parameters::load(FILE *file) {
       catl_path = ini.GetValue("CatLearn", "catl_path");
       catl_model = ini.GetValue("CatLearn", "model", "catl_model");
       catl_prior = ini.GetValue("CatLearn", "prior", "catl_prior");
-      catl_use_deriv = ini.GetValueB("CatLearn", "use_derivatives", "catl_deriv");
-      catl_use_fingerprint = ini.GetValueB("CatLearn", "use_fingerprint", "catl_fingerprint");
-      catl_parallel = ini.GetValueB("CatLearn", "parallel_hyperparameter_opt", "catl_parallel");
+      catl_use_deriv =
+          ini.GetValueB("CatLearn", "use_derivatives", "catl_deriv");
+      catl_use_fingerprint =
+          ini.GetValueB("CatLearn", "use_fingerprint", "catl_fingerprint");
+      catl_parallel = ini.GetValueB("CatLearn", "parallel_hyperparameter_opt",
+                                    "catl_parallel");
     }
     // [ASE_ORCA]
     if (ini.FindKey("ASE_ORCA") != -1) {
       // Case sensitive!!
-      // TODO: This should be handled in clienteon so you can still call eonclient for single point calculations easily
+      // TODO: This should be handled in clienteon so you can still call
+      // eonclient for single point calculations easily
       orca_path = ini.GetValue("ASE_ORCA", "orca_path");
-      orca_pot = ini.GetValue("ASE_ORCA", "potential");
-      orca_basis = ini.GetValue("ASE_ORCA", "basis_set");
-      orca_grid = ini.GetValue("ASE_ORCA", "grid");
-      orca_extra_sline = ini.GetValue("ASE_ORCA", "simpleinput");
+      orca_nproc = ini.GetValue("ASE_ORCA", "nproc");
+      orca_sline = ini.GetValue("ASE_ORCA", "simpleinput");
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
@@ -783,9 +784,8 @@ int Parameters::load(FILE *file) {
         ini.GetValueB("Nudged Elastic Band", "elastic_band", nebElasticBand);
     nebConvergedForce = ini.GetValueF("Nudged Elastic Band", "converged_force",
                                       optConvergedForce);
-    nebEnergyWeighted =
-        ini.GetValueB("Nudged Elastic Band", "energy_weighted",
-                      nebEnergyWeighted);
+    nebEnergyWeighted = ini.GetValueB("Nudged Elastic Band", "energy_weighted",
+                                      nebEnergyWeighted);
     nebKSPMin = ini.GetValueF("Nudged Elastic Band", "ew_ksp_min", nebKSPMin);
     nebKSPMax = ini.GetValueF("Nudged Elastic Band", "ew_ksp_max", nebKSPMax);
 
