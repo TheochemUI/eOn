@@ -30,7 +30,7 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
     nproc = std::stoi(a_params->orca_nproc);
   }
 
-  std::string orca_simpleinput(fmt::format("{}", a_params->orca_extra_sline));
+  std::string orca_simpleinput(fmt::format("{}", a_params->orca_sline));
   this->calc =
       ORCA("profile"_a = OrcaProfile(py::str(a_params->orca_path)),
            "orcasimpleinput"_a = orca_simpleinput,
