@@ -169,9 +169,6 @@ Parameters::Parameters() {
 
   // [ASE_ORCA] //
   orca_path = "SET_ME"s;
-  orca_pot = "BLYP"s;
-  orca_basis = "3-21G"s;
-  orca_grid = "DefGrid2"s;
   orca_nproc = "1"s;
 
   // [Lanczos] //
@@ -626,11 +623,8 @@ int Parameters::load(FILE *file) {
       // TODO: This should be handled in clienteon so you can still call
       // eonclient for single point calculations easily
       orca_path = ini.GetValue("ASE_ORCA", "orca_path");
-      orca_pot = ini.GetValue("ASE_ORCA", "potential");
-      orca_basis = ini.GetValue("ASE_ORCA", "basis_set");
-      orca_grid = ini.GetValue("ASE_ORCA", "grid");
       orca_nproc = ini.GetValue("ASE_ORCA", "nproc");
-      orca_extra_sline = ini.GetValue("ASE_ORCA", "simpleinput");
+      orca_sline = ini.GetValue("ASE_ORCA", "simpleinput");
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
