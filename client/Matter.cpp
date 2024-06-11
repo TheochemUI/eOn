@@ -318,6 +318,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
 
     optim->step(parameters->optMaxMove);
     iteration++;
+    setPositionsFreeV(objf->getPositions());
 
     double stepSize =
         helper_functions::maxAtomMotion(pbc(getPositions() - pos));

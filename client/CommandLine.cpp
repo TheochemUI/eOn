@@ -127,8 +127,11 @@ void commandLine(int argc, char **argv) {
   if (!cflag) {
     params->potential = helper_functions::getPotentialType(potential);
   }
-  params->optMethod = helper_functions::getOptType(optimizer);
-  params->optConvergedForce = optConvergedForce;
+
+  if (!sflag) {
+    params->optMethod = helper_functions::getOptType(optimizer);
+    params->optConvergedForce = optConvergedForce;
+  }
 
   auto pot = helper_functions::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
