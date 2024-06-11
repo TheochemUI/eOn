@@ -488,7 +488,7 @@ int Parameters::load(FILE *file) {
 
     // [Optimizers] //
     auto inp_optMethod = helper_functions::getOptType(
-        toLowerCase(ini.GetValue("Optimizer", "opt_method")));
+        toLowerCase(ini.GetValue("Optimizer", "opt_method", "none")));
     if (inp_optMethod != OptType::None) {
       optMethod = inp_optMethod;
     }
