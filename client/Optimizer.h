@@ -47,7 +47,7 @@ protected:
 public:
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf,
             std::shared_ptr<Parameters> a_params)
-      : m_otype{a_params->optMethod},
+      : m_otype{a_params->optim.method},
         m_params{a_params},
         m_objf{a_objf} {
     SPDLOG_WARN("You should explicitly set an optimizer while constructing the "

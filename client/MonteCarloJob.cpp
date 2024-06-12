@@ -4,10 +4,10 @@
 #include "MonteCarlo.h"
 
 std::vector<std::string> MonteCarloJob::run(void) {
-  string posInFilename("pos.con");
-  string posOutFilename("out.con");
+  std::string posInFilename("pos.con");
+  std::string posOutFilename("out.con");
 
-  if (params->checkpoint) {
+  if (params->main.checkpoint) {
     FILE *pos;
     pos = fopen("pos_cp.con", "r");
     if (pos != NULL) {
@@ -26,8 +26,8 @@ std::vector<std::string> MonteCarloJob::run(void) {
 
   // code will go
   MonteCarlo mc = MonteCarlo(matter, params);
-  mc.run(params->monteCarloSteps, params->temperature,
-         params->monteCarloStepSize);
+  mc.run(params->monte_carlo.steps, params->main.temperature,
+         params->monte_carlo.stepSize);
 
   // FILE *fileResults;
 

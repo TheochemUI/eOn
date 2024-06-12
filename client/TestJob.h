@@ -18,8 +18,8 @@ private:
   void checkFullSearch(void);
   void checkMode(void);
   void checkPotentials(void);
-  double getEnergyDiff(string potTag, double refEnergy);
-  double getForceDiff(string potTag, double refForce);
+  double getEnergyDiff(std::string potTag, double refEnergy);
+  double getForceDiff(std::string potTag, double refForce);
 };
 
 #endif
