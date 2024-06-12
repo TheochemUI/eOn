@@ -31,7 +31,7 @@ public:
     bool quiet;
     bool writeLog;
     bool checkpoint;
-    std::string iniFilename;
+    std::string inpFilename;
     std::string conFilename;
     double finiteDifference;
     long maxForceCalls;
