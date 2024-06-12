@@ -5,15 +5,16 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <memory>
+#include <iostream>
 #include <pybind11/embed.h>
 
 using namespace std::string_literals; // For ""s
 
 int main(void) {
-  string confile("pos.con");
+  std::string confile("pos.con");
   auto params = std::make_shared<Parameters>();
   pybind11::scoped_interpreter guard{}; // Initialize the Python interpreter
-  params->potential = PotType::CatLearn;
+  params->pot.potential = PotType::CatLearn;
   auto pot = helper_functions::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   matter->con2matter(confile);

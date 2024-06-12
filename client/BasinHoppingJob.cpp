@@ -24,13 +24,13 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   Matter *minTrial = new Matter(pot, params);
   Matter *swapTrial = new Matter(pot, params);
 
-  string conFilename = getRelevantFile(params->conFilename);
+  string conFilename = getRelevantFile(params->main.conFilename);
   current->con2matter(conFilename);
 
   // Sanity Check
   vector<long> Elements;
   Elements = getElements(current.get());
-  if (params->basinHoppingSwapProbability > 0 && Elements.size() == 1) {
+  if (params->bhop.swapProbability > 0 && Elements.size() == 1) {
     log = spdlog::get("_traceback");
     SPDLOG_LOGGER_CRITICAL(
         log, "error: [Basin Hopping] swap move probability must be "
@@ -38,13 +38,13 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     std::exit(1);
   }
 
-  double randomProb = params->basinHoppingInitialRandomStructureProbability;
+  double randomProb = params->bhop.initialRandomStructureProbability;
   if (randomProb > 0.0) {
     SPDLOG_LOGGER_DEBUG(
         log, "generating random structure with probability {:.4f}", randomProb);
   }
   double u = helper_functions::random();
-  if (u < params->basinHoppingInitialRandomStructureProbability) {
+  if (u < params->bhop.initialRandomStructureProbability) {
     AtomMatrix randomPositions = current->getPositionsFree();
     for (int i = 0; i < current->numberOfFreeAtoms(); i++) {
       for (int j = 0; j < 3; j++) {
@@ -54,7 +54,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     randomPositions *= current->getCell();
     current->setPositionsFree(randomPositions);
 
-    pushApart(current, params->basinHoppingPushApartDistance);
+    pushApart(current, params->bhop.pushApartDistance);
   }
 
   *trial = *current;
@@ -67,7 +67,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
   auto minimumEnergyStructure = std::make_shared<Matter>(pot, params);
   *minimumEnergyStructure = *current;
-  int nsteps = params->basinHoppingSteps + params->basinHoppingQuenchingSteps;
+  int nsteps = params->bhop.steps + params->bhop.quenchingSteps;
   long totalfc;
   FILE *pFile;
   pFile = fopen("bh.dat", "w");
@@ -80,13 +80,13 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       "----", "-------", "-----", "----------", "--", "--", "--");
 
   int recentAccept = 0;
-  double curDisplacement = params->basinHoppingDisplacement;
+  double curDisplacement = params->bhop.displacement;
 
   for (int step = 0; step < nsteps; step++) {
 
     // Swap or displace
-    if (randomDouble(1.0) < params->basinHoppingSwapProbability &&
-        step < params->basinHoppingSteps) {
+    if (randomDouble(1.0) < params->bhop.swapProbability &&
+        step < params->bhop.steps) {
       *swapTrial = *current;
       randomSwap(swapTrial);
       swapMove = true;
@@ -97,12 +97,12 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
       trial->setPositions(current->getPositions() + displacement);
       swapMove = false;
-      pushApart(trial, params->basinHoppingPushApartDistance);
+      pushApart(trial, params->bhop.pushApartDistance);
 
       *minTrial = *trial;
     }
 
-    if (params->writeMovies == true) {
+    if (params->debug.writeMovies == true) {
       trial->matter2con("trials", true);
     }
 
@@ -112,7 +112,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
     double deltaE = minTrial->getPotentialEnergy() - currentEnergy;
     double p = 0.0;
-    if (step >= params->basinHoppingSteps) {
+    if (step >= params->bhop.steps) {
       if (deltaE <= 0.0) {
         p = 1.0;
       }
@@ -120,14 +120,14 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       if (deltaE <= 0.0) {
         p = 1.0;
       } else {
-        p = exp(-deltaE / (params->temperature * 8.6173324e-5));
+        p = exp(-deltaE / (params->main.temperature * 8.6173324e-5));
       }
     }
 
     bool accepted = false;
     if (randomDouble(1.0) < p) {
       accepted = true;
-      if (params->basinHoppingSignificantStructure) {
+      if (params->bhop.significantStructure) {
         *current = *minTrial;
       } else {
         *current = *trial;
@@ -135,7 +135,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       if (swapMove) {
         swap_accept += 1;
       }
-      if (step < params->basinHoppingSteps) {
+      if (step < params->bhop.steps) {
         totalAccept += 1;
         recentAccept += 1;
       }
@@ -148,15 +148,16 @@ std::vector<std::string> BasinHoppingJob::run(void) {
         minimumEnergyStructure->matter2con("min.con");
       }
 
-      if (params->basinHoppingWriteUnique) {
+      if (params->bhop.writeUnique) {
         bool newStructure = true;
         for (unsigned int i = 0; i < uniqueEnergies.size(); i++) {
           // if minTrial has a different energy or a different structure
           // it is new, otherwise it is old
           if (fabs(currentEnergy - uniqueEnergies[i]) <
-              params->energyDifference) {
+              params->structcomp.energyDifference) {
             if (current->compare(*uniqueStructures[i],
-                                 params->indistinguishableAtoms) == true) {
+                                 params->structcomp.indistinguishableAtoms) ==
+                true) {
               newStructure = false;
             }
           }
@@ -186,7 +187,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       consecutive_rejected_trials++;
     }
 
-    if (params->writeMovies == true) {
+    if (params->debug.writeMovies == true) {
       minTrial->matter2con("movie", true);
     }
 
@@ -206,20 +207,20 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     // fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
     // minTrial->getPotentialEnergy());
 
-    if (minimumEnergy < params->basinHoppingStopEnergy) {
+    if (minimumEnergy < params->bhop.stopEnergy) {
       break;
     }
 
-    if (consecutive_rejected_trials == params->basinHoppingJumpMax &&
-        step < params->basinHoppingSteps) {
+    if (consecutive_rejected_trials == params->bhop.jumpMax &&
+        step < params->bhop.steps) {
       consecutive_rejected_trials = 0;
       AtomMatrix jump;
-      for (int j = 0; j < params->basinHoppingJumpSteps; j++) {
+      for (int j = 0; j < params->bhop.jumpSteps; j++) {
         jump_count++;
         jump = displaceRandom(curDisplacement);
         current->setPositions(current->getPositions() + jump);
-        if (params->basinHoppingSignificantStructure) {
-          pushApart(current, params->basinHoppingPushApartDistance);
+        if (params->bhop.significantStructure) {
+          pushApart(current, params->bhop.pushApartDistance);
           current->relax(true);
         }
         currentEnergy = current->getPotentialEnergy();
@@ -230,12 +231,12 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       }
     }
 
-    int nadjust = params->basinHoppingAdjustPeriod;
-    double adjustFraction = params->basinHoppingAdjustFraction;
+    int nadjust = params->bhop.adjustPeriod;
+    double adjustFraction = params->bhop.adjustFraction;
     if ((step + 1) % nadjust == 0 &&
-        params->basinHoppingAdjustDisplacement == true) {
+        params->bhop.adjustDisplacement == true) {
       double recentRatio = ((double)recentAccept) / ((double)nadjust);
-      if (recentRatio > params->basinHoppingTargetRatio) {
+      if (recentRatio > params->bhop.targetRatio) {
         curDisplacement *= 1.0 + adjustFraction;
       } else {
         curDisplacement *= 1.0 - adjustFraction;
@@ -256,22 +257,22 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   returnFiles.push_back(resultsFilename);
   fileResults = fopen(resultsFilename.c_str(), "wb");
 
-  if (params->writeMovies == true) {
+  if (params->debug.writeMovies == true) {
     std::string movieFilename("movie.xyz");
     returnFiles.push_back(movieFilename);
   }
 
   fprintf(fileResults, "%d termination_reason\n", 0);
   fprintf(fileResults, "%.6f minimum_energy\n", minimumEnergy);
-  fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
+  fprintf(fileResults, "%ld random_seed\n", params->main.randomSeed);
   fprintf(fileResults, "%.3f acceptance_ratio\n",
-          totalAccept / params->basinHoppingSteps);
-  if (params->basinHoppingSwapProbability > 0) {
+          totalAccept / params->bhop.steps);
+  if (params->bhop.swapProbability > 0) {
     fprintf(fileResults, "%.3f swap_acceptance_ratio\n",
             swap_accept / double(swap_count));
   }
   fprintf(fileResults, "%ld total_normal_displacement_steps\n",
-          disp_count - jump_count - params->basinHoppingQuenchingSteps);
+          disp_count - jump_count - params->bhop.quenchingSteps);
   fprintf(fileResults, "%d total_jump_steps\n", jump_count);
   fprintf(fileResults, "%d total_swap_steps\n", swap_count);
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
@@ -300,7 +301,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
   VectorXd distvec = calculateDistanceFromCenter(current.get());
   int num = trial->numberOfAtoms();
   int m = 0;
-  if (params->basinHoppingSingleAtomDisplace) {
+  if (params->bhop.singleAtomDisplace) {
     m = randomInt(0, trial->numberOfAtoms() - 1);
     num = m + 1;
   }
@@ -310,16 +311,16 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
     double disp = 0.0; // displacement size, possibly scaled
 
     if (!trial->getFixed(i)) {
-      if (params->basinHoppingDisplacementAlgorithm == "standard") {
+      if (params->bhop.displacementAlgorithm == "standard") {
         disp = curDisplacement;
       }
       // scale displacement linearly with the particle radius
-      else if (params->basinHoppingDisplacementAlgorithm == "linear") {
+      else if (params->bhop.displacementAlgorithm == "linear") {
         double Cs = curDisplacement / distvec.maxCoeff();
         disp = Cs * dist;
       }
       // scale displacement quadratically with the particle radius
-      else if (params->basinHoppingDisplacementAlgorithm == "quadratic") {
+      else if (params->bhop.displacementAlgorithm == "quadratic") {
         double Cq = curDisplacement / (distvec.maxCoeff() * distvec.maxCoeff());
         disp = Cq * dist * dist;
       } else {
@@ -328,9 +329,9 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
         std::exit(1);
       }
       for (int j = 0; j < 3; j++) {
-        if (params->basinHoppingDisplacementDistribution == "uniform") {
+        if (params->bhop.displacementDistribution == "uniform") {
           displacement(i, j) = randomDouble(2 * disp) - disp;
-        } else if (params->basinHoppingDisplacementDistribution == "gaussian") {
+        } else if (params->bhop.displacementDistribution == "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
           log = spdlog::get("_traceback");

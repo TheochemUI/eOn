@@ -1,4 +1,5 @@
 #include "MonteCarlo.h"
+#include<iostream>
 
 using namespace helper_functions;
 
@@ -53,5 +54,5 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
       SPDLOG_LOGGER_DEBUG(log, "{}: reject\n", steps);
     }
   }
-  cout << accepts << "\n";
+  std::cout << accepts << "\n";
 }

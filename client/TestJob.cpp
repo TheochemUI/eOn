@@ -22,11 +22,11 @@ void TestJob::checkFullSearch(void) {
   bool ok = 1;
   double diffM1, diffM2, diffSP;
 
-  string reactantFilename("reactant_test.con");
-  string displacementFilename("displacement_test.con");
-  string modeFilename("mode_test.dat");
+  std::string reactantFilename("reactant_test.con");
+  std::string displacementFilename("displacement_test.con");
+  std::string modeFilename("mode_test.dat");
 
-  params->potential = "emt";
+  params->pot.potential = "emt";
 
   auto initial = std::make_unique<Matter>(pot, params);
   //    displacement = std::make_unique<Matter>(pot, params);
@@ -132,18 +132,12 @@ void TestJob::checkFullSearch(void) {
   }
   printf("SP done\n");
 
-  delete initial;
-  delete saddle;
-  delete min1;
-  delete min2;
-  delete matterTemp;
-
   return;
 }
 /*
 void TestJob::checkMode(void){
 
-    string reactant_passed("reactant_test.con");
+    std::string reactant_passed("reactant_test.con");
     params->potential = 1;  // always LJ in test
     Matter *saddle = std::make_unique<Matter>(pot, params);
     saddle->con2matter(reactant_passed);
@@ -269,8 +263,8 @@ void TestJob::checkPotentials(void) {
   }
 }
 
-double TestJob::getEnergyDiff(string pot, double refEnergy) {
-  string posFilename("pos_test.con");
+double TestJob::getEnergyDiff(std::string pot, double refEnergy) {
+  std::string posFilename("pos_test.con");
   params->potential = pot;
   Matter *pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posFilename);
@@ -278,8 +272,8 @@ double TestJob::getEnergyDiff(string pot, double refEnergy) {
   return pos->getPotentialEnergy() - refEnergy;
 }
 
-double TestJob::getForceDiff(string pot, double refForce) {
-  string posFilename("pos_test.con");
+double TestJob::getForceDiff(std::string pot, double refForce) {
+  std::string posFilename("pos_test.con");
   params->potential = pot;
   Matter *pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posFilename);

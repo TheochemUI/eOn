@@ -5,6 +5,7 @@
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "SurrogatePotential.h"
+#include <iostream>
 
 // To write the R style data frame
 #include <fmt/os.h>
@@ -63,17 +64,17 @@ public:
   void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
   VectorXd getPositions() { return matter->getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
-  bool isConverged() { return getConvergence() < params->optConvergedForce; }
+  bool isConverged() { return getConvergence() < params->optim.convergedForce; }
   double getConvergence() {
-    if (params->optConvergenceMetric == "norm") {
+    if (params->optim.convergenceMetric == "norm") {
       return matter->getForcesFreeV().norm();
-    } else if (params->optConvergenceMetric == "max_atom") {
+    } else if (params->optim.convergenceMetric == "max_atom") {
       return matter->maxForce();
-    } else if (params->optConvergenceMetric == "max_component") {
+    } else if (params->optim.convergenceMetric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
       SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
-                      params->optConvergenceMetric);
+                      params->optim.convergenceMetric);
       std::exit(1);
     }
   }
@@ -125,21 +126,23 @@ const Matter &Matter::operator=(const Matter &matter) {
 bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
-  if (parameters->checkRotation && indistinguishable) {
+  if (parameters->structcomp.checkRotation && indistinguishable) {
     return helper_functions::sortedR(*this, matter,
-                                     parameters->distanceDifference);
+                                     parameters->structcomp.distanceDifference);
   } else if (indistinguishable) {
-    if (this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and
+        parameters->structcomp.removeTranslation)
       helper_functions::translationRemove(*this, matter);
-    return helper_functions::identical(*this, matter,
-                                       parameters->distanceDifference);
-  } else if (parameters->checkRotation) {
-    return helper_functions::rotationMatch(*this, matter,
-                                           parameters->distanceDifference);
+    return helper_functions::identical(
+        *this, matter, parameters->structcomp.distanceDifference);
+  } else if (parameters->structcomp.checkRotation) {
+    return helper_functions::rotationMatch(
+        *this, matter, parameters->structcomp.distanceDifference);
   } else {
-    if (this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and
+        parameters->structcomp.removeTranslation)
       helper_functions::translationRemove(*this, matter);
-    return (parameters->distanceDifference) > perAtomNorm(matter);
+    return (parameters->structcomp.distanceDifference) > perAtomNorm(matter);
   }
 }
 
@@ -262,7 +265,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   auto objf = std::make_shared<MatterObjectiveFunction>(
       std::make_shared<Matter>(*this), parameters);
   auto optim =
-      helpers::create::mkOptim(objf, parameters->optMethod, parameters);
+      helpers::create::mkOptim(objf, parameters->optim.method, parameters);
 
   ostringstream min;
   min << prefixMovie;
@@ -274,17 +277,17 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   if (!quiet) {
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
                         "[Matter]", "Iter", "Step size",
-                        parameters->optConvergenceMetricLabel, "Energy");
+                        parameters->optim.convergenceMetricLabel, "Energy");
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
                         "[Matter]", iteration, 0.0, objf->getConvergence(),
                         getPotentialEnergy());
   }
 
-  while (!objf->isConverged() && iteration < parameters->optMaxIterations) {
+  while (!objf->isConverged() && iteration < parameters->optim.maxIterations) {
 
     AtomMatrix pos = getPositions();
 
-    optim->step(parameters->optMaxMove);
+    optim->step(parameters->optim.maxMove);
     iteration++;
     setPositionsFreeV(objf->getPositions());
 
@@ -803,7 +806,7 @@ void Matter::computePotential() {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
       potential =
-          helper_functions::makePotential(parameters->potential, parameters);
+          helper_functions::makePotential(parameters->pot.potential, parameters);
     }
     auto surrogatePotential =
         std::dynamic_pointer_cast<SurrogatePotential>(potential);
@@ -829,7 +832,7 @@ void Matter::computePotential() {
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 && parameters->removeNetForce) {
+    if (isFixed.sum() == 0 && parameters->main.removeNetForce) {
       Vector3d tempForce(3);
       tempForce = forces.colwise().sum() / nAtoms;
 
