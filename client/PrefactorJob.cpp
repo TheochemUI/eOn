@@ -12,9 +12,9 @@ std::vector<std::string> PrefactorJob::run(void) {
   std::vector<std::string> returnFiles;
   VectorXd freqs;
 
-  string reactantFilename("reactant.con");
-  string saddleFilename("saddle.con");
-  string productFilename("product.con");
+  std::string reactantFilename("reactant.con");
+  std::string saddleFilename("saddle.con");
+  std::string productFilename("product.con");
 
   auto reactant = std::make_unique<Matter>(pot, params);
   auto saddle = std::make_unique<Matter>(pot, params);
@@ -29,16 +29,17 @@ std::vector<std::string> PrefactorJob::run(void) {
   // printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
 
   VectorXi atoms;
-  if (params->prefactorAllFreeAtoms) {
+  if (params->prefactor.allFreeAtoms) {
     // it is sufficient to pass the configuration
     // for which the frequencies should be determined
-    string matterFilename;
-    if (params->prefactorConfiguration == PrefactorJob::PREFACTOR_REACTANT) {
+    std::string matterFilename;
+    // TODO(rg): Also an enum candidate
+    if (params->prefactor.configuration == PrefactorJob::PREFACTOR_REACTANT) {
       matterFilename = reactantFilename;
-    } else if (params->prefactorConfiguration ==
+    } else if (params->prefactor.configuration ==
                PrefactorJob::PREFACTOR_SADDLE) {
       matterFilename = saddleFilename;
-    } else if (params->prefactorConfiguration ==
+    } else if (params->prefactor.configuration ==
                PrefactorJob::PREFACTOR_PRODUCT) {
       matterFilename = productFilename;
     }
@@ -60,13 +61,14 @@ std::vector<std::string> PrefactorJob::run(void) {
   assert(3 * atoms.rows() > 0);
 
   // calculate frequencies
-  if (params->prefactorConfiguration == PrefactorJob::PREFACTOR_REACTANT) {
+  if (params->prefactor.configuration == PrefactorJob::PREFACTOR_REACTANT) {
     Hessian hessian(params.get(), reactant.get());
     freqs = hessian.getFreqs(reactant.get(), atoms);
-  } else if (params->prefactorConfiguration == PrefactorJob::PREFACTOR_SADDLE) {
+  } else if (params->prefactor.configuration ==
+             PrefactorJob::PREFACTOR_SADDLE) {
     Hessian hessian(params.get(), saddle.get());
     freqs = hessian.getFreqs(saddle.get(), atoms);
-  } else if (params->prefactorConfiguration ==
+  } else if (params->prefactor.configuration ==
              PrefactorJob::PREFACTOR_PRODUCT) {
     Hessian hessian(params.get(), product.get());
     freqs = hessian.getFreqs(product.get(), atoms);

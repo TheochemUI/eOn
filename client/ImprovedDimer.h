@@ -11,13 +11,13 @@
 class ImprovedDimer : public LowestEigenmode {
 
 private:
-  shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> log;
 
 public:
   // Optimization for the dimer
-  //    static const string OPT_SD;
-  //    static const string OPT_CG;
-  //    static const string OPT_LBFGS;
+  //    static const std::string OPT_SD;
+  //    static const std::string OPT_CG;
+  //    static const std::string OPT_LBFGS;
   static const char OPT_SD[];
   static const char OPT_CG[];
   static const char OPT_LBFGS[];

@@ -24,7 +24,7 @@ private:
   void randomSwap(Matter *matter);
   std::shared_ptr<Matter> current;
   std::shared_ptr<Matter> trial; // initial configuration
-  vector<long> getElements(Matter *matter);
+  std::vector<long> getElements(Matter *matter);
   std::vector<std::string> returnFiles;
   int jump_count; // count of jump moves
   int disp_count; // count of displacement moves

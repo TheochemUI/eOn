@@ -11,10 +11,10 @@ const char Dynamics::NONE[] = "none";
 Dynamics::Dynamics(Matter *matter_in, Parameters *parameters_in) {
   matter = matter_in;
   parameters = parameters_in;
-  dt = parameters->mdTimeStep;
+  dt = parameters->md.timeStep;
   nAtoms = matter->numberOfAtoms();
   nFreeCoords = matter->numberOfFreeAtoms() * 3;
-  temperature = parameters->temperature;
+  temperature = parameters->main.temperature;
   kB = parameters->kB;
   vxi1 = vxi2 = xi1 = xi2 = 0.0; // NoseHoover variables
   log = spdlog::get("combi");
@@ -27,14 +27,15 @@ void Dynamics::setTemperature(double temperature_in) {
 }
 
 void Dynamics::oneStep(int stepNumber) {
-  if (parameters->thermostat == ANDERSEN) {
+  // TODO(rg): These should be named enums
+  if (parameters->thermostat.kind == ANDERSEN) {
     andersenCollision();
     velocityVerlet();
-  } else if (parameters->thermostat == NOSE_HOOVER) {
+  } else if (parameters->thermostat.kind == NOSE_HOOVER) {
     noseHooverVerlet();
-  } else if (parameters->thermostat == LANGEVIN) {
+  } else if (parameters->thermostat.kind == LANGEVIN) {
     langevinVerlet();
-  } else if (parameters->thermostat == NONE) {
+  } else if (parameters->thermostat.kind == NONE) {
     velocityVerlet();
   }
 
@@ -50,7 +51,7 @@ void Dynamics::oneStep(int stepNumber) {
     potE = matter->getPotentialEnergy();
     kinT = (2.0 * kinE / nFreeCoords / kB);
 
-    if (stepNumber % parameters->writeMoviesInterval == 0) {
+    if (stepNumber % parameters->debug.writeMoviesInterval == 0) {
       SPDLOG_LOGGER_DEBUG(
           log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n", "[Dynamics]",
           stepNumber, kinE, potE, kinE + potE, kinT);
@@ -79,26 +80,26 @@ void Dynamics::run() {
 
   setThermalVelocity();
 
-  if (parameters->thermostat != NONE) {
+  if (parameters->thermostat.kind != NONE) {
     SPDLOG_LOGGER_DEBUG(log,
                         "{} Running NVT molecular dynamics: {:8.2lf} K for {} "
                         "steps ({:.4e} s)\n",
-                        "[Dynamics]", temperature, parameters->mdSteps,
-                        1e-15 * parameters->mdTimeStep * parameters->timeUnit *
-                            parameters->mdSteps);
+                        "[Dynamics]", temperature, parameters->md.steps,
+                        1e-15 * parameters->md.timeStep * parameters->timeUnit *
+                            parameters->md.steps);
   } else {
     SPDLOG_LOGGER_DEBUG(log, "{} Running NVE molecular dynamics: {} steps\n",
-                        "[Dynamics]", parameters->mdSteps);
+                        "[Dynamics]", parameters->md.steps);
   }
 
-  if (parameters->writeMovies == true) {
+  if (parameters->debug.writeMovies == true) {
     matter->matter2con("dynamics", false);
   }
 
   SPDLOG_LOGGER_DEBUG(log, "%s %8s %10s %12s %12s %10s\n", "[Dynamics]"s,
                       "step", "KE", "PE", "TE", "kinT");
 
-  for (long step = 0; step <= parameters->mdSteps; step++) {
+  for (long step = 0; step <= parameters->md.steps; step++) {
     oneStep();
 
     velocity = matter->getVelocities();
@@ -108,18 +109,18 @@ void Dynamics::run() {
     sumT += kinT;
     sumT2 += kinT * kinT;
 
-    if (step % parameters->writeMoviesInterval == 0) {
+    if (step % parameters->debug.writeMoviesInterval == 0) {
       SPDLOG_LOGGER_DEBUG(log, "{} {:8} {:10} {:12} {:12} {:10}\n",
                           "[Dynamics]", step, kinE, potE, kinE + potE, kinT);
     }
 
-    if ((parameters->writeMovies == true) &&
-        (step % parameters->writeMoviesInterval == 0)) {
+    if ((parameters->debug.writeMovies == true) &&
+        (step % parameters->debug.writeMoviesInterval == 0)) {
       matter->matter2con("dynamics", true);
     }
   }
-  avgT = sumT / double(parameters->mdSteps);
-  varT = sumT2 / double(parameters->mdSteps) - avgT * avgT;
+  avgT = sumT / double(parameters->md.steps);
+  varT = sumT2 / double(parameters->md.steps) - avgT * avgT;
   stdT = sqrt(varT);
   SPDLOG_LOGGER_DEBUG(log,
                       "{} Temperature : Average = {:.2lf} ; StdDev = {:.2lf} ; "
@@ -134,10 +135,10 @@ void Dynamics::andersenCollision() {
   Matrix<double, Eigen::Dynamic, 1> mass;
   AtomMatrix velocity;
 
-  alpha = parameters->thermoAndersenAlpha; // collision strength
-  tCol = parameters->thermoAndersenTcol; // average time between collisions, in
+  alpha = parameters->thermostat.andersenAlpha; // collision strength
+  tCol = parameters->thermostat.andersenTcol; // average time between collisions, in
                                          // unit of fs
-  pCol = 1.0 - exp(-parameters->mdTimeStep / tCol);
+  pCol = 1.0 - exp(-parameters->md.timeStep / tCol);
 
   velocity = matter->getVelocities();
   mass = matter->getMasses();
@@ -184,7 +185,7 @@ void Dynamics::noseHooverVerlet() {
   dt2 = 0.5 * dt;
   dt4 = 0.25 * dt;
   dt8 = 0.125 * dt;
-  q1 = q2 = parameters->thermoNoseMass;
+  q1 = q2 = parameters->thermostat.noseMass;
   g1 = g2 = 0.0;
   Temp = kB * temperature; // imposed temperature
 
@@ -251,7 +252,7 @@ void Dynamics::langevinVerlet() {
   AtomMatrix noise;
   double gamma;
 
-  gamma = parameters->thermoLangevinFriction;
+  gamma = parameters->thermostat.langevinFriction;
   pos = matter->getPositions();
   vel = matter->getVelocities();
 

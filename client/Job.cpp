@@ -25,7 +25,7 @@
 
 namespace helper_functions {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
-  switch (params->job) {
+  switch (params->main.job) {
   case JobType::Process_Search: {
     return (std::make_unique<ProcessSearchJob>(std::move(params)));
     break;

@@ -49,7 +49,7 @@ public:
   std::vector<std::string> run(void) override;
 
 private:
-  shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> log;
   //! Runs the correct saddle search; also checks if the run was successful
   int doProcessSearch(void);
   //! UNDEFINED
@@ -82,11 +82,11 @@ private:
   //! Second minimum from the saddle
   std::shared_ptr<Matter> min2;
 
-  //! Array containg the value of the potential barriers from reactant to
+  //! Array containing the value of the potential barriers from reactant to
   //! product and vice versa
   double barriersValues[2];
-  //! Array containg the value of the prefactors of the matter from reactant to
-  //! product and vice versa
+  //! Array containing the value of the prefactors of the matter from reactant
+  //! to product and vice versa
   double prefactorsValues[2];
 
   //! Force calls to find the saddle

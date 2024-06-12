@@ -21,7 +21,7 @@ public:
 private:
   std::shared_ptr<Matter> matter;
   std::shared_ptr<Parameters> params;
-  shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif

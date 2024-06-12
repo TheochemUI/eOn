@@ -3,7 +3,7 @@
 #include <cstdlib>
 
 int main(void) {
-  string confile("pos.con");
+  std::string confile("pos.con");
   auto parameters = std::make_shared<Parameters>();
   auto pot = helper_functions::makePotential(parameters);
   Matter *matter = new Matter(pot, parameters);

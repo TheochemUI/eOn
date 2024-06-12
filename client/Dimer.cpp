@@ -66,19 +66,20 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     assert(std::isnormal(torque));
 
     // convergence scheme
-    if ((torque > params->dimerTorqueMax &&
-         rotations >= params->dimerRotationsMax) ||
-        (torque < params->dimerTorqueMax && torque >= params->dimerTorqueMin &&
-         rotations >= params->dimerRotationsMin) ||
-        (torque < params->dimerTorqueMin)) {
+    if ((torque > params->dimer.torqueMax &&
+         rotations >= params->dimer.rotationsMax) ||
+        (torque < params->dimer.torqueMax &&
+         torque >= params->dimer.torqueMin &&
+         rotations >= params->dimer.rotationsMin) ||
+        (torque < params->dimer.torqueMin)) {
       /*            cout << "torque: "<<torque<<endl;
-                  cout << "params->dimerTorqueMax:
-         "<<params->dimerTorqueMax<<endl; cout <<
-         "params->dimerTorqueMin: "<<params->dimerTorqueMin<<endl; cout
+                  cout << "params->dimer.torqueMax:
+         "<<params->dimer.torqueMax<<endl; cout <<
+         "params->dimer.torqueMin: "<<params->dimer.torqueMin<<endl; cout
          << "rotations: "<<rotations<<endl; cout <<
-         "params->dimerRotationsMax: "<<params->dimerRotationsMax<<endl;
-                  cout << "params->dimerRotationsMin:
-         "<<params->dimerRotationsMin<<endl; */
+         "params->dimer.rotationsMax: "<<params->dimer.rotationsMax<<endl;
+                  cout << "params->dimer.rotationsMin:
+         "<<params->dimer.rotationsMin<<endl; */
       doneRotating = true;
     }
 
@@ -86,7 +87,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     rotationalForce1 =
         (rotationalForce.array() * rotationalPlane.array()).sum();
 
-    rotate(params->dimerRotationAngle);
+    rotate(params->dimer.rotationAngle);
 
     if (!doneRotating) {
       // rotated dimer
@@ -96,12 +97,12 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
           (rotationalForce.array() * rotationalPlane.array()).sum();
 
       rotationalForceChange =
-          ((rotationalForce1 - rotationalForce2) / params->dimerRotationAngle);
+          ((rotationalForce1 - rotationalForce2) / params->dimer.rotationAngle);
 
       forceDimer = (rotationalForce1 + rotationalForce2) / 2.0;
 
       rotationAngle = (atan(2.0 * forceDimer / rotationalForceChange) / 2.0 -
-                       params->dimerRotationAngle / 2.0);
+                       params->dimer.rotationAngle / 2.0);
 
       //            std::cout << "Rotation Angle: " <<rotationAngle <<endl;
       //            //debug
@@ -152,17 +153,17 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   posCenter = matterCenter->getPositions();
 
   // displace to get the dimer configuration A
-  posDimer = posCenter + direction * params->finiteDifference;
+  posDimer = posCenter + direction * params->main.finiteDifference;
 
   // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
   // http://doi.org/10.1021/ct501155k
-  if (params->dimerRemoveRotation) {
+  if (params->dimer.removeRotation) {
     matterDimer->setPositions(posDimer);
     rotationRemove(matterCenter, matterDimer);
     posDimer = matterDimer->getPositions();
     direction = posDimer - posCenter;
     direction.normalize();
-    posDimer = posCenter + direction * params->finiteDifference;
+    posDimer = posCenter + direction * params->main.finiteDifference;
   }
 
   // obtain the force for the dimer configuration
@@ -181,10 +182,10 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   forceB = makeOrthogonal(forceB, direction);
 
   // determine difference in force orthogonal to dimer
-  rotationalForce = (forceA - forceB) / (2.0 * params->finiteDifference);
+  rotationalForce = (forceA - forceB) / (2.0 * params->main.finiteDifference);
 
   // curvature along the dimer
-  return (projectedForceB - projectedForceA) / (2.0 * params->finiteDifference);
+  return (projectedForceB - projectedForceA) / (2.0 * params->main.finiteDifference);
 }
 
 void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,

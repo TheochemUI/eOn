@@ -11,9 +11,9 @@ public:
   FIRE(std::shared_ptr<ObjectiveFunction> a_objf,
        std::shared_ptr<Parameters> a_params)
       : Optimizer(a_objf, OptType::FIRE, a_params),
-        m_dt{a_params->optTimeStep},
-        m_dt_max{a_params->optMaxTimeStep},
-        m_max_move{a_params->optMaxMove},
+        m_dt{a_params->optim.timeStep},
+        m_dt_max{a_params->optim.maxTimeStep},
+        m_max_move{a_params->optim.maxMove},
         m_N_min{5},
         m_N{0},
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
@@ -45,7 +45,7 @@ private:
   double m_f_dec;
   double m_f_a;
   size_t m_iteration;
-  shared_ptr<spdlog::logger> m_log;
+  std::shared_ptr<spdlog::logger> m_log;
 };
 
 #endif

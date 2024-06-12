@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <iostream>
 #include <optional>
 
 class Potential {
@@ -22,14 +23,16 @@ public:
       : ptype{a_ptype},
         m_params{a_params},
         forceCallCounter{0} {
+    SPDLOG_TRACE("CREATED WITH {}", forceCallCounter);
     initializeLogger();
   }
 
   // Delegating Constructor
   Potential(std::shared_ptr<Parameters> a_params)
-      : Potential(a_params->potential, a_params) {}
+      : Potential(a_params->pot.potential, a_params) {}
 
   virtual ~Potential() {
+    SPDLOG_TRACE("DESTROYED AFTER {}\n", forceCallCounter);
     if (m_log) {
       m_log->trace("[{}] destroyed after {} calls",
                    magic_enum::enum_name<PotType>(getType()), forceCallCounter);

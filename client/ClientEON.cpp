@@ -11,11 +11,11 @@
 
 #include <chrono>
 #include <errno.h>
+#include <filesystem>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <string.h>
 #include <time.h>
-#include <filesystem>
 
 #ifdef EONMPI
 #include <Python.h>
@@ -156,10 +156,10 @@ int main(int argc, char **argv) {
   }
 
   int error;
-  string config_file = "config.ini";
+  std::string config_file = "config.toml";
   if (client_standalone) {
-    if (helper_functions::existsFile("config_0.ini")) {
-      config_file = "config_0.ini";
+    if (helper_functions::existsFile("config_0.toml")) {
+      config_file = "config_0.toml";
     }
     printf("Loading parameter file %s\n", config_file.c_str());
     error = parameters.load(config_file);
@@ -371,8 +371,8 @@ int main(int argc, char **argv) {
 
       // check to see if parameters file exists before loading
       int error = 0;
-      string config_file =
-          helper_functions::getRelevantFile(parameters.iniFilename);
+      std::string config_file =
+          helper_functions::getRelevantFile(parameters.main.iniFilename);
       printf("Loading parameter file %s\n", config_file.c_str());
       error = parameters.load(config_file);
 
@@ -388,7 +388,7 @@ int main(int argc, char **argv) {
           helper_functions::makeJob(std::make_unique<Parameters>(parameters));
       if (job == nullptr) {
         printf("error: Unknown job: %s\n",
-               std::string{magic_enum::enum_name<JobType>(parameters.job)}
+               std::string{magic_enum::enum_name<JobType>(parameters.main.job)}
                    .c_str());
         return 1;
       }

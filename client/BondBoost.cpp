@@ -35,15 +35,15 @@ BondBoost::~BondBoost() {
 void BondBoost::initialize() {
   long i, j, k = 0, count = 0;
   bool flag = 1;
-  string BALstring; // Boosted Atom List String
-  vector<int> atoms;
+  std::string BALstring; // Boosted Atom List String
+  std::vector<int> atoms;
   int leng_strlist;
   nBBs = 0;
   nReg = 1;
-  BALstring = parameters->bondBoostBALS;
+  BALstring = parameters->bondBoost.BALS;
   atoms = helper_functions::split_string_int(BALstring, ",");
   leng_strlist = atoms.size();
-  if (BALstring.c_str() == string("all") or atoms.size() == 0) {
+  if (BALstring.c_str() == std::string("all") or atoms.size() == 0) {
     SPDLOG_LOGGER_DEBUG(log, "boost all atoms that are set free\n");
     nBAs = matter->numberOfFreeAtoms();
     nRAs = nAtoms - nBAs;    // nRestAtoms
@@ -127,7 +127,7 @@ double BondBoost::boost() {
   Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs, 1);
   bool flag = 0;
 
-  RMDS = int(parameters->bondBoostRMDTime / parameters->mdTimeStep);
+  RMDS = int(parameters->bondBoost.RMDTime / parameters->md.timeStep);
   biasPot = 0.0;
 
   if (nReg <= RMDS) {
@@ -186,9 +186,9 @@ double BondBoost::Booststeps() {
   AddForces.setZero();
   BiasForces.setZero();
 
-  QRR = parameters->bondBoostQRR;
-  PRR = parameters->bondBoostPRR;
-  DVMAX = parameters->bondBoostDVMAX;
+  QRR = parameters->bondBoost.QRR;
+  PRR = parameters->bondBoost.PRR;
+  DVMAX = parameters->bondBoost.DVMAX;
   Epsr_MAX = 0.0;
   A_EPS_M = 0.0;
   Boost_Fact = 0.0;
@@ -357,7 +357,7 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
 
 long BondBoost::BondSelect() {
   long count = 0, i, nBBs_tmp = 0;
-  double Qcutoff = parameters->bondBoostQcut;
+  double Qcutoff = parameters->bondBoost.Qcut;
 
   for (i = 0; i < nTABs; i++) {
     if (TABLList(i, 0) <= Qcutoff) {

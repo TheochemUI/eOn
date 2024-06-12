@@ -4,7 +4,7 @@
 #include "Potential.h"
 
 std::vector<std::string> HessianJob::run(void) {
-  string matter_in("pos.con");
+  std::string matter_in("pos.con");
 
   std::vector<std::string> returnFiles;
 
