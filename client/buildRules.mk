@@ -148,7 +148,7 @@ endif
 # --- Build
 SRC := ./
 TEMPDIR := ./.build
-FILES :=   ClientEON.cpp INIFile.cpp MinModeSaddleSearch.cpp Dimer.cpp EpiCenters.cpp \
+FILES :=   ClientEON.cpp MinModeSaddleSearch.cpp Dimer.cpp EpiCenters.cpp \
            Hessian.cpp ConjugateGradients.cpp HelperFunctions.cpp Matter.cpp \
            Parameters.cpp Potential.cpp Quickmin.cpp ProcessSearchJob.cpp PointJob.cpp \
            MinimizationJob.cpp HessianJob.cpp ParallelReplicaJob.cpp \
