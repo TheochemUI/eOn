@@ -115,7 +115,6 @@ add_library(
   HelperFunctions.cpp
   Matter.cpp
   Parameters.cpp
-  INIFile.cpp
   Potential.cpp
   Quickmin.cpp
   ProcessSearchJob.cpp

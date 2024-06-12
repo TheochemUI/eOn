@@ -143,19 +143,6 @@ spdlog_dep = dependency('spdlog', required : true)
 _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
-eoncbase_sources = [
-  'INIFile.cpp',
-]
-
-eoncbase = library('eoncbase',
-  sources : eoncbase_sources,
-  dependencies : _deps,
-  cpp_args : _args,
-  include_directories: _incdirs,
-  install : true)
-
-_linkto += eoncbase
-
 # Potentials
 subdir('potentials/EAM')
 subdir('potentials/EMT')
