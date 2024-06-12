@@ -9,30 +9,22 @@
 //-----------------------------------------------------------------------------------
 
 #include "ASE_ORCA.h"
+#include "../../EnvHelpers.hpp"
 #include "Eigen/src/Core/Matrix.h"
 
-ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
+ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
     : Potential(PotType::ASE_ORCA, a_params) {
   counter = 1;
   py::module_ sys = py::module_::import("sys");
   ase = py::module_::import("ase");
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
-  std::string orcpth;
-
-  // Check if orca_path is set to "SET_ME"
-  if (a_params->orca_path == "ORCA_COMMAND") {
-    // Check if ORCA_COMMAND environment variable is set
-    const char *orca_env_path = std::getenv("ORCA_COMMAND");
-    if (orca_env_path != nullptr) {
-      orcpth = std::string(orca_env_path);
-    } else {
-      throw std::runtime_error(
-          "ORCA path is not set. Please set orca_path in the configuration or the ORCA_COMMAND environment variable."s);
-    }
-  } else {
-    orcpth = a_params->orca_path;
-  }
+  std::string orcpth = helper_functions::get_value_from_env_or_param(
+      "ORCA_COMMAND", a_params->orca_path, "", "", true);
+  std::string orca_simpleinput = helper_functions::get_value_from_env_or_param(
+      "ORCA_SIMPLEINPUT", a_params->orca_sline, "ENGRAD HF-3c",
+      "Using ENGRAD HF-3c as a default input, set simpleinput or the "
+      "environment variable ORCA_SIMPLEINPUT.\n");
 
   // Set up ORCA profile and calculator
   py::object OrcaProfile = ase_orca.attr("OrcaProfile");
@@ -45,7 +37,6 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
     nproc = std::stoi(a_params->orca_nproc);
   }
 
-  std::string orca_simpleinput(fmt::format("{}", a_params->orca_sline));
   this->calc =
       ORCA("profile"_a = OrcaProfile(py::str(orcpth)),
            "orcasimpleinput"_a = orca_simpleinput,
