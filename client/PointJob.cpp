@@ -3,8 +3,8 @@
 
 std::vector<std::string> PointJob::run(void) {
   std::vector<std::string> returnFiles;
-  string posInFilename("pos.con");
-  string resultsFilename("results.dat");
+  std::string posInFilename("pos.con");
+  std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
 
   auto pos = std::make_unique<Matter>(pot, params);

@@ -49,22 +49,22 @@ public:
         (force.array() * eigenvector.array()).sum() * eigenvector.normalized();
 
     if (0 < eigenvalue) {
-      if (params->saddlePerpForceRatio > 0.0) {
+      if (params->saddle.perpForceRatio > 0.0) {
         // reverse force parallel to eigenvector, and reduce perpendicular force
-        double const d = params->saddlePerpForceRatio;
+        double const d = params->saddle.perpForceRatio;
         force = d * force - (1. + d) * proj;
 
         // zero out the smallest forces to keep displacement confined
-      } else if (params->saddleConfinePositive) {
-        if (params->saddleBowlBreakout) {
+      } else if (params->saddle.confinePositive) {
+        if (params->saddle.bowlBreakout) {
           AtomMatrix forceTemp = matter->getForces();
           double *indices_max;
-          indices_max = new double[params->saddleBowlActive];
+          indices_max = new double[params->saddle.bowlActive];
 
           // determine the force for the x largest component
           double f_max;
           int i_max;
-          for (int j = 0; j < params->saddleBowlActive; j++) {
+          for (int j = 0; j < params->saddle.bowlActive; j++) {
             f_max = forceTemp.row(0).norm();
             i_max = 0;
             for (int i = 0; i < matter->numberOfAtoms(); i++) {
@@ -85,7 +85,7 @@ public:
           }
           // only set the projected forces corresponding to the atoms subject to
           // the largest forces
-          for (int j = 0; j < params->saddleBowlActive; j++) {
+          for (int j = 0; j < params->saddle.bowlActive; j++) {
             size_t tind = static_cast<size_t>(indices_max[j]);
             forceTemp(3 * tind + 0) = -proj(3 * tind + 0);
             forceTemp(3 * tind + 1) = -proj(3 * tind + 1);
@@ -95,8 +95,8 @@ public:
           delete[] indices_max;
         } else {
           int sufficientForce = 0;
-          double minForce = params->saddleConfinePositiveMinForce;
-          while (sufficientForce < params->saddleConfinePositiveMinActive) {
+          double minForce = params->saddle.confinePositiveMinForce;
+          while (sufficientForce < params->saddle.confinePositiveMinActive) {
             sufficientForce = 0;
             force = matter->getForces();
             for (int i = 0; i < 3 * matter->numberOfAtoms(); i++) {
@@ -104,10 +104,10 @@ public:
                 force(i) = 0;
               else {
                 sufficientForce = sufficientForce + 1;
-                force(i) = -params->saddleConfinePositiveBoost * proj(i);
+                force(i) = -params->saddle.confinePositiveBoost * proj(i);
               }
             }
-            minForce *= params->saddleConfinePositiveScaleRatio;
+            minForce *= params->saddle.confinePositiveScaleRatio;
           }
         }
       } else {
@@ -126,18 +126,20 @@ public:
   void setPositions(VectorXd x) { matter->setPositionsV(x); }
   VectorXd getPositions() { return matter->getPositionsV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
-  bool isConverged() { return getConvergence() < params->saddleConvergedForce; }
+  bool isConverged() {
+    return getConvergence() < params->saddle.convergedForce;
+  }
 
   double getConvergence() {
-    if (params->optConvergenceMetric == "norm") {
+    if (params->optim.convergenceMetric == "norm") {
       return matter->getForcesFreeV().norm();
-    } else if (params->optConvergenceMetric == "max_atom") {
+    } else if (params->optim.convergenceMetric == "max_atom") {
       return matter->maxForce();
-    } else if (params->optConvergenceMetric == "max_component") {
+    } else if (params->optim.convergenceMetric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
       SPDLOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
-                   params->optConvergenceMetric);
+                   params->optim.convergenceMetric);
       std::exit(1);
     }
   }
@@ -157,13 +159,13 @@ MinModeSaddleSearch::MinModeSaddleSearch(
   iteration = 0;
   log = spdlog::get("combi");
 
-  if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-    if (params->dimerImproved) {
+  if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+    if (params->dimer.improved) {
       minModeMethod = std::make_shared<ImprovedDimer>(matter, params, pot);
     } else {
       minModeMethod = std::make_shared<Dimer>(matter, params, pot);
     }
-  } else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = std::make_shared<Lanczos>(matter, params, pot);
   }
 #ifdef WITH_GPRD
@@ -180,9 +182,9 @@ int MinModeSaddleSearch::run() {
 
   int optStatus;
   int firstIteration = 1;
-  const char *forceLabel = params->optConvergenceMetricLabel.c_str();
+  const char *forceLabel = params->optim.convergenceMetricLabel.c_str();
 
-  if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+  if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
     SPDLOG_LOGGER_DEBUG(
         log, "================= Using the GP Dimer Library =================");
     minModeMethod->compute(matter, mode);
@@ -195,7 +197,7 @@ int MinModeSaddleSearch::run() {
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
     if (fabs(minModeMethod->getEigenvalue()) <
-        params->saddleZeroModeAbortCurvature) {
+        params->saddle.zeroModeAbortCurvature) {
       printf("%f\n", minModeMethod->getEigenvalue());
       status = STATUS_ZEROMODE_ABORT;
     }
@@ -204,20 +206,20 @@ int MinModeSaddleSearch::run() {
     forcecalls = minModeMethod->totalForceCalls;
   } else {
 
-    if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+    if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_DIMER) {
       SPDLOG_LOGGER_INFO(log,
                          "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
                          "{:7s}   {:6s}   {:4s}\n",
                          "Step", "Step Size", "Delta E", forceLabel,
                          "Curvature", "Torque", "Angle", "Rots");
-    } else if (params->saddleMinmodeMethod ==
+    } else if (params->saddle.minmodeMethod ==
                LowestEigenmode::MINMODE_LANCZOS) {
       SPDLOG_LOGGER_INFO(
           log,
           "[Lanczos]  {:9s} {:9s} {:10s} {:18s} {:9s} {:10s} {:7s} {:5s}\n",
           "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change",
           "Angle", "Iters");
-    } else if (params->saddleMinmodeMethod ==
+    } else if (params->saddle.minmodeMethod ==
                LowestEigenmode::MINMODE_GPRDIMER) {
       SPDLOG_LOGGER_INFO(log,
                          "[GPRDimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}  "
@@ -226,9 +228,9 @@ int MinModeSaddleSearch::run() {
                          "Curvature", "Torque", "Angle", "Rots");
     }
 
-    ostringstream climb;
+    std::ostringstream climb;
     climb << "climb";
-    if (params->writeMovies) {
+    if (params->debug.writeMovies) {
       matter->matter2con(climb.str(), false);
     }
 
@@ -237,7 +239,7 @@ int MinModeSaddleSearch::run() {
     auto objf = std::make_shared<MinModeObjectiveFunction>(
         matter, minModeMethod, mode, params);
     // objf->getGradient();
-    if (params->saddleNonnegativeDisplacementAbort) {
+    if (params->saddle.nonnegativeDisplacementAbort) {
       objf->getGradient();
       if (minModeMethod->getEigenvalue() > 0) {
         printf("%f\n", minModeMethod->getEigenvalue());
@@ -245,17 +247,17 @@ int MinModeSaddleSearch::run() {
       }
     }
 
-    auto optim = helpers::create::mkOptim(objf, params->optMethod, params);
+    auto optim = helpers::create::mkOptim(objf, params->optim.method, params);
 
     while (!objf->isConverged() || iteration == 0) {
 
       if (!firstIteration) {
 
         // Abort if negative mode becomes delocalized
-        if (params->saddleNonlocalCountAbort != 0) {
+        if (params->saddle.nonlocalCountAbort != 0) {
           long nm = numAtomsMoved(initialPosition - matter->getPositions(),
-                                  params->saddleNonlocalDistanceAbort);
-          if (nm >= params->saddleNonlocalCountAbort) {
+                                  params->saddle.nonlocalDistanceAbort);
+          if (nm >= params->saddle.nonlocalCountAbort) {
             status = STATUS_NONLOCAL_ABORT;
             break;
           }
@@ -264,7 +266,7 @@ int MinModeSaddleSearch::run() {
         // Abort if negative mode becomes zero
         // cout << "curvature: "<<fabs(minModeMethod->getEigenvalue())<<"\n";
         if (fabs(minModeMethod->getEigenvalue()) <
-            params->saddleZeroModeAbortCurvature) {
+            params->saddle.zeroModeAbortCurvature) {
           printf("%f\n", minModeMethod->getEigenvalue());
           status = STATUS_ZEROMODE_ABORT;
           break;
@@ -272,24 +274,24 @@ int MinModeSaddleSearch::run() {
       }
       firstIteration = 0;
 
-      if (iteration >= params->saddleMaxIterations) {
+      if (iteration >= params->saddle.maxIterations) {
         status = STATUS_BAD_MAX_ITERATIONS;
         break;
       }
 
       AtomMatrix pos = matter->getPositions();
 
-      if (params->saddleBowlBreakout) {
+      if (params->saddle.bowlBreakout) {
         // use negative step to communicate that the system is the negative
         // region and a max step should be performed
         if ((minModeMethod->getEigenvalue() > 0) and
-            (params->optMethod == OptType::CG)) {
-          optStatus = optim->step(-params->optMaxMove);
+            (params->optim.method == OptType::CG)) {
+          optStatus = optim->step(-params->optim.maxMove);
         } else {
-          optStatus = optim->step(params->optMaxMove);
+          optStatus = optim->step(params->optim.maxMove);
         }
       } else {
-        optStatus = optim->step(params->optMaxMove);
+        optStatus = optim->step(params->optim.maxMove);
       }
 
       if (optStatus < 0) {
@@ -307,14 +309,14 @@ int MinModeSaddleSearch::run() {
 
       // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
       // http://doi.org/10.1021/ct501155k
-      if (params->saddleRemoveRotation) {
+      if (params->saddle.removeRotation) {
         rotationRemove(pos, matter);
       }
       stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
 
       iteration++;
 
-      if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+      if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_DIMER) {
         SPDLOG_LOGGER_DEBUG(
             log,
             "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
@@ -323,7 +325,7 @@ int MinModeSaddleSearch::run() {
             objf->getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
-      } else if (params->saddleMinmodeMethod ==
+      } else if (params->saddle.minmodeMethod ==
                  LowestEigenmode::MINMODE_LANCZOS) {
         SPDLOG_LOGGER_DEBUG(
             log,
@@ -333,7 +335,7 @@ int MinModeSaddleSearch::run() {
             objf->getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
-      } else if (params->saddleMinmodeMethod ==
+      } else if (params->saddle.minmodeMethod ==
                  LowestEigenmode::MINMODE_GPRDIMER) {
         SPDLOG_LOGGER_DEBUG(
             log,
@@ -347,20 +349,20 @@ int MinModeSaddleSearch::run() {
         log = spdlog::get("_traceback");
         SPDLOG_LOGGER_CRITICAL(
             log, "[MinModeSaddleSearch] Unknown min_mode_method: {}",
-            params->saddleMinmodeMethod);
+            params->saddle.minmodeMethod);
         std::exit(1);
       }
 
-      if (params->writeMovies) {
+      if (params->debug.writeMovies) {
         matter->matter2con(climb.str(), true);
       }
 
-      if (de > params->saddleMaxEnergy) {
+      if (de > params->saddle.maxEnergy) {
         status = STATUS_BAD_HIGH_ENERGY;
         break;
       }
 
-      if (params->checkpoint) {
+      if (params->main.checkpoint) {
         matter->matter2con("displacement_cp.con", false);
         FILE *fileMode = fopen("mode_cp.dat", "wb");
         helper_functions::saveMode(fileMode, matter,

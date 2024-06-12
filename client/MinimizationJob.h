@@ -7,7 +7,8 @@
 class MinimizationJob : public Job {
 public:
   MinimizationJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), fcalls{0} {
+      : Job(std::move(parameters)),
+        fcalls{0} {
     log = spdlog::get("combi");
   }
   ~MinimizationJob(void) = default;
@@ -16,7 +17,7 @@ public:
 private:
   size_t fcalls;
   RunStatus status;
-  shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif

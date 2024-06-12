@@ -32,9 +32,9 @@ public:
     double Henergy =
         0.5 * Vforce.dot(Vforce) + 0.5 * bgsdAlpha *
                                        (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->beta)) *
+                                        (reactantEnergy + parameters->bgsd.beta)) *
                                        (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->beta));
+                                        (reactantEnergy + parameters->bgsd.beta));
     return Henergy;
   }
 
@@ -45,14 +45,14 @@ public:
     VectorXd Vpositions = matter->getPositionsFreeV();
     matter->setPositionsFreeV(matter->getPositionsFreeV() -
                               normVforce *
-                                  parameters->gradientfinitedifference);
+                                  parameters->bgsd.gradientfinitedifference);
     VectorXd Vforcenew = matter->getForcesFreeV();
     matter->setPositionsFreeV(Vpositions);
     VectorXd Hforce = magVforce * (Vforcenew - Vforce) /
-                          parameters->gradientfinitedifference +
+                          parameters->bgsd.gradientfinitedifference +
                       bgsdAlpha *
                           (matter->getPotentialEnergy() -
-                           (reactantEnergy + parameters->beta)) *
+                           (reactantEnergy + parameters->bgsd.beta)) *
                           Vforce;
     return -Hforce;
   }
@@ -68,13 +68,13 @@ public:
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
   bool isConverged() { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
-    return getConvergenceH() < parameters->Hforceconvergence;
+    return getConvergenceH() < parameters->bgsd.Hforceconvergence;
   }
   bool isConvergedV() {
-    return getConvergenceV() < parameters->grad2energyconvergence;
+    return getConvergenceV() < parameters->bgsd.grad2energyconvergence;
   }
   bool isConvergedIP() {
-    return getConvergenceH() < parameters->grad2forceconvergence;
+    return getConvergenceH() < parameters->bgsd.grad2forceconvergence;
   }
 
   double getConvergence() { return getEnergy() && getGradient().norm(); }
@@ -90,16 +90,16 @@ private:
 };
 
 int BiasedGradientSquaredDescent::run() {
-  auto objf = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
-                                                      params->alpha, params);
-  auto optim = helpers::create::mkOptim(objf, params->optMethod, params);
+  auto objf = std::make_shared<BGSDObjectiveFunction>(
+      saddle, reactantEnergy, params->bgsd.alpha, params);
+  auto optim = helpers::create::mkOptim(objf, params->optim.method, params);
   int iteration = 0;
   SPDLOG_LOGGER_DEBUG(
       log,
       "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
-      params->alpha, params->beta);
+      params->bgsd.alpha, params->bgsd.beta);
   while (!objf->isConvergedH() || iteration == 0) {
-    optim->step(params->optMaxMove);
+    optim->step(params->optim.maxMove);
     SPDLOG_LOGGER_DEBUG(log,
                         "iteration {} Henergy, gradientHnorm, and Venergy: "
                         "{:.8f} {:.8f} {:.8f}",
@@ -109,12 +109,12 @@ int BiasedGradientSquaredDescent::run() {
   }
   auto objf2 = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
                                                        0.0, params);
-  auto optim2 = helpers::create::mkOptim(objf2, params->optMethod, params);
+  auto optim2 = helpers::create::mkOptim(objf2, params->optim.method, params);
   while (!objf2->isConvergedV() || iteration == 0) {
     if (objf2->isConvergedIP()) {
       break;
     };
-    optim2->step(params->optMaxMove);
+    optim2->step(params->optim.maxMove);
     SPDLOG_LOGGER_DEBUG(log,
                         "gradient squared iteration {} Henergy, gradientHnorm, "
                         "and Venergy: {:.8f} {:.8f} {:.8f}",
@@ -124,13 +124,13 @@ int BiasedGradientSquaredDescent::run() {
   }
 
   LowestEigenmode *minModeMethod;
-  if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-    if (params->dimerImproved) {
+  if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+    if (params->dimer.improved) {
       minModeMethod = new ImprovedDimer(saddle, params, pot);
     } else {
       minModeMethod = new Dimer(saddle, params, pot);
     }
-  } else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = new Lanczos(saddle, params, pot);
   }
 

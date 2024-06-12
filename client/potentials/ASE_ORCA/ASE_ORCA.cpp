@@ -20,9 +20,9 @@ ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
   std::string orcpth = helper_functions::get_value_from_env_or_param(
-      "ORCA_COMMAND", a_params->orca_path, "", "", true);
+      "ORCA_COMMAND", a_params->aseorca.orca_path, "", "", true);
   std::string orca_simpleinput = helper_functions::get_value_from_env_or_param(
-      "ORCA_SIMPLEINPUT", a_params->orca_sline, "ENGRAD HF-3c",
+      "ORCA_SIMPLEINPUT", a_params->aseorca.simpleinput, "ENGRAD HF-3c",
       "Using ENGRAD HF-3c as a default input, set simpleinput or the "
       "environment variable ORCA_SIMPLEINPUT.\n");
 
@@ -31,10 +31,10 @@ ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
   py::object ORCA = ase_orca.attr("ORCA");
   size_t nproc{0};
 
-  if (a_params->orca_nproc == "auto") {
+  if (a_params->aseorca.orca_nproc == "auto") {
     nproc = py::cast<int>(psutil.attr("cpu_count")(false));
   } else {
-    nproc = std::stoi(a_params->orca_nproc);
+    nproc = std::stoi(a_params->aseorca.orca_nproc);
   }
 
   this->calc =

@@ -23,7 +23,7 @@ private:
   //        Dynamics **replicaDynamics;
   //        double *replicaTemperature;
   std::vector<std::string> returnFiles;
-  shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif

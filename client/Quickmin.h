@@ -12,12 +12,12 @@ public:
   Quickmin(std::shared_ptr<ObjectiveFunction> a_objf,
            std::shared_ptr<Parameters> a_params)
       : Optimizer(a_objf, OptType::QM, a_params),
-        m_dt{a_params->optTimeStep},
-        m_dt_max{a_params->optMaxTimeStep},
-        m_max_move{a_params->optMaxMove},
+        m_dt{a_params->optim.timeStep},
+        m_dt_max{a_params->optim.maxTimeStep},
+        m_max_move{a_params->optim.maxMove},
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_iteration{0},
-        m_max_iter{a_params->optMaxIterations} {
+        m_max_iter{a_params->optim.maxIterations} {
     if (spdlog::get("qm")) {
       m_log = spdlog::get("qm");
     } else {
@@ -34,7 +34,7 @@ private:
   double m_dt, m_dt_max, m_max_move;
   Eigen::VectorXd m_vel;
   size_t m_iteration, m_max_iter;
-  shared_ptr<spdlog::logger> m_log;
+  std::shared_ptr<spdlog::logger> m_log;
 };
 
 #endif

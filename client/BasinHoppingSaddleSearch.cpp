@@ -18,7 +18,7 @@ int BasinHoppingSaddleSearch::run(void) {
   ereactant = reactant->getPotentialEnergy();
   de = eproduct - ereactant;
   double kB = params->kB;
-  double Temperature = params->temperature;
+  double Temperature = params->main.temperature;
   double arg = -de / (kB * Temperature);
   double p = exp(arg);
   double r = helper_functions::random();

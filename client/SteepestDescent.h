@@ -27,7 +27,7 @@ public:
   int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
-  shared_ptr<spdlog::logger> m_log;
+  std::shared_ptr<spdlog::logger> m_log;
   Eigen::VectorXd getStep(Eigen::VectorXd a_f);
   size_t iteration;
   Eigen::VectorXd m_rPrev;

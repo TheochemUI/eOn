@@ -85,8 +85,8 @@ public:
       long int atom, int axis,
       double velocity); // set the velocity of atom along axis to velocity
   bool relax(bool quiet = false, bool writeMovie = false,
-             bool checkpoint = false, string prefixMovie = string(),
-             string prefixCheckpoint = string());
+             bool checkpoint = false, std::string prefixMovie = std::string(),
+             std::string prefixCheckpoint = std::string());
 
   AtomMatrix pbc(AtomMatrix diff) const;
   VectorXd pbcV(VectorXd diff) const;
@@ -185,7 +185,7 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-  shared_ptr<spdlog::logger> m_log;
+  std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used

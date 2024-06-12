@@ -30,7 +30,7 @@ int FIRE::step(double a_maxMove) {
   if (P >= 0) {
     m_N++;
     if (m_N > m_N_min) {
-      m_dt = min(m_dt * m_f_inc, m_dt_max);
+      m_dt = std::min(m_dt * m_f_inc, m_dt_max);
       m_alpha = m_alpha * m_f_a;
     }
   } else {

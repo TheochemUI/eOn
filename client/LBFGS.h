@@ -16,8 +16,8 @@ public:
         std::shared_ptr<Parameters> a_params)
       : Optimizer(a_objf, OptType::LBFGS, a_params),
         m_iteration{0},
-        m_memory{min(a_objf->degreesOfFreedom(),
-                     static_cast<int>(a_params->optLBFGSMemory))} {
+        m_memory(std::min(a_objf->degreesOfFreedom(),
+                     static_cast<int>(a_params->optim.LBFGSMemory))) {
 
     if (spdlog::get("lbfgs")) {
       m_log = spdlog::get("lbfgs");
