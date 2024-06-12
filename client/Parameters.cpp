@@ -624,7 +624,7 @@ int Parameters::load(FILE *file) {
       // eonclient for single point calculations easily
       orca_path = ini.GetValue("ASE_ORCA", "orca_path", "ORCA_COMMAND");
       orca_nproc = ini.GetValue("ASE_ORCA", "nproc");
-      orca_sline = ini.GetValue("ASE_ORCA", "simpleinput");
+      orca_sline = ini.GetValue("ASE_ORCA", "simpleinput", "ENGRAD HF-3c");
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
