@@ -15,7 +15,7 @@ public:
   std::vector<std::string> run(void);
 
 private:
-  shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> log;
   int dynamics();
   long refine(Matter *mdBuffer[], long length, Matter *reactant);
   bool checkState(Matter *current, Matter *reactant);

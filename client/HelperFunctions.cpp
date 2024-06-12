@@ -472,7 +472,7 @@ void helper_functions::getTime(double *real, double *user, double *sys) {
 #endif
 }
 
-bool helper_functions::existsFile(string filename) {
+bool helper_functions::existsFile(std::string filename) {
   FILE *fh;
   fh = fopen(filename.c_str(), "rb");
   if (fh == NULL) {
@@ -482,10 +482,10 @@ bool helper_functions::existsFile(string filename) {
   return 1;
 }
 
-string helper_functions::getRelevantFile(string filename) {
-  string filenameRelevant;
-  string filenamePrefix;
-  string filenamePostfix;
+std::string helper_functions::getRelevantFile(std::string filename) {
+  std::string filenameRelevant;
+  std::string filenamePrefix;
+  std::string filenamePostfix;
 
   // check if the _cp version of the file is present
   int i = filename.rfind(".");
@@ -504,8 +504,8 @@ string helper_functions::getRelevantFile(string filename) {
   return filename;
 }
 
-VectorXd helper_functions::loadMasses(string filename, int nAtoms) {
-  ifstream massFile(filename.c_str());
+VectorXd helper_functions::loadMasses(std::string filename, int nAtoms) {
+  std::ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
     SPDLOG_CRITICAL("File {} was not found", filename);
     std::exit(1);
@@ -536,7 +536,7 @@ AtomMatrix helper_functions::loadMode(FILE *modeFile, int nAtoms) {
   return mode;
 }
 
-AtomMatrix helper_functions::loadMode(string filename, int nAtoms) {
+AtomMatrix helper_functions::loadMode(std::string filename, int nAtoms) {
   FILE *modeFile;
   modeFile = fopen(filename.c_str(), "rb");
   if (!modeFile) {
@@ -661,7 +661,6 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
   AtomMatrix r2 = m2.getPositions();
   double tolerance = distanceDifference;
   int matches = 0;
-
   if (r1.rows() != r2.rows()) {
     return false;
   }
@@ -682,7 +681,6 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
       rdf2[j2].insert(a2);
     }
   }
-
   for (int i1 = 0; i1 < r1.rows(); i1++) {
     if (matches == i1 - 2) {
       return false;

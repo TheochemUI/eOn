@@ -13,7 +13,7 @@ int DynamicsSaddleSearch::run(void) {
   std::vector<double> MDTimes;
   SPDLOG_LOGGER_DEBUG(log, "Starting dynamics NEB saddle search");
 
-  ifstream massFile("masses.dat");
+  std::ifstream massFile("masses.dat");
   if (massFile.is_open()) {
     SPDLOG_LOGGER_DEBUG(log, "Found mass weights file");
     massFile.close();
@@ -29,11 +29,11 @@ int DynamicsSaddleSearch::run(void) {
   Dynamics dyn(saddle.get(), params.get());
   SPDLOG_LOGGER_DEBUG(
       log, "Initializing velocities from Maxwell-Boltzmann distribution");
-  dyn.setTemperature(params->saddleDynamicsTemperature);
+  dyn.setTemperature(params->saddle.dynamicsTemperature);
   dyn.setThermalVelocity();
 
   int dephaseSteps =
-      int(floor(params->parrepDephaseTime / params->mdTimeStep + 0.5));
+      int(floor(params->parrep.dephaseTime / params->md.timeStep + 0.5));
 
   while (true) {
 
@@ -65,33 +65,33 @@ int DynamicsSaddleSearch::run(void) {
   }
 
   BondBoost bondBoost(saddle.get(), params.get());
-  if (params->biasPotential == Hyperdynamics::BOND_BOOST) {
+  if (params->bondBoost.biasPotential == Hyperdynamics::BOND_BOOST) {
     SPDLOG_LOGGER_DEBUG(log, "Initializing Bond Boost");
     bondBoost.initialize();
   }
 
-  int checkInterval =
-      int(params->saddleDynamicsStateCheckInterval / params->mdTimeStep + 0.5);
+  int checkInterval = int(
+      params->saddle.dynamicsStateCheckInterval / params->md.timeStep + 0.5);
   int recordInterval =
-      int(params->saddleDynamicsRecordInterval / params->mdTimeStep + 0.5);
+      int(params->saddle.dynamicsRecordInterval / params->md.timeStep + 0.5);
 
-  if (params->writeMovies == true) {
+  if (params->debug.writeMovies == true) {
     saddle->matter2con("dynamics", false);
   }
 
-  for (int step = 1; step <= params->mdSteps; step++) {
+  for (int step = 1; step <= params->md.steps; step++) {
     dyn.oneStep(step);
 
     if (step % recordInterval == 0 && recordInterval != 0) {
       SPDLOG_LOGGER_DEBUG(log, "recording configuration at step {} time {:.3f}",
-                          step, step * params->mdTimeStep * params->timeUnit);
+                          step, step * params->md.timeStep * params->timeUnit);
       auto tmp = std::shared_ptr<Matter>(saddle);
       *tmp = *saddle;
       MDSnapshots.push_back(tmp);
-      MDTimes.push_back(step * params->mdTimeStep);
+      MDTimes.push_back(step * params->md.timeStep);
     }
 
-    if (params->writeMovies == true) {
+    if (params->debug.writeMovies == true) {
       saddle->matter2con("dynamics", true);
     }
 
@@ -114,13 +114,13 @@ int DynamicsSaddleSearch::run(void) {
                               MDTimes[ii] * params->timeUnit);
         // subtract off half the record interval in order to not introduce a
         // systematic bias towards longer times.
-        time = MDTimes[image] - params->saddleDynamicsRecordInterval / 2.0;
+        time = MDTimes[image] - params->saddle.dynamicsRecordInterval / 2.0;
         SPDLOG_LOGGER_DEBUG(log, "Transition time {:.2f} fs",
                             time * params->timeUnit);
 
         NudgedElasticBand neb(reactant, product, params, pot);
 
-        if (params->saddleDynamicsLinearInterpolation == false) {
+        if (params->saddle.dynamicsLinearInterpolation == false) {
           SPDLOG_LOGGER_DEBUG(
               log, "Interpolating initial band through MD transition state");
           AtomMatrix reactantToSaddle =
@@ -157,15 +157,15 @@ int DynamicsSaddleSearch::run(void) {
         }
 
         AtomMatrix mode;
-        if (params->nebMaxIterations > 0) {
+        if (params->neb.maxIterations > 0) {
           LowestEigenmode *minModeMethod;
-          if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-            if (params->dimerImproved) {
+          if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+            if (params->dimer.improved) {
               minModeMethod = new ImprovedDimer(saddle, params, pot);
             } else {
               minModeMethod = new Dimer(saddle, params, pot);
             }
-          } else if (params->saddleMinmodeMethod ==
+          } else if (params->saddle.minmodeMethod ==
                      LowestEigenmode::MINMODE_LANCZOS) {
             minModeMethod = new Lanczos(saddle, params, pot);
           }
@@ -177,7 +177,7 @@ int DynamicsSaddleSearch::run(void) {
           for (j = 0; j < neb.numExtrema; j++) {
             //                        if (neb.extremumCurvature[j] < 0.0) {
             if (neb.extremumCurvature[j] <
-                params->saddleDynamicsMaxInitCurvature) {
+                params->saddle.dynamicsMaxInitCurvature) {
               extremumImage = (int)floor(neb.extremumPosition[j]);
               *saddle = *neb.path[extremumImage];
               double interpDistance =
@@ -277,7 +277,7 @@ int DynamicsSaddleSearch::run(void) {
   }
 
   MDSnapshots.clear();
-  time = params->mdSteps * params->mdTimeStep;
+  time = params->md.steps * params->md.timeStep;
   return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }
 
