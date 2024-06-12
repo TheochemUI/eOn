@@ -18,6 +18,21 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
   ase = py::module_::import("ase");
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
+  std::string orcpth;
+
+  // Check if orca_path is set to "SET_ME"
+  if (a_params->orca_path == "SET_ME"s) {
+    // Check if ORCA_PATH environment variable is set
+    const char *orca_env_path = std::getenv("ORCA_PATH");
+    if (orca_env_path != nullptr) {
+      orcpth = std::string(orca_env_path);
+    } else {
+      throw std::runtime_error(
+          "ORCA path is not set. Please set orca_path in the configuration or the ORCA_PATH environment variable."s);
+    }
+  } else {
+    orcpth = a_params->orca_path;
+  }
 
   // Set up ORCA profile and calculator
   py::object OrcaProfile = ase_orca.attr("OrcaProfile");
@@ -32,7 +47,7 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
 
   std::string orca_simpleinput(fmt::format("{}", a_params->orca_sline));
   this->calc =
-      ORCA("profile"_a = OrcaProfile(py::str(a_params->orca_path)),
+      ORCA("profile"_a = OrcaProfile(py::str(orcpth)),
            "orcasimpleinput"_a = orca_simpleinput,
            "orcablocks"_a = py::str(fmt::format("%pal nprocs {} end", nproc)),
            "directory"_a = ".");
