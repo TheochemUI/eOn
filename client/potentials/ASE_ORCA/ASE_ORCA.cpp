@@ -22,13 +22,13 @@ ASEOrcaPot::ASEOrcaPot(shared_ptr<Parameters> a_params)
 
   // Check if orca_path is set to "SET_ME"
   if (a_params->orca_path == "SET_ME"s) {
-    // Check if ORCA_PATH environment variable is set
-    const char *orca_env_path = std::getenv("ORCA_PATH");
+    // Check if ORCA_COMMAND environment variable is set
+    const char *orca_env_path = std::getenv("ORCA_COMMAND");
     if (orca_env_path != nullptr) {
       orcpth = std::string(orca_env_path);
     } else {
       throw std::runtime_error(
-          "ORCA path is not set. Please set orca_path in the configuration or the ORCA_PATH environment variable."s);
+          "ORCA path is not set. Please set orca_path in the configuration or the ORCA_COMMAND environment variable."s);
     }
   } else {
     orcpth = a_params->orca_path;
