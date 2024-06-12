@@ -168,7 +168,7 @@ Parameters::Parameters() {
   dimerRemoveRotation = false;
 
   // [ASE_ORCA] //
-  orca_path = "SET_ME"s;
+  orca_path = "ORCA_COMMAND"s;
   orca_nproc = "1"s;
 
   // [Lanczos] //
@@ -622,7 +622,7 @@ int Parameters::load(FILE *file) {
       // Case sensitive!!
       // TODO: This should be handled in clienteon so you can still call
       // eonclient for single point calculations easily
-      orca_path = ini.GetValue("ASE_ORCA", "orca_path");
+      orca_path = ini.GetValue("ASE_ORCA", "orca_path", "ORCA_COMMAND");
       orca_nproc = ini.GetValue("ASE_ORCA", "nproc");
       orca_sline = ini.GetValue("ASE_ORCA", "simpleinput");
     }
