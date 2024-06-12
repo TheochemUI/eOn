@@ -25,7 +25,7 @@ Parameters::Parameters() {
   main.checkpoint = false;
   main.quiet = false;
   main.writeLog = true;
-  main.iniFilename = "config.toml";
+  main.inpFilename = "config.toml";
   main.conFilename = "pos.con";
   main.finiteDifference = 0.01;
   main.maxForceCalls = 0;
@@ -382,7 +382,7 @@ int Parameters::load(const std::string &filename) {
     main.checkpoint = config["Main"]["checkpoint"].value_or(false);
     main.quiet = config["Main"]["quiet"].value_or(false);
     main.writeLog = config["Main"]["write_log"].value_or(true);
-    main.iniFilename = config["Main"]["ini_filename"].value_or("config.ini");
+    main.inpFilename = config["Main"]["ini_filename"].value_or("config.toml");
     main.conFilename = config["Main"]["con_filename"].value_or("pos.con");
     main.finiteDifference = config["Main"]["finite_difference"].value_or(0.01);
     main.maxForceCalls = config["Main"]["max_force_calls"].value_or(0L);
