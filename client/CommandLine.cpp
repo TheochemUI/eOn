@@ -13,7 +13,7 @@
 using namespace std;
 
 void singlePoint(std::unique_ptr<Matter> matter) {
-  std::cout << "Energy:         " << std::fixed << std::setprecision(10)
+  std::cout << "Energy:         " << std::fixed << std::setprecision(15)
             << matter->getPotentialEnergy() << std::endl;
   std::cout << "(free) Forces:         \n" << matter->getForcesFree() << "\n";
   std::cout << "Max atom force: " << std::scientific << matter->maxForce()
