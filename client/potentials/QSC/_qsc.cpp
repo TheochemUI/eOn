@@ -4940,7 +4940,7 @@ static PyNumberMethods __pyx_tp_as_number_PyQSC = {
 #if PY_MAJOR_VERSION < 3
     0, /*nb_long*/
 #else
-    0,                            /*reserved*/
+    0, /*reserved*/
 #endif
     0, /*nb_float*/
 #if PY_MAJOR_VERSION < 3
@@ -5020,20 +5020,20 @@ static PyTypeObject __pyx_type_4_qsc_PyQSC = {
     0,                                                       /*tp_getattr*/
     0,                                                       /*tp_setattr*/
 #if PY_MAJOR_VERSION < 3
-    0,                                                       /*tp_compare*/
+    0, /*tp_compare*/
 #else
-    0,                            /*reserved*/
+    0, /*reserved*/
 #endif
-    0,                                                       /*tp_repr*/
-    &__pyx_tp_as_number_PyQSC,                               /*tp_as_number*/
-    &__pyx_tp_as_sequence_PyQSC,                             /*tp_as_sequence*/
-    &__pyx_tp_as_mapping_PyQSC,                              /*tp_as_mapping*/
-    0,                                                       /*tp_hash*/
-    0,                                                       /*tp_call*/
-    0,                                                       /*tp_str*/
-    0,                                                       /*tp_getattro*/
-    0,                                                       /*tp_setattro*/
-    &__pyx_tp_as_buffer_PyQSC,                               /*tp_as_buffer*/
+    0,                           /*tp_repr*/
+    &__pyx_tp_as_number_PyQSC,   /*tp_as_number*/
+    &__pyx_tp_as_sequence_PyQSC, /*tp_as_sequence*/
+    &__pyx_tp_as_mapping_PyQSC,  /*tp_as_mapping*/
+    0,                           /*tp_hash*/
+    0,                           /*tp_call*/
+    0,                           /*tp_str*/
+    0,                           /*tp_getattro*/
+    0,                           /*tp_setattro*/
+    &__pyx_tp_as_buffer_PyQSC,   /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_CHECKTYPES | Py_TPFLAGS_HAVE_NEWBUFFER |
         Py_TPFLAGS_BASETYPE,   /*tp_flags*/
     0,                         /*tp_doc*/
@@ -5063,7 +5063,7 @@ static PyTypeObject __pyx_type_4_qsc_PyQSC = {
     0,                         /*tp_weaklist*/
     0,                         /*tp_del*/
 #if PY_VERSION_HEX >= 0x02060000
-    0,                         /*tp_version_tag*/
+    0, /*tp_version_tag*/
 #endif
 };
 
@@ -7641,9 +7641,9 @@ static void __Pyx_AddTraceback(const char *funcname) {
   py_globals = PyModule_GetDict(__pyx_m);
   if (!py_globals)
     goto bad;
-  py_code = PyCode_New(0,                 /*int argcount,*/
+  py_code = PyCode_New(0, /*int argcount,*/
 #if PY_MAJOR_VERSION >= 3
-                       0,                 /*int kwonlyargcount,*/
+                       0, /*int kwonlyargcount,*/
 #endif
                        0,                 /*int nlocals,*/
                        0,                 /*int stacksize,*/

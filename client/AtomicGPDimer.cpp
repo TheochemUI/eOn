@@ -18,8 +18,8 @@ const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
 AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
-                 std::shared_ptr<Parameters> params,
-                 std::shared_ptr<Potential> pot)
+                             std::shared_ptr<Parameters> params,
+                             std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;

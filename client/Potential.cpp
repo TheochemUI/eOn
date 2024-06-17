@@ -98,11 +98,11 @@ int Potential::wu_fcallsTotal = 0;
 double Potential::totalUserTime = 0.0;
 
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
-                                                 const VectorXi atmnrs,
-                                                 const Matrix3d box) {
+                                                 const Vector<int> atmnrs,
+                                                 const Matrix3S box) {
   double energy{std::numeric_limits<double>::infinity()};
   long nAtoms{pos.rows()};
-  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
+  AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
   double var{0}; // no variance for true potentials
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());

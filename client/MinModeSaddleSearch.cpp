@@ -33,7 +33,7 @@ public:
 
   ~MinModeObjectiveFunction(void) {}
 
-  VectorXd getGradient(bool fdstep = false) {
+  VectorType getGradient(bool fdstep = false) {
     AtomMatrix proj;
     AtomMatrix force = matter->getForces();
 
@@ -119,12 +119,13 @@ public:
       force += -2. * proj;
     }
 
-    VectorXd forceV = VectorXd::Map(force.data(), 3 * matter->numberOfAtoms());
+    VectorType forceV =
+        VectorType::Map(force.data(), 3 * matter->numberOfAtoms());
     return -forceV;
   }
   double getEnergy() { return matter->getPotentialEnergy(); }
-  void setPositions(VectorXd x) { matter->setPositionsV(x); }
-  VectorXd getPositions() { return matter->getPositionsV(); }
+  void setPositions(VectorType x) { matter->setPositionsV(x); }
+  VectorType getPositions() { return matter->getPositionsV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
   bool isConverged() { return getConvergence() < params->saddleConvergedForce; }
 
@@ -142,7 +143,9 @@ public:
     }
   }
 
-  VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
+  VectorType difference(VectorType a, VectorType b) {
+    return matter->pbcV(a - b);
+  }
 };
 
 MinModeSaddleSearch::MinModeSaddleSearch(

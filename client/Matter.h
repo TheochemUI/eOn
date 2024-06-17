@@ -30,16 +30,16 @@ public:
         forceCalls{0},
         parameters{params},
         nAtoms{0},
-        positions{Eigen::MatrixXd::Zero(0, 3)},
-        velocities{Eigen::MatrixXd::Zero(0, 3)},
-        forces{Eigen::MatrixXd::Zero(0, 3)},
-        biasForces{Eigen::MatrixXd::Zero(0, 3)},
+        positions{MatrixType::Zero(0, 3)},
+        velocities{MatrixType::Zero(0, 3)},
+        forces{MatrixType::Zero(0, 3)},
+        biasForces{MatrixType::Zero(0, 3)},
         biasPotential{nullptr},
-        masses{Eigen::VectorXd::Zero(0)},
-        atomicNrs{Eigen::VectorXi::Zero(0)},
-        isFixed{Eigen::VectorXi::Zero(0)},
-        cell{Eigen::Matrix3d::Zero()},
-        cellInverse{Eigen::Matrix3d::Zero()},
+        masses{VectorType::Zero(0)},
+        atomicNrs{Vector<int>::Zero(0)},
+        isFixed{Vector<bool>::Zero(false)},
+        cell{Matrix3S::Zero()},
+        cellInverse{Matrix3S::Zero()},
         energyVariance{0.0},
         potentialEnergy{0.0} {
 
@@ -74,8 +74,8 @@ public:
   std::shared_ptr<Potential> getPotential();    // get potential function to use
   void resize(long int nAtoms);   // set or reset the number of atoms
   long int numberOfAtoms() const; // return the number of atoms
-  Matrix3d getCell() const;
-  void setCell(Matrix3d newCell);
+  Matrix3S getCell() const;
+  void setCell(Matrix3S newCell);
   double getPosition(long int atom, int axis)
       const; // return the position of an atom along one of the axis
   void setPosition(
@@ -89,22 +89,22 @@ public:
              string prefixCheckpoint = string());
 
   AtomMatrix pbc(AtomMatrix diff) const;
-  VectorXd pbcV(VectorXd diff) const;
+  VectorType pbcV(VectorType diff) const;
 
   size_t getPotentialCalls() const;
   AtomMatrix getPositions() const; // return coordinates of atoms in array pos
-  VectorXd getPositionsV() const;
+  VectorType getPositionsV() const;
   AtomMatrix
   getPositionsFree() const; // return coordinates of free atoms in array pos
-  VectorXd getPositionsFreeV() const;
+  VectorType getPositionsFreeV() const;
   void
   setPositions(const AtomMatrix pos); // update Matter with the new positions of
                                       // the free atoms given in array pos
-  void setPositionsV(const VectorXd pos);
+  void setPositionsV(const VectorType pos);
   void setPositionsFree(
       const AtomMatrix pos); // update Matter with the new positions of the free
                              // atoms given in array pos
-  void setPositionsFreeV(const VectorXd pos);
+  void setPositionsFreeV(const VectorType pos);
 
   AtomMatrix getVelocities() const;
   void setVelocities(const AtomMatrix v);
@@ -115,28 +115,30 @@ public:
 
   AtomMatrix getForces(); // return forces applied on all atoms in array force
   AtomMatrix getBiasForces();
-  VectorXd getForcesV();
+  VectorType getForcesV();
   AtomMatrix getForcesFree();
-  VectorXd getForcesFreeV();
+  VectorType getForcesFreeV();
 
   double getMass(long int atom) const; // return the mass of the atom specified
   void setMass(long int atom, double mass); // set the mass of an atom
-  void setMasses(VectorXd massesIn);        // set the mass of an atom
+  void setMasses(VectorType massesIn);      // set the mass of an atom
   long getAtomicNr(
       long int atom) const; // return the atomic number of the atom specified
   void setAtomicNr(long int atom,
-                   long atomicNr);          // set the atomic number of an atom
-  VectorXi getAtomicNrs() const;            // Get the vector of atomic numbers
-  VectorXi getAtomicNrsFree() const;        // Get the vector of atomic numbers
-  void setAtomicNrs(const VectorXi atmnrs); // Get the vector of atomic numbers
+                   long atomicNr);      // set the atomic number of an atom
+  Vector<int> getAtomicNrs() const;     // Get the vector of atomic numbers
+  Vector<int> getAtomicNrsFree() const; // Get the vector of atomic numbers
+  void
+  setAtomicNrs(const Vector<int> atmnrs); // Get the vector of atomic numbers
 
   int getFixed(long int atom)
       const; // return true if the atom is fixed, false if it is movable
-  void setFixed(long int atom,
-                int isFixed); // set the atom to fixed (true) or movable (false)
+  void
+  setFixed(long int atom,
+           bool isFixed); // set the atom to fixed (true) or movable (false)
   // void setPotentialEnergy(double);
   double getEnergyVariance();
-  // Eigen::VectorXd getForceVariance();
+  // VectorType getForceVariance();
   // double getMaxVariance();
   double getPotentialEnergy();
   double getKineticEnergy() const;
@@ -181,8 +183,8 @@ public:
   void matter2xyz(std::string filename,
                   bool append = false); // print xyz file from data in Matter
   AtomMatrix getFree() const;
-  VectorXd getFreeV() const;
-  Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
+  VectorType getFreeV() const;
+  VectorType getMasses() const;
 
 private:
   shared_ptr<spdlog::logger> m_log;
@@ -215,11 +217,11 @@ private:
   AtomMatrix forces;
   AtomMatrix biasForces;
   BondBoost *biasPotential;
-  VectorXd masses;
-  VectorXi atomicNrs;
-  VectorXi isFixed; // array of bool, false for movable atom, true for fixed
-  Matrix3d cell;
-  Matrix3d cellInverse;
+  VectorType masses;
+  Vector<int> atomicNrs;
+  Vector<bool> isFixed; // array of bool, false for movable atom, true for fixed
+  Matrix3S cell;
+  Matrix3S cellInverse;
   mutable double energyVariance;
   mutable double potentialEnergy;
 };

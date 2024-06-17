@@ -9,7 +9,7 @@ Hessian::Hessian(Parameters *params, Matter *matter) {
 
 Hessian::~Hessian() {}
 
-MatrixXd Hessian::getHessian(Matter *matterIn, VectorXi atomsIn) {
+MatrixType Hessian::getHessian(Matter *matterIn, Vector<int> atomsIn) {
   if ((matter != matterIn) || (atoms != atomsIn) || (hessian.rows() == 0)) {
     hessian.resize(0, 0);
     matter = matterIn;
@@ -22,7 +22,7 @@ MatrixXd Hessian::getHessian(Matter *matterIn, VectorXi atomsIn) {
   return hessian;
 }
 
-VectorXd Hessian::getFreqs(Matter *matterIn, VectorXi atomsIn) {
+VectorType Hessian::getFreqs(Matter *matterIn, Vector<int> atomsIn) {
   if ((matter != matterIn) || (atoms != atomsIn) || (hessian.rows() == 0)) {
     hessian.resize(0, 0);
     matter = matterIn;
@@ -117,7 +117,7 @@ bool Hessian::calculate(void) {
   helper_functions::getTime(&t0, NULL, NULL);
   SPDLOG_LOGGER_DEBUG(log,
                       "[Hessian] calculating eigen values of the hessian\n");
-  Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
+  Eigen::SelfAdjointEigenSolver<MatrixType> es(hessian);
   helper_functions::getTime(&t1, NULL, NULL);
   SPDLOG_LOGGER_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
                       t1 - t0);
@@ -134,13 +134,13 @@ bool Hessian::calculate(void) {
 // XXX: what happens if the entire particle rotates about one atom or a line of
 // atoms?
 
-VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
+VectorType Hessian::removeZeroFreqs(VectorType freqs) {
   SPDLOG_LOGGER_DEBUG(log, "[Hessian] removing zero frequency modes");
   int size = freqs.size();
   if (size != 3 * matter->numberOfAtoms()) {
     return freqs;
   }
-  VectorXd newfreqs;
+  VectorType newfreqs;
   newfreqs.resize(size);
   int nremoved = 0;
   for (int i = 0; i < size; i++) {

@@ -18,7 +18,9 @@ using namespace std::placeholders;
 namespace tests {
 
 NEBTest::NEBTest()
-    : params{new Parameters}, m1{new Matter(params)}, m2{new Matter(params)},
+    : params{new Parameters},
+      m1{new Matter(params)},
+      m2{new Matter(params)},
       threshold{1e-3} {}
 
 NEBTest::~NEBTest() {
@@ -53,8 +55,8 @@ TEST_F(NEBTest, TestCreation) {
 
 TEST_F(NEBTest, TestObjective) {
   auto vecEq =
-      std::bind(helper_functions::eigenEquality<VectorXd>, _1, _2, 1e-4);
-  VectorXd getPositions_{
+      std::bind(helper_functions::eigenEquality<VectorType>, _1, _2, 1e-4);
+  VectorType getPositions_{
       {9.95383, 11.7605, 12.2282, 9.3464,  11.462,  10.0695, 12.9505, 12.3277,
        11.0109, 11.9457, 12.7707, 10.2873, 13.1479, 11.0061, 11.1346, 12.3646,
        10.1611, 10.5346, 13.4712, 12.9691, 11.6451, 11.6785, 13.7695, 10.3685,
@@ -80,7 +82,7 @@ TEST_F(NEBTest, TestObjective) {
        9.19352, 9.21985, 10.8707, 8.18566, 9.30823, 9.79606, 7.3588,  9.7451,
        7.23909, 8.54648, 10.9098, 8.42965, 9.36366, 9.4438,  8.14452, 7.57228,
        8.22971, 9.08547, 8.64262}};
-  VectorXd getGradient_{
+  VectorType getGradient_{
       {-0.620969, 0.324815,   1.72152,   -1.43938,  -0.0774983, -1.16484,
        6.6729,    7.67128,    7.38725,   -6.05536,  8.41656,    -9.53704,
        8.4028,    -3.75277,   8.44217,   -6.06126,  -11.6783,   -8.01197,
@@ -114,7 +116,7 @@ TEST_F(NEBTest, TestObjective) {
        74.554,    174.67,     462.367,   11.8302,   548.196,    -160.849,
        -328.93,   161.041,    -356.621,  212.573,   -83.1205,   496.518,
        -4.45161,  -0.0761206, 1.52368}};
-  VectorXd diffDat_{
+  VectorType diffDat_{
       {-10.5748, -11.4357, -10.5067, -10.7858, -11.5395, -11.2343, -6.2776,
        -4.65642, -3.62365, 6.99894,  -4.35414, 5.17566,  -4.7451,  10.2411,
        -2.69243, 6.57414,  3.1606,   6.45343,  6.61418,  5.95114,  7.30685,
@@ -143,7 +145,7 @@ TEST_F(NEBTest, TestObjective) {
        -1.7048,  2.41248,  6.15115,  -10.2887, -0.66386, -9.75423, -10.1261,
        5.0082,   2.0851,   -9.04309, 5.60452,  10.1602,  2.61135,  9.01534,
        3.1292,   8.73498,  -11.0543, 12.3187,  -9.16159, -7.11894}};
-  VectorXd setPositionDat_{VectorXd::Zero(getPositions_.size())};
+  VectorType setPositionDat_{VectorType::Zero(getPositions_.size())};
   NudgedElasticBand *neb = new NudgedElasticBand(m1, m2, params);
   NEBObjectiveFunction nebo{neb, params};
   ASSERT_NEAR(nebo.getEnergy(), 231.60596556863382, threshold);
@@ -152,10 +154,10 @@ TEST_F(NEBTest, TestObjective) {
   ASSERT_NEAR(nebo.getConvergence(), 1710.2806025488981, threshold);
   ASSERT_PRED2(vecEq, getPositions_, nebo.getPositions());
   ASSERT_PRED2(vecEq, getGradient_, nebo.getGradient());
-  VectorXd nebo_diff = nebo.difference(getGradient_, getPositions_);
+  VectorType nebo_diff = nebo.difference(getGradient_, getPositions_);
   ASSERT_PRED2(vecEq, diffDat_, nebo_diff);
   // Test setting
-  nebo.setPositions(VectorXd::Ones(getPositions_.size()).array() - 1);
+  nebo.setPositions(VectorType::Ones(getPositions_.size()).array() - 1);
   ASSERT_PRED2(vecEq, setPositionDat_, nebo.getPositions());
 }
 

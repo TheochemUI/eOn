@@ -69,11 +69,21 @@ protected:
   struct Water {
     Water(double const rh1[], double const rh2[], double const ro[],
           double const rc[], double fh1[], double fh2[], double fo[])
-        : rh1_(rh1), rh2_(rh2), ro_(ro), rc_(rc), fh1_(fh1), fh2_(fh2),
+        : rh1_(rh1),
+          rh2_(rh2),
+          ro_(ro),
+          rc_(rc),
+          fh1_(fh1),
+          fh2_(fh2),
           fo_(fo) {}
     Water(Water const &w, double fh1[], double fh2[], double fo[])
-        : rh1_(w.rh1_), rh2_(w.rh2_), ro_(w.ro_), rc_(w.rc_), fh1_(fh1),
-          fh2_(fh2), fo_(fo) {}
+        : rh1_(w.rh1_),
+          rh2_(w.rh2_),
+          ro_(w.ro_),
+          rc_(w.rc_),
+          fh1_(fh1),
+          fh2_(fh2),
+          fo_(fo) {}
     void addForces(Water const &w) {
       for (int a = 0; a < 3; ++a) {
         fh1_[a] += w.fh1_[a];

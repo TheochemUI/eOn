@@ -17,7 +17,7 @@ int DynamicsSaddleSearch::run(void) {
   if (massFile.is_open()) {
     SPDLOG_LOGGER_DEBUG(log, "Found mass weights file");
     massFile.close();
-    VectorXd masses =
+    VectorType masses =
         helper_functions::loadMasses("masses.dat", saddle->numberOfAtoms());
     saddle->setMasses(masses);
     SPDLOG_LOGGER_DEBUG(log, "Applied mass weights");

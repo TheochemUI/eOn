@@ -43,7 +43,8 @@ const double SpceCcl::epsilon_ = 0.00673853;           // eV
 const double SpceCcl::polarisationEnergy_ = 0.0541015; // eV
 #endif
 
-SpceCcl::SpceCcl() : Ccl() {}
+SpceCcl::SpceCcl()
+    : Ccl() {}
 
 SpceCcl::SpceCcl(double cutoff, double switchingWidth)
     : Ccl(cutoff, switchingWidth) {}

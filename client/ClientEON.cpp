@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #endif
 
-
 #ifdef WITH_ASE_ORCA
 #include <pybind11/embed.h>
 #endif

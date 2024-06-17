@@ -9,17 +9,17 @@ int FIRE::step(double a_maxMove) {
   }
 
   // Velocity Verlet
-  Eigen::VectorXd f = -m_objf->getGradient();
-  Eigen::VectorXd x = m_objf->getPositions();
+  VectorType f = -m_objf->getGradient();
+  VectorType x = m_objf->getPositions();
 
   m_vel += f * m_dt;
-  Eigen::VectorXd dx = m_vel * m_dt;
+  VectorType dx = m_vel * m_dt;
 
   dx = helper_functions::maxAtomMotionAppliedV(dx, m_max_move);
   m_objf->setPositions(x + dx);
 
   f = -m_objf->getGradient();
-  Eigen::VectorXd f_unit = f / f.norm();
+  VectorType f_unit = f / f.norm();
 
   // FIRE
   P = f.dot(m_vel);

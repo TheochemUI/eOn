@@ -29,14 +29,14 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
 } // namespace helper_functions::neb_paths
 
 // NEBObjectiveFunction definitions
-VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
-  VectorXd forceV;
+VectorType NEBObjectiveFunction::getGradient(bool fdstep) {
+  VectorType forceV;
   forceV.resize(3 * neb->atoms * neb->numImages);
   if (neb->movedAfterForceCall)
     neb->updateForces();
   for (long i = 1; i <= neb->numImages; i++) {
     forceV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
-        VectorXd::Map(neb->projectedForce[i]->data(), 3 * neb->atoms);
+        VectorType::Map(neb->projectedForce[i]->data(), 3 * neb->atoms);
   }
   return -forceV;
 }
@@ -49,21 +49,21 @@ double NEBObjectiveFunction::getEnergy() {
   return Energy;
 }
 
-void NEBObjectiveFunction::setPositions(VectorXd x) {
+void NEBObjectiveFunction::setPositions(VectorType x) {
   neb->movedAfterForceCall = true;
   for (long i = 1; i <= neb->numImages; i++) {
-    neb->path[i]->setPositions(MatrixXd::Map(
+    neb->path[i]->setPositions(MatrixType::Map(
         x.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms).data(), neb->atoms,
         3));
   }
 }
 
-VectorXd NEBObjectiveFunction::getPositions() {
-  VectorXd posV;
+VectorType NEBObjectiveFunction::getPositions() {
+  VectorType posV;
   posV.resize(3 * neb->atoms * neb->numImages);
   for (long i = 1; i <= neb->numImages; i++) {
     posV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
-        VectorXd::Map(neb->path[i]->getPositions().data(), 3 * neb->atoms);
+        VectorType::Map(neb->path[i]->getPositions().data(), 3 * neb->atoms);
   }
   return posV;
 }
@@ -97,8 +97,8 @@ double NEBObjectiveFunction::getConvergence() {
   return neb->convergenceForce();
 }
 
-VectorXd NEBObjectiveFunction::difference(VectorXd a, VectorXd b) {
-  VectorXd pbcDiff(3 * neb->numImages * neb->atoms);
+VectorType NEBObjectiveFunction::difference(VectorType a, VectorType b) {
+  VectorType pbcDiff(3 * neb->numImages * neb->atoms);
   for (int i = 1; i <= neb->numImages; i++) {
     int n = (i - 1) * 3 * neb->atoms;
     int m = 3 * neb->atoms;
@@ -233,7 +233,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       fclose(fileNEBPath);
       printImageData(true, iteration);
     }
-    VectorXd pos = objf->getPositions();
+    VectorType pos = objf->getPositions();
     double convForce{convergenceForce()};
     if (iteration) { // so that we print forces before taking an optimizer step
       if (iteration >= params->nebMaxIterations) {
