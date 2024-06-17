@@ -60,19 +60,19 @@ public:
    */
   int run(size_t a_maxIterations, double a_maxMove) override;
   //! Gets the direction of the next step
-  Eigen::VectorXd getStep();
+  VectorType getStep();
 
 private:
   //! Current step direction of the conjugate gradient
-  Eigen::VectorXd m_direction;
+  VectorType m_direction;
   //! Algorithms previous step direction
-  Eigen::VectorXd m_directionOld;
+  VectorType m_directionOld;
   //! Normalised version of the current direction vector
-  Eigen::VectorXd m_directionNorm;
+  VectorType m_directionNorm;
   //! Current force vector
-  Eigen::VectorXd m_force;
+  VectorType m_force;
   //! Previous force vector
-  Eigen::VectorXd m_forceOld;
+  VectorType m_forceOld;
   std::shared_ptr<spdlog::logger> m_log;
 
   //! Counts the number of discrete steps until algorithm convergence

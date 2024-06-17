@@ -20,10 +20,10 @@ Lanczos::Lanczos(std::shared_ptr<Matter> matter,
 // equations in the paper given at the top of this file.
 void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   int size = 3 * matter->numberOfFreeAtoms();
-  MatrixXd T(size, params->lanczos.maxIterations),
+  MatrixType T(size, params->lanczos.maxIterations),
       Q(size, params->lanczos.maxIterations);
   T.setZero();
-  VectorXd u(size), r(size);
+  VectorType u(size), r(size);
 
   // Convert the AtomMatrix of all the atoms into
   // a single column vector with just the free coordinates.
@@ -38,9 +38,9 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   double alpha, beta = r.norm();
   double ew = 0, ewOld = 0, ewAbsRelErr;
   double dr = params->main.finiteDifference;
-  VectorXd evEst, evT, evOldEst;
+  VectorType evEst, evT, evOldEst;
 
-  VectorXd force1, force2;
+  VectorType force1, force2;
   auto pot = helper_functions::makePotential(params->pot.potential, params);
   auto tmpMatter = std::make_unique<Matter>(pot, params);
   *tmpMatter = *matter;
@@ -84,7 +84,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
     }
     // Check Eigenvalues
     if (i >= 1) {
-      Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0, 0, i + 1, i + 1));
+      Eigen::SelfAdjointEigenSolver<MatrixType> es(T.block(0, 0, i + 1, i + 1));
       ew = es.eigenvalues()(0);
       evT = es.eigenvectors().col(0);
       ewAbsRelErr = fabs((ew - ewOld) / ewOld);

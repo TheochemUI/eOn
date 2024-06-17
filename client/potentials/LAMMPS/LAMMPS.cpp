@@ -9,7 +9,8 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 // General Functions
-lammps::lammps(std::shared_ptr<Params> p) : Potential(p) {
+lammps::lammps(std::shared_ptr<Params> p)
+    : Potential(p) {
   numberOfAtoms = 0;
   LAMMPSObj = NULL;
   for (int i = 0; i < 9; i++)
