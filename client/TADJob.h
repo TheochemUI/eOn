@@ -8,7 +8,8 @@
 
 class TADJob : public Job {
 public:
-  TADJob(std::unique_ptr<Parameters> parameters) : Job(std::move(parameters)) {
+  TADJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)) {
     log = spdlog::get("combi");
   }
   ~TADJob() = default;

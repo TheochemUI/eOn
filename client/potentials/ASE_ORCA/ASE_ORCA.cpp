@@ -10,7 +10,6 @@
 
 #include "ASE_ORCA.h"
 #include "../../EnvHelpers.hpp"
-#include "Eigen/src/Core/Matrix.h"
 #include <fenv.h>
 
 // XXX: This always assumes that charge is 0, mult is 1
@@ -56,19 +55,15 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
                        double *F, double *U, double *variance,
                        const double *box) {
   variance = nullptr;
-  Eigen::MatrixXd positions =
-      Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(R), nAtoms, 3);
-  Eigen::MatrixXd boxx =
-      Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(box), 3, 3);
-  Eigen::VectorXi atmnmrs =
-      Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
+  MatrixType positions = cvec_to_mat(R, nAtoms, 3);
+  MatrixType boxx = cvec_to_mat(box, 3, 3);
+  Vector<int> atmnmrs = cvec_to_vec(atomicNrs, nAtoms);
   py::object atoms = this->ase.attr("Atoms")(
       "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
   atoms.attr("set_calculator")(this->calc);
   atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
-  Eigen::MatrixXd py_force =
-      py::cast<Eigen::MatrixXd>(atoms.attr("get_forces")());
+  MatrixType py_force = py::cast<MatrixType>(atoms.attr("get_forces")());
 
   // Populate the output parameters
   *U = py_e;

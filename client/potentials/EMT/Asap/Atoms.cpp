@@ -18,7 +18,10 @@ extern int verbose;
 #endif
 
 Atoms::Atoms(const Vec *p, int n, SuperCell *s)
-    : potential(NULL), superCell(s), nAtoms(n), counter(1) {
+    : potential(NULL),
+      superCell(s),
+      nAtoms(n),
+      counter(1) {
   positions.resize(nAtoms);
   pos_translations.resize(nAtoms);
   memset(&pos_translations[0], 0, nAtoms * 3 * sizeof(double));

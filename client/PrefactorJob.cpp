@@ -6,7 +6,7 @@
 
 std::vector<std::string> PrefactorJob::run(void) {
   std::vector<std::string> returnFiles;
-  VectorXd freqs;
+  VectorType freqs;
 
   std::string reactantFilename("reactant.con");
   std::string saddleFilename("saddle.con");
@@ -24,7 +24,7 @@ std::vector<std::string> PrefactorJob::run(void) {
                            product.get(), pref1, pref2);
   // printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
 
-  VectorXi atoms;
+  Vector<int> atoms;
   if (params->prefactor.allFreeAtoms) {
     // it is sufficient to pass the configuration
     // for which the frequencies should be determined

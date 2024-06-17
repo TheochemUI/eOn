@@ -9,7 +9,8 @@
 class TestJob : public Job {
 public:
   TestJob(std::unique_ptr<Parameters> params)
-      : Job(std::move(params)), tolerance{0.01} {}
+      : Job(std::move(params)),
+        tolerance{0.01} {}
   ~TestJob(void) = default;
   std::vector<std::string> run(void);
 

@@ -58,11 +58,11 @@ public:
       : ObjectiveFunction(matterPassed, parametersPassed) {}
   ~MatterObjectiveFunction() = default;
   double getEnergy() { return matter->getPotentialEnergy(); }
-  VectorXd getGradient(bool fdstep = false) {
+  VectorType getGradient(bool fdstep = false) {
     return -matter->getForcesFreeV();
   }
-  void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
-  VectorXd getPositions() { return matter->getPositionsFreeV(); }
+  void setPositions(VectorType x) { matter->setPositionsFreeV(x); }
+  VectorType getPositions() { return matter->getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
   bool isConverged() { return getConvergence() < params->optim.convergedForce; }
   double getConvergence() {
@@ -78,7 +78,9 @@ public:
       std::exit(1);
     }
   }
-  VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
+  VectorType difference(VectorType a, VectorType b) {
+    return matter->pbcV(a - b);
+  }
 };
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
@@ -168,10 +170,10 @@ AtomMatrix Matter::pbc(AtomMatrix diff) const {
   return ddiff * cell;
 }
 
-VectorXd Matter::pbcV(VectorXd diffVector) const {
+VectorType Matter::pbcV(VectorType diffVector) const {
   AtomMatrix pbcMatrix =
       pbc(AtomMatrix::Map(diffVector.data(), diffVector.size() / 3, 3));
-  return VectorXd::Map(pbcMatrix.data(), diffVector.size());
+  return VectorType::Map(pbcMatrix.data(), diffVector.size());
 }
 
 // Returns the maximum distance between two atoms in the Matter objects.
@@ -217,9 +219,9 @@ void Matter::resize(const long int length) {
 
 long int Matter::numberOfAtoms() const { return (nAtoms); }
 
-Matrix3d Matter::getCell() const { return cell; }
+Matrix3S Matter::getCell() const { return cell; }
 
-void Matter::setCell(Matrix3d newCell) { cell = newCell; }
+void Matter::setCell(Matrix3S newCell) { cell = newCell; }
 
 double Matter::getPosition(long int indexAtom, int axis) const {
   return positions(indexAtom, axis);
@@ -240,8 +242,8 @@ void Matter::setVelocity(long int indexAtom, int axis, double vel) {
 // return coordinates of atoms in array 'pos'
 AtomMatrix Matter::getPositions() const { return positions; }
 
-VectorXd Matter::getPositionsV() const {
-  return VectorXd::Map(positions.data(), 3 * numberOfAtoms());
+VectorType Matter::getPositionsV() const {
+  return VectorType::Map(positions.data(), 3 * numberOfAtoms());
 }
 
 AtomMatrix Matter::getPositionsFree() const {
@@ -256,7 +258,7 @@ AtomMatrix Matter::getPositionsFree() const {
   return ret;
 }
 
-VectorXi Matter::getAtomicNrsFree() const {
+Vector<int> Matter::getAtomicNrsFree() const {
   return this->atomicNrs.array() * getFreeV().cast<int>().array();
 }
 
@@ -323,8 +325,8 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   return objf->isConverged();
 }
 
-VectorXd Matter::getPositionsFreeV() const {
-  return VectorXd::Map(getPositionsFree().data(), 3 * numberOfFreeAtoms());
+VectorType Matter::getPositionsFreeV() const {
+  return VectorType::Map(getPositionsFree().data(), 3 * numberOfFreeAtoms());
 }
 
 // update Matter with the new positions of the free atoms given in array 'pos'
@@ -337,7 +339,7 @@ void Matter::setPositions(const AtomMatrix pos) {
 }
 
 // Same but takes vector instead of n x 3 matrix
-void Matter::setPositionsV(const VectorXd pos) {
+void Matter::setPositionsV(const VectorType pos) {
   setPositions(AtomMatrix::Map(pos.data(), numberOfAtoms(), 3));
 }
 
@@ -353,7 +355,7 @@ void Matter::setPositionsFree(const AtomMatrix pos) {
   recomputePotential = true;
 }
 
-void Matter::setPositionsFreeV(const VectorXd pos) {
+void Matter::setPositionsFreeV(const VectorType pos) {
   setPositionsFree(AtomMatrix::Map(pos.data(), numberOfFreeAtoms(), 3));
 }
 
@@ -384,8 +386,8 @@ AtomMatrix Matter::getForces() {
   return ret;
 }
 
-VectorXd Matter::getForcesV() {
-  return VectorXd::Map(getForces().data(), 3 * numberOfAtoms());
+VectorType Matter::getForcesV() {
+  return cvec_to_vec(getForces().data(), 3 * numberOfAtoms());
 }
 
 AtomMatrix Matter::getForcesFree() {
@@ -401,8 +403,8 @@ AtomMatrix Matter::getForcesFree() {
   return ret;
 }
 
-VectorXd Matter::getForcesFreeV() {
-  return VectorXd::Map(getForcesFree().data(), 3 * numberOfFreeAtoms());
+VectorType Matter::getForcesFreeV() {
+  return cvec_to_vec(getForcesFree().data(), 3 * numberOfFreeAtoms());
 }
 
 // return distance between the atoms with index1 and index2
@@ -410,10 +412,10 @@ double Matter::distance(long index1, long index2) const {
   return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
-// return projected distance between the atoms with index1 and index2 on asix
+// return projected distance between the atoms with index1 and index2 on axis
 // (0-x,1-y,2-z)
 double Matter::pdistance(long index1, long index2, int axis) const {
-  Matrix<double, 1, 3> ret;
+  MatrixTRC<double, 1, 3> ret;
   ret.setZero();
   ret(0, axis) = positions(index1, axis) - positions(index2, axis);
   ret = pbc(ret);
@@ -432,7 +434,7 @@ void Matter::setMass(long int indexAtom, double mass) {
   masses[indexAtom] = mass;
 }
 
-void Matter::setMasses(VectorXd massesIn) {
+void Matter::setMasses(VectorType massesIn) {
   for (int i = 0; i < nAtoms; i++) {
     masses[i] = massesIn[i];
   }
@@ -449,7 +451,7 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr) {
 
 int Matter::getFixed(long int indexAtom) const { return (isFixed[indexAtom]); }
 
-void Matter::setFixed(long int indexAtom, int isFixed_passed) {
+void Matter::setFixed(long int indexAtom, bool isFixed_passed) {
   isFixed[indexAtom] = isFixed_passed;
 }
 
@@ -834,7 +836,7 @@ void Matter::computePotential() {
     recomputePotential = false;
 
     if (isFixed.sum() == 0 && parameters->main.removeNetForce) {
-      Vector3d tempForce(3);
+      FixedVecType<3> tempForce(3);
       tempForce = forces.colwise().sum() / nAtoms;
 
       for (long int i = 0; i < nAtoms; i++) {
@@ -872,9 +874,9 @@ double Matter::maxForce(void) {
   return maxForce;
 }
 
-VectorXi Matter::getAtomicNrs() const { return this->atomicNrs; }
+Vector<int> Matter::getAtomicNrs() const { return this->atomicNrs; }
 
-void Matter::setAtomicNrs(const VectorXi atmnrs) {
+void Matter::setAtomicNrs(const Vector<int> atmnrs) {
   if (atmnrs.size() != this->nAtoms) {
     throw std::invalid_argument(
         "Vector of atomic numbers not equal to the number of atoms");
@@ -894,8 +896,8 @@ AtomMatrix Matter::getFree() const {
   return ret;
 }
 
-VectorXd Matter::getFreeV() const {
-  return VectorXd::Map(getFree().data(), 3 * numberOfAtoms());
+VectorType Matter::getFreeV() const {
+  return VectorType::Map(getFree().data(), 3 * numberOfAtoms());
 }
 
 AtomMatrix Matter::getVelocities() const {
@@ -919,7 +921,7 @@ AtomMatrix Matter::getAccelerations() {
   return ret;
 }
 
-Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const { return masses; }
+VectorType Matter::getMasses() const { return masses; }
 
 bool Matter::matter2convel(std::string filename) {
   bool state;
@@ -1218,7 +1220,7 @@ size_t Matter::getPotentialCalls() const {
 
 double Matter::getEnergyVariance() { return this->energyVariance; }
 
-// Eigen::VectorXd Matter::getForceVariance() {
+// VectorType Matter::getForceVariance() {
 //   return this->variance.segment(1, numberOfFreeAtoms() * 3);
 // }
 

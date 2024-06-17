@@ -32,14 +32,14 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
 void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
 
-  VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),
-                                            3 * matter->numberOfAtoms());
+  VectorType initialDirection = VectorType::Map(
+      initialDirectionAtomMatrix.data(), 3 * matter->numberOfAtoms());
   tau = initialDirection.array() * matter->getFreeV().array();
   tau = initialDirection;
   tau.normalize();
   *x0 = *matter;
   *x1 = *matter;
-  VectorXd x0_r = x0->getPositionsV();
+  VectorType x0_r = x0->getPositionsV();
 
   x1->setPositionsV(x0_r + params->main.finiteDifference * tau);
 
@@ -51,11 +51,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   }
 
   // other vectors
-  VectorXd x1_rp;
-  VectorXd x1_r;
-  VectorXd tau_prime;
-  VectorXd tau_Old;
-  VectorXd g1_prime;
+  VectorType x1_rp;
+  VectorType x1_r;
+  VectorType tau_prime;
+  VectorType tau_Old;
+  VectorType g1_prime;
 
   double delta = params->main.finiteDifference;
   double phi_tol = M_PI * (params->dimer.convergedAngle / 180.0);
@@ -69,7 +69,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
   // http://doi.org/10.1021/ct501155k
   if (params->dimer.removeRotation) {
-    rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+    rotationRemove(MatrixType::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
     tau = x1_r - x0_r;
     tau.normalize();
@@ -77,8 +77,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   }
 
   // Calculate the gradients on x0 and x1, g0 and g1, respectively.
-  VectorXd g0 = -x0->getForcesV();
-  VectorXd g1 = -x1->getForcesV();
+  VectorType g0 = -x0->getForcesV();
+  VectorType g1 = -x1->getForcesV();
 
   positions.clear();
   gradients.clear();
@@ -133,11 +133,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     {
       if (init_lbfgs == false) {
         // xph: s0 should the difference between tau and tau_Old, which are
-        // normalized vectors. VectorXd s0 = x1->getPositionsV() - rPrev;
-        VectorXd s0 = tau - tau_Old;
+        // normalized vectors. VectorType s0 = x1->getPositionsV() - rPrev;
+        VectorType s0 = tau - tau_Old;
         s.push_back(s0);
         // xph: rescale the force; or rescale s0 = s0*delta
-        VectorXd y0 = (F_R_Old - F_R) / delta;
+        VectorType y0 = (F_R_Old - F_R) / delta;
         y.push_back(y0);
         rho.push_back(1.0 / (s0.dot(y0)));
       } else {
@@ -150,14 +150,14 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       int loopmax = s.size();
       double a[loopmax];
 
-      VectorXd q = -F_R;
+      VectorType q = -F_R;
 
       for (int i = loopmax - 1; i >= 0; i--) {
         a[i] = rho[i] * s[i].dot(q);
         q -= a[i] * y[i];
       }
 
-      VectorXd z = H0 * q;
+      VectorType z = H0 * q;
 
       for (int i = 0; i < loopmax; i++) {
         double b = rho[i] * y[i].dot(z);
@@ -253,7 +253,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       // http://doi.org/10.1021/ct501155k
       if (params->dimer.removeRotation) {
         x1->setPositionsV(x1_r);
-        rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+        rotationRemove(MatrixType::Map(x0_r.data(), x0->numberOfAtoms(), 3),
+                       x1);
         x1_r = x1->getPositionsV();
         tau = x1_r - x0_r;
         tau.normalize();
@@ -293,5 +294,5 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 double ImprovedDimer::getEigenvalue() { return C_tau; }
 
 AtomMatrix ImprovedDimer::getEigenvector() {
-  return MatrixXd::Map(tau.data(), x0->numberOfAtoms(), 3);
+  return MatrixType::Map(tau.data(), x0->numberOfAtoms(), 3);
 }

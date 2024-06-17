@@ -39,26 +39,25 @@ private:
 };
 
 namespace helper_functions::surrogate {
-Eigen::MatrixXd get_features(const std::vector<Matter> &matobjs);
-Eigen::MatrixXd
-get_features(const std::vector<std::shared_ptr<Matter>> &matobjs);
-Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
-                            std::shared_ptr<Potential> true_pot);
-Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
-                            std::shared_ptr<Potential> true_pot);
-Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot);
-std::pair<Eigen::VectorXd, Eigen::VectorXd>
+MatrixType get_features(const std::vector<Matter> &matobjs);
+MatrixType get_features(const std::vector<std::shared_ptr<Matter>> &matobjs);
+MatrixType get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
+                       std::shared_ptr<Potential> true_pot);
+MatrixType get_targets(std::vector<Matter> &matobjs,
+                       std::shared_ptr<Potential> true_pot);
+VectorType make_target(Matter &m1, std::shared_ptr<Potential> true_pot);
+std::pair<VectorType, VectorType>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot);
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs);
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot);
-std::pair<double, Eigen::VectorXd::Index>
+std::pair<double, VectorType::Index>
 getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs);
 } // namespace helper_functions::surrogate
 
 namespace helper_functions::eigen {
-Eigen::MatrixXd vertCat(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2);
-void addVectorRow(Eigen::MatrixXd &data, const Eigen::VectorXd &newrow);
+MatrixType vertCat(const MatrixType &m1, const MatrixType &m2);
+void addVectorRow(MatrixType &data, const VectorType &newrow);
 // Modifies data
 } // namespace helper_functions::eigen

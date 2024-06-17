@@ -13,8 +13,8 @@ public:
                        std::shared_ptr<Parameters> parametersPassed)
       : SaddleSearchMethod(nullptr, parametersPassed),
         product{std::make_shared<Matter>(*matterPassed)},
-        reactant{std::make_shared<Matter>(*matterPassed)}, saddle{
-                                                               matterPassed} {
+        reactant{std::make_shared<Matter>(*matterPassed)},
+        saddle{matterPassed} {
     this->pot = matterPassed->getPotential();
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();

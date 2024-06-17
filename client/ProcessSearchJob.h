@@ -56,7 +56,7 @@ private:
   /*!
    * Function is not defined in the cpp file and is marked for deletion.
    */
-  VectorXi movedAtoms(void);
+  Vector<int> movedAtoms(void);
   //! Logs the run status and makes sure the run was successful
   void printEndState(int status);
   //! Writes the results from the run to file

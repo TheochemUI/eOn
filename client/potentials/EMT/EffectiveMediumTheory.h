@@ -40,7 +40,8 @@ private:
 public:
   // Functions
   // constructor and destructor
-  EffectiveMediumTheory(std::shared_ptr<Parameters> p) : Potential(p) {
+  EffectiveMediumTheory(std::shared_ptr<Parameters> p)
+      : Potential(p) {
     // dummy variables
     AtomsObj = 0;
     EMTObj = 0;
