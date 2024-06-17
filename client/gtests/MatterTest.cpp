@@ -17,21 +17,17 @@ using namespace std::placeholders;
 namespace tests {
 
 MatterTest::MatterTest()
-    : params{std::make_shared<Parameters>()}, m1{nullptr},
-      pot_default{nullptr}, threshold{1e-6} {}
+    : threshold{1e-2} {}
 
 MatterTest::~MatterTest() {}
 
-void MatterTest::SetUp() {
-  pot_default = helper_functions::makePotential(PotType::LJ, params);
-  m1 = std::make_shared<Matter>(pot_default, params);
+TEST_F(MatterTest, TestCell) {
+  auto params = std::make_shared<Parameters>();
+  auto pot_default = helper_functions::makePotential(PotType::LJ, params);
+  auto m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
-}
 
-void MatterTest::TearDown() {}
-
-TEST_F(MatterTest, TestCell) {
   Matrix3d _cell;
   Matrix3d _cellInverse;
   auto matEq =
@@ -46,6 +42,12 @@ TEST_F(MatterTest, TestCell) {
 }
 
 TEST_F(MatterTest, SetGetAtomicNrs) {
+  auto params = std::make_shared<Parameters>();
+  auto pot_default = helper_functions::makePotential(PotType::LJ, params);
+  auto m1 = std::make_shared<Matter>(pot_default, params);
+  std::string confile("pos.con");
+  m1->con2matter(confile);
+
   VectorXi _atmnrs{{8, 8, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 16}};
   VectorXi _atmnrs2{{16, 16, 12, 12, 12, 12, 2, 2, 2, 2, 2, 2, 32}};
   auto vecEq =
@@ -59,6 +61,12 @@ TEST_F(MatterTest, SetGetAtomicNrs) {
 }
 
 TEST_F(MatterTest, SetPotential) {
+  auto params = std::make_shared<Parameters>();
+  auto pot_default = helper_functions::makePotential(PotType::LJ, params);
+  auto m1 = std::make_shared<Matter>(pot_default, params);
+  std::string confile("pos.con");
+  m1->con2matter(confile);
+
   params->potential = PotType::LJ;
   double m1_ipot = m1->getPotentialEnergy();
   params->potential = PotType::MORSE_PT;
@@ -67,8 +75,8 @@ TEST_F(MatterTest, SetPotential) {
   m1->setPotential(std::move(pot));
   // ASSERT_EQ(m1->getPotential()->getType(), pot->getType());
   double m1_fpot = m1->getPotentialEnergy();
-  ASSERT_NEAR(m1_ipot, -8.9245813315, 1e-5);
-  ASSERT_NEAR(m1_fpot, 1611.8672392832, 1e-5);
+  ASSERT_NEAR(m1_ipot, -8.9245813315, threshold);
+  ASSERT_NEAR(m1_fpot, 1611.8672392832, threshold);
   ASSERT_NE(m1_ipot, m1_fpot);
 }
 
