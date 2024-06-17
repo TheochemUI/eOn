@@ -15,7 +15,7 @@ std::vector<std::string> HessianJob::run(void) {
   Hessian hessian(params.get(), matter.get());
   long nAtoms = matter->numberOfAtoms();
 
-  VectorXi moved(nAtoms);
+  Vector<int> moved(nAtoms);
   moved.setConstant(-1);
 
   int nMoved = 0;

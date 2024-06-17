@@ -15,7 +15,7 @@ public:
         m_dt{a_params->optim.timeStep},
         m_dt_max{a_params->optim.maxTimeStep},
         m_max_move{a_params->optim.maxMove},
-        m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_vel{VectorType::Zero(a_objf->degreesOfFreedom())},
         m_iteration{0},
         m_max_iter{a_params->optim.maxIterations} {
     if (spdlog::get("qm")) {
@@ -32,7 +32,7 @@ public:
 
 private:
   double m_dt, m_dt_max, m_max_move;
-  Eigen::VectorXd m_vel;
+  VectorType m_vel;
   size_t m_iteration, m_max_iter;
   std::shared_ptr<spdlog::logger> m_log;
 };

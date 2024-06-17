@@ -16,7 +16,8 @@
 class VASP : public Potential {
 
 public:
-  VASP(std::shared_ptr<Parameters> p) : Potential(p) {
+  VASP(shared_ptr<Parameters> p)
+      : Potential(p) {
     vaspRunCount++;
     // deleting leftovers from previous run
     system("rm -f TMPCAR");

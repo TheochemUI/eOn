@@ -176,7 +176,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
 
   // Determine optimal rotation
   // Horn, J. Opt. Soc. Am. A, 1987
-  Eigen::Matrix3d m = r1.transpose() * r2;
+  Matrix3S m = r1.transpose() * r2;
 
   double sxx = m(0, 0);
   double sxy = m(0, 1);
@@ -188,7 +188,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
   double szy = m(2, 1);
   double szz = m(2, 2);
 
-  Eigen::Matrix4d n;
+  FSqMatS<4> n;
   n.setZero();
   n(0, 1) = syz - szy;
   n(0, 2) = szx - sxz;
@@ -206,8 +206,8 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
   n(2, 2) = -sxx + syy - szz;
   n(3, 3) = -sxx - syy + szz;
 
-  Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
-  Eigen::Vector4d maxv = es.eigenvectors().col(3);
+  Eigen::SelfAdjointEigenSolver<FSqMatS<4>> es(n);
+  FixedVecType<4> maxv = es.eigenvectors().col(3);
 
   double aa = maxv[0] * maxv[0];
   double bb = maxv[1] * maxv[1];
@@ -241,8 +241,8 @@ bool helper_functions::rotationMatch(const Matter &m1, const Matter &m2,
   AtomMatrix r2 = m2.getPositions();
 
   // Align centroids
-  Eigen::VectorXd c1(3);
-  Eigen::VectorXd c2(3);
+  VectorType c1(3);
+  VectorType c2(3);
 
   c1[0] = r1.col(0).sum();
   c1[1] = r1.col(1).sum();
@@ -283,8 +283,8 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed,
   AtomMatrix r2 = m2->getPositions();
 
   // Align centroids
-  Eigen::VectorXd c1(3);
-  Eigen::VectorXd c2(3);
+  VectorType c1(3);
+  VectorType c2(3);
 
   c1[0] = r1.col(0).sum();
   c1[1] = r1.col(1).sum();
@@ -334,7 +334,7 @@ void helper_functions::translationRemove(Matter &m1,
   AtomMatrix r2 = r2_passed;
 
   // net displacement
-  Eigen::VectorXd disp(3);
+  VectorType disp(3);
   AtomMatrix r12 = m1.pbc(r2 - r1);
 
   disp[0] = r12.col(0).sum();
@@ -369,7 +369,7 @@ double helper_functions::maxAtomMotion(const AtomMatrix v1) {
   return max;
 }
 
-double helper_functions::maxAtomMotionV(const VectorXd v1) {
+double helper_functions::maxAtomMotionV(const VectorType v1) {
   double max = 0.0;
   for (int i = 0; i < v1.rows(); i += 3) {
     double norm = v1.segment<3>(i).norm();
@@ -407,9 +407,9 @@ AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1,
   return v2;
 }
 
-VectorXd helper_functions::maxAtomMotionAppliedV(const VectorXd v1,
-                                                 double maxMotion) {
-  VectorXd v2(v1);
+VectorType helper_functions::maxAtomMotionAppliedV(const VectorType v1,
+                                                   double maxMotion) {
+  VectorType v2(v1);
 
   double max = maxAtomMotionV(v1);
   if (max > maxMotion) {
@@ -433,9 +433,9 @@ AtomMatrix helper_functions::maxMotionApplied(const AtomMatrix v1,
   return v2;
 }
 
-VectorXd helper_functions::maxMotionAppliedV(const VectorXd v1,
-                                             double maxMotion) {
-  VectorXd v2(v1);
+VectorType helper_functions::maxMotionAppliedV(const VectorType v1,
+                                               double maxMotion) {
+  VectorType v2(v1);
 
   double max = v1.norm();
   if (max > maxMotion) {
@@ -504,14 +504,14 @@ std::string helper_functions::getRelevantFile(std::string filename) {
   return filename;
 }
 
-VectorXd helper_functions::loadMasses(std::string filename, int nAtoms) {
+VectorType helper_functions::loadMasses(std::string filename, int nAtoms) {
   std::ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
     SPDLOG_CRITICAL("File {} was not found", filename);
     std::exit(1);
   }
 
-  VectorXd masses(nAtoms);
+  VectorType masses(nAtoms);
   for (int i = 0; i < nAtoms; i++) {
     double mass;
     if (!(massFile >> mass)) {
@@ -730,7 +730,7 @@ void helper_functions::pushApart(std::shared_ptr<Matter> m1,
     return;
 
   AtomMatrix r1 = m1->getPositions();
-  MatrixXd Force(r1.rows(), 3);
+  MatrixType Force(r1.rows(), 3);
   double f = 0.025;
   double cut = minDistance;
   double pushAparts = 500;
