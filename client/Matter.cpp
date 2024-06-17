@@ -304,8 +304,8 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
 
   int iteration = 0;
   if (!quiet) {
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
-                        "Iter", "Step size",
+    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
+                        "[Matter]", "Iter", "Step size",
                         parameters->optConvergenceMetricLabel, "Energy");
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
                         "[Matter]", iteration, 0.0, objf->getConvergence(),
@@ -730,12 +730,13 @@ bool Matter::con2matter(FILE *file) {
                   // water: two components H and O)
   if (sscanf(line, "%d", &Ncomponent) == 0) {
     SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
-                            "component is assumed instead");
+                              "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
     SPDLOG_LOGGER_ERROR(
-        m_log, "con2atoms doesn't support more that {} components or less than 1",
+        m_log,
+        "con2atoms doesn't support more that {} components or less than 1",
         MAXC);
     return false;
   }
@@ -858,7 +859,7 @@ void Matter::computePotential() {
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 and parameters->removeNetForce) {
+    if (isFixed.sum() == 0 && parameters->removeNetForce) {
       Vector3d tempForce(3);
       tempForce = forces.colwise().sum() / nAtoms;
 
@@ -1132,12 +1133,13 @@ bool Matter::convel2matter(FILE *file) {
                   // instance H2O has two components (H and O).
   if (sscanf(line, "%d", &Ncomponent) == 0) {
     SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
-                            "component is assumed instead");
+                              "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
     SPDLOG_LOGGER_ERROR(
-        m_log, "con2atoms doesn't support more that {} components or less than 1",
+        m_log,
+        "con2atoms doesn't support more that {} components or less than 1",
         MAXC);
     return false;
   }

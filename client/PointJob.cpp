@@ -10,15 +10,16 @@ std::vector<std::string> PointJob::run(void) {
   auto pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posInFilename);
 
-  SPDLOG_LOGGER_DEBUG(log, "Energy:         {}", pos->getPotentialEnergy());
-  SPDLOG_LOGGER_DEBUG(log, "Max atom force: {}", pos->maxForce());
+  SPDLOG_LOGGER_DEBUG(log, "Energy:         {:.12f}",
+                      pos->getPotentialEnergy());
+  SPDLOG_LOGGER_DEBUG(log, "Max atom force: {:.12f}", pos->maxForce());
 
   std::shared_ptr<spdlog::logger> fileLogger;
   fileLogger = spdlog::basic_logger_mt("point", "results.dat", true);
 
   fileLogger->set_pattern("%v");
-  fileLogger->info("{} Energy", pos->getPotentialEnergy());
-  fileLogger->info("{} Max_Force", pos->maxForce());
+  fileLogger->info("{:.12f} Energy", pos->getPotentialEnergy());
+  fileLogger->info("{:.12f} Max_Force", pos->maxForce());
 
   spdlog::drop("point");
   fileLogger.reset();
