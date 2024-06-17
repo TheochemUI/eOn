@@ -298,7 +298,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
   AtomMatrix displacement;
   displacement.resize(trial->numberOfAtoms(), 3);
   displacement.setZero();
-  VectorXd distvec = calculateDistanceFromCenter(current.get());
+  VectorType distvec = calculateDistanceFromCenter(current.get());
   int num = trial->numberOfAtoms();
   int m = 0;
   if (params->bhop.singleAtomDisplace) {
@@ -404,14 +404,14 @@ vector<long> BasinHoppingJob::getElements(Matter *matter) {
   return Elements;
 }
 
-VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
+VectorType BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
   AtomMatrix pos = matter->getPositions();
-  Vector3d cen(0, 0, 0);
+  FixedVecType<3> cen(0, 0, 0);
   int num = matter->numberOfAtoms();
 
   cen = pos.colwise().sum() / (double)num;
 
-  VectorXd dist(num);
+  VectorType dist(num);
 
   for (int n = 0; n < num; n++) {
     pos.row(n) -= cen;

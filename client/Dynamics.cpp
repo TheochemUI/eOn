@@ -1,4 +1,5 @@
 #include "Dynamics.h"
+#include "Eigen.h"
 #include <math.h>
 
 using namespace helper_functions;
@@ -132,7 +133,7 @@ void Dynamics::run() {
 void Dynamics::andersenCollision() {
   double alpha, tCol, pCol;
   double vNew, vOld;
-  Matrix<double, Eigen::Dynamic, 1> mass;
+  VectorType mass;
   AtomMatrix velocity;
 
   alpha = parameters->thermostat.andersenAlpha; // collision strength
@@ -157,7 +158,7 @@ void Dynamics::andersenCollision() {
 
 void Dynamics::setThermalVelocity() {
   AtomMatrix velocity = matter->getVelocities();
-  Matrix<double, Eigen::Dynamic, 1> mass = matter->getMasses();
+  VectorType mass = matter->getMasses();
 
   for (long i = 0; i < nAtoms; i++) {
     if (!matter->getFixed(i)) {
@@ -244,7 +245,7 @@ void Dynamics::noseHooverVerlet() {
 }
 
 void Dynamics::langevinVerlet() {
-  Matrix<double, Eigen::Dynamic, 1> mass;
+  VectorType mass;
   AtomMatrix pos;
   AtomMatrix vel;
   AtomMatrix acc;

@@ -28,10 +28,10 @@ public:
 
 private:
   std::shared_ptr<spdlog::logger> m_log;
-  Eigen::VectorXd getStep(Eigen::VectorXd a_f);
+  VectorType getStep(VectorType a_f);
   size_t iteration;
-  Eigen::VectorXd m_rPrev;
-  Eigen::VectorXd m_fPrev;
+  VectorType m_rPrev;
+  VectorType m_fPrev;
 };
 
 #endif

@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef EIGEN_H
-#define EIGEN_H
+#pragma once
+#define EIGEN_DEFAULT_TO_ROW_MAJOR
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 
@@ -50,4 +50,3 @@ template <typename T> Vector<T> cvec_to_vec(const T *array_ptr, int size) {
 }
 
 // TODO(rg): Maybe also have a free function for .setZero()
-#endif
