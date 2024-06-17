@@ -9,7 +9,6 @@
 //-----------------------------------------------------------------------------------
 
 #include "CatLearnPot.h"
-#include "Eigen/src/Core/Matrix.h"
 
 CatLearnPot::CatLearnPot(std::shared_ptr<Parameters> a_params)
     : SurrogatePotential(PotType::CatLearn, a_params) {
@@ -25,8 +24,7 @@ CatLearnPot::CatLearnPot(std::shared_ptr<Parameters> a_params)
       gp_module.attr("get_default_model")("model"_a = a_params->catl.model);
 };
 
-void CatLearnPot::train_optimize(Eigen::MatrixXd features,
-                                 Eigen::MatrixXd targets) {
+void CatLearnPot::train_optimize(MatrixType features, MatrixType targets) {
   m_gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
   return;
 }
@@ -34,12 +32,11 @@ void CatLearnPot::train_optimize(Eigen::MatrixXd features,
 void CatLearnPot::force(long nAtoms, const double *positions,
                         const int *atomicNrs, double *forces, double *energy,
                         double *variance, const double *box) {
-  Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(
-      const_cast<double *>(positions), 1, nAtoms * 3);
-  py::tuple ef_and_unc =
-      (this->m_gpmod.attr("predict")(features, "get_variance"_a = true, "get_derivatives"_a = true));
-  auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
-  auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
+  MatrixType features = cvec_to_mat(positions, 1, nAtoms * 3);
+  py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(
+      features, "get_variance"_a = true, "get_derivatives"_a = true));
+  auto ef_dat = ef_and_unc[0].cast<MatrixType>();
+  auto vari = ef_and_unc[1].cast<MatrixType>();
   auto gradients = ef_dat.block(0, 1, 1, nAtoms * 3);
   for (int idx = 0; idx < nAtoms; idx++) {
     forces[3 * idx] = gradients(0, 3 * idx) * -1;

@@ -73,15 +73,15 @@ public:
 
   ~NEBObjectiveFunction(void){};
 
-  VectorXd getGradient(bool fdstep = false);
+  VectorType getGradient(bool fdstep = false);
   double getEnergy();
-  void setPositions(VectorXd x);
-  VectorXd getPositions();
+  void setPositions(VectorType x);
+  VectorType getPositions();
   int degreesOfFreedom();
   bool isConverged();
   bool isUncertain();
   double getConvergence();
-  VectorXd difference(VectorXd a, VectorXd b);
+  VectorType difference(VectorType a, VectorType b);
   NudgedElasticBand::NEBStatus status;
 
 private:

@@ -28,14 +28,13 @@ public:
   CatLearnPot(std::shared_ptr<Parameters> a_params);
 
   // Functions
-  void train_optimize(Eigen::MatrixXd features,
-                      Eigen::MatrixXd targets) override;
+  void train_optimize(MatrixType features, MatrixType targets) override;
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override;
   // Variables [public]
   py::object m_gpmod;
-  Eigen::MatrixXd
+  MatrixType
       variance; // XXX: This is a hacky way to populate and use this variable
 };
 #endif

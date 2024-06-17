@@ -34,8 +34,8 @@ public:
   AtomMatrix getEigenvector();
 
 private:
-  std::shared_ptr<Matter> matterCenter;       // initial center of the dimer
-  AtomMatrix direction;       // direction along the dimer
+  std::shared_ptr<Matter> matterCenter; // initial center of the dimer
+  AtomMatrix direction;                 // direction along the dimer
   AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation
 
   gpr::InputParameters p;

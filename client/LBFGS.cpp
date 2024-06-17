@@ -2,12 +2,12 @@
 
 #include "LBFGS.h"
 
-Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
+VectorType LBFGS::getStep(double a_maxMove, VectorType a_f) {
   double H0 = m_params->optim.LBFGSInverseCurvature;
-  Eigen::VectorXd r = m_objf->getPositions();
+  VectorType r = m_objf->getPositions();
 
   if (m_iteration > 0) {
-    Eigen::VectorXd dr = m_objf->difference(r, m_rPrev);
+    VectorType dr = m_objf->difference(r, m_rPrev);
     // double C = dr.dot(fPrev-f)/dr.dot(dr);
     double C = (m_fPrev - a_f).dot(m_fPrev - a_f) / dr.dot(m_fPrev - a_f);
     if (C < 0) {
@@ -27,7 +27,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   if (m_iteration == 0 && m_params->optim.LBFGSAutoScale) {
     m_objf->setPositions(r +
                          m_params->main.finiteDifference * a_f.normalized());
-    Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
+    VectorType dg = m_objf->getGradient(true) + a_f;
     double C = dg.dot(a_f.normalized()) / m_params->main.finiteDifference;
     H0 = 1.0 / C;
     m_objf->setPositions(r);
@@ -47,21 +47,21 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   int loopmax = m_s.size();
   double a[loopmax];
 
-  Eigen::VectorXd q = -a_f;
+  VectorType q = -a_f;
 
   for (int i = loopmax - 1; i >= 0; i--) {
     a[i] = m_rho[i] * m_s[i].dot(q);
     q -= a[i] * m_y[i];
   }
 
-  Eigen::VectorXd z = H0 * q;
+  VectorType z = H0 * q;
 
   for (int i = 0; i < loopmax; i++) {
     double b = m_rho[i] * m_y[i].dot(z);
     z += m_s[i] * (a[i] - b);
   }
 
-  Eigen::VectorXd d = -z;
+  VectorType d = -z;
 
   double distance = helper_functions::maxAtomMotionV(d);
   if (distance >= a_maxMove && m_params->optim.LBFGSDistanceReset) {
@@ -96,12 +96,12 @@ void LBFGS::reset(void) {
   m_rho.clear();
 }
 
-int LBFGS::update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0,
-                  Eigen::VectorXd a_f1, Eigen::VectorXd a_f0) {
-  Eigen::VectorXd s0 = m_objf->difference(a_r1, a_r0);
+int LBFGS::update(VectorType a_r1, VectorType a_r0, VectorType a_f1,
+                  VectorType a_f0) {
+  VectorType s0 = m_objf->difference(a_r1, a_r0);
 
   // y0 is the change in the gradient, not the force
-  Eigen::VectorXd y0 = a_f0 - a_f1;
+  VectorType y0 = a_f0 - a_f1;
 
   // GH: added to prevent crashing
   if (abs(s0.dot(y0)) < LBFGS_EPS) {
@@ -124,8 +124,8 @@ int LBFGS::update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0,
 
 int LBFGS::step(double a_maxMove) {
   int status = 0;
-  Eigen::VectorXd r = m_objf->getPositions();
-  Eigen::VectorXd f = -m_objf->getGradient();
+  VectorType r = m_objf->getPositions();
+  VectorType f = -m_objf->getGradient();
 
   if (m_iteration > 0) {
     status = update(r, m_rPrev, f, m_fPrev);
@@ -133,7 +133,7 @@ int LBFGS::step(double a_maxMove) {
   if (status < 0)
     return -1;
 
-  Eigen::VectorXd dr = getStep(a_maxMove, f);
+  VectorType dr = getStep(a_maxMove, f);
 
   m_objf->setPositions(r + dr);
 
