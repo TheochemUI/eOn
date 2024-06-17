@@ -34,7 +34,6 @@ public:
   }
 
   // Functions
-  void force(long nAtoms, const double *R, const int *atomicNrs,
-             double *F, double *U, double *variance,
-             const double *box) override;
+  void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
+             double *U, double *variance, const double *box) override;
 };

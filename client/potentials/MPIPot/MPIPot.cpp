@@ -14,7 +14,8 @@
 #include <time.h>
 #include <unistd.h>
 
-MPIPot::MPIPot(std::shared_ptr<Parameters> p) : Potential(p) {
+MPIPot::MPIPot(std::shared_ptr<Parameters> p)
+    : Potential(p) {
   potentialRank = p->MPIPotentialRank;
   poll_period = p->MPIPollPeriod;
   return;

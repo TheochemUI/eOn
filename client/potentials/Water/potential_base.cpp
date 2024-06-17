@@ -27,14 +27,17 @@ using namespace forcefields;
 When the distance between two molecules is over getCutoff(), van der Waals and
 Coulomb interactions between the two molecules are ignored.
 @see getSwitchingWidth().*/
-PotentialBase::PotentialBase() : cutoff_(6.5), switchingWidth_(2.0) {
+PotentialBase::PotentialBase()
+    : cutoff_(6.5),
+      switchingWidth_(2.0) {
   periods_[0] = 0.0;
   periods_[1] = 0.0;
   periods_[2] = 0.0;
 }
 
 PotentialBase::PotentialBase(double cutoff, double switchingWidth)
-    : cutoff_(cutoff), switchingWidth_(switchingWidth) {
+    : cutoff_(cutoff),
+      switchingWidth_(switchingWidth) {
   if (switchingWidth_ > cutoff_) {
     cerr << "Error: getSwitchingWidth() > getCutoff()" << endl;
     exit(EXIT_FAILURE);

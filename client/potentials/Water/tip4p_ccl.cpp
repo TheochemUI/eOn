@@ -53,7 +53,8 @@ is eV (electron volt), Angstrom, e (e charge).
 A general purpose model for the condensed phases of water: TIP4P/2005, J.L.F.
 Abascal and C. Vega, J. Chem. Phys. (2005) vol. 123, p. 234505.*/
 
-Tip4p::Tip4p() : Ccl() {}
+Tip4p::Tip4p()
+    : Ccl() {}
 
 Tip4p::Tip4p(double cutoff, double switchingWidth)
     : Ccl(cutoff, switchingWidth) {}

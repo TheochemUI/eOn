@@ -124,7 +124,7 @@ void BondBoost::initialize() {
 double BondBoost::boost() {
   long RMDS;
   double biasPot; // , AVE_Boost_Fact;
-  Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs, 1);
+  VectorType TABL_tmp(nTABs, 1);
   bool flag = 0;
 
   RMDS = int(parameters->bondBoost.RMDTime / parameters->md.timeStep);
@@ -315,8 +315,8 @@ double BondBoost::Booststeps() {
   return Boost_Fact;
 }
 
-Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
-  Matrix<double, Eigen::Dynamic, 1> TABL_t(nTABs, 1);
+VectorType BondBoost::Rmdsteps() {
+  VectorType TABL_t(nTABs, 1);
   long count = 0, i, j;
 
   for (i = 0; i < nBAs; i++) {

@@ -52,7 +52,9 @@ adds the values, otherwise it is simply marked as output.
 using namespace std;
 using namespace forcefields;
 
-template <class P> ZhuPhilpott<P>::ZhuPhilpott() : SpceCcl() {
+template <class P>
+ZhuPhilpott<P>::ZhuPhilpott()
+    : SpceCcl() {
   nPlatinum_ = 0;
   positions_ = 0;
   forces_ = 0;

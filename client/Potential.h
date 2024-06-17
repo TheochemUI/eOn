@@ -53,7 +53,7 @@ public:
                      const double *box) = 0;
 
   std::tuple<double, AtomMatrix>
-  get_ef(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
+  get_ef(const AtomMatrix pos, const Vector<int> atmnrs, const Matrix3S box);
 
   PotType getType() { return this->ptype; }
 

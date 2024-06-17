@@ -12,8 +12,8 @@ TEST_CASE("TestCell", "[MatterTest]") {
   std::string confile("pos.con");
   m1->con2matter(confile);
 
-  Eigen::Matrix3d _cell;
-  Eigen::Matrix3d _cellInverse;
+  Matrix3S _cell;
+  Matrix3S _cellInverse;
   // clang-format off
     _cell << // Comma initialized
         25.0, 0.0, 0.0,
@@ -33,10 +33,8 @@ TEST_CASE("SetGetAtomicNrs", "[MatterTest]") {
   std::string confile("pos.con");
   m1->con2matter(confile);
 
-  Eigen::VectorXi _atmnrs(13);
-  _atmnrs << 8, 8, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 16;
-  Eigen::VectorXi _atmnrs2(13);
-  _atmnrs2 << 16, 16, 12, 12, 12, 12, 2, 2, 2, 2, 2, 2, 32;
+  Vector<int> _atmnrs{{8, 8, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 16}};
+  Vector<int> _atmnrs2{{16, 16, 12, 12, 12, 12, 2, 2, 2, 2, 2, 2, 32}};
 
   REQUIRE(m1->getAtomicNrs() == _atmnrs);
 

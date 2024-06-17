@@ -31,22 +31,22 @@ public:
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
-  int update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0, Eigen::VectorXd a_f1,
-             Eigen::VectorXd a_f0);
+  int update(VectorType a_r1, VectorType a_r0, VectorType a_f1,
+             VectorType a_f0);
   void reset(void);
 
 private:
-  Eigen::VectorXd getStep(double a_maxMove, Eigen::VectorXd a_f);
+  VectorType getStep(double a_maxMove, VectorType a_f);
 
   int m_iteration;
   int m_memory;
 
-  std::vector<Eigen::VectorXd> m_s;
-  std::vector<Eigen::VectorXd> m_y;
+  std::vector<VectorType> m_s;
+  std::vector<VectorType> m_y;
   std::vector<double> m_rho;
 
-  Eigen::VectorXd m_rPrev;
-  Eigen::VectorXd m_fPrev;
+  VectorType m_rPrev;
+  VectorType m_fPrev;
   std::shared_ptr<spdlog::logger> m_log;
 };
 
