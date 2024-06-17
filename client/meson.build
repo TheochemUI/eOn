@@ -331,26 +331,30 @@ ec2 = executable('testWriteR',
 # ------------------------ Tests
 
 if get_option('with_tests')
-  gtest_dep = dependency('gtest', main : true, required : true)
-  gmock_dep = dependency('gmock', required : false)
-  _args += ['-DEONTEST'] # Unused
-  _deps += [ gtest_dep, gmock_dep ]
-test_array = [#
-  # ['Improved Dimer', 'test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
-  # ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
-  ['Matter converter', 'test_matter', 'MatterTest.cpp', '/gtests/data/systems/sulfolene'],
-  ['Potential tests', 'test_pot', 'PotTest.cpp', '/gtests/data/systems/sulfolene'],
-  # ['NEB tests', 'neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
-             ]
-foreach test : test_array
-  test(test.get(0),
-       executable(test.get(1),
-          sources : ['gtests/'+test.get(2)],
-          dependencies : _deps,
-          link_with : _linkto,
-          cpp_args : _args
-                 ),
-        workdir : meson.source_root() + test.get(3)
-      )
-endforeach
+    test_args = _args
+    test_deps = _deps
+    test_deps += dependency(
+      'Catch2',
+      method: 'cmake',
+      modules: ['Catch2::Catch2WithMain'],
+    )
+    test_array = [#
+      # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
+      # ['strparse_run', 'StringHelpersTest.cpp', ''],
+      ['test_matter', 'MatterTest.cpp', 'sulfolene'],
+      # ['test_pot', 'PotTest.cpp', '/gtests/data/systems/sulfolene'],
+      # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
+    ]
+    foreach test : test_array
+      test(test.get(0),
+           executable(test.get(0),
+              sources : ['gtests/'+test.get(1)],
+              dependencies : test_deps,
+              include_directories: _incdirs,
+              cpp_args: test_args,
+              link_with: _linkto,
+                     ),
+            workdir : meson.source_root() + '/gtests/data/systems/' + test.get(2)
+          )
+    endforeach
 endif
