@@ -129,7 +129,9 @@ void commandLine(int argc, char **argv) {
     }
 
     if (!sflag) {
-      params->optMethod = helper_functions::getOptType(optimizer);
+      params->optMethod = magic_enum::enum_cast<OptType>(
+                              optimizer, magic_enum::case_insensitive)
+                              .value_or(OptType::ConjugateGradient);
       params->optConvergedForce = optConvergedForce;
     }
 
