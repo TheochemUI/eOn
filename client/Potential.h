@@ -32,7 +32,7 @@ public:
   virtual ~Potential() {
     if (m_log) {
       std::string potentialName = helper_functions::getPotentialName(getType());
-      m_log->info("[{}] called potential {} times", potentialName,
+      m_log->info("[{}] finished after {} calls", potentialName,
                   forceCallCounter);
     } else {
       std::cerr << "Logger is not initialized\n";
