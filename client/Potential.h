@@ -66,8 +66,4 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
                                          std::shared_ptr<Parameters> params);
 } // namespace helper_functions
 
-// int Potential::fcalls = 0;
-// int Potential::fcallsTotal = 0;
-// int Potential::wu_fcallsTotal = 0;
-// double Potential::totalUserTime = 0.0;
 #endif
