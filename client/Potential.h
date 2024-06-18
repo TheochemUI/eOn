@@ -31,9 +31,8 @@ public:
 
   virtual ~Potential() {
     if (m_log) {
-      std::string potentialName = helper_functions::getPotentialName(getType());
-      m_log->info("[{}] finished after {} calls", potentialName,
-                  forceCallCounter);
+      m_log->info("[{}] finished after {} calls",
+                  magic_enum::enum_name<PotType>(getType()), forceCallCounter);
     } else {
       std::cerr << "Logger is not initialized\n";
     }
@@ -66,8 +65,7 @@ public:
       m_log = spdlog::get("_potcalls");
     }
     if (m_log) {
-      std::string potentialName = helper_functions::getPotentialName(getType());
-      m_log->info("[{}] created", potentialName);
+      m_log->info("[{}] created", magic_enum::enum_name<PotType>(getType()));
     }
   }
 };

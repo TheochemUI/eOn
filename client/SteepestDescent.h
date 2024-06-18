@@ -12,7 +12,7 @@ class SteepestDescent final : public Optimizer {
 public:
   SteepestDescent(std::shared_ptr<ObjectiveFunction> a_objf,
                   std::shared_ptr<Parameters> a_params)
-      : Optimizer(a_objf, OptType::SteepestDescent, a_params),
+      : Optimizer(a_objf, OptType::SD, a_params),
         iteration{0} {
     if (spdlog::get("sd")) {
       m_log = spdlog::get("sd");
