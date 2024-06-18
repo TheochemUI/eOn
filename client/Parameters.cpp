@@ -13,6 +13,7 @@
 #include "Prefactor.h"
 #include "PrefactorJob.h"
 #include "ReplicaExchangeJob.h"
+#include "magic_enum/magic_enum.hpp"
 #include <errno.h>
 #include <float.h>
 #include <stdexcept>
@@ -379,8 +380,9 @@ int Parameters::load(FILE *file) {
 
     // [Main] //
 
-    job =
-        helper_functions::getJobType(toLowerCase(ini.GetValue("Main", "job")));
+    job = magic_enum::enum_cast<JobType>(ini.GetValue("Main", "job"),
+                                         magic_enum::case_insensitive)
+              .value_or(JobType::Unknown);
     temperature = ini.GetValueF("Main", "temperature", temperature);
     randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
     checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
@@ -487,8 +489,10 @@ int Parameters::load(FILE *file) {
                       processSearchMinimizationOffset);
 
     // [Optimizers] //
-    auto inp_optMethod = helper_functions::getOptType(
-        toLowerCase(ini.GetValue("Optimizer", "opt_method", "none")));
+    auto inp_optMethod = magic_enum::enum_cast<OptType>(
+                             ini.GetValue("Optimizer", "opt_method", "none"),
+                             magic_enum::case_insensitive)
+                             .value_or(OptType::Unknown);
     if (inp_optMethod != OptType::None) {
       optMethod = inp_optMethod;
     }
@@ -509,8 +513,10 @@ int Parameters::load(FILE *file) {
     }
 
     if (ini.FindKey("Refine") != -1) {
-      refineOptMethod = helper_functions::getOptType(
-          toLowerCase(ini.GetValue("Refine", "opt_method")));
+      refineOptMethod =
+          magic_enum::enum_cast<OptType>(ini.GetValue("Refine", "opt_method"),
+                                         magic_enum::case_insensitive)
+              .value_or(OptType::None);
       refineThreshold = ini.GetValueF("Refine", "threshold", refineThreshold);
     }
 
@@ -1044,7 +1050,7 @@ int Parameters::load(FILE *file) {
 
     // Sanity Checks
     if (parrepStateCheckInterval > mdTime &&
-        helper_functions::getJobName(job) == "parallel_replica") {
+        magic_enum::enum_name<JobType>(job) == "parallel_replica") {
       SPDLOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
       error = 1;
     }
