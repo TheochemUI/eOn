@@ -14,6 +14,8 @@ _incdirs = [] # All the includes
 
 # Someday these should be removed and things should be fixed..
 _args += ['-Wno-unused-result',
+          '-g3',
+          '-O0',
          '-Wunused-but-set-parameter']
 
 add_languages('c', required: true)
@@ -342,7 +344,7 @@ if get_option('with_tests')
       # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
       # ['strparse_run', 'StringHelpersTest.cpp', ''],
       ['test_matter', 'MatterTest.cpp', 'sulfolene'],
-      # ['test_pot', 'PotTest.cpp', '/gtests/data/systems/sulfolene'],
+      ['test_pot', 'PotTest.cpp', 'sulfolene'],
       # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
     ]
     foreach test : test_array
