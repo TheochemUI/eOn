@@ -1,4 +1,5 @@
 
+#include "BaseStructures.h"
 #include "Bundling.h"
 #include "CommandLine.h"
 #include "EpiCenters.h"
@@ -371,7 +372,7 @@ int main(int argc, char **argv) {
           helper_functions::makeJob(std::make_unique<Parameters>(parameters));
       if (job == NULL) {
         printf("error: Unknown job: %s\n",
-               helper_functions::getJobName(parameters.job).c_str());
+               std::string{magic_enum::enum_name<JobType>(parameters.job)}.c_str());
         return 1;
       }
 

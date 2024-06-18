@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 
+#include <magic_enum/magic_enum_all.hpp>
+
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/os.h> // To write the R style data frame
@@ -19,6 +21,9 @@
 using namespace std::string_literals; // For ""s
 
 // This file contains forward declarations and enum classes
+// NOTE(rg):
+// We use magic_enum for converting <-> strings so the names have to match what
+// the user will input, though we are case-insensitive
 
 /* Don't guard with compiler directives anymore because that will break ABI for
  * any of these */
@@ -63,46 +68,36 @@ enum class PotType {
 enum class JobType {
   // Only add to the end of this!!!
   Unknown = 0,
-  ProcessSearch,
-  SaddleSearch,
+  Process_Search,
+  Saddle_Search,
   Minimization,
   Point,
-  ParallelReplica,
-  SafeHyperdynamics,
+  Parallel_Replica,
+  Safe_Hyperdynamics,
   TAD,
-  ReplicaExchange,
-  BasinHopping,
+  Replica_Exchange,
+  Basin_Hopping,
   Hessian,
-  FiniteDifference,
-  NEB,
+  Finite_Difference,
+  Nudged_Elastic_Band,
   Dynamics,
   Prefactor,
-  GlobalOptimization,
-  StructureComparison,
-  MonteCarlo,
+  Global_Optimization,
+  Structure_Comparison,
+  Monte_Carlo,
   Test,
-  GPSurrogate
+  GP_Surrogate
 };
 
 enum class OptType {
   // Only add to the end of this!!!
   Unknown = -1, // an error case
   None = 0,
-  QuickMin,
-  ConjugateGradient,
+  QM,
+  CG,
   LBFGS,
   FIRE,
-  SteepestDescent
+  SD
 };
 
-enum class RunStatus { GOOD = 0, MAX_ITERATIONS, POTENTIAL_FAILED };
-
-namespace helper_functions {
-PotType getPotentialType(std::string pname);
-std::string getPotentialName(PotType ptype);
-JobType getJobType(std::string jname);
-std::string getJobName(JobType jtype);
-OptType getOptType(std::string a_oname);
-std::string getOptName(OptType a_otype);
-std::string getRunStatusName(RunStatus rstype);
-} // namespace helper_functions
+enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };

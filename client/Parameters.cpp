@@ -13,6 +13,7 @@
 #include "Prefactor.h"
 #include "PrefactorJob.h"
 #include "ReplicaExchangeJob.h"
+#include "magic_enum/magic_enum.hpp"
 #include <errno.h>
 #include <float.h>
 #include <stdexcept>
@@ -24,7 +25,7 @@ Parameters::Parameters() {
   timeUnit = 10.1805055; // fs
 
   // [Main] //
-  job = JobType::ProcessSearch;
+  job = JobType::Process_Search;
   randomSeed = -1;
   temperature = 300.0;
   checkpoint = false;
@@ -125,7 +126,7 @@ Parameters::Parameters() {
   saddleZeroModeAbortCurvature = 0.0;   // eV/Ang^2
 
   // [Optimizers] //
-  optMethod = OptType::ConjugateGradient;
+  optMethod = OptType::CG;
   optConvergenceMetric = "norm"s;
   refineOptMethod = OptType::None;
   refineThreshold = 0.5;
@@ -379,8 +380,9 @@ int Parameters::load(FILE *file) {
 
     // [Main] //
 
-    job =
-        helper_functions::getJobType(toLowerCase(ini.GetValue("Main", "job")));
+    job = magic_enum::enum_cast<JobType>(ini.GetValue("Main", "job"),
+                                         magic_enum::case_insensitive)
+              .value_or(JobType::Unknown);
     temperature = ini.GetValueF("Main", "temperature", temperature);
     randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
     checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
@@ -401,8 +403,10 @@ int Parameters::load(FILE *file) {
 
     // [Potential] //
 
-    potential = helper_functions::getPotentialType(
-        toLowerCase(ini.GetValue("Potential", "potential")));
+    potential =
+        magic_enum::enum_cast<PotType>(ini.GetValue("Potential", "potential"),
+                                       magic_enum::case_insensitive)
+            .value_or(PotType::UNKNOWN);
     MPIPollPeriod =
         ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
     LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
@@ -485,8 +489,10 @@ int Parameters::load(FILE *file) {
                       processSearchMinimizationOffset);
 
     // [Optimizers] //
-    auto inp_optMethod = helper_functions::getOptType(
-        toLowerCase(ini.GetValue("Optimizer", "opt_method", "none")));
+    auto inp_optMethod = magic_enum::enum_cast<OptType>(
+                             ini.GetValue("Optimizer", "opt_method", "none"),
+                             magic_enum::case_insensitive)
+                             .value_or(OptType::Unknown);
     if (inp_optMethod != OptType::None) {
       optMethod = inp_optMethod;
     }
@@ -507,8 +513,10 @@ int Parameters::load(FILE *file) {
     }
 
     if (ini.FindKey("Refine") != -1) {
-      refineOptMethod = helper_functions::getOptType(
-          toLowerCase(ini.GetValue("Refine", "opt_method")));
+      refineOptMethod =
+          magic_enum::enum_cast<OptType>(ini.GetValue("Refine", "opt_method"),
+                                         magic_enum::case_insensitive)
+              .value_or(OptType::None);
       refineThreshold = ini.GetValueF("Refine", "threshold", refineThreshold);
     }
 
@@ -593,13 +601,15 @@ int Parameters::load(FILE *file) {
     if (use_surrogate) {
       // TODO: What about other jobs
       sub_job = job;
-      job = JobType::GPSurrogate;
+      job = JobType::GP_Surrogate;
     }
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
     if (ini.FindKey("Surrogate") != -1) {
-      surrogatePotential = helper_functions::getPotentialType(
-          toLowerCase(ini.GetValue("Surrogate", "potential")));
+      surrogatePotential =
+          magic_enum::enum_cast<PotType>(ini.GetValue("Surrogate", "potential"),
+                                         magic_enum::case_insensitive)
+              .value_or(PotType::UNKNOWN);
       if (surrogatePotential != PotType::CatLearn) {
         throw std::runtime_error("We only support catlearn for GP right now");
       }
@@ -1040,7 +1050,7 @@ int Parameters::load(FILE *file) {
 
     // Sanity Checks
     if (parrepStateCheckInterval > mdTime &&
-        helper_functions::getJobName(job) == "parallel_replica") {
+        magic_enum::enum_name<JobType>(job) == "parallel_replica") {
       SPDLOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
       error = 1;
     }
