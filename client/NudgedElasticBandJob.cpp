@@ -78,8 +78,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   fileResults = fopen(resultsFilename.c_str(), "wb");
 
   fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
-  fprintf(fileResults, "%s potential_type\n",
-          helper_functions::getPotentialName(params->potential).c_str());
+  fprintf(
+      fileResults, "%s potential_type\n",
+      std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
   // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
   // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
   fprintf(fileResults, "%f energy_reference\n",
