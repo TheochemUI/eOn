@@ -3,4 +3,5 @@ ams_io = shared_library('ams_io',
            dependencies : _deps,
            cpp_args : _args,
            link_with : _linkto,
+           include_directories: _incdirs,
            install : true)
