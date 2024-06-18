@@ -4,4 +4,5 @@ water_h=shared_library('water_h',
            dependencies : _deps,
            cpp_args : _args,
            link_with : _linkto,
+           include_directories: _incdirs,
            install : true)

@@ -12,6 +12,8 @@ _deps = [] # Dependencies
 _linkto = [] # All the sub-libraries
 _incdirs = [] # All the includes
 
+_incdirs += [ include_directories('thirdparty') ]
+
 # Someday these should be removed and things should be fixed..
 _args += ['-Wno-unused-result',
           '-g3',
@@ -62,7 +64,6 @@ _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
 eoncbase_sources = [
-  'BaseStructures.cpp',
   'INIFile.cpp',
 ]
 
@@ -70,6 +71,7 @@ eoncbase = library('eoncbase',
   sources : eoncbase_sources,
   dependencies : _deps,
   cpp_args : _args,
+  include_directories: _incdirs,
   install : true)
 
 _linkto += eoncbase
@@ -302,6 +304,7 @@ _linkto += potentials
 
 eclib = library('eonclib',
                 sources : eonclib_sources,
+                include_directories: _incdirs,
                 dependencies : _deps,
                 link_with : _linkto,
                 cpp_args : _args,
@@ -313,6 +316,7 @@ _linkto += eclib
 
 ec = executable('eonclient',
                 sources : eonclient_sources,
+                include_directories: _incdirs,
                 dependencies : _deps,
                 link_with : _linkto,
                 cpp_args : _args,
@@ -320,12 +324,14 @@ ec = executable('eonclient',
 
 ec1 = executable('testPot',
                 'testpot.cpp',
+                include_directories: _incdirs,
                 dependencies : _deps,
                 link_with : _linkto,
                 )
 
 ec2 = executable('testWriteR',
                 'testWriteR.cpp',
+                include_directories: _incdirs,
                 dependencies : _deps,
                 link_with : _linkto,
                 )
