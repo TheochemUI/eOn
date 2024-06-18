@@ -1,83 +1,69 @@
-/*
- * Test.cpp
- *
- *  Created on: 23 Feb 2022
- *      Author: Rohit Goswami
- *     Company: University of Iceland
- */
+#include "Matter.h"
+#include "Parameters.h"
+#include <catch2/catch_all.hpp>
+#include <memory>
 
-#include "MatterTest.h"
-#include "../potentials/Morse/Morse.cpp"
-#include "BaseStructures.h"
+using namespace Catch::Matchers;
 
-#include <algorithm>
-
-using namespace std::placeholders;
-
-namespace tests {
-
-MatterTest::MatterTest()
-    : threshold{1e-2} {}
-
-MatterTest::~MatterTest() {}
-
-TEST_F(MatterTest, TestCell) {
+TEST_CASE("TestCell", "[MatterTest]") {
   auto params = std::make_shared<Parameters>();
   auto pot_default = helper_functions::makePotential(PotType::LJ, params);
   auto m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
 
-  Matrix3d _cell;
-  Matrix3d _cellInverse;
-  auto matEq =
-      std::bind(helper_functions::eigenEquality<Matrix3d>, _1, _2, threshold);
+  Eigen::Matrix3d _cell;
+  Eigen::Matrix3d _cellInverse;
   // clang-format off
     _cell << // Comma initialized
         25.0, 0.0, 0.0,
         0.0, 25.0, 0.0,
         0.0, 0.0, 25.0;
   // clang-format on
-  ASSERT_PRED2(matEq, _cell, m1->getCell());
+
+  REQUIRE_THAT(m1->getCell()(0, 0), WithinAbs(_cell(0, 0), 0.01));
+  REQUIRE_THAT(m1->getCell()(1, 1), WithinAbs(_cell(1, 1), 0.01));
+  REQUIRE_THAT(m1->getCell()(2, 2), WithinAbs(_cell(2, 2), 0.01));
 }
 
-TEST_F(MatterTest, SetGetAtomicNrs) {
+TEST_CASE("SetGetAtomicNrs", "[MatterTest]") {
   auto params = std::make_shared<Parameters>();
   auto pot_default = helper_functions::makePotential(PotType::LJ, params);
   auto m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
 
-  VectorXi _atmnrs{{8, 8, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 16}};
-  VectorXi _atmnrs2{{16, 16, 12, 12, 12, 12, 2, 2, 2, 2, 2, 2, 32}};
-  auto vecEq =
-      std::bind(helper_functions::eigenEquality<VectorXi>, _1, _2, threshold);
-  ASSERT_PRED2(vecEq, _atmnrs, m1->getAtomicNrs());
+  Eigen::VectorXi _atmnrs(13);
+  _atmnrs << 8, 8, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 16;
+  Eigen::VectorXi _atmnrs2(13);
+  _atmnrs2 << 16, 16, 12, 12, 12, 12, 2, 2, 2, 2, 2, 2, 32;
+
+  REQUIRE(m1->getAtomicNrs() == _atmnrs);
+
   for (auto &atmnr : _atmnrs) {
     atmnr *= 2;
   }
   m1->setAtomicNrs(_atmnrs);
-  ASSERT_PRED2(vecEq, _atmnrs2, m1->getAtomicNrs());
+
+  REQUIRE(m1->getAtomicNrs() == _atmnrs2);
 }
 
-TEST_F(MatterTest, SetPotential) {
+TEST_CASE("SetPotential", "[MatterTest]") {
   auto params = std::make_shared<Parameters>();
   auto pot_default = helper_functions::makePotential(PotType::LJ, params);
   auto m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
 
-  params->potential = PotType::LJ;
   double m1_ipot = m1->getPotentialEnergy();
   params->potential = PotType::MORSE_PT;
-  auto pot{helper_functions::makePotential(params->potential, params)};
-  ASSERT_NE(m1->getPotential(), pot);
-  m1->setPotential(std::move(pot));
-  // ASSERT_EQ(m1->getPotential()->getType(), pot->getType());
-  double m1_fpot = m1->getPotentialEnergy();
-  ASSERT_NEAR(m1_ipot, -8.9245813315, threshold);
-  ASSERT_NEAR(m1_fpot, 1611.8672392832, threshold);
-  ASSERT_NE(m1_ipot, m1_fpot);
-}
+  auto pot = helper_functions::makePotential(params->potential, params);
 
-} /* namespace tests */
+  REQUIRE(m1->getPotential() != pot);
+  m1->setPotential(pot);
+
+  double m1_fpot = m1->getPotentialEnergy();
+  REQUIRE_THAT(m1_ipot, WithinAbs(-8.9245813315, 0.01));
+  REQUIRE_THAT(m1_fpot, WithinAbs(1611.8672392832, 0.01));
+  REQUIRE(m1_ipot != m1_fpot);
+}
