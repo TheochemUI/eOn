@@ -15,8 +15,6 @@
 //     return;
 // }
 
-void LJ::cleanMemory(void) { return; }
-
 // General Functions
 void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
                        double psiRecieved) {
@@ -30,7 +28,7 @@ void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
-// adress to supercell size
+// address to supercell size
 void LJ::force(long N, const double *R, const int *atomicNrs, double *F,
                double *U, double *variance, const double *box) {
   variance = nullptr;
@@ -80,5 +78,3 @@ void LJ::force(long N, const double *R, const int *atomicNrs, double *F,
   }
   return;
 }
-
-LJ::~LJ() { cleanMemory(); }
