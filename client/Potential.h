@@ -16,23 +16,29 @@ protected:
 
 public:
   size_t forceCallCounter;
+
+  // Main Constructor
   Potential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
       : ptype{a_ptype},
-        forceCallCounter{0},
-        m_params{a_params} {
-    initializeLogger();
-  }
-  Potential(std::shared_ptr<Parameters> a_params)
-      : ptype{a_params->potential},
-        m_params{a_params} {
+        m_params{a_params},
+        forceCallCounter{0} {
     initializeLogger();
   }
 
+  // Delegating Constructor
+  Potential(std::shared_ptr<Parameters> a_params)
+      : Potential(a_params->potential, a_params) {}
+
   virtual ~Potential() {
-    std::string potentialName = helper_functions::getPotentialName(getType());
-    m_log->info("[{}] called potential {} times", potentialName,
-                forceCallCounter);
+    if (m_log) {
+      std::string potentialName = helper_functions::getPotentialName(getType());
+      m_log->info("[{}] called potential {} times", potentialName,
+                  forceCallCounter);
+    } else {
+      std::cerr << "Logger is not initialized\n";
+    }
   }
+
   static int fcalls;
   static int fcallsTotal;
   static int wu_fcallsTotal;
@@ -43,9 +49,13 @@ public:
   void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
                      double *forces, double *energy, double *variance,
                      const double *box) = 0;
+
   std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
-  PotType getType() { return this->ptype; };
+
+  PotType getType() { return this->ptype; }
+
+  // Logger initialization
   void initializeLogger() {
     if (!spdlog::get("_potcalls")) {
       // Create logger if it doesn't exist
@@ -55,8 +65,10 @@ public:
       // Use existing logger
       m_log = spdlog::get("_potcalls");
     }
-    std::string potentialName = helper_functions::getPotentialName(getType());
-    m_log->info("[{}] created", potentialName);
+    if (m_log) {
+      std::string potentialName = helper_functions::getPotentialName(getType());
+      m_log->info("[{}] created", potentialName);
+    }
   }
 };
 
