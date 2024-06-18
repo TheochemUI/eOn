@@ -14,16 +14,16 @@ std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
   case OptType::FIRE: {
     return std::make_unique<FIRE>(a_objf, a_params);
   }
-  case OptType::QuickMin: {
+  case OptType::QM: {
     return std::make_unique<Quickmin>(a_objf, a_params);
   }
-  case OptType::ConjugateGradient: {
+  case OptType::CG: {
     return std::make_unique<ConjugateGradients>(a_objf, a_params);
   }
   case OptType::LBFGS: {
     return std::make_unique<LBFGS>(a_objf, a_params);
   }
-  case OptType::SteepestDescent: {
+  case OptType::SD: {
     return std::make_unique<SteepestDescent>(a_objf, a_params);
   }
   case OptType::None: {

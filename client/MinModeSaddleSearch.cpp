@@ -283,7 +283,7 @@ int MinModeSaddleSearch::run() {
         // use negative step to communicate that the system is the negative
         // region and a max step should be performed
         if ((minModeMethod->getEigenvalue() > 0) and
-            (params->optMethod == OptType::ConjugateGradient)) {
+            (params->optMethod == OptType::CG)) {
           optStatus = optim->step(-params->optMaxMove);
         } else {
           optStatus = optim->step(params->optMaxMove);
