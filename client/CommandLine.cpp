@@ -123,7 +123,9 @@ void commandLine(int argc, char **argv) {
     }
 
     if (!cflag) {
-      params->potential = helper_functions::getPotentialType(potential);
+      params->potential = magic_enum::enum_cast<PotType>(
+                              potential, magic_enum::case_insensitive)
+                              .value_or(PotType::UNKNOWN);
     }
 
     if (!sflag) {
