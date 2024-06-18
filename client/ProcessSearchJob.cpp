@@ -3,8 +3,10 @@
 #include "BiasedGradientSquaredDescent.h"
 #include "DynamicsSaddleSearch.h"
 #include "EpiCenters.h"
+#include "MinModeSaddleSearch.h"
 #include "Optimizer.h"
 #include "Prefactor.h"
+#include <memory>
 
 std::vector<std::string> ProcessSearchJob::run(void) {
   string reactantFilename("pos.con");
@@ -64,14 +66,15 @@ std::vector<std::string> ProcessSearchJob::run(void) {
       // mode was passed from the server
       mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
     }
-    saddleSearch = new MinModeSaddleSearch(
+    saddleSearch = std::make_unique<MinModeSaddleSearch>(
         saddle, mode, initial->getPotentialEnergy(), params, pot);
   } else if (params->saddleMethod == "basin_hopping") {
-    saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, pot, params);
+    saddleSearch =
+        std::make_unique<BasinHoppingSaddleSearch>(min1, saddle, pot, params);
   } else if (params->saddleMethod == "dynamics") {
-    saddleSearch = new DynamicsSaddleSearch(saddle, params);
+    saddleSearch = std::make_unique<DynamicsSaddleSearch>(saddle, params);
   } else if (params->saddleMethod == "bgsd") {
-    saddleSearch = new BiasedGradientSquaredDescent(
+    saddleSearch = std::make_unique<BiasedGradientSquaredDescent>(
         saddle, initial->getPotentialEnergy(), params);
   }
 
@@ -244,9 +247,8 @@ void ProcessSearchJob::saveData(int status) {
     fprintf(fileResults, "%.12e displacement_saddle_distance\n", 0.0);
   }
   if (params->saddleMethod == "dynamics") {
-    DynamicsSaddleSearch *ds = (DynamicsSaddleSearch *)saddleSearch;
-    fprintf(fileResults, "%.12e simulation_time\n",
-            ds->time * params->timeUnit);
+    auto ds = dynamic_cast<DynamicsSaddleSearch &>(*saddleSearch);
+    fprintf(fileResults, "%.12e simulation_time\n", ds.time * params->timeUnit);
     fprintf(fileResults, "%.12e md_temperature\n",
             params->saddleDynamicsTemperature);
   }
