@@ -33,7 +33,7 @@ public:
    */
   ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
                      std::shared_ptr<Parameters> a_params)
-      : Optimizer(a_objf, OptType::ConjugateGradient, a_params),
+      : Optimizer(a_objf, OptType::CG, a_params),
         m_directionOld{(a_objf->getPositions()).setZero()},
         m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
         m_cg_i{0} {
