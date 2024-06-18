@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 
+#include <magic_enum/magic_enum_all.hpp>
+
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/os.h> // To write the R style data frame
@@ -98,8 +100,6 @@ enum class OptType {
 enum class RunStatus { GOOD = 0, MAX_ITERATIONS, POTENTIAL_FAILED };
 
 namespace helper_functions {
-PotType getPotentialType(std::string pname);
-std::string getPotentialName(PotType ptype);
 JobType getJobType(std::string jname);
 std::string getJobName(JobType jtype);
 OptType getOptType(std::string a_oname);
