@@ -5,4 +5,5 @@ emt = shared_library('emt',
            dependencies : _deps,
            cpp_args : _args,
            link_with : [_linkto, asap],
+           include_directories: _incdirs,
            install : true)
