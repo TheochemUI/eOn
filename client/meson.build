@@ -64,7 +64,6 @@ _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
 eoncbase_sources = [
-  'BaseStructures.cpp',
   'INIFile.cpp',
 ]
 
