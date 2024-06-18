@@ -401,8 +401,10 @@ int Parameters::load(FILE *file) {
 
     // [Potential] //
 
-    potential = helper_functions::getPotentialType(
-        toLowerCase(ini.GetValue("Potential", "potential")));
+    potential =
+        magic_enum::enum_cast<PotType>(ini.GetValue("Potential", "potential"),
+                                       magic_enum::case_insensitive)
+            .value_or(PotType::UNKNOWN);
     MPIPollPeriod =
         ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
     LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
@@ -598,8 +600,10 @@ int Parameters::load(FILE *file) {
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
     if (ini.FindKey("Surrogate") != -1) {
-      surrogatePotential = helper_functions::getPotentialType(
-          toLowerCase(ini.GetValue("Surrogate", "potential")));
+      surrogatePotential =
+          magic_enum::enum_cast<PotType>(ini.GetValue("Surrogate", "potential"),
+                                         magic_enum::case_insensitive)
+              .value_or(PotType::UNKNOWN);
       if (surrogatePotential != PotType::CatLearn) {
         throw std::runtime_error("We only support catlearn for GP right now");
       }

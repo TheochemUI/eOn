@@ -118,8 +118,9 @@ void ReplicaExchangeJob::saveData(void) {
   fileResults = fopen(resultsFilename.c_str(), "wb");
 
   fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
-  fprintf(fileResults, "%s potential_type\n",
-          helper_functions::getPotentialName(params->potential).c_str());
+  fprintf(
+      fileResults, "%s potential_type\n",
+      std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
   // fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
   fclose(fileResults);
 
