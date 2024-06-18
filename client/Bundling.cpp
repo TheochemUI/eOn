@@ -5,10 +5,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <dirent.h>
-#include <errno.h>
+#include <filesystem>
+#include <iostream>
 #include <unistd.h>
 
-int copyfile(char *, char *);
+namespace fs = std::filesystem;
 
 int getBundleSize(void) {
   DIR *dir;
@@ -16,6 +17,11 @@ int getBundleSize(void) {
   int num_bundle = -1;
 
   dir = opendir(".");
+
+  if (!dir) {
+    perror("opendir");
+    return num_bundle;
+  }
 
   // Find the highest numbered bundle file
   // and return that number.
@@ -56,9 +62,9 @@ int getBundleSize(void) {
   return num_bundle;
 }
 
-int strchrcount(char *haystack, char needle) {
+int strchrcount(const char *haystack, char needle) {
   int count = 0;
-  for (char *ch = haystack; *ch != '\0'; ch++) {
+  for (const char *ch = haystack; *ch != '\0'; ch++) {
     if (*ch == needle) {
       count++;
     }
@@ -73,6 +79,11 @@ std::vector<std::string> unbundle(int number) {
 
   dir = opendir(".");
 
+  if (!dir) {
+    perror("opendir");
+    return filenames;
+  }
+
   while ((dp = readdir(dir))) {
     int bundleNumber;
     std::string originalFilename(dp->d_name);
@@ -80,12 +91,6 @@ std::vector<std::string> unbundle(int number) {
     if (dp->d_name[0] == '.') {
       continue;
     }
-
-    // If "passed" is not in the filename
-    // then skip.
-    // if (strstr(dp->d_name, "passed")==NULL) {
-    //     continue;
-    // }
 
     int numUnderscores = strchrcount(dp->d_name, '_');
     if (numUnderscores < 1) {
@@ -113,94 +118,51 @@ std::vector<std::string> unbundle(int number) {
 
     *(ch - 1) = '\0';
 
-    int stringSize = strlen(dp->d_name) + 10;
-    char *newFilename = new char[stringSize];
-    snprintf(newFilename, stringSize, "%s.%s", dp->d_name, cch + 1);
+    std::string newFilename =
+        std::string(dp->d_name) + "." + std::string(cch + 1);
 
-    int err;
-    err = copyfile((char *)originalFilename.c_str(), newFilename);
-    if (err) {
-      fprintf(stderr, "error: unbundle: problem copying %s to %s\n",
-              originalFilename.c_str(), newFilename);
+    try {
+      fs::copy_file(originalFilename, newFilename,
+                    fs::copy_options::overwrite_existing);
+    } catch (const fs::filesystem_error &e) {
+      std::cerr << "error: unbundle: problem copying " << originalFilename
+                << " to " << newFilename << ": " << e.what() << '\n';
     }
-    filenames.push_back(std::string(newFilename));
-    delete[] newFilename;
+
+    filenames.push_back(newFilename);
   }
 
   closedir(dir);
   return filenames;
 }
 
-// Why couldn't there be a crossplatform standard for file copy?
-int copyfile(char *filenameSrc, char *filenameDest) {
-  // 10kB buffer
-  int buffSize = 1024 * 10;
-  char *buff = new char[buffSize];
-  FILE *fSrc = fopen(filenameSrc, "rb");
-  if (fSrc == NULL) {
-    fprintf(stderr, "error: copyfile: problem opening src file\n");
-    delete[] buff;
-    return 1;
-  }
-  FILE *fDest = fopen(filenameDest, "wb");
-  if (fDest == NULL) {
-    fprintf(stderr, "error: copyfile: problem opening dest file\n");
-    delete[] buff;
-    return 1;
-  }
-
-  // XXX: Error checking
-  while (!feof(fSrc)) {
-    int count = fread(buff, sizeof(char), buffSize, fSrc);
-    fwrite(buff, sizeof(char), count, fDest);
-  }
-
-  delete[] buff;
-  fclose(fSrc);
-  fclose(fDest);
-
-  return 0;
-}
-
-void deleteUnbundledFiles(std::vector<std::string> unbundledFilenames) {
-  for (unsigned int i = 0; i < unbundledFilenames.size(); i++) {
-    unlink(unbundledFilenames[i].c_str());
+void deleteUnbundledFiles(const std::vector<std::string> &unbundledFilenames) {
+  for (const auto &filename : unbundledFilenames) {
+    fs::remove(filename);
   }
 }
 
-void bundle(int number, std::vector<std::string> filenames,
+void bundle(int number, const std::vector<std::string> &filenames,
             std::vector<std::string> *bundledFilenames) {
-  for (unsigned int i = 0; i < filenames.size(); i++) {
+  for (const auto &filename : filenames) {
+    std::string newFilename = filename;
 
-    std::string filename = filenames[i];
-    // Assumes that bundle numbers wont exceed 100,000,000
-    int stringSize = filename.length() + 20;
-    char *newFilename;
-    newFilename = new char[stringSize];
-    strncpy(newFilename, filename.c_str(), stringSize);
-
-    char *ch;
-    char *fileEnding;
-    if ((ch = strrchr(newFilename, '.')) != NULL) {
-      *ch = '\0';
-      fileEnding = new char[filename.length()];
-      strncpy(fileEnding, ch + 1, filename.length());
-      char *buff = new char[stringSize];
-      snprintf(buff, stringSize, "%s_%i.%s", newFilename, number, fileEnding);
-      strncpy(newFilename, buff, stringSize);
-      delete[] fileEnding;
-      delete[] buff;
+    size_t pos = newFilename.find_last_of('.');
+    if (pos != std::string::npos) {
+      std::string fileEnding = newFilename.substr(pos + 1);
+      newFilename = newFilename.substr(0, pos) + "_" + std::to_string(number) +
+                    "." + fileEnding;
     } else {
-      snprintf(newFilename, stringSize, "%s_%i", newFilename, number);
+      newFilename = newFilename + "_" + std::to_string(number);
     }
 
-    int err;
-    if ((err = rename(filename.c_str(), newFilename))) {
-      fprintf(stderr, "error: bundle: cannot rename %s to %s: %s\n",
-              filename.c_str(), newFilename, strerror(errno));
+    try {
+      fs::rename(filename, newFilename);
+    } catch (const fs::filesystem_error &e) {
+      std::cerr << "error: bundle: cannot rename " << filename << " to "
+                << newFilename << ": " << e.what() << '\n';
     }
-    bundledFilenames->push_back(std::string(newFilename));
 
-    delete[] newFilename;
+    bundledFilenames->push_back(newFilename);
   }
 }
