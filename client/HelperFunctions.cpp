@@ -165,14 +165,8 @@ AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1,
 // result contains v1 projection on v2
 void helper_functions::makeProjection(double *result, const double *v1,
                                       const double *v2, long size) {
-  double *tempListDouble;
-  double tempDouble;
-  tempListDouble = new double[size];
-
-  tempDouble = dot(v1, v2, size);
+  double tempDouble = dot(v1, v2, size);
   multiplyScalar(result, v2, tempDouble, size);
-
-  delete[] tempListDouble;
   return;
 }
 
@@ -667,13 +661,15 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
   AtomMatrix r2 = m2.getPositions();
   double tolerance = distanceDifference;
   int matches = 0;
-  //   std::set<atom,by_atom> rdf1[r1.rows()];
-  //    std::set<atom,by_atom> rdf2[r2.rows()];
-  // GH clang workaround for non-POD allocation
-  set<atom, by_atom> *rdf1 = new set<atom, by_atom>[r1.rows()];
-  set<atom, by_atom> *rdf2 = new set<atom, by_atom>[r2.rows()];
-  if (r1.rows() != r2.rows())
+
+  if (r1.rows() != r2.rows()) {
     return false;
+  }
+
+  // Allocate memory for rdf1 and rdf2
+  std::vector<std::set<atom, by_atom>> rdf1(r1.rows());
+  std::vector<std::set<atom, by_atom>> rdf2(r2.rows());
+
   for (int i2 = 0; i2 < r2.rows(); i2++) {
     rdf2[i2].clear();
     for (int j2 = 0; j2 < r2.rows(); j2++) {
@@ -686,13 +682,9 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
       rdf2[j2].insert(a2);
     }
   }
-  set<atom>::iterator it;
-  set<atom>::iterator it2;
+
   for (int i1 = 0; i1 < r1.rows(); i1++) {
     if (matches == i1 - 2) {
-      // GH clang workaround for non-POD allocation
-      delete[] rdf1;
-      delete[] rdf2;
       return false;
     }
     for (int j1 = 0; j1 < r1.rows(); j1++) {
@@ -705,40 +697,33 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
       rdf1[j1].insert(a);
     }
     for (int x = 0; x < r2.rows(); x++) {
-      it2 = rdf2[x].begin();
-      it = rdf1[i1].begin();
+      auto it2 = rdf2[x].begin();
+      auto it = rdf1[i1].begin();
       int c = 0;
       int counter = 0;
       for (; c < r1.rows(); c++) {
-        atom k1;
-        k1 = *it;
-        atom k2;
-        k2 = *it2;
+        if (it == rdf1[i1].end() || it2 == rdf2[x].end())
+          break;
+        atom k1 = *it;
+        atom k2 = *it2;
         if (fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
           counter++;
         } else {
           SPDLOG_INFO("No match");
           break;
         }
-        //          it++;
+        ++it;
+        ++it2;
       }
       if (counter == r1.rows()) {
         matches++;
       } else {
         SPDLOG_INFO("No match");
       }
-      it2++;
     }
-    it++;
   }
-  // GH clang workaround for non-POD allocation
-  delete[] rdf1;
-  delete[] rdf2;
-  if (matches < r1.rows()) {
-    return false;
-  } else {
-    return true;
-  }
+
+  return matches >= r1.rows();
 }
 
 void helper_functions::pushApart(std::shared_ptr<Matter> m1,

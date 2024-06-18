@@ -15,6 +15,7 @@ dependencies:
   - openblas
   # Pinned
   - eigen==3.4.0
+  - catch2>=3.4.0
   # AMS
   - boost-cpp
   - fmt<10.0.0
@@ -31,4 +32,3 @@ dependencies:
   - pytest-datadir
   - sh
   - sphinx
-  - gtest
