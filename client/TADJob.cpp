@@ -342,8 +342,7 @@ void TADJob::dephase() {
     // this should be allocated once, and of length DephaseSteps
     dephaseBufferLength = DephaseSteps - step;
     loop++;
-    std::vector<std::shared_ptr<Matter>> dephaseBuffer;
-    dephaseBuffer.reserve(dephaseBufferLength);
+    std::vector<std::shared_ptr<Matter>> dephaseBuffer(dephaseBufferLength);
 
     for (long i = 0; i < dephaseBufferLength; i++) {
       dephaseBuffer[i] = std::make_shared<Matter>(pot, params);
