@@ -165,14 +165,8 @@ AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1,
 // result contains v1 projection on v2
 void helper_functions::makeProjection(double *result, const double *v1,
                                       const double *v2, long size) {
-  double *tempListDouble;
-  double tempDouble;
-  tempListDouble = new double[size];
-
-  tempDouble = dot(v1, v2, size);
+  double tempDouble = dot(v1, v2, size);
   multiplyScalar(result, v2, tempDouble, size);
-
-  delete[] tempListDouble;
   return;
 }
 
