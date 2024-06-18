@@ -25,7 +25,7 @@ Parameters::Parameters() {
   timeUnit = 10.1805055; // fs
 
   // [Main] //
-  job = JobType::ProcessSearch;
+  job = JobType::Process_Search;
   randomSeed = -1;
   temperature = 300.0;
   checkpoint = false;
@@ -126,7 +126,7 @@ Parameters::Parameters() {
   saddleZeroModeAbortCurvature = 0.0;   // eV/Ang^2
 
   // [Optimizers] //
-  optMethod = OptType::ConjugateGradient;
+  optMethod = OptType::CG;
   optConvergenceMetric = "norm"s;
   refineOptMethod = OptType::None;
   refineThreshold = 0.5;
@@ -601,7 +601,7 @@ int Parameters::load(FILE *file) {
     if (use_surrogate) {
       // TODO: What about other jobs
       sub_job = job;
-      job = JobType::GPSurrogate;
+      job = JobType::GP_Surrogate;
     }
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
