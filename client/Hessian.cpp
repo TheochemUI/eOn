@@ -41,7 +41,7 @@ bool Hessian::calculate(void) {
   // Determine the Hessian size
   int size = 0;
   size = atoms.rows() * 3;
-  SPDLOG_LOGGER_DEBUG(log, "[Hessian] Hessian size: %i\n", size);
+  SPDLOG_LOGGER_DEBUG(log, "[Hessian] Hessian size: {}\n", size);
   if (size == 0) {
     return false;
   }
@@ -119,7 +119,7 @@ bool Hessian::calculate(void) {
                       "[Hessian] calculating eigen values of the hessian\n");
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
   helper_functions::getTime(&t1, NULL, NULL);
-  SPDLOG_LOGGER_DEBUG(log, "[Hessian] eigenvalue problem took %.4e seconds\n",
+  SPDLOG_LOGGER_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
                       t1 - t0);
   freqs = es.eigenvalues();
 
