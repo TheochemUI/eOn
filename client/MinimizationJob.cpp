@@ -60,7 +60,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   fileResults = fopen(resultsFilename.c_str(), "wb");
 
   fprintf(fileResults, "%s termination_reason\n",
-          (helper_functions::getRunStatusName(status)).c_str());
+          (std::string{magic_enum::enum_name<RunStatus>(status)}).c_str());
   fprintf(fileResults, "minimization job_type\n");
   fprintf(
       fileResults, "%s potential_type\n",
