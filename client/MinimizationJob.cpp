@@ -35,13 +35,13 @@ std::vector<std::string> MinimizationJob::run(void) {
       status = RunStatus::GOOD;
       SPDLOG_LOGGER_DEBUG(log, "Minimization converged within tolerence");
     } else {
-      status = RunStatus::MAX_ITERATIONS;
+      status = RunStatus::FAIL_MAX_ITERATIONS;
       SPDLOG_LOGGER_DEBUG(log, "Minimization did not converge to tolerence!"
                                "Maybe try to increase max_iterations?");
     }
   } catch (int e) {
     if (e == 100) {
-      status = RunStatus::POTENTIAL_FAILED;
+      status = RunStatus::FAIL_POTENTIAL_FAILED;
     } else {
       throw e;
     }
@@ -49,7 +49,7 @@ std::vector<std::string> MinimizationJob::run(void) {
 
   SPDLOG_LOGGER_DEBUG(log, "Saving result to {}", posOutFilename);
   pos->matter2con(posOutFilename);
-  if (status != RunStatus::POTENTIAL_FAILED) {
+  if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
     SPDLOG_LOGGER_DEBUG(log, "Final Energy: {}", pos->getPotentialEnergy());
   }
 
@@ -66,7 +66,7 @@ std::vector<std::string> MinimizationJob::run(void) {
       fileResults, "%s potential_type\n",
       std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
-  if (status != RunStatus::POTENTIAL_FAILED) {
+  if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
     fprintf(fileResults, "%f potential_energy\n", pos->getPotentialEnergy());
   }
   fclose(fileResults);

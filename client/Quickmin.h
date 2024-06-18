@@ -11,7 +11,7 @@ class Quickmin final : public Optimizer {
 public:
   Quickmin(std::shared_ptr<ObjectiveFunction> a_objf,
            std::shared_ptr<Parameters> a_params)
-      : Optimizer(a_objf, OptType::QuickMin, a_params),
+      : Optimizer(a_objf, OptType::QM, a_params),
         m_dt{a_params->optTimeStep},
         m_dt_max{a_params->optMaxTimeStep},
         m_max_move{a_params->optMaxMove},
