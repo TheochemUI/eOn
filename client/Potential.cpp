@@ -91,6 +91,12 @@
 
 #include <limits>
 
+// TODO(rg): These aren't really used anymore, just there for eyecandy
+int Potential::fcalls = 0;
+int Potential::fcallsTotal = 0;
+int Potential::wu_fcallsTotal = 0;
+double Potential::totalUserTime = 0.0;
+
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
                                                  const VectorXi atmnrs,
                                                  const Matrix3d box) {

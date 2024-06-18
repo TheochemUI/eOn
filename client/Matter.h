@@ -13,29 +13,6 @@ class BondBoost;
 
 #include <string>
 
-/* This structure is used as a inherited by Matter. It contains data about an
- * atomic structure. It is used when a fast and direct access to the private
- * data members is required in Matter. It should not be used alone.  Use
- * carefully. Avoid it and use Matter instead if possible. */
-
-// TODO: Why do we even need this!?
-struct MatterPrivateData {
-  std::shared_ptr<Parameters> parameters;
-  long nAtoms;
-  AtomMatrix positions;
-  AtomMatrix velocities;
-  AtomMatrix forces;
-  AtomMatrix biasForces;
-  BondBoost *biasPotential;
-  VectorXd masses;
-  VectorXi atomicNrs;
-  VectorXi isFixed; // array of bool, false for movable atom, true for fixed
-  Matrix3d cell;
-  Matrix3d cellInverse;
-  mutable double energyVariance;
-  mutable double potentialEnergy;
-};
-
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
  * etc. It also allow to associate a forcefield for the structure through a
@@ -43,11 +20,29 @@ struct MatterPrivateData {
  * file (atom2con() and con2atom()). It can also save to a .xyz file
  * (atom2xyz()).*/
 
-class Matter : private MatterPrivateData {
+class Matter {
 public:
+  ~Matter() = default;
   Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
-      : potential{pot} {
-    initializeDataMembers(params);
+      : potential{pot},
+        usePeriodicBoundaries{true},
+        recomputePotential{true},
+        forceCalls{0},
+        parameters{params},
+        nAtoms{0},
+        positions{Eigen::MatrixXd::Zero(0, 3)},
+        velocities{Eigen::MatrixXd::Zero(0, 3)},
+        forces{Eigen::MatrixXd::Zero(0, 3)},
+        biasForces{Eigen::MatrixXd::Zero(0, 3)},
+        biasPotential{nullptr},
+        masses{Eigen::VectorXd::Zero(0)},
+        atomicNrs{Eigen::VectorXi::Zero(0)},
+        isFixed{Eigen::VectorXi::Zero(0)},
+        cell{Eigen::Matrix3d::Zero()},
+        cellInverse{Eigen::Matrix3d::Zero()},
+        energyVariance{0.0},
+        potentialEnergy{0.0} {
+
     m_log = spdlog::get("combi");
     if (spdlog::get("matters")) {
       m_log = spdlog::get("matters");
@@ -64,7 +59,6 @@ public:
   //        long int nAtoms);      // prepare the object for use with nAtoms
   //        atoms
   Matter(const Matter &matter);                  // create a copy of matter
-  ~Matter();                                     // Destructor
   const Matter &operator=(const Matter &matter); // copy the matter object
   // bool operator==(const Matter& matter); // true if differences in positions
   // are below differenceDistance bool operator!=(const Matter& matter); //
@@ -211,6 +205,22 @@ private:
   void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
+
+  // Stuff which used to be in MatterPrivateData
+  std::shared_ptr<Parameters> parameters;
+  long nAtoms;
+  AtomMatrix positions;
+  AtomMatrix velocities;
+  AtomMatrix forces;
+  AtomMatrix biasForces;
+  BondBoost *biasPotential;
+  VectorXd masses;
+  VectorXi atomicNrs;
+  VectorXi isFixed; // array of bool, false for movable atom, true for fixed
+  Matrix3d cell;
+  Matrix3d cellInverse;
+  mutable double energyVariance;
+  mutable double potentialEnergy;
 };
 
 #endif
