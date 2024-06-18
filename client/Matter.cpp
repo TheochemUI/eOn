@@ -79,38 +79,11 @@ public:
   VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
 };
 
-// Matter::Matter(Parameters *parameters) { initializeDataMembers(parameters); }
-
-// Matter::Matter(std::shared_ptr<Parameters> parameters, const long int nAtoms)
-// {
-//   resize(nAtoms); // prepare memory for nAtoms
-//   initializeDataMembers(parameters);
-// }
-
-void Matter::initializeDataMembers(std::shared_ptr<Parameters> params) {
-  nAtoms = 0;
-  biasPotential = NULL;
-  cell.resize(3, 3);
-  cell.setZero();
-  cellInverse.resize(3, 3);
-  cellInverse.setZero();
-  usePeriodicBoundaries = true;
-  recomputePotential = true;
-  forceCalls = 0;
-  parameters = params;
-}
-
 Matter::Matter(const Matter &matter) { operator=(matter); }
 
-Matter::~Matter() {
-  //    if (potential!=NULL){
-  //        delete potential;
-  //    }
-}
-
 const Matter &Matter::operator=(const Matter &matter) {
-  resize(matter.numberOfAtoms());
   nAtoms = matter.nAtoms;
+  resize(nAtoms);
 
   positions = matter.positions;
   forces = matter.forces;
@@ -212,13 +185,6 @@ double Matter::perAtomNorm(const Matter &matter) {
 
 void Matter::resize(const long int length) {
   if (length > 0) {
-
-    //        if (potential)
-    //        {
-    //            delete potential;
-    //            potential = NULL;
-    //        }
-
     nAtoms = length;
     positions.resize(length, 3);
     positions.setZero();
@@ -768,17 +734,17 @@ bool Matter::con2matter(FILE *file) {
     split = strtok(NULL, " \t");
   }
 
-  resize(
-      first[Ncomponent]); // Set the total number of atoms, and allocates memory
+  // Set the total number of atoms, and allocates memory
+  resize(first[Ncomponent]);
 
   double mass[MAXC];
   fgets(line, sizeof(line), file);
   // split at either space or tab
   split = strtok(line, " \t");
 
-  for (j = 0; j < Ncomponent;
-       j++) { // Now we want to know the number of atom of each type. Ex with
-              // H2O, two hydrogens and one oxygen
+  for (j = 0; j < Ncomponent; j++) {
+    // Now we want to know the number of atom of each type. Ex with
+    // H2O, two hydrogens and one oxygen
     if (split == NULL) {
       SPDLOG_LOGGER_ERROR(m_log, "input con file does not list enough masses");
       return false;
@@ -821,8 +787,9 @@ bool Matter::con2matter(FILE *file) {
     }
   }
   if (usePeriodicBoundaries) {
-    applyPeriodicBoundary(); // Transform the coordinate to use the minimum
-                             // image convention.
+    // Transform the coordinate to use the minimum
+    // image convention.
+    applyPeriodicBoundary();
   }
   // potential_ = new Potential(parameters_);
   recomputePotential = true;
@@ -1158,12 +1125,12 @@ bool Matter::convel2matter(FILE *file) {
   }
 
   fgets(line, sizeof(line), file); // Discard the rest of the line
-  resize(
-      first[Ncomponent]); // Set the total number of atoms, and allocates memory
+  // Set the total number of atoms, and allocates memory
+  resize(first[Ncomponent]);
   double mass[MAXC];
-  for (j = 0; j < Ncomponent;
-       j++) { // Now we want to know the number of atom of each type. Ex with
-              // H2O, two hydrogens and one oxygen
+  for (j = 0; j < Ncomponent; j++) {
+    // Now we want to know the number of atom of each type. Ex with
+    // H2O, two hydrogens and one oxygen
     fscanf(file, "%lf", &mass[j]);
     // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
   }
