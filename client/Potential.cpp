@@ -107,8 +107,7 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());
   forceCallCounter++;
-  m_log->info("{} called", magic_enum::enum_name<PotType>(getType()));
-
+  m_log->info("{} called", helper_functions::getPotentialName(getType()));
   return std::make_tuple(energy, forces);
 };
 
@@ -286,9 +285,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
   default:
-    SPDLOG_ERROR("No known potential could be constructed from {}",
-                 magic_enum::enum_name(ptype));
-    throw std::runtime_error("Terminating");
+    throw std::runtime_error("No known potential could be constructed");
     break;
   }
 }

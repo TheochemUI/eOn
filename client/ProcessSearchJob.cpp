@@ -219,9 +219,8 @@ void ProcessSearchJob::saveData(int status) {
 
   fprintf(fileResults, "%d termination_reason\n", status);
   fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
+  fprintf(fileResults, "%s potential_type\n",
+          helper_functions::getPotentialName(params->potential).c_str());
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
   // fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
   //    fprintf(fileResults, "%ld force_calls_minimization\n",

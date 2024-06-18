@@ -123,15 +123,11 @@ void commandLine(int argc, char **argv) {
     }
 
     if (!cflag) {
-      params->potential = magic_enum::enum_cast<PotType>(
-                              potential, magic_enum::case_insensitive)
-                              .value_or(PotType::UNKNOWN);
+      params->potential = helper_functions::getPotentialType(potential);
     }
 
     if (!sflag) {
-      params->optMethod = magic_enum::enum_cast<OptType>(
-                              optimizer, magic_enum::case_insensitive)
-                              .value_or(OptType::ConjugateGradient);
+      params->optMethod = helper_functions::getOptType(optimizer);
       params->optConvergedForce = optConvergedForce;
     }
 

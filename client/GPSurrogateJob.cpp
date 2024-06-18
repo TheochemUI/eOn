@@ -31,7 +31,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
   auto features = helper_functions::surrogate::get_features(init_data);
   SPDLOG_TRACE("Potential is {}",
-               magic_enum::enum_name<PotType>(pot->getType()));
+               helper_functions::getPotentialName(pot->getType()));
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
@@ -108,7 +108,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   }
 
   fileResults << static_cast<int>(status) << " termination_reason\n";
-  fileResults << magic_enum::enum_name<PotType>(params->potential)
+  fileResults << helper_functions::getPotentialName(params->potential)
               << " potential_type\n";
   fileResults << fmt::format("{:.6f} energy_reference\n",
                              neb->path[0]->getPotentialEnergy());

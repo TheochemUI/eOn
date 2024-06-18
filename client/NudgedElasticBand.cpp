@@ -1,7 +1,5 @@
 #include "NudgedElasticBand.h"
-#include "BaseStructures.h"
 #include "Optimizer.h"
-#include "magic_enum/magic_enum.hpp"
 #include <filesystem>
 
 using namespace helper_functions;
@@ -246,8 +244,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         } else {
           if (!switched) {
             switched = true;
-            SPDLOG_DEBUG("Switched to {}", magic_enum::enum_name<OptType>(
-                                               params->refineOptMethod));
+            SPDLOG_DEBUG("Switched to {}",
+                         helper_functions::getOptName(params->refineOptMethod));
           }
           refine_optim->step(params->optMaxMove);
         }

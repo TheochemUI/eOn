@@ -13,7 +13,6 @@
 #include "Prefactor.h"
 #include "PrefactorJob.h"
 #include "ReplicaExchangeJob.h"
-#include "magic_enum/magic_enum.hpp"
 #include <errno.h>
 #include <float.h>
 #include <stdexcept>
@@ -380,9 +379,8 @@ int Parameters::load(FILE *file) {
 
     // [Main] //
 
-    job = magic_enum::enum_cast<JobType>(ini.GetValue("Main", "job"),
-                                         magic_enum::case_insensitive)
-              .value_or(JobType::Unknown);
+    job =
+        helper_functions::getJobType(toLowerCase(ini.GetValue("Main", "job")));
     temperature = ini.GetValueF("Main", "temperature", temperature);
     randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
     checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
@@ -403,10 +401,8 @@ int Parameters::load(FILE *file) {
 
     // [Potential] //
 
-    potential =
-        magic_enum::enum_cast<PotType>(ini.GetValue("Potential", "potential"),
-                                       magic_enum::case_insensitive)
-            .value_or(PotType::UNKNOWN);
+    potential = helper_functions::getPotentialType(
+        toLowerCase(ini.GetValue("Potential", "potential")));
     MPIPollPeriod =
         ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
     LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
@@ -489,10 +485,8 @@ int Parameters::load(FILE *file) {
                       processSearchMinimizationOffset);
 
     // [Optimizers] //
-    auto inp_optMethod = magic_enum::enum_cast<OptType>(
-                             ini.GetValue("Optimizer", "opt_method", "none"),
-                             magic_enum::case_insensitive)
-                             .value_or(OptType::Unknown);
+    auto inp_optMethod = helper_functions::getOptType(
+        toLowerCase(ini.GetValue("Optimizer", "opt_method", "none")));
     if (inp_optMethod != OptType::None) {
       optMethod = inp_optMethod;
     }
@@ -513,10 +507,8 @@ int Parameters::load(FILE *file) {
     }
 
     if (ini.FindKey("Refine") != -1) {
-      refineOptMethod =
-          magic_enum::enum_cast<OptType>(ini.GetValue("Refine", "opt_method"),
-                                         magic_enum::case_insensitive)
-              .value_or(OptType::None);
+      refineOptMethod = helper_functions::getOptType(
+          toLowerCase(ini.GetValue("Refine", "opt_method")));
       refineThreshold = ini.GetValueF("Refine", "threshold", refineThreshold);
     }
 
@@ -606,10 +598,8 @@ int Parameters::load(FILE *file) {
     gp_uncertainity =
         ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
     if (ini.FindKey("Surrogate") != -1) {
-      surrogatePotential =
-          magic_enum::enum_cast<PotType>(ini.GetValue("Surrogate", "potential"),
-                                         magic_enum::case_insensitive)
-              .value_or(PotType::UNKNOWN);
+      surrogatePotential = helper_functions::getPotentialType(
+          toLowerCase(ini.GetValue("Surrogate", "potential")));
       if (surrogatePotential != PotType::CatLearn) {
         throw std::runtime_error("We only support catlearn for GP right now");
       }
@@ -1050,7 +1040,7 @@ int Parameters::load(FILE *file) {
 
     // Sanity Checks
     if (parrepStateCheckInterval > mdTime &&
-        magic_enum::enum_name<JobType>(job) == "parallel_replica") {
+        helper_functions::getJobName(job) == "parallel_replica") {
       SPDLOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
       error = 1;
     }
