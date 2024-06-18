@@ -65,7 +65,7 @@ public:
       m_log = spdlog::get("_potcalls");
     }
     if (m_log) {
-      m_log->info("[{}] created", magic_enum::enum_name<PotType>(getType()));
+      m_log->trace("[{}] created", magic_enum::enum_name<PotType>(getType()));
     }
   }
 };
