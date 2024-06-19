@@ -91,6 +91,7 @@ public:
   AtomMatrix pbc(AtomMatrix diff) const;
   VectorXd pbcV(VectorXd diff) const;
 
+  size_t getPotentialCalls() const;
   AtomMatrix getPositions() const; // return coordinates of atoms in array pos
   VectorXd getPositionsV() const;
   AtomMatrix

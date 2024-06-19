@@ -219,7 +219,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
   diff.setConstant(0.0);
 
   SPDLOG_DEBUG(
-      "[Prefactor] including all atoms that make up %.3f%% of the motion",
+      "[Prefactor] including all atoms that make up {:.3f}% of the motion",
       parameters->prefactorFilterFraction * 100);
   double sum = 0.0;
   int mini = 0;
@@ -231,8 +231,8 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
     }
   }
 
-  SPDLOG_DEBUG("[Prefactor] sum of atom distances moved %.4f", sum);
-  SPDLOG_DEBUG("[Prefactor] max moved atom distance: %.4f", diff.maxCoeff());
+  SPDLOG_DEBUG("[Prefactor] sum of atom distances moved {:.4f}", sum);
+  SPDLOG_DEBUG("[Prefactor] max moved atom distance: {:.4f}", diff.maxCoeff());
 
   int nMoved = 0;
   double d = 0.0;
