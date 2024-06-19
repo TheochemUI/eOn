@@ -33,6 +33,7 @@ dependencies:
   - pytest-datadir
   - sh
   - sphinx
+  - towncrier
   # Lint
   - cppcheck
   - cpplint
