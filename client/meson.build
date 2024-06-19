@@ -140,6 +140,7 @@ eonclib_sources = [
            'Quickmin.cpp',
            'ParallelReplicaJob.cpp',
            'Potential.cpp',
+           'SurrogatePotential.cpp', # Part of the interface
            'BasinHoppingJob.cpp',
            'FIRE.cpp',
            'EpiCenters.cpp',
@@ -166,7 +167,7 @@ endif
 
 if get_option('with_gp_surrogate')
   _args += ['-DWITH_GP_SURROGATE']
-  eonclib_sources += ['SurrogatePotential.cpp', 'GPSurrogateJob.cpp']
+  eonclib_sources += ['GPSurrogateJob.cpp']
     if get_option('with_catlearn')
       # TODO: Cleanup, used for ase_orca too
       # Embedding the interpreter
@@ -322,12 +323,15 @@ ec = executable('eonclient',
                 cpp_args : _args,
                 install : true)
 
-ec1 = executable('testPot',
-                'testpot.cpp',
-                include_directories: _incdirs,
-                dependencies : _deps,
-                link_with : _linkto,
-                )
+if get_option('with_tests')
+if get_option('with_python')
+  ec1 = executable('testPot',
+                   'testpot.cpp',
+                   include_directories: _incdirs,
+                   dependencies : _deps,
+                   link_with : _linkto,
+                  )
+endif
 
 ec2 = executable('testWriteR',
                 'testWriteR.cpp',
@@ -335,7 +339,7 @@ ec2 = executable('testWriteR',
                 dependencies : _deps,
                 link_with : _linkto,
                 )
-
+endif
 # ------------------------ Tests
 
 if get_option('with_tests')
