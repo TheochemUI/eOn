@@ -282,7 +282,7 @@ if get_option('with_cuh2')
   fc = meson.get_compiler('fortran')
   subdir('potentials/CuH2')
   potentials += [cuh2]
-  _args += ['-DCUH2_POT']
+  _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
 endif
 
 if get_option('with_ase_orca')
