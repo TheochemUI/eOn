@@ -1,6 +1,6 @@
 # To use:
 #
-#   $ micromamba env create -f environment.yml  # `micromamba` works too for this command
+#   $ micromamba env create -f environment.yml  # `conda` works too for this command
 #   $ micromamba activate eongit
 #
 name: eongit
@@ -10,6 +10,7 @@ dependencies:
   - compilers
   - meson
   - cmake
+  - ninja
   - gfortran
   - pkg-config
   - openblas
@@ -32,3 +33,6 @@ dependencies:
   - pytest-datadir
   - sh
   - sphinx
+  # Lint
+  - cppcheck
+  - cpplint
