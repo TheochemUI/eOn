@@ -36,7 +36,8 @@ public:
    * \param *params defined by the config.init file
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), fCallsSaddle{0} {
+      : Job(std::move(parameters)),
+        fCallsSaddle{0} {
     log = spdlog::get("combi");
   }
   //! Saddle Search Job Deconstructor
@@ -56,7 +57,7 @@ private:
   std::vector<std::string> returnFiles;
 
   //! Initializes a ref MinModeSaddleSearch
-  MinModeSaddleSearch *saddleSearch;
+  std::unique_ptr<MinModeSaddleSearch> saddleSearch;
   //! Initial configuration.
   std::shared_ptr<Matter> initial;
   //! Configuration used during the saddle point search.
