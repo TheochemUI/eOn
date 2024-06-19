@@ -184,7 +184,6 @@ int ProcessSearchJob::doProcessSearch(void) {
 
   // calculate the prefactor
   if (!params->prefactorDefaultValue) {
-    // TODO(rg): Is this the right one?
     fctmp = min1->getPotentialCalls();
     int prefStatus;
     double pref1, pref2;
@@ -234,8 +233,7 @@ void ProcessSearchJob::saveData(int status) {
   fprintf(
       fileResults, "%s potential_type\n",
       std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
-  // TODO(rg): The total is going to come from the server counter now
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
+  fprintf(fileResults, "%ld total_force_calls\n", fCallsMin+fCallsSaddle+fCallsPrefactors);
   fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
   //    fprintf(fileResults, "%ld force_calls_minimization\n",
   //    SaddleSearch->forceCallsMinimization + fCallsMin);
