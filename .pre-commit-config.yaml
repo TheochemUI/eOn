@@ -2,19 +2,31 @@
 # See https://pre-commit.com/hooks.html for more hooks
 fail_fast: false
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
-    hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
-  - repo: https://github.com/cpp-linter/cpp-linter-hooks
-    rev: v0.2.1
-    hooks:
-      - id: clang-format
-        args: [--style=file]
-        files: 'client/.*\.(cpp|h|hpp|cc)$'
-        exclude: '^.*external/.*$'
-      # - id: clang-tidy
-      #   args: [--checks='boost-*,bugprone-*,performance-*,readability-*,portability-*,modernize-*,clang-analyzer-*,cppcoreguidelines-*']
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.0.1
+  hooks:
+  -   id: trailing-whitespace
+  -   id: end-of-file-fixer
+  -   id: check-yaml
+  -   id: check-added-large-files
+- repo: local
+  hooks:
+    - id: cppcheck
+      name: cppcheck
+      entry: cppcheck
+      language: system
+      types_or: [c++, c]
+      args: ["--error-exitcode=0", "-iclient/thirdparty", "-itools/mastereqn/", "eon/mcamc/libqd/"]
+    - id: cpplint
+      name: cpplint
+      entry: cpplint
+      language: system
+      types_or: [c++, c]
+      args: ["--exclude=client/thirdparty/", "--exclude=tools/mastereqn/", "--exclude=eon/mcamc/libqd/",  "--filter=-whitespace/comments,-runtime/references,-whitespace/indent,-whitespace/parens,-whitespace/braces,-whitespace/line_length,-whitespace/newline,-build/include_order,-readability/todo,-build/namespaces"]
+    - id: clang-format
+      name: clang-format
+      entry: clang-format
+      exclude: 'thirdparty/'
+      language: system
+      types_or: [c, c++, cuda]
+      args: ["-fallback-style=none", "-style=file", "-i"]
