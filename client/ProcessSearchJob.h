@@ -37,7 +37,9 @@ public:
    * \param *params defined by the config.init file
    */
   ProcessSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), fCallsSaddle{0}, fCallsMin{0},
+      : Job(std::move(parameters)),
+        fCallsSaddle{0},
+        fCallsMin{0},
         fCallsPrefactors{0} {
     log = spdlog::get("combi");
   }
@@ -68,7 +70,7 @@ private:
    * sa ref BasinHoppingSaddleSearch DynamicsSaddleSearch
    * BiasedGradientSquaredDescent MinModeSaddleSearch
    */
-  SaddleSearchMethod *saddleSearch;
+  std::unique_ptr<SaddleSearchMethod> saddleSearch;
   //! Initial configuration
   std::shared_ptr<Matter> initial;
   //! Configuration used during the saddle point search

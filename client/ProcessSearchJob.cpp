@@ -3,14 +3,17 @@
 #include "BiasedGradientSquaredDescent.h"
 #include "DynamicsSaddleSearch.h"
 #include "EpiCenters.h"
+#include "MinModeSaddleSearch.h"
 #include "Optimizer.h"
 #include "Prefactor.h"
+#include <memory>
+#include <spdlog/spdlog.h>
 
 std::vector<std::string> ProcessSearchJob::run(void) {
   string reactantFilename("pos.con");
   string displacementFilename("displacement.con");
   string modeFilename("direction.dat");
-
+  size_t fctmp{0}; // force call temporary
   initial = std::make_shared<Matter>(pot, params);
   if (params->saddleMethod == "min_mode" ||
       params->saddleMethod == "basin_hopping" ||
@@ -30,9 +33,11 @@ std::vector<std::string> ProcessSearchJob::run(void) {
 
   if (params->processSearchMinimizeFirst) {
     SPDLOG_LOGGER_DEBUG(log, "Minimizing initial structure\n");
-    int fi = Potential::fcalls;
+    fctmp = initial->getPotentialCalls();
     initial->relax();
-    // fCallsMin += Potential::fcalls - fi;
+    fCallsMin += initial->getPotentialCalls() - fctmp;
+    SPDLOG_LOGGER_DEBUG(log, "Initial minimization took {} fcalls",
+                        initial->getPotentialCalls() - fctmp);
   }
 
   barriersValues[0] = barriersValues[1] = 0;
@@ -64,14 +69,15 @@ std::vector<std::string> ProcessSearchJob::run(void) {
       // mode was passed from the server
       mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
     }
-    saddleSearch = new MinModeSaddleSearch(
+    saddleSearch = std::make_unique<MinModeSaddleSearch>(
         saddle, mode, initial->getPotentialEnergy(), params, pot);
   } else if (params->saddleMethod == "basin_hopping") {
-    saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, pot, params);
+    saddleSearch =
+        std::make_unique<BasinHoppingSaddleSearch>(min1, saddle, pot, params);
   } else if (params->saddleMethod == "dynamics") {
-    saddleSearch = new DynamicsSaddleSearch(saddle, params);
+    saddleSearch = std::make_unique<DynamicsSaddleSearch>(saddle, params);
   } else if (params->saddleMethod == "bgsd") {
-    saddleSearch = new BiasedGradientSquaredDescent(
+    saddleSearch = std::make_unique<BiasedGradientSquaredDescent>(
         saddle, initial->getPotentialEnergy(), params);
   }
 
@@ -89,11 +95,13 @@ std::vector<std::string> ProcessSearchJob::run(void) {
 int ProcessSearchJob::doProcessSearch(void) {
   Matter matterTemp(pot, params);
   long status;
-  int f1;
-  // f1 = Potential::fcalls;
+  size_t fctmp{0};
 
+  fctmp = pot->forceCallCounter;
   status = saddleSearch->run();
-  // fCallsSaddle += Potential::fcalls - f1;
+  fCallsSaddle += pot->forceCallCounter - fctmp;
+  SPDLOG_DEBUG("Got {} calls in the saddle search, with previous {}",
+               fCallsSaddle, fctmp);
 
   if (status != MinModeSaddleSearch::STATUS_GOOD) {
     return status;
@@ -110,10 +118,12 @@ int ProcessSearchJob::doProcessSearch(void) {
                                  params->processSearchMinimizationOffset;
   min1->setPositions(displacedPos);
 
-  // Potential::fcalls = 0;
   SPDLOG_LOGGER_DEBUG(log, "Starting Minimization 1");
+  fctmp = min1->getPotentialCalls();
   bool converged = min1->relax(false, params->writeMovies, false, "min1");
-  // fCallsMin += Potential::fcalls;
+  fCallsMin += min1->getPotentialCalls() - fctmp;
+  SPDLOG_LOGGER_DEBUG(log, "Min1 minimization took {} fcalls",
+                      min1->getPotentialCalls() - fctmp);
 
   if (!converged) {
     return MinModeSaddleSearch::STATUS_BAD_MINIMA;
@@ -124,10 +134,12 @@ int ProcessSearchJob::doProcessSearch(void) {
                                  params->processSearchMinimizationOffset;
   min2->setPositions(displacedPos);
 
-  // Potential::fcalls = 0;
   SPDLOG_LOGGER_DEBUG(log, "Starting Minimization 2");
+  fctmp = min2->getPotentialCalls();
   converged = min2->relax(false, params->writeMovies, false, "min2");
-  // fCallsMin += Potential::fcalls;
+  fCallsMin += min2->getPotentialCalls() - fctmp;
+  SPDLOG_LOGGER_DEBUG(log, "Min2 minimization took {} fcalls",
+                      min2->getPotentialCalls() - fctmp);
 
   if (!converged) {
     return MinModeSaddleSearch::STATUS_BAD_MINIMA;
@@ -172,8 +184,7 @@ int ProcessSearchJob::doProcessSearch(void) {
 
   // calculate the prefactor
   if (!params->prefactorDefaultValue) {
-    // f1 = Potential::fcalls;
-
+    fctmp = min1->getPotentialCalls();
     int prefStatus;
     double pref1, pref2;
     // XXX: no get() calls
@@ -183,7 +194,7 @@ int ProcessSearchJob::doProcessSearch(void) {
       printf("Prefactor: bad calculation\n");
       return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;
     }
-    // fCallsPrefactors += Potential::fcalls - f1;
+    fCallsPrefactors += min1->getPotentialCalls() - fctmp;
 
     /* Check that the prefactors are in the correct range */
     if ((pref1 > params->prefactorMaxValue) ||
@@ -222,8 +233,8 @@ void ProcessSearchJob::saveData(int status) {
   fprintf(
       fileResults, "%s potential_type\n",
       std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
-  // fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
+  fprintf(fileResults, "%ld total_force_calls\n", fCallsMin+fCallsSaddle+fCallsPrefactors);
+  fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
   //    fprintf(fileResults, "%ld force_calls_minimization\n",
   //    SaddleSearch->forceCallsMinimization + fCallsMin);
   fprintf(fileResults, "%ld force_calls_saddle\n", fCallsSaddle);
@@ -244,9 +255,8 @@ void ProcessSearchJob::saveData(int status) {
     fprintf(fileResults, "%.12e displacement_saddle_distance\n", 0.0);
   }
   if (params->saddleMethod == "dynamics") {
-    DynamicsSaddleSearch *ds = (DynamicsSaddleSearch *)saddleSearch;
-    fprintf(fileResults, "%.12e simulation_time\n",
-            ds->time * params->timeUnit);
+    auto ds = dynamic_cast<DynamicsSaddleSearch &>(*saddleSearch);
+    fprintf(fileResults, "%.12e simulation_time\n", ds.time * params->timeUnit);
     fprintf(fileResults, "%.12e md_temperature\n",
             params->saddleDynamicsTemperature);
   }
