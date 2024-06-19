@@ -54,8 +54,10 @@ bool CIniFile::ReadFile(FILE *file) {
 
     if (line[line.length() - 1] == '\n')
       line = line.substr(0, line.length() - 1);
+#ifdef IS_WINDOWS
     if (line[line.length() - 1] == '\r')
       line = line.substr(0, line.length() - 1);
+#endif
 
     if (line.length()) {
       // Check that the user hasn't openned a binary file by checking the first
