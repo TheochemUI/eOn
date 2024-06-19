@@ -1205,6 +1205,10 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   recomputePotential = true;
 }
 
+size_t Matter::getPotentialCalls() const {
+  return this->potential->forceCallCounter;
+}
+
 double Matter::getEnergyVariance() { return this->energyVariance; }
 
 // Eigen::VectorXd Matter::getForceVariance() {
