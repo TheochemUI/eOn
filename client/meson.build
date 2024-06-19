@@ -37,6 +37,12 @@ if host_system == 'darwin'
   # type 'void *(unsigned long, enum std::align_val_t)' is only available on macOS 10.13 or newer
   add_global_arguments(['-faligned-allocation'], language: 'cpp')
 endif
+if is_windows
+  _args += ['-DIS_WINDOWS']
+ # Workaround used in INIFile.cpp
+ # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
+endif
+
 
 # Dependencies
 if not is_windows
