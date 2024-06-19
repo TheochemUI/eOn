@@ -16,16 +16,17 @@ repos:
       entry: cppcheck
       language: system
       types_or: [c++, c]
-      args: ["--error-exitcode=0"]
+      args: ["--error-exitcode=0", "-iclient/thirdparty", "-itools/mastereqn/", "eon/mcamc/libqd/"]
     - id: cpplint
       name: cpplint
       entry: cpplint
       language: system
-      args: ["--exclude=thirdparty/", "--filter=-whitespace/comments,-runtime/references,-whitespace/indent,-whitespace/parens,-whitespace/braces,-whitespace/line_length,-whitespace/newline,-build/include_order,-readability/todo,-build/namespaces"]
+      types_or: [c++, c]
+      args: ["--exclude=client/thirdparty/", "--exclude=tools/mastereqn/", "--exclude=eon/mcamc/libqd/",  "--filter=-whitespace/comments,-runtime/references,-whitespace/indent,-whitespace/parens,-whitespace/braces,-whitespace/line_length,-whitespace/newline,-build/include_order,-readability/todo,-build/namespaces"]
     - id: clang-format
       name: clang-format
       entry: clang-format
-      exclude: '^thirdparty/'
+      exclude: 'thirdparty/'
       language: system
       types_or: [c, c++, cuda]
       args: ["-fallback-style=none", "-style=file", "-i"]
