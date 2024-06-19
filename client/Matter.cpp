@@ -10,6 +10,7 @@
 #include <fmt/os.h>
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
 
 using namespace std;
 
@@ -98,6 +99,7 @@ const Matter &Matter::operator=(const Matter &matter) {
 
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
 
+  potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
   recomputePotential = matter.recomputePotential;
 
@@ -799,6 +801,7 @@ bool Matter::con2matter(FILE *file) {
 void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
+      throw(std::runtime_error("Whoops, you need a potential.."));
       potential =
           helper_functions::makePotential(parameters->potential, parameters);
     }
@@ -1203,6 +1206,10 @@ void Matter::writeTibble(std::string fname) {
 void Matter::setPotential(std::shared_ptr<Potential> pot) {
   this->potential = pot;
   recomputePotential = true;
+}
+
+size_t Matter::getPotentialCalls() const {
+  return this->potential->forceCallCounter;
 }
 
 double Matter::getEnergyVariance() { return this->energyVariance; }
