@@ -1,36 +1,60 @@
 from pydantic import BaseModel, Field, ValidationError, validator
 from typing import Optional
+from typing_extensions import Literal
+from uuid import uuid4
 
 
 class MainConfig(BaseModel):
-    job: str
-    temperature: float
-    checkpoint: bool
-    random_seed: int
+    job: Literal[
+        "akmc",
+        "basin_hopping",
+        "displacement_sampling",
+        "dynamics",
+        "finite_differences",
+        "global_optimization",
+        "gp_surrogate",
+        "hessian",
+        "minimization",
+        "monte_carlo",
+        "nudged_elastic_band",
+        "parallel_replica",
+        "point",
+        "prefactor",
+        "process_search",
+        "replica_exchange",
+        "saddle_search",
+        "safe_hyperdynamics",
+        "structure_comparison",
+        "tad",
+    ] = "akmc"
+    temperature: float = 300
+    checkpoint: bool = False
+    random_seed: int = Field(default_factory=lambda: uuid4().int)
 
 
 class StructureComparisonConfig(BaseModel):
-    energy_difference: float
-    distance_difference: float
-    indistinguishable_atoms: bool
-    check_rotation: bool
-    brute_neighbors: bool
-    neighbor_cutoff: float
-    use_covalent: bool
-    covalent_scale: float
-    remove_translation: bool
+    energy_difference: float = 0.01
+    distance_difference: float = 0.1
+    indistinguishable_atoms: bool = True
+    check_rotation: bool = False
+    brute_neighbors: bool = False
+    neighbor_cutoff: float = 3.3
+    use_covalent: bool = False
+    covalent_scale: float = 1.3  # From displace
+    remove_translation: bool = True
 
 
 class AKMCConfig(BaseModel):
-    confidence: float
-    server_side_process_search: bool
-    thermally_accessible_window: float
-    thermally_accessible_buffer: float
-    max_kmc_steps: int
-    confidence_scheme: str
-    confidence_correction: bool
-    max_rate: float
-    eq_rate: float
+    confidence: float = 0.99
+    server_side_process_search: bool = False
+    thermally_accessible_window: float = 20.0
+    thermally_accessible_buffer: float = 0.0
+    max_kmc_steps: int = 0
+    confidence_scheme: Literal["old", "new"] = "new"
+    confidence_correction: bool = False
+    # These are commented out and not used...
+    max_rate: Optional[float]
+    eq_rate: Optional[float]
 
 
 class BasinHoppingConfig(BaseModel):
