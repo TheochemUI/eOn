@@ -46,7 +46,7 @@ std::vector<std::string> SaddleSearchJob::run(void) {
     mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
-  saddleSearch = new MinModeSaddleSearch(
+  saddleSearch = std::make_unique<MinModeSaddleSearch>(
       saddle, mode, initial->getPotentialEnergy(), params, pot);
 
   int status;
@@ -54,7 +54,6 @@ std::vector<std::string> SaddleSearchJob::run(void) {
   printEndState(status);
   saveData(status);
 
-  delete saddleSearch;
   return returnFiles;
 }
 
