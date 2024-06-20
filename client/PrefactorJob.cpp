@@ -30,13 +30,11 @@ std::vector<std::string> PrefactorJob::run(void) {
     // for which the frequencies should be determined
     std::string matterFilename;
     // TODO(rg): Also an enum candidate
-    if (params->prefactor.configuration == PrefactorType::REACTANT) {
+    if (params->prefactor.configuration == ::Prefactor::TYPE::REACTANT) {
       matterFilename = reactantFilename;
-    } else if (params->prefactor.configuration ==
-               PrefactorType::SADDLE) {
+    } else if (params->prefactor.configuration == ::Prefactor::TYPE::SADDLE) {
       matterFilename = saddleFilename;
-    } else if (params->prefactor.configuration ==
-               PrefactorType::PRODUCT) {
+    } else if (params->prefactor.configuration == ::Prefactor::TYPE::PRODUCT) {
       matterFilename = productFilename;
     }
     reactant->con2matter(matterFilename);
@@ -57,15 +55,13 @@ std::vector<std::string> PrefactorJob::run(void) {
   assert(3 * atoms.rows() > 0);
 
   // calculate frequencies
-  if (params->prefactor.configuration == PrefactorType::REACTANT) {
+  if (params->prefactor.configuration == ::Prefactor::TYPE::REACTANT) {
     Hessian hessian(params.get(), reactant.get());
     freqs = hessian.getFreqs(reactant.get(), atoms);
-  } else if (params->prefactor.configuration ==
-             PrefactorType::SADDLE) {
+  } else if (params->prefactor.configuration == ::Prefactor::TYPE::SADDLE) {
     Hessian hessian(params.get(), saddle.get());
     freqs = hessian.getFreqs(saddle.get(), atoms);
-  } else if (params->prefactor.configuration ==
-             PrefactorType::PRODUCT) {
+  } else if (params->prefactor.configuration == ::Prefactor::TYPE::PRODUCT) {
     Hessian hessian(params.get(), product.get());
     freqs = hessian.getFreqs(product.get(), atoms);
   }
