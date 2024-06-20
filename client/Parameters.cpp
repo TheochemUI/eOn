@@ -474,7 +474,7 @@ int Parameters::load(const std::string &filename) {
     saddle.minmodeMethod = config["Saddle_Search"]["min_mode_method"].value_or(
         "LowestEigenmode::MINMODE_DIMER");
     saddle.displaceType =
-        config["Saddle_Search"]["displace_type"].value_or("DISP_LOAD");
+        config["Saddle_Search"]["displace_type"].value_or("load");
     saddle.maxEnergy = config["Saddle_Search"]["max_energy"].value_or(20.0);
     saddle.displaceMagnitude =
         config["Saddle_Search"]["displace_magnitude"].value_or(0.1);
