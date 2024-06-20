@@ -1,6 +1,6 @@
 """ The statelist module. """
 
-from eon.config import config
+from eon.migrator.config import config
 import logging
 logger = logging.getLogger('statelist')
 import math

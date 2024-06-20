@@ -18,7 +18,7 @@ from builtins import input
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
 from eon.version import version
-from eon.config import config
+from eon.migrator.config import config
 from eon import communicator
 from eon import locking
 from eon import akmcstatelist
