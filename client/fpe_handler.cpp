@@ -5,8 +5,6 @@
 
 #ifdef _WIN32
 #include <float.h>
-#elif defined(__APPLE__) && defined(__x86_64__)
-#include <xmmintrin.h>
 #endif
 
 void enableFPE() {
