@@ -3,6 +3,7 @@
 #include "EpiCenters.h"
 #include "Potential.h"
 
+#include <stdexcept>
 #include <stdio.h>
 #include <string>
 
@@ -45,6 +46,12 @@ std::vector<std::string> SaddleSearchJob::run(void) {
     // mode was passed from the server
     mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
   }
+
+#ifdef EON_CHECKS
+  if (mode.size() == 0) {
+    throw std::logic_error("You must have a mode for saddle searches!");
+  }
+#endif
 
   saddleSearch = std::make_unique<MinModeSaddleSearch>(
       saddle, mode, initial->getPotentialEnergy(), params, pot);
