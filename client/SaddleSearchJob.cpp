@@ -103,9 +103,9 @@ void SaddleSearchJob::saveData(int status) {
   fprintf(fileResults, "%d termination_reason\n", status);
   fprintf(fileResults, "saddle_search job_type\n");
   fprintf(fileResults, "%ld random_seed\n", params->main.randomSeed);
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->pot.potential)}.c_str());
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(params->pot.potential)}
+              .c_str());
   if (params->saddle.minmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
     fprintf(fileResults, "%li total_force_calls\n",
             this->pot->forceCallCounter);
