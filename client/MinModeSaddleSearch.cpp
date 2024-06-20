@@ -29,6 +29,12 @@ public:
       : ObjectiveFunction(matterPassed, paramsPassed),
         minModeMethod{minModeMethodPassed} {
     eigenvector = modePassed;
+#ifdef EON_CHECKS
+    if (eigenvector.size() == 0) {
+      throw std::logic_error(
+          "You must have an eigenvector for MinMode Objective calls!");
+    }
+#endif
   }
 
   ~MinModeObjectiveFunction(void) {}
@@ -155,6 +161,11 @@ MinModeSaddleSearch::MinModeSaddleSearch(
       matter{matterPassed} {
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
+#ifdef EON_CHECKS
+  if (mode.size() == 0) {
+    throw std::logic_error("You must have a mode for MinModeSaddleSearch!");
+  }
+#endif
   status = STATUS_GOOD;
   iteration = 0;
   log = spdlog::get("combi");
