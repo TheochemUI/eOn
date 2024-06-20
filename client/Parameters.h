@@ -304,17 +304,17 @@ public:
                             filterMode is fraction */
     double minDisplacement; /** atoms with displacement between min1 or min2
                             and the saddle point are put in the Hessian */
-    std::string rate;       ///< method to estimate prefactor
-    PrefactorType configuration; /** configuration for which the frequencies
+    ::Prefactor::RATE rate; ///< method to estimate prefactor
+    ::Prefactor::TYPE configuration; /** configuration for which the frequencies
                                should be determined */
     bool allFreeAtoms; ///< use all free atom when determining the prefactor
-    std::string filterScheme; /** "cutoff" or "fraction", which use
+    ::Prefactor::FILTER filterScheme; /** "cutoff" or "fraction", which use
                               prefactorMinDisplacement or
                               prefactorFilterFraction, respectively */
-    double filterFraction;    /** Include atoms whose summed motion comprise
-                              more than prefactorFilterFraction in the
-                              prefactor calculation. Prioritizes atoms
-                              that move more. */
+    double filterFraction; /** Include atoms whose summed motion comprise
+                           more than prefactorFilterFraction in the
+                           prefactor calculation. Prioritizes atoms
+                           that move more. */
   } prefactor;
 
   struct Hessian {

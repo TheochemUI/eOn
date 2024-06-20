@@ -1,4 +1,5 @@
 #pragma once
+#include "magic_enum/magic_enum.hpp"
 #include <memory>
 #include <string>
 
@@ -20,6 +21,7 @@
 
 using namespace std::string_literals; // For ""s
 
+// TODO(rg): Maybe put these in a namespace
 // This file contains forward declarations and enum classes
 // NOTE(rg):
 // We use magic_enum for converting <-> strings so the names have to match what
@@ -103,23 +105,8 @@ enum class OptType {
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
 
-enum class PrefactorType { REACTANT, SADDLE, PRODUCT };
-
-enum class Prefactor { RATE_HTST, RATE_QQHTST, FILTER_CUTOFF, FILTER_FRACTION };
-
-// Custom definition of prefactor names to not have to change the parameters
-template <>
-constexpr magic_enum::customize::customize_t
-magic_enum::customize::enum_name<Prefactor>(Prefactor value) noexcept {
-  switch (value) {
-  case Prefactor::RATE_HTST:
-    return "htst";
-  case Prefactor::RATE_QQHTST:
-    return "qqhtst";
-  case Prefactor::FILTER_CUTOFF:
-    return "cutoff";
-  case Prefactor::FILTER_FRACTION:
-    return "fraction";
-  }
-  return default_tag;
-}
+namespace Prefactor {
+enum class TYPE { REACTANT, SADDLE, PRODUCT };
+enum class RATE { HTST, QQHTST };
+enum class FILTER { CUTOFF, FRACTION };
+} // namespace Prefactor
