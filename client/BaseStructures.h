@@ -102,3 +102,5 @@ enum class OptType {
 };
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
+
+enum class PrefactorType {REACTANT, SADDLE, PRODUCT};
