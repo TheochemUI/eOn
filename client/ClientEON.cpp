@@ -360,7 +360,8 @@ int main(int argc, char **argv) {
           helper_functions::makeJob(std::make_unique<Parameters>(parameters));
       if (job == nullptr) {
         printf("error: Unknown job: %s\n",
-               std::string{magic_enum::enum_name<JobType>(parameters.job)}.c_str());
+               std::string{magic_enum::enum_name<JobType>(parameters.job)}
+                   .c_str());
         return 1;
       }
 
