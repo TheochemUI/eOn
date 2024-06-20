@@ -5,7 +5,7 @@ logger = logging.getLogger('superbasinscheme')
 
 import sys
 
-from eon.config import config
+from eon.migrator.config import config
 from eon import superbasin
 
 class SuperbasinScheme:
