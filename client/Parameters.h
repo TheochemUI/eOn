@@ -305,7 +305,7 @@ public:
     double minDisplacement; /** atoms with displacement between min1 or min2
                             and the saddle point are put in the Hessian */
     std::string rate;       ///< method to estimate prefactor
-    std::string configuration; /** configuration for which the frequencies
+    PrefactorType configuration; /** configuration for which the frequencies
                                should be determined */
     bool allFreeAtoms; ///< use all free atom when determining the prefactor
     std::string filterScheme; /** "cutoff" or "fraction", which use

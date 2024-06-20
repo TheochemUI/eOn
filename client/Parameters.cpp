@@ -40,7 +40,7 @@ Parameters::Parameters() {
   prefactor.withinRadius = 3.3;
   prefactor.minDisplacement = 0.25;
   prefactor.rate = ::Prefactor::RATE_HTST;
-  prefactor.configuration = PrefactorJob::PREFACTOR_REACTANT;
+  prefactor.configuration = PrefactorType::REACTANT;
   prefactor.allFreeAtoms = false;
   prefactor.filterScheme = ::Prefactor::FILTER_FRACTION;
   prefactor.filterFraction = 0.90;
@@ -683,7 +683,10 @@ int Parameters::load(const std::string &filename) {
     prefactor.rate =
         config["Prefactor"]["rate_estimation"].value_or("RATE_HTST"s);
     prefactor.configuration =
-        config["Prefactor"]["configuration"].value_or("PREFACTOR_REACTANT"s);
+        magic_enum::enum_cast<PrefactorType>(
+            config["Prefactor"]["configuration"].value_or("reactant"s),
+            magic_enum::case_insensitive)
+            .value_or(PrefactorType::REACTANT);
     prefactor.allFreeAtoms =
         config["Prefactor"]["all_free_atoms"].value_or(false);
     prefactor.filterScheme =
