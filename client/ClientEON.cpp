@@ -34,17 +34,7 @@
 #endif
 
 // Includes for FPE trapping
-#ifdef OSX
-#include <mach/mach_init.h>
-#include <mach/task.h>
-#include <xmmintrin.h>
-#endif
-#ifdef LINUX
-#include <fenv.h>
-#endif
-#ifdef WIN32
-#include <float.h>
-#endif
+#include "fpe_handler.h"
 
 #ifndef WIN32
 #include <sys/resource.h>
@@ -52,19 +42,6 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 #endif
-
-void enableFPE(void) {
-// Floating Point Trapping. It is platform specific!
-// This causes the program to crash on divison by zero,
-// invalid operations, and overflows.
-#ifdef LINUX
-  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
-#ifdef OSX
-  _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() & ~_MM_MASK_INVALID &
-                         ~_MM_MASK_DIV_ZERO & ~_MM_MASK_OVERFLOW);
-#endif
-}
 
 void printSystemInfo() {
   printf("EON Client\n");
