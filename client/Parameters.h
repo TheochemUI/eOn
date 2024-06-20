@@ -2,8 +2,8 @@
 #define PARAMETERS_H
 
 #include "BaseStructures.h"
-#include <string>
 #include <memory>
+#include <string>
 
 #ifdef EONMPI
 #include "mpi.h"
