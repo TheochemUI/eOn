@@ -1,6 +1,6 @@
 
 from array import array
-from eon.config import config
+from eon.migrator.config import config
 import os
 import shutil
 import logging
