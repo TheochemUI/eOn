@@ -8,17 +8,62 @@ project('eonclient', 'cpp',
 host_system = host_machine.system()
 
 _args = [] # Extra arguments
+_fargs = [] # Fortran arguments
 _deps = [] # Dependencies
 _linkto = [] # All the sub-libraries
 _incdirs = [] # All the includes
 
 _incdirs += [ include_directories('thirdparty') ]
 
+# TODO(rg): use cc.get_supported_arguments and add more compiler support
 # Someday these should be removed and things should be fixed..
-_args += ['-Wno-unused-result',
-          '-g3',
-          '-O0',
-         '-Wunused-but-set-parameter']
+_args += [
+  # C++ only
+  '-Wno-class-memaccess',
+  '-Wno-unused-function',
+  # Common
+  '-Wno-reorder',
+  '-Wno-sign-compare',
+  '-Wno-unused-but-set-parameter',
+  '-Wno-unused-but-set-variable',
+  '-Wno-unused-parameter',
+  '-Wno-unused-result',
+  '-Wno-unused-variable',
+]
+
+# TODO(rg): use fc.get_supported_arguments and add more compiler support
+_fargs += [
+  # Fortran only, these are important!
+  '-Wno-compare-reals',
+  '-Wno-conversion',
+  '-Wno-line-truncation',
+  '-Wno-surprising',
+  '-Wno-unused-dummy-argument',
+  '-Wno-deprecated',
+  '-Wno-unused-label',
+  # Common
+  '-w',
+  # ^--- Silence.. TODO(rg): Seriously a very bad idea long term
+  '-Wno-maybe-uninitialized',
+  '-Wno-uninitialized',
+  '-Wno-unused-but-set-parameter',
+  '-Wno-unused-but-set-variable',
+  '-Wno-unused-parameter',
+  '-Wno-unused-variable',
+]
+
+# Debugging, should be offloaded from here eventually
+_args += [
+  '-g3',
+  '-O0',
+]
+
+# Safer, saner default, can be turned off in release
+if get_option('buildtype') != 'release'
+  _args += [
+    '-DEON_CHECKS=TRUE',
+  ]
+endif
 
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
@@ -43,6 +88,25 @@ if is_windows
  # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
 endif
 
+# Get the version and build date
+version_script = find_program('get_version.py')
+version_output = run_command(version_script).stdout().strip()
+version_bits = version_output.split(',')
+version = version_bits[0]
+build_date = version_bits[1]
+architecture = host_machine.cpu_family()
+
+# Configure the header file
+configure_file(
+  input: 'version.h.in',
+  output: 'version.h',
+  configuration: {
+    'VERSION': version,
+    'BUILD_DATE': build_date,
+    'OS_INFO': host_system,
+    'ARCH': architecture,
+  }
+)
 
 # Dependencies
 if not is_windows
