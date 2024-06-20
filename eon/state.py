@@ -5,7 +5,6 @@ import os
 import shutil
 import logging
 logger = logging.getLogger('state')
-from configparser import ConfigParser
 import tarfile
 
 from eon import fileio as io
