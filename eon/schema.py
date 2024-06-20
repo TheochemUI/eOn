@@ -18,6 +18,7 @@ class MainConfig(BaseModel):
         "basin_hopping",
         "displacement_sampling",
         "dynamics",
+        "escaperate",  # TODO(rg): Document
         "finite_differences",
         "global_optimization",
         "gp_surrogate",
@@ -25,7 +26,7 @@ class MainConfig(BaseModel):
         "minimization",
         "monte_carlo",
         "nudged_elastic_band",
-        "parallel_replica",
+        "parallel_replica",  # Alias for unbiased_parallel_replica
         "point",
         "prefactor",
         "process_search",
@@ -144,17 +145,40 @@ class AKMCConfig(BaseModel):
         default=0,
         description="The maximum number of KMC transitions in a row. In MPI or continuous mode, EON will exit after performing this many KMC steps. If this is set to 0, EON will run forever.",
     )
-    confidence_scheme: Literal["old", "new"] = Field(
+    confidence_scheme: Literal["old", "new", "sampling", "dynamics"] = Field(
         default="new",
-        description="The scheme used for confidence calculation.",
+        description="""
+            The scheme used for confidence calculation. Options:
+            - 'old': Traditional confidence scheme based on the number of unique processes (Nf) and the number of searches (Ns).
+            - 'new': Enhanced confidence scheme using a mathematical function to account for the ratio of Nf to Ns.
+            - 'sampling': Confidence based on sampling probabilities derived from the repeat counts of processes.
+            - 'dynamics': Confidence derived from molecular dynamics, considering time extrapolation and rates at different temperatures.
+        """,
     )
     confidence_correction: bool = Field(
         default=False,
         description="If true, applies a correction to the confidence calculation.",
     )
     # These are commented out and not used...
-    max_rate: Optional[float]
-    eq_rate: Optional[float]
+    # TODO(rg): These are not checked for existence, only for positivity
+    # 0 shouldn't be a signalling value
+    max_rate: float = Field(
+        default=0.0,
+        description="""
+            Sets the maximum allowable rate for a process. If a calculated rate exceeds this value,
+            it is capped to prevent exceedingly high rates from dominating the simulation.
+            This helps in maintaining numerical stability and realistic dynamics in the simulation.
+        """,
+    )
+    eq_rate: float = Field(
+        default=0.0,
+        description="""
+            Sets the equilibrium rate. If the forward and reverse rates exceed this value,
+            they are adjusted to maintain equilibrium conditions. This prevents exceedingly high rates
+            from dominating the simulation and ensures that both forward and reverse processes
+            are considered symmetrically.
+        """,
+    )
 
 
 class BasinHoppingConfig(BaseModel):
@@ -522,16 +546,16 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_atom_list.",
     )
-    displace_atom_list: str = Field(
-        default="0",
+    displace_atom_list: list[int] = Field(
+        default=[-1],
         description="The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.",
     )
     displace_listed_type_weight: float = Field(
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_type_list.",
     )
-    displace_type_list: str = Field(
-        default="none", description="The atom types should be separated by a comma."
+    displace_type_list: list[str] = Field(
+        default=[], description="The atom types should be separated by a comma."
     )
     displace_all_listed: bool = Field(
         default=False,
@@ -658,10 +682,11 @@ class KDBConfig(BaseModel):
         default=False,
         description="KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).",
     )
-    kdb_name: Optional[str]
-    kdb_nf: Optional[str]
-    kdb_dc: Optional[str]
-    kdb_mac: Optional[str]
+    kdb_name: str = "kdb.db"
+    # TODO(rg): These are in config.yaml, not sure what they do..
+    kdb_nf: float = 0.2
+    kdb_dc: float = 0.3
+    kdb_mac: float = 0.7
 
 
 class RecyclingConfig(BaseModel):
@@ -900,8 +925,9 @@ class DebugConfig(BaseModel):
     write_movies_interval: int = Field(
         default=1, description="Write a movie frame every write_movies_interval steps."
     )
-    stop_criterion: Optional[float] = Field(
-        description="Criterion to stop the calculation."
+    # TODO(rg): Document, from config.yaml
+    stop_criterion: float = Field(
+        default=1e8, description="Criterion to stop the calculation."
     )
 
 
@@ -916,7 +942,7 @@ class Config(BaseModel):
     prefactor: PrefactorConfig
     saddle_search: SaddleSearchConfig
     potential: PotentialConfig
-    potential: RefineConfig
+    refine: RefineConfig
     kdb: KDBConfig
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
