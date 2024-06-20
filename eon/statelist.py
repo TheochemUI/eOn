@@ -6,7 +6,7 @@ logger = logging.getLogger('statelist')
 import os
 
 from eon import atoms
-from eon.config import config
+from eon.migrator.config import config
 
 
 class StateList:
