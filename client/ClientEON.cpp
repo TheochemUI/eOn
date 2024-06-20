@@ -15,6 +15,7 @@
 #include <spdlog/spdlog.h>
 #include <string.h>
 #include <time.h>
+#include <filesystem>
 
 #ifdef EONMPI
 #include <Python.h>
@@ -23,7 +24,6 @@
 #include <sstream>
 #include <stdlib.h>
 #endif
-
 
 #ifdef WITH_ASE_ORCA
 #include <pybind11/embed.h>
@@ -44,23 +44,34 @@
 #endif
 
 void printSystemInfo() {
-  printf("EON Client\n");
-  printf("VERSION: r%s\n", VERSION);
-  printf("BUILD DATE: %s\n\n", BUILD_DATE);
-// System Information
-#ifdef WIN32
-  printf("OS: Microsoft Windows\n");
+  spdlog::info("EON Client");
+  spdlog::info("VERSION: {}", VERSION);
+  spdlog::info("BUILD DATE: {}\n", BUILD_DATE);
+  spdlog::info("OS: {}", OS_INFO);
+  spdlog::info("Arch: {}", ARCH);
+
+#ifdef _WIN32
+  TCHAR hostname[MAX_COMPUTERNAME_LENGTH + 1];
+  DWORD size = sizeof(hostname) / sizeof(hostname[0]);
+  if (GetComputerName(hostname, &size)) {
+    spdlog::info("Hostname: {}", hostname);
+  } else {
+    spdlog::error("Failed to get hostname");
+  }
+  spdlog::info("PID: {}", GetCurrentProcessId());
 #else
   struct utsname systemInfo;
   int status = uname(&systemInfo);
   if (status == 0) {
-    printf("Hostname: %s\nOS: %s\nArch: %s\nPID: %i\n", systemInfo.nodename,
-           systemInfo.sysname, systemInfo.machine, (int)getpid());
+    spdlog::info("Hostname: {}", systemInfo.nodename);
+    spdlog::info("PID: {}", getpid());
+  } else {
+    spdlog::error("Failed to get system information");
   }
-  char dir[1024];
-  getcwd(dir, 1024);
-  printf("DIR: %s\n\n", dir);
 #endif
+
+  std::filesystem::path cwd = std::filesystem::current_path();
+  spdlog::info("DIR: {}", cwd.string());
 }
 
 int main(int argc, char **argv) {
@@ -349,7 +360,8 @@ int main(int argc, char **argv) {
           helper_functions::makeJob(std::make_unique<Parameters>(parameters));
       if (job == nullptr) {
         printf("error: Unknown job: %s\n",
-               std::string{magic_enum::enum_name<JobType>(parameters.job)}.c_str());
+               std::string{magic_enum::enum_name<JobType>(parameters.job)}
+                   .c_str());
         return 1;
       }
 
