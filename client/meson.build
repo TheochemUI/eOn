@@ -54,6 +54,25 @@ if is_windows
  # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
 endif
 
+# Get the version and build date
+version_script = find_program('get_version.py')
+version_output = run_command(version_script).stdout().strip()
+version_bits = version_output.split(',')
+version = version_bits[0]
+build_date = version_bits[1]
+architecture = host_machine.cpu_family()
+
+# Configure the header file
+configure_file(
+  input: 'version.h.in',
+  output: 'version.h',
+  configuration: {
+    'VERSION': version,
+    'BUILD_DATE': build_date,
+    'OS_INFO': host_system,
+    'ARCH': architecture,
+  }
+)
 
 # Dependencies
 if not is_windows
