@@ -12,6 +12,8 @@
 #include <string>
 #include <thirdparty/toml.hpp>
 
+using namespace std::string_literals;
+
 Parameters::Parameters() {
 
   kB = 8.6173324e-5;     // eV/K
@@ -25,8 +27,8 @@ Parameters::Parameters() {
   main.checkpoint = false;
   main.quiet = false;
   main.writeLog = true;
-  main.inpFilename = "config.toml";
-  main.conFilename = "pos.con";
+  main.inpFilename = "config.toml"s;
+  main.conFilename = "pos.con"s;
   main.finiteDifference = 0.01;
   main.maxForceCalls = 0;
   main.removeNetForce = true;
@@ -50,28 +52,28 @@ Parameters::Parameters() {
   pot.LAMMPSLogging = false;
   pot.LAMMPSThreads = 0;
   pot.EMTRasmussen = false;
-  pot.extPotPath = "./ext_pot";
+  pot.extPotPath = "./ext_pot"s;
 
   // [AMS] //
-  ams.engine = "";     // One of REAXFF MOPAC
-  ams.forcefield = ""; // OPt.ff or something else
-  ams.model = "";      // PM7 PM3 or something
-  ams.xc = "";         // exchange-correlation functional
-  ams.basis = "";      // with xc
-  ams.resources = "";  // For DFTB
+  ams.engine = ""s;     // One of REAXFF MOPAC
+  ams.forcefield = ""s; // OPt.ff or something else
+  ams.model = ""s;      // PM7 PM3 or something
+  ams.xc = ""s;         // exchange-correlation functional
+  ams.basis = ""s;      // with xc
+  ams.resources = ""s;  // For DFTB
 
   // [AMS_ENV] //
   // Horrid little section to mimic amsrc.sh
   // Assumes the entire thing is going to be set
-  amsenv.amshome = "";       // "/some/path/to/amshome/";
-  amsenv.scm_tmpdir = "";    // "/tmp";
-  amsenv.scm_pythondir = ""; // "/.scm/python";
-  amsenv.amsbin = "";        // amshome.append("/bin");
-  amsenv.scmlicense = "";    // amshome.append("license.txt");
-  amsenv.amsresources = "";  // amshome.append("/atomicdata");
+  amsenv.amshome = ""s;       // "/some/path/to/amshome/"s;
+  amsenv.scm_tmpdir = ""s;    // "/tmp"s;
+  amsenv.scm_pythondir = ""s; // "/.scm/python"s;
+  amsenv.amsbin = ""s;        // amshome.append("/bin"s);
+  amsenv.scmlicense = ""s;    // amshome.append("license.txt"s);
+  amsenv.amsresources = ""s;  // amshome.append("/atomicdata"s);
 
   // [XTBPot] //
-  xtbpot.paramset = "GFNFF";
+  xtbpot.paramset = "GFNFF"s;
   xtbpot.acc = 1.0;
   xtbpot.elec_temperature = 0.0;
   xtbpot.maxiter = 250;
@@ -90,7 +92,7 @@ Parameters::Parameters() {
 
   // [Saddle Search] //
   saddle.displaceType = EpiCenters::DISP_LOAD;
-  saddle.method = "min_mode";
+  saddle.method = "min_mode"s;
   saddle.minmodeMethod = LowestEigenmode::MINMODE_DIMER;
   saddle.maxEnergy = 20.0;
   saddle.maxIterations = 1000;
@@ -186,8 +188,8 @@ Parameters::Parameters() {
   gprd.maxOuterIterations = 300;  // num_bigiter
   gprd.maxInnerIterations = 1000; // num_iter
   gprd.midpointMaxDisp = 0.5;     // disp_max
-  gprd.rotOptMethod = "lbfgs";    // method_rot
-  gprd.transOptMethod = "lbfgs";  // method_trans
+  gprd.rotOptMethod = "lbfgs"s;   // method_rot
+  gprd.transOptMethod = "lbfgs"s; // method_trans
   gprd.activeRadius = 5.0;        // actidst_fro
   gprd.dimerSep = 0.01;           // dimer_sep
   gprd.convStep = 0.1;            // param_trans[0]
@@ -198,13 +200,13 @@ Parameters::Parameters() {
   gprd.initTransGP = 0;           // inittrans_nogp
   gprd.manyIterations = true;     // islarge_num_iter
   // GPR Params
-  gprd.hyperOptMethod = "scg"; // optimization_alg
-  gprd.sigma2 = 1e-8;          // gp_sigma2
-  gprd.jitterSigma2 = 0;       // jitter_sigma2
-  gprd.noiseSigma2 = 1e-8;     // sigma2
-  gprd.priorMu = 0;            // prior_mu
-  gprd.priorSigma2 = 1;        // prior_s2
-  gprd.priorNu = 20;           // prior_nu
+  gprd.hyperOptMethod = "scg"s; // optimization_alg
+  gprd.sigma2 = 1e-8;           // gp_sigma2
+  gprd.jitterSigma2 = 0;        // jitter_sigma2
+  gprd.noiseSigma2 = 1e-8;      // sigma2
+  gprd.priorMu = 0;             // prior_mu
+  gprd.priorSigma2 = 1;         // prior_s2
+  gprd.priorNu = 20;            // prior_nu
   // GPR Optimization Parameters
   gprd.optCheckDerivatives = false; // check_derivative
   gprd.optMaxIterations = 400;      // max_iter
@@ -218,16 +220,16 @@ Parameters::Parameters() {
   gprd.pruneNVals = 3;       // nprune_vals
   gprd.pruneThreshold = 0.5; // prune_threshold
   // GPR Debugging Parameters
-  gprd.reportLevel = 1;            // report_level
-  gprd.debugLevel = 2;             // debug_level
-  gprd.debugOutDir = "output";     // debug_output_dir
-  gprd.debugPosFile = "position";  // debug_output_file_R
-  gprd.debugEnergyFile = "energy"; // debug_output_file_E
-  gprd.debugGradFile = "gradient"; // debug_output_file_G
-  gprd.debugOutExt = "dat";        // debug_output_file_extension
-  gprd.debugOffsetMidPoint = 3.;   // debug_offset_from_mid_point
-  gprd.debugDy = 0.1;              // debug_dy
-  gprd.debugDz = 0.1;              // debug_dz
+  gprd.reportLevel = 1;             // report_level
+  gprd.debugLevel = 2;              // debug_level
+  gprd.debugOutDir = "output"s;     // debug_output_dir
+  gprd.debugPosFile = "position"s;  // debug_output_file_R
+  gprd.debugEnergyFile = "energy"s; // debug_output_file_E
+  gprd.debugGradFile = "gradient"s; // debug_output_file_G
+  gprd.debugOutExt = "dat"s;        // debug_output_file_extension
+  gprd.debugOffsetMidPoint = 3.;    // debug_offset_from_mid_point
+  gprd.debugDy = 0.1;               // debug_dy
+  gprd.debugDz = 0.1;               // debug_dz
 
   // GP Surrogate Parameters
   surrogate.use = false;
@@ -237,7 +239,7 @@ Parameters::Parameters() {
   surrogate.potential = PotType::CatLearn;
 
   // [Hessian] //
-  hessian.atomList = std::string("All");
+  hessian.atomList = std::string("All"s);
   hessian.zeroFreqValue = 1e-6;
 
   // [Nudged Elastic Band] //
@@ -302,7 +304,7 @@ Parameters::Parameters() {
 
   // [Hyperdynamics] //
   bondBoost.biasPotential = "none"s;    // Hyperdynamics::NONE
-  bondBoost.BALS = std::string("ALL"); // boosted atom list string
+  bondBoost.BALS = "ALL"s; // boosted atom list string
   bondBoost.DVMAX = 0.0;
   bondBoost.QRR = 0.2; // can not be set to 0
   bondBoost.PRR = 0.95;
@@ -318,8 +320,8 @@ Parameters::Parameters() {
   bhop.quenchingSteps = 0;
   bhop.singleAtomDisplace = false;
   bhop.significantStructure = true;
-  bhop.displacementAlgorithm = "standard";
-  bhop.displacementDistribution = "uniform";
+  bhop.displacementAlgorithm = "standard"s;
+  bhop.displacementDistribution = "uniform"s;
   bhop.swapProbability = 0.0;
   bhop.jumpMax = 10;
   bhop.jumpSteps = 0;
@@ -331,8 +333,8 @@ Parameters::Parameters() {
   bhop.stopEnergy = -DBL_MAX;
 
   // [Global Optimization] //
-  globopt.moveMethod = "md";
-  globopt.decisionMethod = "npew";
+  globopt.moveMethod = "md"s;
+  globopt.decisionMethod = "npew"s;
   globopt.steps = 10000;
   globopt.beta = 1.05;
   globopt.alpha = 1.02;
@@ -353,9 +355,9 @@ Parameters::Parameters() {
 
   // [CatLearn] //
   // No reasonable default for catl_path
-  catl.path = "";
-  catl.model = "gp";
-  catl.prior = "median";
+  catl.path = ""s;
+  catl.model = "gp"s;
+  catl.prior = "median"s;
   catl.use_deriv = true;
   catl.use_fingerprint = false;
   catl.parallel = false;
@@ -374,7 +376,7 @@ int Parameters::load(const std::string &filename) {
 
     // Main section
     main.job = magic_enum::enum_cast<JobType>(
-                   config["Main"]["job"].value_or("process_search"),
+                   config["Main"]["job"].value_or("process_search"s),
                    magic_enum::case_insensitive)
                    .value_or(JobType::Process_Search);
     main.temperature = config["Main"]["temperature"].value_or(300.0);
@@ -382,8 +384,8 @@ int Parameters::load(const std::string &filename) {
     main.checkpoint = config["Main"]["checkpoint"].value_or(false);
     main.quiet = config["Main"]["quiet"].value_or(false);
     main.writeLog = config["Main"]["write_log"].value_or(true);
-    main.inpFilename = config["Main"]["ini_filename"].value_or("config.toml");
-    main.conFilename = config["Main"]["con_filename"].value_or("pos.con");
+    main.inpFilename = config["Main"]["ini_filename"].value_or("config.toml"s);
+    main.conFilename = config["Main"]["con_filename"].value_or("pos.con"s);
     main.finiteDifference = config["Main"]["finite_difference"].value_or(0.01);
     main.maxForceCalls = config["Main"]["max_force_calls"].value_or(0L);
     main.removeNetForce = config["Main"]["remove_net_force"].value_or(true);
@@ -399,46 +401,47 @@ int Parameters::load(const std::string &filename) {
 
     // Potential section
     pot.potential = magic_enum::enum_cast<PotType>(
-                        config["Potential"]["potential"].value_or("LJ"),
+                        config["Potential"]["potential"].value_or("LJ"s),
                         magic_enum::case_insensitive)
                         .value_or(PotType::LJ);
     pot.MPIPollPeriod = config["Potential"]["mpi_poll_period"].value_or(0.25);
     pot.LAMMPSLogging = config["Potential"]["lammps_logging"].value_or(false);
     pot.LAMMPSThreads = config["Potential"]["lammps_threads"].value_or(0);
     pot.EMTRasmussen = config["Potential"]["emt_rasmussen"].value_or(false);
-    pot.extPotPath = config["Potential"]["ext_pot_path"].value_or("./ext_pot");
+    pot.extPotPath = config["Potential"]["ext_pot_path"].value_or("./ext_pot"s);
     pot.LogPotential = config["Potential"]["log_potential"].value_or(
         pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
         pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
 
     // AMS section
-    ams.engine = config["AMS"]["engine"].value_or(""); // One of REAXFF MOPA
+    ams.engine = config["AMS"]["engine"].value_or(""s); // One of REAXFF MOPA
     ams.forcefield =
-        config["AMS"]["forcefield"].value_or(""); // OPt.ff or something else
+        config["AMS"]["forcefield"].value_or(""s); // OPt.ff or something else
     ams.resources =
-        config["AMS"]["resources"].value_or(""); // PM7 PM3 or something
+        config["AMS"]["resources"].value_or(""s); // PM7 PM3 or something
     ams.model =
-        config["AMS"]["model"].value_or(""); // exchange-correlation functional
-    ams.xc = config["AMS"]["xc"].value_or("");       // with xc
-    ams.basis = config["AMS"]["basis"].value_or(""); // For DFTB
+        config["AMS"]["model"].value_or(""s); // exchange-correlation functional
+    ams.xc = config["AMS"]["xc"].value_or(""s);       // with xc
+    ams.basis = config["AMS"]["basis"].value_or(""s); // For DFTB
 
     // AMS_ENV section
     // Horrid little section to mimic amsrc.sh
     // Assumes the entire thing is going to be set
-    amsenv.amshome =
-        config["AMS_ENV"]["amshome"].value_or(""); // "/some/path/to/amshome/";
-    amsenv.scm_tmpdir = config["AMS_ENV"]["scm_tmpdir"].value_or(""); // "/tmp";
+    amsenv.amshome = config["AMS_ENV"]["amshome"].value_or(
+        ""s); // "/some/path/to/amshome/"s;
+    amsenv.scm_tmpdir =
+        config["AMS_ENV"]["scm_tmpdir"].value_or(""s); // "/tmp"s;
     amsenv.scmlicense =
-        config["AMS_ENV"]["scmlicense"].value_or(""); // "/.scm/python";
+        config["AMS_ENV"]["scmlicense"].value_or(""s); // "/.scm/python"s;
     amsenv.scm_pythondir = config["AMS_ENV"]["scm_pythondir"].value_or(
-        ""); // amshome.append("/bin");
+        ""s); // amshome.append("/bin"s);
     amsenv.amsbin = config["AMS_ENV"]["amsbin"].value_or(
-        ""); // amshome.append("license.txt");
+        ""s); // amshome.append("license.txt"s);
     amsenv.amsresources = config["AMS_ENV"]["amsresources"].value_or(
-        ""); // amshome.append("/atomicdata");
+        ""s); // amshome.append("/atomicdata"s);
 
     // XTBPot section
-    xtbpot.paramset = config["XTBPot"]["paramset"].value_or("GFNFF");
+    xtbpot.paramset = config["XTBPot"]["paramset"].value_or("GFNFF"s);
     xtbpot.acc = config["XTBPot"]["accuracy"].value_or(1.0);
     xtbpot.elec_temperature =
         config["XTBPot"]["electronic_temperature"].value_or(0.0);
@@ -470,11 +473,11 @@ int Parameters::load(const std::string &filename) {
         config["Saddle_Search"]["max_jump_attempts"].value_or(0L);
     saddle.maxIterations =
         config["Saddle_Search"]["max_iterations"].value_or(1000L);
-    saddle.method = config["Saddle_Search"]["method"].value_or("min_mode");
+    saddle.method = config["Saddle_Search"]["method"].value_or("min_mode"s);
     saddle.minmodeMethod = config["Saddle_Search"]["min_mode_method"].value_or(
-        "LowestEigenmode::MINMODE_DIMER");
+        "LowestEigenmode::MINMODE_DIMER"s);
     saddle.displaceType =
-        config["Saddle_Search"]["displace_type"].value_or("load");
+        config["Saddle_Search"]["displace_type"].value_or("load"s);
     saddle.maxEnergy = config["Saddle_Search"]["max_energy"].value_or(20.0);
     saddle.displaceMagnitude =
         config["Saddle_Search"]["displace_magnitude"].value_or(0.1);
@@ -528,23 +531,24 @@ int Parameters::load(const std::string &filename) {
 
     // Optimizer section
     optim.method = magic_enum::enum_cast<OptType>(
-                       config["Optimizer"]["opt_method"].value_or("none"),
+                       config["Optimizer"]["opt_method"].value_or("none"s),
                        magic_enum::case_insensitive)
                        .value_or(OptType::CG);
     optim.refineOptMethod =
         magic_enum::enum_cast<OptType>(
-            config["Optimizer"]["refine_opt"].value_or("none"),
+            config["Optimizer"]["refine_opt"].value_or("none"s),
             magic_enum::case_insensitive)
             .value_or(OptType::CG);
-    optim.refineOptMethod = magic_enum::enum_cast<OptType>(
-                                config["Refine"]["opt_method"].value_or("none"),
-                                magic_enum::case_insensitive)
-                                .value_or(OptType::None);
+    optim.refineOptMethod =
+        magic_enum::enum_cast<OptType>(
+            config["Refine"]["opt_method"].value_or("none"s),
+            magic_enum::case_insensitive)
+            .value_or(OptType::None);
     optim.refineThreshold = config["Refine"]["threshold"].value_or(0.5);
-    optim.convergenceMetric =
-        toLowerCase(config["Optimizer"]["convergence_metric"].value_or("norm"));
+    optim.convergenceMetric = toLowerCase(
+        config["Optimizer"]["convergence_metric"].value_or("norm"s));
     optim.convergenceMetricLabel =
-        config["Optimizer"]["convergence_metric_label"].value_or("||Force||");
+        config["Optimizer"]["convergence_metric_label"].value_or("||Force||"s);
     optim.maxIterations = config["Optimizer"]["max_iterations"].value_or(1000L);
     optim.maxMove = config["Optimizer"]["max_move"].value_or(0.2);
     optim.convergedForce =
@@ -585,7 +589,7 @@ int Parameters::load(const std::string &filename) {
     dimer.improved = config["Dimer"]["improved"].value_or(true);
     dimer.convergedAngle = config["Dimer"]["converged_angle"].value_or(5.0);
     dimer.maxIterations = config["Dimer"]["max_iterations"].value_or(1000L);
-    dimer.optMethod = config["Dimer"]["opt_method"].value_or("OPT_CG");
+    dimer.optMethod = config["Dimer"]["opt_method"].value_or("OPT_CG"s);
     dimer.rotationsMin = config["Dimer"]["rotations_min"].value_or(1L);
     dimer.rotationsMax = config["Dimer"]["rotations_max"].value_or(10L);
     dimer.torqueMin = config["Dimer"]["torque_min"].value_or(0.1);
@@ -609,9 +613,9 @@ int Parameters::load(const std::string &filename) {
     gprd.midpointMaxDisp =
         config["GPR_Dimer"]["max_midpoint_displacement"].value_or(0.5);
     gprd.rotOptMethod =
-        config["GPR_Dimer"]["rotation_opt_method"].value_or("lbfgs");
+        config["GPR_Dimer"]["rotation_opt_method"].value_or("lbfgs"s);
     gprd.transOptMethod =
-        config["GPR_Dimer"]["translation_opt_method"].value_or("lbfgs");
+        config["GPR_Dimer"]["translation_opt_method"].value_or("lbfgs"s);
     gprd.activeRadius = config["GPR_Dimer"]["active_radius"].value_or(5.0);
     gprd.dimerSep = config["GPR_Dimer"]["dimer_separation"].value_or(0.01);
     gprd.convStep =
@@ -626,7 +630,7 @@ int Parameters::load(const std::string &filename) {
     gprd.manyIterations =
         config["GPR_Dimer"]["has_many_iterations"].value_or(true);
     gprd.hyperOptMethod =
-        config["GPR_Dimer"]["hyperparameter_opt_method"].value_or("scg");
+        config["GPR_Dimer"]["hyperparameter_opt_method"].value_or("scg"s);
     gprd.sigma2 = config["GPR_Dimer"]["gpr_variance"].value_or(1e-8);
     gprd.jitterSigma2 =
         config["GPR_Dimer"]["gpr_jitter_variance"].value_or(0.0);
@@ -650,15 +654,15 @@ int Parameters::load(const std::string &filename) {
     gprd.reportLevel = config["GPR_Dimer"]["report_level"].value_or(1);
     gprd.debugLevel = config["GPR_Dimer"]["debug_level"].value_or(2);
     gprd.debugOutDir =
-        config["GPR_Dimer"]["debug_output_directory"].value_or("output");
+        config["GPR_Dimer"]["debug_output_directory"].value_or("output"s);
     gprd.debugPosFile =
-        config["GPR_Dimer"]["debug_position_basename"].value_or("position");
+        config["GPR_Dimer"]["debug_position_basename"].value_or("position"s);
     gprd.debugEnergyFile =
-        config["GPR_Dimer"]["debug_energy_basename"].value_or("energy");
+        config["GPR_Dimer"]["debug_energy_basename"].value_or("energy"s);
     gprd.debugGradFile =
-        config["GPR_Dimer"]["debug_gradient_basename"].value_or("gradient");
+        config["GPR_Dimer"]["debug_gradient_basename"].value_or("gradient"s);
     gprd.debugOutExt =
-        config["GPR_Dimer"]["debug_output_file_extension"].value_or("dat");
+        config["GPR_Dimer"]["debug_output_file_extension"].value_or("dat"s);
     gprd.debugOffsetMidPoint =
         config["GPR_Dimer"]["debug_midpoint_offset"].value_or(3.0);
     gprd.debugDy = config["GPR_Dimer"]["debug_y_step"].value_or(0.1);
@@ -677,18 +681,18 @@ int Parameters::load(const std::string &filename) {
     prefactor.minDisplacement =
         config["Prefactor"]["min_displacement"].value_or(0.25);
     prefactor.rate =
-        config["Prefactor"]["rate_estimation"].value_or("RATE_HTST");
+        config["Prefactor"]["rate_estimation"].value_or("RATE_HTST"s);
     prefactor.configuration =
-        config["Prefactor"]["configuration"].value_or("PREFACTOR_REACTANT");
+        config["Prefactor"]["configuration"].value_or("PREFACTOR_REACTANT"s);
     prefactor.allFreeAtoms =
         config["Prefactor"]["all_free_atoms"].value_or(false);
     prefactor.filterScheme =
-        config["Prefactor"]["filter_scheme"].value_or("fraction");
+        config["Prefactor"]["filter_scheme"].value_or("fraction"s);
     prefactor.filterFraction =
         config["Prefactor"]["filter_fraction"].value_or(0.90);
 
     // Hessian section
-    hessian.atomList = config["Hessian"]["atom_list"].value_or("All");
+    hessian.atomList = config["Hessian"]["atom_list"].value_or("All"s);
     hessian.zeroFreqValue = config["Hessian"]["zero_freq_value"].value_or(1e-6);
 
     // Nudged Elastic Band section
@@ -716,7 +720,7 @@ int Parameters::load(const std::string &filename) {
     md.timeInput = config["Dynamics"]["time"].value_or(1000.0);
     md.time = md.timeInput / timeUnit;
     md.steps = static_cast<long>(std::floor(md.time / md.timeStep + 0.5));
-    thermostat.kind = config["Dynamics"]["thermostat"].value_or("andersen");
+    thermostat.kind = config["Dynamics"]["thermostat"].value_or("andersen"s);
     thermostat.andersenAlpha =
         config["Dynamics"]["andersen_alpha"].value_or(1.0);
     thermostat.andersenTcolInput =
@@ -767,38 +771,38 @@ int Parameters::load(const std::string &filename) {
         config["Surrogate"]["gp_uncertainity"].value_or(0.05);
     surrogate.gp_linear_path_always =
         config["Surrogate"]["gp_linear_path_always"].value_or(false);
-    if (config.contains("Surrogate")) {
+    if (config.contains("Surrogate"s)) {
       surrogate.potential =
           magic_enum::enum_cast<PotType>(
-              config["Surrogate"]["potential"].value_or("catlearn"),
+              config["Surrogate"]["potential"].value_or("catlearn"s),
               magic_enum::case_insensitive)
               .value_or(PotType::UNKNOWN);
       if (surrogate.potential != PotType::CatLearn) {
-        throw std::runtime_error("We only support catlearn for GP right now");
+        throw std::runtime_error("We only support catlearn for GP right now"s);
       }
     }
     // [CatLearn]
-    if (config.contains("CatLearn")) {
+    if (config.contains("CatLearn"s)) {
       // Case sensitive!!
-      catl.path = config["CatLearn"]["path"].value_or("");
-      catl.model = config["CatLearn"]["model"].value_or("gp");
-      catl.prior = config["CatLearn"]["prior"].value_or("median");
+      catl.path = config["CatLearn"]["path"].value_or(""s);
+      catl.model = config["CatLearn"]["model"].value_or("gp"s);
+      catl.prior = config["CatLearn"]["prior"].value_or("median"s);
       catl.use_deriv = config["CatLearn"]["use_derivative"].value_or(true);
       catl.parallel = config["CatLearn"]["parallel"].value_or(true);
       catl.use_deriv = config["CatLearn"]["use_fingerprint"].value_or(false);
     }
     // [ASE_ORCA]
-    if (config.contains("ASE_ORCA")) {
+    if (config.contains("ASE_ORCA"s)) {
       // Case sensitive!!
       // Can be used with environment variables
-      aseorca.orca_path = config["ASE_ORCA"]["orca_path"].value_or("");
-      aseorca.orca_nproc = config["ASE_ORCA"]["nproc"].value_or("1");
-      aseorca.simpleinput = config["ASE_ORCA"]["simpleinput"].value_or("");
+      aseorca.orca_path = config["ASE_ORCA"]["orca_path"].value_or(""s);
+      aseorca.orca_nproc = config["ASE_ORCA"]["nproc"].value_or("1"s);
+      aseorca.simpleinput = config["ASE_ORCA"]["simpleinput"].value_or(""s);
     }
     // Replica Exchange section
     repexc.temperatureDistribution =
         config["Replica_Exchange"]["temperature_distribution"].value_or(
-            "exponential");
+            "exponential"s);
     repexc.replicas = config["Replica_Exchange"]["replicas"].value_or(10L);
     repexc.exchangeTrials =
         config["Replica_Exchange"]["exchange_trials"].value_or(repexc.replicas);
@@ -815,9 +819,9 @@ int Parameters::load(const std::string &filename) {
 
     // Hyperdynamics section
     bondBoost.biasPotential =
-        config["Hyperdynamics"]["bias_potential"].value_or("NONE");
+        config["Hyperdynamics"]["bias_potential"].value_or("NONE"s);
     bondBoost.BALS =
-        config["Hyperdynamics"]["bb_boost_atomlist"].value_or("ALL");
+        config["Hyperdynamics"]["bb_boost_atomlist"].value_or("ALL"s);
     bondBoost.RMDTimeInput =
         config["Hyperdynamics"]["bb_rmd_time"].value_or(100.0);
     bondBoost.RMDTime = bondBoost.RMDTimeInput / timeUnit;
@@ -842,10 +846,10 @@ int Parameters::load(const std::string &filename) {
     bhop.singleAtomDisplace =
         config["Basin_Hopping"]["single_atom_displace"].value_or(false);
     bhop.displacementAlgorithm =
-        config["Basin_Hopping"]["displacement_algorithm"].value_or("standard");
+        config["Basin_Hopping"]["displacement_algorithm"].value_or("standard"s);
     bhop.displacementDistribution =
         config["Basin_Hopping"]["displacement_distribution"].value_or(
-            "uniform");
+            "uniform"s);
     bhop.swapProbability =
         config["Basin_Hopping"]["swap_probability"].value_or(0.0);
     bhop.jumpMax = config["Basin_Hopping"]["jump_max"].value_or(10L);
@@ -861,9 +865,9 @@ int Parameters::load(const std::string &filename) {
 
     // Global Optimization section
     globopt.moveMethod =
-        config["Global_Optimization"]["move_method"].value_or("md");
+        config["Global_Optimization"]["move_method"].value_or("md"s);
     globopt.decisionMethod =
-        config["Global_Optimization"]["decision_method"].value_or("npew");
+        config["Global_Optimization"]["decision_method"].value_or("npew"s);
     globopt.steps = config["Global_Optimization"]["steps"].value_or(10000L);
     globopt.beta = config["Global_Optimization"]["beta"].value_or(1.05);
     globopt.alpha = config["Global_Optimization"]["alpha"].value_or(1.02);
@@ -893,26 +897,26 @@ int Parameters::load(const std::string &filename) {
 
     // Sanity Checks
     if (parrep.stateCheckInterval > md.time &&
-        magic_enum::enum_name<JobType>(main.job) == "parallel_replica") {
-      spdlog::error("[Parallel Replica] state_check_interval must be <= time");
+        magic_enum::enum_name<JobType>(main.job) == "parallel_replica"s) {
+      spdlog::error("[Parallel Replica] state_check_interval must be <= time"s);
       return 1;
     }
 
     if (saddle.dynamicsRecordIntervalInput >
         saddle.dynamicsStateCheckIntervalInput) {
       spdlog::error("[Saddle Search] dynamics_record_interval must be <= "
-                    "dynamics_state_check_interval");
+                    "dynamics_state_check_interval"s);
       return 1;
     }
 
     if (pot.potential == PotType::AMS || pot.potential == PotType::AMS_IO) {
       if (ams.forcefield.empty() && ams.model.empty() && ams.xc.empty()) {
-        spdlog::error("[AMS] Must provide at least forcefield or model or xc");
+        spdlog::error("[AMS] Must provide at least forcefield or model or xc"s);
         return 1;
       }
 
       if (!ams.forcefield.empty() && !ams.model.empty() && !ams.xc.empty()) {
-        spdlog::error("[AMS] Must provide either forcefield or model");
+        spdlog::error("[AMS] Must provide either forcefield or model"s);
         return 1;
       }
     }
