@@ -8,15 +8,47 @@ project('eonclient', 'cpp',
 host_system = host_machine.system()
 
 _args = [] # Extra arguments
+_fargs = [] # Fortran arguments
 _deps = [] # Dependencies
 _linkto = [] # All the sub-libraries
 _incdirs = [] # All the includes
 
 _incdirs += [ include_directories('thirdparty') ]
 
+# TODO(rg): use cc.get_supported_arguments and add more compiler support
 # Someday these should be removed and things should be fixed..
-_args += ['-Wno-unused-result',
-          '-Wunused-but-set-parameter']
+_args += [
+  # C++ only
+  '-Wno-class-memaccess',
+  '-Wno-unused-function',
+  # Common
+  '-Wno-reorder',
+  '-Wno-sign-compare',
+  '-Wno-unused-but-set-parameter',
+  '-Wno-unused-but-set-variable',
+  '-Wno-unused-parameter',
+  '-Wno-unused-result',
+  '-Wno-unused-variable',
+]
+
+# TODO(rg): use fc.get_supported_arguments and add more compiler support
+_fargs += [
+  # Fortran only, these are important!
+  '-Wno-compare-reals',
+  '-Wno-conversion',
+  '-Wno-line-truncation',
+  '-Wno-surprising',
+  '-Wno-unused-dummy-argument',
+  '-Wno-deprecated',
+  '-Wno-unused-label',
+  # Common
+  '-Wno-maybe-uninitialized',
+  '-Wno-uninitialized',
+  '-Wno-unused-but-set-parameter',
+  '-Wno-unused-but-set-variable',
+  '-Wno-unused-parameter',
+  '-Wno-unused-variable',
+]
 
 # Debugging, should be offloaded from here eventually
 _args += [
