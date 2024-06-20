@@ -39,10 +39,10 @@ Parameters::Parameters() {
   prefactor.minValue = 1e+9;
   prefactor.withinRadius = 3.3;
   prefactor.minDisplacement = 0.25;
-  prefactor.rate = ::Prefactor::RATE_HTST;
-  prefactor.configuration = PrefactorType::REACTANT;
+  prefactor.rate = ::Prefactor::RATE::HTST;
+  prefactor.configuration = ::Prefactor::TYPE::REACTANT;
   prefactor.allFreeAtoms = false;
-  prefactor.filterScheme = ::Prefactor::FILTER_FRACTION;
+  prefactor.filterScheme = ::Prefactor::FILTER::FRACTION;
   prefactor.filterFraction = 0.90;
 
   // [Potential] //
@@ -681,16 +681,22 @@ int Parameters::load(const std::string &filename) {
     prefactor.minDisplacement =
         config["Prefactor"]["min_displacement"].value_or(0.25);
     prefactor.rate =
-        config["Prefactor"]["rate_estimation"].value_or("RATE_HTST"s);
+        magic_enum::enum_cast<::Prefactor::RATE>(
+            config["Prefactor"]["rate_estimation"].value_or("htst"s),
+            magic_enum::case_insensitive)
+            .value_or(::Prefactor::RATE::HTST);
     prefactor.configuration =
-        magic_enum::enum_cast<PrefactorType>(
+        magic_enum::enum_cast<::Prefactor::TYPE>(
             config["Prefactor"]["configuration"].value_or("reactant"s),
             magic_enum::case_insensitive)
-            .value_or(PrefactorType::REACTANT);
+            .value_or(::Prefactor::TYPE::REACTANT);
     prefactor.allFreeAtoms =
         config["Prefactor"]["all_free_atoms"].value_or(false);
     prefactor.filterScheme =
-        config["Prefactor"]["filter_scheme"].value_or("fraction"s);
+        magic_enum::enum_cast<::Prefactor::FILTER>(
+            config["Prefactor"]["filter_scheme"].value_or("fraction"s),
+            magic_enum::case_insensitive)
+            .value_or(::Prefactor::FILTER::FRACTION);
     prefactor.filterFraction =
         config["Prefactor"]["filter_fraction"].value_or(0.90);
 
