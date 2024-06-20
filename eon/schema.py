@@ -9,7 +9,7 @@ from pydantic import (
 )
 from typing import Optional, Any
 from typing_extensions import Literal
-from uuid import uuid4
+import random
 
 
 class MainConfig(BaseModel):
@@ -63,8 +63,10 @@ class MainConfig(BaseModel):
         """,
     )
     random_seed: int = Field(
-        default_factory=lambda: uuid4().int,
-        description="Takes an integer for the random seed. If this number is less than zero the current time is used as the random seed. If it is not defined, a uuid4 integer is used.",
+        # See https://click.rgoswami.me/pyrandint
+        # for a few caveats on getrandbits
+        default_factory=lambda: random.getrandbits(32),
+        description="Takes an integer for the random seed. If this number is less than zero the current time is used as the random seed. If it is not defined, a 32 bit sized integer is used.",
     )
     temperature: float = Field(
         default=300.0, description="The temperature that the job will run at."
