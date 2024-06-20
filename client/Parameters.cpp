@@ -473,7 +473,7 @@ int Parameters::load(const std::string &filename) {
         config["Saddle_Search"]["max_jump_attempts"].value_or(0L);
     saddle.maxIterations =
         config["Saddle_Search"]["max_iterations"].value_or(1000L);
-    saddle.method = config["Saddle_Search"]["method"].value_or("min_mode"s);
+    // saddle.method = config["Saddle_Search"]["method"].value_or("min_mode"s);
     saddle.minmodeMethod = config["Saddle_Search"]["min_mode_method"].value_or(
         "LowestEigenmode::MINMODE_DIMER"s);
     saddle.displaceType =
@@ -531,7 +531,7 @@ int Parameters::load(const std::string &filename) {
 
     // Optimizer section
     optim.method = magic_enum::enum_cast<OptType>(
-                       config["Optimizer"]["opt_method"].value_or("none"s),
+                       config["Optimizer"]["opt_method"].value_or("cg"s),
                        magic_enum::case_insensitive)
                        .value_or(OptType::CG);
     optim.refineOptMethod =
