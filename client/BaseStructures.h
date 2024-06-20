@@ -103,4 +103,23 @@ enum class OptType {
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
 
-enum class PrefactorType {REACTANT, SADDLE, PRODUCT};
+enum class PrefactorType { REACTANT, SADDLE, PRODUCT };
+
+enum class Prefactor { RATE_HTST, RATE_QQHTST, FILTER_CUTOFF, FILTER_FRACTION };
+
+// Custom definition of prefactor names to not have to change the parameters
+template <>
+constexpr magic_enum::customize::customize_t
+magic_enum::customize::enum_name<Prefactor>(Prefactor value) noexcept {
+  switch (value) {
+  case Prefactor::RATE_HTST:
+    return "htst";
+  case Prefactor::RATE_QQHTST:
+    return "qqhtst";
+  case Prefactor::FILTER_CUTOFF:
+    return "cutoff";
+  case Prefactor::FILTER_FRACTION:
+    return "fraction";
+  }
+  return default_tag;
+}
