@@ -9,7 +9,7 @@ from eon import basinhopping
 from eon import parallelreplica
 from eon import escaperate
 from eon import fileio as io
-from eon.config import config
+from eon.migrator.config import config
 
 def server():
     config.init()

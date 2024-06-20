@@ -13,7 +13,7 @@ import os
 import pickle as pickle
 
 from eon import atoms
-from eon.config import config
+from eon.migrator.config import config
 
 def save_prng_state():
     state = numpy.random.get_state()

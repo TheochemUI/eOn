@@ -3,7 +3,7 @@ import os
 import numpy
 from eon import atoms
 from eon import fileio as io
-from eon.config import config
+from eon.migrator.config import config
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.

@@ -13,7 +13,7 @@ import os
 import shutil
 import sys
 
-from eon.config import config
+from eon.migrator.config import config
 from eon.version import version
 from eon import atoms
 from eon import communicator

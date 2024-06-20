@@ -9,7 +9,7 @@ logger = logging.getLogger('state')
 
 import numpy
 
-from eon.config import config
+from eon.migrator.config import config
 from eon import atoms
 from eon import fileio as io
 from eon import state

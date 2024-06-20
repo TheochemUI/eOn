@@ -7,7 +7,7 @@ import numpy
 
 from eon import atoms
 from eon import fileio as io
-from eon.config import config
+from eon.migrator.config import config
 
 class DisplacementManager:
     def __init__(self, reactant, moved_atoms):
