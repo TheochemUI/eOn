@@ -16,9 +16,20 @@ _incdirs += [ include_directories('thirdparty') ]
 
 # Someday these should be removed and things should be fixed..
 _args += ['-Wno-unused-result',
-          '-g3',
-          '-O0',
-         '-Wunused-but-set-parameter']
+          '-Wunused-but-set-parameter']
+
+# Debugging, should be offloaded from here eventually
+_args += [
+  '-g3',
+  '-O0',
+]
+
+# Safer, saner default, can be turned off in release
+if get_option('buildtype') != 'release'
+  _args += [
+    '-DEON_CHECKS=TRUE',
+  ]
+endif
 
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
