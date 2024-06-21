@@ -148,9 +148,8 @@ Parameters::Parameters() {
   saddle.dynamicsStateCheckIntervalInput = 100.0; // fs
   saddle.dynamicsStateCheckInterval =
       saddle.dynamicsStateCheckIntervalInput / timeUnit;
-  saddle.dynamicsRecordIntervalInput = 10.0;      // fs
-  saddle.dynamicsRecordInterval =
-    saddle.dynamicsRecordIntervalInput / timeUnit;
+  saddle.dynamicsRecordIntervalInput = 10.0; // fs
+  saddle.dynamicsRecordInterval = saddle.dynamicsRecordIntervalInput / timeUnit;
   saddle.dynamicsLinearInterpolation = true;
   saddle.dynamicsMaxInitCurvature = 0.0; // eV/Ang^2
   saddle.zeroModeAbortCurvature = 0.0;   // eV/Ang^2
@@ -306,8 +305,8 @@ Parameters::Parameters() {
   repexc.exchangePeriod = 100.0;
 
   // [Hyperdynamics] //
-  bondBoost.biasPotential = "none"s;    // Hyperdynamics::NONE
-  bondBoost.BALS = "ALL"s; // boosted atom list string
+  bondBoost.biasPotential = "none"s; // Hyperdynamics::NONE
+  bondBoost.BALS = "ALL"s;           // boosted atom list string
   bondBoost.DVMAX = 0.0;
   bondBoost.QRR = 0.2; // can not be set to 0
   bondBoost.PRR = 0.95;
