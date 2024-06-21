@@ -1,18 +1,3 @@
-project('eonclient', 'cpp',
-  version : '0.1',
-  default_options : ['warning_level=0', 'cpp_std=c++17'])
-# IMPORTANT!! warning_level=3 passes -fimplicit-none
-# EON needs implicit typing!!
-
-
-host_system = host_machine.system()
-
-_args = [] # Extra arguments
-_fargs = [] # Fortran arguments
-_deps = [] # Dependencies
-_linkto = [] # All the sub-libraries
-_incdirs = [] # All the includes
-
 _incdirs += [ include_directories('thirdparty') ]
 
 # TODO(rg): use cc.get_supported_arguments and add more compiler support
