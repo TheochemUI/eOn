@@ -416,26 +416,30 @@ endif
 if get_option('with_tests')
     test_args = _args
     test_deps = _deps
-    test_deps += dependency(
-      'Catch2',
-      method: 'cmake',
-      modules: ['Catch2::Catch2WithMain'],
+    testMain = library(
+      'TestMain',
+      ['gtests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
+      dependencies : test_deps,
+      include_directories: _incdirs,
+      cpp_args: test_args,
+      link_with: _linkto,
     )
     test_array = [#
       # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
       # ['strparse_run', 'StringHelpersTest.cpp', ''],
       ['test_matter', 'MatterTest.cpp', 'sulfolene'],
       ['test_pot', 'PotTest.cpp', 'sulfolene'],
+      ['approve_params', 'ApproveParams.cpp', ''],
       # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
     ]
     foreach test : test_array
       test(test.get(0),
            executable(test.get(0),
-              sources : ['gtests/'+test.get(1)],
+              sources : ['gtests/'+test.get(1), 'thirdparty/catch2/catch_amalgamated.cpp'],
               dependencies : test_deps,
               include_directories: _incdirs,
               cpp_args: test_args,
-              link_with: _linkto,
+              link_with: _linkto + testMain,
                      ),
             workdir : meson.source_root() + '/gtests/data/systems/' + test.get(2)
           )
