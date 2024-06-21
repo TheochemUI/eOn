@@ -57,12 +57,3 @@ py.install_sources([
   pure: false, # install next to compiled extension
   subdir: 'eon'
 )
-
-# "install" the server
-main_executable = custom_target('main_executable',
-  input: 'eon/main.py',
-  output: 'main',
-  command: ['cp', '@INPUT@', '@OUTPUT@'],
-  install: true,
-  install_dir: get_option('bindir')
-)
