@@ -1,0 +1,51 @@
+* What
+Documentation which is still usable, but not recommended.
+*** Nix [Deprecated]
+This is preferred since it is reproducible. You will need [[https://nixos.org/guides/install-nix.html][nix]].
+#+begin_src bash
+# Debug errors
+nix-build -K .
+# Add to path
+nix-env -if .
+#+end_src
+**** Development
+To get a new shell to work on the packages, use the following:
+#+begin_src bash
+# With gcc
+nix-shell --pure --run bash --show-trace --verbose
+# With clang
+nix-shell --argstr clang --pure --run bash --show-trace --verbose
+#+end_src
+***** Linux
+In a new sub-shell:
+#+begin_src bash
+# On Linux machines:
+cd client
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DUNIX=TRUE -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DWITH_GPRD=TRUE -DWITH_FORTRAN=FALSE -G "Ninja"
+VERBOSE=1 ninja
+ctest
+#+end_src
+Currently the ~ctests~ are out of date, and ~meson~ is recommended.
+***** MacOS
+In the new sub-shell:
+#+begin_src bash
+cd client
+./version.sh > version.h
+meson setup builddir -Dwith_ams=true -Dwith_gprd=true --buildtype=release
+VERBOSE=1 meson compile -C builddir
+#+end_src
+All the options are documented in ~meson_options.txt~. Occasionally, when the
+installation is not done, there may be some linking errors. These can be fixed
+by:
+#+begin_src bash
+# In a conda environment
+cd builddir
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib64:$LD_LIBRARY_PATH
+export PATH=$(pwd):$PATH
+#+end_src
+Dependencies can be obtained via:
+#+begin_src bash
+micromamba env create -f environment.yml
+micromamba activate eongit
+#+end_src
