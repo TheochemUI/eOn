@@ -1,1 +1,1 @@
-from eon.main import main
+from eon.server import server
