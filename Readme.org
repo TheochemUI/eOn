@@ -151,6 +151,10 @@ For best results, consider installing the ~git~ hook as well.
 #+begin_src bash
 pipx run pre-commit install
 #+end_src
+* Testing
+We have both ~Catch2~ unit tests, and also ~ApprovalTests~. For adding new
+approval tests, first build them with ~meson compile~, run them to approve, and
+then re-run to make sure things pass with ~meson test~.
 * TODO Development Rosetta
 ** Machine Learning Concepts
 ** EON Concepts
