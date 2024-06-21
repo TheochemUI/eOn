@@ -120,7 +120,9 @@ Parameters::Parameters() {
   saddleConfinePositiveMinActive = 30;           // undocumented
   saddleDynamicsTemperature = 0.0;               // defaults to temperature
   saddleDynamicsStateCheckIntervalInput = 100.0; // fs
-  saddleDynamicsRecordIntervalInput = 10.0;      // fs
+  saddleDynamicsStateCheckInterval =
+      saddleDynamicsStateCheckIntervalInput / timeUnit;
+  saddleDynamicsRecordIntervalInput = 10.0; // fs
   saddleDynamicsLinearInterpolation = true;
   saddleDynamicsMaxInitCurvature = 0.0; // eV/Ang^2
   saddleZeroModeAbortCurvature = 0.0;   // eV/Ang^2
@@ -135,6 +137,7 @@ Parameters::Parameters() {
   optMaxMove = 0.2;
   optTimeStepInput = 1.0;
   optMaxTimeStepInput = 2.5;
+  optMaxTimeStep = optMaxTimeStepInput / timeUnit;
 
   optLBFGSMemory = 20;
   optLBFGSInverseCurvature =
@@ -161,6 +164,7 @@ Parameters::Parameters() {
   dimerRotationAngle = 0.005;
   dimerImproved = true;
   dimerConvergedAngle = 5.0; // degrees
+  dimerMaxIterations = 1000;
   dimerOptMethod = ImprovedDimer::OPT_CG;
   dimerTorqueMin = 0.1;   // old dimer
   dimerTorqueMax = 1.0;   // old dimer
@@ -259,6 +263,9 @@ Parameters::Parameters() {
   // [Dynamics] //
   mdTimeStepInput = 1.0;
   mdTimeInput = 1000.0;
+  mdTimeStep = mdTimeStepInput / timeUnit;
+  mdTime = mdTimeInput / timeUnit;
+  mdSteps = long(floor(mdTime / mdTimeStep + 0.5));
 
   // [Thermostat] //
   thermostat = Dynamics::NONE;
@@ -266,6 +273,7 @@ Parameters::Parameters() {
   thermoAndersenTcolInput = 100.0; // collision frequency in unit of fs
   thermoNoseMass = 1.0;
   thermoLangevinFrictionInput = 0.01;
+  thermoLangevinFriction = thermoLangevinFrictionInput * timeUnit;
 
   // [Parallel Replica] //
   parrepRefineTransition = true;
@@ -276,6 +284,10 @@ Parameters::Parameters() {
   parrepStateCheckIntervalInput = 1000.0;
   parrepRecordIntervalInput = 50.0;
   parrepCorrTimeInput = 1000.0;
+  parrepDephaseTime = parrepDephaseTimeInput / timeUnit;
+  parrepStateCheckInterval = parrepStateCheckIntervalInput / timeUnit;
+  parrepRecordInterval = parrepRecordIntervalInput / timeUnit;
+  parrepCorrTime = parrepCorrTimeInput / timeUnit;
 
   // [Temperature Accelerated Dynamics] //
   tadLowT = 300.0;
@@ -287,6 +299,7 @@ Parameters::Parameters() {
   repexcReplicas = 10;
   repexcExchangeTrials = repexcReplicas;
   repexcSamplingTimeInput = 1000.0;
+  repexcSamplingTime = repexcSamplingTimeInput / timeUnit;
   repexcTemperatureLow = 0.0;
   repexcTemperatureHigh = 0.0;
   repexcExchangePeriod = 100.0;
@@ -299,6 +312,7 @@ Parameters::Parameters() {
   bondBoostPRR = 0.95;
   bondBoostQcut = 3.0;
   bondBoostRMDTimeInput = 100.0;
+  bondBoostRMDTime = bondBoostRMDTimeInput / timeUnit;
 
   // [Basin Hopping] //
   basinHoppingDisplacement = 0.5;
