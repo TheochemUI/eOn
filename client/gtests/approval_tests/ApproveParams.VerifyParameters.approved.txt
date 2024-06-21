@@ -1,0 +1,345 @@
+parameters
+
+
+[0] = Current Parameters are: 
+
+[Main]
+kB: 8.6173323999999996e-05
+timeUnit: 10.1805055000000007
+job: Process_Search
+randomSeed: -1
+temperature: 300
+quiet: false
+writeLog: true
+checkpoint: false
+iniFilename: config.ini
+conFilename: pos.con
+finiteDifference: 0.0100000000000000002
+maxForceCalls: 0
+removeNetForce: true
+
+[Potential]
+potential: LJ
+MPIPollPeriod: 0.25
+MPIPotentialRank: -1
+LAMMPSLogging: false
+LAMMPSThreads: 0
+EMTRasmussen: false
+LogPotential: false
+extPotPath: ./ext_pot
+
+[AMS]
+engine: 
+forcefield: 
+model: 
+resources: 
+xc: 
+basis: 
+
+[AMS_ENV]
+amshome: 
+scm_tmpdir: 
+scmlicense: 
+scm_pythondir: 
+amsbin: 
+amsresources: 
+
+[XTBPot]
+xtb_paramset: GFNFF
+xtb_elec_temperature: 0
+xtb_maxiter: 250
+xtb_acc: 1
+
+[Structure Comparison]
+distanceDifference: 0.100000000000000006
+neighborCutoff: 3.29999999999999982
+checkRotation: false
+indistinguishableAtoms: true
+energyDifference: 0.0100000000000000002
+removeTranslation: true
+
+[Process Search]
+processSearchMinimizeFirst: true
+processSearchMinimizationOffset: 0.200000000000000011
+
+[Saddle Search]
+saddleMaxJumpAttempts: 3
+saddleMaxIterations: 1000
+saddleMethod: min_mode
+saddleMinmodeMethod: dimer
+saddleDisplaceType: load
+saddleMaxEnergy: 20
+saddleDisplaceMagnitude: 0.100000000000000006
+saddleMaxSingleDisplace: 10
+saddleDisplaceRadius: 4
+saddleConvergedForce: 0
+saddlePerpForceRatio: 0
+saddleNonnegativeDisplacementAbort: false
+saddleNonlocalCountAbort: 0
+saddleNonlocalDistanceAbort: 0
+saddleRemoveRotation: false
+saddleDynamicsTemperature: 0
+saddleDynamicsStateCheckIntervalInput: 100
+saddleDynamicsStateCheckInterval: 9.8226949536052004
+saddleDynamicsRecordIntervalInput: 10
+saddleDynamicsRecordInterval: 0
+saddleDynamicsLinearInterpolation: true
+saddleDynamicsMaxInitCurvature: 0
+saddleConfinePositive: false
+saddleBowlBreakout: false
+saddleBowlActive: 20
+saddleConfinePositiveMinForce: 0.5
+saddleConfinePositiveScaleRatio: 0.900000000000000022
+saddleConfinePositiveBoost: 10
+saddleConfinePositiveMinActive: 30
+saddleZeroModeAbortCurvature: 0
+
+[Optimizers]
+optMethod: CG
+optConvergenceMetric: norm
+optConvergenceMetricLabel: 
+optMaxIterations: 1000
+optMaxMove: 0.200000000000000011
+optConvergedForce: 0.0100000000000000002
+optTimeStepInput: 1
+optTimeStep: 0
+optMaxTimeStepInput: 2.5
+optMaxTimeStep: 0.245567373840130027
+optLBFGSMemory: 20
+optLBFGSInverseCurvature: 0.0100000000000000002
+optLBFGSMaxInverseCurvature: 0
+optLBFGSAutoScale: true
+optLBFGSAngleReset: true
+optLBFGSDistanceReset: true
+optQMSteepestDecent: false
+optCGNoOvershooting: false
+optCGKnockOutMaxMove: false
+optCGLineSearch: false
+optCGLineConverged: 0.100000000000000006
+optCGLineSearchMaxIter: 10
+optCGMaxIterBeforeReset: 0
+optSDAlpha: 0.100000000000000006
+optSDTwoPoint: false
+
+[Refine]
+refineOptMethod: None
+refineThreshold: 0.5
+
+[Dimer]
+dimerRotationAngle: 0.0050000000000000001
+dimerImproved: true
+dimerConvergedAngle: 5
+dimerMaxIterations: 1000
+dimerOptMethod: cg
+dimerRotationsMax: 10
+dimerRotationsMin: 1
+dimerTorqueMax: 1
+dimerTorqueMin: 0.100000000000000006
+dimerRemoveRotation: false
+
+[GPR Dimer]
+gprDimerRotationAngle: 0.0050000000000000001
+gprDimerConvergedAngle: 0.0800000000000000017
+gprDimerRelaxConvAngle: 0.00100000000000000002
+gprDimerInitRotationsMax: 6
+gprDimerRelaxRotationsMax: 10
+gprDimerDivisorTdimerGP: 10
+gprDimerMaxOuterIterations: 300
+gprDimerMaxInnerIterations: 1000
+gprDimerMidpointMaxDisp: 0.5
+gprDimerRotOptMethod: lbfgs
+gprDimerTransOptMethod: lbfgs
+gprActiveRadius: 5
+gprDimerSep: 0.0100000000000000002
+gprDimerConvStep: 0.100000000000000006
+gprDimerMaxStep: 0.100000000000000006
+gprForceThreshold: 0.0100000000000000002
+gprDimerRatioAtLimit: 0.666669999999999985
+gprDimerInitRotGP: false
+gprDimerInitTransGP: false
+gprDimerManyIterations: true
+gprDimerHyperOptMethod: scg
+gprDimerSigma2: 1.00000000000000002e-08
+gprDimerJitterSigma2: 0
+gprDimerNoiseSigma2: 1.00000000000000002e-08
+gprDimerPriorMu: 0
+gprDimerPriorSigma2: 1
+gprDimerPriorNu: 20
+gprOptCheckDerivatives: false
+gprOptMaxIterations: 400
+gprOptTolFunc: 0.000100000000000000005
+gprOptTolSol: 0.000100000000000000005
+gprOptLambdaLimit: 100000000000000000
+gprOptLambdaInit: 10
+gprUsePrune: false
+gprPruneBegin: 8
+gprPruneNVals: 3
+gprPruneThreshold: 0.5
+gprReportLevel: 1
+gprDebugLevel: 2
+gprDebugOutDir: output
+gprDebugPosFile: position
+gprDebugEnergyFile: energy
+gprDebugGradFile: gradient
+gprDebugOutExt: dat
+gprDebugOffsetMidPoint: 3
+gprDebugDy: 0.100000000000000006
+gprDebugDz: 0.100000000000000006
+
+[Surrogate]
+use_surrogate: false
+sub_job: Unknown
+gp_uncertainity: 0.0500000000000000028
+gp_linear_path_always: false
+surrogatePotential: CatLearn
+
+[CatLearn]
+catl_path: 
+catl_model: gp
+catl_prior: median
+catl_use_deriv: true
+catl_use_fingerprint: false
+catl_parallel: false
+
+[ASE ORCA]
+orca_path: 
+orca_nproc: 1
+orca_sline: 
+
+[Lanczos]
+lanczosTolerance: 0.0100000000000000002
+lanczosMaxIterations: 20
+lanczosQuitEarly: true
+
+[Prefactor]
+prefactorDefaultValue: 0
+prefactorMaxValue: 1e+21
+prefactorMinValue: 1000000000
+prefactorWithinRadius: 3.29999999999999982
+prefactorMinDisplacement: 0.25
+prefactorRate: htst
+prefactorConfiguration: reactant
+prefactorAllFreeAtoms: false
+prefactorFilterScheme: fraction
+prefactorFilterFraction: 0.900000000000000022
+
+[Hessian]
+hessianAtomList: All
+hessianZeroFreqValue: 9.99999999999999955e-07
+
+[Nudged Elastic Band]
+nebImages: 5
+nebMaxIterations: 1000
+nebSpring: 5
+nebClimbingImageMethod: true
+nebClimbingImageConvergedOnly: true
+nebOldTangent: false
+nebDoublyNudged: false
+nebDoublyNudgedSwitching: false
+nebOptMethod: 
+nebElasticBand: false
+nebConvergedForce: 0.0100000000000000002
+nebKSPMin: 0.969999999999999973
+nebKSPMax: 9.69999999999999929
+nebEnergyWeighted: false
+
+[Dynamics]
+mdTimeStepInput: 1
+mdTimeStep: 0.0982269495360520162
+mdTimeInput: 1000
+mdTime: 98.226949536052004
+mdSteps: 1000
+
+[Parallel Replica]
+parrepRefineTransition: true
+parrepAutoStop: false
+parrepDephaseLoopStop: false
+parrepDephaseTimeInput: 1000
+parrepDephaseTime: 98.226949536052004
+parrepDephaseLoopMax: 5
+parrepStateCheckIntervalInput: 1000
+parrepStateCheckInterval: 98.226949536052004
+parrepRecordIntervalInput: 50
+parrepRecordInterval: 4.9113474768026002
+parrepCorrTimeInput: 1000
+parrepCorrTime: 98.226949536052004
+
+[TAD]
+tadLowT: 300
+tadMinPrefactor: 0.00100000000000000002
+tadConfidence: 0.00100000000000000002
+
+[Thermostat]
+thermostat: none
+thermoAndersenAlpha: 1
+thermoAndersenTcolInput: 100
+thermoAndersenTcol: 0
+thermoNoseMass: 1
+thermoLangevinFrictionInput: 0.0100000000000000002
+thermoLangevinFriction: 0.101805055000000005
+
+[Parallel Replica]
+repexcTemperatureDistribution: exponential
+repexcReplicas: 10
+repexcExchangeTrials: 10
+repexcSamplingTimeInput: 1000
+repexcSamplingTime: 98.226949536052004
+repexcTemperatureHigh: 0
+repexcTemperatureLow: 0
+repexcExchangePeriodInput: 0
+repexcExchangePeriod: 100
+
+[Hyperdynamics]
+biasPotential: none
+bondBoostBALS: ALL
+bondBoostRMDTimeInput: 100
+bondBoostRMDTime: 9.8226949536052004
+bondBoostDVMAX: 0
+bondBoostQRR: 0.200000000000000011
+bondBoostPRR: 0.949999999999999956
+bondBoostQcut: 3
+basinHoppingDisplacement: 0.5
+basinHoppingInitialRandomStructureProbability: 0
+basinHoppingPushApartDistance: 0.400000000000000022
+basinHoppingSteps: 10000
+basinHoppingQuenchingSteps: 0
+basinHoppingSignificantStructure: true
+basinHoppingSingleAtomDisplace: false
+basinHoppingDisplacementAlgorithm: standard
+basinHoppingDisplacementDistribution: uniform
+basinHoppingSwapProbability: 0
+basinHoppingJumpMax: 10
+basinHoppingJumpSteps: 0
+basinHoppingAdjustDisplacement: true
+basinHoppingAdjustPeriod: 10
+basinHoppingAdjustFraction: 0.0500000000000000028
+basinHoppingTargetRatio: 0.5
+basinHoppingWriteUnique: false
+basinHoppingStopEnergy (-DBL_MAX): -1.79769313486231571e+308
+
+[Global Optimization]
+globalOptimizationMoveMethod: md
+globalOptimizationDecisionMethod: npew
+globalOptimizationSteps: 10000
+globalOptimizationBeta: 1.05000000000000004
+globalOptimizationAlpha: 1.02000000000000002
+globalOptimizationMdmin: 3
+globalOptimizationTargetEnergy: -1.00000000000000008e+50
+
+[Monte Carlo]
+monteCarloStepSize: 0.0050000000000000001
+monteCarloSteps: 1000
+
+[BGSD]
+alpha: 10
+beta: 0.200000000000000011
+gradientfinitedifference: 9.99999999999999955e-07
+Hforceconvergence: 0.0100000000000000002
+grad2energyconvergence: 9.99999999999999955e-07
+grad2forceconvergence: 0.000100000000000000005
+
+[Debug]
+writeMovies: false
+writeMoviesInterval: 1
+
+
