@@ -11,7 +11,7 @@ from eon import escaperate
 from eon import fileio as io
 from eon.config import config
 
-def main():
+def server():
     config.init()
 
     # Should we have some kind of sanity-check module/function somewhere?
@@ -56,4 +56,4 @@ def main():
         comm.submit_jobs([job], invariants)
 
 if __name__ == '__main__':
-    main()
+    server()
