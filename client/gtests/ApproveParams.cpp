@@ -12,452 +12,453 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
   os << "\n[Main]" << std::endl;
   os << "kB: " << params.kB << std::endl;
   os << "timeUnit: " << params.timeUnit << std::endl;
-  os << "job: " << magic_enum::enum_name(params.job) << std::endl;
-  os << "randomSeed: " << params.randomSeed << std::endl;
-  os << "temperature: " << params.temperature << std::endl;
-  os << "quiet: " << std::boolalpha << params.quiet << std::endl;
-  os << "writeLog: " << std::boolalpha << params.writeLog << std::endl;
-  os << "checkpoint: " << std::boolalpha << params.checkpoint << std::endl;
-  os << "iniFilename: " << params.iniFilename << std::endl;
-  os << "conFilename: " << params.conFilename << std::endl;
-  os << "finiteDifference: " << params.finiteDifference << std::endl;
-  os << "maxForceCalls: " << params.maxForceCalls << std::endl;
-  os << "removeNetForce: " << std::boolalpha << params.removeNetForce
+  os << "job: " << magic_enum::enum_name(params.main.job) << std::endl;
+  os << "randomSeed: " << params.main.randomSeed << std::endl;
+  os << "temperature: " << params.main.temperature << std::endl;
+  os << "quiet: " << std::boolalpha << params.main.quiet << std::endl;
+  os << "writeLog: " << std::boolalpha << params.main.writeLog << std::endl;
+  os << "checkpoint: " << std::boolalpha << params.main.checkpoint << std::endl;
+  os << "inpFilename: " << params.main.inpFilename << std::endl;
+  os << "conFilename: " << params.main.conFilename << std::endl;
+  os << "finiteDifference: " << params.main.finiteDifference << std::endl;
+  os << "maxForceCalls: " << params.main.maxForceCalls << std::endl;
+  os << "removeNetForce: " << std::boolalpha << params.main.removeNetForce
      << std::endl;
+
   os << "\n[Potential]" << std::endl;
-  os << "potential: " << magic_enum::enum_name(params.potential) << std::endl;
-  os << "MPIPollPeriod: " << params.MPIPollPeriod << std::endl;
-  os << "MPIPotentialRank: " << params.MPIPotentialRank << std::endl;
-  os << "LAMMPSLogging: " << std::boolalpha << params.LAMMPSLogging
+  os << "potential: " << magic_enum::enum_name(params.pot.potential)
      << std::endl;
-  os << "LAMMPSThreads: " << params.LAMMPSThreads << std::endl;
-  os << "EMTRasmussen: " << std::boolalpha << params.EMTRasmussen << std::endl;
-  os << "LogPotential: " << std::boolalpha << params.LogPotential << std::endl;
-  os << "extPotPath: " << params.extPotPath << std::endl;
+  os << "MPIPollPeriod: " << params.pot.MPIPollPeriod << std::endl;
+  // TODO(rg): Should this be here? PotentialRank
+  os << "MPIPotentialRank: " << params.MPIPotentialRank << std::endl;
+  os << "LAMMPSLogging: " << std::boolalpha << params.pot.LAMMPSLogging
+     << std::endl;
+  os << "LAMMPSThreads: " << params.pot.LAMMPSThreads << std::endl;
+  os << "EMTRasmussen: " << std::boolalpha << params.pot.EMTRasmussen
+     << std::endl;
+  os << "LogPotential: " << std::boolalpha << params.pot.LogPotential
+     << std::endl;
+  os << "extPotPath: " << params.pot.extPotPath << std::endl;
 
   os << "\n[AMS]" << std::endl;
-  os << "engine: " << params.engine << std::endl;
-  os << "forcefield: " << params.forcefield << std::endl;
-  os << "model: " << params.model << std::endl;
-  os << "resources: " << params.resources << std::endl;
-  os << "xc: " << params.xc << std::endl;
-  os << "basis: " << params.basis << std::endl;
+  os << "engine: " << params.ams.engine << std::endl;
+  os << "forcefield: " << params.ams.forcefield << std::endl;
+  os << "model: " << params.ams.model << std::endl;
+  os << "resources: " << params.ams.resources << std::endl;
+  os << "xc: " << params.ams.xc << std::endl;
+  os << "basis: " << params.ams.basis << std::endl;
 
   os << "\n[AMS_ENV]" << std::endl;
-  os << "amshome: " << params.amshome << std::endl;
-  os << "scm_tmpdir: " << params.scm_tmpdir << std::endl;
-  os << "scmlicense: " << params.scmlicense << std::endl;
-  os << "scm_pythondir: " << params.scm_pythondir << std::endl;
-  os << "amsbin: " << params.amsbin << std::endl;
-  os << "amsresources: " << params.amsresources << std::endl;
+  os << "amshome: " << params.amsenv.amshome << std::endl;
+  os << "scm_tmpdir: " << params.amsenv.scm_tmpdir << std::endl;
+  os << "scmlicense: " << params.amsenv.scmlicense << std::endl;
+  os << "scm_pythondir: " << params.amsenv.scm_pythondir << std::endl;
+  os << "amsbin: " << params.amsenv.amsbin << std::endl;
+  os << "amsresources: " << params.amsenv.amsresources << std::endl;
 
   os << "\n[XTBPot]" << std::endl;
-  os << "xtb_paramset: " << params.xtb_paramset << std::endl;
-  os << "xtb_elec_temperature: " << params.xtb_elec_temperature << std::endl;
-  os << "xtb_maxiter: " << params.xtb_maxiter << std::endl;
-  os << "xtb_acc: " << params.xtb_acc << std::endl;
+  os << "xtb_paramset: " << params.xtbpot.paramset << std::endl;
+  os << "xtb_elec_temperature: " << params.xtbpot.elec_temperature << std::endl;
+  os << "xtb_maxiter: " << params.xtbpot.maxiter << std::endl;
+  os << "xtb_acc: " << params.xtbpot.acc << std::endl;
 
   os << "\n[Structure Comparison]" << std::endl;
-  os << "distanceDifference: " << params.distanceDifference << std::endl;
-  os << "neighborCutoff: " << params.neighborCutoff << std::endl;
-  os << "checkRotation: " << std::boolalpha << params.checkRotation
+  os << "distanceDifference: " << params.structcomp.distanceDifference
+     << std::endl;
+  os << "neighborCutoff: " << params.structcomp.neighborCutoff << std::endl;
+  os << "checkRotation: " << std::boolalpha << params.structcomp.checkRotation
      << std::endl;
   os << "indistinguishableAtoms: " << std::boolalpha
-     << params.indistinguishableAtoms << std::endl;
-  os << "energyDifference: " << params.energyDifference << std::endl;
-  os << "removeTranslation: " << std::boolalpha << params.removeTranslation
-     << std::endl;
+     << params.structcomp.indistinguishableAtoms << std::endl;
+  os << "energyDifference: " << params.structcomp.energyDifference << std::endl;
+  os << "removeTranslation: " << std::boolalpha
+     << params.structcomp.removeTranslation << std::endl;
 
   os << "\n[Process Search]" << std::endl;
   os << "processSearchMinimizeFirst: " << std::boolalpha
-     << params.processSearchMinimizeFirst << std::endl;
+     << params.procsearch.minimizeFirst << std::endl;
   os << "processSearchMinimizationOffset: "
-     << params.processSearchMinimizationOffset << std::endl;
+     << params.procsearch.minimizationOffset << std::endl;
 
   os << "\n[Saddle Search]" << std::endl;
-  os << "saddleMaxJumpAttempts: " << params.saddleMaxJumpAttempts << std::endl;
-  os << "saddleMaxIterations: " << params.saddleMaxIterations << std::endl;
-  os << "saddleMethod: " << params.saddleMethod << std::endl;
-  os << "saddleMinmodeMethod: " << params.saddleMinmodeMethod << std::endl;
-  os << "saddleDisplaceType: " << params.saddleDisplaceType << std::endl;
-  os << "saddleMaxEnergy: " << params.saddleMaxEnergy << std::endl;
-  os << "saddleDisplaceMagnitude: " << params.saddleDisplaceMagnitude
+  os << "saddleMaxJumpAttempts: " << params.saddle.maxJumpAttempts << std::endl;
+  os << "saddleMaxIterations: " << params.saddle.maxIterations << std::endl;
+  os << "saddleMethod: " << params.saddle.method << std::endl;
+  os << "saddleMinmodeMethod: " << params.saddle.minmodeMethod << std::endl;
+  os << "saddleDisplaceType: " << params.saddle.displaceType << std::endl;
+  os << "saddleMaxEnergy: " << params.saddle.maxEnergy << std::endl;
+  os << "saddleDisplaceMagnitude: " << params.saddle.displaceMagnitude
      << std::endl;
-  os << "saddleMaxSingleDisplace: " << params.saddleMaxSingleDisplace
+  os << "saddleMaxSingleDisplace: " << params.saddle.maxSingleDisplace
      << std::endl;
-  os << "saddleDisplaceRadius: " << params.saddleDisplaceRadius << std::endl;
-  os << "saddleConvergedForce: " << params.saddleConvergedForce << std::endl;
-  os << "saddlePerpForceRatio: " << params.saddlePerpForceRatio << std::endl;
+  os << "saddleDisplaceRadius: " << params.saddle.displaceRadius << std::endl;
+  os << "saddleConvergedForce: " << params.saddle.convergedForce << std::endl;
+  os << "saddlePerpForceRatio: " << params.saddle.perpForceRatio << std::endl;
   os << "saddleNonnegativeDisplacementAbort: " << std::boolalpha
-     << params.saddleNonnegativeDisplacementAbort << std::endl;
-  os << "saddleNonlocalCountAbort: " << params.saddleNonlocalCountAbort
+     << params.saddle.nonnegativeDisplacementAbort << std::endl;
+  os << "saddleNonlocalCountAbort: " << params.saddle.nonlocalCountAbort
      << std::endl;
-  os << "saddleNonlocalDistanceAbort: " << params.saddleNonlocalDistanceAbort
+  os << "saddleNonlocalDistanceAbort: " << params.saddle.nonlocalDistanceAbort
      << std::endl;
   os << "saddleRemoveRotation: " << std::boolalpha
-     << params.saddleRemoveRotation << std::endl;
-  os << "saddleDynamicsTemperature: " << params.saddleDynamicsTemperature
+     << params.saddle.removeRotation << std::endl;
+  os << "saddleDynamicsTemperature: " << params.saddle.dynamicsTemperature
      << std::endl;
   os << "saddleDynamicsStateCheckIntervalInput: "
-     << params.saddleDynamicsStateCheckIntervalInput << std::endl;
+     << params.saddle.dynamicsStateCheckIntervalInput << std::endl;
   os << "saddleDynamicsStateCheckInterval: "
-     << params.saddleDynamicsStateCheckInterval << std::endl;
+     << params.saddle.dynamicsStateCheckInterval << std::endl;
   os << "saddleDynamicsRecordIntervalInput: "
-     << params.saddleDynamicsRecordIntervalInput << std::endl;
-  os << "saddleDynamicsRecordInterval: " << params.saddleDynamicsRecordInterval
+     << params.saddle.dynamicsRecordIntervalInput << std::endl;
+  os << "saddleDynamicsRecordInterval: " << params.saddle.dynamicsRecordInterval
      << std::endl;
   os << "saddleDynamicsLinearInterpolation: " << std::boolalpha
-     << params.saddleDynamicsLinearInterpolation << std::endl;
+     << params.saddle.dynamicsLinearInterpolation << std::endl;
   os << "saddleDynamicsMaxInitCurvature: "
-     << params.saddleDynamicsMaxInitCurvature << std::endl;
+     << params.saddle.dynamicsMaxInitCurvature << std::endl;
   os << "saddleConfinePositive: " << std::boolalpha
-     << params.saddleConfinePositive << std::endl;
-  os << "saddleBowlBreakout: " << std::boolalpha << params.saddleBowlBreakout
+     << params.saddle.confinePositive << std::endl;
+  os << "saddleBowlBreakout: " << std::boolalpha << params.saddle.bowlBreakout
      << std::endl;
-  os << "saddleBowlActive: " << params.saddleBowlActive << std::endl;
+  os << "saddleBowlActive: " << params.saddle.bowlActive << std::endl;
   os << "saddleConfinePositiveMinForce: "
-     << params.saddleConfinePositiveMinForce << std::endl;
+     << params.saddle.confinePositiveMinForce << std::endl;
   os << "saddleConfinePositiveScaleRatio: "
-     << params.saddleConfinePositiveScaleRatio << std::endl;
-  os << "saddleConfinePositiveBoost: " << params.saddleConfinePositiveBoost
+     << params.saddle.confinePositiveScaleRatio << std::endl;
+  os << "saddleConfinePositiveBoost: " << params.saddle.confinePositiveBoost
      << std::endl;
   os << "saddleConfinePositiveMinActive: "
-     << params.saddleConfinePositiveMinActive << std::endl;
-  os << "saddleZeroModeAbortCurvature: " << params.saddleZeroModeAbortCurvature
+     << params.saddle.confinePositiveMinActive << std::endl;
+  os << "saddleZeroModeAbortCurvature: " << params.saddle.zeroModeAbortCurvature
      << std::endl;
 
   os << "\n[Optimizers]" << std::endl;
-  os << "optMethod: " << magic_enum::enum_name(params.optMethod) << std::endl;
-  os << "optConvergenceMetric: " << params.optConvergenceMetric << std::endl;
-  os << "optConvergenceMetricLabel: " << params.optConvergenceMetricLabel
+  os << "optMethod: " << magic_enum::enum_name(params.optim.method)
      << std::endl;
-  os << "optMaxIterations: " << params.optMaxIterations << std::endl;
-  os << "optMaxMove: " << params.optMaxMove << std::endl;
-  os << "optConvergedForce: " << params.optConvergedForce << std::endl;
-  os << "optTimeStepInput: " << params.optTimeStepInput << std::endl;
-  os << "optTimeStep: " << params.optTimeStep << std::endl;
-  os << "optMaxTimeStepInput: " << params.optMaxTimeStepInput << std::endl;
-  os << "optMaxTimeStep: " << params.optMaxTimeStep << std::endl;
-  os << "optLBFGSMemory: " << params.optLBFGSMemory << std::endl;
-  os << "optLBFGSInverseCurvature: " << params.optLBFGSInverseCurvature
+  os << "optConvergenceMetric: " << params.optim.convergenceMetric << std::endl;
+  os << "optConvergenceMetricLabel: " << params.optim.convergenceMetricLabel
      << std::endl;
-  os << "optLBFGSMaxInverseCurvature: " << params.optLBFGSMaxInverseCurvature
+  os << "optMaxIterations: " << params.optim.maxIterations << std::endl;
+  os << "optMaxMove: " << params.optim.maxMove << std::endl;
+  os << "optConvergedForce: " << params.optim.convergedForce << std::endl;
+  os << "optTimeStepInput: " << params.optim.timeStepInput << std::endl;
+  os << "optTimeStep: " << params.optim.timeStep << std::endl;
+  os << "optMaxTimeStepInput: " << params.optim.maxTimeStepInput << std::endl;
+  os << "optMaxTimeStep: " << params.optim.maxTimeStep << std::endl;
+  os << "optLBFGSMemory: " << params.optim.LBFGSMemory << std::endl;
+  os << "optLBFGSInverseCurvature: " << params.optim.LBFGSInverseCurvature
      << std::endl;
-  os << "optLBFGSAutoScale: " << std::boolalpha << params.optLBFGSAutoScale
+  os << "optLBFGSMaxInverseCurvature: " << params.optim.LBFGSMaxInverseCurvature
      << std::endl;
-  os << "optLBFGSAngleReset: " << std::boolalpha << params.optLBFGSAngleReset
+  os << "optLBFGSAutoScale: " << std::boolalpha << params.optim.LBFGSAutoScale
+     << std::endl;
+  os << "optLBFGSAngleReset: " << std::boolalpha << params.optim.LBFGSAngleReset
      << std::endl;
   os << "optLBFGSDistanceReset: " << std::boolalpha
-     << params.optLBFGSDistanceReset << std::endl;
-  os << "optQMSteepestDecent: " << std::boolalpha << params.optQMSteepestDecent
-     << std::endl;
-  os << "optCGNoOvershooting: " << std::boolalpha << params.optCGNoOvershooting
-     << std::endl;
+     << params.optim.LBFGSDistanceReset << std::endl;
+  os << "optQMSteepestDecent: " << std::boolalpha
+     << params.optim.QMSteepestDecent << std::endl;
+  os << "optCGNoOvershooting: " << std::boolalpha
+     << params.optim.CGNoOvershooting << std::endl;
   os << "optCGKnockOutMaxMove: " << std::boolalpha
-     << params.optCGKnockOutMaxMove << std::endl;
-  os << "optCGLineSearch: " << std::boolalpha << params.optCGLineSearch
+     << params.optim.CGKnockOutMaxMove << std::endl;
+  os << "optCGLineSearch: " << std::boolalpha << params.optim.CGLineSearch
      << std::endl;
-  os << "optCGLineConverged: " << params.optCGLineConverged << std::endl;
-  os << "optCGLineSearchMaxIter: " << params.optCGLineSearchMaxIter
+  os << "optCGLineConverged: " << params.optim.CGLineConverged << std::endl;
+  os << "optCGLineSearchMaxIter: " << params.optim.CGLineSearchMaxIter
      << std::endl;
-  os << "optCGMaxIterBeforeReset: " << params.optCGMaxIterBeforeReset
+  os << "optCGMaxIterBeforeReset: " << params.optim.CGMaxIterBeforeReset
      << std::endl;
-  os << "optSDAlpha: " << params.optSDAlpha << std::endl;
-  os << "optSDTwoPoint: " << std::boolalpha << params.optSDTwoPoint
+  os << "optSDAlpha: " << params.optim.SDAlpha << std::endl;
+  os << "optSDTwoPoint: " << std::boolalpha << params.optim.SDTwoPoint
      << std::endl;
 
   os << "\n[Refine]" << std::endl;
-  os << "refineOptMethod: " << magic_enum::enum_name(params.refineOptMethod)
-     << std::endl;
-  os << "refineThreshold: " << params.refineThreshold << std::endl;
+  os << "refineOptMethod: "
+     << magic_enum::enum_name(params.optim.refineOptMethod) << std::endl;
+  os << "refineThreshold: " << params.optim.refineThreshold << std::endl;
 
   os << "\n[Dimer]" << std::endl;
-  os << "dimerRotationAngle: " << params.dimerRotationAngle << std::endl;
-  os << "dimerImproved: " << std::boolalpha << params.dimerImproved
+  os << "dimerRotationAngle: " << params.dimer.rotationAngle << std::endl;
+  os << "dimerImproved: " << std::boolalpha << params.dimer.improved
      << std::endl;
-  os << "dimerConvergedAngle: " << params.dimerConvergedAngle << std::endl;
-  os << "dimerMaxIterations: " << params.dimerMaxIterations << std::endl;
-  os << "dimerOptMethod: " << params.dimerOptMethod << std::endl;
-  os << "dimerRotationsMax: " << params.dimerRotationsMax << std::endl;
-  os << "dimerRotationsMin: " << params.dimerRotationsMin << std::endl;
-  os << "dimerTorqueMax: " << params.dimerTorqueMax << std::endl;
-  os << "dimerTorqueMin: " << params.dimerTorqueMin << std::endl;
-  os << "dimerRemoveRotation: " << std::boolalpha << params.dimerRemoveRotation
+  os << "dimerConvergedAngle: " << params.dimer.convergedAngle << std::endl;
+  os << "dimerMaxIterations: " << params.dimer.maxIterations << std::endl;
+  os << "dimerOptMethod: " << params.dimer.optMethod << std::endl;
+  os << "dimerRotationsMax: " << params.dimer.rotationsMax << std::endl;
+  os << "dimerRotationsMin: " << params.dimer.rotationsMin << std::endl;
+  os << "dimerTorqueMax: " << params.dimer.torqueMax << std::endl;
+  os << "dimerTorqueMin: " << params.dimer.torqueMin << std::endl;
+  os << "dimerRemoveRotation: " << std::boolalpha << params.dimer.removeRotation
      << std::endl;
 
   os << "\n[GPR Dimer]" << std::endl;
-  os << "gprDimerRotationAngle: " << params.gprDimerRotationAngle << std::endl;
-  os << "gprDimerConvergedAngle: " << params.gprDimerConvergedAngle
+  os << "gprDimerRotationAngle: " << params.gprd.rotationAngle << std::endl;
+  os << "gprDimerConvergedAngle: " << params.gprd.convergedAngle << std::endl;
+  os << "gprDimerRelaxConvAngle: " << params.gprd.relaxConvAngle << std::endl;
+  os << "gprDimerInitRotationsMax: " << params.gprd.initRotationsMax
      << std::endl;
-  os << "gprDimerRelaxConvAngle: " << params.gprDimerRelaxConvAngle
+  os << "gprDimerRelaxRotationsMax: " << params.gprd.relaxRotationsMax
      << std::endl;
-  os << "gprDimerInitRotationsMax: " << params.gprDimerInitRotationsMax
+  os << "gprDimerDivisorTdimerGP: " << params.gprd.divisorTdimerGP << std::endl;
+  os << "gprDimerMaxOuterIterations: " << params.gprd.maxOuterIterations
      << std::endl;
-  os << "gprDimerRelaxRotationsMax: " << params.gprDimerRelaxRotationsMax
+  os << "gprDimerMaxInnerIterations: " << params.gprd.maxInnerIterations
      << std::endl;
-  os << "gprDimerDivisorTdimerGP: " << params.gprDimerDivisorTdimerGP
+  os << "gprDimerMidpointMaxDisp: " << params.gprd.midpointMaxDisp << std::endl;
+  os << "gprDimerRotOptMethod: " << params.gprd.rotOptMethod << std::endl;
+  os << "gprDimerTransOptMethod: " << params.gprd.transOptMethod << std::endl;
+  os << "gprActiveRadius: " << params.gprd.activeRadius << std::endl;
+  os << "gprDimerSep: " << params.gprd.dimerSep << std::endl;
+  os << "gprDimerConvStep: " << params.gprd.convStep << std::endl;
+  os << "gprDimerMaxStep: " << params.gprd.maxStep << std::endl;
+  os << "gprForceThreshold: " << params.gprd.forceThreshold << std::endl;
+  os << "gprDimerRatioAtLimit: " << params.gprd.ratioAtLimit << std::endl;
+  os << "gprDimerInitRotGP: " << std::boolalpha << params.gprd.initRotGP
      << std::endl;
-  os << "gprDimerMaxOuterIterations: " << params.gprDimerMaxOuterIterations
-     << std::endl;
-  os << "gprDimerMaxInnerIterations: " << params.gprDimerMaxInnerIterations
-     << std::endl;
-  os << "gprDimerMidpointMaxDisp: " << params.gprDimerMidpointMaxDisp
-     << std::endl;
-  os << "gprDimerRotOptMethod: " << params.gprDimerRotOptMethod << std::endl;
-  os << "gprDimerTransOptMethod: " << params.gprDimerTransOptMethod
-     << std::endl;
-  os << "gprActiveRadius: " << params.gprActiveRadius << std::endl;
-  os << "gprDimerSep: " << params.gprDimerSep << std::endl;
-  os << "gprDimerConvStep: " << params.gprDimerConvStep << std::endl;
-  os << "gprDimerMaxStep: " << params.gprDimerMaxStep << std::endl;
-  os << "gprForceThreshold: " << params.gprForceThreshold << std::endl;
-  os << "gprDimerRatioAtLimit: " << params.gprDimerRatioAtLimit << std::endl;
-  os << "gprDimerInitRotGP: " << std::boolalpha << params.gprDimerInitRotGP
-     << std::endl;
-  os << "gprDimerInitTransGP: " << std::boolalpha << params.gprDimerInitTransGP
+  os << "gprDimerInitTransGP: " << std::boolalpha << params.gprd.initTransGP
      << std::endl;
   os << "gprDimerManyIterations: " << std::boolalpha
-     << params.gprDimerManyIterations << std::endl;
-  os << "gprDimerHyperOptMethod: " << params.gprDimerHyperOptMethod
-     << std::endl;
-  os << "gprDimerSigma2: " << params.gprDimerSigma2 << std::endl;
-  os << "gprDimerJitterSigma2: " << params.gprDimerJitterSigma2 << std::endl;
-  os << "gprDimerNoiseSigma2: " << params.gprDimerNoiseSigma2 << std::endl;
-  os << "gprDimerPriorMu: " << params.gprDimerPriorMu << std::endl;
-  os << "gprDimerPriorSigma2: " << params.gprDimerPriorSigma2 << std::endl;
-  os << "gprDimerPriorNu: " << params.gprDimerPriorNu << std::endl;
+     << params.gprd.manyIterations << std::endl;
+  os << "gprDimerHyperOptMethod: " << params.gprd.hyperOptMethod << std::endl;
+  os << "gprDimerSigma2: " << params.gprd.sigma2 << std::endl;
+  os << "gprDimerJitterSigma2: " << params.gprd.jitterSigma2 << std::endl;
+  os << "gprDimerNoiseSigma2: " << params.gprd.noiseSigma2 << std::endl;
+  os << "gprDimerPriorMu: " << params.gprd.priorMu << std::endl;
+  os << "gprDimerPriorSigma2: " << params.gprd.priorSigma2 << std::endl;
+  os << "gprDimerPriorNu: " << params.gprd.priorNu << std::endl;
   os << "gprOptCheckDerivatives: " << std::boolalpha
-     << params.gprOptCheckDerivatives << std::endl;
-  os << "gprOptMaxIterations: " << params.gprOptMaxIterations << std::endl;
-  os << "gprOptTolFunc: " << params.gprOptTolFunc << std::endl;
-  os << "gprOptTolSol: " << params.gprOptTolSol << std::endl;
-  os << "gprOptLambdaLimit: " << params.gprOptLambdaLimit << std::endl;
-  os << "gprOptLambdaInit: " << params.gprOptLambdaInit << std::endl;
-  os << "gprUsePrune: " << std::boolalpha << params.gprUsePrune << std::endl;
-  os << "gprPruneBegin: " << params.gprPruneBegin << std::endl;
-  os << "gprPruneNVals: " << params.gprPruneNVals << std::endl;
-  os << "gprPruneThreshold: " << params.gprPruneThreshold << std::endl;
-  os << "gprReportLevel: " << params.gprReportLevel << std::endl;
-  os << "gprDebugLevel: " << params.gprDebugLevel << std::endl;
-  os << "gprDebugOutDir: " << params.gprDebugOutDir << std::endl;
-  os << "gprDebugPosFile: " << params.gprDebugPosFile << std::endl;
-  os << "gprDebugEnergyFile: " << params.gprDebugEnergyFile << std::endl;
-  os << "gprDebugGradFile: " << params.gprDebugGradFile << std::endl;
-  os << "gprDebugOutExt: " << params.gprDebugOutExt << std::endl;
-  os << "gprDebugOffsetMidPoint: " << params.gprDebugOffsetMidPoint
+     << params.gprd.optCheckDerivatives << std::endl;
+  os << "gprOptMaxIterations: " << params.gprd.optMaxIterations << std::endl;
+  os << "gprOptTolFunc: " << params.gprd.optTolFunc << std::endl;
+  os << "gprOptTolSol: " << params.gprd.optTolSol << std::endl;
+  os << "gprOptLambdaLimit: " << params.gprd.optLambdaLimit << std::endl;
+  os << "gprOptLambdaInit: " << params.gprd.optLambdaInit << std::endl;
+  os << "gprUsePrune: " << std::boolalpha << params.gprd.usePrune << std::endl;
+  os << "gprPruneBegin: " << params.gprd.pruneBegin << std::endl;
+  os << "gprPruneNVals: " << params.gprd.pruneNVals << std::endl;
+  os << "gprPruneThreshold: " << params.gprd.pruneThreshold << std::endl;
+  os << "gprReportLevel: " << params.gprd.reportLevel << std::endl;
+  os << "gprDebugLevel: " << params.gprd.debugLevel << std::endl;
+  os << "gprDebugOutDir: " << params.gprd.debugOutDir << std::endl;
+  os << "gprDebugPosFile: " << params.gprd.debugPosFile << std::endl;
+  os << "gprDebugEnergyFile: " << params.gprd.debugEnergyFile << std::endl;
+  os << "gprDebugGradFile: " << params.gprd.debugGradFile << std::endl;
+  os << "gprDebugOutExt: " << params.gprd.debugOutExt << std::endl;
+  os << "gprDebugOffsetMidPoint: " << params.gprd.debugOffsetMidPoint
      << std::endl;
-  os << "gprDebugDy: " << params.gprDebugDy << std::endl;
-  os << "gprDebugDz: " << params.gprDebugDz << std::endl;
+  os << "gprDebugDy: " << params.gprd.debugDy << std::endl;
+  os << "gprDebugDz: " << params.gprd.debugDz << std::endl;
 
   os << "\n[Surrogate]" << std::endl;
-  os << "use_surrogate: " << params.use_surrogate << std::endl;
-  os << "sub_job: " << magic_enum::enum_name(params.sub_job) << std::endl;
-  os << "gp_uncertainity: " << params.gp_uncertainity << std::endl;
+  os << "use_surrogate: " << params.surrogate.use << std::endl;
+  os << "sub_job: " << magic_enum::enum_name(params.surrogate.sub_job)
+     << std::endl;
+  os << "gp_uncertainity: " << params.surrogate.gp_uncertainity << std::endl;
   os << "gp_linear_path_always: " << std::boolalpha
-     << params.gp_linear_path_always << std::endl;
+     << params.surrogate.gp_linear_path_always << std::endl;
   os << "surrogatePotential: "
-     << magic_enum::enum_name(params.surrogatePotential) << std::endl;
+     << magic_enum::enum_name(params.surrogate.potential) << std::endl;
 
   os << "\n[CatLearn]" << std::endl;
-  os << "catl_path: " << params.catl_path << std::endl;
-  os << "catl_model: " << params.catl_model << std::endl;
-  os << "catl_prior: " << params.catl_prior << std::endl;
-  os << "catl_use_deriv: " << std::boolalpha << params.catl_use_deriv
+  os << "catl_path: " << params.catl.path << std::endl;
+  os << "catl_model: " << params.catl.model << std::endl;
+  os << "catl_prior: " << params.catl.prior << std::endl;
+  os << "catl_use_deriv: " << std::boolalpha << params.catl.use_deriv
      << std::endl;
   os << "catl_use_fingerprint: " << std::boolalpha
-     << params.catl_use_fingerprint << std::endl;
-  os << "catl_parallel: " << std::boolalpha << params.catl_parallel
+     << params.catl.use_fingerprint << std::endl;
+  os << "catl_parallel: " << std::boolalpha << params.catl.parallel
      << std::endl;
 
   os << "\n[ASE ORCA]" << std::endl;
-  os << "orca_path: " << params.orca_path << std::endl;
-  os << "orca_nproc: " << params.orca_nproc << std::endl;
-  os << "orca_sline: " << params.orca_sline << std::endl;
+  os << "orca_path: " << params.aseorca.orca_path << std::endl;
+  os << "orca_nproc: " << params.aseorca.orca_nproc << std::endl;
+  os << "orca_sline: " << params.aseorca.simpleinput << std::endl;
 
   os << "\n[Lanczos]" << std::endl;
-  os << "lanczosTolerance: " << params.lanczosTolerance << std::endl;
-  os << "lanczosMaxIterations: " << params.lanczosMaxIterations << std::endl;
-  os << "lanczosQuitEarly: " << std::boolalpha << params.lanczosQuitEarly
+  os << "lanczosTolerance: " << params.lanczos.tolerance << std::endl;
+  os << "lanczosMaxIterations: " << params.lanczos.maxIterations << std::endl;
+  os << "lanczosQuitEarly: " << std::boolalpha << params.lanczos.quitEarly
      << std::endl;
 
   os << "\n[Prefactor]" << std::endl;
-  os << "prefactorDefaultValue: " << params.prefactorDefaultValue << std::endl;
-  os << "prefactorMaxValue: " << params.prefactorMaxValue << std::endl;
-  os << "prefactorMinValue: " << params.prefactorMinValue << std::endl;
-  os << "prefactorWithinRadius: " << params.prefactorWithinRadius << std::endl;
-  os << "prefactorMinDisplacement: " << params.prefactorMinDisplacement
+  os << "prefactorDefaultValue: " << params.prefactor.defaultValue << std::endl;
+  os << "prefactorMaxValue: " << params.prefactor.maxValue << std::endl;
+  os << "prefactorMinValue: " << params.prefactor.minValue << std::endl;
+  os << "prefactorWithinRadius: " << params.prefactor.withinRadius << std::endl;
+  os << "prefactorMinDisplacement: " << params.prefactor.minDisplacement
      << std::endl;
-  os << "prefactorRate: " << params.prefactorRate << std::endl;
-  os << "prefactorConfiguration: " << params.prefactorConfiguration
+  os << "prefactorRate: " << magic_enum::enum_name(params.prefactor.rate)
      << std::endl;
+  os << "prefactorConfiguration: "
+     << magic_enum::enum_name(params.prefactor.configuration) << std::endl;
   os << "prefactorAllFreeAtoms: " << std::boolalpha
-     << params.prefactorAllFreeAtoms << std::endl;
-  os << "prefactorFilterScheme: " << params.prefactorFilterScheme << std::endl;
-  os << "prefactorFilterFraction: " << params.prefactorFilterFraction
+     << params.prefactor.allFreeAtoms << std::endl;
+  os << "prefactorFilterScheme: "
+     << magic_enum::enum_name(params.prefactor.filterScheme) << std::endl;
+  os << "prefactorFilterFraction: " << params.prefactor.filterFraction
      << std::endl;
 
   os << "\n[Hessian]" << std::endl;
-  os << "hessianAtomList: " << params.hessianAtomList << std::endl;
-  os << "hessianZeroFreqValue: " << params.hessianZeroFreqValue << std::endl;
+  os << "hessianAtomList: " << params.hessian.atomList << std::endl;
+  os << "hessianZeroFreqValue: " << params.hessian.zeroFreqValue << std::endl;
 
   os << "\n[Nudged Elastic Band]" << std::endl;
-  os << "nebImages: " << params.nebImages << std::endl;
-  os << "nebMaxIterations: " << params.nebMaxIterations << std::endl;
-  os << "nebSpring: " << params.nebSpring << std::endl;
+  os << "nebImages: " << params.neb.images << std::endl;
+  os << "nebMaxIterations: " << params.neb.maxIterations << std::endl;
+  os << "nebSpring: " << params.neb.spring << std::endl;
   os << "nebClimbingImageMethod: " << std::boolalpha
-     << params.nebClimbingImageMethod << std::endl;
+     << params.neb.climbingImageMethod << std::endl;
   os << "nebClimbingImageConvergedOnly: " << std::boolalpha
-     << params.nebClimbingImageConvergedOnly << std::endl;
-  os << "nebOldTangent: " << std::boolalpha << params.nebOldTangent
+     << params.neb.climbingImageConvergedOnly << std::endl;
+  os << "nebOldTangent: " << std::boolalpha << params.neb.oldTangent
      << std::endl;
-  os << "nebDoublyNudged: " << std::boolalpha << params.nebDoublyNudged
+  os << "nebDoublyNudged: " << std::boolalpha << params.neb.doublyNudged
      << std::endl;
   os << "nebDoublyNudgedSwitching: " << std::boolalpha
-     << params.nebDoublyNudgedSwitching << std::endl;
-  os << "nebOptMethod: " << params.nebOptMethod << std::endl;
-  os << "nebElasticBand: " << std::boolalpha << params.nebElasticBand
+     << params.neb.doublyNudgedSwitching << std::endl;
+  os << "nebOptMethod: " << params.neb.optMethod << std::endl;
+  os << "nebElasticBand: " << std::boolalpha << params.neb.elasticBand
      << std::endl;
-  os << "nebConvergedForce: " << params.nebConvergedForce << std::endl;
-  os << "nebKSPMin: " << params.nebKSPMin << std::endl;
-  os << "nebKSPMax: " << params.nebKSPMax << std::endl;
-  os << "nebEnergyWeighted: " << std::boolalpha << params.nebEnergyWeighted
+  os << "nebConvergedForce: " << params.neb.convergedForce << std::endl;
+  os << "nebKSPMin: " << params.neb.KSPMin << std::endl;
+  os << "nebKSPMax: " << params.neb.KSPMax << std::endl;
+  os << "nebEnergyWeighted: " << std::boolalpha << params.neb.energyWeighted
      << std::endl;
 
   os << "\n[Dynamics]" << std::endl;
-  os << "mdTimeStepInput: " << params.mdTimeStepInput << std::endl;
-  os << "mdTimeStep: " << params.mdTimeStep << std::endl;
-  os << "mdTimeInput: " << params.mdTimeInput << std::endl;
-  os << "mdTime: " << params.mdTime << std::endl;
-  os << "mdSteps: " << params.mdSteps << std::endl;
+  os << "mdTimeStepInput: " << params.md.timeStepInput << std::endl;
+  os << "mdTimeStep: " << params.md.timeStep << std::endl;
+  os << "mdTimeInput: " << params.md.timeInput << std::endl;
+  os << "mdTime: " << params.md.time << std::endl;
+  os << "mdSteps: " << params.md.steps << std::endl;
 
   os << "\n[Parallel Replica]" << std::endl;
   os << "parrepRefineTransition: " << std::boolalpha
-     << params.parrepRefineTransition << std::endl;
-  os << "parrepAutoStop: " << std::boolalpha << params.parrepAutoStop
+     << params.parrep.refineTransition << std::endl;
+  os << "parrepAutoStop: " << std::boolalpha << params.parrep.autoStop
      << std::endl;
   os << "parrepDephaseLoopStop: " << std::boolalpha
-     << params.parrepDephaseLoopStop << std::endl;
-  os << "parrepDephaseTimeInput: " << params.parrepDephaseTimeInput
+     << params.parrep.dephaseLoopStop << std::endl;
+  os << "parrepDephaseTimeInput: " << params.parrep.dephaseTimeInput
      << std::endl;
-  os << "parrepDephaseTime: " << params.parrepDephaseTime << std::endl;
-  os << "parrepDephaseLoopMax: " << params.parrepDephaseLoopMax << std::endl;
+  os << "parrepDephaseTime: " << params.parrep.dephaseTime << std::endl;
+  os << "parrepDephaseLoopMax: " << params.parrep.dephaseLoopMax << std::endl;
   os << "parrepStateCheckIntervalInput: "
-     << params.parrepStateCheckIntervalInput << std::endl;
-  os << "parrepStateCheckInterval: " << params.parrepStateCheckInterval
+     << params.parrep.stateCheckIntervalInput << std::endl;
+  os << "parrepStateCheckInterval: " << params.parrep.stateCheckInterval
      << std::endl;
-  os << "parrepRecordIntervalInput: " << params.parrepRecordIntervalInput
+  os << "parrepRecordIntervalInput: " << params.parrep.recordIntervalInput
      << std::endl;
-  os << "parrepRecordInterval: " << params.parrepRecordInterval << std::endl;
-  os << "parrepCorrTimeInput: " << params.parrepCorrTimeInput << std::endl;
-  os << "parrepCorrTime: " << params.parrepCorrTime << std::endl;
+  os << "parrepRecordInterval: " << params.parrep.recordInterval << std::endl;
+  os << "parrepCorrTimeInput: " << params.parrep.corrTimeInput << std::endl;
+  os << "parrepCorrTime: " << params.parrep.corrTime << std::endl;
 
   os << "\n[TAD]" << std::endl;
-  os << "tadLowT: " << params.tadLowT << std::endl;
-  os << "tadMinPrefactor: " << params.tadMinPrefactor << std::endl;
-  os << "tadConfidence: " << params.tadConfidence << std::endl;
+  os << "tadLowT: " << params.tad.lowT << std::endl;
+  os << "tadMinPrefactor: " << params.tad.minPrefactor << std::endl;
+  os << "tadConfidence: " << params.tad.confidence << std::endl;
 
   os << "\n[Thermostat]" << std::endl;
-  os << "thermostat: " << params.thermostat << std::endl;
-  os << "thermoAndersenAlpha: " << params.thermoAndersenAlpha << std::endl;
-  os << "thermoAndersenTcolInput: " << params.thermoAndersenTcolInput
+  os << "thermostat: " << params.thermostat.kind << std::endl;
+  os << "thermoAndersenAlpha: " << params.thermostat.andersenAlpha << std::endl;
+  os << "thermoAndersenTcolInput: " << params.thermostat.andersenTcolInput
      << std::endl;
-  os << "thermoAndersenTcol: " << params.thermoAndersenTcol << std::endl;
-  os << "thermoNoseMass: " << params.thermoNoseMass << std::endl;
-  os << "thermoLangevinFrictionInput: " << params.thermoLangevinFrictionInput
-     << std::endl;
-  os << "thermoLangevinFriction: " << params.thermoLangevinFriction
+  os << "thermoAndersenTcol: " << params.thermostat.andersenTcol << std::endl;
+  os << "thermoNoseMass: " << params.thermostat.noseMass << std::endl;
+  os << "thermoLangevinFrictionInput: "
+     << params.thermostat.langevinFrictionInput << std::endl;
+  os << "thermoLangevinFriction: " << params.thermostat.langevinFriction
      << std::endl;
 
   os << "\n[Parallel Replica]" << std::endl;
   os << "repexcTemperatureDistribution: "
-     << params.repexcTemperatureDistribution << std::endl;
-  os << "repexcReplicas: " << params.repexcReplicas << std::endl;
-  os << "repexcExchangeTrials: " << params.repexcExchangeTrials << std::endl;
-  os << "repexcSamplingTimeInput: " << params.repexcSamplingTimeInput
+     << params.repexc.temperatureDistribution << std::endl;
+  os << "repexcReplicas: " << params.repexc.replicas << std::endl;
+  os << "repexcExchangeTrials: " << params.repexc.exchangeTrials << std::endl;
+  os << "repexcSamplingTimeInput: " << params.repexc.samplingTimeInput
      << std::endl;
-  os << "repexcSamplingTime: " << params.repexcSamplingTime << std::endl;
-  os << "repexcTemperatureHigh: " << params.repexcTemperatureHigh << std::endl;
-  os << "repexcTemperatureLow: " << params.repexcTemperatureLow << std::endl;
-  os << "repexcExchangePeriodInput: " << params.repexcExchangePeriodInput
+  os << "repexcSamplingTime: " << params.repexc.samplingTime << std::endl;
+  os << "repexcTemperatureHigh: " << params.repexc.temperatureHigh << std::endl;
+  os << "repexcTemperatureLow: " << params.repexc.temperatureLow << std::endl;
+  os << "repexcExchangePeriodInput: " << params.repexc.exchangePeriodInput
      << std::endl;
-  os << "repexcExchangePeriod: " << params.repexcExchangePeriod << std::endl;
+  os << "repexcExchangePeriod: " << params.repexc.exchangePeriod << std::endl;
 
   os << "\n[Hyperdynamics]" << std::endl;
-  os << "biasPotential: " << params.biasPotential << std::endl;
-  os << "bondBoostBALS: " << params.bondBoostBALS << std::endl;
-  os << "bondBoostRMDTimeInput: " << params.bondBoostRMDTimeInput << std::endl;
-  os << "bondBoostRMDTime: " << params.bondBoostRMDTime << std::endl;
-  os << "bondBoostDVMAX: " << params.bondBoostDVMAX << std::endl;
-  os << "bondBoostQRR: " << params.bondBoostQRR << std::endl;
-  os << "bondBoostPRR: " << params.bondBoostPRR << std::endl;
-  os << "bondBoostQcut: " << params.bondBoostQcut << std::endl;
-  os << "basinHoppingDisplacement: " << params.basinHoppingDisplacement
-     << std::endl;
+  os << "biasPotential: " << params.bondBoost.biasPotential << std::endl;
+  os << "bondBoostBALS: " << params.bondBoost.BALS << std::endl;
+  os << "bondBoostRMDTimeInput: " << params.bondBoost.RMDTimeInput << std::endl;
+  os << "bondBoostRMDTime: " << params.bondBoost.RMDTime << std::endl;
+  os << "bondBoostDVMAX: " << params.bondBoost.DVMAX << std::endl;
+  os << "bondBoostQRR: " << params.bondBoost.QRR << std::endl;
+  os << "bondBoostPRR: " << params.bondBoost.PRR << std::endl;
+  os << "bondBoostQcut: " << params.bondBoost.Qcut << std::endl;
+
+  os << "basinHoppingDisplacement: " << params.bhop.displacement << std::endl;
   os << "basinHoppingInitialRandomStructureProbability: "
-     << params.basinHoppingInitialRandomStructureProbability << std::endl;
-  os << "basinHoppingPushApartDistance: "
-     << params.basinHoppingPushApartDistance << std::endl;
-  os << "basinHoppingSteps: " << params.basinHoppingSteps << std::endl;
-  os << "basinHoppingQuenchingSteps: " << params.basinHoppingQuenchingSteps
+     << params.bhop.initialRandomStructureProbability << std::endl;
+  os << "basinHoppingPushApartDistance: " << params.bhop.pushApartDistance
+     << std::endl;
+  os << "basinHoppingSteps: " << params.bhop.steps << std::endl;
+  os << "basinHoppingQuenchingSteps: " << params.bhop.quenchingSteps
      << std::endl;
   os << "basinHoppingSignificantStructure: " << std::boolalpha
-     << params.basinHoppingSignificantStructure << std::endl;
+     << params.bhop.significantStructure << std::endl;
   os << "basinHoppingSingleAtomDisplace: " << std::boolalpha
-     << params.basinHoppingSingleAtomDisplace << std::endl;
+     << params.bhop.singleAtomDisplace << std::endl;
   os << "basinHoppingDisplacementAlgorithm: "
-     << params.basinHoppingDisplacementAlgorithm << std::endl;
+     << params.bhop.displacementAlgorithm << std::endl;
   os << "basinHoppingDisplacementDistribution: "
-     << params.basinHoppingDisplacementDistribution << std::endl;
-  os << "basinHoppingSwapProbability: " << params.basinHoppingSwapProbability
+     << params.bhop.displacementDistribution << std::endl;
+  os << "basinHoppingSwapProbability: " << params.bhop.swapProbability
      << std::endl;
-  os << "basinHoppingJumpMax: " << params.basinHoppingJumpMax << std::endl;
-  os << "basinHoppingJumpSteps: " << params.basinHoppingJumpSteps << std::endl;
+  os << "basinHoppingJumpMax: " << params.bhop.jumpMax << std::endl;
+  os << "basinHoppingJumpSteps: " << params.bhop.jumpSteps << std::endl;
   os << "basinHoppingAdjustDisplacement: " << std::boolalpha
-     << params.basinHoppingAdjustDisplacement << std::endl;
-  os << "basinHoppingAdjustPeriod: " << params.basinHoppingAdjustPeriod
+     << params.bhop.adjustDisplacement << std::endl;
+  os << "basinHoppingAdjustPeriod: " << params.bhop.adjustPeriod << std::endl;
+  os << "basinHoppingAdjustFraction: " << params.bhop.adjustFraction
      << std::endl;
-  os << "basinHoppingAdjustFraction: " << params.basinHoppingAdjustFraction
+  os << "basinHoppingTargetRatio: " << params.bhop.targetRatio << std::endl;
+  os << "basinHoppingWriteUnique: " << std::boolalpha << params.bhop.writeUnique
      << std::endl;
-  os << "basinHoppingTargetRatio: " << params.basinHoppingTargetRatio
-     << std::endl;
-  os << "basinHoppingWriteUnique: " << std::boolalpha
-     << params.basinHoppingWriteUnique << std::endl;
-  os << "basinHoppingStopEnergy (-DBL_MAX): " << params.basinHoppingStopEnergy
+  os << "basinHoppingStopEnergy (-DBL_MAX): " << params.bhop.stopEnergy
      << std::endl;
 
   os << "\n[Global Optimization]" << std::endl;
-  os << "globalOptimizationMoveMethod: " << params.globalOptimizationMoveMethod
+  os << "globalOptimizationMoveMethod: " << params.globopt.moveMethod
      << std::endl;
-  os << "globalOptimizationDecisionMethod: "
-     << params.globalOptimizationDecisionMethod << std::endl;
-  os << "globalOptimizationSteps: " << params.globalOptimizationSteps
+  os << "globalOptimizationDecisionMethod: " << params.globopt.decisionMethod
      << std::endl;
-  os << "globalOptimizationBeta: " << params.globalOptimizationBeta
+  os << "globalOptimizationSteps: " << params.globopt.steps << std::endl;
+  os << "globalOptimizationBeta: " << params.globopt.beta << std::endl;
+  os << "globalOptimizationAlpha: " << params.globopt.alpha << std::endl;
+  os << "globalOptimizationMdmin: " << params.globopt.mdmin << std::endl;
+  os << "globalOptimizationTargetEnergy: " << params.globopt.targetEnergy
      << std::endl;
-  os << "globalOptimizationAlpha: " << params.globalOptimizationAlpha
-     << std::endl;
-  os << "globalOptimizationMdmin: " << params.globalOptimizationMdmin
-     << std::endl;
-  os << "globalOptimizationTargetEnergy: "
-     << params.globalOptimizationTargetEnergy << std::endl;
 
   os << "\n[Monte Carlo]" << std::endl;
-  os << "monteCarloStepSize: " << params.monteCarloStepSize << std::endl;
-  os << "monteCarloSteps: " << params.monteCarloSteps << std::endl;
+  os << "monteCarloStepSize: " << params.monte_carlo.stepSize << std::endl;
+  os << "monteCarloSteps: " << params.monte_carlo.steps << std::endl;
 
   os << "\n[BGSD]" << std::endl;
-  os << "alpha: " << params.alpha << std::endl;
-  os << "beta: " << params.beta << std::endl;
-  os << "gradientfinitedifference: " << params.gradientfinitedifference
+  os << "alpha: " << params.bgsd.alpha << std::endl;
+  os << "beta: " << params.bgsd.beta << std::endl;
+  os << "gradientfinitedifference: " << params.bgsd.gradientfinitedifference
      << std::endl;
-  os << "Hforceconvergence: " << params.Hforceconvergence << std::endl;
-  os << "grad2energyconvergence: " << params.grad2energyconvergence
+  os << "Hforceconvergence: " << params.bgsd.Hforceconvergence << std::endl;
+  os << "grad2energyconvergence: " << params.bgsd.grad2energyconvergence
      << std::endl;
-  os << "grad2forceconvergence: " << params.grad2forceconvergence << std::endl;
+  os << "grad2forceconvergence: " << params.bgsd.grad2forceconvergence
+     << std::endl;
 
   os << "\n[Debug]" << std::endl;
-  os << "writeMovies: " << std::boolalpha << params.writeMovies << std::endl;
-  os << "writeMoviesInterval: " << params.writeMoviesInterval << std::endl;
+  os << "writeMovies: " << std::boolalpha << params.debug.writeMovies
+     << std::endl;
+  os << "writeMoviesInterval: " << params.debug.writeMoviesInterval
+     << std::endl;
   return os;
 }
 

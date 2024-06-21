@@ -90,7 +90,38 @@ Parameters::Parameters() {
   debug.writeMovies = false;
   debug.writeMoviesInterval = 1;
 
+  // [Optimizers] //
+  optim.method = OptType::CG;
+  optim.convergenceMetric = "norm"s;
+  optim.refineOptMethod = OptType::None;
+  optim.refineThreshold = 0.5;
+  optim.maxIterations = 1000;
+  optim.convergedForce = 0.01;
+  optim.maxMove = 0.2;
+  optim.timeStepInput = 1.0;
+  optim.maxTimeStepInput = 2.5;
+  optim.maxTimeStep = optim.maxTimeStepInput / timeUnit;
+
+  optim.LBFGSMemory = 20;
+  // assumes stiffest curvature at minimum is 100 eV/A^2
+  optim.LBFGSInverseCurvature = 0.01;
+  optim.LBFGSAutoScale = true;
+  optim.LBFGSAngleReset = true;
+  optim.LBFGSDistanceReset = true;
+
+  optim.QMSteepestDecent = false;
+  optim.CGNoOvershooting = false;
+  optim.CGKnockOutMaxMove = false;
+  optim.CGLineConverged = 0.1;
+  optim.CGLineSearch = false;
+  optim.CGMaxIterBeforeReset = 0;
+  optim.CGLineSearchMaxIter = 10;
+  optim.SDAlpha = 0.1;
+  optim.SDTwoPoint = false;
+
   // [Saddle Search] //
+  saddle.convergedForce = optim.convergedForce;
+  saddle.maxJumpAttempts = 0; // from config.yaml
   saddle.displaceType = EpiCenters::DISP_LOAD;
   saddle.method = "min_mode"s;
   saddle.minmodeMethod = LowestEigenmode::MINMODE_DIMER;
@@ -123,35 +154,6 @@ Parameters::Parameters() {
   saddle.dynamicsLinearInterpolation = true;
   saddle.dynamicsMaxInitCurvature = 0.0; // eV/Ang^2
   saddle.zeroModeAbortCurvature = 0.0;   // eV/Ang^2
-
-  // [Optimizers] //
-  optim.method = OptType::CG;
-  optim.convergenceMetric = "norm"s;
-  optim.refineOptMethod = OptType::None;
-  optim.refineThreshold = 0.5;
-  optim.maxIterations = 1000;
-  optim.convergedForce = 0.01;
-  optim.maxMove = 0.2;
-  optim.timeStepInput = 1.0;
-  optim.maxTimeStepInput = 2.5;
-  optim.maxTimeStep = optim.maxTimeStepInput / timeUnit;
-
-  optim.LBFGSMemory = 20;
-  // assumes stiffest curvature at minimum is 100 eV/A^2
-  optim.LBFGSInverseCurvature = 0.01;
-  optim.LBFGSAutoScale = true;
-  optim.LBFGSAngleReset = true;
-  optim.LBFGSDistanceReset = true;
-
-  optim.QMSteepestDecent = false;
-  optim.CGNoOvershooting = false;
-  optim.CGKnockOutMaxMove = false;
-  optim.CGLineConverged = 0.1;
-  optim.CGLineSearch = false;
-  optim.CGMaxIterBeforeReset = 0;
-  optim.CGLineSearchMaxIter = 10;
-  optim.SDAlpha = 0.1;
-  optim.SDTwoPoint = false;
 
   // [Process Search] //
   procsearch.minimizeFirst = true;
@@ -268,6 +270,7 @@ Parameters::Parameters() {
   thermostat.kind = Dynamics::NONE;
   thermostat.andersenAlpha = 1.0;       // collision strength
   thermostat.andersenTcolInput = 100.0; // collision frequency in unit of fs
+  thermostat.andersenTcol = thermostat.andersenTcolInput / timeUnit;
   thermostat.noseMass = 1.0;
   thermostat.langevinFrictionInput = 0.01;
   thermostat.langevinFriction = thermostat.langevinFrictionInput * timeUnit;
