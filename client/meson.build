@@ -418,8 +418,14 @@ if get_option('with_tests')
     test_deps = _deps
     test_deps += dependency(
       'Catch2',
-      method: 'cmake',
-      modules: ['Catch2::Catch2WithMain'],
+    )
+    testMain = library(
+      'TestMain',
+      'gtests/TestMain.cpp',
+      dependencies : test_deps,
+      include_directories: _incdirs,
+      cpp_args: test_args,
+      link_with: _linkto,
     )
     test_array = [#
       # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
@@ -435,7 +441,7 @@ if get_option('with_tests')
               dependencies : test_deps,
               include_directories: _incdirs,
               cpp_args: test_args,
-              link_with: _linkto,
+              link_with: _linkto + testMain,
                      ),
             workdir : meson.source_root() + '/gtests/data/systems/' + test.get(2)
           )
