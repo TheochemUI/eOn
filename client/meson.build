@@ -416,12 +416,9 @@ endif
 if get_option('with_tests')
     test_args = _args
     test_deps = _deps
-    test_deps += dependency(
-      'Catch2',
-    )
     testMain = library(
       'TestMain',
-      'gtests/TestMain.cpp',
+      ['gtests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
       dependencies : test_deps,
       include_directories: _incdirs,
       cpp_args: test_args,
@@ -437,7 +434,7 @@ if get_option('with_tests')
     foreach test : test_array
       test(test.get(0),
            executable(test.get(0),
-              sources : ['gtests/'+test.get(1)],
+              sources : ['gtests/'+test.get(1), 'thirdparty/catch2/catch_amalgamated.cpp'],
               dependencies : test_deps,
               include_directories: _incdirs,
               cpp_args: test_args,

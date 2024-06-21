@@ -1,6 +1,6 @@
 #include "../MatrixHelpers.hpp"
 #include "Matter.h"
-#include <catch2/catch_all.hpp>
+#include "catch2/catch_amalgamated.hpp"
 
 using namespace std::placeholders;
 using namespace Catch::Matchers;
