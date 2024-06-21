@@ -1,0 +1,28 @@
+[project]
+name = "eon"
+version = "2.0.0"
+description = "Server component of eon project"
+authors = [
+    {name = "Henkelman Group", email = "contact@henkelmanlab.com"},
+    {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
+]
+dependencies = [
+    "numpy>=1.26.4",
+]
+requires-python = ">=3.9"
+# readme = "readme.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["meson-python", "numpy"]
+build-backend = "mesonpy"
+
+[tool.meson-python.args]
+setup = [
+    '-Dwrap_mode=forcefallback',
+]
+install = ['--skip-subprojects']
+dist = ['--include-subprojects']
+
+[project.scripts]
+eon-server = "eon.main:main"
