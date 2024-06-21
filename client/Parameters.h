@@ -100,6 +100,7 @@ public:
   long saddleMaxJumpAttempts; // number of displacements to reach a convex
                               // region;  if 0, a search is started after the
                               // displacement
+                              // TODO(rg): Not used
   long saddleMaxIterations;   // max iterations for saddle point searches and
                               // minimization
   string saddleMethod;
