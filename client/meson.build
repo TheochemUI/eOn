@@ -384,6 +384,14 @@ eclib = library('eonclib',
 
 _linkto += eclib
 
+# Export variable
+eclib_dep = declare_dependency(
+  link_with: [eclib, _linkto],
+  include_directories: _incdirs,
+  compile_args: _fargs + _args,
+  dependencies: _deps,
+)
+
 # ---------------------- Executable
 
 ec = executable('eonclient',
