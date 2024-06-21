@@ -1,6 +1,6 @@
 #include "Matter.h"
 #include "Parameters.h"
-#include <catch2/catch_all.hpp>
+#include "catch2/catch_amalgamated.hpp"
 #include <memory>
 
 using namespace Catch::Matchers;
