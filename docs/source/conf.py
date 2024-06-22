@@ -21,6 +21,8 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.githubpages",
+    "sphinx_togglebutton",
+    "sphinx_favicon",
     "sphinx_contributors",
     "sphinx_copybutton",
     "sphinx_design",
