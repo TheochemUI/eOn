@@ -49,17 +49,16 @@ eon.server`.
 ```
 
 
-# Special topics
+# Additional topics
 
 This page lists generally applicable installation instructions, for specific
 systems, follow the sub-parts of this document.
 
 ```{toctree}
 :maxdepth: 2
-:caption: Special Topics
+:caption: Special topics
 
 windows
-docker
 lammps
 ```
 <!-- pipx run pdm run sphinx-build -b html docs/source docs/build/html -->
