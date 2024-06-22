@@ -31,7 +31,7 @@ extensions = [
 
 autodoc2_render_plugin = "myst"
 autodoc2_packages = [
-    f"../../src/{project}",
+    f"../../{project.lower()}",
 ]
 
 myst_enable_extensions = [
@@ -55,7 +55,6 @@ html_static_path = ["_static"]
 html_theme_options = {
     "repository_url": "https://github.com/TheochemUI/EONgit",
     "use_repository_button": True,
-    "alt_text": "eON Docs - Home",
     "logo": {
         "image_light": "_static/ev2_trans.png",
         "image_dark": "_static/ev2_trans_dark.png",
