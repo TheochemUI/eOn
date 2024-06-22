@@ -73,6 +73,7 @@ computing environments.
 
 team
 install/index
+apidocs/index
 ```
 
 ## Indices and tables
