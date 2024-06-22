@@ -26,9 +26,9 @@ for line in open("minimization.test"):
 rel_err = abs(u-r)/abs(u)
 
 if rel_err > 0.01:
-    print "%s: failed relative error of %.3f exeeds tolerence" % (test_name,rel_err)
+    print("%s: failed relative error of %.3f exeeds tolerence" % (test_name,rel_err))
     sys.exit(1)
 else:
     #passed, so delete files
-    print "%s: passed relative error %.3e" % (test_name, rel_err)
+    print("%s: passed relative error %.3e" % (test_name, rel_err))
     os.system("rm -f minimization.txt min_0.xyz reactant.con")
