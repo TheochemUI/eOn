@@ -24,5 +24,41 @@ setup = [
 install = ['--skip-subprojects']
 dist = ['--include-subprojects']
 
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "ruff>=0.3.4",
+]
+testing = [
+    "pytest-cov>=5.0.0",
+    "pytest>=8.1.1",
+    "pytest-datadir>=1.5.0",
+]
+docs = [
+    "sphinx>=7.3.7",
+    "sphinx-contributors>=0.2.7",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-design>=0.6.0",
+    "sphinx-autobuild>=2024.4.16",
+    "sphinxcontrib-spelling>=8.0.0",
+    "myst-parser>=2",
+    "sphinx-autodoc2>=0.4.2",
+    "sphinx-book-theme>=1.1.3",
+    "sphinx-togglebutton>=0.3.2",
+    "sphinx-favicon>=1.0.1",
+    "mdit-py-plugins>0.3.4",
+]
+
+[tool.pdm.scripts]
+check_ruff  = "ruff check ."
+ruff_fix    = "ruff --fix --unsafe-fixes ."
+ruff_format = "ruff format ."
+lint        = { composite = [ "ruff_fix", "ruff_format" ] }
+test        = "pytest --cov=src tests"
+mkdoc = {composite = ["sphinx-build -b html docs/source docs/build/html"]}
 [project.scripts]
 eon-server = "eon.main:main"
+
