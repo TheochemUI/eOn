@@ -64,11 +64,11 @@ html_theme_options = {
 
 # --- Plugin options
 favicons = [
-    "_static/favicons/favicon-16x16.png",
-    "_static/favicons/favicon-32x32.png",
-    "_static/favicons/favicon.ico",
-    "_static/favicons/android-chrome-192x192.png",
-    "_static/favicons/android-chrome-512x512.png",
-    "_static/favicons/apple-touch-icon.png",
-    "_static/favicons/site.webmanifest",
+    "favicons/favicon-16x16.png",
+    "favicons/favicon-32x32.png",
+    "favicons/favicon.ico",
+    "favicons/android-chrome-192x192.png",
+    "favicons/android-chrome-512x512.png",
+    "favicons/apple-touch-icon.png",
+    "favicons/site.webmanifest",
 ]
