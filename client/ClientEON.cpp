@@ -45,10 +45,12 @@
 
 void printSystemInfo() {
   spdlog::info("EON Client");
+#ifdef __arm__
   spdlog::info("VERSION: {}", VERSION);
   spdlog::info("BUILD DATE: {}\n", BUILD_DATE);
   spdlog::info("OS: {}", OS_INFO);
   spdlog::info("Arch: {}", ARCH);
+#endif
 
 #ifdef _WIN32
   TCHAR hostname[MAX_COMPUTERNAME_LENGTH + 1];
