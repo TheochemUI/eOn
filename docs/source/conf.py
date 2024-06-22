@@ -35,8 +35,13 @@ autodoc2_packages = [
     f"../../{project.lower()}",
 ]
 
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+}
+
 myst_enable_extensions = [
     "deflist",
+    "fieldlist",
 ]
 
 intersphinx_mapping = {
@@ -74,59 +79,3 @@ favicons = [
     "favicons/apple-touch-icon.png",
     "favicons/site.webmanifest",
 ]
-
-GH_ORGANIZATION = "TheochemUI"
-GH_PROJECT = "EONgit"
-MODULE = "eon"
-
-
-def linkcode_resolve(domain, info):
-    import subprocess
-    import sys, os
-
-    """Generate link to GitHub.
-    References:
-    - https://github.com/scikit-learn/scikit-learn/blob/f0faaee45762d0a5c75dcf3d487c118b10e1a5a8/doc/conf.py
-    - https://github.com/chainer/chainer/pull/2758/
-    """
-    if domain != "py" or not info["module"]:
-        return None
-
-    # tag
-    try:
-        revision = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip()
-    except (subprocess.CalledProcessError, OSError):
-        print("Failed to execute git to get revision")
-        return None
-    revision = revision.decode("utf-8")
-
-    obj = sys.modules.get(info["module"])
-    if obj is None:
-        return None
-    for comp in info["fullname"].split("."):
-        obj = getattr(obj, comp)
-
-    # filename
-    try:
-        filename = inspect.getsourcefile(obj)
-    except Exception:
-        return None
-    if filename is None:
-        return None
-
-    # relpath
-    pkg_root_dir = os.path.dirname(__import__(MODULE).__file__)
-    filename = os.path.realpath(filename)
-    if not filename.startswith(pkg_root_dir):
-        return None
-    relpath = os.path.relpath(filename, pkg_root_dir)
-
-    # line number
-    try:
-        linenum = inspect.getsourcelines(obj)[1]
-    except Exception:
-        linenum = ""
-
-    return "https://github.com/{}/{}/blob/{}/{}/{}#L{}".format(
-        GH_ORGANIZATION, GH_PROJECT, revision, MODULE, relpath, linenum
-    )
