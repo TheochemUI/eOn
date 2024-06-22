@@ -1,58 +1,14 @@
 _incdirs += [ include_directories('thirdparty') ]
 
-# TODO(rg): use cc.get_supported_arguments and add more compiler support
-# Someday these should be removed and things should be fixed..
-_args += [
-  # C++ only
-  '-Wno-class-memaccess',
-  '-Wno-unused-function',
-  # Common
-  '-Wno-reorder',
-  '-Wno-sign-compare',
-  '-Wno-unused-but-set-parameter',
-  '-Wno-unused-but-set-variable',
-  '-Wno-unused-parameter',
-  '-Wno-unused-result',
-  '-Wno-unused-variable',
-]
-
-# TODO(rg): use fc.get_supported_arguments and add more compiler support
-_fargs += [
-  # Fortran only, these are important!
-  '-Wno-compare-reals',
-  '-Wno-conversion',
-  '-Wno-line-truncation',
-  '-Wno-surprising',
-  '-Wno-unused-dummy-argument',
-  '-Wno-deprecated',
-  '-Wno-unused-label',
-  # Common
-  '-w',
-  # ^--- Silence.. TODO(rg): Seriously a very bad idea long term
-  '-Wno-maybe-uninitialized',
-  '-Wno-uninitialized',
-  '-Wno-unused-but-set-parameter',
-  '-Wno-unused-but-set-variable',
-  '-Wno-unused-parameter',
-  '-Wno-unused-variable',
-]
-
-# Debugging, should be offloaded from here eventually
-_args += [
-  '-g3',
-  '-O0',
-]
-
-# Safer, saner default, can be turned off in release
-if get_option('buildtype') != 'release'
-  _args += [
-    '-DEON_CHECKS=TRUE',
-  ]
-endif
-
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
+
+if get_option('with_fortran') or get_option('with_xtb')
+  use_fortran = true
+  add_languages('fortran', required: true)
+  fc = meson.get_compiler('fortran')
+endif
 
 # Platform detection
 host_system = host_machine.system()
@@ -72,6 +28,58 @@ if is_windows
  # Workaround used in INIFile.cpp
  # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
 endif
+
+_args += cppc.get_supported_arguments([
+  # C++ only
+  '-Wno-class-memaccess',
+  '-Wno-unused-function',
+  # Common
+  '-Wno-reorder',
+  '-Wno-sign-compare',
+  '-Wno-unused-but-set-parameter',
+  '-Wno-unused-but-set-variable',
+  '-Wno-unused-parameter',
+  '-Wno-unused-result',
+  '-Wno-unused-variable',
+]
+)
+
+# TODO(rg): use fc.get_supported_arguments and add more compiler support
+if use_fortran == true
+    _fargs += fc.get_supported_arguments([
+      # Fortran only, these are important!
+      '-Wno-compare-reals',
+      '-Wno-conversion',
+      '-Wno-line-truncation',
+      '-Wno-surprising',
+      '-Wno-unused-dummy-argument',
+      '-Wno-deprecated',
+      '-Wno-unused-label',
+      # Common
+      '-w',
+      # ^--- Silence.. TODO(rg): Seriously a very bad idea long term
+      '-Wno-maybe-uninitialized',
+      '-Wno-uninitialized',
+      '-Wno-unused-but-set-parameter',
+      '-Wno-unused-but-set-variable',
+      '-Wno-unused-parameter',
+      '-Wno-unused-variable',
+    ])
+endif
+
+# Debugging, should be offloaded from here eventually
+_args += [
+  '-g3',
+  '-O0',
+]
+
+# Safer, saner default, can be turned off in release
+if get_option('buildtype') != 'release'
+  _args += [
+    '-DEON_CHECKS=TRUE',
+  ]
+endif
+
 
 # Get the version and build date
 version_script = find_program('get_version.py')
@@ -283,9 +291,6 @@ if get_option('with_ams')
 endif
 
 if get_option('with_xtb')
-  # TODO: Clean this up and integrate with with_fortran
-  add_languages('fortran', required: true)
-  fc = meson.get_compiler('fortran')
   xtb_proj = subproject('xtb')
   xtb_dep = xtb_proj.get_variable('xtb_dep')
   _deps += [xtb_dep]
@@ -316,8 +321,6 @@ if get_option('with_mpi')
 endif
 
 if get_option('with_fortran')
-  add_languages('fortran', required: true)
-  fc = meson.get_compiler('fortran')
   subdir('potentials/Aluminum')
   subdir('potentials/EDIP')
   subdir('potentials/FeHe')
