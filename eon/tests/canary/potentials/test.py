@@ -4,7 +4,7 @@ import os
 import sys
 
 if not os.path.isfile("../../../client/client"):
-    print "Client binary missing"
+    print("Client binary missing")
     sys.exit(1)
 tab = open('energies')
 
@@ -24,10 +24,10 @@ for test in tests:
 
     #write the config
     conf = open('config.ini','w')
-    print >> conf, '[Main]'
-    print >> conf, 'job = point'
-    print >> conf, '[Potential]'
-    print >> conf, 'potential =', test['potential']
+    print('[Main]', file=conf)
+    print('job = point', file=conf)
+    print('[Potential]', file=conf)
+    print('potential =', test['potential'], file=conf)
     conf.close()
 
     os.system("../../../client/client > /dev/null")
@@ -39,13 +39,13 @@ for test in tests:
     test['pass'] = abs(energy - test['energy']) <= test['tolerance']
 
 allpassed = True
-print "%-30s\t%-20s\t%-5s" % ("File", "Potential", "Pass")
+print("%-30s\t%-20s\t%-5s" % ("File", "Potential", "Pass"))
 for test in tests:
     out = "%-30s\t%-20s\t%-5s" % (test['file'], test['potential'], test['pass'])
     if test['pass']:
-        print '\033[92m'+out+'\033[0m'
+        print('\033[92m'+out+'\033[0m')
     else:
-        print '\033[91m'+out+'\033[0m'
+        print('\033[91m'+out+'\033[0m')
 
     if not test['pass']:
         allpassed = False
