@@ -1,5 +1,6 @@
 # Custom, other things are auto-ignored
 subprojects
+/docs/source/apidocs/
 # /
 /*.tmp
 /*.pyc
