@@ -59,3 +59,14 @@ html_theme_options = {
         "image_dark": "_static/ev2_trans_dark.png",
     },
 }
+
+# --- Plugin options
+favicons = [
+    "_static/favicons/favicon-16x16.png",
+    "_static/favicons/favicon-32x32.png",
+    "_static/favicons/favicon.ico",
+    "_static/favicons/android-chrome-192x192.png",
+    "_static/favicons/android-chrome-512x512.png",
+    "_static/favicons/apple-touch-icon.png",
+    "_static/favicons/site.webmanifest",
+]
