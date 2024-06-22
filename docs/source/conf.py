@@ -62,6 +62,8 @@ html_theme_options = {
 }
 
 # --- Plugin options
+autodoc2_render_plugin = "myst"
+
 favicons = [
     "favicons/favicon-16x16.png",
     "favicons/favicon-32x32.png",
