@@ -20,7 +20,7 @@ eON can handle both molecular systems (e.g. gas-phase reactions) and extended
 ```{figure} fig/esys_trans.png
 ---
 alt: Collection of systems which can be modeled
-:class: full-width
+class: full-width
 align: center
 ---
 An overview of some systems modelled with eON
@@ -36,7 +36,7 @@ interest.
 ```{figure} fig/alripe.png
 ---
 alt: Ripening dynamics
-:class: full-width
+class: full-width
 align: center
 ---
 Al(100) ripening dynamics
@@ -65,6 +65,7 @@ options including local communication, distribution over a cluster using a
 queueing system, multiple process multiple data MPI jobs, and distributed
 computing environments.
 
+# Additional Topics
 
 ```{toctree}
 :maxdepth: 2
