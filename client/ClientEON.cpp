@@ -45,9 +45,9 @@
 
 void printSystemInfo() {
   spdlog::info("EON Client");
-#ifndef __aarch64__
   spdlog::info("VERSION: {}", VERSION);
   spdlog::info("BUILD DATE: {}\n", BUILD_DATE);
+#ifndef __aarch64__
   spdlog::info("OS: {}", OS_INFO);
   spdlog::info("Arch: {}", ARCH);
 #endif
