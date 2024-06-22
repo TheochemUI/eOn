@@ -71,6 +71,7 @@ computing environments.
 :caption: Contents
 
 team
+install/index
 ```
 
 ## Indices and tables
