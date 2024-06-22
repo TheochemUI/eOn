@@ -45,7 +45,7 @@
 
 void printSystemInfo() {
   spdlog::info("EON Client");
-#ifdef __arm__
+#if (defined(__APPLE__) && defined(__MACH__))
   spdlog::info("VERSION: {}", VERSION);
   spdlog::info("BUILD DATE: {}\n", BUILD_DATE);
   spdlog::info("OS: {}", OS_INFO);
@@ -409,7 +409,7 @@ int main(int argc, char **argv) {
          rtime, utime, stime);
 
 #ifdef OSX
-  #ifndef __arm__
+  #if (defined(__APPLE__) && defined(__MACH__))
   struct task_basic_info t_info;
   mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
