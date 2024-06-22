@@ -18,10 +18,10 @@ for line in f:
 error = False
 for ref_barrier in ref_barriers:
     if ref_barrier not in my_barriers:
-        print "warning: missing barrier %.3f" % ref_barrier
+        print("warning: missing barrier %.3f" % ref_barrier)
         error = True
 
 if error:
     exit(1)
 else:
-    print "success: found all processes"
+    print("success: found all processes")
