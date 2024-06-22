@@ -21,6 +21,8 @@ dependencies:
   - fmt<10.0.0
   - spdlog
   - abseil-cpp
+  # eON server # TODO(rg): this is silly, server shouldn't die without svnversion..
+  - svn
   # Testing
   - pytest
   - pytest-datadir
