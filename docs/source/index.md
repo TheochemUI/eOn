@@ -75,6 +75,7 @@ computing environments.
 
 team
 install/index
+devdocs/index
 apidocs/index
 ```
 
