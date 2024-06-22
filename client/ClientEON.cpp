@@ -409,6 +409,7 @@ int main(int argc, char **argv) {
          rtime, utime, stime);
 
 #ifdef OSX
+  #ifndef __arm__
   struct task_basic_info t_info;
   mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
@@ -421,6 +422,7 @@ int main(int argc, char **argv) {
   printf(
       "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
       (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+  #endif
 #endif
 
 #ifdef EONMPI
