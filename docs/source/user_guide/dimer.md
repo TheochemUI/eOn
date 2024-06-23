@@ -19,6 +19,10 @@ There is no point removing rotations for an extended system.
 
 ## Configuration
 
+```{code-block} toml
+[Dimer]
+```
+
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.DimerConfig
 ```

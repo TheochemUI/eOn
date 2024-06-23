@@ -28,6 +28,16 @@ The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElast
 
 ## Configuration
 
+```{code-block} ini
+[Nudged Elastic Band]
+```
+
+
+```{versionchanged} 2.1
+In TOML, this will be `[NEB]`
+```
+
+
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.NudgedElasticBandConfig
 ```
