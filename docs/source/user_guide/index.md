@@ -47,39 +47,66 @@ Methods run in parallel are broken up by the eon server into tasks which
 are run by client program. The server then compiles the information sent back
 by the clients in a way that can be used by the sampling or dynamics methods.
 
-<!-- TODO(rg) Structure this a bit more, better -->
+## Configurationa Sections
+
 ```{toctree}
 :maxdepth: 1
-:caption: Configuration Sections
+:caption: Common
 
 main
 potential
 structure_comparison
 optimizer
+```
+
+
+```{toctree}
+:maxdepth: 1
+:caption: Potential Energy Surface Traversal
+
 minimization
 neb
 dimer
 lanczos
 hessian
 prefactor
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Compound Jobs
 
 saddle_search
 basin_hopping
 process_search
 recycling
 coarse_graining
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Dynamics
 
 dynamics
 parallel_replica
 hyperdynamics
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Additional configuration
 
 communicator
 debug
 paths
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: External linkage
 
 lammps_pot
 kdb
 mpi_potential
 ```
-
 <!-- TODO(rg) Maybe add the whole config as well -->
