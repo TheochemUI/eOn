@@ -24,9 +24,9 @@ EXT_POT
 AMS(-IO)
 : Amsterdam modeling suite {cite:p}`pot-teveldeChemistryADF2001`, both I/O and library
 ASE_ORCA
-: Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to ORCA {cite:p}`neeseORCAQuantumChemistry2020`
+: Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to ORCA {cite:p}`pot-neeseORCAQuantumChemistry2020`
 XTB
-: Extended Tight binding models via native Fortran-C interfce {cite:p}`bannwarthExtendedTightbindingQuantum2021`
+: Extended Tight binding models via native Fortran-C interfce {cite:p}`pot-bannwarthExtendedTightbindingQuantum2021`
 ```
 
 ### Vendored
@@ -61,13 +61,13 @@ SW_SI {cite:p}`pot-stillingerComputerSimulationLocal1985`
 Tersoff_SI {cite:p}`pot-tersoffEmpiricalInteratomicPotential1988`
 : Tersoff pair potential with angular terms, for silicon.
 
-EDIP {cite:p}`justoInteratomicPotentialSilicon1998`
+EDIP {cite:p}`pot-justoInteratomicPotentialSilicon1998`
 : Environment-Dependent Interatomic Potential, for carbon.
 
-TIP4P {cite:p}`jorgensenComparisonSimplePotential1983`
+TIP4P {cite:p}`pot-jorgensenComparisonSimplePotential1983`
 : Point charge model for water, also for water-hydrogen and water on platinum.
 
-SPCE {cite:p}`berendsenMissingTermEffective1987`
+SPCE {cite:p}`pot-berendsenMissingTermEffective1987`
 : Extended simple point charge model for water
 
 ```{deprecated} 2.0
