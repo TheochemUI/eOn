@@ -15,4 +15,5 @@ dimer
 neb
 structure_comparison
 optimizer
+minimization
 ```
