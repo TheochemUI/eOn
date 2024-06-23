@@ -16,4 +16,5 @@ neb
 structure_comparison
 optimizer
 minimization
+mpi_potential
 ```
