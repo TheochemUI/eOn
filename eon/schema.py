@@ -1,9 +1,7 @@
 from pydantic import (
     BaseModel,
     Field,
-    ValidationError,
     validator,
-    field_validator,
     model_validator,
     ConfigDict,
 )
@@ -249,10 +247,9 @@ class BasinHoppingConfig(BaseModel):
         default=0.5,
         description="Target acceptance ratio used to determine whether to increase or decrease the step size.",
     )
-    displacement_distribution: str = Field(
+    displacement_distribution: Literal["gaussian", "uniform"] = Field(
         default="gaussian",
         description="Distribution used for the displacement of each atom.",
-        enum=["gaussian", "uniform"],
     )
     """
     :any:`eon.schema.BasinHoppingConfig.displacement` for the **gaussian** will
@@ -469,9 +466,7 @@ class PrefactorConfig(BaseModel):
     )
     filter_scheme: Literal["cutoff", "fraction"] = Field(
         default="fraction",
-        description="""
-            Determines how to filter the atoms for use in the prefactor calculation.
-        """,
+        description="Determines how to filter the atoms for use in the prefactor calculation.",
     )
     """
     Options:
@@ -613,22 +608,25 @@ class SaddleSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
     method: Literal["min_mode", "dynamics"] = Field(
-        default="min_mode",
-        description="""
-            Method to locate the saddle point. Options:
-            - 'min_mode': Use a min-mode following scheme to locate the saddle point.
-            - 'dynamics': Experimental method that uses molecular dynamics to find new states and then runs a climbing image NEB calculation to find the saddle and a dimer calculation to estimate the eigenmode at the saddle.
-        """,
+        default="min_mode", description="Method to locate the saddle point."
     )
+    """
+     Options:
+      - ``min_mode``: Use a min-mode following scheme to locate the saddle
+        point.
+      - ``dynamics``: Experimental method that uses molecular dynamics to find
+        new states and then runs a climbing image NEB calculation to find the
+        saddle and a dimer calculation to estimate the eigenmode at the saddle.
+    """
     min_mode_method: Literal["dimer", "lanczos", "gprdimer"] = Field(
-        default="dimer",
-        description="""
-            Min-mode method to use. Options:
-            - 'dimer': Use the dimer min-mode method.
-            - 'lanczos': Use the Lanczos min-mode method.
-            - 'gprdimer': Use the GP accelerated dimer method.
-        """,
+        default="dimer", description="Min-mode method to use."
     )
+    """
+    Options:
+     - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
+     - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`
+     - ``gprdimer``: Use the GP accelerated dimer method.
+     """
     max_energy: float = Field(
         default=20.0,
         description="The energy at which a saddle search is considered bad and terminated.",
@@ -674,13 +672,14 @@ class SaddleSearchConfig(BaseModel):
     )
     displace_all_listed: bool = Field(
         default=False,
-        description="""
-            If true, each displacement will include all of the degrees of freedom of all of the listed atoms in displace_atom_list or displace_type_list.
-            If false, one of the atoms in displace_atom_list or displace_type_list will be selected at random for each displacement.
-            In either case all atoms up to displace_radius distance away from any displaced atom will be included in the displacement.
-            This can be disabled by setting displace_radius to 0.
-        """,
     )
+    """
+    This can be disabled by setting `displace_radius` to 0. Otherwise:
+
+    - If true, each displacement will include all of the degrees of freedom of all of the listed atoms in `displace_atom_list` or `displace_type_list`.
+    - If false, one of the atoms in `displace_atom_list` or `displace_type_list` will be selected at random for each displacement.
+    - In either case, all atoms up to `displace_radius` distance away from any displaced atom will be included in the displacement.
+    """
     displace_max_coordination: int = Field(
         default=11,
         description="When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.",
@@ -700,6 +699,9 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.",
     )
+    client_displace_type: Literal[
+        "load", "random", "last_atom", "min_coordinated", "not_fcc_or_hcp"
+    ] = Field(default="load", description="Type of displacement method used.")
     zero_mode_abort_curvature: float = Field(
         default=0.0,
         description="The saddle search will abort when the magnitude of the minmode curvature is less than this value.",
@@ -710,28 +712,46 @@ class SaddleSearchConfig(BaseModel):
     )
     bowl_breakout: bool = Field(
         default=False,
-        description="When activated, the search within positive regions of PES is confined to the subset of atoms (bowl_active_atoms) that are subject to the largest forces. To activate, confine_positive must also be true.",
+        description="When activated, the search within positive regions of PES is confined to a subset of atoms.",
     )
+    """
+    Determines :any:`bowl_active_atoms` that are subject to the largest forces.
+    To activate, :any:`confine_positive` must also be true. Method of
+    :cite:t:`ss-pedersenBowlBreakoutEscaping2014`.
+    """
     bowl_active_atoms: int = Field(
         default=20,
         description="Size of the applied confinement in the bowl breakout scheme.",
     )
     dynamics_temperature: Optional[float] = Field(
         default=None,
-        description="The temperature, in Kelvin, for the molecular dynamics run. A good initial choice might be near the melting temperature of the material.",
+        description="The temperature, in Kelvin, for the molecular dynamics run.",
     )
+    """
+    A good initial choice might be near the melting temperature of the material.
+    """
     dynamics_state_check_interval: float = Field(
         default=100.0,
         description="The time interval, in femtoseconds, to minimize the geometry and check if the system has left the initial state.",
     )
     dynamics_record_interval: float = Field(
         default=10.0,
-        description="The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory. These snapshots are then used to locate when the system first left the initial state. A binary search is used to locate the first snapshot that minimizes to a new geometry.",
+        description="The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory.",
     )
+    """
+    Snapshots of MD trajectories are used to locate when the system first left
+    the initial state. A binary search is used to locate the first snapshot that
+    minimizes to a new geometry.
+    """
     dynamics_linear_interpolation: bool = Field(
         default=True,
-        description="If true, then the band connecting the initial and final states will be initialized using a linear interpolation. If false, then the band is interpolated through the first snapshot that minimizes to the final state.",
     )
+    """
+     - If true, then the band connecting the initial and final states will be
+       initialized using a linear interpolation.
+     - If false, then the band is interpolated through the first snapshot that
+       minimizes to the final state.
+    """
     dynamics_max_init_curvature: float = Field(
         default=0.0,
         description="The maximum initial curvature for the dynamics method in eV/Å^2.",
@@ -857,9 +877,7 @@ class CoarseGrainingConfig(BaseModel):
     )
     superbasin_scheme: Literal["energy_level", "transition_counting"] = Field(
         default="transition_counting",
-        description="""
-            MCAMC provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin.
-        """,
+        description="MCAMC provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin.",
     )
     """
     Options:
