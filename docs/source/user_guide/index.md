@@ -97,9 +97,6 @@ hyperdynamics
 :maxdepth: 1
 :caption: Additional configuration
 
-dynamics
-parallel_replica
-
 communicator
 debug
 paths
