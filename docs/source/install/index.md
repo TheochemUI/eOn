@@ -7,6 +7,11 @@ results.
 
 # Obtaining sources
 
+```{note}
+`eON` is released under the [BSD 3-Clause License](https://opensource.org/license/BSD-3-Clause).
+We vendor `mcamc` which contains `libqd` which is also under the BSD-3-Clause license.
+```
+
 ```{versionadded} 2.0
 `eON` is now developed and distributed primarily via GitHub.
 ```
