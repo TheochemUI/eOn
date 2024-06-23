@@ -38,9 +38,7 @@ class MainConfig(BaseModel):
         "tad",
     ] = Field(
         default="akmc",
-        description="""
-            The type of job to execute.
-        """,
+        description="The type of job to execute.",
     )
     """
     Options:
@@ -88,6 +86,10 @@ class MainConfig(BaseModel):
     max_force_calls: int = Field(
         default=0,
         description="The maximum number of total force calls per job. The default, 0, means unlimited force calls. If this limit is reached, an error code 1017 is thrown and shows up in the client log.",
+    )
+    remove_net_force: bool = Field(
+        default=True,
+        description="If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.",
     )
 
 
