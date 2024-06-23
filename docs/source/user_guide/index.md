@@ -65,9 +65,9 @@ hessian
 basin_hopping
 recycling
 
+debug
 paths
 mpi_potential
-debug
 ```
 
 <!-- TODO(rg) Maybe add the whole config as well -->
