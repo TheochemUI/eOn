@@ -7,7 +7,7 @@ from pydantic import (
     model_validator,
     ConfigDict,
 )
-from typing import Optional, Any
+from typing import Optional, Any, Union
 from typing_extensions import Literal
 import random
 
@@ -1108,6 +1108,17 @@ class LanczosConfig(BaseModel):
     )
 
 
+class HessianConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+    atom_list: Union[str, list[int]] = Field(
+        default="All",
+        description="The atoms that will be displaced in the calculation of the Hessian: a comma delimited list of atom indices, e.g. 0,1,2. Default is 'All'.",
+    )
+    zero_freq_value: float = Field(
+        default=1e-6, description="The value assigned to zero frequencies."
+    )
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     main: MainConfig
@@ -1118,6 +1129,7 @@ class Config(BaseModel):
     dimer: DimerConfig
     neb: NudgedElasticBandConfig
     lanczos: LanczosConfig
+    hessian: HessianConfig
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig
