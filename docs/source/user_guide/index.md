@@ -76,6 +76,7 @@ prefactor
 :maxdepth: 1
 :caption: Compound Jobs
 
+akmc
 saddle_search
 basin_hopping
 process_search
