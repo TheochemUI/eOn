@@ -27,9 +27,11 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinxcontrib.spelling",
+    "sphinxcontrib.bibtex",
     "autodoc2",
 ]
 
+bibtex_bibfiles = ['eonDocs.bib']
 autodoc2_render_plugin = "myst"
 autodoc2_packages = [
     f"../../{project.lower()}",
@@ -62,8 +64,8 @@ html_theme_options = {
     "repository_url": "https://github.com/TheochemUI/EONgit",
     "use_repository_button": True,
     "logo": {
-        "image_light": "_static/ev2_trans.png",
-        "image_dark": "_static/ev2_trans_dark.png",
+        "image_light": "_static/logo/ev2_trans.png",
+        "image_dark": "_static/logo/ev2_trans_dark.png",
     },
 }
 
