@@ -1,7 +1,7 @@
 # Dimer method
 
-The dimer method of {cite:t}`dm-henkelmanDimerMethodFinding1999` with improvements
-by {cite:t}`dm-heydenEfficientMethodsFinding2005` and
+The dimer method of {cite:t}`dm-henkelmanDimerMethodFinding1999` with
+improvements by {cite:t}`dm-heydenEfficientMethodsFinding2005` and
 {cite:t}`dm-kastnerSuperlinearlyConvergingDimer2008` for estimating the lowest
 Eigenmode using only first derivatives.
 
