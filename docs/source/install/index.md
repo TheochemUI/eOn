@@ -7,11 +7,6 @@ results.
 
 # Obtaining sources
 
-```{note}
-`eON` is released under the [BSD 3-Clause License](https://opensource.org/license/BSD-3-Clause).
-We vendor `mcamc` which contains `libqd` which is also under the BSD-3-Clause license.
-```
-
 ```{versionadded} 2.0
 `eON` is now developed and distributed primarily via GitHub.
 ```
@@ -31,7 +26,9 @@ cd EONgit
 ```
 ````
 
-We provide a `conda` environment, which is only partially supported for reproducible usage, since it depends on local compilers.
+## Setup
+
+We provide a `conda` environment.
 
 ```{code-block} bash
 micromamba create -f environment.yml
@@ -65,6 +62,29 @@ systems, follow the sub-parts of this document.
 
 windows
 lammps
+svn
 ```
+
+# Licenses
+
+`eON` is released under the [BSD 3-Clause
+License](https://opensource.org/license/BSD-3-Clause).
+
+## Vendored
+Some libraries[^1] are distributed along with `eON`, namely:
+
+- `mcamc` which contains `libqd` :: BSD-3-Clause license
+```{versionadded} 2.0
+- `cxxopts` :: MIT License
+- `magic_enum` :: MIT License
+- `catch2` :: Boost Software License, Version 1.0
+- `ApprovalTests.cpp` :: Apache 2.0 License
+```
+```{deprecated} 2.0
+- Eigen 2.x :: Mozilla Public License
+```
+
+
 <!-- pipx run pdm run sphinx-build -b html docs/source docs/build/html -->
 
+[^1]: All with compatible licenses
