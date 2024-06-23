@@ -12,7 +12,7 @@ The input file format transitioned to TOML from previously being an enhanced INI
 Although we use `micromamba` for handling system dependencies, the documenation
 is handled via the `python` ecosystem. Namely:
 
-- [PDM](https://pdm-project.org/en/latest/) is used to track versions
+- [PDM](https://pdm-project.org/en/latest/) is used to track versions, and provide [development groups](https://pdm-project.org/latest/usage/dependency/#add-development-only-dependencies)
 
 To facilitate interactions with `pdm`,
 [pipx](https://pipx.pypa.io/latest/installation/) is recommended.
@@ -27,4 +27,12 @@ This can be viewed locally with an HTTP server.
 
 ```{code-block} bash
 python -m http.server docs/build/html
+```
+
+## Adding extensions
+
+Additions to the build process are handled by the `pdm` development group `docs`, so additions are done via:
+
+```{code-block} bash
+pipx run pdm add -dG docs "sphinxcontrib-bibtex"
 ```
