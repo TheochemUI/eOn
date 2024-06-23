@@ -68,6 +68,7 @@ process_search
 recycling
 coarse_graining
 
+communicator
 debug
 paths
 mpi_potential

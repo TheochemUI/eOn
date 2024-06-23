@@ -350,29 +350,55 @@ class CommunicatorConfig(BaseModel):
 
     type: Literal["local", "cluster", "mpi"] = Field(
         default="local",
-        description="""
-            Communicator type. Options:
-            - 'local': The local communicator runs the calculations on the same computer that the server is run on.
-            - 'cluster': A job scheduler can be used to run jobs through user supplied shell scripts.
-            - 'mpi': Allows for the server and clients to run as a MPI job.
-        """,
+        description="Communicator type",
     )
+    """
+    Options:
+     - 'local': The local communicator runs the calculations on the same computer that the server is run on.
+     - 'cluster': A job scheduler can be used to run jobs through user supplied shell scripts.
+     - 'mpi': Allows for the server and clients to run as a MPI job.
+    """
     jobs_per_bundle: int = Field(
         default=1,
-        description="Number of jobs per bundle. In eon, a job is defined as a task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.",
+        description="Number of jobs per bundle.",
     )
+    """
+    In ``eON``, a job is defined as a task that the ``eonclient`` executes, such
+    as a process search or a parallel replica run. Sometimes it makes sense to
+    run more than one of the same type of job at a time.
+
+    For example, when using empirical potentials to do saddle searches a single
+    search might only take several seconds on modern CPUs. In order to improve
+    performance more than one client job (*e.g.*, process search, dimer,
+    minimization) can be run at the same time.
+    """
     num_jobs: int = Field(
         default=1,
-        description="Number of jobs. The meaning of this variable changes depending on the communicator type. For 'local', it is the number of jobs run every time the program is invoked. For 'cluster', it is the desired sum of the queued and running jobs.",
+        description="Number of jobs.",
     )
+    """
+    The meaning of this variable changes depending on the communicator type. For
+    ``local``, it is the number of jobs run every time the program is invoked. For
+    ``cluster``, it is the desired sum of the queued and running jobs.
+    """
     max_jobs: int = Field(
         default=0,
-        description="Maximum number of akmc jobs that can be running at once for the current state. For communicators with queues ('cluster'), no more jobs will be queued if the number of jobs queued and in progress equals or exceeds this number. A default of 0 means unlimited.",
+        description="Maximum number of akmc jobs that can be running at once for the current state.",
     )
+    """
+    For communicators with queues (``cluster``), no more jobs will be queued if
+    the number of jobs queued and in progress equals or exceeds this number. A
+    default of 0 means unlimited.
+    """
     client_path: str = Field(
         default="eonclient",
-        description="Path to the eon client binary. If only a name and not a path is given, eon looks for the binary in the same directory as config.ini. If not found there, it searches through the directories in the $PATH environment variable.",
+        description="Path to the eon client binary.",
     )
+    """
+    If only a name and not a path is given, ``eON`` looks for the binary in the
+    same directory as the configuration file. If not found there, it searches
+    through the directories in the ``$PATH`` environment variable.
+    """
     number_of_CPUs: int = Field(
         default=1,
         description="Number of jobs that will run simultaneously for the local communicator.",
@@ -389,14 +415,29 @@ class CommunicatorConfig(BaseModel):
         default="queued_jobs.sh",
         description="Name of the script that returns the job IDs of all the running and queued jobs for the cluster communicator.",
     )
+    """
+    This may return more than just ``eON`` jobs.
+    """
     cancel_job: str = Field(
         default="cancel_job.sh",
         description="Name of the script that cancels a job for the cluster communicator.",
     )
+    """
+    Takes a single argument, the JobID.
+    """
     submit_job: str = Field(
         default="submit_job.sh",
         description="Name of the script that submits a single job to the queuing system for the cluster communicator.",
     )
+    """
+    It takes two command line arguments. The first is the name of the job. This
+    is not required for ``eON`` use, but is highly recommended so that users can
+    identify which job is which. The second argument is the working directory.
+    This is the path where the ``eON`` client should be executed. All of the
+    needed client files will be placed in this directory. The script must return
+    the job id of the submitted job. This is how ``eON`` internally keeps track
+    of jobs.
+    """
 
 
 class ProcessSearchConfig(BaseModel):
