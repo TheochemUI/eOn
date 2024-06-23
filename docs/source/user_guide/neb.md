@@ -12,19 +12,20 @@ Details may be found in {cite:t}`neb-jonssonNudgedElasticBand1998`,
 {cite:t}`neb-sheppardPathsWhichNudged2011`, and
 {cite:t}`neb-asgeirssonExploringPotentialEnergy2018`.
 
-In order to run a nudged elastic band calculation, set **job** to *nudged_elastic_band* in the
-**[Main]** section. Details of the optimizer can be set in the **[optimizer]** section.
+In order to run a nudged elastic band calculation, set **job** to
+*nudged_elastic_band* in the **[Main]** section. Details of the optimizer can be
+set in the **[Optimizer]** section.
 
 ## Variants
-
-```{versionadded} 2.0
-The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021` has been added.
-```
 
 - Classic nudged elastic band of {cite:t}`neb-millsQuantumThermalEffects1994` and {cite:t}`neb-schenterReversibleWorkBased1994`.
 - Improved tangent method of {cite:t}`neb-henkelmanImprovedTangentEstimate2000`.
 - Climbing image NEB of {cite:t}`neb-henkelmanClimbingImageNudged2000`.
 - Doubly nudged method of {cite:t}`neb-trygubenkoDoublyNudgedElastic2004`.
+
+```{versionadded} 2.0
+- The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021`.
+```
 
 ## Configuration
 
@@ -40,6 +41,21 @@ In TOML, this will be `[NEB]`
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.NudgedElasticBandConfig
+```
+
+## Refinement
+
+```{versionadded} 2.0
+```
+
+Far from the minimum energy path, second order optimizers like those using the
+LBFGS may not be optimal. In these situations, to traverse uninteresting
+sections of the potential energy surface rapidly, it is best to use an
+accelerating optimizer like QuickMin to begin with and transition to LBFGS
+later. To facilitate this, the `[Refine]` section has been introduced.
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.RefineConfig
 ```
 
 ## References
