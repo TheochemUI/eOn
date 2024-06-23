@@ -406,6 +406,8 @@ class ProcessSearchConfig(BaseModel):
 
 
 class PrefactorConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
     all_free_atoms: bool = Field(
         default=False,
         description="Account for all free atoms when determining the prefactor.",
@@ -414,12 +416,16 @@ class PrefactorConfig(BaseModel):
         default="fraction",
         description="""
             Determines how to filter the atoms for use in the prefactor calculation.
-            Options are 'cutoff' (includes atoms that move more than 'min_displacement') and 'fraction' (includes atoms that make up 'filter_fraction' of the total motion, prioritizing the atoms that move the most).
         """,
     )
+    """
+    Options:
+    - ``cutoff``: includes atoms that move more than :any:`eon.schema.PrefactorConfig.min_displacement`
+    - ``fraction``: includes atoms that make up :any:`eon.schema.PrefactorConfig.filter_fraction` of the total motion, prioritizing the atoms that move the most
+    """
     filter_fraction: float = Field(
         default=0.9,
-        description="When using filter_scheme 'fraction', includes the atoms that move the most, limited to the number that make up 'filter_fraction' of the total motion.",
+        description="When using filter_scheme ``fraction``, includes the atoms that move the most, limited to the number that make up ``filter_fraction`` of the total motion.",
     )
     min_displacement: float = Field(
         default=0.25,
@@ -441,12 +447,23 @@ class PrefactorConfig(BaseModel):
     )
     configuration: Literal["reactant", "saddle", "product"] = Field(
         default="reactant",
-        description="Configuration for which the eigenfrequencies will be determined in a prefactor job. Options: 'reactant', 'saddle', 'product'.",
+        description="Configuration for which the eigenfrequencies will be determined in a prefactor job.",
+    )
+    """
+    Options:
+     - ``reactant``
+     - ``saddle``
+     - ``product``.
+    """
+    rate_estimation: str = Field(
+        default="htst",
+        description="Rate estimation method used for the prefactor calculation.",
     )
 
 
 class PotentialConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
+
     mpi_poll_period: float = Field(
         default=0.25, description="Polling period for MPI potential."
     )
