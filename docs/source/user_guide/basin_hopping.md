@@ -18,7 +18,7 @@ At each basin hopping step the client will print out:
   the method of {cite:t}`bh-whiteInvestigationTwoApproaches1998`, which is
   controlled by {any}`siginificant_structure
   <eon.schema.BasinHoppingConfig.significant_structure>`
-- The occational jumping variant of {cite:t}`bh-iwamatsuBasinHoppingOccasional2004`
+- The occasional jumping variant of {cite:t}`bh-iwamatsuBasinHoppingOccasional2004`
   is also implemented, and is controlled by
   {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
 
@@ -35,7 +35,7 @@ At each basin hopping step the client will print out:
 ---
 style: alpha
 filter: docname in docnames
-labelprefix: BH
+labelprefix: BH_
 keyprefix: bh-
 ---
 ```
