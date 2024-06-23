@@ -27,13 +27,12 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinxcontrib.spelling",
+    "sphinxcontrib.autodoc_pydantic",
+    "sphinxcontrib.bibtex",
     "autodoc2",
 ]
 
-autodoc2_render_plugin = "myst"
-autodoc2_packages = [
-    f"../../{project.lower()}",
-]
+bibtex_bibfiles = ['bibtex/eonDocs.bib']
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
@@ -62,13 +61,29 @@ html_theme_options = {
     "repository_url": "https://github.com/TheochemUI/EONgit",
     "use_repository_button": True,
     "logo": {
-        "image_light": "_static/ev2_trans.png",
-        "image_dark": "_static/ev2_trans_dark.png",
+        "image_light": "_static/logo/ev2_trans.png",
+        "image_dark": "_static/logo/ev2_trans_dark.png",
     },
 }
 
-# --- Plugin options
+# --- Plugin options -------------------------------------------------
+
+# --- autodoc2 options
 autodoc2_render_plugin = "myst"
+autodoc2_packages = [
+    {
+        "path": f"../../{project.lower()}",
+        "exclude_dirs": [
+            "__pycache__",
+        ],
+        "exclude_files": [
+            "*schema*",
+        ],
+    }
+]
+autodoc2_hidden_objects = ["dunder", "private", "inherited"]
+
+# ----- sphinx_favicon options
 
 favicons = [
     "favicons/favicon-16x16.png",
