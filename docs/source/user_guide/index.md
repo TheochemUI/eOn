@@ -66,6 +66,7 @@ prefactor
 basin_hopping
 process_search
 recycling
+coarse_graining
 
 debug
 paths
