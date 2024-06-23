@@ -11,8 +11,13 @@ ratio (ar), and the current max displacement (md).
 
 ## Notes
 
-- `eON` defaults to letting displacements occur from minimized structures as per the method of {cite:t}`whiteInvestigationTwoApproaches1998`.
-- The occational jumping variant of {cite:t}`iwamatsuBasinHoppingOccasional2004` is also implemented, and is controlled by {any}`eon.schema.BasinHoppingConfig.jump_max`.
+- `eON` defaults to letting displacements occur from minimized structures as per
+  the method of {cite:t}`whiteInvestigationTwoApproaches1998`, which is
+  controlled by {any}`siginificant_structure
+  <eon.schema.BasinHoppingConfig.significant_structure>`
+- The occational jumping variant of {cite:t}`iwamatsuBasinHoppingOccasional2004`
+  is also implemented, and is controlled by
+  {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
 
 ## Configuration
 
