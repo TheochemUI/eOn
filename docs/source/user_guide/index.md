@@ -14,4 +14,5 @@ basin_hopping
 dimer
 neb
 structure_comparison
+optimizer
 ```
