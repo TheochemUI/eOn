@@ -974,6 +974,55 @@ class DebugConfig(BaseModel):
     )
 
 
+class DimerConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    opt_method: Literal["sd", "cg", "lbfgs"] = Field(
+        default="cg",
+        description="Optimization algorithm to choose the dimer rotation direction.",
+    )
+    """
+    Options:
+     - 'sd': Steepest descent, rotate along the rotational force.
+     - 'cg': Conjugate gradient, rotate along conjugate directions.
+     - 'lbfgs': Limited memory Broyden-Fletcher-Goldfarb-Shanno Quasi-Newton optimizer.
+    """
+
+    converged_angle: float = Field(
+        default=5.0,
+        description="The dimer is considered converged if it will be rotated fewer degrees than this angle.",
+    )
+    rotations_max: int = Field(
+        default=10,
+        description="This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.",
+    )
+
+    dimer_rotation_angle: float = Field(
+        default=0.005, description="Finite angle for dimer rotation."
+    )
+    dimer_improved: bool = Field(
+        default=True, description="Indicates if the improved dimer method is used."
+    )
+    dimer_max_iterations: int = Field(
+        default=1000, description="Maximum number of iterations allowed for the dimer."
+    )
+    dimer_rotations_min: int = Field(
+        default=1, description="Minimum number of rotations for the dimer. [not improved]"
+    )
+    dimer_torque_min: float = Field(
+        default=0.1, description="Minimum torque for the dimer. [not improved]"
+    )
+    dimer_torque_max: float = Field(
+        default=1.0, description="Maximum torque for the dimer. [not improved]"
+    )
+    dimer_remove_rotation: bool = Field(
+        default=False, description="Indicates if the rotation should be removed."
+    )
+    """
+    Implements the method of :cite:t:`dm-melanderRemovingExternalDegrees2015`
+    """
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     main: MainConfig
@@ -981,6 +1030,7 @@ class Config(BaseModel):
     akmc: AKMCConfig
     basin_hopping: BasinHoppingConfig
     paths: PathsConfig
+    dimer: DimerConfig
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig
