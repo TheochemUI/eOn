@@ -1100,6 +1100,7 @@ class Config(BaseModel):
     basin_hopping: BasinHoppingConfig
     paths: PathsConfig
     dimer: DimerConfig
+    neb: NudgedElasticBandConfig
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig
