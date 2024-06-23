@@ -404,8 +404,15 @@ class ProcessSearchConfig(BaseModel):
 
     minimization_offset: float = Field(
         default=None,
-        description="After a saddle is found, images are placed on either side of the saddle along the mode and minimized to ensure that the saddle is connected to the original minimum and to locate the product state. This is the distance those images are displaced from the saddle.",
+        description="This is the distance images bracketing the saddle are displaced.",
     )
+    """
+    After a saddle is found, images are placed on either side of the saddle
+    along the mode and minimized to ensure that the saddle is connected to the
+    original minimum and to locate the product state.
+    This defaults to being the same as
+    :any:`eon.schema.OptimizerConfig.max_move`
+    """
     minimize_first: bool = Field(
         default=True,
         description="Every time a process search is run by a client the reactant will be minimized first before doing any saddle searches.",
