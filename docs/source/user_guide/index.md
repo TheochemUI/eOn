@@ -70,6 +70,7 @@ coarse_graining
 
 dynamics
 parallel_replica
+hyperdynamics
 
 communicator
 debug
