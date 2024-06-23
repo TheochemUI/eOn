@@ -35,7 +35,8 @@ We use `myst` markdown via the `myst-parser` extension for almost everything,
 however, the `pydantic` schema is handled by `autodoc-pydantic` which requires
 `rst` directives only, so:
 - The docstrings for the configuration are formatted with `rst`.
-- `eval-rst` is required to wrap the configuration stanzas in the `myst` markdown files
+- `eval-rst` is required to wrap the configuration stanzas in the `myst`
+  markdown files
 
 ## Additions
 
