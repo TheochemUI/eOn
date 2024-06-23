@@ -13,6 +13,7 @@ import random
 
 
 class MainConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     job: Literal[
         "akmc",
         "basin_hopping",
@@ -88,6 +89,7 @@ class MainConfig(BaseModel):
 
 
 class StructureComparisonConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     energy_difference: float = Field(
         default=0.01,
         description="How different in energy two configurations must be to be considered different structures.",
@@ -127,6 +129,7 @@ class StructureComparisonConfig(BaseModel):
 
 
 class AKMCConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     confidence: float = Field(
         default=0.99,
         description="The confidence (out of 1.0) criterion for moving to the next state.",
@@ -184,6 +187,7 @@ class AKMCConfig(BaseModel):
 
 
 class BasinHoppingConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     steps: int = Field(
         default=10000,
         description="Number of steps to take at the assigned temperature.",
@@ -247,6 +251,7 @@ class BasinHoppingConfig(BaseModel):
     significant_structure: bool = Field(
         default=True, description="Displace from minimized structures."
     )
+    """Implements the method of :cite:t:`whiteInvestigationTwoApproaches1998`."""
     jump_steps: int = Field(
         default=0,
         description="Number of jump steps to take after jump_max consecutive rejections.",
@@ -254,6 +259,7 @@ class BasinHoppingConfig(BaseModel):
 
 
 class PathsConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     main_directory: str = Field(
         default="./",
         description="This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.",
@@ -305,6 +311,7 @@ class PathsConfig(BaseModel):
 
 
 class CommunicatorConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     type: Literal["local", "cluster", "mpi"] = Field(
         default="local",
         description="""
@@ -357,6 +364,7 @@ class CommunicatorConfig(BaseModel):
 
 
 class ProcessSearchConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     minimization_offset: float = Field(
         default=None,
         description="After a saddle is found, images are placed on either side of the saddle along the mode and minimized to ensure that the saddle is connected to the original minimum and to locate the product state. This is the distance those images are displaced from the saddle.",
@@ -408,6 +416,7 @@ class PrefactorConfig(BaseModel):
 
 
 class PotentialConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     mpi_poll_period: float = Field(
         default=0.25, description="Polling period for MPI potential."
     )
@@ -499,6 +508,7 @@ class PotentialConfig(BaseModel):
 
 
 class SaddleSearchConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     method: Literal["min_mode", "dynamics"] = Field(
         default="min_mode",
         description="""
@@ -675,6 +685,7 @@ class SaddleSearchConfig(BaseModel):
 
 
 class KDBConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     use_kdb: bool = False
     kdb_only: bool = Field(
         default=False,
@@ -692,6 +703,7 @@ class KDBConfig(BaseModel):
 
 
 class RecyclingConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     use_recycling: bool = Field(default=True, description="Turn recycling on and off.")
     move_distance: float = Field(
         default=0.2,
@@ -719,6 +731,7 @@ class RecyclingConfig(BaseModel):
 
 
 class CoarseGrainingConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     use_mcamc: bool = Field(
         default=False,
         description="This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used. This mutually excludes the use_askmc option.",
@@ -779,6 +792,7 @@ class CoarseGrainingConfig(BaseModel):
 
 
 class OptimizerConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     opt_method: Literal["box", "cg", "qm", "lbfgs", "fire"] = Field(
         default="cg",
         description="""
@@ -873,6 +887,7 @@ class OptimizerConfig(BaseModel):
 
 
 class RefineConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     refine_opt_method: Literal["none", "cg", "lbfgs", "fire", "box", "qm"] = Field(
         default="none",
         description="""
@@ -892,6 +907,7 @@ class RefineConfig(BaseModel):
 
 
 class DebugConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     save_stdout: bool = Field(
         default=False,
         description="Save the standard output from the client to a file named stdout_0.dat.",
@@ -934,6 +950,7 @@ class DebugConfig(BaseModel):
 
 
 class Config(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     main: MainConfig
     structure_comparison: StructureComparisonConfig
     akmc: AKMCConfig
