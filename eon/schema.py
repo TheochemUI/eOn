@@ -1092,6 +1092,22 @@ class NudgedElasticBandConfig(BaseModel):
     )
 
 
+class LanczosConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+    tolerance: float = Field(
+        default=0.01,
+        description="This is the convergence criteria for relative change in the estimated lowest eigenvalue.",
+    )
+    max_iterations: int = Field(
+        default=20,
+        description="The maximum number of refinement iterations when calculating the minimum eigenvalue.",
+    )
+    quit_early: bool = Field(
+        default=True,
+        description="If the relative change between the previous lowest eigenvalue and the curvature along the initial direction is less than the tolerance, terminate.",
+    )
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     main: MainConfig
@@ -1101,6 +1117,7 @@ class Config(BaseModel):
     paths: PathsConfig
     dimer: DimerConfig
     neb: NudgedElasticBandConfig
+    lanczos: LanczosConfig
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig
     prefactor: PrefactorConfig
