@@ -83,6 +83,8 @@ autodoc2_packages = [
 ]
 autodoc2_hidden_objects = ["dunder", "private", "inherited"]
 
+# ----- sphinx_favicon options
+
 favicons = [
     "favicons/favicon-16x16.png",
     "favicons/favicon-32x32.png",
