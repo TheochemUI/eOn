@@ -33,8 +33,6 @@ dependencies:
   - sh
   - sphinx
   - towncrier
-  # For related pydantic scheme documentation
-  - graphviz
   # Lint
   - cppcheck
   - cpplint
