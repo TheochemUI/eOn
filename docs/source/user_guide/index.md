@@ -74,6 +74,7 @@ parallel_replica
 communicator
 debug
 paths
+kdb
 mpi_potential
 ```
 
