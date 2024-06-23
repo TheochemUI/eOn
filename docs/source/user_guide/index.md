@@ -6,17 +6,20 @@ within `eON`.
 
 Each of the sections and methods may be included in the configuration file with the appropriate section header.
 
+<!-- TODO(rg) Structure this a bit more, better -->
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 :caption: Configuration Sections
 
-basin_hopping
-dimer
-neb
 structure_comparison
 optimizer
-lanczos
 minimization
+neb
+dimer
+lanczos
+hessian
+
+basin_hopping
 recycling
 
 mpi_potential
