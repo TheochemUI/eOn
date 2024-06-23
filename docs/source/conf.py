@@ -27,6 +27,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinxcontrib.spelling",
+    "sphinxcontrib.autodoc_pydantic",
     "sphinxcontrib.bibtex",
     "autodoc2",
 ]
