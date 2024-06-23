@@ -33,11 +33,6 @@ extensions = [
 
 bibtex_bibfiles = ['bibtex/eonDocs.bib']
 
-autodoc2_render_plugin = "myst"
-autodoc2_packages = [
-    f"../../{project.lower()}",
-]
-
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
 }
@@ -70,8 +65,22 @@ html_theme_options = {
     },
 }
 
-# --- Plugin options
+# --- Plugin options -------------------------------------------------
+
+# --- autodoc2 options
 autodoc2_render_plugin = "myst"
+autodoc2_packages = [
+    {
+        "path": f"../../{project.lower()}",
+        "exclude_dirs": [
+            "__pycache__",
+        ],
+        "exclude_files": [
+            "*schema*",
+        ],
+    }
+]
+autodoc2_hidden_objects = ["dunder", "private", "inherited"]
 
 favicons = [
     "favicons/favicon-16x16.png",
