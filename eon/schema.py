@@ -553,41 +553,46 @@ class PotentialConfig(BaseModel):
         "xtb",
     ] = Field(
         default="lj",
-        description="""
-            Type of potential to execute. Options:
-            - 'ams': Amsterdam Modeling Suite potential.
-            - 'ams_io': Amsterdam Modeling Suite via the I/O.
-            - 'ase_orca': ASE interface for ORCA quantum chemistry package.
-            - 'bop': Bond order potential for metals. [unused]
-            - 'bopfox': Bond order potential, for metals. [unused]
-            - 'cuh2': Potential for copper hydride systems.
-            - 'eam_al': Embedded atom method parameterized for aluminum.
-            - 'edip': Environment-Dependent Interatomic Potential, for carbon.
-            - 'emt': Effective medium theory, for metals.
-            - 'ext': External potential with system call interface.
-            - 'fehe': Potential for iron-hydrogen systems.
-            - 'gpr': Gaussian process regression potential.
-            - 'imd': IMD simulation package interface.
-            - 'lammps': The LAMMPS potentials.
-            - 'lenosky_si': Lenosky potential, for silicon.
-            - 'lj': Lennard-Jones potential in reduced units.
-            - 'ljcluster': Lennard-Jones cluster potential.
-            - 'morse_pt': Morse potential for platinum.
-            - 'mpi': Communicate with an MPI process to calculate energy and forces.
-            - 'pyamff': Python implementation of the AMFF potential.
-            - 'python': Custom python potential.
-            - 'qsc': Quantum Sutton-Chen potential, for FCC metals.
-            - 'spce': Simple Point Charge model for water.
-            - 'sw_si': Stillinger-Weber potential, for silicon.
-            - 'tersoff_si': Tersoff pair potential with angular terms, for silicon.
-            - 'tip4p': Point charge model for water.
-            - 'tip4p_h': TIP4P model for water with hydrogen.
-            - 'tip4p_pt': TIP4P model for water on platinum.
-            - 'unknown': Placeholder for unknown potential type.
-            - 'vasp': Vienna Ab-Initio Simulation Program (VASP) interface.
-            - 'xtb': Extended Tight Binding model.
-        """,
+        description="Type of potential to execute.",
     )
+    """
+    Options:
+        - ``ams``: Amsterdam Modeling Suite potential.
+        - ``ams_io``: Amsterdam Modeling Suite via the I/O.
+        - ``ase_orca``: ASE interface for ORCA quantum chemistry package.
+        - ``bop``: Bond order potential for metals. [unused]
+        - ``bopfox``: Bond order potential, for metals. [unused]
+        - ``cuh2``: Potential for copper hydride systems.
+        - ``eam_al``: Embedded atom method parameterized for aluminum.
+        - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
+        - ``emt``: Effective medium theory, for metals.
+        - ``ext``: External potential with system call interface.
+        - ``fehe``: Potential for iron-hydrogen systems.
+        - ``gpr``: Gaussian process regression potential.
+        - ``imd``: IMD simulation package interface.
+        - ``lammps``: The LAMMPS potentials.
+        - ``lenosky_si``: Lenosky potential, for silicon.
+        - ``lj``: Lennard-Jones potential in reduced units.
+        - ``ljcluster``: Lennard-Jones cluster potential.
+        - ``morse_pt``: Morse potential for platinum.
+        - ``mpi``: Communicate with an MPI process to calculate energy and forces.
+        - ``pyamff``: Python implementation of the AMFF potential.
+        - ``python``: Custom python potential.
+        - ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
+        - ``spce``: Simple Point Charge model for water.
+        - ``sw_si``: Stillinger-Weber potential, for silicon.
+        - ``tersoff_si``: Tersoff pair potential with angular terms, for silicon.
+        - ``tip4p``: Point charge model for water.
+        - ``tip4p_h``: TIP4P model for water with hydrogen.
+        - ``tip4p_pt``: TIP4P model for water on platinum.
+        - ``unknown``: Placeholder for unknown potential type.
+        - ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
+        - ``xtb``: Extended Tight Binding model.
+    Note that for ``ext_pot``:
+    Writes box size and coordinates to the file ``from_eon_to_ext``
+    Make a system call for the binary ``ext_pot``, which should read
+    the coordinates and return the energy and forces to the file ``from_ext_to_eon``
+    """
     log_potential: Optional[bool] = Field(
         default=None,
         description="If true, write timing information about each force call to client.log.",
