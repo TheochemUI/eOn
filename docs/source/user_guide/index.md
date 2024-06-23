@@ -65,6 +65,7 @@ hessian
 basin_hopping
 recycling
 
+paths
 mpi_potential
 debug
 ```
