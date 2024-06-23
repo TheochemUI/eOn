@@ -29,6 +29,14 @@ This can be viewed locally with an HTTP server.
 python -m http.server docs/build/html
 ```
 
+## Writing documentation
+
+We use `myst` markdown via the `myst-parser` extension for almost everything,
+however, the `pydantic` schema is handled by `autodoc-pydantic` which requires
+`rst` directives only, so:
+- The docstrings for the configuration are formatted with `rst`.
+- `eval-rst` is required to wrap the configuration stanzas in the `myst` markdown files
+
 ## Additions
 
 The following sections detail methods to add functionality to the documentation.
