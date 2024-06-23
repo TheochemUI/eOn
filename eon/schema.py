@@ -249,7 +249,7 @@ class BasinHoppingConfig(BaseModel):
     significant_structure: bool = Field(
         default=True, description="Displace from minimized structures."
     )
-    """Implements the method of :cite:t:`whiteInvestigationTwoApproaches1998`."""
+    """Implements the method of :cite:t:`bh-whiteInvestigationTwoApproaches1998`."""
     jump_steps: int = Field(
         default=0,
         description="Number of jump steps to take after jump_max consecutive rejections.",
