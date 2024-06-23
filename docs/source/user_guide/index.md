@@ -53,6 +53,7 @@ by the clients in a way that can be used by the sampling or dynamics methods.
 :maxdepth: 1
 :caption: Configuration Sections
 
+main
 structure_comparison
 optimizer
 minimization
@@ -66,3 +67,5 @@ recycling
 
 mpi_potential
 ```
+
+<!-- TODO(rg) Maybe add the whole config as well -->
