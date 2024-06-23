@@ -24,6 +24,14 @@ At each basin hopping step the client will print out:
 
 ## Configuration
 
+```{code-block} ini
+[Basin Hopping]
+```
+
+```{versionchanged} 2.1
+In TOML, this will be `[Basin_Hopping]
+```
+
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.BasinHoppingConfig
 ```
