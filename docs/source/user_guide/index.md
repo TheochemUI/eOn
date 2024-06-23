@@ -97,6 +97,8 @@ hyperdynamics
 :maxdepth: 1
 :caption: Additional configuration
 
+dynamics
+
 communicator
 debug
 paths
