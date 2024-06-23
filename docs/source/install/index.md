@@ -50,6 +50,11 @@ While reading older documentation, calls to `eon` must now be `python -m
 eon.server`. 
 ```
 
+### Optional packages
+
+The full listing of options is found in the `meson_options.txt` file. These can
+all be turned on and off at the command line. As an example see the [LAMMPS
+integration instructions](project:../user_guide/lammps_pot.md).
 
 # Additional topics
 
