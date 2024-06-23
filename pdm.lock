@@ -5,7 +5,7 @@
 groups = ["default", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:cc014a6c58dae9e7276ec8336138e2704971cf8a223459643a35e8b136375286"
+content_hash = "sha256:7fe954289ff7edc845e7fb77e62ed57da00bcca9567cc56a2644bd880972a1ae"
 
 [[package]]
 name = "accessible-pygments"
@@ -281,6 +281,17 @@ files = [
 ]
 
 [[package]]
+name = "latexcodec"
+version = "3.0.0"
+requires_python = ">=3.7"
+summary = "A lexer and codec to work with LaTeX code in Python."
+groups = ["docs"]
+files = [
+    {file = "latexcodec-3.0.0-py3-none-any.whl", hash = "sha256:6f3477ad5e61a0a99bd31a6a370c34e88733a6bad9c921a3ffcfacada12f41a7"},
+    {file = "latexcodec-3.0.0.tar.gz", hash = "sha256:917dc5fe242762cc19d963e6548b42d63a118028cdd3361d62397e3b638b6bc5"},
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 requires_python = ">=3.8"
@@ -454,6 +465,37 @@ files = [
 ]
 
 [[package]]
+name = "pybtex"
+version = "0.24.0"
+requires_python = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+summary = "A BibTeX-compatible bibliography processor in Python"
+groups = ["docs"]
+dependencies = [
+    "PyYAML>=3.01",
+    "latexcodec>=1.0.4",
+    "six",
+]
+files = [
+    {file = "pybtex-0.24.0-py2.py3-none-any.whl", hash = "sha256:e1e0c8c69998452fea90e9179aa2a98ab103f3eed894405b7264e517cc2fcc0f"},
+    {file = "pybtex-0.24.0.tar.gz", hash = "sha256:818eae35b61733e5c007c3fcd2cfb75ed1bc8b4173c1f70b56cc4c0802d34755"},
+]
+
+[[package]]
+name = "pybtex-docutils"
+version = "1.0.3"
+requires_python = ">=3.7"
+summary = "A docutils backend for pybtex."
+groups = ["docs"]
+dependencies = [
+    "docutils>=0.14",
+    "pybtex>=0.16",
+]
+files = [
+    {file = "pybtex-docutils-1.0.3.tar.gz", hash = "sha256:3a7ebdf92b593e00e8c1c538aa9a20bca5d92d84231124715acc964d51d93c6b"},
+    {file = "pybtex_docutils-1.0.3-py3-none-any.whl", hash = "sha256:8fd290d2ae48e32fcb54d86b0efb8d573198653c7e2447d5bec5847095f430b9"},
+]
+
+[[package]]
 name = "pydata-sphinx-theme"
 version = "0.15.3"
 requires_python = ">=3.9"
@@ -565,6 +607,17 @@ groups = ["docs"]
 files = [
     {file = "setuptools-70.1.0-py3-none-any.whl", hash = "sha256:d9b8b771455a97c8a9f3ab3448ebe0b29b5e105f1228bba41028be116985a267"},
     {file = "setuptools-70.1.0.tar.gz", hash = "sha256:01a1e793faa5bd89abc851fa15d0a0db26f160890c7102cd8dce643e886b47f5"},
+]
+
+[[package]]
+name = "six"
+version = "1.16.0"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+summary = "Python 2 and 3 compatibility utilities"
+groups = ["docs"]
+files = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 
 [[package]]
@@ -761,6 +814,24 @@ groups = ["docs"]
 files = [
     {file = "sphinxcontrib_applehelp-1.0.8-py3-none-any.whl", hash = "sha256:cb61eb0ec1b61f349e5cc36b2028e9e7ca765be05e49641c97241274753067b4"},
     {file = "sphinxcontrib_applehelp-1.0.8.tar.gz", hash = "sha256:c40a4f96f3776c4393d933412053962fac2b84f4c99a7982ba42e09576a70619"},
+]
+
+[[package]]
+name = "sphinxcontrib-bibtex"
+version = "2.6.2"
+requires_python = ">=3.7"
+summary = "Sphinx extension for BibTeX style citations."
+groups = ["docs"]
+dependencies = [
+    "Sphinx>=3.5",
+    "docutils!=0.18.*,!=0.19.*,>=0.8",
+    "importlib-metadata>=3.6; python_version < \"3.10\"",
+    "pybtex-docutils>=1.0.0",
+    "pybtex>=0.24",
+]
+files = [
+    {file = "sphinxcontrib-bibtex-2.6.2.tar.gz", hash = "sha256:f487af694336f28bfb7d6a17070953a7d264bec43000a2379724274f5f8d70ae"},
+    {file = "sphinxcontrib_bibtex-2.6.2-py3-none-any.whl", hash = "sha256:10d45ebbb19207c5665396c9446f8012a79b8a538cb729f895b5910ab2d0b2da"},
 ]
 
 [[package]]
