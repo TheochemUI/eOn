@@ -76,7 +76,7 @@ computing environments.
 team
 install/index
 tutorials/index
-algorithms/index
+user_guide/index
 devdocs/index
 apidocs/index
 ```
