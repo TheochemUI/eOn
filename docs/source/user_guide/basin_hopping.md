@@ -43,7 +43,7 @@ In TOML, this will be `[Basin_Hopping]`
 ---
 style: alpha
 filter: docname in docnames
-labelprefix: BH_
+labelprefix: BH
 keyprefix: bh-
 ---
 ```
