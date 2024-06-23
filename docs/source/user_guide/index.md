@@ -63,6 +63,7 @@ lanczos
 hessian
 prefactor
 
+saddle_search
 basin_hopping
 process_search
 recycling
