@@ -31,6 +31,9 @@ set as per the <project:optimizer.md> document.
 `eON`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
 ```
 
+```{versionadded} 3.0_TBA
+```
+
 ## Configuration
 
 ```{code-block} ini
@@ -38,7 +41,7 @@ set as per the <project:optimizer.md> document.
 ```
 
 
-```{versionchanged} 2.1
+```{versionchanged} 2.1_TBA
 In TOML, this will be `[NEB]`
 ```
 
