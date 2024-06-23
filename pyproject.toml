@@ -51,7 +51,7 @@ docs = [
     "sphinx-favicon>=1.0.1",
     "mdit-py-plugins>0.3.4",
     "sphinxcontrib-bibtex>=2.6.2",
-    "sphinx-pydantic>=0.1.1",
+    "autodoc-pydantic>=2.0.0",
 ]
 
 [tool.pdm.scripts]
