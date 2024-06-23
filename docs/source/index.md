@@ -65,6 +65,8 @@ options including local communication, distribution over a cluster using a
 queueing system, multiple process multiple data MPI jobs, and distributed
 computing environments.
 
+<!-- Is this still true -->
+
 # Additional Topics
 
 ```{toctree}
@@ -73,6 +75,9 @@ computing environments.
 
 team
 install/index
+tutorials/index
+user_guide/index
+devdocs/index
 apidocs/index
 ```
 
