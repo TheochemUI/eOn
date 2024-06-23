@@ -5,7 +5,7 @@
 groups = ["default", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:34537d134f1f6d01b634697a7c4261db2519098f5be51a3e8824f67f16a5cb40"
+content_hash = "sha256:0b6830149e44c60be80cc8ac0a54004487fb3777a91b28837cbb351487a34cc4"
 
 [[package]]
 name = "accessible-pygments"
@@ -84,6 +84,21 @@ dependencies = [
     "Sphinx>=4.0",
     "pydantic-settings<3.0.0,>=2.0",
     "pydantic<3.0.0,>=2.0",
+]
+files = [
+    {file = "autodoc_pydantic-2.2.0-py3-none-any.whl", hash = "sha256:8c6a36fbf6ed2700ea9c6d21ea76ad541b621fbdf16b5a80ee04673548af4d95"},
+]
+
+[[package]]
+name = "autodoc-pydantic"
+version = "2.2.0"
+extras = ["erdantic"]
+requires_python = "<4.0.0,>=3.8.1"
+summary = "Seamlessly integrate pydantic models in your Sphinx documentation."
+groups = ["docs"]
+dependencies = [
+    "autodoc-pydantic==2.2.0",
+    "erdantic<2.0",
 ]
 files = [
     {file = "autodoc_pydantic-2.2.0-py3-none-any.whl", hash = "sha256:8c6a36fbf6ed2700ea9c6d21ea76ad541b621fbdf16b5a80ee04673548af4d95"},
@@ -230,6 +245,26 @@ groups = ["docs"]
 files = [
     {file = "docutils-0.21.2-py3-none-any.whl", hash = "sha256:dafca5b9e384f0e419294eb4d2ff9fa826435bf15f15b7bd45723e8ad76811b2"},
     {file = "docutils-0.21.2.tar.gz", hash = "sha256:3a6b18732edf182daa3cd12775bbb338cf5691468f91eeeb109deff6ebfa986f"},
+]
+
+[[package]]
+name = "erdantic"
+version = "1.0.3"
+requires_python = ">=3.8"
+summary = "Entity relationship diagrams for Python data model classes like Pydantic."
+groups = ["docs"]
+dependencies = [
+    "pydantic-core",
+    "pydantic>=2",
+    "pygraphviz",
+    "sortedcontainers-pydantic",
+    "typenames",
+    "typer",
+    "typing-extensions>4; python_version < \"3.12\"",
+]
+files = [
+    {file = "erdantic-1.0.3-py3-none-any.whl", hash = "sha256:d2707220cedffe4cc9509931ed9f6e1ced334fbdbd8f0eb258ccf3048cae7876"},
+    {file = "erdantic-1.0.3.tar.gz", hash = "sha256:d84cae68674954e311a5593c5082d85875972f254738fef4e67c7903f2107e8e"},
 ]
 
 [[package]]
@@ -677,6 +712,16 @@ files = [
 ]
 
 [[package]]
+name = "pygraphviz"
+version = "1.11"
+requires_python = ">=3.8"
+summary = "Python interface to Graphviz"
+groups = ["docs"]
+files = [
+    {file = "pygraphviz-1.11.zip", hash = "sha256:a97eb5ced266f45053ebb1f2c6c6d29091690503e3a5c14be7f908b37b06f2d4"},
+]
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.1"
 requires_python = ">=3.8"
@@ -746,6 +791,21 @@ files = [
 ]
 
 [[package]]
+name = "rich"
+version = "13.7.1"
+requires_python = ">=3.7.0"
+summary = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
+groups = ["docs"]
+dependencies = [
+    "markdown-it-py>=2.2.0",
+    "pygments<3.0.0,>=2.13.0",
+]
+files = [
+    {file = "rich-13.7.1-py3-none-any.whl", hash = "sha256:4edbae314f59eb482f54e9e30bf00d33350aaa94f4bfcd4e9e3110e64d0d7222"},
+    {file = "rich-13.7.1.tar.gz", hash = "sha256:9be308cb1fe2f1f57d67ce99e95af38a1e2bc71ad9813b0e247cf7ffbcc3a432"},
+]
+
+[[package]]
 name = "setuptools"
 version = "70.1.0"
 requires_python = ">=3.8"
@@ -754,6 +814,17 @@ groups = ["docs"]
 files = [
     {file = "setuptools-70.1.0-py3-none-any.whl", hash = "sha256:d9b8b771455a97c8a9f3ab3448ebe0b29b5e105f1228bba41028be116985a267"},
     {file = "setuptools-70.1.0.tar.gz", hash = "sha256:01a1e793faa5bd89abc851fa15d0a0db26f160890c7102cd8dce643e886b47f5"},
+]
+
+[[package]]
+name = "shellingham"
+version = "1.5.4"
+requires_python = ">=3.7"
+summary = "Tool to Detect Surrounding Shell"
+groups = ["docs"]
+files = [
+    {file = "shellingham-1.5.4-py2.py3-none-any.whl", hash = "sha256:7ecfff8f2fd72616f7481040475a65b2bf8af90a56c89140852d1120324e8686"},
+    {file = "shellingham-1.5.4.tar.gz", hash = "sha256:8dbca0739d487e5bd35ab3ca4b36e11c4078f3a234bfce294b0a0291363404de"},
 ]
 
 [[package]]
@@ -786,6 +857,32 @@ groups = ["docs"]
 files = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
     {file = "snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1"},
+]
+
+[[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+summary = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
+groups = ["docs"]
+files = [
+    {file = "sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"},
+    {file = "sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88"},
+]
+
+[[package]]
+name = "sortedcontainers-pydantic"
+version = "1.0.0"
+requires_python = ">=3.8"
+summary = "Pydantic support for the sortedcontainers package."
+groups = ["docs"]
+dependencies = [
+    "pydantic-core",
+    "pydantic>=2",
+    "sortedcontainers",
+]
+files = [
+    {file = "sortedcontainers_pydantic-1.0.0-py3-none-any.whl", hash = "sha256:07e92e9b85dbf9248e0a5b59e0311a095e6fb27e0dc461b1209ead5a550b60b2"},
+    {file = "sortedcontainers_pydantic-1.0.0.tar.gz", hash = "sha256:eb0e4aeb5197d690165f0a7b1a55c490eabe4b21375c3a91726373b2551e25ee"},
 ]
 
 [[package]]
@@ -1076,6 +1173,34 @@ marker = "python_version < \"3.11\""
 files = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
+]
+
+[[package]]
+name = "typenames"
+version = "1.2.0"
+requires_python = ">=3.8"
+summary = "String representations of type annotations."
+groups = ["docs"]
+files = [
+    {file = "typenames-1.2.0-py3-none-any.whl", hash = "sha256:6c0745a0003686dfb032ba26a779e0d46a98e83098dabba694856ac8f6525be5"},
+    {file = "typenames-1.2.0.tar.gz", hash = "sha256:a694a19aecf5884b2c52cdf9a03b501bc7ee9a03131bfa58b2a6b072182270a7"},
+]
+
+[[package]]
+name = "typer"
+version = "0.12.3"
+requires_python = ">=3.7"
+summary = "Typer, build great CLIs. Easy to code. Based on Python type hints."
+groups = ["docs"]
+dependencies = [
+    "click>=8.0.0",
+    "rich>=10.11.0",
+    "shellingham>=1.3.0",
+    "typing-extensions>=3.7.4.3",
+]
+files = [
+    {file = "typer-0.12.3-py3-none-any.whl", hash = "sha256:070d7ca53f785acbccba8e7d28b08dcd88f79f1fbda035ade0aecec71ca5c914"},
+    {file = "typer-0.12.3.tar.gz", hash = "sha256:49e73131481d804288ef62598d97a1ceef3058905aa536a1134f90891ba35482"},
 ]
 
 [[package]]
