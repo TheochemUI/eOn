@@ -1,6 +1,6 @@
 # Lanczos
 
-The Lanczos method for determining the lowest eigenmode.
+The Lanczos method for determining the lowest eigenmode along the lines of {cite:t}`lcz-malekDynamicsLennardJonesClusters2000`.
 
 ## Configuration
 
