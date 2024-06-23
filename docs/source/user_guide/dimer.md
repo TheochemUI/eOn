@@ -5,6 +5,8 @@ improvements by {cite:t}`dm-heydenEfficientMethodsFinding2005` and
 {cite:t}`dm-kastnerSuperlinearlyConvergingDimer2008` for estimating the lowest
 Eigenmode using only first derivatives.
 
+An overview may be found in {cite:t}`dm-olsenComparisonMethodsFinding2004`.
+
 The dimer separation is set in the **[Main]** section with the
 `finiteDifference` parameter.
 
