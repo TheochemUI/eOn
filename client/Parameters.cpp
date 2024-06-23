@@ -306,7 +306,7 @@ Parameters::Parameters() {
 
   // [Hyperdynamics] //
   biasPotential = Hyperdynamics::NONE;
-  bondBoostBALS = string("ALL"); // boosted atom list string
+  bondBoostBALS = string("All"); // boosted atom list string
   bondBoostDVMAX = 0.0;
   bondBoostQRR = 0.2; // can not be set to 0
   bondBoostPRR = 0.95;
