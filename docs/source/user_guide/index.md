@@ -53,6 +53,7 @@ by the clients in a way that can be used by the sampling or dynamics methods.
 :caption: Configuration Sections
 
 main
+potential
 structure_comparison
 optimizer
 minimization
