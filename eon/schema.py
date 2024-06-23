@@ -805,8 +805,11 @@ class CoarseGrainingConfig(BaseModel):
 
     use_mcamc: bool = Field(
         default=False,
-        description="This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used. This mutually excludes the use_askmc option.",
+        description="This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used.",
     )
+    """
+    Mutually exclusive with :any:`eon.schema.CoarseGrainingConfig.use_askmc`.
+    """
     state_file: str = Field(
         default="superbasin",
         description="File name for the state-specific data stored within each of the state directories.",
@@ -815,11 +818,13 @@ class CoarseGrainingConfig(BaseModel):
         default="transition_counting",
         description="""
             MCAMC provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin.
-            Options:
-            - 'transition_counting': Counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occurred, the pair of states are merged to form a superbasin.
-            - 'energy_level': States are merged based on energy levels.
         """,
     )
+    """
+    Options:
+     - ``transition_counting``: Counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occurred, the pair of states are merged to form a superbasin.
+     - ``energy_level``: States are merged based on energy levels.
+    """
     max_size: int = Field(
         default=0,
         description="The maximal number of states that will be merged together. If 0, there is no limit.",
@@ -830,16 +835,37 @@ class CoarseGrainingConfig(BaseModel):
     )
     energy_increment: float = Field(
         default=0.01,
-        description="If the energy level scheme is being used, each state, the first time it is visited, is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount.",
+        description="The first time each state is visited, it is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount.",
     )
+    """
+    Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
+    ``energy_level``.
+    """
     superbasin_confidence: bool = Field(
         default=True,
-        description="Superbasin KMC steps only consider exit processes from the superbasin. Additional searches need to be performed to ensure adequate confidence for the barrier energies leaving the superbasin.",
+        description="Superbasin KMC confidence.",
     )
+    """
+    Superbasin KMC steps only consider exit processes from the superbasin. As
+    fast processes get absorbed more and more into the superbasin, the relevant
+    exit processes have higher and higher barriers. The confidence to have found
+    all relevant processes leading away from a state is heavily influenced by
+    the fast processes, that no longer exit the superbasin. To make sure that
+    the confidence is adequately high for the barrier energies leaving the
+    superbasin, additional searches need to be performed. This setting (which
+    defaults to true) enables these additional searches. The searches are marked
+    in states/<state_number>/search_results.txt by appending the number of the
+    superbasin in which the search was performed in brackets. In general, this
+    option should not be disabled! It exists only for debug purposes and cases
+    where the user is sure that the additional searches are not needed.
+    """
     use_askmc: bool = Field(
         default=False,
-        description="This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the use_projective_dynamics option.",
+        description="This option determines whether the AS-KMC coarse graining method will be used.",
     )
+    """
+    Mutually exclusive with :any:`eon.schema.CoarseGrainingConfig.use_mcamc`.
+    """
     askmc_confidence: float = Field(
         default=0.9,
         description="The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.",
@@ -856,10 +882,34 @@ class CoarseGrainingConfig(BaseModel):
         default=True,
         description="This test verifies that no low-barrier process in a superbasin has been missed, considering even processes which have not been visited.",
     )
+    """
+    Because the implemented Superbasin Criterion actually only considers
+    processes which have been passed over at least once, there is some chance
+    that a low-barrier process in a superbasin might have not been visited at
+    all while all other low-barrier processes have been visited at least
+    :math:`N_f` times. This is unlikely, but this test verifies that such has
+    not happened, considering even processes which have not been visited when
+    determining if the Superbasin Criterion has first, because the implemented
+    Superbasin Criterion actually only considers processes which have been
+    passed over at least once, there is some chance that a low-barrier process
+    in a superbasin might have not been visited at all while all other
+    low-barrier processes have been visited at least :math:`N_f` times. This is
+    unlikely, but this test verifies that such has not happened, considering
+    even processes which have not been visited when determining if the
+    Superbasin Criterion has passed. This check should not add significant
+    overhead.
+    """
     askmc_connections_test_on: Optional[bool] = Field(
         default=False,
         description="Ensures that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier.",
     )
+    """
+    This parameter determines whether to ensure that there are no processes
+    which connect states in the defined superbasin which have not been visited
+    yet and which have a low-barrier. This check is somewhat more
+    computationally expensive than the previous because structure comparisons
+    have to be made when finding product states of unvisited processes.
+    """
 
 
 class OptimizerConfig(BaseModel):
