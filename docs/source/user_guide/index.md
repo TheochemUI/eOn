@@ -10,4 +10,5 @@ within `eON`.
 
 basin_hopping
 dimer
+neb
 ```
