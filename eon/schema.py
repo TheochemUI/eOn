@@ -1005,7 +1005,8 @@ class DimerConfig(BaseModel):
         default=1000, description="Maximum number of iterations allowed for the dimer."
     )
     dimer_rotations_min: int = Field(
-        default=1, description="Minimum number of rotations for the dimer. [not improved]"
+        default=1,
+        description="Minimum number of rotations for the dimer. [not improved]",
     )
     dimer_torque_min: float = Field(
         default=0.1, description="Minimum torque for the dimer. [not improved]"
@@ -1019,6 +1020,68 @@ class DimerConfig(BaseModel):
     """
     Implements the method of :cite:t:`dm-melanderRemovingExternalDegrees2015`
     """
+
+
+class NudgedElasticBandConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    images: int = Field(
+        default=5, description="Number of NEB images between the fixed endpoints."
+    )
+    spring: float = Field(
+        default=5.0, description="The spring constant, in eV/Ang^2 between the images."
+    )
+    climbing_image_method: bool = Field(
+        default=False, description="Indicates if the climbing image method is used."
+    )
+    """
+    As discussed in :cite:t:`neb-henkelmanClimbingImageNudged2000`.
+    """
+    old_tangent: bool = Field(
+        default=False, description="Indicates if the old tangent method is used."
+    )
+    """
+    From :cite:t:`neb-millsQuantumThermalEffects1994`, before :cite:t:`neb-henkelmanImprovedTangentEstimate2000`.
+    """
+    neb_max_iterations: int = Field(
+        default=1000, description="Maximum number of iterations allowed for the NEB."
+    )
+    neb_climbing_image_converged_only: bool = Field(
+        default=True,
+        description="Indicates if only the climbing image converged is used.",
+    )
+    neb_doubly_nudged: bool = Field(
+        default=False, description="Indicates if the doubly nudged method is used."
+    )
+    neb_doubly_nudged_switching: bool = Field(
+        default=False,
+        description="Indicates if the doubly nudged switching method is used.",
+    )
+    """
+    Method as demonstrated in :cite:t:`neb-trygubenkoDoublyNudgedElastic2004`.
+    """
+    neb_elastic_band: bool = Field(
+        default=False, description="Indicates if the elastic band method is used."
+    )
+    neb_converged_force: float = Field(
+        default=0.01,  # Assuming `optConvergedForce` is 0.0 as it's not provided
+        description="Converged force threshold for the NEB.",
+    )
+    """
+    This defaults to being the same as :any:`eon.schema.OptimizerConfig.converged_force`
+    """
+    neb_energy_weighted: bool = Field(
+        default=False, description="Indicates if the energy-weighted method is used."
+    )
+    """
+    Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.
+    """
+    neb_ksp_min: float = Field(
+        default=0.97, description="Minimum value for KSP in the energy-weighted method."
+    )
+    neb_ksp_max: float = Field(
+        default=9.7, description="Maximum value for KSP in the energy-weighted method."
+    )
 
 
 class Config(BaseModel):
