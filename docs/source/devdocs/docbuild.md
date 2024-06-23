@@ -29,6 +29,10 @@ This can be viewed locally with an HTTP server.
 python -m http.server docs/build/html
 ```
 
+## Additions
+
+The following sections detail methods to add functionality to the documentation.
+
 ## Adding extensions
 
 Additions to the build process are handled by the `pdm` development group `docs`, so additions are done via:
@@ -36,3 +40,8 @@ Additions to the build process are handled by the `pdm` development group `docs`
 ```{code-block} bash
 pipx run pdm add -dG docs "sphinxcontrib-bibtex"
 ```
+
+## Adding citations
+
+Citations are handled in a `.bib` file which is exported via `better-bibtex`
+with Zotero. Kindly do not modify these by hand.
