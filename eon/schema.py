@@ -820,26 +820,26 @@ class OptimizerConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     opt_method: Literal["box", "cg", "qm", "lbfgs", "fire"] = Field(
         default="cg",
-        description="""
-            The optimization method to use.
-            Options:
-            - 'box': Optimizes the atom positions and box using quickmin
-            - 'cg': Conjugate gradient
-            - 'qm': Quickmin
-            - 'lbfgs': Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
-            - 'fire': Fast inertial relaxation engine
-        """,
+        description="The optimization method to use.",
     )
+    """
+    Options:
+      - ``box``: Optimizes the atom positions and box using quickmin
+      - ``cg``: Conjugate gradient
+      - ``qm``: Quickmin
+      - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
+      - ``fire``: Fast inertial relaxation engine
+    """
     convergence_metric: Literal["norm", "max_atom", "max_component"] = Field(
         default="norm",
-        description="""
-            The metric to use to determine when an optimization is complete.
-            Options:
-            - 'norm': The norm of the entire force vector
-            - 'max_atom': The maximum force on any non-frozen atom
-            - 'max_component': The maximum force on any non-frozen degree of freedom
-        """,
+        description="The metric to use to determine when an optimization is complete.",
     )
+    """
+    Options:
+      - ``norm``: The norm of the entire force vector
+      - ``max_atom``: The maximum force on any non-frozen atom
+      - ``max_component``: The maximum force on any non-frozen degree of freedom
+    """
     converged_force: float = Field(
         default=0.01,
         description="When the convergence_metric is smaller than this value (eV/A), the structure is considered minimized.",
@@ -915,17 +915,17 @@ class RefineConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     refine_opt_method: Literal["none", "cg", "lbfgs", "fire", "box", "qm"] = Field(
         default="none",
-        description="""
-            The optimization method to use for refinement.
-            Options:
-            - 'none': No refinement optimization
-            - 'cg': Conjugate gradient
-            - 'lbfgs': Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
-            - 'fire': Fast inertial relaxation engine
-            - 'box': Optimizes the atom positions and box using quickmin
-            - 'qm': Quickmin
-        """,
+        description="The optimization method to use for refinement.",
     )
+    """
+    Options:
+      - ``none``: No refinement optimization
+      - ``cg``: Conjugate gradient
+      - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
+      - ``fire``: Fast inertial relaxation engine
+      - ``box``: Optimizes the atom positions and box using quickmin
+      - ``qm``: Quickmin
+    """
     refine_threshold: float = Field(
         default=0.5, description="Threshold for refinement optimization."
     )
