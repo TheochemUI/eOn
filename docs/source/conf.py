@@ -31,7 +31,8 @@ extensions = [
     "autodoc2",
 ]
 
-bibtex_bibfiles = ['eonDocs.bib']
+bibtex_bibfiles = ['bibtex/eonDocs.bib']
+
 autodoc2_render_plugin = "myst"
 autodoc2_packages = [
     f"../../{project.lower()}",
