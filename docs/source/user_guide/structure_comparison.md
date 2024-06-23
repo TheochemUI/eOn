@@ -6,7 +6,7 @@
 [Structure Comparison]
 ```
 
-```{versionchanged} 2.1
+```{versionchanged} 2.1_TBA
 In TOML, this will be `[Structure Comparison]`
 ```
 

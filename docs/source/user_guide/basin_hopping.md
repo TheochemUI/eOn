@@ -28,7 +28,7 @@ At each basin hopping step the client will print out:
 [Basin Hopping]
 ```
 
-```{versionchanged} 2.1
+```{versionchanged} 2.1_TBA
 In TOML, this will be `[Basin_Hopping]
 ```
 

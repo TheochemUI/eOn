@@ -17,6 +17,10 @@ implemented for use with gas phase systems.
 There is no point removing rotations for an extended system.
 ```
 
+```{versionadded} 2.5_TBA
+The Gaussian Process Regression accelerated dimer in C++, rewritten and extended from {cite:t}`dm-koistinenMinimumModeSaddle2020`.
+```
+
 ## Configuration
 
 ```{code-block} toml
