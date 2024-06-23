@@ -201,7 +201,9 @@ class BasinHoppingConfig(BaseModel):
     )
     """
     The files are named ``min_xxxxx.con`` and ``energy_xxxxx.con``, where
-    'xxxxx' corresponds to the Monte Carlo step.
+    'xxxxx' corresponds to the Monte Carlo step where the structure was first
+    seen. For clusters it is important to set
+    :any:`eon.schema.StructureComparisonConfig.check_rotation`.
     """
     initial_state_pool_size: int = Field(
         default=1,
@@ -243,6 +245,14 @@ class BasinHoppingConfig(BaseModel):
         description="Distribution used for the displacement of each atom.",
         enum=["gaussian", "uniform"],
     )
+    """
+    :any:`eon.schema.BasinHoppingConfig.displacement` for the **gaussian** will
+    serve as the standard deviation of the normal distribution used to select
+    displacements.
+
+    **uniform** will select a random number between the positive and negative
+    values of :any:`eon.schema.BasinHoppingConfig.displacement`.
+    """
     swap_probability: float = Field(
         default=0.0,
         description="Probability (in range [0,1]) that a swapping step takes place instead of a displacement step.",
@@ -258,7 +268,10 @@ class BasinHoppingConfig(BaseModel):
         description="Number of consecutive rejected steps after which jump steps should be taken.",
     )
     """
-    This provides a more global search when the structure is stuck in a certain basin.
+    This provides a more global search when the structure is stuck in a certain
+    basin. The number of jump steps is assigned in
+    :any:`eon.schema.BasinHoppingConfig.jump_steps`. See
+    :cite:t:`bh-iwamatsuBasinHoppingOccasional2004` for more details.
     """
     significant_structure: bool = Field(
         default=True, description="Displace from minimized structures."
