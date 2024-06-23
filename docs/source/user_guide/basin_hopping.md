@@ -29,7 +29,7 @@ At each basin hopping step the client will print out:
 ```
 
 ```{versionchanged} 2.1_TBA
-In TOML, this will be `[Basin_Hopping]
+In TOML, this will be `[Basin_Hopping]`
 ```
 
 ```{eval-rst}

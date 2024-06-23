@@ -65,7 +65,7 @@ exit direction and time compared to normal KMC simulation
 ```
 
 ```{versionchanged} 2.1_TBA
-In TOML, this will be `[Coarse_Graining]
+In TOML, this will be `[Coarse_Graining]`
 ```
 
 ```{eval-rst}

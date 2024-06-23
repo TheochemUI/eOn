@@ -69,6 +69,7 @@ recycling
 coarse_graining
 
 dynamics
+parallel_replica
 
 communicator
 debug
