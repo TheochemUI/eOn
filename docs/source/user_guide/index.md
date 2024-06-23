@@ -61,6 +61,7 @@ neb
 dimer
 lanczos
 hessian
+prefactor
 
 basin_hopping
 recycling
