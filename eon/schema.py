@@ -39,29 +39,32 @@ class MainConfig(BaseModel):
     ] = Field(
         default="akmc",
         description="""
-            The type of job to execute. Options:
-            - 'molecular_dynamics': Molecular dynamics.
-            - 'parallel_replica': Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
-            - 'saddle_search': Do a saddle point search using a minimum mode method.
-            - 'displacement_sampling': Job to sample different displacement methods and parameters to see which are the most efficient.
-            - 'process_search': Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.
-            - 'basin_hopping': Search for global minimum using basin hopping method.
-            - 'minimization': Find the minimum from an initial configuration.
-            - 'akmc': Run an adaptive kinetic monte carlo simulation.
-            - 'hessian': Calculate the Hessian matrix for the specified configuration in a process.
-            - 'finite_differences': Finite difference methods.
-            - 'global_optimization': Global optimization methods.
-            - 'gp_surrogate': Gaussian process surrogate methods.
-            - 'monte_carlo': Monte Carlo methods.
-            - 'nudged_elastic_band': Nudged elastic band methods.
-            - 'point': Single point calculation.
-            - 'prefactor': Prefactor calculations.
-            - 'replica_exchange': Replica exchange methods.
-            - 'safe_hyperdynamics': Safe hyperdynamics methods.
-            - 'structure_comparison': Structure comparison methods.
-            - 'tad': Temperature-accelerated dynamics.
+            The type of job to execute.
         """,
     )
+    """
+    Options:
+     - ``molecular_dynamics``: Molecular dynamics.
+     - ``parallel_replica``: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
+     - ``saddle_search``: Do a saddle point search using a minimum mode method.
+     - ``displacement_sampling``: Job to sample different displacement methods and parameters to see which are the most efficient.
+     - ``process_search``: Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.
+     - ``basin_hopping``: Search for global minimum using basin hopping method.
+     - ``minimization``: Find the minimum from an initial configuration.
+     - ``akmc``: Run an adaptive kinetic monte carlo simulation.
+     - ``hessian``: Calculate the Hessian matrix for the specified configuration in a process.
+     - ``finite_differences``: Finite difference methods.
+     - ``global_optimization``: Global optimization methods.
+     - ``gp_surrogate``: Gaussian process surrogate methods.
+     - ``monte_carlo``: Monte Carlo methods.
+     - ``nudged_elastic_band``: Nudged elastic band methods.
+     - ``point``: Single point calculation.
+     - ``prefactor``: Prefactor calculations.
+     - ``replica_exchange``: Replica exchange methods.
+     - ``safe_hyperdynamics``: Safe hyperdynamics methods.
+     - ``structure_comparison``: Structure comparison methods.
+     - ``tad``: Temperature-accelerated dynamics.
+    """
     random_seed: int = Field(
         # See https://click.rgoswami.me/pyrandint
         # for a few caveats on getrandbits
