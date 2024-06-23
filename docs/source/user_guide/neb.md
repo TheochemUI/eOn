@@ -14,7 +14,7 @@ Details may be found in {cite:t}`neb-jonssonNudgedElasticBand1998`,
 
 In order to run a nudged elastic band calculation, set **job** to
 *nudged_elastic_band* in the **[Main]** section. Details of the optimizer can be
-set in the **[Optimizer]** section.
+set as per the <project:optimizer.md> document.
 
 ## Variants
 
@@ -25,6 +25,10 @@ set in the **[Optimizer]** section.
 
 ```{versionadded} 2.0
 - The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021`.
+```
+
+```{note}
+`eON`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
 ```
 
 ## Configuration
