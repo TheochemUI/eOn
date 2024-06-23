@@ -1383,6 +1383,47 @@ class ParallelReplicaConfig(BaseModel):
     )
 
 
+class HyperdynamicsConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    bias_potential: Literal["none", "bond_boost"] = Field(
+        default="none", description="Type of bias potential to use."
+    )
+    """
+    Options:
+    - ``none``: With no bias potential, run regular MD.
+    - ``bond_boost``: Bond boost method.
+    """
+
+    bb_dvmax: float = Field(
+        default=0.0, description="The magnitude of the bond-boost bias potential."
+    )
+
+    bb_rmd_time: float = Field(
+        default=100.0,
+        description="Regular MD duration (in fs) to determine equilibrium bond length before adding bias potential.",
+    )
+
+    bb_rcut: float = Field(
+        default=3.0,
+        description="Cutoff distance (in Angstroms) for bonds included in the bond-boost potential.",
+    )
+
+    bb_stretch_threshold: float = Field(
+        default=0.2, description="Defines the bond-boost dividing surface."
+    )
+    """
+    It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.
+    """
+
+    bb_ds_curvature: float = Field(
+        default=0.95, description="Curvature near the bond-boost dividing surface."
+    )
+    """
+    It should have a value <= 1. We recommend the value to be 0.9-0.98.
+    """
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -1404,6 +1445,7 @@ class Config(BaseModel):
     kdb: KDBConfig
     dynamics: DynamicsConfig
     parrep: ParallelReplicaConfig
+    hyperdyn: HyperdynamicsConfig
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
     optimizer: OptimizerConfig
