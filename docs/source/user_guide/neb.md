@@ -32,6 +32,7 @@ set as per the <project:optimizer.md> document.
 ```
 
 ```{versionadded} 3.0_TBA
+Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in {cite:t}`koistinenNudgedElasticBand2017` and {cite:t}`koistinenNudgedElasticBand2019`.
 ```
 
 ## Configuration
