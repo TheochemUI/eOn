@@ -5,7 +5,7 @@
 groups = ["default", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:e56a3a9c6b59b2216c2ce44d3c5a5f26311937c0e362c7e738f901e56d43af97"
+content_hash = "sha256:34537d134f1f6d01b634697a7c4261db2519098f5be51a3e8824f67f16a5cb40"
 
 [[package]]
 name = "accessible-pygments"
@@ -72,6 +72,21 @@ dependencies = [
 files = [
     {file = "astroid-3.2.2-py3-none-any.whl", hash = "sha256:e8a0083b4bb28fcffb6207a3bfc9e5d0a68be951dd7e336d5dcf639c682388c0"},
     {file = "astroid-3.2.2.tar.gz", hash = "sha256:8ead48e31b92b2e217b6c9733a21afafe479d52d6e164dd25fb1a770c7c3cf94"},
+]
+
+[[package]]
+name = "autodoc-pydantic"
+version = "2.2.0"
+requires_python = "<4.0.0,>=3.8.1"
+summary = "Seamlessly integrate pydantic models in your Sphinx documentation."
+groups = ["docs"]
+dependencies = [
+    "Sphinx>=4.0",
+    "pydantic-settings<3.0.0,>=2.0",
+    "pydantic<3.0.0,>=2.0",
+]
+files = [
+    {file = "autodoc_pydantic-2.2.0-py3-none-any.whl", hash = "sha256:8c6a36fbf6ed2700ea9c6d21ea76ad541b621fbdf16b5a80ee04673548af4d95"},
 ]
 
 [[package]]
@@ -289,17 +304,6 @@ dependencies = [
 files = [
     {file = "jinja2-3.1.4-py3-none-any.whl", hash = "sha256:bc5dd2abb727a5319567b7a813e6a2e7318c39f4f487cfe6c89c6f9c7d25197d"},
     {file = "jinja2-3.1.4.tar.gz", hash = "sha256:4a3aee7acbbe7303aede8e9648d13b8bf88a429282aa6122a993f0ac800cb369"},
-]
-
-[[package]]
-name = "jsonpointer"
-version = "3.0.0"
-requires_python = ">=3.7"
-summary = "Identify specific nodes in a JSON document (RFC 6901) "
-groups = ["docs"]
-files = [
-    {file = "jsonpointer-3.0.0-py2.py3-none-any.whl", hash = "sha256:13e088adc14fca8b6aa8177c044e12701e6ad4b28ff10e65f2267a90109c9942"},
-    {file = "jsonpointer-3.0.0.tar.gz", hash = "sha256:2b2d729f2091522d61c3b31f82e11870f60b68f43fbc705cb76bf4b832af59ef"},
 ]
 
 [[package]]
@@ -613,6 +617,21 @@ files = [
 ]
 
 [[package]]
+name = "pydantic-settings"
+version = "2.3.3"
+requires_python = ">=3.8"
+summary = "Settings management using Pydantic"
+groups = ["docs"]
+dependencies = [
+    "pydantic>=2.7.0",
+    "python-dotenv>=0.21.0",
+]
+files = [
+    {file = "pydantic_settings-2.3.3-py3-none-any.whl", hash = "sha256:e4ed62ad851670975ec11285141db888fd24947f9440bd4380d7d8788d4965de"},
+    {file = "pydantic_settings-2.3.3.tar.gz", hash = "sha256:87fda838b64b5039b970cd47c3e8a1ee460ce136278ff672980af21516f6e6ce"},
+]
+
+[[package]]
 name = "pydata-sphinx-theme"
 version = "0.15.3"
 requires_python = ">=3.9"
@@ -655,6 +674,17 @@ groups = ["docs"]
 files = [
     {file = "pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a"},
     {file = "pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"},
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.1"
+requires_python = ">=3.8"
+summary = "Read key-value pairs from a .env file and set them as environment variables"
+groups = ["docs"]
+files = [
+    {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
+    {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
 ]
 
 [[package]]
@@ -904,36 +934,6 @@ dependencies = [
 files = [
     {file = "sphinx-favicon-1.0.1.tar.gz", hash = "sha256:df796de32125609c1b4a8964db74270ebf4502089c27cd53f542354dc0b57e8e"},
     {file = "sphinx_favicon-1.0.1-py3-none-any.whl", hash = "sha256:7c93d6b634cb4c9687ceab67a8526f05d3b02679df94e273e51a43282e6b034c"},
-]
-
-[[package]]
-name = "sphinx-jsonschema"
-version = "1.19.1"
-summary = "Sphinx extension to display JSON Schema"
-groups = ["docs"]
-dependencies = [
-    "docutils",
-    "jsonpointer",
-    "pyyaml",
-    "requests",
-]
-files = [
-    {file = "sphinx-jsonschema-1.19.1.tar.gz", hash = "sha256:b2385fe1c7acf2e759152aefed0cb17c920645b2a75c9934000c9c528e7d53c1"},
-]
-
-[[package]]
-name = "sphinx-pydantic"
-version = "0.1.1"
-requires_python = ">=3.6.0"
-summary = "Generate Sphinx documentation from PyDantic objects."
-groups = ["docs"]
-dependencies = [
-    "pydantic",
-    "sphinx-jsonschema",
-]
-files = [
-    {file = "sphinx-pydantic-0.1.1.tar.gz", hash = "sha256:a830e4f07fe88fbdfe3edecc2f52ef133cde2def7cb882a3f22780f34963b0fb"},
-    {file = "sphinx_pydantic-0.1.1-py3-none-any.whl", hash = "sha256:371487ad81250d8bc5b944a2936b33c10ff88af7188d5be0ee6c4b46bb70254a"},
 ]
 
 [[package]]
