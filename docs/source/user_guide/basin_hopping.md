@@ -2,7 +2,7 @@
 
 Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimum
-{cite:p}`walesGlobalOptimizationBasinHopping1997`.
+{cite:p}`bh-walesGlobalOptimizationBasinHopping1997`.
 
 At each basin hopping step the client will print out the current energy
 (current), the trial energy (trial), the lowest energy found (global min), the
@@ -12,10 +12,10 @@ ratio (ar), and the current max displacement (md).
 ## Notes
 
 - `eON` defaults to letting displacements occur from minimized structures as per
-  the method of {cite:t}`whiteInvestigationTwoApproaches1998`, which is
+  the method of {cite:t}`bh-whiteInvestigationTwoApproaches1998`, which is
   controlled by {any}`siginificant_structure
   <eon.schema.BasinHoppingConfig.significant_structure>`
-- The occational jumping variant of {cite:t}`iwamatsuBasinHoppingOccasional2004`
+- The occational jumping variant of {cite:t}`bh-iwamatsuBasinHoppingOccasional2004`
   is also implemented, and is controlled by
   {any}`jump_max <eon.schema.BasinHoppingConfig.jump_max>`.
 
@@ -27,5 +27,12 @@ ratio (ar), and the current max displacement (md).
 
 ## References
 
+
 ```{bibliography}
+---
+style: alpha
+filter: docname in docnames
+labelprefix: BH
+keyprefix: bh-
+---
 ```
