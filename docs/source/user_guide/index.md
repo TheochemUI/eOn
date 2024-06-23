@@ -16,5 +16,7 @@ neb
 structure_comparison
 optimizer
 minimization
+recycling
+
 mpi_potential
 ```

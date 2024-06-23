@@ -740,12 +740,18 @@ class RecyclingConfig(BaseModel):
     )
     save_suggestions: bool = Field(
         default=False,
-        description="If true, the suggestions made by saddle recycling are saved to the 'saddle_suggestions' directory of the state directory for which the saddles are being suggested.",
+        description="If True, the suggestions made by saddle recycling are saved to the 'saddle_suggestions' directory of the state directory for which the saddles are being suggested.",
     )
     active_region: float = Field(
         default=1.0,
-        description="Defines a region around the atoms that moved in the previous KMC step to target new saddle searches in the current state. For dynamics-based saddle searches, atoms in the active region will have mass weighting applied; for min-mode following saddle searches, only these atoms will be selected for displacements. Represents a multiple of [Structure Comparison] neighbor_distance.",
+        description="Defines a region around the atoms that moved in the previous KMC step to target new saddle searches in the current state.",
     )
+    """
+    For dynamics-based saddle searches, atoms in the active region will have
+    mass weighting applied; for min-mode following saddle searches, only these
+    atoms will be selected for displacements. Represents a multiple of
+    :any:`eon.schema.StructureComparisonConfig.neighbor_cutoff`.
+    """
     mass_weight_factor: float = Field(
         default=1000.0,
         description="Atoms that are not within the active region have their atomic masses multiplied by this factor.",
