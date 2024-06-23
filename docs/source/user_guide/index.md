@@ -68,6 +68,8 @@ process_search
 recycling
 coarse_graining
 
+dynamics
+
 communicator
 debug
 paths

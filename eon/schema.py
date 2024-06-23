@@ -1254,6 +1254,43 @@ class HessianConfig(BaseModel):
     )
 
 
+class DynamicsConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    time_step: float = Field(
+        default=1.0, description="The duration of each MD step, in femtoseconds."
+    )
+    time: float = Field(
+        default=1000.0,
+        description="Total MD time, in femtoseconds.",
+    )
+    thermostat: Literal["none", "andersen", "langevin", "nose_hoover"] = Field(
+        default="none", description="Thermostat to use for the dynamics simulation."
+    )
+    """
+    Options:
+    - ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
+    - ``andersen``: Andersen thermostat with the Verlet algorithm.
+    - ``langevin``: Langevin thermostat with the Verlet algorithm.
+    - ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.
+    """
+    andersen_collision_period: float = Field(
+        default=100.0,
+        description="The collision period (in fs) for the Andersen thermostat.",
+    )
+    andersen_alpha: float = Field(
+        default=1.0, description="The collision strength in the Andersen thermostat."
+    )
+    nose_mass: float = Field(
+        default=1.0,
+        description="The effective mass of the additional degree of freedom in the Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.",
+    )
+    langevin_friction: float = Field(
+        default=0.01,
+        description="The damping coefficient for Langevin dynamics (1/fs).",
+    )
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -1273,6 +1310,7 @@ class Config(BaseModel):
     potential: PotentialConfig
     refine: RefineConfig
     kdb: KDBConfig
+    dynamics: DynamicsConfig
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
     optimizer: OptimizerConfig
