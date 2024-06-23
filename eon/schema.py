@@ -1291,6 +1291,80 @@ class DynamicsConfig(BaseModel):
     )
 
 
+class ParallelReplicaConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    dephase_time: float = Field(
+        default=1000.0,
+        description="Time (in fs) to decorrelate the replica trajectories.",
+    )
+    """
+    The momenta will be inverted when reaching the dividing surface to prevent
+    transitions occurring during this time.
+    """
+
+    state_check_interval: float = Field(
+        default=1000.0, description="Frequency (in fs) to check the system state."
+    )
+    """
+    Every ``state_check_interval``, the current configuration is minimized and
+    compared to the initial state minimum to decide if a transition to a new
+    state has occurred. When :any:`refine_transition` is set to true, the code
+    will keep a buffer of configurations so that the transition time can be
+    determined to more precision than ``state_check_interval``.
+    """
+
+    refine_transition: bool = Field(
+        default=True, description="Whether the transition time is refined."
+    )
+    """
+    When this option is true, an array of (:any:`state_check_interval`/
+    :any:`state_save_interval`) configurations along the history of the
+    trajectory is saved. A binary search is then used to determine the
+    transition time. When this option is false, the transition time is taken to
+    be when the new state was found. This function reduces the need for small
+    values of :any:`state_check_interval`; the precision of the transition time
+    is :any:`state_save_interval` * :any:`dynamics time_step
+    <eon.schema.DynamicsConfig.time_step>`.
+    """
+
+    state_save_interval: float = Field(
+        default=0.1 * 1000.0,  # 0.1 * state_check_interval
+        description="Frequency to record system state.",
+    )
+    """
+    How often the system is recorded to the buffer array when the
+    :any:`refine_transition` option is
+    activated. Increasing the value of
+    :any:`state_save_interval` lowers the
+    precision of the transition time estimate but also reduces memory usage and
+    speeds up refinement of the transition step.
+    """
+
+    post_transition_time: float = Field(
+        default=1000.0,
+        description="Additional time (in fs) after a new state is found.",
+    )
+    """
+    A state check will be employed after this post_transition_time to confirm
+    that the state is stable. This additional check helps avoid meta-stable
+    states. A value similar to
+    :any:`dephase_time` is recommended.
+    """
+
+    stop_after_transition: bool = Field(
+        default=False, description="Whether to stop the job when a new state is found."
+    )
+
+    dephase_loop_stop: bool = Field(
+        default=False, description="Whether to stop the dephase loop."
+    )
+
+    dephase_loop_max: int = Field(
+        default=5, description="Maximum number of dephase loops."
+    )
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -1311,6 +1385,7 @@ class Config(BaseModel):
     refine: RefineConfig
     kdb: KDBConfig
     dynamics: DynamicsConfig
+    parrep: ParallelReplicaConfig
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
     optimizer: OptimizerConfig
