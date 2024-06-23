@@ -1393,6 +1393,11 @@ class HyperdynamicsConfig(BaseModel):
         description="Regular MD duration (in fs) to determine equilibrium bond length before adding bias potential.",
     )
 
+    bb_boost_atom_list: Union[str, list[int]] = Field(
+        default="ALL",
+        description="The atoms that will be displaced in the calculation: a comma delimited list of atom indices, e.g. 0,1,2. Default is 'All'.",
+    )
+
     bb_rcut: float = Field(
         default=3.0,
         description="Cutoff distance (in Angstroms) for bonds included in the bond-boost potential.",
