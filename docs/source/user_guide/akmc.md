@@ -14,9 +14,9 @@ The hTST approximation of a transition rate is calculated from the energy
 difference between the saddle point along the minimum energy path for the
 transition and the initial minimum. The vibrational modes at these points are
 also used to calculate the prefactor. An hTST rate is of the standard Arrhenius
-form {math}`\(R = v \exp (-\Delta E/kT)\)` where {math}`\(v\)` is the product of all positive
-modes at the minimum divided by those at the saddle, {math}`\(\Delta E\)` is the energy
-barrier, and {math}`\(kT\)` is the thermal enregy.
+form {math}`R = v \exp (-\Delta E/kT)` where {math}`v` is the product of all positive
+modes at the minimum divided by those at the saddle, {math}`\Delta E` is the energy
+barrier, and {math}`kT` is the thermal enregy.
 
 In order to propogate the dynamics within aKMC, a list of all possible rates
 leading away from the current stable state to any other state is required.
