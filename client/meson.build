@@ -212,7 +212,7 @@ eonclib_sources = [
 ]
 
 eonclient_sources = [
-           'fpe_handler.cpp',
+           # 'fpe_handler.cpp',
            'ClientEON.cpp',
            'CommandLine.cpp',
 ]
