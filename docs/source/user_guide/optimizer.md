@@ -23,6 +23,58 @@ standard optimizer software suite[^1] . Some prominent reasons are:
 .. autopydantic_model:: eon.schema.OptimizerConfig
 ```
 
+Each of the optimizer methods have their own settings as well.
+
+### LBFGS
+
+```{code-block} ini
+[LBFGS]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.LBFGSConfig
+```
+
+### QuickMin
+
+```{code-block} ini
+[QuickMin]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.QuickMinConfig
+```
+
+### FIRE
+
+```{code-block} ini
+[FIRE]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.FIREConfig
+```
+
+### CG
+
+```{code-block} ini
+[CG]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.CGConfig
+```
+
+### SD
+
+```{code-block} ini
+[SD]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.SDConfig
+```
+
 ## References
 
 ```{bibliography}
