@@ -4,7 +4,7 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
-if get_option('with_fortran') or get_option('with_xtb')
+if get_option('with_fortran') or get_option('with_xtb') or get_option('with_cuh2')
   use_fortran = true
   add_languages('fortran', required: true)
   fc = meson.get_compiler('fortran')
@@ -88,6 +88,8 @@ version_bits = version_output.split(',')
 version = version_bits[0]
 build_date = version_bits[1]
 architecture = host_machine.cpu_family()
+message(host_system)
+message(architecture)
 
 # Configure the header file
 configure_file(
@@ -336,9 +338,6 @@ if get_option('with_fortran')
 endif
 
 if get_option('with_cuh2')
-  # Implicitly needs Fortran
-  add_languages('fortran', required: true)
-  fc = meson.get_compiler('fortran')
   subdir('potentials/CuH2')
   potentials += [cuh2]
   _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
