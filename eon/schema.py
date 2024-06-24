@@ -1001,58 +1001,85 @@ class OptimizerConfig(BaseModel):
         default=1000,
         description="The maximum number of optimization iterations that will be performed.",
     )
-    lbfgs_memory: int = Field(
-        default=20,
-        description="The maximum number of previous gradients and positions that are kept in memory for the L-BFGS algorithm.",
-    )
-    lbfgs_inverse_curvature: float = Field(
-        default=0.01,
-        description="The initial guess for inverse curvature at each step, used to construct the inverse Hessian matrix. Only used when lbfgs_auto_scale is False.",
-    )
-    lbfgs_auto_scale: bool = Field(
-        default=True,
-        description="If True, the initial guess for the inverse Hessian at each step is constructed by estimating the curvature along the previous step direction.",
-    )
-    lbfgs_angle_reset: bool = Field(
-        default=True,
-        description="If True, the L-BFGS memory resets if the angle between the force and the L-BFGS direction is larger than 90 degrees.",
-    )
-    lbfgs_distance_reset: bool = Field(
-        default=True,
-        description="If True, the L-BFGS memory resets if a move larger than the max_move is attempted.",
+
+
+class QuickMinConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    time_step: float = Field(
+        default=1.0, description="Time step for QuickMin, in femtoseconds."
     )
     qm_steepest_descent: bool = Field(
-        default=False, description="If True, uses steepest descent in quickmin."
-    )
-    cg_no_overshooting: bool = Field(
         default=False,
-        description="If True, the conjugate gradient method will avoid overshooting.",
+        description="If true, use the steepest descent method for QuickMin.",
+    )
+
+
+class FIREConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    time_step: float = Field(
+        default=1.0, description="Time step for FIRE, in femtoseconds."
+    )
+    time_step_max: float = Field(
+        default=1.0, description="Maximum time step for FIRE, in femtoseconds."
+    )
+
+
+class LBFGSConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    lbfgs_memory: int = Field(
+        default=5,
+        description="Number of previous gradients and positions to store for the LBFGS method.",
+    )
+    lbfgs_inverse_curvature: float = Field(
+        default=1e-3, description="Initial inverse curvature value for LBFGS."
+    )
+    lbfgs_max_inverse_curvature: float = Field(
+        default=1e-2, description="Maximum inverse curvature value for LBFGS."
+    )
+    lbfgs_auto_scale: bool = Field(
+        default=True, description="If true, auto-scale the inverse curvature in LBFGS."
+    )
+    lbfgs_angle_reset: bool = Field(
+        default=False, description="If true, reset the LBFGS angle."
+    )
+    lbfgs_distance_reset: bool = Field(
+        default=False, description="If true, reset the LBFGS distance."
+    )
+
+
+class CGConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    cg_no_overshooting: bool = Field(
+        default=False, description="If true, prevent overshooting in CG."
     )
     cg_knock_out_max_move: bool = Field(
-        default=False,
-        description="If True, knocks out the maximum move in conjugate gradient.",
+        default=False, description="If true, limit the maximum move in CG."
     )
     cg_line_search: bool = Field(
-        default=False,
-        description="If True, performs a line search in conjugate gradient.",
+        default=False, description="If true, perform a line search in CG."
     )
     cg_line_converged: float = Field(
-        default=0.1,
-        description="Convergence criterion for line search in conjugate gradient.",
-    )
-    cg_line_search_max_iter: int = Field(
-        default=10,
-        description="Maximum number of iterations for line search in conjugate gradient.",
+        default=1e-4, description="Convergence criterion for the line search in CG."
     )
     cg_max_iter_before_reset: int = Field(
-        default=0,
-        description="Maximum number of iterations in conjugate gradient before a reset.",
+        default=20, description="Maximum number of iterations before reset in CG."
     )
-    sd_alpha: float = Field(
-        default=0.1, description="Alpha parameter for steepest descent."
+    cg_max_iter_line_search: int = Field(
+        default=10,
+        description="Maximum number of iterations for the line search in CG.",
     )
-    sd_two_point: bool = Field(
-        default=False, description="If True, uses two-point steepest descent."
+
+
+class SDConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    sd_alpha: float = Field(default=0.1, description="Alpha value for SD.")
+    sd_twopoint: bool = Field(
+        default=False, description="If true, use the two-point method in SD."
     )
 
 
