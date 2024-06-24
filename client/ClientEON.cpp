@@ -274,7 +274,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-  enableFPE();
+  // enableFPE();
 
   double beginTime = 0.0;
   helper_functions::getTime(&beginTime, NULL, NULL);
