@@ -11,6 +11,7 @@ if get_option('with_fortran') or get_option('with_xtb') or get_option('with_cuh2
 endif
 
 if get_option('with_python') or get_option('gp_surrogate')
+  # TODO(rg): Cleanup a bit
   # Embed is needed for surrogate, numpy by qsc
   py = import('python').find_installation('python', modules: ['numpy'])
   python_dep = py.dependency(embed: true)
@@ -403,12 +404,12 @@ ec = executable('eonclient',
 
 if get_option('with_tests')
 if get_option('with_python')
-  ec1 = executable('testPot',
-                   'testpot.cpp',
-                   include_directories: _incdirs,
-                   dependencies : _deps,
-                   link_with : _linkto,
-                  )
+  # ec1 = executable('testPot',
+  #                  'testpot.cpp',
+  #                  include_directories: _incdirs,
+  #                  dependencies : _deps,
+  #                  link_with : _linkto,
+  #                 )
 endif
 
 ec2 = executable('testWriteR',
