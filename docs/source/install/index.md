@@ -38,24 +38,9 @@ micromamba activate eongit
 This leads to the most robust installation approach:
 
 ```{code-block} bash
-meson setup bbdir --prefix=$CONDA_PREFIX
+# conda-compilers may try to install to $CONDA_PREFIX/lib/x86_64-linux-gnu without --libdir
+meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib
 meson install -C bbdir
-```
-
-Occasionally, the library is installed to the wrong path[^1], in which case the
-output of the above command should be checked for the location and then that
-should be added to `$PATH`.
-
-```{code-block} bash
-meson install -C bbdir | grep libeon
-Installing client/libeoncbase.so to /micromamba/envs/eongit/lib
-Installing client/libeonclib.so to /micromamba/envs/eongit/lib
-```
-
-At which point we should add the library path:
-
-```{code-block} bash
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/micromamba/envs/eongit/lib
 ```
 
 The server is accessed through `python -m eon.server`, and the `eonclient`
@@ -92,7 +77,7 @@ svn
 License](https://opensource.org/license/BSD-3-Clause).
 
 ## Vendored
-Some libraries[^2] are distributed along with `eON`, namely:
+Some libraries[^1] are distributed along with `eON`, namely:
 
 - `mcamc` which contains `libqd` :: BSD-3-Clause license
 ```{versionadded} 2.0
@@ -108,5 +93,4 @@ Some libraries[^2] are distributed along with `eON`, namely:
 
 <!-- pipx run pdm run sphinx-build -b html docs/source docs/build/html -->
 
-[^1]: Due to the [post-fix labeling](https://conda-forge.org/docs/user/faq/#why-dont-the-cc-compilers-automatically-know-how-to-find-libraries-installed-by-conda) of `conda-compilers`
-[^2]: All with compatible licenses
+[^1]: All with compatible licenses
