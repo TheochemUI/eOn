@@ -1,3 +1,24 @@
+* Conda bugs
+
+Occasionally, the library is installed to the wrong path[^1], in which case the
+output of the above command should be checked for the location and then that
+should be added to `$PATH`.
+
+```{code-block} bash
+meson install -C bbdir | grep libeon
+Installing client/libeoncbase.so to /micromamba/envs/eongit/lib
+Installing client/libeonclib.so to /micromamba/envs/eongit/lib
+```
+
+At which point we should add the library path:
+
+```{code-block} bash
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/micromamba/envs/eongit/lib
+```
+
+# conda-compilers may try to install to $CONDA_PREFIX/lib/x86_64-linux-gnu
+
+[^1]: Due to the [post-fix labeling](https://conda-forge.org/docs/user/faq/#why-dont-the-cc-compilers-automatically-know-how-to-find-libraries-installed-by-conda) of `conda-compilers`
 * What
 Documentation which is still usable, but not recommended.
 *** Nix [Deprecated]
