@@ -1,7 +1,7 @@
 import numpy as np
 cimport numpy as np
 
-cdef extern from "QSC.h":
+cdef extern from "QSC.h": 
     cdef cppclass QSC:
         QSC()
 
@@ -12,8 +12,8 @@ cdef extern from "QSC.h":
         void set_qsc_parameter(int Z, double n, double m, double epsilon,
                                double c, double a)
 
-        void force(long N, double *R, int *atomicNrs,
-                   double *F, double *U,  double *box) except +
+        void force(long N, const double *R, const int *atomicNrs,
+                   double *F, double *U, double *variance, const double *box) except +
 
 class QSCMissingParameter(Exception):
     pass
@@ -34,26 +34,28 @@ cdef class PyQSC:
         return self.thisptr.vlist_updates
 
     def set_verlet_skin(self, dr):
-        self.thisptr.set_verlet_skin(dr)
+        self.thisptr.set_verlet_skin(dr) 
 
     def set_cutoff(self, c):
         self.thisptr.set_cutoff(c)
 
     def get_cutoff(self):
         return self.thisptr.get_cutoff()
-
+        
     def force(self,
-              N,
+              N, 
               np.ndarray[np.double_t,ndim=1] R,
-              np.ndarray[np.int_t,ndim=1] atomicNrs,
+              np.ndarray[np.int,ndim=1] atomicNrs,
               np.ndarray[np.double_t,ndim=1] box):
         #XXX: UGLY TYPE HACK
         cdef np.ndarray[np.int32_t]  Z=atomicNrs.astype(np.int32)
-        cdef np.ndarray[np.double_t] U=np.zeros((1,),dtype=np.double)
+        cdef np.ndarray[np.double_t] U=np.zeros((1,),dtype=np.double) 
         cdef np.ndarray[np.double_t] F=np.zeros((3*N,),dtype=np.double)
+        cdef np.ndarray[np.double_t] variance=np.zeros((3*N,),dtype=np.double)
         try:
             self.thisptr.force(N,<double*>R.data,<int*>Z.data,<double*>F.data,
-                               <double*>U.data,<double*>box.data)
+                               <double*>U.data,<double*>variance.data,<double*>box.data)
         except RuntimeError:
             raise QSCMissingParameter("Missing Parameter")
         return U[0],F
+

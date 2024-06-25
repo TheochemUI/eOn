@@ -10,7 +10,24 @@ class QSC
 #endif
 {
 public:
-  QSC(void);
+  QSC(std::shared_ptr<Parameters> params)
+      : Potential(PotType::QSC, params) {
+    cutoff = 8.0;
+    verlet_skin = 0.5;
+    init = false;
+    prev_num_atoms = 0;
+    vlist_updates = 0;
+
+    int i = 0;
+    while (true) {
+      if (qsc_default_params[i].Z == -1)
+        break;
+      qsc_params.push_back(qsc_default_params[i]);
+      i++;
+    }
+  }
+  QSC()
+      : QSC(std::make_shared<Parameters>()) {}
   ~QSC(void);
 
   void initialize(){};
@@ -18,7 +35,7 @@ public:
                   const double *box);
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+             double *U, double *variance, const double *box) override;
   void set_verlet_skin(double dr);
   void set_cutoff(double c);
   double get_cutoff(void);
