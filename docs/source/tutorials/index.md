@@ -9,4 +9,7 @@ server and client).
 
 akmc
 parrep
+CECAM_LTS_MAP_2024/index
 ```
+
+<!-- Maybe the workshops should be elsewhere? -->
