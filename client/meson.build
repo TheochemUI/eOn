@@ -10,6 +10,20 @@ if get_option('with_fortran') or get_option('with_xtb') or get_option('with_cuh2
   fc = meson.get_compiler('fortran')
 endif
 
+if get_option('with_python') or get_option('gp_surrogate')
+  # Embed is needed for surrogate, numpy by qsc
+  py = import('python').find_installation('python', modules: ['numpy'])
+  python_dep = py.dependency(embed: true)
+  _deps += python_dep
+
+  incdir_numpy = run_command(py,
+    ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
+    check : true
+  ).stdout().strip()
+  inc_np = include_directories(incdir_numpy)
+  _deps += declare_dependency(include_directories: inc_np)
+endif
+
 # Platform detection
 host_system = host_machine.system()
 is_windows = host_system == 'windows'
@@ -237,10 +251,7 @@ if get_option('with_gp_surrogate')
     if get_option('with_catlearn')
       # TODO: Cleanup, used for ase_orca too
       # Embedding the interpreter
-      py = import('python').find_installation()
-      python_dep = py.dependency(embed: true)
-      pyb11f_deps = [ python_dep,
-                      dependency('pybind11'),
+      pyb11f_deps = [ dependency('pybind11'),
                       declare_dependency(link_args: '-lstdc++') ]
       _deps += [ pyb11f_deps ]
       subdir('potentials/CatLearnPot')
@@ -308,9 +319,10 @@ if get_option('with_lammps')
 endif
 
 if get_option('with_python')
-  subdir('potentials/PyAMFF')
+  # subdir('potentials/PyAMFF')
+  # pyamff,
   subdir('potentials/QSC')
-  potentials += [ pyamff, qsc ]
+  potentials += [ qsc ]
   _args += ['-DWITH_PYTHON']
 endif
 
