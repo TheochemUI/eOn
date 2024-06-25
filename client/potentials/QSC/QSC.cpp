@@ -3,8 +3,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "Parameters.h"
 #include "QSC.h"
+#include "Parameters.h"
 
 /*
  * This is an implementation of the Quantum Sutton-Chen Potential,
@@ -13,22 +13,6 @@
  * EAM density:    rho_i(r_ij) = sum_(i!=j) (a/r_ij)^m
  * Pair potential: V(r_ij) = (a/r_ij)^n
  */
-
-QSC::QSC() {
-  cutoff = 8.0;
-  verlet_skin = 0.5;
-  init = false;
-  prev_num_atoms = 0;
-  vlist_updates = 0;
-
-  int i = 0;
-  while (true) {
-    if (qsc_default_params[i].Z == -1)
-      break;
-    qsc_params.push_back(qsc_default_params[i]);
-    i++;
-  }
-}
 
 QSC::~QSC() { cleanMemory(); }
 

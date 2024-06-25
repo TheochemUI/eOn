@@ -10,6 +10,7 @@ dependencies:
   - compilers
   - meson
   - cmake
+  - cython # For qsc
   - ninja
   - gfortran
   - pkg-config
