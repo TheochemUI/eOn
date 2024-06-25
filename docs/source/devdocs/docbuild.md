@@ -19,7 +19,17 @@ To facilitate interactions with `pdm`,
 
 ## Building locally
 
+````{margin}
+```{note}
+`pipx` simplifies running Python commands, and `pdm` handles version updates better, syncing nicely with the `pyproject.toml` so no Python dependencies not needed by the client should be in the `environment.yml`
+```
+````
+
 ```{code-block} bash
+# Setup dependencies
+pipx run pdm sync
+# Need to install for autodoc-pydantic
+pipx run pdm run pip install . -vvv
 pipx run pdm run sphinx-build -b html docs/source docs/build/html
 ```
 
