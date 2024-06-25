@@ -17,7 +17,7 @@ int DynamicsSaddleSearch::run(void) {
   if (massFile.is_open()) {
     SPDLOG_LOGGER_DEBUG(log, "Found mass weights file");
     massFile.close();
-    VectorXd masses =
+    Eigen::VectorXd masses =
         helper_functions::loadMasses("masses.dat", saddle->numberOfAtoms());
     saddle->setMasses(masses);
     SPDLOG_LOGGER_DEBUG(log, "Applied mass weights");
@@ -98,7 +98,7 @@ int DynamicsSaddleSearch::run(void) {
     if (step % checkInterval == 0) {
       SPDLOG_LOGGER_DEBUG(log, "Minimizing trajectory, step {}", step);
 
-      *product = *saddle;
+      product = saddle;
       product->relax(false, false);
 
       if (!product->compare(*reactant)) {
