@@ -52,7 +52,7 @@ void Dynamics::oneStep(int stepNumber) {
 
     if (stepNumber % parameters->writeMoviesInterval == 0) {
       SPDLOG_LOGGER_DEBUG(
-          log, "{} {:8ld} {:10.4f} {:12.4f} {:12.4f} {:10.2f}\n", "[Dynamics]",
+          log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n", "[Dynamics]",
           stepNumber, kinE, potE, kinE + potE, kinT);
     }
   }
