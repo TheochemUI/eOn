@@ -1,0 +1,2 @@
+pair_style			eam/alloy
+pair_coeff			 * * Cu01.eam.alloy Cu
