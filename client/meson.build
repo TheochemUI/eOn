@@ -4,6 +4,7 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
+use_fortran = false
 if get_option('with_fortran') or get_option('with_xtb') or get_option('with_cuh2')
   use_fortran = true
   add_languages('fortran', required: true)
