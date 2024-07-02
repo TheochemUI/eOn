@@ -93,6 +93,7 @@ git branch main_fin
 git push -u origin main_fin
 # Adding back the newer commits after the reset
 git rebase --ignore-whitespace --rebase-merges --onto main_fin 0e26312^ c267e1c
+git push origin HEAD:main_fin
 ```
 
 Note that the `ignore-whitespace` option might be problematic for Python
@@ -103,7 +104,9 @@ changes, but for C++ only changesets it should be fine.
 emacsclient -n $(git diff --name-only --diff-filter=U | head -n 1)
 ```
 
-Also note that documentation commits are ported en-mass, and skipped on rebase.
+```{note}
+Documentation only commits are ported separately, and skipped during the rebase, since these will be in files "deleted by us".
+```
 
 [^1]: Atlassian has [pretty decent documentation and helpers](https://www.atlassian.com/git/tutorials/svn-to-git-prepping-your-team-migration), but, Java is a pain.
 [^2]: From this [SO answer](https://stackoverflow.com/a/79188/1895378)
