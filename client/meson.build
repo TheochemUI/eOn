@@ -322,11 +322,17 @@ if get_option('with_lammps')
 endif
 
 if get_option('with_python')
+  _args += ['-DWITH_PYTHON']
   # subdir('potentials/PyAMFF')
   # pyamff,
   subdir('potentials/QSC')
   potentials += [ qsc ]
-  _args += ['-DWITH_PYTHON']
+  if get_option('with_ase')
+    subdir('potentials/ASE')
+    potentials += [ ase ]
+    # TODO(rg): Annoying, use WITH_ style
+    _args += ['-DASE_POT']
+  endif
 endif
 
 if get_option('with_mpi')
