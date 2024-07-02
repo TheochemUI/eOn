@@ -34,6 +34,7 @@ dependencies:
   - sh
   # Docs
   - towncrier
+  - pipx
   # Lint
   - cppcheck
   - cpplint
