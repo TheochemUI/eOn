@@ -11,4 +11,5 @@ Pull requests and documentation contributions are all highly appreciated.
 
 testing
 docbuild
+svn-migration
 ```
