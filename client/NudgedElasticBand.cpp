@@ -126,6 +126,7 @@ NudgedElasticBand::NudgedElasticBand(
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
+  this->status = NEBStatus::INIT;
   log = spdlog::get("combi");
   SPDLOG_LOGGER_DEBUG(log, "\nNEB: initializing with linear path\n");
   for (long i = 0; i <= numImages + 1; i++) {
@@ -235,10 +236,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     VectorXd pos = objf->getPositions();
     double convForce{convergenceForce()};
     if (iteration) { // so that we print forces before taking an optimizer step
-    if (iteration >= params->nebMaxIterations) {
-      status = NEBStatus::BAD_MAX_ITERATIONS;
-      break;
-    }
+      if (iteration >= params->nebMaxIterations) {
+        status = NEBStatus::BAD_MAX_ITERATIONS;
+        break;
+      }
       if (refine_optim) {
         if (optim && convForce > params->refineThreshold) {
           optim->step(params->optMaxMove);
@@ -254,6 +255,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         optim->step(params->optMaxMove);
       }
     }
+    // }
     iteration++;
 
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
@@ -309,10 +311,11 @@ double NudgedElasticBand::convergenceForce(void) {
     } else if (params->optConvergenceMetric == "max_component") {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
-      SPDLOG_LOGGER_DEBUG(
-          log, "[Nudged Elastic Band] unknown opt_convergence_metric: %s\n",
+      log = spdlog::get("_traceback");
+      SPDLOG_LOGGER_CRITICAL(
+          log, "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
           params->optConvergenceMetric);
-      exit(1);
+      std::exit(1);
     }
     if (params->nebClimbingImageConvergedOnly == true &&
         params->nebClimbingImageMethod && climbingImage != 0) {
@@ -435,27 +438,27 @@ void NudgedElasticBand::updateForces(void) {
           ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
     } else {
       this->ksp = params->nebSpring;
-    forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
+      forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
       forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
     }
 
     if (params->nebDoublyNudged) {
       if (not params->nebEnergyWeighted) {
-      forceSpringPerp =
-          forceSpring -
-          (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
-      forceDNEB =
-          forceSpringPerp -
-          (forceSpringPerp.array() * forcePerp.normalized().array()).sum() *
-              forcePerp.normalized();
-      if (params->nebDoublyNudgedSwitching) {
-        double switching;
-        switching =
-            2.0 / M_PI *
-            atan(pow(forcePerp.norm(), 2) / pow(forceSpringPerp.norm(), 2));
-        forceDNEB *= switching;
-      }
-    } else {
+        forceSpringPerp =
+            forceSpring -
+            (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
+        forceDNEB =
+            forceSpringPerp -
+            (forceSpringPerp.array() * forcePerp.normalized().array()).sum() *
+                forcePerp.normalized();
+        if (params->nebDoublyNudgedSwitching) {
+          double switching;
+          switching =
+              2.0 / M_PI *
+              atan(pow(forcePerp.norm(), 2) / pow(forceSpringPerp.norm(), 2));
+          forceDNEB *= switching;
+        }
+      } else {
         SPDLOG_WARN("Not using doubly nudged since energy_weighted is set");
       }
     } else {
@@ -474,8 +477,8 @@ void NudgedElasticBand::updateForces(void) {
       // sum the spring and potential forces for the neb force
       if (params->nebElasticBand) {
         if (not params->nebEnergyWeighted) {
-        *projectedForce[i] = forceSpring + force;
-      } else {
+          *projectedForce[i] = forceSpring + force;
+        } else {
           SPDLOG_WARN("Not using elastic_band  since energy_weighted is set");
         }
       } else {
@@ -511,17 +514,20 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   AtomMatrix tang;
 
   std::shared_ptr<spdlog::logger> fileLogger;
+  if (spdlog::get("file_logger")) {
+    spdlog::drop("file_logger");
+  }
   if (writeToFile) {
     // Remove existing log file if it exists
-    if (fs::exists("neb.dat")) {
-      SPDLOG_LOGGER_DEBUG(log, "Previous neb.dat found, overwriting");
+    auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
+    if (fs::exists(neb_dat_fs)) {
+      // SPDLOG_DEBUG(
+      //     "Removing the file since it exists, dropping existing logger");
+      fs::remove(neb_dat_fs);
     }
     fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
     fileLogger->set_pattern("%v");
   }
-
-  SPDLOG_LOGGER_DEBUG(log, "Image data (as in neb.dat)");
-
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
       tang = tangentStart;
@@ -546,8 +552,6 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
           (path[i]->getForces().array() * tang.array()).sum());
     }
   }
-  spdlog::drop("neb");
-  fileLogger.reset();
 }
 
 // Estimate the barrier using a cubic spline
@@ -629,7 +633,7 @@ void NudgedElasticBand::findExtrema(void) {
     }
   }
 
-  SPDLOG_LOGGER_DEBUG(log, "\nFound {} extrema", numExtrema);
+  SPDLOG_LOGGER_DEBUG(log, "Found {} extrema", numExtrema);
   SPDLOG_LOGGER_DEBUG(log, "Energy reference: {}",
                       path[0]->getPotentialEnergy());
   for (long i = 0; i < numExtrema; i++) {

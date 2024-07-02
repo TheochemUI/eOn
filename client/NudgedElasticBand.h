@@ -59,6 +59,7 @@ public:
 private:
   std::shared_ptr<Parameters> params;
   std::shared_ptr<Potential> pot;
+  NEBStatus status;
   std::shared_ptr<spdlog::logger> log;
 };
 
