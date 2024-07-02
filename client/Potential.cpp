@@ -40,7 +40,7 @@
 #include "potentials/PyAMFF/PyAMFF.h"
 #endif
 #ifdef ASE_POT
-    #include "potentials/ASE/ASE.h"
+#include "potentials/ASE/ASE.h"
 #endif
 
 #include "potentials/QSC/QSC.h"
@@ -52,11 +52,6 @@
 
 #ifdef LAMMPS_POT
 #include "potentials/LAMMPS/LAMMPS.h"
-#endif
-
-#ifdef ASE_POT
-    else if(parameters->potential == POT_ASE){
-        pot = new ASE(parameters);}
 #endif
 
 #ifdef NEW_POT
@@ -237,6 +232,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef PYAMFF_POT
   case PotType::PYAMFF: {
     return (std::make_shared<PyAMFF>());
+    break;
+  }
+#endif
+#ifdef ASE_POT
+  case PotType::ASE_POT: {
+    return (std::make_shared<ASE_POT>(params));
     break;
   }
 #endif
