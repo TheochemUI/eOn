@@ -429,11 +429,8 @@ int Parameters::load(FILE *file) {
     EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
     extPotPath = ini.GetValue("Potential", "ext_pot_path", extPotPath);
 
-        if (potential == "mpi"    || 
-            potential == "vasp"   ||
-            potential == "bopfox" ||
-            potential == "bop")
-        {
+    if (potential == PotType::MPI || potential == PotType::VASP ||
+        potential == PotType::BOPFOX || potential == PotType::BOP) {
       LogPotential = true;
     } else {
       LogPotential = false;
@@ -604,8 +601,8 @@ int Parameters::load(FILE *file) {
         toLowerCase(ini.GetValue("Dimer", "opt_method", dimerOptMethod));
     dimerRotationsMin =
         ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin); // old
-    dimerRotationsMax =
-        ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax); // old & new
+    dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max",
+                                      dimerRotationsMax); // old & new
     dimerTorqueMin =
         ini.GetValueF("Dimer", "torque_min", dimerTorqueMin); // old
     dimerTorqueMax =
@@ -835,7 +832,8 @@ int Parameters::load(FILE *file) {
     thermoLangevinFrictionInput = ini.GetValueF("Dynamics", "langevin_friction",
                                                 thermoLangevinFrictionInput);
     thermoLangevinFriction = thermoLangevinFrictionInput * timeUnit;
-    // thermoAtoms = helper_functions::split_string_int(ini.GetValue("Dynamics",
+    // thermoAtoms =
+    // helper_functions::split_string_int(ini.GetValue("Dynamics",
     // "thermo_atoms", ""), ",");
 
     // [Parallel Replica]
