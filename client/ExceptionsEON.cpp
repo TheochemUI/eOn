@@ -47,6 +47,8 @@ int getFPEState(void) {
     #ifdef OSX
         return _MM_GET_EXCEPTION_MASK();
     #endif
+        // Default to false
+        return -1;
 }
 
 bool isFPEEnabled(void) {
