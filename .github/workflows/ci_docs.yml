@@ -21,7 +21,6 @@ jobs:
       - name: Generate Docs
         shell: bash -el {0}
         run: |
-          micromamba install pipx
           # Will also install the package
           pipx run pdm sync -v
           pipx run pdm run sphinx-build -b html docs/source html
