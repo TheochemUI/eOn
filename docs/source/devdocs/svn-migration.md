@@ -99,13 +99,16 @@ git push origin HEAD:main_fin
 Note that the `ignore-whitespace` option might be problematic for Python
 changes, but for C++ only changesets it should be fine.
 
+Documentation only commits are ported separately, and skipped during the rebase, since these will be in files "deleted by us".
+
 ```{code-block} bash
 # Open next both merged
 emacsclient -n $(git diff --name-only --diff-filter=U | head -n 1)
 ```
 
+
 ```{note}
-Documentation only commits are ported separately, and skipped during the rebase, since these will be in files "deleted by us".
+Remember to diff the folders (e.g. via `meld`) after this operation, and confirm only expected changes are present.
 ```
 
 [^1]: Atlassian has [pretty decent documentation and helpers](https://www.atlassian.com/git/tutorials/svn-to-git-prepping-your-team-migration), but, Java is a pain.
