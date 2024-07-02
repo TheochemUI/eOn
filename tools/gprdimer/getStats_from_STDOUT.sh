@@ -42,7 +42,8 @@ def print_stats(fname, ams=None):
             Total Time (wall time): {totTime}
             Total PES Sample Time: {np.round(mSampleT*totEcalls, 3)}
             Wasted PES Sample Time: {np.round(mSampleT*totDrops, 3)}
-            Overhead: {np.round(totTime-(mSampleT*totEcalls), 3)}
+            Overhead: {np.round(overhead, 3)}
+            Cost: {np.round(cost,3)}
             '''
         else:
             outstring = f'''
