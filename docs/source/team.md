@@ -5,22 +5,31 @@ research groups.
 
 ## Contributors
 
+In no particular order. Refer to the log for more details.
+
+[Jónsson Group](https://hj.hi.is/researchgroup.html) (University of Iceland)
+
+- [Rohit Goswami](https://rgoswami.me)
+- Andreas Pederson
+- Alejandro Pena Torres
+- Vilhjálmur Ásgeirsson
+
 [Henkelman Group](https://theory.cm.utexas.edu/henkelman/) (UT Austin)
 
 - Samuel Chill
 - Rye Terrell
 - Matthew Welborn
 - Liang Zhang
-- SONG Zichen
 - Akksay Singh
-
-[Jónsson Group](https://hj.hi.is/researchgroup.html) (University of Iceland)
-
-- [Rohit Goswami](https://rgoswami.me)
-- Andreas Pederson
+- S. Alireza Ghasemi
+- Juliana Duncan
+- Naman Katyal
+- Sung Hoon Jung
 
 <!-- TODO(rg) update!! -->
-Lei-Lei Group ()
+[Li Lei Group](https://faculty.sustech.edu.cn/lil33/en/)
+
+- SONG Zichen
 
 With contributions from a number of other developers:
 
