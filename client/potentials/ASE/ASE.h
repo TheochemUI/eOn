@@ -11,31 +11,28 @@
 #ifndef ASE_POTENTIAL
 #define ASE_POTENTIAL
 
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
 #include "../../Potential.h"
+#include <pybind11/embed.h>
+#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
-class ASE : public Potential
-{
+class ASE : public Potential {
 
-    private:
-        Parameters *parameters;
-        py::scoped_interpreter guard;  // Member to manage the Python Interpreter
-        py::module_ py_module;  // Member to store the Python module
-        py::object calculator;  // Member to store the ASE calculator object
-        py::object _calculate;  // Member to store the Python function to calculate forces and energy
+private:
+  size_t counter;
+  // XXX(rg): Remove this, guards are done in the client
+  py::scoped_interpreter guard; // Member to manage the Python Interpreter
+  py::module_ py_module;        // Member to store the Python module
+  py::object calculator;        // Member to store the ASE calculator object
+  py::object _calculate; // Member to store the Python function to calculate
+                         // forces and energy
 
-    public:
-        ASE(Parameters *p);
-        ~ASE();
-	
-        // Just to satisfy interface
-        void initialize() {};
-        void cleanMemory(void);    
-        
-        void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+public:
+  ASE(shared_ptr<Parameters> a_params);
+  virtual ~ASE() { SPDLOG_INFO("[ASE] called potential {} times", counter); }
+
+  void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
+             double *U, double *variance, const double *box) override;
 };
 #endif
-

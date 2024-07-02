@@ -62,7 +62,8 @@ enum class PotType {
   PYTHON,
   CatLearn,
   XTB,
-  ASE_ORCA
+  ASE_ORCA,
+  ASE_POT,
 };
 
 enum class JobType {
