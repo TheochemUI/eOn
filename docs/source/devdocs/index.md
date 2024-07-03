@@ -9,6 +9,7 @@ Pull requests and documentation contributions are all highly appreciated.
 :maxdepth: 2
 :caption: Tasks
 
+design/index
 testing
 docbuild
 svn-migration
