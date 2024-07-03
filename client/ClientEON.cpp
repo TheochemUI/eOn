@@ -34,7 +34,7 @@
 #endif
 
 //Includes for FPE trapping
-#include "ExceptionsEON.h"
+#include "fpe_handler.h"
 
 #ifdef WIN32
     #include <float.h>
