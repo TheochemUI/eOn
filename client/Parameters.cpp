@@ -308,7 +308,7 @@ Parameters::Parameters() {
   repexc.exchangePeriod = 100.0;
 
   // [Hyperdynamics] //
-  bondBoost.biasPotential = Hyperdynamics::NONE; // Hyperdynamics::NONE
+  bondBoost.biasPotential = "none"s; // Hyperdynamics::NONE
   bondBoost.BALS = "ALL"s;           // boosted atom list string
   bondBoost.DVMAX = 0.0;
   bondBoost.QRR = 0.2; // can not be set to 0
