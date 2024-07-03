@@ -54,5 +54,7 @@ jobs:
       - name: Run tests
         shell: bash -el {0}
         run: |
-          cd examples/akmc-al
-          python -m eon.server
+          meson test -vvv -C bbdir
+          # TODO(rg): Start running these after gh-143
+          # cd examples/akmc-al
+          # python -m eon.server
