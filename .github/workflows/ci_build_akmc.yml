@@ -13,12 +13,13 @@ jobs:
         os: [ubuntu-22.04, macos-14, macos-12, windows-2022]
     steps:
       - uses: actions/checkout@v4
+
       - uses: mamba-org/setup-micromamba@v1
+        if: matrix.os != 'windows-2022'
         with:
           environment-file: environment.yml
           init-shell: >-
             bash
-            powershell
           cache-environment: true
           cache-downloads: true
           cache-environment-key: environment-${{ matrix.os }}
@@ -30,12 +31,25 @@ jobs:
         run: |
           meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
           meson install -C bbdir
+
+      - uses: mamba-org/setup-micromamba@v1
+        if: matrix.os == 'windows-2022'
+        with:
+          environment-file: env_win.yml
+          init-shell: >-
+            powershell
+          cache-environment: true
+          cache-downloads: true
+          cache-environment-key: environment-${{ matrix.os }}
+          cache-downloads-key: downloads-${{ matrix.os }}
+          post-cleanup: 'all'
       - name: Compile and install [windows]
         if: matrix.os == 'windows-2022'
         shell: pwsh
         run: |
           meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
           meson install -C bbdir
+
       - name: Run tests
         shell: bash -el {0}
         run: |
