@@ -47,6 +47,29 @@
 #include <unistd.h>
 #endif
 
+#ifdef __APPLE__
+  #ifndef __aarch64__
+  #include <mach/mach.h>
+  #include <mach/task_info.h>
+
+  void print_memory_usage() {
+      struct task_basic_info t_info;
+      mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+
+      if (KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count)) {
+          printf("Failed to get task info\n");
+          return;
+      }
+
+      unsigned int rss = t_info.resident_size;
+      unsigned int vs = t_info.virtual_size;
+      printf(
+          "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
+          (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+  }
+  #endif
+#endif
+
 void printSystemInfo() {
   spdlog::info("EON Client");
   spdlog::info("VERSION: {}", VERSION);
@@ -414,18 +437,7 @@ int main(int argc, char **argv) {
 
 #ifdef OSX
   #ifndef __aarch64__
-  struct task_basic_info t_info;
-  mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
-
-  if (KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO,
-                                (task_info_t)&t_info, &t_info_count)) {
-    return -1;
-  }
-  unsigned int rss = t_info.resident_size;
-  unsigned int vs = t_info.virtual_size;
-  printf(
-      "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
-      (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+  print_memory_usage();
   #endif
 #endif
 
