@@ -29,8 +29,6 @@ py.install_sources([
   'eon/atoms.py',
   'eon/basinhopping.py',
   'eon/communicator.py',
-  'eon/config.py',
-  'eon/config.yaml',
   'eon/displace.py',
   'eon/eon_kdb.py',
   'eon/escaperate.py',
@@ -58,4 +56,12 @@ py.install_sources([
 ],
   pure: false, # install next to compiled extension
   subdir: 'eon'
+)
+
+py.install_sources([
+  'eon/migrator/config.py',
+  'eon/migrator/config.yaml',
+],
+  pure: false,
+  subdir: 'eon/migrator'
 )
