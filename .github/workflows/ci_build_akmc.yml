@@ -20,6 +20,9 @@ jobs:
             bash
             powershell
           cache-environment: true
+          cache-downloads: true
+          cache-environment-key: environment-${{ matrix.os }}
+          cache-downloads-key: downloads-${{ matrix.os }}
           post-cleanup: 'all'
       - name: Compile and install [nix]
         if: matrix.os != 'windows-2022'
@@ -34,6 +37,7 @@ jobs:
           meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
           meson install -C bbdir
       - name: Run tests
+        shell: bash -el {0}
         run: |
           cd examples/akmc-al
           python -m eon.server
