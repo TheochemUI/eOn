@@ -105,6 +105,7 @@ Parameters::Parameters() {
   optim.LBFGSMemory = 20;
   // assumes stiffest curvature at minimum is 100 eV/A^2
   optim.LBFGSInverseCurvature = 0.01;
+  optim.LBFGSMaxInverseCurvature = 0.01;
   optim.LBFGSAutoScale = true;
   optim.LBFGSAngleReset = true;
   optim.LBFGSDistanceReset = true;
@@ -302,6 +303,7 @@ Parameters::Parameters() {
   repexc.samplingTime = repexc.samplingTimeInput / timeUnit;
   repexc.temperatureLow = 0.0;
   repexc.temperatureHigh = 0.0;
+  repexc.exchangePeriodInput = 100.0;
   repexc.exchangePeriod = 100.0;
 
   // [Hyperdynamics] //
