@@ -1,4 +1,4 @@
-name: "Build EON"
+name: "Build EON with GPRD"
 # TODO: Include master once merged
 on:
   push:
