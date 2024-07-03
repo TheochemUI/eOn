@@ -47,7 +47,7 @@ jobs:
         if: matrix.os == 'windows-2022'
         shell: pwsh
         run: |
-          meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
+          meson setup bbdir --prefix $env:CONDA_PREFIX --libdir=lib
           meson install -C bbdir
 
       - name: Run tests
