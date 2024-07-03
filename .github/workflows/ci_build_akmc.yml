@@ -10,7 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-14, macos-12, windows-2022]
+        # TODO(rg): Handle the windows-2022 later, issues linking fmt
+        os: [ubuntu-22.04, macos-14, macos-12]
     steps:
       - uses: actions/checkout@v4
 
