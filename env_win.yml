@@ -1,8 +1,4 @@
-# To use:
-#
-#   $ micromamba env create -f environment.yml  # `conda` works too for this command
-#   $ micromamba activate eongit
-#
+# Almost like environment.yml but without packages which fail on windows
 name: eongit
 channels:
   - conda-forge
@@ -19,7 +15,6 @@ dependencies:
   - eigen==3.4.0
   # AMS
   - boost-cpp
-  - fmt
   - spdlog
   - abseil-cpp
   # Testing
@@ -31,7 +26,6 @@ dependencies:
   - PyYAML
   - pytest
   - pytest-datadir
-  - sh
   # Docs
   - towncrier
   - pipx
