@@ -442,7 +442,7 @@ if get_option('with_tests')
               cpp_args: test_args,
               link_with: _linkto + testMain,
                      ),
-            workdir : meson.source_root() + '/gtests/data/systems/' + test.get(2)
+            workdir : meson.source_root() + '/client/gtests/data/systems/' + test.get(2)
           )
     endforeach
 endif
