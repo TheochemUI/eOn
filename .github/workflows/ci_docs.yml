@@ -23,7 +23,6 @@ jobs:
           init-shell: >-
             bash
           cache-environment: true
-          cache-downloads: true
           post-cleanup: 'all'
       - name: Generate Docs
         shell: bash -el {0}
