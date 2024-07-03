@@ -107,7 +107,7 @@ optMaxTimeStepInput: 2.5
 optMaxTimeStep: 0.245567373840130027
 optLBFGSMemory: 20
 optLBFGSInverseCurvature: 0.0100000000000000002
-optLBFGSMaxInverseCurvature: 0
+optLBFGSMaxInverseCurvature: 0.0100000000000000002
 optLBFGSAutoScale: true
 optLBFGSAngleReset: true
 optLBFGSDistanceReset: true
@@ -286,7 +286,7 @@ repexcSamplingTimeInput: 1000
 repexcSamplingTime: 98.226949536052004
 repexcTemperatureHigh: 0
 repexcTemperatureLow: 0
-repexcExchangePeriodInput: 0
+repexcExchangePeriodInput: 100
 repexcExchangePeriod: 100
 
 [Hyperdynamics]
