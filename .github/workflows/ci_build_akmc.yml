@@ -1,0 +1,58 @@
+name: Build basic eon
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: false
+on: [push, pull_request]
+jobs:
+  build_eon:
+    runs-on: ${{ matrix.os }}
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(rg): Handle the windows-2022 later, issues linking fmt
+        os: [ubuntu-22.04, macos-14, macos-12]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v1
+        if: matrix.os != 'windows-2022'
+        with:
+          environment-file: environment.yml
+          init-shell: >-
+            bash
+          cache-environment: true
+          cache-environment-key: environment-${{ matrix.os }}
+          post-cleanup: 'all'
+      - name: Compile and install [nix]
+        if: matrix.os != 'windows-2022'
+        shell: bash -el {0}
+        run: |
+          meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
+          meson install -C bbdir
+
+      - uses: mamba-org/setup-micromamba@v1
+        if: matrix.os == 'windows-2022'
+        with:
+          environment-file: env_win.yml
+          init-shell: >-
+            powershell
+          cache-environment: true
+          cache-downloads: true
+          cache-environment-key: environment-${{ matrix.os }}
+          cache-downloads-key: downloads-${{ matrix.os }}
+          post-cleanup: 'all'
+      - name: Compile and install [windows]
+        if: matrix.os == 'windows-2022'
+        shell: pwsh
+        run: |
+          # Windows gfotran can't handle iso_c_binding...
+          meson wrap install fmt
+          meson setup bbdir --prefix $env:CONDA_PREFIX --libdir=lib -Dwith_cuh2=false
+          meson install -C bbdir
+
+      - name: Run tests
+        shell: bash -el {0}
+        run: |
+          cd examples/akmc-al
+          python -m eon.server
