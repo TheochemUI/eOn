@@ -101,6 +101,7 @@ Parameters::Parameters() {
   optim.timeStepInput = 1.0;
   optim.maxTimeStepInput = 2.5;
   optim.maxTimeStep = optim.maxTimeStepInput / timeUnit;
+  optim.timeStep = optim.timeStepInput / timeUnit;
 
   optim.LBFGSMemory = 20;
   // assumes stiffest curvature at minimum is 100 eV/A^2
