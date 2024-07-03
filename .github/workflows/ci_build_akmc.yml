@@ -21,9 +21,7 @@ jobs:
           init-shell: >-
             bash
           cache-environment: true
-          cache-downloads: true
           cache-environment-key: environment-${{ matrix.os }}
-          cache-downloads-key: downloads-${{ matrix.os }}
           post-cleanup: 'all'
       - name: Compile and install [nix]
         if: matrix.os != 'windows-2022'
