@@ -1,8 +1,6 @@
 name: Build basic eon
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: "eon_basic"
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: false
 on: [push, pull_request]
 jobs:
@@ -10,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: test (${{ matrix.os }})
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-14, macos-12, windows-2022]
     steps:
@@ -20,10 +18,18 @@ jobs:
           environment-file: environment.yml
           init-shell: >-
             bash
+            powershell
           cache-environment: true
           post-cleanup: 'all'
-      - name: Compile and install
+      - name: Compile and install [nix]
+        if: matrix.os != 'windows-2022'
         shell: bash -el {0}
+        run: |
+          meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
+          meson install -C bbdir
+      - name: Compile and install [windows]
+        if: matrix.os == 'windows-2022'
+        shell: pwsh
         run: |
           meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
           meson install -C bbdir
