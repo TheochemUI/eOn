@@ -136,7 +136,6 @@ eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], 
 _deps += [ eigen_dep ]
 
 fmt_dep = dependency('fmt',
-                     version: ['<10'],
                      required : true)
 _deps += fmt_dep
 

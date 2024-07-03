@@ -19,7 +19,6 @@ dependencies:
   - eigen==3.4.0
   # AMS
   - boost-cpp
-  - fmt<10.0.0
   - spdlog
   - abseil-cpp
   # Testing
