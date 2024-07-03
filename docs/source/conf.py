@@ -32,6 +32,8 @@ extensions = [
     "autodoc2",
 ]
 
+todo_include_todos = True
+
 bibtex_bibfiles = ['bibtex/eonDocs.bib']
 
 intersphinx_mapping = {
