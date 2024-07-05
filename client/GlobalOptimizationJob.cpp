@@ -1,7 +1,6 @@
 #include "GlobalOptimizationJob.h"
-#include "GlobalOptimization.h"
-// #include "MinimizationJob.h"
 #include "Dynamics.h"
+#include "GlobalOptimization.h"
 #include "HelperFunctions.h"
 #include <spdlog/spdlog.h>
 

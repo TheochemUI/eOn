@@ -1,9 +1,6 @@
-#ifndef DYNAMICSSADDLESEARCH_H
-#define DYNAMICSSADDLESEARCH_H
-
+#pragma once
 #include "Eigen.h"
 #include "Matter.h"
-#include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
 #include <vector>
 
@@ -43,5 +40,3 @@ public:
 private:
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

@@ -1,6 +1,4 @@
-
-#ifndef PREFACTORJOB_H
-#define PREFACTORJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Parameters.h"
@@ -16,5 +14,3 @@ public:
   static const char PREFACTOR_SADDLE[];
   static const char PREFACTOR_PRODUCT[];
 };
-
-#endif

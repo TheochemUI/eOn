@@ -1,8 +1,7 @@
-#ifndef REPLICAEXCHANGEJOB_H
-#define REPLICAEXCHANGEJOB_H
+#pragma once
 
-#include "Dynamics.h"
 #include "Job.h"
+#include "Matter.h"
 #include "Parameters.h"
 
 class ReplicaExchangeJob : public Job {
@@ -26,5 +25,3 @@ private:
   std::vector<std::string> returnFiles;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif
