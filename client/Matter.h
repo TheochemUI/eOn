@@ -33,7 +33,7 @@ public:
   ~Matter() = default;
   Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
       : potential{pot},
-        usePeriodicBoundaries{true},
+        usePeriodicBoundaries{params->main.usePBC},
         recomputePotential{true},
         forceCalls{0},
         parameters{params},
