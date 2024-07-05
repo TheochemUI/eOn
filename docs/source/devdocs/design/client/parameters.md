@@ -43,12 +43,7 @@ Consider the iterative improvement for the `LJ` class. First the parameters need
 // [Potential] //
 struct Potential {
   PotType potential;
-  double MPIPollPeriod;
-  bool LAMMPSLogging;
-  int LAMMPSThreads;
-  bool EMTRasmussen;
-  bool LogPotential;
-  std::string extPotPath;
+  ...
   struct LJParams{
   double u0;
   double cutoff;
@@ -113,4 +108,8 @@ more input file formats.
 ```{code-block} cpp
 // TODO(rg): Remove these when parameters goes away
 #include "potentials/LJ/LJ.h"
+```
+
+```{note}
+Unfortunately, until the parser is setup, the structures have to live out of the class definitions to prevent requiring a bunch of `ifdef` directives for the conditionally included potentials and jobs.
 ```
