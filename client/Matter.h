@@ -153,7 +153,7 @@ public:
   numberOfFreeAtoms() const; // return the number of free (or movable) atoms
   long int numberOfFixedAtoms() const; // return the number of fixed atoms
 
-  long
+ size_t
   getForceCalls() const; // return how many force calls that have been performed
   void resetForceCalls(); // zeroing the value of force calls
 
@@ -189,9 +189,9 @@ private:
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
-  mutable bool recomputePotential; // boolean indicating if the potential energy
+  bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated
-  mutable long
+ size_t
       forceCalls; // keep track of how many force calls have been performed
 
   // CON file header information, which is not used in the eon code
@@ -220,8 +220,8 @@ private:
   VectorXi isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3d cell;
   Matrix3d cellInverse;
-  mutable double energyVariance;
-  mutable double potentialEnergy;
+  double energyVariance;
+  double potentialEnergy;
 };
 
 #endif
