@@ -39,6 +39,7 @@ Parameters::Parameters() {
   main.finiteDifference = 0.01;
   main.maxForceCalls = 0;
   main.removeNetForce = true;
+  main.usePBC = true;
 
   // [Prefactor] //
   prefactor.defaultValue = 0.0;
@@ -401,6 +402,7 @@ int Parameters::load(const std::string &filename) {
     main.finiteDifference = config["Main"]["finite_difference"].value_or(0.01);
     main.maxForceCalls = config["Main"]["max_force_calls"].value_or(0L);
     main.removeNetForce = config["Main"]["remove_net_force"].value_or(true);
+    main.usePBC = config["Main"]["use_pbc"].value_or(true);
 
     // Initialize random generator
     if (main.randomSeed < 0) {
