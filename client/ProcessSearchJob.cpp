@@ -4,7 +4,6 @@
 #include "DynamicsSaddleSearch.h"
 #include "EpiCenters.h"
 #include "MinModeSaddleSearch.h"
-#include "Optimizer.h"
 #include "Prefactor.h"
 #include <iostream>
 

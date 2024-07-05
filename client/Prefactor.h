@@ -1,5 +1,4 @@
-
-#ifndef PREFACTOR_H
+#pragma once
 #define PREFACTOR_H
 
 #include "Eigen.h"
@@ -18,4 +17,3 @@ Vector<int> allFreeAtoms(Matter *matter);
 VectorType removeZeroFreqs(Parameters *parameters, VectorType freqs);
 void logFreqs(VectorType freqs, char *name);
 } // namespace Prefactor
-#endif

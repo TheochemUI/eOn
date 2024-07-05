@@ -1,6 +1,4 @@
-#ifndef HELPER_FUNCTIONS_H
-#define HELPER_FUNCTIONS_H
-
+#pragma once
 #include "Eigen.h"
 #include "Matter.h"
 #include <string>
@@ -72,8 +70,8 @@ VectorType maxMotionAppliedV(const VectorType v1, double maxMotion);
 void getTime(double *real, double *user, double *sys);
 bool existsFile(std::string filename); // does filename exist
 std::string
-getRelevantFile(std::string filename); // return filename containing _checkpoint or
-                                  // _passed if such a file exists
+getRelevantFile(std::string filename); // return filename containing _checkpoint
+                                       // or _passed if such a file exists
 VectorType loadMasses(std::string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
 AtomMatrix loadMode(std::string filename, int nAtoms);
@@ -87,4 +85,3 @@ bool sortedR(const Matter &m1, const Matter &m2,
 void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
 } // namespace helper_functions
-#endif

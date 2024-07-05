@@ -1,11 +1,8 @@
-#ifndef _BIASED_GRADIENT_SQUARED_DESCENT_
-#define _BIASED_GRADIENT_SQUARED_DESCENT_
+#pragma once
 
 #include "Eigen.h"
 #include "Matter.h"
-#include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
-#include <vector>
 
 class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
@@ -38,5 +35,3 @@ private:
   std::shared_ptr<spdlog::logger> log;
   //        double bgsdAlpha;
 };
-
-#endif

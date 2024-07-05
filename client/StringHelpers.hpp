@@ -1,5 +1,4 @@
-#ifndef STRINGHELPERS_H
-#define STRINGHELPERS_H
+#pragma once
 
 #include <optional>
 #include <regex>
@@ -33,4 +32,3 @@ std::vector<std::string> get_split_strings(const std::string &line);
  */
 bool isNumber(const std::string &token);
 } // namespace helper_functions
-#endif /* STRINGHELPERS_H */

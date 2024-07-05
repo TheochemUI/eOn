@@ -1,6 +1,4 @@
-
-#ifndef STRUCTURECOMPARISONJOB_H
-#define STRUCTURECOMPARISONJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Parameters.h"
@@ -12,5 +10,3 @@ public:
   ~StructureComparisonJob(void) = default;
   std::vector<std::string> run(void);
 };
-
-#endif

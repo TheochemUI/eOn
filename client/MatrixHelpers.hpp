@@ -1,6 +1,4 @@
-#ifndef MATRIXHELPERS_H
-#define MATRIXHELPERS_H
-
+#pragma once
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -18,4 +16,3 @@ bool eigenEquality(const Eigen::MatrixBase<T> &lhs,
   return lhs.isApprox(rhs, threshold);
 }
 } // namespace helper_functions
-#endif /* MATRIXHELPERS_H */
