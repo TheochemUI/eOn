@@ -16,14 +16,15 @@
 #include "../../Potential.h"
 #endif
 
+// XXX: This is actually unused..
 class EAM
 #ifndef EAM_STANDALONE
     : public Potential
 #endif
 {
 public:
-  EAM(Parameters &a_p)
-      : Potential(PotType::EAM_AL, a_p) {
+  EAM()
+      : Potential(PotType::EAM_STANDALONE) {
     celllist_new = 0;
     neigh_list = 0;
     initialized = false;
@@ -41,7 +42,7 @@ private:
   struct element_parameters {
     const int Z;                // Atomic Number
     const double Dm;            // Morse potential well depth
-    const double alphaM;        // Curvative at Morse minimum
+    const double alphaM;        // Curvature at Morse minimum
     const double Rm;            // Position of Morse minimum
     const double beta1;         // Density parameter 1
     const double beta2;         // Density parameter 2
