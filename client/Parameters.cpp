@@ -1,13 +1,9 @@
 #include "Parameters.h"
 #include "BaseStructures.h"
 #include "EpiCenters.h"
+#include "HelperFunctions.h"
 #include "ImprovedDimer.h"
-#include "ParallelReplicaJob.h"
-#include "Prefactor.h"
-#include "PrefactorJob.h"
-#include "ReplicaExchangeJob.h"
 #include "magic_enum/magic_enum.hpp"
-#include <errno.h>
 #include <float.h>
 #include <string>
 #include <thirdparty/toml.hpp>
@@ -268,7 +264,7 @@ Parameters::Parameters() {
   md.steps = long(floor(md.time / md.timeStep + 0.5));
 
   // [Thermostat] //
-  thermostat.kind = Dynamics::NONE;
+  thermostat.kind = "none"s;
   thermostat.andersenAlpha = 1.0;       // collision strength
   thermostat.andersenTcolInput = 100.0; // collision frequency in unit of fs
   thermostat.andersenTcol = thermostat.andersenTcolInput / timeUnit;

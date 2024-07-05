@@ -1,5 +1,4 @@
-#ifndef LOWESTEIGENMODE_H
-#define LOWESTEIGENMODE_H
+#pragma once
 
 #include "Eigen.h"
 #include "Matter.h"
@@ -37,5 +36,3 @@ public:
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
 };
-
-#endif

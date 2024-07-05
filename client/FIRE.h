@@ -1,7 +1,4 @@
-#ifndef FIRE_H
-#define FIRE_H
-
-#include "Matter.h"
+#pragma once
 #include "Optimizer.h"
 #include "Parameters.h"
 
@@ -47,5 +44,3 @@ private:
   size_t m_iteration;
   std::shared_ptr<spdlog::logger> m_log;
 };
-
-#endif

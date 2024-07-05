@@ -1,6 +1,4 @@
-#ifndef LANCZOS_H
-#define LANCZOS_H
-
+#pragma once
 #include "Eigen.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
@@ -22,5 +20,3 @@ private:
   double lowestEw;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

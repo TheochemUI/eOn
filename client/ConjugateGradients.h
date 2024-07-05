@@ -1,9 +1,5 @@
-#ifndef CG_H
-#define CG_H
-
+#pragma once
 #include "Eigen.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
 #include "Optimizer.h"
 #include "Parameters.h"
 
@@ -90,5 +86,3 @@ private:
    */
   int line_search(double a_maxMove);
 };
-
-#endif

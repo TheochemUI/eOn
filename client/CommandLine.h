@@ -1,8 +1,4 @@
-#ifndef COMMANDLINE_H
-#define COMMANDLINE_H
-
+#pragma once
 #include <thirdparty/cxxopts.hpp>
 
 void commandLine(int argc, char **argv);
-
-#endif

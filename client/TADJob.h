@@ -1,6 +1,4 @@
-
-#ifndef TADJOB_H
-#define TADJOB_H
+#pragma once
 
 #include "Job.h"
 #include "MinModeSaddleSearch.h"
@@ -52,5 +50,3 @@ private:
 
   std::vector<std::string> returnFiles;
 };
-
-#endif

@@ -16,7 +16,8 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   double pAcc;
   std::shared_ptr<Matter> tmpMatter;
 
-  std::string posFilename = helper_functions::getRelevantFile(params->main.conFilename);
+  std::string posFilename =
+      helper_functions::getRelevantFile(params->main.conFilename);
   pos = std::make_shared<Matter>(pot, params);
   pos->con2matter(posFilename);
 
@@ -118,9 +119,9 @@ void ReplicaExchangeJob::saveData(void) {
   fileResults = fopen(resultsFilename.c_str(), "wb");
 
   fprintf(fileResults, "%ld random_seed\n", params->main.randomSeed);
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->pot.potential)}.c_str());
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(params->pot.potential)}
+              .c_str());
   // fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
   fclose(fileResults);
 

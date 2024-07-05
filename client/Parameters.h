@@ -1,8 +1,6 @@
-#ifndef PARAMETERS_H
-#define PARAMETERS_H
+#pragma once
 
 #include "BaseStructures.h"
-#include <memory>
 #include <string>
 
 #ifdef EONMPI
@@ -95,8 +93,8 @@ public:
                           region;  if 0, a search is started after the
                           displacement */
                           // TODO(rg): Not used
-    long maxIterations; ///< max iterations for saddle point searches and
-                        ///< minimization
+    long maxIterations;   ///< max iterations for saddle point searches and
+                          ///< minimization
     std::string method;
     std::string minmodeMethod; /**< algorithm to be used for lowest eigenmode
                                determination */
@@ -465,5 +463,3 @@ public:
 private:
   std::string toLowerCase(std::string s);
 };
-
-#endif // PARAMETERS_H

@@ -1,5 +1,4 @@
-#ifndef PARALLELREPLICAJOB_H
-#define PARALLELREPLICAJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Parameters.h"
@@ -21,5 +20,3 @@ private:
   int refineTransition(std::vector<Matter *> MDSnapshots, bool fake = false);
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

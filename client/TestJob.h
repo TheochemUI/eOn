@@ -1,8 +1,5 @@
+#pragma once
 
-#ifndef TESTJOB_H
-#define TESTJOB_H
-
-#include "ConjugateGradients.h"
 #include "Job.h"
 #include "Parameters.h"
 
@@ -22,5 +19,3 @@ private:
   double getEnergyDiff(std::string potTag, double refEnergy);
   double getForceDiff(std::string potTag, double refForce);
 };
-
-#endif

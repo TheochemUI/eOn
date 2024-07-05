@@ -387,7 +387,7 @@ AtomMatrix Matter::getForces() {
 }
 
 VectorType Matter::getForcesV() {
-  return cvec_to_vec(getForces().data(), 3 * numberOfAtoms());
+  return VectorType::Map(getForces().data(), 3 * numberOfAtoms());
 }
 
 AtomMatrix Matter::getForcesFree() {
@@ -404,7 +404,7 @@ AtomMatrix Matter::getForcesFree() {
 }
 
 VectorType Matter::getForcesFreeV() {
-  return cvec_to_vec(getForcesFree().data(), 3 * numberOfFreeAtoms());
+  return VectorType::Map(getForcesFree().data(), 3 * numberOfFreeAtoms());
 }
 
 // return distance between the atoms with index1 and index2
@@ -807,8 +807,8 @@ void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
-      potential =
-          helper_functions::makePotential(parameters->pot.potential, parameters);
+      potential = helper_functions::makePotential(parameters->pot.potential,
+                                                  parameters);
     }
     auto surrogatePotential =
         std::dynamic_pointer_cast<SurrogatePotential>(potential);

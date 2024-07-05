@@ -32,7 +32,8 @@ void CatLearnPot::train_optimize(MatrixType features, MatrixType targets) {
 void CatLearnPot::force(long nAtoms, const double *positions,
                         const int *atomicNrs, double *forces, double *energy,
                         double *variance, const double *box) {
-  MatrixType features = cvec_to_mat(positions, 1, nAtoms * 3);
+  // TODO(rg): Test after matrixtype map
+  MatrixType features = MatrixType::Map(positions, 1, nAtoms * 3);
   py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(
       features, "get_variance"_a = true, "get_derivatives"_a = true));
   auto ef_dat = ef_and_unc[0].cast<MatrixType>();

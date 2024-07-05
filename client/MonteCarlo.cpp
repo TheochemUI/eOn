@@ -1,5 +1,6 @@
 #include "MonteCarlo.h"
-#include<iostream>
+#include "HelperFunctions.h"
+#include <iostream>
 
 using namespace helper_functions;
 

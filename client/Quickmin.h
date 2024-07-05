@@ -1,7 +1,5 @@
-#ifndef QUICKMIN_H
-#define QUICKMIN_H
+#pragma once
 
-#include "Matter.h"
 #include "Optimizer.h"
 #include "Parameters.h"
 
@@ -36,5 +34,3 @@ private:
   size_t m_iteration, m_max_iter;
   std::shared_ptr<spdlog::logger> m_log;
 };
-
-#endif

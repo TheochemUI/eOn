@@ -1,6 +1,4 @@
-#ifndef IMPROVEDDIMER_H
-#define IMPROVEDDIMER_H
-
+#pragma once
 #include "Eigen.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
@@ -53,5 +51,3 @@ public:
   std::vector<VectorType> gradients;
   std::vector<VectorType> positions;
 };
-
-#endif

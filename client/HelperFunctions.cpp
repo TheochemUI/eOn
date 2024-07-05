@@ -1,12 +1,10 @@
 #include "HelperFunctions.h"
 
-#include <cassert>
 #include <iostream>
 #include <math.h>
 #include <set>
 #include <string.h>
 #include <time.h>
-#include <unordered_map>
 
 #ifndef WIN32
 #include <sys/resource.h>

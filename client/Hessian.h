@@ -1,6 +1,4 @@
-#ifndef HESSIAN_H
-#define HESSIAN_H
-
+#pragma once
 #include "Eigen.h"
 
 #include "Matter.h"
@@ -28,5 +26,3 @@ private:
   bool calculate(void);
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

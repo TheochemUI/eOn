@@ -1,12 +1,11 @@
-#ifndef POTENTIAL_H
-#define POTENTIAL_H
+#pragma once
 
 #include "Eigen.h"
 #include "Parameters.h"
 #include <algorithm>
+#include <iostream>
 #include <limits>
 #include <memory>
-#include <iostream>
 #include <optional>
 
 class Potential {
@@ -78,5 +77,3 @@ std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params);
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          std::shared_ptr<Parameters> params);
 } // namespace helper_functions
-
-#endif
