@@ -12,8 +12,6 @@
 //-----------------------------------------------------------------------------------
 #include "Aluminum.h"
 #include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy

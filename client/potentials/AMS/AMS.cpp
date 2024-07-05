@@ -11,38 +11,36 @@
 */
 
 #include "AMS.h"
-#include <iostream>
-#include <iterator>
 
 namespace bp = boost::process;
 
-AMS::AMS(std::shared_ptr<Parameters> p)
+AMS::AMS(Parameters &p)
     : Potential(PotType::AMS, p) {
   // Get the values from the configuration
   // All the parameter values are converted to lowercase in generate_run
-  this->engine = p->engine;
-  this->forcefield = p->forcefield;
-  this->model = p->model;
-  this->xc = p->xc;
-  this->resources = p->resources;
-  this->basis = p->basis;
+  this->engine = p.ams.engine;
+  this->forcefield = p.ams.forcefield;
+  this->model = p.ams.model;
+  this->xc = p.ams.xc;
+  this->resources = p.ams.resources;
+  this->basis = p.ams.basis;
   this->engine_setup = generate_run(p);
   // Environment
   // TODO: Add more checks for how this can be set
-  if (p->amshome.empty() && p->scm_tmpdir.empty() && p->scmlicense.empty() &&
-      p->scm_pythondir.empty() && p->amsbin.empty() &&
-      p->amsresources.empty()) {
+  if (p.amsenv.amshome.empty() && p.amsenv.scm_tmpdir.empty() &&
+      p.amsenv.scmlicense.empty() && p.amsenv.scm_pythondir.empty() &&
+      p.amsenv.amsbin.empty() && p.amsenv.amsresources.empty()) {
     nativenv = boost::this_process::environment();
   } else {
     nativenv = boost::this_process::environment();
     // Some of these can be derived from the others
-    nativenv["AMSHOME"] = p->amshome;
-    nativenv["SCM_TMPDIR"] = p->scm_tmpdir;
-    nativenv["SCMLICENSE"] = p->scmlicense;
-    nativenv["SCM_PYTHONDIR"] = p->scm_pythondir;
-    nativenv["AMSBIN"] = p->amsbin;
-    nativenv["AMSRESOURCES"] = p->amsresources;
-    nativenv["PATH"] += p->amsbin;
+    nativenv["AMSHOME"] = p.amsenv.amshome;
+    nativenv["SCM_TMPDIR"] = p.amsenv.scm_tmpdir;
+    nativenv["SCMLICENSE"] = p.amsenv.scmlicense;
+    nativenv["SCM_PYTHONDIR"] = p.amsenv.scm_pythondir;
+    nativenv["AMSBIN"] = p.amsenv.amsbin;
+    nativenv["AMSRESOURCES"] = p.amsenv.amsresources;
+    nativenv["PATH"] += p.amsenv.amsbin;
   }
   // Do not pass "" in the config files
   // std::cout<<nativenv["PATH"].to_string()<<std::endl;
@@ -466,7 +464,7 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   return;
 }
 
-std::string AMS::generate_run(std::shared_ptr<Parameters> p) {
+std::string AMS::generate_run(Parameters &p) {
   std::string engine_block; // Shadows the class variable
   // TODO: Use args everywhere, cleaner logic
   // Ensure capitals and existence

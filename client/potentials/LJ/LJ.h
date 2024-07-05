@@ -13,8 +13,6 @@
 #ifndef LENNARD_JONES
 #define LENNARD_JONES
 
-#include <iostream>
-#include <math.h>
 // #include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
 
@@ -27,12 +25,11 @@ private:
   double cuttOffU;
 
 public:
-  LJ(std::shared_ptr<Parameters> params)
-      : LJ(PotType::LJ, params, 1.0, 15.0, 1.0) {}
+  LJ(Parameters &a_p)
+      : LJ(PotType::LJ, a_p, 1.0, 15.0, 1.0) {}
 
-  LJ(PotType ptype, std::shared_ptr<Parameters> params, double u0,
-     double cuttOffR, double psi)
-      : Potential(ptype, params),
+  LJ(PotType ptype, Parameters &a_p, double u0, double cuttOffR, double psi)
+      : Potential(ptype, a_p),
         u0{u0},
         cuttOffR{cuttOffR},
         psi{psi} {}

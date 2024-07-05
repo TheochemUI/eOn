@@ -19,7 +19,7 @@
 class lammps : public Potential {
 
 public:
-  lammps(std::shared_ptr<Parameters> p);
+  lammps(Parameters& p);
   ~lammps(void);
   void initialize() {};
   void cleanMemory(void);
