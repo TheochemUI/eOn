@@ -18,8 +18,8 @@
 class IMD : public Potential {
 
 public:
-  IMD(std::shared_ptr<Parameters> params)
-      : Potential(params){};
+  IMD(Parameters& a_p)
+      : Potential(a_p){};
   ~IMD();
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,

@@ -16,7 +16,7 @@
 class SurrogatePotential : public Potential {
 
 public:
-  SurrogatePotential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
+  SurrogatePotential(PotType a_ptype, Parameters& a_params)
       : Potential(a_ptype, a_params) {}
   virtual ~SurrogatePotential() = default;
   std::tuple<double, AtomMatrix, double> // energy, forces, energy variance

@@ -19,7 +19,7 @@
 class MPIPot : public Potential {
 
 public:
-  MPIPot(std::shared_ptr<Parameters> p);
+  MPIPot(Parameters& p);
   ~MPIPot();
   void initialize(){};
   void cleanMemory(void);

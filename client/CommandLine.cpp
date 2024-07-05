@@ -146,7 +146,7 @@ void commandLine(int argc, char **argv) {
       params->optim.convergedForce = optConvergedForce;
     }
 
-    auto pot = helper_functions::makePotential(params);
+    auto pot = helper_functions::makePotential(*params);
     auto matter = std::make_unique<Matter>(pot, params);
     auto matter2 = std::make_unique<Matter>(pot, params);
     matter->con2matter(confile);
