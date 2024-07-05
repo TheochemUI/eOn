@@ -31,18 +31,19 @@
 class EffectiveMediumTheory : public Potential {
 
 private:
-  //	Variables
+  // Variables
   long numberOfAtoms;
   bool periodicity[3];
   Atoms *AtomsObj;
   EMTDefaultParameterProvider *EMTParameterObj;
   EMT *EMTObj;
   SuperCell *SuperCellObj;
+  bool useEMTRasmussen;
 
 public:
   // Functions
   // constructor and destructor
-  EffectiveMediumTheory(std::shared_ptr<Parameters> p)
+  EffectiveMediumTheory(Parameters &p)
       : Potential(p) {
     // dummy variables
     AtomsObj = 0;
@@ -50,7 +51,12 @@ public:
     SuperCellObj = 0;
     EMTParameterObj = 0;
     numberOfAtoms = 0;
+    useEMTRasmussen = p.pot.EMTRasmussen;
 
+    if (p.main.usePBC == false) {
+      throw std::invalid_argument(
+          "EMT should have periodic boundary conditions in all directions");
+    }
     // should have periodic boundary conditions in all directions
     periodicity[0] = true;
     periodicity[1] = true;

@@ -11,7 +11,6 @@
 */
 
 #include "ExtPot.h"
-#include <iostream>
 #include <stdio.h>
 #include <unistd.h>
 

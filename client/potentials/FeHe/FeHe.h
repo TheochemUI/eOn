@@ -46,8 +46,8 @@ extern "C"
 /** FeHe potential.*/
 class FeHe : public Potential {
 public:
-  FeHe(std::shared_ptr<Parameters> params)
-      : Potential(params) {}
+  FeHe(Parameters& a_p)
+      : Potential(a_p) {}
   ~FeHe(void){};
   // To satisfy interface
   void force(long N, const double *R, const int *atomicNrs, double *F,

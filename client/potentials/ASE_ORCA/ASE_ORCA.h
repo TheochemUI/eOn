@@ -30,7 +30,7 @@ private:
   size_t counter;
 
 public:
-  ASEOrcaPot(std::shared_ptr<Parameters> a_params);
+  ASEOrcaPot(Parameters &a_p);
   virtual ~ASEOrcaPot() {
     SPDLOG_INFO("[ASEOrca] called potential {} times", counter);
   }

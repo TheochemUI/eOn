@@ -817,8 +817,6 @@ void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
-      potential = helper_functions::makePotential(parameters->pot.potential,
-                                                  parameters);
     }
     auto surrogatePotential =
         std::dynamic_pointer_cast<SurrogatePotential>(potential);

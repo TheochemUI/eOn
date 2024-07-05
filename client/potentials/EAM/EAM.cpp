@@ -9,12 +9,13 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include <float.h>
 #include <limits.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <math.h>
+
 
 #include "EAM.h"
 #include "Parameters.h"

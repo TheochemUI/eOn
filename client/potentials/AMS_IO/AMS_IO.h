@@ -10,8 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef AMS_IO_POT
-#define AMS_IO_POT
+#pragma once
 
 #include "../../Matter.h"
 #include "../../Potential.h"
@@ -19,7 +18,7 @@
 class AMS_IO : public Potential {
 
 public:
-  AMS_IO(std::shared_ptr<Parameters> p);
+  AMS_IO(Parameters& a_p);
   ~AMS_IO();
   void initialize(){};
   void cleanMemory(void);
@@ -35,5 +34,3 @@ private:
   const char *forcefield;
   const char *xc;
 };
-
-#endif

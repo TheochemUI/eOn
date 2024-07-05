@@ -10,9 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef CATLEARNPOT_INTERFACE
-#define CATLEARNPOT_INTERFACE
-
+#pragma once
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
 #include "../../SurrogatePotential.h"
@@ -27,7 +25,7 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 class CatLearnPot : public SurrogatePotential {
 
 public:
-  CatLearnPot(std::shared_ptr<Parameters> a_params);
+  CatLearnPot(Parameters &a_p);
 
   // Functions
   void train_optimize(MatrixType features, MatrixType targets) override;
@@ -39,4 +37,3 @@ public:
   MatrixType
       variance; // XXX: This is a hacky way to populate and use this variable
 };
-#endif
