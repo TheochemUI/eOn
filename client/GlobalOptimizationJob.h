@@ -1,6 +1,4 @@
-#ifndef GLOBALOPTIMIZATION_HJOB_H
-#define GLOBALOPTIMIZATION_HJOB_H
-
+#pragma once
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -71,5 +69,3 @@ private:
   FILE *earrfile;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <memory>
 #include <iostream>
+#include <memory>
 #include <pybind11/embed.h>
 
 using namespace std::string_literals; // For ""s

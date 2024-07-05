@@ -1,10 +1,7 @@
 #include "GPSurrogateJob.h"
 #include "BaseStructures.h"
 #include "NudgedElasticBand.h"
-#include "NudgedElasticBandJob.h"
-#include "SurrogatePotential.h"
 #include "helpers/Create.hpp"
-#include "potentials/CatLearnPot/CatLearnPot.h"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working

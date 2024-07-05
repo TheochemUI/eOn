@@ -1,5 +1,4 @@
-#ifndef JOB_H
-#define JOB_H
+#pragma once
 #include "Parameters.h"
 #include "Potential.h"
 #include <string>
@@ -61,4 +60,3 @@ public:
 namespace helper_functions {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
 } // namespace helper_functions
-#endif

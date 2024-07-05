@@ -1,19 +1,10 @@
-
 #include "BiasedGradientSquaredDescent.h"
 #include "Dimer.h"
-#include "HelperFunctions.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
-#include "SaddleSearchMethod.h"
-
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <map>
-#include <string.h>
 
 class BGSDObjectiveFunction : public ObjectiveFunction {
 public:
@@ -29,12 +20,12 @@ public:
 
   double getEnergy() {
     VectorType Vforce = matter->getForcesFreeV();
-    double Henergy =
-        0.5 * Vforce.dot(Vforce) + 0.5 * bgsdAlpha *
-                                       (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->bgsd.beta)) *
-                                       (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->bgsd.beta));
+    double Henergy = 0.5 * Vforce.dot(Vforce) +
+                     0.5 * bgsdAlpha *
+                         (matter->getPotentialEnergy() -
+                          (reactantEnergy + parameters->bgsd.beta)) *
+                         (matter->getPotentialEnergy() -
+                          (reactantEnergy + parameters->bgsd.beta));
     return Henergy;
   }
 
@@ -49,10 +40,10 @@ public:
     VectorType Vforcenew = matter->getForcesFreeV();
     matter->setPositionsFreeV(Vpositions);
     VectorType Hforce = magVforce * (Vforcenew - Vforce) /
-                          parameters->bgsd.gradientfinitedifference +
+                            parameters->bgsd.gradientfinitedifference +
                         bgsdAlpha *
                             (matter->getPotentialEnergy() -
-                           (reactantEnergy + parameters->bgsd.beta)) *
+                             (reactantEnergy + parameters->bgsd.beta)) *
                             Vforce;
     return -Hforce;
   }

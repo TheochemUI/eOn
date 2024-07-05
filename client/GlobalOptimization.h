@@ -1,5 +1,4 @@
-#ifndef GLOBALOPTIMIZATION_H
-#define GLOBALOPTIMIZATION_H
+#pragma once
 #include "Parameters.h"
 
 class GlobalOptimization {
@@ -11,5 +10,3 @@ public:
 private:
   Parameters *parameters;
 };
-
-#endif

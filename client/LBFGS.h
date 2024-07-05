@@ -1,5 +1,4 @@
-#ifndef LBFGS_H
-#define LBFGS_H
+#pragma once
 
 #include "HelperFunctions.h"
 #include "Matter.h"
@@ -17,7 +16,7 @@ public:
       : Optimizer(a_objf, OptType::LBFGS, a_params),
         m_iteration{0},
         m_memory(std::min(a_objf->degreesOfFreedom(),
-                     static_cast<int>(a_params->optim.LBFGSMemory))) {
+                          static_cast<int>(a_params->optim.LBFGSMemory))) {
 
     if (spdlog::get("lbfgs")) {
       m_log = spdlog::get("lbfgs");
@@ -49,5 +48,3 @@ private:
   VectorType m_fPrev;
   std::shared_ptr<spdlog::logger> m_log;
 };
-
-#endif

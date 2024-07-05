@@ -1,7 +1,6 @@
-
 #include "SaddleSearchJob.h"
 #include "EpiCenters.h"
-#include "Potential.h"
+#include "HelperFunctions.h"
 
 #include <stdexcept>
 #include <stdio.h>

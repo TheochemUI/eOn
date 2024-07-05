@@ -1,8 +1,6 @@
-#ifndef NEBJOB_H
-#define NEBJOB_H
+#pragma once
 
 #include "Job.h"
-#include "Matter.h"
 #include "NudgedElasticBand.h"
 #include "Parameters.h"
 
@@ -27,5 +25,3 @@ private:
   size_t fCallsNEB;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

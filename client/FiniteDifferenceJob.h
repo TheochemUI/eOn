@@ -1,7 +1,4 @@
-#ifndef FINITEDIFFERENCE_H
-#define FINITEDIFFERENCE_H
-
-#include "Eigen.h"
+#pragma once
 #include "Job.h"
 #include "Parameters.h"
 
@@ -12,5 +9,3 @@ public:
   ~FiniteDifferenceJob(void) = default;
   std::vector<std::string> run(void);
 };
-
-#endif

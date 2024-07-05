@@ -3,9 +3,6 @@
 
 #include "Dynamics.h"
 #include "DynamicsJob.h"
-#include "HelperFunctions.h"
-#include "Parameters.h"
-#include "Potential.h"
 
 using namespace helper_functions;
 

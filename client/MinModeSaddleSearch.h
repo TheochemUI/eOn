@@ -1,5 +1,4 @@
-#ifndef MIN_MODE_SADDLE_SEARCH_H
-#define MIN_MODE_SADDLE_SEARCH_H
+#pragma once
 
 #include "Eigen.h"
 #include "LowestEigenmode.h"
@@ -58,5 +57,3 @@ private:
   double reactantEnergy;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

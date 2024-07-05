@@ -1,5 +1,4 @@
-#ifndef MONTECARLOJOB_H
-#define MONTECARLOJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Parameters.h"
@@ -16,5 +15,3 @@ public:
 private:
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif
