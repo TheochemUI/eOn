@@ -9,4 +9,5 @@ Guidelines and rationale for the `C++` core of eOn.
 types
 memory
 parameters
+potentials
 ```
