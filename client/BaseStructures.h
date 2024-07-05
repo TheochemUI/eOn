@@ -1,4 +1,5 @@
 #pragma once
+#include "magic_enum/magic_enum.hpp"
 #include <memory>
 #include <string>
 
@@ -20,6 +21,7 @@
 
 using namespace std::string_literals; // For ""s
 
+// TODO(rg): Maybe put these in a namespace
 // This file contains forward declarations and enum classes
 // NOTE(rg):
 // We use magic_enum for converting <-> strings so the names have to match what
@@ -102,3 +104,9 @@ enum class OptType {
 };
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
+
+namespace Prefactor {
+enum class TYPE { REACTANT, SADDLE, PRODUCT };
+enum class RATE { HTST, QQHTST };
+enum class FILTER { CUTOFF, FRACTION };
+} // namespace Prefactor

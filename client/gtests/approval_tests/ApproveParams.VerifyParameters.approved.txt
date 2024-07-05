@@ -12,7 +12,7 @@ temperature: 300
 quiet: false
 writeLog: true
 checkpoint: false
-iniFilename: config.ini
+inpFilename: config.toml
 conFilename: pos.con
 finiteDifference: 0.0100000000000000002
 maxForceCalls: 0
@@ -63,7 +63,7 @@ processSearchMinimizeFirst: true
 processSearchMinimizationOffset: 0.200000000000000011
 
 [Saddle Search]
-saddleMaxJumpAttempts: 3
+saddleMaxJumpAttempts: 0
 saddleMaxIterations: 1000
 saddleMethod: min_mode
 saddleMinmodeMethod: dimer
@@ -72,7 +72,7 @@ saddleMaxEnergy: 20
 saddleDisplaceMagnitude: 0.100000000000000006
 saddleMaxSingleDisplace: 10
 saddleDisplaceRadius: 4
-saddleConvergedForce: 0
+saddleConvergedForce: 0.0100000000000000002
 saddlePerpForceRatio: 0
 saddleNonnegativeDisplacementAbort: false
 saddleNonlocalCountAbort: 0
@@ -82,7 +82,7 @@ saddleDynamicsTemperature: 0
 saddleDynamicsStateCheckIntervalInput: 100
 saddleDynamicsStateCheckInterval: 9.8226949536052004
 saddleDynamicsRecordIntervalInput: 10
-saddleDynamicsRecordInterval: 0
+saddleDynamicsRecordInterval: 0.982269495360520106
 saddleDynamicsLinearInterpolation: true
 saddleDynamicsMaxInitCurvature: 0
 saddleConfinePositive: false
@@ -107,7 +107,7 @@ optMaxTimeStepInput: 2.5
 optMaxTimeStep: 0.245567373840130027
 optLBFGSMemory: 20
 optLBFGSInverseCurvature: 0.0100000000000000002
-optLBFGSMaxInverseCurvature: 0
+optLBFGSMaxInverseCurvature: 0.0100000000000000002
 optLBFGSAutoScale: true
 optLBFGSAngleReset: true
 optLBFGSDistanceReset: true
@@ -217,10 +217,10 @@ prefactorMaxValue: 1e+21
 prefactorMinValue: 1000000000
 prefactorWithinRadius: 3.29999999999999982
 prefactorMinDisplacement: 0.25
-prefactorRate: htst
-prefactorConfiguration: reactant
+prefactorRate: HTST
+prefactorConfiguration: REACTANT
 prefactorAllFreeAtoms: false
-prefactorFilterScheme: fraction
+prefactorFilterScheme: FRACTION
 prefactorFilterFraction: 0.900000000000000022
 
 [Hessian]
@@ -273,7 +273,7 @@ tadConfidence: 0.00100000000000000002
 thermostat: none
 thermoAndersenAlpha: 1
 thermoAndersenTcolInput: 100
-thermoAndersenTcol: 0
+thermoAndersenTcol: 9.8226949536052004
 thermoNoseMass: 1
 thermoLangevinFrictionInput: 0.0100000000000000002
 thermoLangevinFriction: 0.101805055000000005
@@ -286,7 +286,7 @@ repexcSamplingTimeInput: 1000
 repexcSamplingTime: 98.226949536052004
 repexcTemperatureHigh: 0
 repexcTemperatureLow: 0
-repexcExchangePeriodInput: 0
+repexcExchangePeriodInput: 100
 repexcExchangePeriod: 100
 
 [Hyperdynamics]

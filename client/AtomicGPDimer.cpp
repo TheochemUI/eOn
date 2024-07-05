@@ -45,7 +45,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
-  problem_setup.activateFrozenAtoms(R_init, params->gprActiveRadius,
+  problem_setup.activateFrozenAtoms(R_init, params->gprd.activeRadius,
                                     atoms_config);
   orient_init.clear();
   orient_init.resize(matterCenter->getPositionsFree().rows(),

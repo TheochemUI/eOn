@@ -5,10 +5,10 @@
 #include "Optimizer.h"
 
 std::vector<std::string> MinimizationJob::run(void) {
-  string posInFilename("pos.con");
-  string posOutFilename("min.con");
+  std::string posInFilename("pos.con");
+  std::string posOutFilename("min.con");
 
-  if (params->checkpoint) {
+  if (params->main.checkpoint) {
     FILE *pos_file;
     pos_file = fopen("pos_cp.con", "r");
     if (pos_file != NULL) {
@@ -29,8 +29,8 @@ std::vector<std::string> MinimizationJob::run(void) {
 
   bool converged;
   try {
-    converged = pos->relax(false, params->writeMovies, params->checkpoint,
-                           "minimization", "pos");
+    converged = pos->relax(false, params->debug.writeMovies,
+                           params->main.checkpoint, "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
       SPDLOG_LOGGER_DEBUG(log, "Minimization converged within tolerence");
@@ -64,7 +64,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   fprintf(fileResults, "minimization job_type\n");
   fprintf(
       fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
+      std::string{magic_enum::enum_name<PotType>(params->pot.potential)}.c_str());
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
   if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
     fprintf(fileResults, "%f potential_energy\n", pos->getPotentialEnergy());

@@ -51,8 +51,10 @@ jobs:
           meson setup bbdir --prefix $env:CONDA_PREFIX --libdir=lib -Dwith_cuh2=false
           meson install -C bbdir
 
-      - name: Run tests
-        shell: bash -el {0}
-        run: |
-          cd examples/akmc-al
-          python -m eon.server
+      # - name: Run tests
+      #   shell: bash -el {0}
+      #   run: |
+          # TODO(rg): Start running these after gh-143
+          # meson test -vvv -C bbdir
+          # cd examples/akmc-al
+          # python -m eon.server

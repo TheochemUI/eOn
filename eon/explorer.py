@@ -10,7 +10,7 @@ import pickle as pickle
 from copy import copy
 import numpy
 
-from eon.config import config
+from eon.migrator.config import config
 from eon import atoms
 from eon import communicator
 from eon import displace
