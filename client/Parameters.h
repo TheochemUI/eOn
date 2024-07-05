@@ -18,10 +18,15 @@
 #include "mpi.h"
 #endif
 
-/** Contains all runtime parameters and results. No functionality just
- * bookkeeping.*/
-class Parameters {
+// TODO(rg): Remove these when parameters goes away
+#include "potentials/LJ/LJ.h"
 
+#include "thirdparty/toml.hpp"
+/** Contains all runtime parameters as parsed at start-up.*/
+class Parameters {
+private:
+    void loadPot(const toml::table& config);
+    void loadLJParams(const toml::table &config);
 public:
   Parameters();
   ~Parameters() = default;
@@ -48,6 +53,7 @@ public:
     bool usePBC;
   } main;
 
+  // [Potential] //
   struct Potential {
     PotType potential;
     double MPIPollPeriod;
@@ -56,11 +62,16 @@ public:
     bool EMTRasmussen;
     bool LogPotential;
     std::string extPotPath;
-    struct LJ {
-      double u0;
-      double cutoff;
-      double psi;
-    } lj;
+    eonc::def::LJParams lj;
+    Potential()
+        : potential{PotType::LJ},
+          MPIPollPeriod{0.25} /* seconds */,
+          LAMMPSLogging{false},
+          LAMMPSThreads{0},
+          EMTRasmussen{false},
+          LogPotential{false},
+          extPotPath{"./ext_pot"s},
+          lj{eonc::def::LJParams()} {}
   } pot;
 
   struct AMS {              // Also for AMS_IO
