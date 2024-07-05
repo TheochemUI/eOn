@@ -144,7 +144,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &a_p) {
   }
   case PotType::LJ: {
     return (
-        std::make_shared<LJ>(a_p.pot.lj.u0, a_p.pot.lj.cutoff, a_p.pot.lj.psi));
+        std::make_shared<LJ>(a_p.pot.lj));
     break;
   }
   case PotType::LJCLUSTER: {

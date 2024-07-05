@@ -10,11 +10,21 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef LENNARD_JONES
-#define LENNARD_JONES
-
+#pragma once
 // #include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
+
+namespace eonc::def {
+struct LJParams {
+  double u0;
+  double cutoff;
+  double psi;
+  LJParams()
+      : u0{1.0},
+        cutoff{15.0},
+        psi{1.0} {}
+};
+} // namespace eonc::def
 
 /** Lennard Jones potential.*/
 class LJ : public Potential {
@@ -25,11 +35,11 @@ private:
   double cuttOffU;
 
 public:
-  LJ(double u0, double cuttOffR, double psi)
+  LJ(eonc::def::LJParams ljp)
       : Potential(PotType::LJ),
-        u0{u0},
-        cuttOffR{cuttOffR},
-        psi{psi} {}
+        u0{ljp.u0},
+        cuttOffR{ljp.cutoff},
+        psi{ljp.psi} {}
 
   ~LJ() = default;
 
@@ -38,4 +48,3 @@ public:
 
   void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
-#endif
