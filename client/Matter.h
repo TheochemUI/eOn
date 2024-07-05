@@ -2,7 +2,6 @@
 #include "Eigen.h"
 #include "Parameters.h"
 #include "Potential.h"
-#include "SurrogatePotential.h"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
 
@@ -35,7 +34,7 @@ public:
         biasPotential{nullptr},
         masses{VectorType::Zero(0)},
         atomicNrs{Vector<int>::Zero(0)},
-        isFixed{Vector<bool>::Zero(false)},
+        isFixed{Vector<int>::Zero(0)},
         cell{Matrix3S::Zero()},
         cellInverse{Matrix3S::Zero()},
         energyVariance{0.0},
@@ -131,9 +130,8 @@ public:
 
   int getFixed(long int atom)
       const; // return true if the atom is fixed, false if it is movable
-  void
-  setFixed(long int atom,
-           bool isFixed); // set the atom to fixed (true) or movable (false)
+  void setFixed(long int atom,
+                int isFixed); // set the atom to fixed (true) or movable (false)
   // void setPotentialEnergy(double);
   double getEnergyVariance();
   // VectorType getForceVariance();
@@ -153,7 +151,7 @@ public:
   numberOfFreeAtoms() const; // return the number of free (or movable) atoms
   long int numberOfFixedAtoms() const; // return the number of fixed atoms
 
- size_t
+  size_t
   getForceCalls() const; // return how many force calls that have been performed
   void resetForceCalls(); // zeroing the value of force calls
 
@@ -189,10 +187,9 @@ private:
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
-  bool recomputePotential; // boolean indicating if the potential energy
-                                   // and forces need to be recalculated
- size_t
-      forceCalls; // keep track of how many force calls have been performed
+  bool recomputePotential;    // boolean indicating if the potential energy
+                              // and forces need to be recalculated
+  size_t forceCalls; // keep track of how many force calls have been performed
 
   // CON file header information, which is not used in the eon code
   char headerCon1[512];
@@ -217,7 +214,7 @@ private:
   BondBoost *biasPotential;
   VectorType masses;
   Vector<int> atomicNrs;
-  Vector<bool> isFixed; // array of bool, false for movable atom, true for fixed
+  Vector<int> isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3S cell;
   Matrix3S cellInverse;
   double energyVariance;
