@@ -52,7 +52,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   VectorType evEst, evT, evOldEst;
 
   VectorType force1, force2;
-  auto pot = helper_functions::makePotential(params->pot.potential, params);
+  auto pot = helper_functions::makePotential(params->pot.potential, *params);
   auto tmpMatter = std::make_unique<Matter>(pot, params);
   *tmpMatter = *matter;
   force1 = tmpMatter->getForcesFreeV();

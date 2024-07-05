@@ -19,11 +19,11 @@
 class XTBPot final : public Potential {
 public:
   // Functions
-  XTBPot(std::shared_ptr<Parameters> p)
-      : Potential(PotType::XTB, p),
-        xtb_acc{p->xtb_acc},
-        xtb_electronic_temperature{p->xtb_elec_temperature},
-        xtb_max_iter{p->xtb_maxiter} {
+  XTBPot(Parameters &a_p)
+      : Potential(PotType::XTB, a_p),
+        xtb_acc{a_p.xtbpot.acc},
+        xtb_electronic_temperature{a_p.xtbpot.elec_temperature},
+        xtb_max_iter{a_p.xtbpot.maxiter} {
     counter = 0;
     env = xtb_newEnvironment();
     xtb_setVerbosity(env, XTB_VERBOSITY_MUTED);
@@ -36,13 +36,13 @@ public:
       throw std::runtime_error("Failed to create xtb calculator");
     }
     // Unmarshal parameters
-    if (p->xtb_paramset == "GFNFF") {
+    if (a_p.xtbpot.paramset == "GFNFF") {
       xtb_paramset = GFNMethod::GFNFF;
-    } else if (p->xtb_paramset == "GFN0xTB") {
+    } else if (a_p.xtbpot.paramset == "GFN0xTB") {
       xtb_paramset = GFNMethod::GFN0xTB;
-    } else if (p->xtb_paramset == "GFN1xTB") {
+    } else if (a_p.xtbpot.paramset == "GFN1xTB") {
       xtb_paramset = GFNMethod::GFN1xTB;
-    } else if (p->xtb_paramset == "GFN2xTB") {
+    } else if (a_p.xtbpot.paramset == "GFN2xTB") {
       xtb_paramset = GFNMethod::GFN2xTB;
     } else {
       throw std::runtime_error("Parameter set for XTB must be one of GFNFF, "

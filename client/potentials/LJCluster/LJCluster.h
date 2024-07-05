@@ -13,8 +13,6 @@
 #ifndef LENNARD_JONES_CLUSTER_H
 #define LENNARD_JONES_CLUSTER_H
 
-#include <iostream>
-#include <math.h>
 // #include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
 
@@ -32,7 +30,7 @@ private:
 public:
   // Functions
   // constructor
-  LJCluster(std::shared_ptr<Parameters> params)
+  LJCluster(Parameters &params)
       : Potential(params),
         u0{1.0},
         cuttOffR{15.0},
