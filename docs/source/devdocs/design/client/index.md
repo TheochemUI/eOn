@@ -6,5 +6,6 @@ Guidelines and rationale for the `C++` core of eON.
 :maxdepth: 2
 :caption: Components
 
+types
 parameters
 ```
