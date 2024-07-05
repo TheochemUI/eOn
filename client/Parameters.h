@@ -45,6 +45,7 @@ public:
     double finiteDifference;
     long maxForceCalls;
     bool removeNetForce;
+    bool usePBC;
   } main;
 
   struct Potential {
