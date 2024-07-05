@@ -56,6 +56,11 @@ public:
     bool EMTRasmussen;
     bool LogPotential;
     std::string extPotPath;
+    struct LJ {
+      double u0;
+      double cutoff;
+      double psi;
+    } lj;
   } pot;
 
   struct AMS {              // Also for AMS_IO

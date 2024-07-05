@@ -61,6 +61,9 @@ Parameters::Parameters() {
   pot.LAMMPSThreads = 0;
   pot.EMTRasmussen = false;
   pot.extPotPath = "./ext_pot"s;
+  pot.lj.u0 = 1.0;
+  pot.lj.cutoff = 15.0;
+  pot.lj.psi = 1.0;
 
   // [AMS] //
   ams.engine = ""s;     // One of REAXFF MOPAC
@@ -426,6 +429,10 @@ int Parameters::load(const std::string &filename) {
     pot.LogPotential = config["Potential"]["log_potential"].value_or(
         pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
         pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
+    // LJ Parameters
+    pot.lj.u0 = config["Potential"]["LJ"]["u0"].value_or(1.0);
+    pot.lj.cutoff = config["Potential"]["LJ"]["cutoff"].value_or(15.0);
+    pot.lj.psi = config["Potential"]["LJ"]["psi"].value_or(1.0);
 
     // AMS section
     ams.engine = config["AMS"]["engine"].value_or(""s); // One of REAXFF MOPA
