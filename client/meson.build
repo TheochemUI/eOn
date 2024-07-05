@@ -57,6 +57,7 @@ _args += cppc.get_supported_arguments([
   '-Wno-unused-parameter',
   '-Wno-unused-result',
   '-Wno-unused-variable',
+  # '-Wfatal-errors',
 ]
 )
 
