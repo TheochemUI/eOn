@@ -1,5 +1,4 @@
-#ifndef MINIMAZATIONJOB_H
-#define MINIMAZATIONJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Parameters.h"
@@ -19,5 +18,3 @@ private:
   RunStatus status;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

@@ -1,17 +1,15 @@
-
-#ifndef PROCESSSEARCHJOB_H
-#define PROCESSSEARCHJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Matter.h"
-#include "MinModeSaddleSearch.h"
 #include "Parameters.h"
+#include "SaddleSearchMethod.h"
 
 /**
  * @file
  * @ingroup Jobs
  *
- * \brief Finds possible escape mecahnisms from a state.
+ * \brief Finds possible escape mechanisms from a state.
  *
  * The process search job implements one of the following types of saddle
  * searches, as well as an \ref Optimizer "optimizer", as defined by the
@@ -96,5 +94,3 @@ private:
   //! Force calls to find the prefactors
   size_t fCallsPrefactors;
 };
-
-#endif

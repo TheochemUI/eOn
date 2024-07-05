@@ -124,14 +124,14 @@ void commandLine(int argc, char **argv) {
 
     if (!cflag) {
       params->pot.potential = magic_enum::enum_cast<PotType>(
-                              potential, magic_enum::case_insensitive)
-                              .value_or(PotType::UNKNOWN);
+                                  potential, magic_enum::case_insensitive)
+                                  .value_or(PotType::UNKNOWN);
     }
 
     if (!sflag) {
       params->optim.method = magic_enum::enum_cast<OptType>(
-                              optimizer, magic_enum::case_insensitive)
-                              .value_or(OptType::CG);
+                                 optimizer, magic_enum::case_insensitive)
+                                 .value_or(OptType::CG);
       params->optim.convergedForce = optConvergedForce;
     }
 

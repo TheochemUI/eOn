@@ -1,8 +1,4 @@
-
-#ifndef BONDBOOST_H
-#define BONDBOOST_H
-
-#include "HelperFunctions.h"
+#pragma once
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -54,5 +50,3 @@ public:
   static const char NONE[];
   static const char BOND_BOOST[];
 };
-
-#endif

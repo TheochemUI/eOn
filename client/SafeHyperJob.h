@@ -1,5 +1,4 @@
-#ifndef SAFEHYPERJOB_H
-#define SAFEHYPERJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Matter.h"
@@ -48,5 +47,3 @@ private:
 
   std::vector<std::string> returnFiles;
 };
-
-#endif

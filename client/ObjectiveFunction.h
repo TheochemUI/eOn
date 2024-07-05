@@ -1,10 +1,5 @@
-#ifndef OBJECTIVE_FUNCTION_H
-#define OBJECTIVE_FUNCTION_H
+#pragma once
 
-#include "Dimer.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
-#include "LowestEigenmode.h"
 #include "Matter.h"
 
 #ifdef WITH_GPRD
@@ -31,5 +26,3 @@ public:
   virtual double getConvergence() = 0;
   virtual VectorType difference(VectorType a, VectorType b) = 0;
 };
-
-#endif

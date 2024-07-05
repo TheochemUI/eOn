@@ -1,6 +1,4 @@
-#ifndef EPI_CENTERS_H
-#define EPI_CENTERS_H
-
+#pragma once
 #include "Matter.h"
 
 namespace EpiCenters {
@@ -37,4 +35,3 @@ void coordinationLessOrEqual(bool *result, long coordinationMaxVal,
 // determine first minimally coordinated atom
 long minCoordination(const Matter *matter, double neighborCutoff);
 } // namespace EpiCenters
-#endif

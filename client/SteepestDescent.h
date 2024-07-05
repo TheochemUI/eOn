@@ -1,9 +1,6 @@
 #ifndef SteepestDescent_H
 #define SteepestDescent_H
 
-#include "Eigen.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "Parameters.h"

@@ -1,6 +1,4 @@
-#ifndef MATTER_H
-#define MATTER_H
-
+#pragma once
 #include "Eigen.h"
 #include "Parameters.h"
 #include "Potential.h"
@@ -225,5 +223,3 @@ private:
   double energyVariance;
   double potentialEnergy;
 };
-
-#endif

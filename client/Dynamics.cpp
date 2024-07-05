@@ -53,9 +53,9 @@ void Dynamics::oneStep(int stepNumber) {
     kinT = (2.0 * kinE / nFreeCoords / kB);
 
     if (stepNumber % parameters->debug.writeMoviesInterval == 0) {
-      SPDLOG_LOGGER_DEBUG(
-          log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n", "[Dynamics]",
-          stepNumber, kinE, potE, kinE + potE, kinT);
+      SPDLOG_LOGGER_DEBUG(log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n",
+                          "[Dynamics]", stepNumber, kinE, potE, kinE + potE,
+                          kinT);
     }
   }
 }
@@ -137,8 +137,8 @@ void Dynamics::andersenCollision() {
   AtomMatrix velocity;
 
   alpha = parameters->thermostat.andersenAlpha; // collision strength
-  tCol = parameters->thermostat.andersenTcol; // average time between collisions, in
-                                         // unit of fs
+  tCol = parameters->thermostat.andersenTcol;   // average time between
+                                                // collisions, in unit of fs
   pCol = 1.0 - exp(-parameters->md.timeStep / tCol);
 
   velocity = matter->getVelocities();
