@@ -433,6 +433,7 @@ if get_option('with_tests')
       ['test_matter', 'MatterTest.cpp', 'sulfolene'],
       ['test_pot', 'PotTest.cpp', 'sulfolene'],
       ['approve_params', 'ApproveParams.cpp', ''],
+      ['approve_matter', 'ApproveMatter.cpp', 'sulfolene'],
       # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
     ]
     foreach test : test_array
