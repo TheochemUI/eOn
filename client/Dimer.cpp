@@ -1,4 +1,5 @@
 #include "Dimer.h"
+#include "HelperFunctions.h"
 
 using namespace helper_functions;
 
@@ -185,7 +186,8 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   rotationalForce = (forceA - forceB) / (2.0 * params->main.finiteDifference);
 
   // curvature along the dimer
-  return (projectedForceB - projectedForceA) / (2.0 * params->main.finiteDifference);
+  return (projectedForceB - projectedForceA) /
+         (2.0 * params->main.finiteDifference);
 }
 
 void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,

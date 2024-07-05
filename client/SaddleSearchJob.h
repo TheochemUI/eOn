@@ -1,7 +1,4 @@
-//----------------------------------------------------------------------------
-
-#ifndef SADDLESEARCHJOB_H
-#define SADDLESEARCHJOB_H
+#pragma once
 
 #include "Job.h"
 #include "Matter.h"
@@ -70,5 +67,3 @@ private:
 
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

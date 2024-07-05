@@ -1,6 +1,4 @@
-#ifndef HESSIANJOB_H
-#define HESSIANJOB_H
-
+#pragma once
 #include "Job.h"
 #include "Parameters.h"
 
@@ -11,5 +9,3 @@ public:
   ~HessianJob(void) = default;
   std::vector<std::string> run(void);
 };
-
-#endif

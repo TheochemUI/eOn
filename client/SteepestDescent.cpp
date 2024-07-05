@@ -2,6 +2,7 @@
 // Based on the SteepestDescent minimizer written in ASE.
 
 #include "SteepestDescent.h"
+#include "HelperFunctions.h"
 
 int SteepestDescent::step(double a_maxMove) {
   VectorType r = m_objf->getPositions();

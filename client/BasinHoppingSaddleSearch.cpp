@@ -1,11 +1,7 @@
 #include "BasinHoppingSaddleSearch.h"
-#include "Dimer.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
-#include "LowestEigenmode.h"
+#include "HelperFunctions.h"
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
-#include <stdio.h>
 
 int BasinHoppingSaddleSearch::run(void) {
   // minimize "saddle"

@@ -274,9 +274,9 @@ void SafeHyperJob::saveData(int status) {
   // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls +
   // refineFCalls;
 
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->pot.potential)}.c_str());
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(params->pot.potential)}
+              .c_str());
   fprintf(fileResults, "%ld random_seed\n", params->main.randomSeed);
   fprintf(fileResults, "%lf potential_energy_reactant\n",
           reactant->getPotentialEnergy());

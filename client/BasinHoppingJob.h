@@ -1,7 +1,4 @@
-
-#ifndef BASINHOPPINGJOB_H
-#define BASINHOPPINGJOB_H
-
+#pragma once
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -36,5 +33,3 @@ private:
   std::vector<double> uniqueEnergies;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

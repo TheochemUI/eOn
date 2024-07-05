@@ -1,12 +1,7 @@
-#ifndef NudgedElasticBand_H
-#define NudgedElasticBand_H
-
-#include <cmath>
-#include <math.h>
+#pragma once
 
 #include "Eigen.h"
 
-#include "HelperFunctions.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
@@ -94,5 +89,3 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                                const size_t nimgs);
 }
 } // namespace helper_functions
-
-#endif

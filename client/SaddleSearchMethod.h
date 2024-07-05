@@ -1,5 +1,4 @@
-#ifndef SADDLESEARCHMETHOD_H
-#define SADDLESEARCHMETHOD_H
+#pragma once
 
 #include "Parameters.h"
 #include "Potential.h"
@@ -21,5 +20,3 @@ public:
 
   int status;
 };
-
-#endif

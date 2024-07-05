@@ -47,9 +47,10 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
                        double *F, double *U, double *variance,
                        const double *box) {
   variance = nullptr;
-  MatrixType positions = cvec_to_mat(R, nAtoms, 3);
-  MatrixType boxx = cvec_to_mat(box, 3, 3);
-  Vector<int> atmnmrs = cvec_to_vec(atomicNrs, nAtoms);
+  // TODO(rg) Test after type maps
+  MatrixType positions = MatrixType::Map(R, nAtoms, 3);
+  MatrixType boxx = MatrixType::Map(box, 3, 3);
+  Vector<int> atmnmrs = Vector<int>::Map(atomicNrs, nAtoms);
   py::object atoms = this->ase.attr("Atoms")(
       "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
   atoms.attr("set_calculator")(this->calc);

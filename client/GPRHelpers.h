@@ -1,6 +1,4 @@
-#ifndef GPRHELPERS_H
-#define GPRHELPERS_H
-
+#pragma once
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -36,4 +34,3 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
 gpr::Observation eon_matter_to_init_obs(Matter *matter);
 
 } // namespace helper_functions
-#endif /* GPRHELPERS_H */

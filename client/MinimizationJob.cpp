@@ -62,9 +62,9 @@ std::vector<std::string> MinimizationJob::run(void) {
   fprintf(fileResults, "%s termination_reason\n",
           (std::string{magic_enum::enum_name<RunStatus>(status)}).c_str());
   fprintf(fileResults, "minimization job_type\n");
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->pot.potential)}.c_str());
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(params->pot.potential)}
+              .c_str());
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
   if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
     fprintf(fileResults, "%f potential_energy\n", pos->getPotentialEnergy());

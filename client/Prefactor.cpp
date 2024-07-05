@@ -1,5 +1,7 @@
 #include "Prefactor.h"
 #include "Hessian.h"
+#include "Matter.h"
+#include "Parameters.h"
 
 int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
                              Matter *saddle, Matter *min2, double &pref1,

@@ -1,11 +1,8 @@
-#ifndef BASINHOPPINGSADDLESEARCH_H
-#define BASINHOPPINGSADDLESEARCH_H
-
+#pragma once
 #include "Eigen.h"
+#include "HelperFunctions.h"
 #include "Matter.h"
-#include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
-#include <vector>
 
 class BasinHoppingSaddleSearch : public SaddleSearchMethod {
 public:
@@ -38,5 +35,3 @@ public:
 private:
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

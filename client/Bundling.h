@@ -1,5 +1,4 @@
-#ifndef BUNDLING_H
-#define BUNDLING_H
+#pragma once
 #include <string>
 #include <vector>
 
@@ -8,4 +7,3 @@ std::vector<std::string> unbundle(int number);
 void bundle(int number, const std::vector<std::string> &filenames,
             std::vector<std::string> *bundledFilenames);
 void deleteUnbundledFiles(const std::vector<std::string> &unbundledFilenames);
-#endif
