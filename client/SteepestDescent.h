@@ -1,9 +1,6 @@
 #ifndef SteepestDescent_H
 #define SteepestDescent_H
 
-#include "Eigen.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "Parameters.h"
@@ -28,10 +25,10 @@ public:
 
 private:
   std::shared_ptr<spdlog::logger> m_log;
-  Eigen::VectorXd getStep(Eigen::VectorXd a_f);
+  VectorType getStep(VectorType a_f);
   size_t iteration;
-  Eigen::VectorXd m_rPrev;
-  Eigen::VectorXd m_fPrev;
+  VectorType m_rPrev;
+  VectorType m_fPrev;
 };
 
 #endif

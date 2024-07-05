@@ -1,13 +1,15 @@
 #include "Prefactor.h"
 #include "Hessian.h"
+#include "Matter.h"
+#include "Parameters.h"
 
 int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
                              Matter *saddle, Matter *min2, double &pref1,
                              double &pref2) {
-  VectorXd min1Freqs, saddleFreqs, min2Freqs;
+  VectorType min1Freqs, saddleFreqs, min2Freqs;
 
   // determine which atoms moved in the process
-  VectorXi atoms;
+  Vector<int> atoms;
 
   if (parameters->prefactor.filterScheme == Prefactor::FILTER::FRACTION) {
     atoms = movedAtomsPct(parameters, min1, saddle, min2);
@@ -142,7 +144,7 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
   return 0;
 }
 
-void Prefactor::logFreqs(VectorXd freqs, char *name) {
+void Prefactor::logFreqs(VectorType freqs, char *name) {
   std::shared_ptr<spdlog::logger> fileLogger;
   fileLogger = spdlog::basic_logger_mt("prefactor", "freqs.dat", true);
   fileLogger->set_pattern("%v");
@@ -160,11 +162,11 @@ void Prefactor::logFreqs(VectorXd freqs, char *name) {
   fileLogger.reset();
 }
 
-VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
-                               Matter *saddle, Matter *min2) {
+Vector<int> Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
+                                  Matter *saddle, Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
 
-  VectorXi moved(nAtoms);
+  Vector<int> moved(nAtoms);
   moved.setConstant(-1);
 
   AtomMatrix diffMin1 =
@@ -196,15 +198,15 @@ VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
       }
     }
   }
-  return (VectorXi)moved.block(0, 0, nMoved, 1);
+  return (Vector<int>)moved.block(0, 0, nMoved, 1);
 }
 
-VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
-                                  Matter *saddle, Matter *min2) {
+Vector<int> Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
+                                     Matter *saddle, Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
   long nFree = saddle->numberOfFreeAtoms();
 
-  VectorXi moved(nAtoms);
+  Vector<int> moved(nAtoms);
   moved.setConstant(-1);
 
   AtomMatrix diffMin1 =
@@ -215,7 +217,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
   diffMin1.array() *= saddle->getFree().array();
   diffMin2.array() *= saddle->getFree().array();
 
-  VectorXd diff(nAtoms);
+  VectorType diff(nAtoms);
   diff.setConstant(0.0);
 
   SPDLOG_DEBUG(
@@ -270,13 +272,13 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
   SPDLOG_DEBUG("[Prefactor] including {} atoms in the hessian ({} moved + {} "
                "neighbors)",
                totalAtoms, nMoved, totalAtoms - nMoved);
-  return (VectorXi)moved.block(0, 0, totalAtoms, 1);
+  return (Vector<int>)moved.block(0, 0, totalAtoms, 1);
 }
 
-VectorXi Prefactor::allFreeAtoms(Matter *matter) {
+Vector<int> Prefactor::allFreeAtoms(Matter *matter) {
   long nAtoms = matter->numberOfAtoms();
 
-  VectorXi moved(nAtoms);
+  Vector<int> moved(nAtoms);
   moved.setConstant(-1);
 
   int nMoved = 0;

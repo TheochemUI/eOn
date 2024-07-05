@@ -1,7 +1,5 @@
-#ifndef MONTECARLO_H
-#define MONTECARLO_H
+#pragma once
 
-#include "HelperFunctions.h"
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -11,7 +9,8 @@ class MonteCarlo {
 public:
   MonteCarlo(std::shared_ptr<Matter> const matterIn,
              std::shared_ptr<Parameters> paramsIn)
-      : matter{matterIn}, params{paramsIn} {
+      : matter{matterIn},
+        params{paramsIn} {
     log = spdlog::get("combi");
   }
   ~MonteCarlo() = default;
@@ -23,5 +22,3 @@ private:
   std::shared_ptr<Parameters> params;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

@@ -1,12 +1,11 @@
-#ifndef POTENTIAL_H
-#define POTENTIAL_H
+#pragma once
 
 #include "Eigen.h"
 #include "Parameters.h"
 #include <algorithm>
+#include <iostream>
 #include <limits>
 #include <memory>
-#include <iostream>
 #include <optional>
 
 class Potential {
@@ -53,7 +52,7 @@ public:
                      const double *box) = 0;
 
   std::tuple<double, AtomMatrix>
-  get_ef(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
+  get_ef(const AtomMatrix pos, const Vector<int> atmnrs, const Matrix3S box);
 
   PotType getType() { return this->ptype; }
 
@@ -78,5 +77,3 @@ std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params);
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          std::shared_ptr<Parameters> params);
 } // namespace helper_functions
-
-#endif

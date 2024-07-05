@@ -1,19 +1,10 @@
-
 #include "BiasedGradientSquaredDescent.h"
 #include "Dimer.h"
-#include "HelperFunctions.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
-#include "SaddleSearchMethod.h"
-
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <map>
-#include <string.h>
 
 class BGSDObjectiveFunction : public ObjectiveFunction {
 public:
@@ -28,43 +19,43 @@ public:
   ~BGSDObjectiveFunction(void) = default;
 
   double getEnergy() {
-    VectorXd Vforce = matter->getForcesFreeV();
-    double Henergy =
-        0.5 * Vforce.dot(Vforce) + 0.5 * bgsdAlpha *
-                                       (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->bgsd.beta)) *
-                                       (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->bgsd.beta));
+    VectorType Vforce = matter->getForcesFreeV();
+    double Henergy = 0.5 * Vforce.dot(Vforce) +
+                     0.5 * bgsdAlpha *
+                         (matter->getPotentialEnergy() -
+                          (reactantEnergy + parameters->bgsd.beta)) *
+                         (matter->getPotentialEnergy() -
+                          (reactantEnergy + parameters->bgsd.beta));
     return Henergy;
   }
 
-  VectorXd getGradient(bool fdstep = false) {
-    VectorXd Vforce = matter->getForcesFreeV();
+  VectorType getGradient(bool fdstep = false) {
+    VectorType Vforce = matter->getForcesFreeV();
     double magVforce = Vforce.norm();
-    VectorXd normVforce = Vforce / magVforce;
-    VectorXd Vpositions = matter->getPositionsFreeV();
+    VectorType normVforce = Vforce / magVforce;
+    VectorType Vpositions = matter->getPositionsFreeV();
     matter->setPositionsFreeV(matter->getPositionsFreeV() -
                               normVforce *
                                   parameters->bgsd.gradientfinitedifference);
-    VectorXd Vforcenew = matter->getForcesFreeV();
+    VectorType Vforcenew = matter->getForcesFreeV();
     matter->setPositionsFreeV(Vpositions);
-    VectorXd Hforce = magVforce * (Vforcenew - Vforce) /
-                          parameters->bgsd.gradientfinitedifference +
-                      bgsdAlpha *
-                          (matter->getPotentialEnergy() -
-                           (reactantEnergy + parameters->bgsd.beta)) *
-                          Vforce;
+    VectorType Hforce = magVforce * (Vforcenew - Vforce) /
+                            parameters->bgsd.gradientfinitedifference +
+                        bgsdAlpha *
+                            (matter->getPotentialEnergy() -
+                             (reactantEnergy + parameters->bgsd.beta)) *
+                            Vforce;
     return -Hforce;
   }
 
   double getGradientnorm() {
-    VectorXd Hforce = getGradient();
+    VectorType Hforce = getGradient();
     double Hnorm = Hforce.norm();
     return Hnorm;
   }
 
-  void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
-  VectorXd getPositions() { return matter->getPositionsFreeV(); }
+  void setPositions(VectorType x) { matter->setPositionsFreeV(x); }
+  VectorType getPositions() { return matter->getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
   bool isConverged() { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
@@ -80,7 +71,9 @@ public:
   double getConvergence() { return getEnergy() && getGradient().norm(); }
   double getConvergenceH() { return getGradient().norm(); }
   double getConvergenceV() { return getEnergy(); }
-  VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
+  VectorType difference(VectorType a, VectorType b) {
+    return matter->pbcV(a - b);
+  }
 
 private:
   Matter *matter;

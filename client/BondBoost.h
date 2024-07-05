@@ -1,8 +1,4 @@
-
-#ifndef BONDBOOST_H
-#define BONDBOOST_H
-
-#include "HelperFunctions.h"
+#pragma once
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -24,7 +20,7 @@ public:
   double boost();
 
 private:
-  Matrix<double, Eigen::Dynamic, 1> Rmdsteps();
+  VectorType Rmdsteps();
   long BondSelect();
   double Booststeps();
   long nAtoms;    ///< Number of free coordinates.
@@ -36,10 +32,9 @@ private:
   long *TABAList;
   long *BBAList;
   double *Epsr_Q;
-  Matrix<double, Eigen::Dynamic, 1>
-      TABLList; // EquilibriumTaggedAtomInvolvedBondLengthList;
-  Matrix<double, Eigen::Dynamic, 1> EBBLList; // EquilibriumBoostBondLengthList
-  Matrix<double, Eigen::Dynamic, 1> CBBLList; // CurrentBoostBondLengthList
+  VectorType TABLList; // EquilibriumTaggedAtomInvolvedBondLengthList;
+  VectorType EBBLList; // EquilibriumBoostBondLengthList
+  VectorType CBBLList; // CurrentBoostBondLengthList
   long nBAs;
   long nRAs;
   long nTABs;
@@ -55,5 +50,3 @@ public:
   static const char NONE[];
   static const char BOND_BOOST[];
 };
-
-#endif

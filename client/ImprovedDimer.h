@@ -1,6 +1,4 @@
-#ifndef IMPROVEDDIMER_H
-#define IMPROVEDDIMER_H
-
+#pragma once
 #include "Eigen.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
@@ -33,25 +31,23 @@ public:
 
   std::shared_ptr<Matter> x0; // Center image
   std::shared_ptr<Matter> x1; // Forward image
-  VectorXd tau;               // Dimer direction
-  VectorXd theta;             // Dimer rotation direction
-  VectorXd F_R;               // Dimer rotational force
+  VectorType tau;             // Dimer direction
+  VectorType theta;           // Dimer rotation direction
+  VectorType F_R;             // Dimer rotational force
   double C_tau;               // Curvature along tau
 
   // parameters used for conjugate gradients
-  VectorXd F_R_Old;
-  VectorXd thetaOld;
+  VectorType F_R_Old;
+  VectorType thetaOld;
   double a, b, gamma;
   bool init_cg;
 
   // variables for LBFGS
-  std::vector<VectorXd> s, y;
+  std::vector<VectorType> s, y;
   std::vector<double> rho;
   bool init_lbfgs;
-  VectorXd rPrev;
+  VectorType rPrev;
 
-  std::vector<VectorXd> gradients;
-  std::vector<VectorXd> positions;
+  std::vector<VectorType> gradients;
+  std::vector<VectorType> positions;
 };
-
-#endif

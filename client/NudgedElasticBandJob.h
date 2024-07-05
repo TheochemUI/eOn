@@ -1,8 +1,6 @@
-#ifndef NEBJOB_H
-#define NEBJOB_H
+#pragma once
 
 #include "Job.h"
-#include "Matter.h"
 #include "NudgedElasticBand.h"
 #include "Parameters.h"
 
@@ -10,7 +8,8 @@ class NudgedElasticBandJob : public Job {
 
 public:
   NudgedElasticBandJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), fCallsNEB{0} {
+      : Job(std::move(parameters)),
+        fCallsNEB{0} {
     log = spdlog::get("combi");
   }
   ~NudgedElasticBandJob(void) = default;
@@ -26,5 +25,3 @@ private:
   size_t fCallsNEB;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

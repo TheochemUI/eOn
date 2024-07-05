@@ -1,6 +1,7 @@
 #include "ConjugateGradients.h"
+#include "HelperFunctions.h"
 
-Eigen::VectorXd ConjugateGradients::getStep() {
+VectorType ConjugateGradients::getStep() {
   double a = 0, b = 0, gamma = 0;
   a = std::fabs(m_force.dot(m_forceOld));
   b = m_forceOld.squaredNorm();
@@ -44,9 +45,9 @@ int ConjugateGradients::step(double a_maxMove) {
 }
 
 int ConjugateGradients::line_search(double a_maxMove) {
-  Eigen::VectorXd pos;
-  Eigen::VectorXd posStep;
-  Eigen::VectorXd forceBeforeStep;
+  VectorType pos;
+  VectorType posStep;
+  VectorType forceBeforeStep;
   double stepSize;
   double projectedForce;
   double projectedForceBeforeStep;
@@ -90,10 +91,11 @@ int ConjugateGradients::line_search(double a_maxMove) {
 
     // Line search considered converged based in the ratio between the projected
     // force and the norm of the true force
-  } while (m_params->optim.CGLineConverged <
-               fabs(projectedForce) / (sqrt(m_force.dot(m_force) +
-                                            m_params->optim.CGLineConverged)) and
-           (line_i < m_params->optim.CGLineSearchMaxIter));
+  } while (
+      m_params->optim.CGLineConverged <
+          fabs(projectedForce) /
+              (sqrt(m_force.dot(m_force) + m_params->optim.CGLineConverged)) and
+      (line_i < m_params->optim.CGLineSearchMaxIter));
   //    return objf->isConverged();
   if (m_objf->isConverged())
     return 1;
@@ -101,9 +103,9 @@ int ConjugateGradients::line_search(double a_maxMove) {
 }
 
 int ConjugateGradients::single_step(double a_maxMove) {
-  Eigen::VectorXd pos;
-  Eigen::VectorXd posStep;
-  Eigen::VectorXd forceAfterStep;
+  VectorType pos;
+  VectorType posStep;
+  VectorType forceAfterStep;
 
   m_force = -m_objf->getGradient();
   pos = m_objf->getPositions();

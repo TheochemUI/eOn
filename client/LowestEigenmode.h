@@ -1,5 +1,4 @@
-#ifndef LOWESTEIGENMODE_H
-#define LOWESTEIGENMODE_H
+#pragma once
 
 #include "Eigen.h"
 #include "Matter.h"
@@ -26,7 +25,8 @@ public:
 
   LowestEigenmode(std::shared_ptr<Potential> potPassed,
                   std::shared_ptr<Parameters> parameters)
-      : pot{potPassed}, params{parameters} {}
+      : pot{potPassed},
+        params{parameters} {}
   virtual ~LowestEigenmode() {}
 
   // void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
@@ -36,5 +36,3 @@ public:
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
 };
-
-#endif

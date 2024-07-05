@@ -2,16 +2,17 @@
 // Based on the SteepestDescent minimizer written in ASE.
 
 #include "SteepestDescent.h"
+#include "HelperFunctions.h"
 
 int SteepestDescent::step(double a_maxMove) {
-  Eigen::VectorXd r = m_objf->getPositions();
-  Eigen::VectorXd f = -m_objf->getGradient();
+  VectorType r = m_objf->getPositions();
+  VectorType f = -m_objf->getGradient();
 
-  Eigen::VectorXd dr;
+  VectorType dr;
   double alpha = m_params->optim.SDAlpha;
   if (m_params->optim.SDTwoPoint == true && iteration > 0) {
-    Eigen::VectorXd dx = r - m_rPrev;
-    Eigen::VectorXd dg = -f + m_fPrev;
+    VectorType dx = r - m_rPrev;
+    VectorType dg = -f + m_fPrev;
     alpha = dx.dot(dx) / dx.dot(dg);
     if (alpha < 0) {
       alpha = m_params->optim.SDAlpha;

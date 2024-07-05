@@ -1,10 +1,7 @@
 #include "GPSurrogateJob.h"
 #include "BaseStructures.h"
 #include "NudgedElasticBand.h"
-#include "NudgedElasticBandJob.h"
-#include "SurrogatePotential.h"
 #include "helpers/Create.hpp"
-#include "potentials/CatLearnPot/CatLearnPot.h"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
@@ -154,10 +151,9 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   neb->printImageData(true);
 }
 namespace helper_functions::surrogate {
-Eigen::MatrixXd get_features(const std::vector<Matter> &matobjs) {
+MatrixType get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions
-  Eigen::MatrixXd features(matobjs.size(),
-                           matobjs.front().numberOfFreeAtoms() * 3);
+  MatrixType features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
   SPDLOG_TRACE("rows: {}, cols:{}", matobjs.size(),
                matobjs.front().numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
@@ -166,11 +162,9 @@ Eigen::MatrixXd get_features(const std::vector<Matter> &matobjs) {
   SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
   return features;
 }
-Eigen::MatrixXd
-get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
+MatrixType get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   // Calculate dimensions
-  Eigen::MatrixXd features(matobjs.size(),
-                           matobjs.front()->numberOfFreeAtoms() * 3);
+  MatrixType features(matobjs.size(), matobjs.front()->numberOfFreeAtoms() * 3);
   SPDLOG_TRACE("rows: {}, cols:{}\n", matobjs.size(),
                matobjs.front()->numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
@@ -179,13 +173,13 @@ get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
   return features;
 }
-Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
-                            std::shared_ptr<Potential> true_pot) {
+MatrixType get_targets(std::vector<Matter> &matobjs,
+                       std::shared_ptr<Potential> true_pot) {
   // Always with derivatives for now
   // Energy + Derivatives for each row
   const auto nrows = matobjs.size();
   const auto ncols = (matobjs.front().numberOfFreeAtoms() * 3) + 1;
-  Eigen::MatrixXd targets(nrows, ncols);
+  MatrixType targets(nrows, ncols);
   for (long idx{0}; idx < targets.rows(); idx++) {
     matobjs[idx].setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
@@ -195,11 +189,11 @@ Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
   SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
   return targets;
 }
-Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
-                            std::shared_ptr<Potential> true_pot) {
+MatrixType get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
+                       std::shared_ptr<Potential> true_pot) {
   const auto nrows = matobjs.size();
   const auto ncols = (matobjs.front()->numberOfFreeAtoms() * 3) + 1;
-  Eigen::MatrixXd targets(nrows, ncols);
+  MatrixType targets(nrows, ncols);
   for (long idx{0}; idx < targets.rows(); idx++) {
     matobjs[idx]->setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
@@ -222,41 +216,41 @@ std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
   res.push_back(matobjs[((matobjs.size() - 2) * 2.0 / 3.0) + 1]);
   return res;
 }
-Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
+VectorType make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   const auto ncols = (m1.numberOfFreeAtoms() * 3) + 1;
-  Eigen::VectorXd target(ncols);
+  VectorType target(ncols);
   m1.setPotential(true_pot);
   target(0) = m1.getPotentialEnergy();
   target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
   // SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
   return target;
 }
-std::pair<double, Eigen::VectorXd::Index>
+std::pair<double, VectorType::Index>
 getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
-  Eigen::VectorXd pathUncertainty{Eigen::VectorXd::Zero(matobjs.size() - 2)};
+  VectorType pathUncertainty{VectorType::Zero(matobjs.size() - 2)};
   for (auto idx{0}; idx < pathUncertainty.size(); idx++) {
     pathUncertainty[idx] = matobjs[idx + 1]->getEnergyVariance();
   }
-  Eigen::VectorXd::Index maxIndex;
+  VectorType::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
   // SPDLOG_TRACE("Uncertainity along path is {}\nmax_index: {}, maxVal: {}",
   //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
-std::pair<Eigen::VectorXd, Eigen::VectorXd>
+std::pair<VectorType, VectorType>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot) {
   auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
   Matter candidate{*matobjs[maxIndex + 1]};
-  return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
+  return std::make_pair<VectorType, VectorType>(
       candidate.getPositionsFreeV(), make_target(candidate, true_pot));
 }
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot) {
-  Eigen::VectorXd predEnergies{Eigen::VectorXd::Zero(matobjs.size())};
-  Eigen::VectorXd trueEnergies{Eigen::VectorXd::Zero(matobjs.size())};
-  Eigen::VectorXd accuracy{Eigen::VectorXd::Zero(matobjs.size())};
+  VectorType predEnergies{VectorType::Zero(matobjs.size())};
+  VectorType trueEnergies{VectorType::Zero(matobjs.size())};
+  VectorType accuracy{VectorType::Zero(matobjs.size())};
   for (auto idx{0}; idx < predEnergies.size(); idx++) {
     predEnergies[idx] = matobjs[idx]->getPotentialEnergy();
     matobjs[idx]->setPotential(true_pot);
@@ -265,7 +259,7 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
     accuracy[idx] = std::sqrt(predEnergies[idx] * predEnergies[idx] -
                               trueEnergies[idx] * trueEnergies[idx]);
   }
-  Eigen::VectorXd difference = predEnergies - trueEnergies;
+  VectorType difference = predEnergies - trueEnergies;
   auto mae = difference.array()
                  .abs()
                  .maxCoeff(); //.squaredNorm() / predEnergies.size();
@@ -277,13 +271,13 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
 } // namespace helper_functions::surrogate
 
 namespace helper_functions::eigen {
-Eigen::MatrixXd vertCat(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2) {
+MatrixType vertCat(const MatrixType &m1, const MatrixType &m2) {
   assert(m1.cols() == m2.cols());
-  Eigen::MatrixXd res(m1.rows() + m2.rows(), m2.cols());
+  MatrixType res(m1.rows() + m2.rows(), m2.cols());
   res << m1, m2;
   return res;
 }
-void addVectorRow(Eigen::MatrixXd &data, const Eigen::VectorXd &newrow) {
+void addVectorRow(MatrixType &data, const VectorType &newrow) {
   assert(data.cols() == newrow.size());
   data.conservativeResize(data.rows() + 1, data.cols());
   data.row(data.rows() - 1) = newrow;

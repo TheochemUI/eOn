@@ -1,6 +1,4 @@
-
-#ifndef TADJOB_H
-#define TADJOB_H
+#pragma once
 
 #include "Job.h"
 #include "MinModeSaddleSearch.h"
@@ -8,7 +6,8 @@
 
 class TADJob : public Job {
 public:
-  TADJob(std::unique_ptr<Parameters> parameters) : Job(std::move(parameters)) {
+  TADJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)) {
     log = spdlog::get("combi");
   }
   ~TADJob() = default;
@@ -51,5 +50,3 @@ private:
 
   std::vector<std::string> returnFiles;
 };
-
-#endif

@@ -1,8 +1,5 @@
-#ifndef DYNAMICSJOB_H
-#define DYNAMICSJOB_H
-
+#pragma once
 #include "Job.h"
-#include "Matter.h"
 #include "Parameters.h"
 
 class DynamicsJob : public Job {
@@ -14,5 +11,3 @@ public:
   std::vector<std::string> run(void);
   std::vector<std::string> returnFiles;
 };
-
-#endif

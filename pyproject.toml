@@ -63,4 +63,3 @@ test        = "pytest --cov=src tests"
 mkdoc = {composite = ["sphinx-build -b html docs/source docs/build/html"]}
 [project.scripts]
 eon-server = "eon.main:main"
-

@@ -1,6 +1,4 @@
-#ifndef HESSIAN_H
-#define HESSIAN_H
-
+#pragma once
 #include "Eigen.h"
 
 #include "Matter.h"
@@ -11,23 +9,20 @@ public:
   Hessian(Parameters *params, Matter *matter);
   ~Hessian();
 
-  Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(Matter *matterIn,
-                                                            VectorXi atomsIn);
-  VectorXd getFreqs(Matter *matterIn, VectorXi atomsIn);
-  //    VectorXd getModes(Matter *matterIn, VectorXi atomsIn);
-  VectorXd removeZeroFreqs(VectorXd freqs);
+  MatrixType getHessian(Matter *matterIn, Vector<int> atomsIn);
+  VectorType getFreqs(Matter *matterIn, Vector<int> atomsIn);
+  //    VectorType getModes(Matter *matterIn, Vector<int> atomsIn);
+  VectorType removeZeroFreqs(VectorType freqs);
 
 private:
   Matter *matter;
   Parameters *parameters;
 
-  Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
-  //    VectorXd modes;
-  VectorXd freqs;
+  MatrixType hessian;
+  //    VectorType modes;
+  VectorType freqs;
 
-  VectorXi atoms;
+  Vector<int> atoms;
   bool calculate(void);
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

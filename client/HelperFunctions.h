@@ -1,6 +1,4 @@
-#ifndef HELPER_FUNCTIONS_H
-#define HELPER_FUNCTIONS_H
-
+#pragma once
 #include "Eigen.h"
 #include "Matter.h"
 #include <string>
@@ -63,18 +61,18 @@ void rotationRemove(const std::shared_ptr<Matter> m1,
 void translationRemove(Matter &m1, const AtomMatrix r1);
 void translationRemove(Matter &m1, const Matter &m2);
 double maxAtomMotion(const AtomMatrix v1);
-double maxAtomMotionV(const VectorXd v1);
+double maxAtomMotionV(const VectorType v1);
 long numAtomsMoved(const AtomMatrix v1, double cutoff);
 AtomMatrix maxAtomMotionApplied(const AtomMatrix v1, double maxMotion);
-VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion);
+VectorType maxAtomMotionAppliedV(const VectorType v1, double maxMotion);
 AtomMatrix maxMotionApplied(const AtomMatrix v1, double maxMotion);
-VectorXd maxMotionAppliedV(const VectorXd v1, double maxMotion);
+VectorType maxMotionAppliedV(const VectorType v1, double maxMotion);
 void getTime(double *real, double *user, double *sys);
 bool existsFile(std::string filename); // does filename exist
 std::string
 getRelevantFile(std::string filename); // return filename containing _checkpoint
                                        // or _passed if such a file exists
-VectorXd loadMasses(std::string filename, int nAtoms);
+VectorType loadMasses(std::string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
 AtomMatrix loadMode(std::string filename, int nAtoms);
 void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
@@ -87,4 +85,3 @@ bool sortedR(const Matter &m1, const Matter &m2,
 void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
 } // namespace helper_functions
-#endif

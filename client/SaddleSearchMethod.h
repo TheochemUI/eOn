@@ -1,5 +1,4 @@
-#ifndef SADDLESEARCHMETHOD_H
-#define SADDLESEARCHMETHOD_H
+#pragma once
 
 #include "Parameters.h"
 #include "Potential.h"
@@ -12,7 +11,8 @@ protected:
 public:
   SaddleSearchMethod(std::shared_ptr<Potential> potPassed,
                      std::shared_ptr<Parameters> paramsPassed)
-      : pot{potPassed}, params{paramsPassed} {};
+      : pot{potPassed},
+        params{paramsPassed} {};
   virtual ~SaddleSearchMethod(){};
   virtual int run() = 0;
   virtual double getEigenvalue() = 0;
@@ -20,5 +20,3 @@ public:
 
   int status;
 };
-
-#endif

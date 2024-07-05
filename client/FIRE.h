@@ -1,7 +1,4 @@
-#ifndef FIRE_H
-#define FIRE_H
-
-#include "Matter.h"
+#pragma once
 #include "Optimizer.h"
 #include "Parameters.h"
 
@@ -16,7 +13,7 @@ public:
         m_max_move{a_params->optim.maxMove},
         m_N_min{5},
         m_N{0},
-        m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_vel{VectorType::Zero(a_objf->degreesOfFreedom())},
         m_alpha_start{0.1},
         m_alpha{m_alpha_start},
         m_f_inc{1.1},
@@ -38,7 +35,7 @@ public:
 private:
   double m_dt, m_dt_max, m_max_move;
   size_t m_N_min, m_N;
-  Eigen::VectorXd m_vel;
+  VectorType m_vel;
   double m_alpha_start;
   double m_alpha;
   double m_f_inc;
@@ -47,5 +44,3 @@ private:
   size_t m_iteration;
   std::shared_ptr<spdlog::logger> m_log;
 };
-
-#endif

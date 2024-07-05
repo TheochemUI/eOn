@@ -4,13 +4,8 @@
 #include <string>
 
 #include "BasinHoppingJob.h"
-#include "Dynamics.h"
 #include "HelperFunctions.h"
-#include "ObjectiveFunction.h"
-#include "Optimizer.h"
-#include "Potential.h"
 
-using namespace std;
 using namespace helper_functions;
 
 std::vector<std::string> BasinHoppingJob::run(void) {
@@ -24,11 +19,11 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   Matter *minTrial = new Matter(pot, params);
   Matter *swapTrial = new Matter(pot, params);
 
-  string conFilename = getRelevantFile(params->main.conFilename);
+  std::string conFilename = getRelevantFile(params->main.conFilename);
   current->con2matter(conFilename);
 
   // Sanity Check
-  vector<long> Elements;
+  std::vector<long> Elements;
   Elements = getElements(current.get());
   if (params->bhop.swapProbability > 0 && Elements.size() == 1) {
     log = spdlog::get("_traceback");
@@ -233,8 +228,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
     int nadjust = params->bhop.adjustPeriod;
     double adjustFraction = params->bhop.adjustFraction;
-    if ((step + 1) % nadjust == 0 &&
-        params->bhop.adjustDisplacement == true) {
+    if ((step + 1) % nadjust == 0 && params->bhop.adjustDisplacement == true) {
       double recentRatio = ((double)recentAccept) / ((double)nadjust);
       if (recentRatio > params->bhop.targetRatio) {
         curDisplacement *= 1.0 + adjustFraction;
@@ -298,7 +292,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
   AtomMatrix displacement;
   displacement.resize(trial->numberOfAtoms(), 3);
   displacement.setZero();
-  VectorXd distvec = calculateDistanceFromCenter(current.get());
+  VectorType distvec = calculateDistanceFromCenter(current.get());
   int num = trial->numberOfAtoms();
   int m = 0;
   if (params->bhop.singleAtomDisplace) {
@@ -346,7 +340,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
 
 void BasinHoppingJob::randomSwap(Matter *matter) {
   swap_count++;
-  vector<long> Elements;
+  std::vector<long> Elements;
   Elements = getElements(matter);
 
   long ela;
@@ -384,9 +378,9 @@ void BasinHoppingJob::randomSwap(Matter *matter) {
   matter->setPosition(changerb, 2, posaz);
 }
 
-vector<long> BasinHoppingJob::getElements(Matter *matter) {
+std::vector<long> BasinHoppingJob::getElements(Matter *matter) {
   int allElements[118] = {0};
-  vector<long> Elements;
+  std::vector<long> Elements;
 
   for (long y = 0; y < matter->numberOfAtoms(); y++) {
     if (!matter->getFixed(y)) {
@@ -404,14 +398,14 @@ vector<long> BasinHoppingJob::getElements(Matter *matter) {
   return Elements;
 }
 
-VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
+VectorType BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
   AtomMatrix pos = matter->getPositions();
-  Vector3d cen(0, 0, 0);
+  FixedVecType<3> cen(0, 0, 0);
   int num = matter->numberOfAtoms();
 
   cen = pos.colwise().sum() / (double)num;
 
-  VectorXd dist(num);
+  VectorType dist(num);
 
   for (int n = 0; n < num; n++) {
     pos.row(n) -= cen;

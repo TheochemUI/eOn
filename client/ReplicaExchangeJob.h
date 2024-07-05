@@ -1,14 +1,14 @@
-#ifndef REPLICAEXCHANGEJOB_H
-#define REPLICAEXCHANGEJOB_H
+#pragma once
 
-#include "Dynamics.h"
 #include "Job.h"
+#include "Matter.h"
 #include "Parameters.h"
 
 class ReplicaExchangeJob : public Job {
 public:
   ReplicaExchangeJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), forceCalls{0} {
+      : Job(std::move(parameters)),
+        forceCalls{0} {
     log = spdlog::get("combi");
   }
   ~ReplicaExchangeJob(void) = default;
@@ -25,5 +25,3 @@ private:
   std::vector<std::string> returnFiles;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

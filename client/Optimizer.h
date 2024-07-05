@@ -1,5 +1,4 @@
-#ifndef OPTIMIZER_H
-#define OPTIMIZER_H
+#pragma once
 
 #include "Eigen.h"
 #include "ObjectiveFunction.h"
@@ -72,5 +71,3 @@ std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
                                    OptType a_otype,
                                    std::shared_ptr<Parameters> a_params);
 }
-
-#endif
