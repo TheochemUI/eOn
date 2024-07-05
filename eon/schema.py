@@ -90,6 +90,9 @@ class MainConfig(BaseModel):
         default=True,
         description="If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.",
     )
+    usePBC: bool = Field(
+        default=True, description="Use periodic boundary conditions"
+    )
 
 
 class StructureComparisonConfig(BaseModel):
