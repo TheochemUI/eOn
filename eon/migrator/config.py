@@ -301,7 +301,7 @@ class ConfigClass:
 
         # Coarse Graining
         self.sb_on = parser.getboolean('Coarse Graining', 'use_mcamc')
-        self.sb_state_file = parser.get('Coarse Graining', 'state_file') 
+        self.sb_state_file = parser.get('Coarse Graining', 'state_file')
         self.sb_path = None
         self.sb_path = parser.get('Paths', 'superbasins')
         self.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
