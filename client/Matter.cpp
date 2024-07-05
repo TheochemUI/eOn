@@ -483,7 +483,7 @@ long int Matter::numberOfFreeAtoms() const { return nAtoms - isFixed.sum(); }
 
 long int Matter::numberOfFixedAtoms() const { return isFixed.sum(); }
 
-long Matter::getForceCalls() const { return (forceCalls); }
+size_t Matter::getForceCalls() const { return this->forceCalls; }
 
 void Matter::resetForceCalls() {
   forceCalls = 0;
@@ -829,7 +829,8 @@ void Matter::computePotential() {
       potentialEnergy = pE;
       forces = frcs;
     }
-    forceCalls = forceCalls + 1;
+    // TODO(rg) :: Something about this isn't right..
+    forceCalls += 1;
     recomputePotential = false;
 
     if (isFixed.sum() == 0 && parameters->main.removeNetForce) {
