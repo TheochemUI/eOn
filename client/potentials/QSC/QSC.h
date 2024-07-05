@@ -21,7 +21,7 @@ class QSC
 #endif
 {
 public:
-  QSC(std::shared_ptr<Parameters> params)
+  QSC(Parameters& params)
       : Potential(PotType::QSC, params) {
     cutoff = 8.0;
     verlet_skin = 0.5;
@@ -37,8 +37,8 @@ public:
       i++;
     }
   }
-  QSC()
-      : QSC(std::make_shared<Parameters>()) {}
+  // QSC()
+  //     : QSC(Parameters()) {}
   ~QSC(void);
 
   void initialize(){};

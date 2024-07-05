@@ -37,10 +37,10 @@ class Tip4p_H : public Potential {
 public:
   // Functions
   // constructor
-  Tip4p_H(std::shared_ptr<Parameters> params)
-      : Potential(params) {
+  Tip4p_H(Parameters& a_p)
+      : Potential(a_p) {
     setup_();
-    tip4p_pot = std::make_shared<Tip4p>(params);
+    tip4p_pot = std::make_shared<Tip4p>(a_p);
   };
 
   // To satisfy interface

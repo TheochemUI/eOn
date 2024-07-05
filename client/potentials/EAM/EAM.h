@@ -22,8 +22,8 @@ class EAM
 #endif
 {
 public:
-  EAM(std::shared_ptr<Parameters> params)
-      : Potential(PotType::EAM_AL, params) {
+  EAM(Parameters &a_p)
+      : Potential(PotType::EAM_AL, a_p) {
     celllist_new = 0;
     neigh_list = 0;
     initialized = false;
@@ -33,7 +33,6 @@ public:
     // for each cell in cell list.
     rc[0] = rc[1] = rc[2] = 6.0;
   };
-  // To satify interface
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *fullbox) override;

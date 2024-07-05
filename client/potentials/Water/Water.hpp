@@ -24,8 +24,8 @@ University of Iceland
 
 class Tip4p : public Potential, private forcefields::Tip4p {
 public:
-  Tip4p(std::shared_ptr<Parameters> params)
-      : Potential(params),
+  Tip4p(Parameters &a_p)
+      : Potential(a_p),
         forcefields::Tip4p(8.5, 1.0){};
   // Functions
   // constructor and destructor

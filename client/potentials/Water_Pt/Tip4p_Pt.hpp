@@ -23,8 +23,8 @@ University of Iceland
 
 class Tip4p_Pt : public Potential, private forcefields::ZhuPhilpott<> {
 public:
-  Tip4p_Pt(std::shared_ptr<Parameters> params)
-      : Potential(params),
+  Tip4p_Pt(Parameters &a_p)
+      : Potential(a_p),
         forcefields::ZhuPhilpott<>(8.5, 1.0){};
   // Functions
   // constructor and destructor
