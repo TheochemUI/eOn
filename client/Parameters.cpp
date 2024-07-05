@@ -17,7 +17,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include <float.h>
 #include <string>
-#include <thirdparty/toml.hpp>
 
 using namespace std::string_literals;
 
@@ -52,18 +51,6 @@ Parameters::Parameters() {
   prefactor.allFreeAtoms = false;
   prefactor.filterScheme = ::Prefactor::FILTER::FRACTION;
   prefactor.filterFraction = 0.90;
-
-  // [Potential] //
-  pot.potential = PotType::LJ;
-  pot.MPIPollPeriod = 0.25; // seconds
-  pot.LogPotential = false;
-  pot.LAMMPSLogging = false;
-  pot.LAMMPSThreads = 0;
-  pot.EMTRasmussen = false;
-  pot.extPotPath = "./ext_pot"s;
-  pot.lj.u0 = 1.0;
-  pot.lj.cutoff = 15.0;
-  pot.lj.psi = 1.0;
 
   // [AMS] //
   ams.engine = ""s;     // One of REAXFF MOPAC
@@ -416,23 +403,8 @@ int Parameters::load(const std::string &filename) {
       helper_functions::random(main.randomSeed);
     }
 
-    // Potential section
-    pot.potential = magic_enum::enum_cast<PotType>(
-                        config["Potential"]["potential"].value_or("LJ"s),
-                        magic_enum::case_insensitive)
-                        .value_or(PotType::LJ);
-    pot.MPIPollPeriod = config["Potential"]["mpi_poll_period"].value_or(0.25);
-    pot.LAMMPSLogging = config["Potential"]["lammps_logging"].value_or(false);
-    pot.LAMMPSThreads = config["Potential"]["lammps_threads"].value_or(0);
-    pot.EMTRasmussen = config["Potential"]["emt_rasmussen"].value_or(false);
-    pot.extPotPath = config["Potential"]["ext_pot_path"].value_or("./ext_pot"s);
-    pot.LogPotential = config["Potential"]["log_potential"].value_or(
-        pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
-        pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
-    // LJ Parameters
-    pot.lj.u0 = config["Potential"]["LJ"]["u0"].value_or(1.0);
-    pot.lj.cutoff = config["Potential"]["LJ"]["cutoff"].value_or(15.0);
-    pot.lj.psi = config["Potential"]["LJ"]["psi"].value_or(1.0);
+    // Potential
+    loadPot(config);
 
     // AMS section
     ams.engine = config["AMS"]["engine"].value_or(""s); // One of REAXFF MOPA
@@ -957,4 +929,40 @@ int Parameters::load(const std::string &filename) {
   }
 
   return 0;
+}
+
+void Parameters::loadPot(const toml::table &config) {
+  if (config.contains("Potential") && config["Potential"].is_table()) {
+    const auto &potentialTable = *config["Potential"].as_table();
+
+    pot.potential = magic_enum::enum_cast<PotType>(
+                        potentialTable["potential"].value_or("LJ"s),
+                        magic_enum::case_insensitive)
+                        .value_or(PotType::LJ);
+    pot.MPIPollPeriod =
+        potentialTable["mpi_poll_period"].value_or(pot.MPIPollPeriod);
+    pot.LAMMPSLogging =
+        potentialTable["lammps_logging"].value_or(pot.LAMMPSLogging);
+    pot.LAMMPSThreads =
+        potentialTable["lammps_threads"].value_or(pot.LAMMPSThreads);
+    pot.EMTRasmussen =
+        potentialTable["emt_rasmussen"].value_or(pot.EMTRasmussen);
+    pot.extPotPath = potentialTable["ext_pot_path"].value_or(pot.extPotPath);
+    pot.LogPotential = potentialTable["log_potential"].value_or(
+        pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
+        pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
+
+    // Load LJ parameters if they exist
+    loadLJParams(*potentialTable);
+  }
+}
+
+void Parameters::loadLJParams(const toml::table &config) {
+  if (config.contains("LJ") && config["LJ"].is_table()) {
+    const auto &ljTable = *config["LJ"].as_table();
+
+    pot.lj.u0 = ljTable["u0"].value_or(pot.lj.u0);
+    pot.lj.cutoff = ljTable["cutoff"].value_or(pot.lj.cutoff);
+    pot.lj.psi = ljTable["psi"].value_or(pot.lj.psi);
+  }
 }
