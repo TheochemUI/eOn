@@ -28,16 +28,12 @@ public:
   size_t forceCallCounter;
 
   // Main Constructor
-  Potential(PotType a_ptype, Parameters& a_params)
+  Potential(PotType a_ptype)
       : ptype{a_ptype},
         forceCallCounter{0} {
     SPDLOG_TRACE("CREATED WITH {}", forceCallCounter);
     initializeLogger();
   }
-
-  // Delegating Constructor
-  Potential(Parameters& a_params)
-      : Potential(a_params.pot.potential, a_params) {}
 
   virtual ~Potential() {
     SPDLOG_TRACE("DESTROYED AFTER {}\n", forceCallCounter);
@@ -82,7 +78,6 @@ public:
 };
 
 namespace helper_functions {
-std::shared_ptr<Potential> makePotential(Parameters& params);
-std::shared_ptr<Potential> makePotential(PotType ptype,
-                                         Parameters& params);
+std::shared_ptr<Potential> makePotential(Parameters &params);
+std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params);
 } // namespace helper_functions

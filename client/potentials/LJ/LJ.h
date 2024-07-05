@@ -25,12 +25,8 @@ private:
   double cuttOffU;
 
 public:
-  LJ(Parameters &a_p)
-      : LJ(PotType::LJ, a_p, a_p.pot.lj.u0, a_p.pot.lj.cutoff, a_p.pot.lj.psi) {
-  }
-
-  LJ(PotType ptype, Parameters &a_p, double u0, double cuttOffR, double psi)
-      : Potential(ptype, a_p),
+  LJ(double u0, double cuttOffR, double psi)
+      : Potential(PotType::LJ),
         u0{u0},
         cuttOffR{cuttOffR},
         psi{psi} {}
