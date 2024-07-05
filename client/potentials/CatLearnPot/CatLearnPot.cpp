@@ -12,10 +12,10 @@
 
 #include "CatLearnPot.h"
 
-CatLearnPot::CatLearnPot(std::shared_ptr<Parameters> a_params)
-    : SurrogatePotential(PotType::CatLearn, a_params) {
+CatLearnPot::CatLearnPot(Parameters &a_p)
+    : SurrogatePotential(PotType::CatLearn, a_p) {
   py::module_ sys = py::module_::import("sys");
-  py::exec(fmt::format("sys.path.insert(0, {})", a_params->catl.path));
+  py::exec(fmt::format("sys.path.insert(0, {})", a_p.catl.path));
 
   py::module_ gp_module = py::module_::import(
       "catlearn.regression.gaussianprocess.calculator.mlmodel");
@@ -23,7 +23,7 @@ CatLearnPot::CatLearnPot(std::shared_ptr<Parameters> a_params)
   // Import the required modules
   // GP Model
   this->m_gpmod =
-      gp_module.attr("get_default_model")("model"_a = a_params->catl.model);
+      gp_module.attr("get_default_model")("model"_a = a_p.catl.model);
 };
 
 void CatLearnPot::train_optimize(MatrixType features, MatrixType targets) {

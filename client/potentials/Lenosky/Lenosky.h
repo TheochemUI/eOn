@@ -34,8 +34,8 @@ class Lenosky : public Potential {
 public:
   // Functions
   // constructor
-  Lenosky(std::shared_ptr<Parameters> params)
-      : Potential(params){};
+  Lenosky(Parameters& a_p)
+      : Potential(a_p){};
 
   // To satisfy interface
   void cleanMemory(void);
