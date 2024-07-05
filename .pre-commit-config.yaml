@@ -16,7 +16,17 @@ repos:
   rev: v4.0.1
   hooks:
   -   id: trailing-whitespace
+      exclude: |
+        (?x)^(
+        docs/.*|           # Exclude docs folder
+        client/gtests/approval_tests/.*  # Exclude approval tests
+        )$
   -   id: end-of-file-fixer
+      exclude: |
+        (?x)^(
+        docs/.*|           # Exclude docs folder
+        client/gtests/approval_tests/.*  # Exclude approval tests
+        )$
   -   id: check-yaml
   -   id: check-added-large-files
 - repo: local
