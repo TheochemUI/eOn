@@ -1,5 +1,4 @@
 #include "Matter.h"
-#include "BaseStructures.h"
 #include "BondBoost.h"
 #include "HelperFunctions.h"
 #include "ObjectiveFunction.h"
@@ -451,7 +450,7 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr) {
 
 int Matter::getFixed(long int indexAtom) const { return (isFixed[indexAtom]); }
 
-void Matter::setFixed(long int indexAtom, bool isFixed_passed) {
+void Matter::setFixed(long int indexAtom, int isFixed_passed) {
   isFixed[indexAtom] = isFixed_passed;
 }
 
