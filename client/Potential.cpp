@@ -128,113 +128,114 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
 };
 
 namespace helper_functions {
-std::shared_ptr<Potential> makePotential(Parameters &params) {
-  return makePotential(params.pot.potential, params);
+std::shared_ptr<Potential> makePotential(Parameters &a_p) {
+  return makePotential(a_p.pot.potential, a_p);
 }
-std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params) {
+std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &a_p) {
   switch (ptype) {
   // TODO: Every potential must know their own type
   case PotType::EMT: {
-    return (std::make_shared<EffectiveMediumTheory>(params));
+    return (std::make_shared<EffectiveMediumTheory>(a_p));
     break;
   }
   case PotType::EXT: {
-    return (std::make_shared<ExtPot>(params));
+    return (std::make_shared<ExtPot>(a_p));
     break;
   }
   case PotType::LJ: {
-    return (std::make_shared<LJ>(params));
+    return (
+        std::make_shared<LJ>(a_p.pot.lj.u0, a_p.pot.lj.cutoff, a_p.pot.lj.psi));
     break;
   }
   case PotType::LJCLUSTER: {
-    return (std::make_shared<LJCluster>(params));
+    return (std::make_shared<LJCluster>(a_p));
     break;
   }
   case PotType::MORSE_PT: {
-    return (std::make_shared<Morse>(params));
+    return (std::make_shared<Morse>(a_p));
     break;
   }
 #ifdef NEW_POT
   case PotType::NEW: {
-    return (std::make_shared<NewPot>(params));
+    return (std::make_shared<NewPot>(a_p));
     break;
   }
 #endif
 #ifdef CUH2_POT
   case PotType::CUH2: {
-    return (std::make_shared<CuH2>(params));
+    return (std::make_shared<CuH2>(a_p));
     break;
   }
 #endif
 #ifdef IMD_POT
   case PotType::IMD: {
-    return (std::make_shared<IMD>(params));
+    return (std::make_shared<IMD>(a_p));
     break;
   }
 #endif
 #ifdef WITH_WATER
   case PotType::TIP4P: {
-    return (std::make_shared<Tip4p>(params));
+    return (std::make_shared<Tip4p>(a_p));
     break;
   }
   case PotType::SPCE: {
-    return (std::make_shared<SpceCcl>(params));
+    return (std::make_shared<SpceCcl>(a_p));
     break;
   }
 #ifdef WITH_FORTRAN
   case PotType::TIP4P_PT: {
-    return (std::make_shared<Tip4p_Pt>(params));
+    return (std::make_shared<Tip4p_Pt>(a_p));
     break;
   }
   case PotType::TIP4P_H: {
-    return (std::make_shared<Tip4p_H>(params));
+    return (std::make_shared<Tip4p_H>(a_p));
     break;
   }
 #endif
 #endif
 #ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
-    return (std::make_shared<Aluminum>(params));
+    return (std::make_shared<Aluminum>(a_p));
     break;
   }
   case PotType::EDIP: {
-    return (std::make_shared<EDIP>(params));
+    return (std::make_shared<EDIP>(a_p));
     break;
   }
   case PotType::FEHE: {
-    return (std::make_shared<FeHe>(params));
+    return (std::make_shared<FeHe>(a_p));
     break;
   }
   case PotType::LENOSKY_SI: {
-    return (std::make_shared<Lenosky>(params));
+    return (std::make_shared<Lenosky>(a_p));
     break;
   }
   case PotType::SW_SI: {
-    return (std::make_shared<SW>(params));
+    return (std::make_shared<SW>(a_p));
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (std::make_shared<Tersoff>(params));
+    return (std::make_shared<Tersoff>(a_p));
     break;
   }
 #endif
 #ifndef WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
-    return (std::make_shared<VASP>(params));
+    return (std::make_shared<VASP>(a_p));
     break;
   }
 #endif
 #endif
 #ifdef LAMMPS_POT
   case PotType::LAMMPS: {
-    return (std::make_shared<lammps>(params));
+    return (std::make_shared<lammps>(a_p));
     break;
   }
 #endif
 #ifdef EONMPI
   case PotType::MPI: {
-    return (std::make_shared<MPIPot>(params));
+    return (std::make_shared<MPIPot>(a_p));
     break;
   }
 #endif
@@ -247,7 +248,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params) {
 #endif
 #ifdef ASE_POT
   case PotType::ASE_POT: {
-    return (std::make_shared<ASE_POT>(params));
+    return (std::make_shared<ASE_POT>(a_p));
     break;
   }
 #endif
@@ -267,11 +268,11 @@ std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params) {
   // }
 #ifdef WITH_AMS
   case PotType::AMS: {
-    return (std::make_shared<AMS>(params));
+    return (std::make_shared<AMS>(a_p));
     break;
   }
   case PotType::AMS_IO: {
-    return (std::make_shared<AMS_IO>(params));
+    return (std::make_shared<AMS_IO>(a_p));
     break;
   }
 #endif
@@ -288,20 +289,20 @@ std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params) {
   // }
 #ifdef WITH_CATLEARN
   case PotType::CatLearn: {
-    return (std::make_shared<CatLearnPot>(params));
+    return (std::make_shared<CatLearnPot>(a_p));
     break;
   }
 #endif
 // TODO: Handle Fortran interaction
 #ifdef WITH_XTB
   case PotType::XTB: {
-    return (std::make_shared<XTBPot>(params));
+    return (std::make_shared<XTBPot>(a_p));
     break;
   }
 #endif
 #ifdef WITH_ASE_ORCA
   case PotType::ASE_ORCA: {
-    return (std::make_shared<ASEOrcaPot>(params));
+    return (std::make_shared<ASEOrcaPot>(a_p));
     break;
   }
 #endif
