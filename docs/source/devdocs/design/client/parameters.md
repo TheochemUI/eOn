@@ -85,6 +85,19 @@ struct LJParams {
 } // namespace eonc::def
 ```
 
+Naturally post C++11/C++14 we can use in-class member initialization, aka
+[NSDMI](https://www.cppstories.com/2015/02/non-static-data-members-initialization/).
+
+```{code-block} cpp
+namespace eonc::def {
+struct LJParams {
+  double u0 = 1.0;
+  double cutoff = 15.0;
+  double psi = 1.0;
+};
+} // namespace eonc::def
+```
+
 Now we can finally remove the initialization call in the `Parameters`
 constructor by addding an initializer for `Potential`.
 
