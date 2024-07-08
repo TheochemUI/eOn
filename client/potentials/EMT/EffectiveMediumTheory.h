@@ -38,22 +38,23 @@ private:
   EMTDefaultParameterProvider *EMTParameterObj;
   EMT *EMTObj;
   SuperCell *SuperCellObj;
-  bool useEMTRasmussen;
+  bool useEMTRasmussen, usePBC;
 
 public:
   // Functions
   // constructor and destructor
-  EffectiveMediumTheory(Parameters &p)
-      : Potential(p) {
+  EffectiveMediumTheory(bool useEMTRasmussen, bool usePBC)
+      : Potential(PotType::EMT),
+        useEMTRasmussen{useEMTRasmussen},
+        usePBC{usePBC} {
     // dummy variables
-    AtomsObj = 0;
-    EMTObj = 0;
-    SuperCellObj = 0;
-    EMTParameterObj = 0;
+    AtomsObj = nullptr;
+    EMTObj = nullptr;
+    SuperCellObj = nullptr;
+    EMTParameterObj = nullptr;
     numberOfAtoms = 0;
-    useEMTRasmussen = p.pot.EMTRasmussen;
 
-    if (p.main.usePBC == false) {
+    if (usePBC == false) {
       throw std::invalid_argument(
           "EMT should have periodic boundary conditions in all directions");
     }

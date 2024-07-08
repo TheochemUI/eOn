@@ -14,11 +14,12 @@
 
 #include "../../Matter.h"
 #include "../../Potential.h"
+#include "../AMS/AMS.h"
 
 class AMS_IO : public Potential {
 
 public:
-  AMS_IO(Parameters& a_p);
+  AMS_IO(AMSParams amsp);
   ~AMS_IO();
   void initialize(){};
   void cleanMemory(void);

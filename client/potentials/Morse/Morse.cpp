@@ -35,6 +35,7 @@ void Morse::setParameters(double De, double a, double re, double cutoff) {
   a_ = a;
   cutoff_ = cutoff;
   double f;
+  // TODO(rg): Why call the energy and forces here?
   morse(cutoff, energyCutoff_, f);
 }
 

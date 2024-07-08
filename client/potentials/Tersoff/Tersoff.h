@@ -35,8 +35,8 @@ class Tersoff : public Potential {
 public:
   // Functions
   // constructor
-  Tersoff(Parameters &a_p)
-      : Potential(a_p) {}
+  Tersoff()
+      : Potential(PotType::TERSOFF_SI) {}
 
   // To satisfy interface
   void initialize(void);

@@ -18,9 +18,9 @@
 class ExtPot : public Potential {
 
 public:
-  ExtPot(Parameters &a_p)
-      : Potential(a_p),
-        eon_extpot_path{a_p.pot.extPotPath.c_str()} {};
+  ExtPot(std::string extPotPath)
+      : Potential(PotType::EXT),
+        eon_extpot_path{extPotPath.c_str()} {};
   ~ExtPot();
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,

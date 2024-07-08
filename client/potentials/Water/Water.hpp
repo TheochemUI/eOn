@@ -24,8 +24,9 @@ University of Iceland
 
 class Tip4p : public Potential, private forcefields::Tip4p {
 public:
-  Tip4p(Parameters &a_p)
-      : Potential(a_p),
+  Tip4p()
+      : Potential(PotType::TIP4P),
+        // TODO(rg): Expose these like LJ
         forcefields::Tip4p(8.5, 1.0){};
   // Functions
   // constructor and destructor

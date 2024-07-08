@@ -14,12 +14,12 @@
 #include <string>
 #include <unistd.h>
 
-AMS_IO::AMS_IO(Parameters &a_p)
-    : Potential(PotType::AMS_IO, a_p) {
-  engine = a_p.ams.engine.c_str();
-  forcefield = a_p.ams.forcefield.c_str();
-  model = a_p.ams.model.c_str();
-  xc = a_p.ams.xc.c_str();
+AMS_IO::AMS_IO(AMSParams amsp)
+    : Potential(PotType::AMS_IO) {
+  engine = amsp.engine.c_str();
+  forcefield = amsp.forcefield.c_str();
+  model = amsp.model.c_str();
+  xc = amsp.xc.c_str();
   return;
 }
 

@@ -61,7 +61,7 @@ public:
   double beta3;
   double alpha1;
   double alpha2;
-  long mdmin;
+  size_t mdmin;
 
 private:
   size_t nlmin;
