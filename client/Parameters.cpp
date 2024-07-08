@@ -52,30 +52,6 @@ Parameters::Parameters() {
   prefactor.filterScheme = ::Prefactor::FILTER::FRACTION;
   prefactor.filterFraction = 0.90;
 
-  // [AMS] //
-  ams.engine = ""s;     // One of REAXFF MOPAC
-  ams.forcefield = ""s; // OPt.ff or something else
-  ams.model = ""s;      // PM7 PM3 or something
-  ams.xc = ""s;         // exchange-correlation functional
-  ams.basis = ""s;      // with xc
-  ams.resources = ""s;  // For DFTB
-
-  // [AMS_ENV] //
-  // Horrid little section to mimic amsrc.sh
-  // Assumes the entire thing is going to be set
-  amsenv.amshome = ""s;       // "/some/path/to/amshome/"s;
-  amsenv.scm_tmpdir = ""s;    // "/tmp"s;
-  amsenv.scm_pythondir = ""s; // "/.scm/python"s;
-  amsenv.amsbin = ""s;        // amshome.append("/bin"s);
-  amsenv.scmlicense = ""s;    // amshome.append("license.txt"s);
-  amsenv.amsresources = ""s;  // amshome.append("/atomicdata"s);
-
-  // [XTBPot] //
-  xtbpot.paramset = "GFNFF"s;
-  xtbpot.acc = 1.0;
-  xtbpot.elec_temperature = 0.0;
-  xtbpot.maxiter = 250;
-
   // [Structure Comparison] //
   structcomp.distanceDifference = 0.1;
   structcomp.neighborCutoff = 3.3;
@@ -169,10 +145,6 @@ Parameters::Parameters() {
   dimer.rotationsMin = 1;  // old dimer
   dimer.rotationsMax = 10; // old dimer and new dimer
   dimer.removeRotation = false;
-
-  // [ASE_ORCA] //
-  aseorca.orca_path = ""s;
-  aseorca.orca_nproc = "1"s;
 
   // [Lanczos] //
   lanczos.tolerance = 0.01;
@@ -335,15 +307,6 @@ Parameters::Parameters() {
   bhop.writeUnique = false;
   bhop.stopEnergy = -DBL_MAX;
 
-  // [Global Optimization] //
-  globopt.moveMethod = "md"s;
-  globopt.decisionMethod = "npew"s;
-  globopt.steps = 10000;
-  globopt.beta = 1.05;
-  globopt.alpha = 1.02;
-  globopt.mdmin = 3;
-  globopt.targetEnergy = -1.E50;
-
   // [Monte Carlo] //
   monte_carlo.stepSize = 0.005;
   monte_carlo.steps = 1000;
@@ -355,15 +318,6 @@ Parameters::Parameters() {
   bgsd.Hforceconvergence = 0.01;
   bgsd.grad2energyconvergence = 0.000001;
   bgsd.grad2forceconvergence = 0.0001;
-
-  // [CatLearn] //
-  // No reasonable default for catl_path
-  catl.path = ""s;
-  catl.model = "gp"s;
-  catl.prior = "median"s;
-  catl.use_deriv = true;
-  catl.use_fingerprint = false;
-  catl.parallel = false;
 }
 
 std::string Parameters::toLowerCase(std::string s) {
@@ -403,42 +357,14 @@ int Parameters::load(const std::string &filename) {
       helper_functions::random(main.randomSeed);
     }
 
-    // Potential
+    // [Potential]
     loadPot(config);
-
-    // AMS section
-    ams.engine = config["AMS"]["engine"].value_or(""s); // One of REAXFF MOPA
-    ams.forcefield =
-        config["AMS"]["forcefield"].value_or(""s); // OPt.ff or something else
-    ams.resources =
-        config["AMS"]["resources"].value_or(""s); // PM7 PM3 or something
-    ams.model =
-        config["AMS"]["model"].value_or(""s); // exchange-correlation functional
-    ams.xc = config["AMS"]["xc"].value_or(""s);       // with xc
-    ams.basis = config["AMS"]["basis"].value_or(""s); // For DFTB
-
-    // AMS_ENV section
-    // Horrid little section to mimic amsrc.sh
-    // Assumes the entire thing is going to be set
-    amsenv.amshome = config["AMS_ENV"]["amshome"].value_or(
-        ""s); // "/some/path/to/amshome/"s;
-    amsenv.scm_tmpdir =
-        config["AMS_ENV"]["scm_tmpdir"].value_or(""s); // "/tmp"s;
-    amsenv.scmlicense =
-        config["AMS_ENV"]["scmlicense"].value_or(""s); // "/.scm/python"s;
-    amsenv.scm_pythondir = config["AMS_ENV"]["scm_pythondir"].value_or(
-        ""s); // amshome.append("/bin"s);
-    amsenv.amsbin = config["AMS_ENV"]["amsbin"].value_or(
-        ""s); // amshome.append("license.txt"s);
-    amsenv.amsresources = config["AMS_ENV"]["amsresources"].value_or(
-        ""s); // amshome.append("/atomicdata"s);
-
-    // XTBPot section
-    xtbpot.paramset = config["XTBPot"]["paramset"].value_or("GFNFF"s);
-    xtbpot.acc = config["XTBPot"]["accuracy"].value_or(1.0);
-    xtbpot.elec_temperature =
-        config["XTBPot"]["electronic_temperature"].value_or(0.0);
-    xtbpot.maxiter = config["XTBPot"]["max_iterations"].value_or(250L);
+    // [AMS] and [AMS_ENV]
+    loadAMSParams(config);
+    // [ASE_ORCA]
+    loadASEOrcaParams(config);
+    // [CatLearn]
+    loadCatLearnParams(config);
 
     // Structure Comparison section
     structcomp.distanceDifference =
@@ -783,24 +709,6 @@ int Parameters::load(const std::string &filename) {
         throw std::runtime_error("We only support catlearn for GP right now"s);
       }
     }
-    // [CatLearn]
-    if (config.contains("CatLearn"s)) {
-      // Case sensitive!!
-      catl.path = config["CatLearn"]["path"].value_or(""s);
-      catl.model = config["CatLearn"]["model"].value_or("gp"s);
-      catl.prior = config["CatLearn"]["prior"].value_or("median"s);
-      catl.use_deriv = config["CatLearn"]["use_derivative"].value_or(true);
-      catl.parallel = config["CatLearn"]["parallel"].value_or(true);
-      catl.use_deriv = config["CatLearn"]["use_fingerprint"].value_or(false);
-    }
-    // [ASE_ORCA]
-    if (config.contains("ASE_ORCA"s)) {
-      // Case sensitive!!
-      // Can be used with environment variables
-      aseorca.orca_path = config["ASE_ORCA"]["orca_path"].value_or(""s);
-      aseorca.orca_nproc = config["ASE_ORCA"]["nproc"].value_or("1"s);
-      aseorca.simpleinput = config["ASE_ORCA"]["simpleinput"].value_or(""s);
-    }
     // Replica Exchange section
     repexc.temperatureDistribution =
         config["Replica_Exchange"]["temperature_distribution"].value_or(
@@ -952,8 +860,10 @@ void Parameters::loadPot(const toml::table &config) {
         pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
         pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
 
-    // Load LJ parameters if they exist
-    loadLJParams(*potentialTable);
+    // Load other parameters if they exist
+    loadLJParams(potentialTable);
+    loadMorseParams(potentialTable);
+    loadXTBParams(potentialTable);
   }
 }
 
@@ -964,5 +874,82 @@ void Parameters::loadLJParams(const toml::table &config) {
     pot.lj.u0 = ljTable["u0"].value_or(pot.lj.u0);
     pot.lj.cutoff = ljTable["cutoff"].value_or(pot.lj.cutoff);
     pot.lj.psi = ljTable["psi"].value_or(pot.lj.psi);
+  }
+}
+
+void Parameters::loadMorseParams(const toml::table &config) {
+  if (config.contains("Morse") && config["Morse"].is_table()) {
+    const auto &MorseTable = *config["Morse"].as_table();
+
+    pot.mpar.De = MorseTable["De"].value_or(pot.mpar.De);
+    pot.mpar.a = MorseTable["a"].value_or(pot.mpar.a);
+    pot.mpar.re = MorseTable["re"].value_or(pot.mpar.re);
+    pot.mpar.cutoff = MorseTable["cutoff"].value_or(pot.mpar.cutoff);
+  }
+}
+
+void Parameters::loadXTBParams(const toml::table &config) {
+  if (config.contains("XTBPot") && config["XTBPot"].is_table()) {
+    const auto &XTBPotTable = *config["XTBPot"].as_table();
+
+    pot.xtbp.paramset = XTBPotTable["param"].value_or(pot.xtbp.paramset);
+    pot.xtbp.acc = XTBPotTable["accuracy"].value_or(pot.xtbp.acc);
+    pot.xtbp.elec_temperature =
+        XTBPotTable["electronic_temperature"].value_or(pot.xtbp.acc);
+    pot.xtbp.maxiter = XTBPotTable["max_iterations"].value_or(pot.xtbp.maxiter);
+  }
+}
+
+void Parameters::loadAMSParams(const toml::table &config) {
+  if (config.contains("AMS") && config["AMS"].is_table()) {
+    const auto &amsTable = *config["AMS"].as_table();
+
+    ams.engine = amsTable["engine"].value_or(ams.engine);
+    ams.forcefield = amsTable["forcefield"].value_or(ams.forcefield);
+    ams.model = amsTable["model"].value_or(ams.model);
+    ams.resources = amsTable["resources"].value_or(ams.resources);
+    ams.xc = amsTable["xc"].value_or(ams.xc);
+    ams.basis = amsTable["basis"].value_or(ams.basis);
+  }
+
+  if (config.contains("AMS_ENV") && config["AMS_ENV"].is_table()) {
+    const auto &envTable = *config["AMS_ENV"].as_table();
+
+    ams.amsenv.amshome = envTable["amshome"].value_or(ams.amsenv.amshome);
+    ams.amsenv.scm_tmpdir =
+        envTable["scm_tmpdir"].value_or(ams.amsenv.scm_tmpdir);
+    ams.amsenv.scmlicense =
+        envTable["scmlicense"].value_or(ams.amsenv.scmlicense);
+    ams.amsenv.scm_pythondir =
+        envTable["scm_pythondir"].value_or(ams.amsenv.scm_pythondir);
+    ams.amsenv.amsbin = envTable["amsbin"].value_or(ams.amsenv.amsbin);
+    ams.amsenv.amsresources =
+        envTable["amsresources"].value_or(ams.amsenv.amsresources);
+  }
+}
+
+void Parameters::loadASEOrcaParams(const toml::table &config) {
+  if (config.contains("ASE_ORCA") && config["ASE_ORCA"].is_table()) {
+    const auto &aseOrcaTable = *config["ASE_ORCA"].as_table();
+
+    aseorca.orca_path = aseOrcaTable["orca_path"].value_or(aseorca.orca_path);
+    aseorca.orca_nproc = aseOrcaTable["nproc"].value_or(aseorca.orca_nproc);
+    aseorca.simpleinput =
+        aseOrcaTable["simpleinput"].value_or(aseorca.simpleinput);
+  }
+}
+
+void Parameters::loadCatLearnParams(const toml::table &config) {
+  if (config.contains("CatLearn") && config["CatLearn"].is_table()) {
+    const auto &aseOrcaTable = *config["CatLearn"].as_table();
+    // Case sensitive!!
+    catl.path = config["CatLearn"]["path"].value_or(catl.path);
+    catl.model = config["CatLearn"]["model"].value_or(catl.model);
+    catl.prior = config["CatLearn"]["prior"].value_or(catl.prior);
+    catl.use_deriv =
+        config["CatLearn"]["use_derivative"].value_or(catl.use_deriv);
+    catl.parallel = config["CatLearn"]["parallel"].value_or(catl.parallel);
+    catl.use_deriv =
+        config["CatLearn"]["use_fingerprint"].value_or(catl.use_deriv);
   }
 }

@@ -61,7 +61,7 @@ _args += cppc.get_supported_arguments([
   '-Wno-unused-parameter',
   '-Wno-unused-result',
   '-Wno-unused-variable',
-  # '-Wfatal-errors',
+  '-Wfatal-errors',
 ]
 )
 
@@ -203,6 +203,7 @@ eonclib_sources = [
            'NudgedElasticBandJob.cpp',
            'DynamicsSaddleSearch.cpp',
            'HelperFunctions.cpp',
+           'EnvHelpers.cc',
            # 'StringHelpers.cc', # Template
            'MatrixHelpers.hpp', # Template
            'Dimer.cpp',

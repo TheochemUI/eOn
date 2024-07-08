@@ -19,15 +19,15 @@
 class NewPot : public Potential {
 
 private:
-  //	Variables
+  // Variables
   double fake1;
   double fake2;
 
 public:
   // Functions
   // constructor and destructor
-  NewPot(Parameters& p)
-      : Potential(p),
+  NewPot()
+      : Potential(PotType::NEW),
         fake1{0},
         fake2{0} {};
 

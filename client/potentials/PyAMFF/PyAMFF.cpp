@@ -28,7 +28,8 @@ extern "C" void nncleanup();
 extern "C" void prepfNN(long *nAtoms, int *num_elements, int *max_fps,
                         const int[], int[]);
 
-PyAMFF::PyAMFF(void) {
+PyAMFF::PyAMFF(void)
+    : Potential(PotType::PYAMFF) {
   new_pyamff = true;
   return;
 }

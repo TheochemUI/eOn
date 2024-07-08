@@ -34,8 +34,8 @@ class SW : public Potential {
 public:
   // Functions
   // constructor
-  SW(Parameters &a_p)
-      : Potential(a_p) {}
+  SW()
+      : Potential(PotType::SW_SI) {}
 
   // To satisfy interface
   void initialize(void);
