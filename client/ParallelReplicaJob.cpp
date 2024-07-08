@@ -17,7 +17,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "ParallelReplicaJob.h"
-
+namespace eonc {
 std::vector<std::string> ParallelReplicaJob::run(void) {
   // load pos.con
   reactant = new Matter(pot, params);
@@ -293,3 +293,5 @@ int ParallelReplicaJob::refineTransition(std::vector<Matter *> MDSnapshots,
 
   return (min + max) / 2 + 1;
 }
+
+} // namespace eonc

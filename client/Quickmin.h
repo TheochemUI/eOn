@@ -13,7 +13,7 @@
 
 #include "Optimizer.h"
 #include "Parameters.h"
-
+namespace eonc {
 // when changing away from final, remember to mark the destructor as virtual
 class Quickmin final : public Optimizer {
 
@@ -45,3 +45,5 @@ private:
   size_t m_iteration, m_max_iter;
   std::shared_ptr<spdlog::logger> m_log;
 };
+
+} // namespace eonc

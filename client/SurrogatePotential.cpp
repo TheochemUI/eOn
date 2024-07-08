@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "SurrogatePotential.h"
-
+namespace eonc {
 std::tuple<double, AtomMatrix, double>
 SurrogatePotential::get_ef_var(const AtomMatrix pos, const Vector<int> atmnrs,
                                const Matrix3S box) {
@@ -22,3 +22,5 @@ SurrogatePotential::get_ef_var(const AtomMatrix pos, const Vector<int> atmnrs,
               box.data());
   return std::make_tuple(energy, forces, var);
 };
+
+} // namespace eonc

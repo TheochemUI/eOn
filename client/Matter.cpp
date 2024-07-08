@@ -23,8 +23,8 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
+namespace eonc {
 using namespace std;
-
 namespace {
 
 const char *elementArray[] = {
@@ -1235,3 +1235,5 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+
+} // namespace eonc

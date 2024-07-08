@@ -20,7 +20,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
-
+namespace eonc {
 using namespace std;
 
 void singlePoint(std::unique_ptr<Matter> matter) {
@@ -176,3 +176,5 @@ void commandLine(int argc, char **argv) {
     exit(1);
   }
 }
+
+} // namespace eonc

@@ -14,7 +14,7 @@
 #include "Dynamics.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
-
+namespace eonc {
 std::vector<std::string> ReplicaExchangeJob::run(void) {
   long i, step,
       samplingSteps =
@@ -143,3 +143,5 @@ void ReplicaExchangeJob::saveData(void) {
 
   return;
 }
+
+} // namespace eonc

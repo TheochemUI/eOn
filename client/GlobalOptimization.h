@@ -11,7 +11,7 @@
 */
 #pragma once
 #include "Parameters.h"
-
+namespace eonc {
 class GlobalOptimization {
 public:
   GlobalOptimization(Parameters *params);
@@ -21,3 +21,5 @@ public:
 private:
   Parameters *parameters;
 };
+
+} // namespace eonc

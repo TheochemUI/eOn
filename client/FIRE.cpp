@@ -11,7 +11,7 @@
 */
 #include "FIRE.h"
 #include "HelperFunctions.h"
-
+namespace eonc {
 int FIRE::step(double a_maxMove) {
   double P = 0;
   // Check convergence.
@@ -68,3 +68,5 @@ int FIRE::run(size_t a_maxIterations, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

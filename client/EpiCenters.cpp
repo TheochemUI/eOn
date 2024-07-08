@@ -15,7 +15,7 @@
 #include <cassert>
 #include <climits>
 #include <vector>
-
+namespace eonc {
 using namespace helper_functions;
 using std::vector;
 
@@ -300,3 +300,5 @@ long EpiCenters::minCoordination(const Matter *matter, double neighborCutoff) {
 
   return (minCoordinationVal);
 }
+
+} // namespace eonc

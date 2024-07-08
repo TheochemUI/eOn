@@ -16,7 +16,7 @@
 #include "Matter.h"
 #include "Optimizer.h"
 #include "TADJob.h"
-
+namespace eonc {
 std::vector<std::string> TADJob::run(void) {
   current = std::make_shared<Matter>(pot, params);
   reactant = std::make_shared<Matter>(pot, params);
@@ -454,3 +454,5 @@ long TADJob::refine(std::vector<std::shared_ptr<Matter>> buff, long length,
 
   return (min + max) / 2 + 1;
 }
+
+} // namespace eonc

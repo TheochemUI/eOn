@@ -9,8 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#ifndef DYNAMICS_H
-#define DYNAMICS_H
+#pragma once
 
 #include "HelperFunctions.h"
 #include "Matter.h"
@@ -18,7 +17,7 @@
 #include "Parameters.h"
 
 #include "Eigen.h"
-
+namespace eonc {
 class Dynamics {
 
 public:
@@ -53,5 +52,4 @@ private:
   double vxi1, vxi2, xi1, xi2;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif
+} // namespace eonc

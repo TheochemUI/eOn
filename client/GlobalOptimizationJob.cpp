@@ -14,7 +14,7 @@
 #include "GlobalOptimization.h"
 #include "HelperFunctions.h"
 #include <spdlog/spdlog.h>
-
+namespace eonc {
 using namespace helper_functions;
 
 std::vector<std::string> GlobalOptimizationJob::run(void) {
@@ -433,3 +433,5 @@ size_t GlobalOptimizationJob::hunt(double epot) {
   // if(std::abs(epot-earr[jlo+1])<params->energyDifference) jlo++;
   return jlo;
 }
+
+} // namespace eonc

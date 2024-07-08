@@ -19,6 +19,8 @@
 #include <memory>
 #include <optional>
 
+namespace eonc {
+
 class Potential {
 protected:
   PotType ptype;
@@ -77,7 +79,10 @@ public:
   }
 };
 
-namespace helper_functions {
+} // namespace eonc
+
+namespace eonc::helper_functions {
+using namespace eonc;
 std::shared_ptr<Potential> makePotential(Parameters &params);
 std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params);
 } // namespace helper_functions

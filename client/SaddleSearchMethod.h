@@ -13,7 +13,7 @@
 
 #include "Parameters.h"
 #include "Potential.h"
-
+namespace eonc {
 class SaddleSearchMethod {
 protected:
   std::shared_ptr<Potential> pot;
@@ -24,10 +24,12 @@ public:
                      std::shared_ptr<Parameters> paramsPassed)
       : pot{potPassed},
         params{paramsPassed} {};
-  virtual ~SaddleSearchMethod(){};
+  virtual ~SaddleSearchMethod() {};
   virtual int run() = 0;
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
 
   int status;
 };
+
+} // namespace eonc

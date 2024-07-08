@@ -19,6 +19,8 @@
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
 
+namespace eonc {
+
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
@@ -37,3 +39,5 @@ public:
   MatrixType
       variance; // XXX: This is a hacky way to populate and use this variable
 };
+
+} // namespace eonc
