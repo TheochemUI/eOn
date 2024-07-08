@@ -1,6 +1,6 @@
 # Recycling
 
-As reported in {cite:t}`recyc-xuAdaptiveKineticMonte2008`, `eON` implements a
+As reported in {cite:t}`recyc-xuAdaptiveKineticMonte2008`, `eOn` implements a
 method of saddle point recycling that can significantly reduce the computational
 cost of the aKMC algorithm.
 
