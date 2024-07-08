@@ -1,5 +1,15 @@
-#ifndef BUNDLING_H
-#define BUNDLING_H
+/*
+** This file is part of eON.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eON Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eON
+*/
+#pragma once
 #include <string>
 #include <vector>
 
@@ -8,4 +18,3 @@ std::vector<std::string> unbundle(int number);
 void bundle(int number, const std::vector<std::string> &filenames,
             std::vector<std::string> *bundledFilenames);
 void deleteUnbundledFiles(const std::vector<std::string> &unbundledFilenames);
-#endif
