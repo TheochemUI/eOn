@@ -40,3 +40,10 @@ With contributions from a number of other developers:
 - Raymond Smith (UT)
 - Erik Edelmann (Finland)
 - Jutta Rogal (Bochum)
+
+## License history
+
+`eON` was originally licensed under the GNU GPL v3 until 2017.  In 2017, the
+license was changed to GNU GPL v2.  Since 2020, eON is licensed under the BSD
+3-Clause License. Some more context is at
+[gh-140](https://github.com/TheochemUI/eON/issues/140).
