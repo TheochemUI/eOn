@@ -10,12 +10,11 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef LENNARD_JONES_CLUSTER_H
-#define LENNARD_JONES_CLUSTER_H
+#pragma once
 
 // #include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
-
+namespace eonc {
 /** Lennard Jones potential.*/
 class LJCluster : public Potential {
 
@@ -30,7 +29,7 @@ private:
 public:
   // Functions
   // constructor
-  LJCluster(eonc::def::LJParams& ljp)
+  LJCluster(eonc::def::LJParams &ljp)
       : Potential(PotType::LJCLUSTER),
         u0{ljp.u0},
         cuttOffR{ljp.cutoff},
@@ -45,4 +44,4 @@ public:
              double *U, double *variance, const double *box) override;
   void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
-#endif
+} // namespace eonc

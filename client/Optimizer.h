@@ -14,7 +14,7 @@
 #include "Eigen.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
-
+namespace eonc {
 /** @defgroup Optimizers
  *
  * \brief ClientEON methods for optimizing atomic structures
@@ -69,7 +69,7 @@ public:
         m_params{a_params},
         m_objf{a_objf} {}
   //! optimizer deconstructor
-  virtual ~Optimizer(){};
+  virtual ~Optimizer() {};
   //! Template for stepping the optimizer, returns convergence
   virtual int step(double a_maxMove) = 0;
   //! Template for running the optimizer; uses a series of steps, checking for
@@ -82,3 +82,5 @@ std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
                                    OptType a_otype,
                                    std::shared_ptr<Parameters> a_params);
 }
+
+} // namespace eonc

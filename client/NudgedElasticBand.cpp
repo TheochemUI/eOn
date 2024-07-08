@@ -15,7 +15,7 @@
 #include "Optimizer.h"
 #include "magic_enum/magic_enum.hpp"
 #include <filesystem>
-
+namespace eonc {
 using namespace helper_functions;
 namespace fs = std::filesystem;
 
@@ -383,7 +383,7 @@ void NudgedElasticBand::updateForces(void) {
         double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
         springConstants[idx - 1] =
             (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
-      }                                          // else always k_l
+      } // else always k_l
     }
   }
 
@@ -656,3 +656,5 @@ void NudgedElasticBand::findExtrema(void) {
         extremumCurvature[i]);
   }
 }
+
+} // namespace eonc

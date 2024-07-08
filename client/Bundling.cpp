@@ -19,7 +19,7 @@
 #include <filesystem>
 #include <iostream>
 #include <unistd.h>
-
+namespace eonc {
 namespace fs = std::filesystem;
 
 int getBundleSize(void) {
@@ -177,3 +177,5 @@ void bundle(int number, const std::vector<std::string> &filenames,
     bundledFilenames->push_back(newFilename);
   }
 }
+
+} // namespace eonc

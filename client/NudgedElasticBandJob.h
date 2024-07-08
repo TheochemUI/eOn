@@ -14,7 +14,7 @@
 #include "Job.h"
 #include "NudgedElasticBand.h"
 #include "Parameters.h"
-
+namespace eonc {
 class NudgedElasticBandJob : public Job {
 
 public:
@@ -36,3 +36,5 @@ private:
   size_t fCallsNEB;
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

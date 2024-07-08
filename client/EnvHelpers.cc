@@ -1,6 +1,6 @@
 #include "EnvHelpers.hpp"
 #include <spdlog/spdlog.h>
-
+namespace eonc {
 namespace helper_functions {
 
 std::string get_value_from_env_or_param(const char *env_variable,
@@ -8,7 +8,7 @@ std::string get_value_from_env_or_param(const char *env_variable,
                                         const std::string &warning_message,
                                         const bool is_mandatory) {
   const char *env_value = std::getenv(env_variable);
-  auto&& [param_value, default_value] = val_def;
+  auto &&[param_value, default_value] = val_def;
   if (env_value != nullptr) {
     return std::string(env_value);
   }
@@ -32,3 +32,5 @@ std::string get_value_from_env_or_param(const char *env_variable,
 }
 
 } // namespace helper_functions
+
+} // namespace eonc

@@ -13,7 +13,7 @@
 #include "HelperFunctions.h"
 
 using namespace std;
-
+namespace eonc {
 std::vector<std::string> NudgedElasticBandJob::run(void) {
   NudgedElasticBand::NEBStatus status;
   int f1;
@@ -137,3 +137,5 @@ void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
     SPDLOG_LOGGER_WARN(log, "Unknown status: {}!", static_cast<int>(status));
   return;
 }
+
+} // namespace eonc

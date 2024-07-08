@@ -14,7 +14,7 @@
 
 #include "Dynamics.h"
 #include "DynamicsJob.h"
-
+namespace eonc {
 using namespace helper_functions;
 
 std::vector<std::string> DynamicsJob::run(void) {
@@ -40,3 +40,5 @@ std::vector<std::string> DynamicsJob::run(void) {
   std::vector<std::string> returnFiles;
   return returnFiles;
 }
+
+} // namespace eonc

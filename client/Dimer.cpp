@@ -11,7 +11,7 @@
 */
 #include "Dimer.h"
 #include "HelperFunctions.h"
-
+namespace eonc {
 using namespace helper_functions;
 
 Dimer::Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
@@ -252,3 +252,5 @@ void Dimer::rotate(double rotationAngle) {
 
   return;
 }
+
+} // namespace eonc

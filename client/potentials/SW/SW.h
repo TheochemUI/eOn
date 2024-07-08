@@ -28,7 +28,7 @@ extern "C" {
 void sw_(const long int *N, const double *R, double *F, double *U,
          const double *bx, const double *by, const double *bz);
 }
-
+namespace eonc {
 /** SW potential.*/
 class SW : public Potential {
 public:
@@ -44,3 +44,4 @@ public:
              double *U, double *variance, const double *box);
 };
 #endif
+}

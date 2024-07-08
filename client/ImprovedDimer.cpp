@@ -15,7 +15,7 @@
 #include "ImprovedDimer.h"
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
-
+namespace eonc {
 using namespace helper_functions;
 
 const char ImprovedDimer::OPT_SD[] = "sd";
@@ -307,3 +307,5 @@ double ImprovedDimer::getEigenvalue() { return C_tau; }
 AtomMatrix ImprovedDimer::getEigenvector() {
   return MatrixType::Map(tau.data(), x0->numberOfAtoms(), 3);
 }
+
+} // namespace eonc

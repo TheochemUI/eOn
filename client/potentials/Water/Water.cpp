@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Water.hpp"
-
+namespace eonc {
 void Tip4p::force(long N, const double *R, const int *atomicNrs, double *F,
                   double *U, const double *box) {
   double diagbox[3];
@@ -29,3 +29,5 @@ void SpceCcl::force(long N, const double *R, const int *atomicNrs, double *F,
   diagbox[2] = box[8];
   computeHH_O_(N, R, F, *U, diagbox, 0);
 }
+
+} // namespace eonc

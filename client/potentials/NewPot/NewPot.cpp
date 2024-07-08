@@ -11,7 +11,7 @@
 */
 
 #include "NewPot.h"
-
+namespace eonc {
 void NewPot::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
@@ -30,3 +30,5 @@ void NewPot::force(long N, const double *R, const int *atomicNrs, double *F,
   *U = fake2;
   return;
 }
+
+} // namespace eonc

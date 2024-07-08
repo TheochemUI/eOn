@@ -32,7 +32,7 @@
 #define IQ2 52774
 #define IR1 12211
 #define IR2 3791
-
+namespace eonc {
 /* Collection of supporting functions that handle arrays of doubles as vectors
  * and different random number generators */
 namespace helper_functions {
@@ -96,3 +96,5 @@ bool sortedR(const Matter &m1, const Matter &m2,
 void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
 } // namespace helper_functions
+
+} // namespace eonc

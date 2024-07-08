@@ -11,6 +11,7 @@
 */
 #include "Hessian.h"
 #include "HelperFunctions.h"
+namespace eonc {
 Hessian::Hessian(Parameters *params, Matter *matter) {
   parameters = params;
   hessian.resize(0, 0);
@@ -169,3 +170,5 @@ VectorType Hessian::removeZeroFreqs(VectorType freqs) {
   }
   return newfreqs.head(size - nremoved);
 }
+
+} // namespace eonc

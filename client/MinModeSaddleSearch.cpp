@@ -23,7 +23,7 @@
 #endif
 #include "EpiCenters.h"
 #include "ObjectiveFunction.h"
-
+namespace eonc {
 using namespace helper_functions;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
@@ -415,3 +415,5 @@ double MinModeSaddleSearch::getEigenvalue() {
 AtomMatrix MinModeSaddleSearch::getEigenvector() {
   return minModeMethod->getEigenvector();
 }
+
+} // namespace eonc

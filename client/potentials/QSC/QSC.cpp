@@ -16,7 +16,7 @@
 
 #include "Parameters.h"
 #include "QSC.h"
-
+namespace eonc {
 /*
  * This is an implementation of the Quantum Sutton-Chen Potential,
  * which is an EAM type potential with the following functional form:
@@ -366,3 +366,5 @@ QSC::qsc_parameters QSC::get_qsc_parameters(int element_a, int element_b) {
 
   return p;
 }
+
+} // namespace eonc

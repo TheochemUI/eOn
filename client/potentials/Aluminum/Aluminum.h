@@ -30,6 +30,8 @@ extern "C" {
 void potinit_();
 }
 
+namespace eonc {
+
 /** Aluminum potential.*/
 class Aluminum : public Potential {
 public:
@@ -37,8 +39,10 @@ public:
       : Potential(PotType::EAM_AL) {
     potinit_();
   };
-  ~Aluminum(void){};
+  ~Aluminum(void) {};
   // To satisfy interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
+
+} // namespace eonc

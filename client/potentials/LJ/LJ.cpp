@@ -11,7 +11,7 @@
 */
 
 #include "LJ.h"
-
+namespace eonc {
 // LJ::LJ(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
 //     this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
 //     return;
@@ -80,3 +80,5 @@ void LJ::force(long N, const double *R, const int *atomicNrs, double *F,
   }
   return;
 }
+
+} // namespace eonc

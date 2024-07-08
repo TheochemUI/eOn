@@ -11,7 +11,7 @@
 */
 #include "PointJob.h"
 #include "Matter.h"
-
+namespace eonc {
 std::vector<std::string> PointJob::run(void) {
   std::vector<std::string> returnFiles;
   std::string posInFilename("pos.con");
@@ -36,3 +36,5 @@ std::vector<std::string> PointJob::run(void) {
   fileLogger.reset();
   return returnFiles;
 }
+
+} // namespace eonc

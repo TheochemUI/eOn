@@ -12,7 +12,7 @@
 #include "MonteCarlo.h"
 #include "HelperFunctions.h"
 #include <iostream>
-
+namespace eonc {
 using namespace helper_functions;
 
 void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
@@ -68,3 +68,5 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
   }
   std::cout << accepts << "\n";
 }
+
+} // namespace eonc

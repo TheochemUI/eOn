@@ -16,7 +16,7 @@
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
-
+namespace eonc {
 // NEB method for determining a minimum energy path between two matter objects
 class NudgedElasticBand {
 
@@ -77,7 +77,7 @@ public:
         neb{nebPassed} {}
   // This is the odd one out, doesn't take a Matter so we null it
 
-  ~NEBObjectiveFunction(void){};
+  ~NEBObjectiveFunction(void) {};
 
   VectorType getGradient(bool fdstep = false);
   double getEnergy();
@@ -100,3 +100,5 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                                const size_t nimgs);
 }
 } // namespace helper_functions
+
+} // namespace eonc

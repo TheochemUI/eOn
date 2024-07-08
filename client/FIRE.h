@@ -12,7 +12,7 @@
 #pragma once
 #include "Optimizer.h"
 #include "Parameters.h"
-
+namespace eonc {
 class FIRE : public Optimizer {
 
 public:
@@ -55,3 +55,5 @@ private:
   size_t m_iteration;
   std::shared_ptr<spdlog::logger> m_log;
 };
+
+} // namespace eonc

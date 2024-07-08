@@ -10,9 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef TIP4_H_POTENTIAL
-#define TIP4_H_POTENTIAL
-
+#pragma once
 #include "../../Potential.h"
 #include "../Water/Water.hpp"
 
@@ -30,7 +28,7 @@ extern "C" {
 void poth2oh_(double *R, double *U, double *F);
 void setup_(void);
 }
-
+namespace eonc {
 /** H-Water potential.*/
 class Tip4p_H : public Potential {
 
@@ -52,4 +50,4 @@ public:
 private:
   std::shared_ptr<Tip4p> tip4p_pot;
 };
-#endif
+}

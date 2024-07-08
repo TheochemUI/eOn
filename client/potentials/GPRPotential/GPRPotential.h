@@ -10,12 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef GPRPOT_INTERFACE
-#define GPRPOT_INTERFACE
-
+#pragma once
 #include "../../Potential.h"
 #include "../../subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
-
+namespace eonc {
 /** Template to use if user want to provide potential. */
 class GPRPotential : public Potential {
 
@@ -36,4 +34,4 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
 };
-#endif
+}

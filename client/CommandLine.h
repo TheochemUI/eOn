@@ -11,5 +11,6 @@
 */
 #pragma once
 #include <thirdparty/cxxopts.hpp>
-
+namespace eonc {
 void commandLine(int argc, char **argv);
+}

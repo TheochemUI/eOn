@@ -11,7 +11,7 @@
 */
 
 #include "Tersoff.h"
-
+namespace eonc {
 void Tersoff::initialize(void) { return; }
 
 void Tersoff::cleanMemory(void) { return; }
@@ -24,3 +24,5 @@ void Tersoff::force(long N, const double *R, const int *atomicNrs, double *F,
   tersoff_(&N, R, F, U, &box[0], &box[4], &box[8]);
   return;
 }
+
+} // namespace eonc

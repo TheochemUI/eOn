@@ -9,13 +9,15 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
+#pragma once
 #include <iostream>
 #include <math.h>
 
 #ifndef EAM_STANDALONE
 #include "../../Potential.h"
 #endif
-
+namespace eonc {
 // XXX: This is actually unused..
 class EAM
 #ifndef EAM_STANDALONE
@@ -75,3 +77,5 @@ private:
   double embedding_force(const double *func_coeff, double rho);
   element_parameters get_element_parameters(int atomic_number);
 };
+
+} // namespace eonc

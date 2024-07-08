@@ -14,7 +14,7 @@
 #include "Matter.h"
 #include "Potential.h"
 #include "Prefactor.h"
-
+namespace eonc {
 std::vector<std::string> PrefactorJob::run(void) {
   std::vector<std::string> returnFiles;
   VectorType freqs;
@@ -41,11 +41,11 @@ std::vector<std::string> PrefactorJob::run(void) {
     // for which the frequencies should be determined
     std::string matterFilename;
     // TODO(rg): Also an enum candidate
-    if (params->prefactor.configuration == ::Prefactor::TYPE::REACTANT) {
+    if (params->prefactor.configuration == eonc::Prefactor::TYPE::REACTANT) {
       matterFilename = reactantFilename;
-    } else if (params->prefactor.configuration == ::Prefactor::TYPE::SADDLE) {
+    } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::SADDLE) {
       matterFilename = saddleFilename;
-    } else if (params->prefactor.configuration == ::Prefactor::TYPE::PRODUCT) {
+    } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::PRODUCT) {
       matterFilename = productFilename;
     }
     reactant->con2matter(matterFilename);
@@ -66,13 +66,13 @@ std::vector<std::string> PrefactorJob::run(void) {
   assert(3 * atoms.rows() > 0);
 
   // calculate frequencies
-  if (params->prefactor.configuration == ::Prefactor::TYPE::REACTANT) {
+  if (params->prefactor.configuration == eonc::Prefactor::TYPE::REACTANT) {
     Hessian hessian(params.get(), reactant.get());
     freqs = hessian.getFreqs(reactant.get(), atoms);
-  } else if (params->prefactor.configuration == ::Prefactor::TYPE::SADDLE) {
+  } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::SADDLE) {
     Hessian hessian(params.get(), saddle.get());
     freqs = hessian.getFreqs(saddle.get(), atoms);
-  } else if (params->prefactor.configuration == ::Prefactor::TYPE::PRODUCT) {
+  } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::PRODUCT) {
     Hessian hessian(params.get(), product.get());
     freqs = hessian.getFreqs(product.get(), atoms);
   }
@@ -106,3 +106,5 @@ std::vector<std::string> PrefactorJob::run(void) {
 
   return returnFiles;
 }
+
+} // namespace eonc

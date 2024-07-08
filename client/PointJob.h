@@ -13,7 +13,7 @@
 
 #include "Job.h"
 #include "Parameters.h"
-
+namespace eonc {
 class PointJob : public Job {
 public:
   PointJob(std::unique_ptr<Parameters> parameters)
@@ -26,3 +26,5 @@ public:
 private:
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

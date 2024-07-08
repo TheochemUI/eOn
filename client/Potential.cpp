@@ -105,7 +105,7 @@
 #endif
 
 #include <limits>
-
+namespace eonc {
 // TODO(rg): These aren't really used anymore, just there for eyecandy
 int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
@@ -128,7 +128,8 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
   return std::make_tuple(energy, forces);
 };
 
-namespace helper_functions {
+} // namespace eonc
+namespace eonc::helper_functions {
 std::shared_ptr<Potential> makePotential(Parameters &a_p) {
   return makePotential(a_p.pot.potential, a_p);
 }
@@ -315,4 +316,4 @@ std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &a_p) {
   }
 }
 
-} // namespace helper_functions
+} // namespace eonc::helper_functions

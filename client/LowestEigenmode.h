@@ -14,7 +14,7 @@
 #include "Eigen.h"
 #include "Matter.h"
 #include "Parameters.h"
-
+namespace eonc {
 /* Define the interface for the lowest eigenvalue determination algorithm */
 class LowestEigenmode {
 protected:
@@ -47,3 +47,5 @@ public:
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
 };
+
+} // namespace eonc

@@ -12,7 +12,7 @@
 
 #include "XTBPot.h"
 #include <cstddef>
-
+namespace eonc {
 // Conversion factors
 // const double angstromToBohr = 1.8897261349925714;
 // const double hartreeToEV = 27.21138386;
@@ -84,3 +84,5 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   xtb_delResults(&res);
   xtb_delMolecule(&mol);
 }
+
+} // namespace eonc

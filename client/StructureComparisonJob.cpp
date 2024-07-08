@@ -13,7 +13,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "Optimizer.h"
-
+namespace eonc {
 std::vector<std::string> StructureComparisonJob::run(void) {
   std::vector<std::string> returnFiles;
 
@@ -22,3 +22,5 @@ std::vector<std::string> StructureComparisonJob::run(void) {
 
   return returnFiles;
 }
+
+} // namespace eonc

@@ -14,7 +14,7 @@
 #include "LowestEigenmode.h"
 #include "Matter.h"
 #include "Parameters.h"
-
+namespace eonc {
 // Lanczos method to find the lowest curvature mode
 class Lanczos : public LowestEigenmode {
 
@@ -31,3 +31,5 @@ private:
   double lowestEw;
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

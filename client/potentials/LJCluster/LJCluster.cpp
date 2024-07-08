@@ -11,7 +11,7 @@
 */
 
 #include "LJCluster.h"
-
+namespace eonc {
 // LJCluster::LJCluster(double u0Recieved, double cuttOffRRecieved, double
 // psiRecieved){
 //     this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
@@ -80,3 +80,5 @@ void LJCluster::force(long N, const double *R, const int *atomicNrs, double *F,
 }
 
 LJCluster::~LJCluster() { cleanMemory(); }
+
+} // namespace eonc

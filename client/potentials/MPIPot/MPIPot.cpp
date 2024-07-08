@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
-
+namespace eonc {
 MPIPot::MPIPot(int _MPIPotentialRank, double _MPIPollPeriod)
     : Potential(PotType::MPI) {
   potentialRank = _MPIPotentialRank;
@@ -66,3 +66,5 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
   // for (int i=0;i<N;i++) printf("%12.4e %12.4e %12.4e\n", F[3*i], F[3*i+1],
   // F[3*i+2]);
 }
+
+} // namespace eonc

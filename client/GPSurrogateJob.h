@@ -24,7 +24,7 @@
 #include <pybind11/embed.h>
 
 #include "NudgedElasticBand.h"
-
+namespace eonc {
 class GPSurrogateJob : public Job {
 public:
   GPSurrogateJob(std::unique_ptr<Parameters> parameters)
@@ -72,3 +72,5 @@ MatrixType vertCat(const MatrixType &m1, const MatrixType &m2);
 void addVectorRow(MatrixType &data, const VectorType &newrow);
 // Modifies data
 } // namespace helper_functions::eigen
+
+} // namespace eonc
