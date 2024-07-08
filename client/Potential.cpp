@@ -11,13 +11,10 @@
 */
 #include <csignal>
 #include <limits>
-#include <time.h>
-#include <utility>
 
-#include "HelperFunctions.h"
 #include "Parameters.h"
 #include "Potential.h"
-#include "definitions/PotParams.hpp"
+
 #ifdef WITH_CATLEARN
 #include "potentials/CatLearnPot/CatLearnPot.h"
 #endif
@@ -104,13 +101,7 @@
 #include "potentials/XTBPot/XTBPot.h"
 #endif
 
-#include <limits>
 namespace eonc {
-// TODO(rg): These aren't really used anymore, just there for eyecandy
-int Potential::fcalls = 0;
-int Potential::fcallsTotal = 0;
-int Potential::wu_fcallsTotal = 0;
-double Potential::totalUserTime = 0.0;
 
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
                                                  const Vector<int> atmnrs,
