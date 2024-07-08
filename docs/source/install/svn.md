@@ -1,7 +1,7 @@
 # Subversion
 
 ```{deprecated} 2.0
-These instructions are for obtaining older versions of `eON`.
+These instructions are for obtaining older versions of `eOn`.
 ```
 
 A read-only copy of the code can be anonymously checked out of the subversion
@@ -22,4 +22,4 @@ This will fetch a copy of the latest code to a local directory named eon.
 
 For more information on subversion read its [online documentation](http://svnbook.red-bean.com/en/1.5/index.html).
 
-The `eON` code can also be download directly in `tar` format [from here](http://theory.cm.utexas.edu/code/eon.tgz).
+The `eOn` code can also be download directly in `tar` format [from here](http://theory.cm.utexas.edu/code/eon.tgz).

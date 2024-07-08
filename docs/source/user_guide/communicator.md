@@ -1,15 +1,15 @@
 # Communicator
 
-`eON` has a server client architecture for running its calculations. The
+`eOn` has a server client architecture for running its calculations. The
 simulation data is stored on the server and clients are sent jobs and return the
-results. Each time `eON` is run it first checks to see if any results have come
+results. Each time `eOn` is run it first checks to see if any results have come
 back from clients and processes them accordingly and then submits more jobs if
-needed. In `eON` there are several different ways to run jobs. One can run them
+needed. In `eOn` there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 [SGE](http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html).
 
 ```{note}
-As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eON` to generate submission scripts.
+As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eOn` to generate submission scripts.
 ```
 
 ## Configuration
