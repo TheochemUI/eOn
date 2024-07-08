@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Tip4p_Pt.hpp"
-
+namespace eonc {
 void Tip4p_Pt::force(long N, const double *R, const int *atomicNrs, double *F,
                      double *U, double *variance, const double *box) {
   variance = nullptr;
@@ -23,3 +23,5 @@ void Tip4p_Pt::force(long N, const double *R, const int *atomicNrs, double *F,
     i += 2;
   computeHH_O_Pt_(i / 2, N - i * 3 / 2, R, F, *U, diagbox, 0);
 }
+
+} // namespace eonc

@@ -10,10 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef VASP_POTENTIAL
-#define VASP_POTENTIAL
-
+#pragma once
 #include "../../Potential.h"
+namespace eonc {
 
 class VASP : public Potential {
 
@@ -40,7 +39,7 @@ public:
     system("rm -f XDATCAR");
   }
   ~VASP() { cleanMemory(); }
-  void initialize(){};
+  void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
@@ -55,5 +54,4 @@ private:
   static long vaspRunCount;
   static pid_t vaspPID;
 };
-
-#endif
+} // namespace eonc

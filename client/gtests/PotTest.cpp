@@ -15,6 +15,7 @@
 
 using namespace std::placeholders;
 using namespace Catch::Matchers;
+using namespace eonc;
 
 namespace tests {
 
@@ -29,7 +30,7 @@ public:
   ~PotTest() {}
 
   void SetUp() {
-    pot_default = helper_functions::makePotential(PotType::LJ, *params);
+    pot_default = eonc::helper_functions::makePotential(PotType::LJ, *params);
     m1 = std::make_shared<Matter>(pot_default, params);
     std::string confile("pos.con");
     m1->con2matter(confile);
@@ -49,11 +50,11 @@ TEST_CASE_METHOD(PotTest, "getType", "[PotTest]") {
   auto params = std::make_shared<Parameters>();
   params->pot.potential = PotType::LJ;
   std::shared_ptr<Potential> pot =
-      helper_functions::makePotential(PotType::LJ, *params);
+      eonc::helper_functions::makePotential(PotType::LJ, *params);
   REQUIRE(pot->getType() == PotType::LJ);
   params->pot.potential = PotType::MORSE_PT;
   std::shared_ptr<Potential> pot2 =
-      helper_functions::makePotential(PotType::MORSE_PT, *params);
+      eonc::helper_functions::makePotential(PotType::MORSE_PT, *params);
   REQUIRE(pot2->getType() == PotType::MORSE_PT);
   TearDown();
 }
@@ -61,7 +62,7 @@ TEST_CASE_METHOD(PotTest, "getType", "[PotTest]") {
 TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
   SetUp();
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(::helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
 
   double energy_lj{-8.9245539406};
   AtomMatrix forces_lj{MatrixType::Zero(m1->numberOfAtoms(), 3)};
@@ -102,7 +103,7 @@ TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
   // clang-format on
   params->pot.potential = PotType::LJ;
   std::shared_ptr<Potential> pot =
-      helper_functions::makePotential(params->pot.potential, *params);
+      eonc::helper_functions::makePotential(params->pot.potential, *params);
   double e_lj{0};
   AtomMatrix f_lj = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
 
@@ -116,7 +117,7 @@ TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
   AtomMatrix f_morse = MatrixType::Ones(m1->numberOfAtoms(), 3);
   params->pot.potential = PotType::MORSE_PT;
   std::shared_ptr<Potential> pot2 =
-      helper_functions::makePotential(params->pot.potential, *params);
+      eonc::helper_functions::makePotential(params->pot.potential, *params);
   REQUIRE(pot2 != pot);
 
   pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),

@@ -14,7 +14,7 @@
 
 #include "SteepestDescent.h"
 #include "HelperFunctions.h"
-
+namespace eonc {
 int SteepestDescent::step(double a_maxMove) {
   VectorType r = m_objf->getPositions();
   VectorType f = -m_objf->getGradient();
@@ -50,3 +50,5 @@ int SteepestDescent::run(size_t a_maxIteration, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

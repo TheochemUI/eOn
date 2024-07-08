@@ -13,6 +13,7 @@
 #include "CuH2.h"
 #include <set>
 
+namespace eonc {
 void CuH2::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
@@ -57,3 +58,5 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
                     // the CuH2 slab
   return;
 }
+
+} // namespace eonc

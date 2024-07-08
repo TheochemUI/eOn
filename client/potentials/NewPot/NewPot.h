@@ -10,11 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef NEWPOT_INTERFACE
-#define NEWPOT_INTERFACE
+#pragma once
 
 #include "../../Potential.h"
-
+namespace eonc {
 /** Template to use if user want to provide potential. */
 class NewPot : public Potential {
 
@@ -37,4 +36,4 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif
+} // namespace eonc

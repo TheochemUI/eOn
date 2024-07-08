@@ -11,7 +11,7 @@
 */
 
 #include "CatLearnPot.h"
-
+namespace eonc {
 CatLearnPot::CatLearnPot(CatLearnParams &a_p)
     : SurrogatePotential(PotType::CatLearn) {
   py::module_ sys = py::module_::import("sys");
@@ -50,3 +50,5 @@ void CatLearnPot::force(long nAtoms, const double *positions,
   *energy = ef_dat(0, 0);
   return;
 }
+
+} // namespace eonc

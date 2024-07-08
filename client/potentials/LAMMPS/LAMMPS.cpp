@@ -18,7 +18,7 @@
 #include <unistd.h>
 
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+namespace eonc {
 // General Functions
 lammps::lammps()
     : Potential(PotType::LAMMPS) {
@@ -207,3 +207,5 @@ void lammps::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lammps_command(ptr, "variable fz atom fz");
   lammps_command(ptr, "variable pe equal pe");
 }
+
+} // namespace eonc

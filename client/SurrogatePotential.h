@@ -12,7 +12,7 @@
 #pragma once
 
 #include "Potential.h"
-
+namespace eonc {
 class SurrogatePotential : public Potential {
 
 public:
@@ -24,3 +24,5 @@ public:
              const Matrix3S box);
   virtual void train_optimize(MatrixType a_features, MatrixType a_targets) = 0;
 };
+
+} // namespace eonc

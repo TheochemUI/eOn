@@ -13,7 +13,7 @@
 
 #include "Job.h"
 #include "Parameters.h"
-
+namespace eonc {
 class TestJob : public Job {
 public:
   TestJob(std::unique_ptr<Parameters> params)
@@ -30,3 +30,5 @@ private:
   double getEnergyDiff(std::string potTag, double refEnergy);
   double getForceDiff(std::string potTag, double refForce);
 };
+
+} // namespace eonc

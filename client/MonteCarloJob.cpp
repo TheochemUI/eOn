@@ -13,7 +13,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "MonteCarlo.h"
-
+namespace eonc {
 std::vector<std::string> MonteCarloJob::run(void) {
   std::string posInFilename("pos.con");
   std::string posOutFilename("out.con");
@@ -59,3 +59,5 @@ std::vector<std::string> MonteCarloJob::run(void) {
 
   return returnFiles;
 }
+
+} // namespace eonc

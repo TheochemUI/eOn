@@ -15,7 +15,7 @@
 
 #include "../../Parameters.h"
 #include "../../Potential.h"
-
+namespace eonc {
 class lammps : public Potential {
 
 public:
@@ -34,3 +34,5 @@ private:
                      const double *box);
   bool realunits;
 };
+
+} // namespace eonc

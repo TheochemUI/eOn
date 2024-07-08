@@ -14,7 +14,7 @@
 #include "Eigen.h"
 #include "Matter.h"
 #include "SaddleSearchMethod.h"
-
+namespace eonc {
 class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
   BiasedGradientSquaredDescent(std::shared_ptr<Matter> matterPassed,
@@ -46,3 +46,5 @@ private:
   std::shared_ptr<spdlog::logger> log;
   //        double bgsdAlpha;
 };
+
+} // namespace eonc

@@ -17,6 +17,8 @@
 
 namespace py = pybind11;
 
+namespace eonc {
+
 class ASE : public Potential {
 
 private:
@@ -35,3 +37,5 @@ public:
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
+
+} // namespace eonc

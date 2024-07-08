@@ -10,16 +10,14 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef IMD_POTENTIAL
-#define IMD_POTENTIAL
-
+#pragma once
 #include "../../Potential.h"
-
+namespace eonc {
 class IMD : public Potential {
 
 public:
   IMD()
-      : Potential(PotType::IMD){};
+      : Potential(PotType::IMD) {};
   ~IMD();
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -35,5 +33,4 @@ private:
   //        static long vaspRunCount;
   //        static pid_t vaspPID;
 };
-
-#endif
+} // namespace eonc
