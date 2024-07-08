@@ -90,7 +90,7 @@ Communicator
 : which detail methods by which the code can be run in parallel.
 
 Potential
-: which configures interatomic potentials, both bundled with `eON` and interfaced
+: which configures interatomic potentials, both bundled with `eOn` and interfaced
 
 Optimizer
 : which has options related to the generic step interface for optimization of atomic structures
