@@ -167,6 +167,7 @@ potentials = [
 
 eonclib_sources = [
            'toml.cpp',
+           'Parser.cc',
            'Parameters.cpp',
            'Optimizer.cpp',
            'PrefactorJob.cpp',
