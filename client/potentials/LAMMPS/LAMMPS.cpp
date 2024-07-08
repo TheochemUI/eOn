@@ -20,8 +20,8 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 // General Functions
-lammps::lammps(std::shared_ptr<Parameters> p)
-    : Potential(p) {
+lammps::lammps()
+    : Potential(PotType::LAMMPS) {
   numberOfAtoms = 0;
   LAMMPSObj = NULL;
   for (int i = 0; i < 9; i++)

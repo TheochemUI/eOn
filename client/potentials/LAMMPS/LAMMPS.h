@@ -19,7 +19,7 @@
 class lammps : public Potential {
 
 public:
-  lammps(Parameters& p);
+  lammps();
   ~lammps(void);
   void initialize() {};
   void cleanMemory(void);

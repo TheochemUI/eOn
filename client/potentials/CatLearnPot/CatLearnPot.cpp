@@ -12,10 +12,10 @@
 
 #include "CatLearnPot.h"
 
-CatLearnPot::CatLearnPot(Parameters &a_p)
-    : SurrogatePotential(PotType::CatLearn, a_p) {
+CatLearnPot::CatLearnPot(CatLearnParams &a_p)
+    : SurrogatePotential(PotType::CatLearn) {
   py::module_ sys = py::module_::import("sys");
-  py::exec(fmt::format("sys.path.insert(0, {})", a_p.catl.path));
+  py::exec(fmt::format("sys.path.insert(0, {})", a_p.path));
 
   py::module_ gp_module = py::module_::import(
       "catlearn.regression.gaussianprocess.calculator.mlmodel");

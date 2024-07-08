@@ -34,8 +34,8 @@ class Lenosky : public Potential {
 public:
   // Functions
   // constructor
-  Lenosky(Parameters& a_p)
-      : Potential(a_p){};
+  Lenosky()
+      : Potential(PotType::LENOSKY_SI){};
 
   // To satisfy interface
   void cleanMemory(void);
