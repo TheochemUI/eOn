@@ -8,7 +8,7 @@ results.
 # Obtaining sources
 
 ```{versionadded} 2.0
-`eON` is now developed and distributed primarily via GitHub.
+`eOn` is now developed and distributed primarily via GitHub.
 ```
 
 Assuming access has been granted to the Github repository:
@@ -74,11 +74,11 @@ svn
 
 # Licenses
 
-`eON` is released under the [BSD 3-Clause
+`eOn` is released under the [BSD 3-Clause
 License](https://opensource.org/license/BSD-3-Clause).
 
 ## Vendored
-Some libraries[^1] are distributed along with `eON`, namely:
+Some libraries[^1] are distributed along with `eOn`, namely:
 
 - `mcamc` which contains `libqd` :: BSD-3-Clause license
 ```{versionadded} 2.0
