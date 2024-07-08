@@ -173,7 +173,7 @@ int TADJob::dynamics() {
     if (transitionFlag) {
       // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
       // time.");
-      refFCalls = Potential::fcalls;
+      // refFCalls = Potential::fcalls;
       refineStep = refine(mdBuffer, mdBufferLength, reactant.get());
 
       transitionStep =

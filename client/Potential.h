@@ -13,11 +13,8 @@
 
 #include "Eigen.h"
 #include "Parameters.h"
-#include <algorithm>
 #include <iostream>
-#include <limits>
 #include <memory>
-#include <optional>
 
 namespace eonc {
 
@@ -46,11 +43,6 @@ public:
       std::cerr << "Logger is not initialized\n";
     }
   }
-
-  static int fcalls;
-  static int fcallsTotal;
-  static int wu_fcallsTotal;
-  static double totalUserTime;
 
   // Does not take into account the fixed / free atoms
   // Variance here is null when not needed and that's OK
@@ -85,4 +77,4 @@ namespace eonc::helper_functions {
 using namespace eonc;
 std::shared_ptr<Potential> makePotential(Parameters &params);
 std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params);
-} // namespace helper_functions
+} // namespace eonc::helper_functions
