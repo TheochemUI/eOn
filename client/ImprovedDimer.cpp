@@ -1,3 +1,14 @@
+/*
+** This file is part of eON.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eON Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eON
+*/
 // An implementation of Johannes Kästner and Paul Sherwood's improved dimer.
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
