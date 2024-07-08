@@ -1,11 +1,11 @@
 # Virtualbox Troublshooting
 
 ```{warning}
-It is **highly** recommended to run `eON` locally, since hypervision virtualization incurs a **significant** slowdown.
+It is **highly** recommended to run `eOn` locally, since hypervision virtualization incurs a **significant** slowdown.
 ```
 
 The virtual machine used for the CECAM-LTS-MAP 2024 event has an older version
-of `eON` which must be removed.
+of `eOn` which must be removed.
 
 To do so:
 

@@ -2,15 +2,15 @@
 
 Here we collect a brief introduction to each algorithm, with curated references
 for more information along with the  configuration settings as implemented
-within `eON`.
+within `eOn`.
 
 Each of the sections and methods may be included in the configuration file with the appropriate section header.
 
 ## Overview
 
-The `eON` program can run the following methods or tasks to explore the
+The `eOn` program can run the following methods or tasks to explore the
 configuration space of molecular systems and to accelerate the simulation of
-their dynamics over long times. To run `eON`, a configuration file must be generated
+their dynamics over long times. To run `eOn`, a configuration file must be generated
 using the options specified in the documentation. Each section header is denoted
 by square brackets, and is followed by the key/value pairs. For example, to set
 the *job_type* key of the *[Main]* section to the value *process_search*, your
@@ -33,7 +33,7 @@ optimizations and comparisons.
 
 ````{margin}
 ```{note}
-As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eON` to generate submission scripts.
+As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eOn` to generate submission scripts.
 ```
 ````
 

@@ -1,7 +1,7 @@
-# eON Team
+# eOn Team
 
-The EON software is primarily a collaboration between the Henkelman and Jónsson
-research groups.
+The `eOn` software is primarily a collaboration between the Henkelman and
+Jónsson research groups.
 
 ## Contributors
 
@@ -43,7 +43,7 @@ With contributions from a number of other developers:
 
 ## License history
 
-`eON` was originally licensed under the GNU GPL v3 until 2017.  In 2017, the
-license was changed to GNU GPL v2.  Since 2020, eON is licensed under the BSD
+`eOn` was originally licensed under the GNU GPL v3 until 2017.  In 2017, the
+license was changed to GNU GPL v2.  Since 2020, eOn is licensed under the BSD
 3-Clause License. Some more context is at
-[gh-140](https://github.com/TheochemUI/eON/issues/140).
+[gh-140](https://github.com/TheochemUI/eOn/issues/140).

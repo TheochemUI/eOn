@@ -30,7 +30,7 @@ meson install -C bbdir
 ```
 
 ```{note}
-With this setup, there is no need to explicitly let `eON` know about other libraries, since they are all installed together in the environment.
+With this setup, there is no need to explicitly let `eOn` know about other libraries, since they are all installed together in the environment.
 
 For backwards compatibility, we also support copying in `liblammps.so` into `potentials/LAMMPS/liblammps.so`.
 ```
