@@ -23,7 +23,6 @@
 #include <boost/process.hpp>
 #include <boost/process/environment.hpp>
 
-#include <algorithm>
 #include <filesystem>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -31,9 +30,8 @@
 #include <string>
 
 class AMS : public Potential {
-
 public:
-  AMS(Parameters& p);
+  AMS(eonc::def::AMSParams amsp);
   ~AMS();
   void initialize(){};
   void cleanMemory(void);
@@ -53,7 +51,7 @@ private:
   std::string engine, forcefield, model, xc, resources, basis;
   std::string engine_setup, engine_lower;
   // Generate run configuration
-  std::string generate_run(Parameters& p);
+  std::string generate_run(Parameters &p);
   // Environment
   boost::process::native_environment nativenv;
   int amsevals;

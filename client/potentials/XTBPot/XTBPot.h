@@ -20,7 +20,7 @@ class XTBPot final : public Potential {
 public:
   // Functions
   XTBPot(Parameters &a_p)
-      : Potential(PotType::XTB, a_p),
+      : Potential(PotType::XTB),
         xtb_acc{a_p.xtbpot.acc},
         xtb_electronic_temperature{a_p.xtbpot.elec_temperature},
         xtb_max_iter{a_p.xtbpot.maxiter} {

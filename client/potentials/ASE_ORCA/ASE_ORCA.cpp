@@ -13,37 +13,31 @@
 #include "ASE_ORCA.h"
 #include "../../EnvHelpers.hpp"
 
-ASEOrcaPot::ASEOrcaPot(Parameters& a_p)
-    : Potential(PotType::ASE_ORCA, a_p) {
-  counter = 1;
+ASEOrcaPot::ASEOrcaPot(const eonc::def::ASEOrcaParams &a_p)
+    : Potential(PotType::ASE_ORCA),
+      counter(1) {
   py::module_ sys = py::module_::import("sys");
-  ase = py::module_::import("ase");
+  py::module_ ase = py::module_::import("ase");
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
+
   std::string orcpth = helper_functions::get_value_from_env_or_param(
-      "ORCA_COMMAND", a_p.aseorca.orca_path, "", "", true);
-  std::string orca_simpleinput = helper_functions::get_value_from_env_or_param(
-      "ORCA_SIMPLEINPUT", a_p.aseorca.simpleinput, "ENGRAD HF-3c",
-      "Using ENGRAD HF-3c as a default input, set simpleinput or the "
-      "environment variable ORCA_SIMPLEINPUT.\n");
+      "ORCA_COMMAND", PDef(""s, ""s), "", true);
+  std::string orca_simpleinput = a_p.simpleinput;
 
   // Set up ORCA profile and calculator
   py::object OrcaProfile = ase_orca.attr("OrcaProfile");
   py::object ORCA = ase_orca.attr("ORCA");
-  size_t nproc{0};
-
-  if (a_p.aseorca.orca_nproc == "auto") {
-    nproc = py::cast<int>(psutil.attr("cpu_count")(false));
-  } else {
-    nproc = std::stoi(a_p.aseorca.orca_nproc);
-  }
+  size_t nproc = (a_p.orca_nproc == "auto")
+                     ? py::cast<int>(psutil.attr("cpu_count")(false))
+                     : std::stoi(a_p.orca_nproc);
 
   this->calc =
       ORCA("profile"_a = OrcaProfile(py::str(orcpth)),
            "orcasimpleinput"_a = orca_simpleinput,
            "orcablocks"_a = py::str(fmt::format("%pal nprocs {} end", nproc)),
            "directory"_a = ".");
-};
+}
 
 void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
                        double *F, double *U, double *variance,
