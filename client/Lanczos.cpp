@@ -1,3 +1,14 @@
+/*
+** This file is part of eON.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eON Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eON
+*/
 // This Lanczos algorithm is implemented as described in this paper:
 // R. A. Olsen, G. J. Kroes, G. Henkelman, A. Arnaldsson, and H. Jónsson,
 // Comparison of methods for finding saddle points without knowledge of the
