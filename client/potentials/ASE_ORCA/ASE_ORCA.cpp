@@ -13,7 +13,9 @@
 #include "ASE_ORCA.h"
 #include "../../EnvHelpers.hpp"
 
-ASEOrcaPot::ASEOrcaPot(const eonc::def::ASEOrcaParams &a_p)
+namespace eonc {
+
+ASEOrcaPot::ASEOrcaPot(const def::ASEOrcaParams &a_p)
     : Potential(PotType::ASE_ORCA),
       counter(1) {
   py::module_ sys = py::module_::import("sys");
@@ -64,3 +66,5 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
   counter++;
   return;
 }
+
+} // namespace eonc

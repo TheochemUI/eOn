@@ -12,7 +12,7 @@
 // Based on the LBFGS minimizer written in ASE.
 
 #include "LBFGS.h"
-
+namespace eonc {
 VectorType LBFGS::getStep(double a_maxMove, VectorType a_f) {
   double H0 = m_params->optim.LBFGSInverseCurvature;
   VectorType r = m_objf->getPositions();
@@ -165,3 +165,5 @@ int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

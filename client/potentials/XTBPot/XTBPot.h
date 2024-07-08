@@ -15,7 +15,7 @@
 #include "../../Potential.h"
 #include "units.hpp"
 #include "xtb.h"
-
+namespace eonc {
 class XTBPot final : public Potential {
 public:
   // Functions
@@ -76,3 +76,5 @@ private:
   size_t xtb_max_iter;
   size_t counter;
 };
+
+} // namespace eonc

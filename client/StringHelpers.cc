@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <type_traits>
-
+namespace eonc {
 namespace helper_functions {
 template <typename T>
 std::vector<T> get_val_from_string(const std::string &line,
@@ -54,3 +54,5 @@ bool isNumber(const std::string &token) {
       token, std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
 }
 } // namespace helper_functions
+
+} // namespace eonc

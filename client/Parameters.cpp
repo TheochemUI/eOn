@@ -17,7 +17,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include <float.h>
 #include <string>
-
+namespace eonc {
 using namespace std::string_literals;
 
 Parameters::Parameters() {
@@ -46,10 +46,10 @@ Parameters::Parameters() {
   prefactor.minValue = 1e+9;
   prefactor.withinRadius = 3.3;
   prefactor.minDisplacement = 0.25;
-  prefactor.rate = ::Prefactor::RATE::HTST;
-  prefactor.configuration = ::Prefactor::TYPE::REACTANT;
+  prefactor.rate = eonc::Prefactor::RATE::HTST;
+  prefactor.configuration = eonc::Prefactor::TYPE::REACTANT;
   prefactor.allFreeAtoms = false;
-  prefactor.filterScheme = ::Prefactor::FILTER::FRACTION;
+  prefactor.filterScheme = eonc::Prefactor::FILTER::FRACTION;
   prefactor.filterFraction = 0.90;
 
   // [Structure Comparison] //
@@ -600,22 +600,22 @@ int Parameters::load(const std::string &filename) {
     prefactor.minDisplacement =
         config["Prefactor"]["min_displacement"].value_or(0.25);
     prefactor.rate =
-        magic_enum::enum_cast<::Prefactor::RATE>(
+        magic_enum::enum_cast<eonc::Prefactor::RATE>(
             config["Prefactor"]["rate_estimation"].value_or("htst"s),
             magic_enum::case_insensitive)
-            .value_or(::Prefactor::RATE::HTST);
+            .value_or(eonc::Prefactor::RATE::HTST);
     prefactor.configuration =
-        magic_enum::enum_cast<::Prefactor::TYPE>(
+        magic_enum::enum_cast<eonc::Prefactor::TYPE>(
             config["Prefactor"]["configuration"].value_or("reactant"s),
             magic_enum::case_insensitive)
-            .value_or(::Prefactor::TYPE::REACTANT);
+            .value_or(eonc::Prefactor::TYPE::REACTANT);
     prefactor.allFreeAtoms =
         config["Prefactor"]["all_free_atoms"].value_or(false);
     prefactor.filterScheme =
-        magic_enum::enum_cast<::Prefactor::FILTER>(
+        magic_enum::enum_cast<eonc::Prefactor::FILTER>(
             config["Prefactor"]["filter_scheme"].value_or("fraction"s),
             magic_enum::case_insensitive)
-            .value_or(::Prefactor::FILTER::FRACTION);
+            .value_or(eonc::Prefactor::FILTER::FRACTION);
     prefactor.filterFraction =
         config["Prefactor"]["filter_fraction"].value_or(0.90);
 
@@ -953,3 +953,5 @@ void Parameters::loadCatLearnParams(const toml::table &config) {
         config["CatLearn"]["use_fingerprint"].value_or(catl.use_deriv);
   }
 }
+
+} // namespace eonc

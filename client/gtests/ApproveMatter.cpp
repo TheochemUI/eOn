@@ -27,51 +27,53 @@ std::string toSpaceSeparatedString(const Eigen::VectorXd &vec) {
   return oss.str();
 }
 
-double perAtomNormConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).perAtomNorm(matter);
+double perAtomNormConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).perAtomNorm(matter);
 }
 
-double distanceToConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).distanceTo(matter);
+double distanceToConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).distanceTo(matter);
 }
 
-double getPotentialEnergyConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getPotentialEnergy();
+double getPotentialEnergyConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getPotentialEnergy();
 }
 
-double maxForceConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).maxForce();
+double maxForceConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).maxForce();
 }
 
-auto getForcesConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getForces();
+auto getForcesConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getForces();
 }
 
-auto getForcesVConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getForcesV();
+auto getForcesVConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getForcesV();
 }
 
-auto getEnergyVarianceConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getEnergyVariance();
+auto getEnergyVarianceConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getEnergyVariance();
 }
 
-auto getMechanicalEnergyConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getMechanicalEnergy();
+auto getMechanicalEnergyConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getMechanicalEnergy();
 }
 
-auto getForcesFreeConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getForcesFree();
+auto getForcesFreeConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getForcesFree();
 }
 
-auto getForcesFreeVConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getForcesFreeV();
+auto getForcesFreeVConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getForcesFreeV();
 }
 
-auto getBiasForcesConst(const Matter &matter) {
-  return const_cast<Matter &>(matter).getBiasForces();
+auto getBiasForcesConst(const eonc::Matter &matter) {
+  return const_cast<eonc::Matter &>(matter).getBiasForces();
 }
 
-std::ostream &operator<<(std::ostream &os, const Matter &matter) {
+namespace eonc {
+
+std::ostream &operator<<(std::ostream &os, const eonc::Matter &matter) {
   os << std::setprecision(8);
   os << "Matter has: " << std::endl;
 
@@ -128,20 +130,21 @@ std::ostream &operator<<(std::ostream &os, const Matter &matter) {
   os << "Distance between same atom in two configurations: \n"
      << matter.distance(matter, 0) << std::endl;
 
-  AtomMatrix placeholderMatrix = Eigen::MatrixXd::Zero(0, 3);
+  eonc::AtomMatrix placeholderMatrix = Eigen::MatrixXd::Zero(0, 3);
   Eigen::VectorXd placeholderVector = Eigen::VectorXd::Zero(0);
   os << "PBC Matrix: \n" << matter.pbc(placeholderMatrix) << std::endl;
   os << "PBC Vector: \n" << matter.pbcV(placeholderVector) << std::endl;
 
   return os;
 }
-
-std::vector<Matter> getMatter() {
+} // namespace eonc
+std::vector<eonc::Matter> getMatter() {
   // Return test data for Matter
   // TODO(rg): Add more objects
-  auto params = std::make_shared<Parameters>();
-  auto pot_default = helper_functions::makePotential(PotType::LJ, *params);
-  auto m1 = Matter(pot_default, params);
+  auto params = std::make_shared<eonc::Parameters>();
+  auto pot_default =
+      eonc::helper_functions::makePotential(eonc::PotType::LJ, *params);
+  auto m1 = eonc::Matter(pot_default, params);
   std::string confile("pos.con"); // Sulfolene
   m1.con2matter(confile);
   for (size_t idx{0}; idx < 3; idx++) {

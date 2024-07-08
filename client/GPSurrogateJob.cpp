@@ -13,7 +13,7 @@
 #include "BaseStructures.h"
 #include "NudgedElasticBand.h"
 #include "helpers/Create.hpp"
-
+namespace eonc {
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
   std::string reactantFilename =
@@ -294,3 +294,5 @@ void addVectorRow(MatrixType &data, const VectorType &newrow) {
   data.row(data.rows() - 1) = newrow;
 }
 } // namespace helper_functions::eigen
+
+} // namespace eonc

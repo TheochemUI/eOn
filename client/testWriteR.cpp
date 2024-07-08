@@ -13,6 +13,8 @@
 #include "Parameters.h"
 #include <cstdlib>
 
+using namespace eonc;
+
 int main(void) {
   std::string confile("pos.con");
   auto parameters = std::make_shared<Parameters>();

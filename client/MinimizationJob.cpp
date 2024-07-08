@@ -14,7 +14,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "Optimizer.h"
-
+namespace eonc {
 std::vector<std::string> MinimizationJob::run(void) {
   std::string posInFilename("pos.con");
   std::string posOutFilename("min.con");
@@ -84,3 +84,5 @@ std::vector<std::string> MinimizationJob::run(void) {
 
   return returnFiles;
 }
+
+} // namespace eonc

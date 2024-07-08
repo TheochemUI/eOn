@@ -13,7 +13,7 @@
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
-
+namespace eonc {
 class GlobalOptimizationJob : public Job {
 public:
   GlobalOptimizationJob(std::unique_ptr<Parameters> parameters)
@@ -80,3 +80,5 @@ private:
   FILE *earrfile;
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

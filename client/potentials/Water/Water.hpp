@@ -16,18 +16,17 @@ Wrapper for Eon
 University of Iceland
 */
 
-#ifndef WATER_FOR_EON_HPP
-#define WATER_FOR_EON_HPP
+#pragma once
 #include "../../Potential.h"
 #include "spce_ccl.hpp"
 #include "tip4p_ccl.hpp"
-
+namespace eonc {
 class Tip4p : public Potential, private forcefields::Tip4p {
 public:
   Tip4p()
       : Potential(PotType::TIP4P),
         // TODO(rg): Expose these like LJ
-        forcefields::Tip4p(8.5, 1.0){};
+        forcefields::Tip4p(8.5, 1.0) {};
   // Functions
   // constructor and destructor
 
@@ -51,4 +50,4 @@ public:
              double *U, double *variance, const double *box) override;
 };
 
-#endif
+} // namespace eonc

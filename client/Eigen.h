@@ -14,7 +14,7 @@
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
-
+namespace eonc {
 using ScalarType = double;
 // Vectors are always column major
 using VectorType =
@@ -52,3 +52,5 @@ template <typename T> Vector<T> cvec_to_vec(const T *array_ptr, int size) {
 }
 
 // TODO(rg): Maybe also have a free function for .setZero()
+
+} // namespace eonc

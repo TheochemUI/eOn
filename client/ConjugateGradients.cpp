@@ -11,7 +11,7 @@
 */
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
-
+namespace eonc {
 VectorType ConjugateGradients::getStep() {
   double a = 0, b = 0, gamma = 0;
   a = std::fabs(m_force.dot(m_forceOld));
@@ -198,3 +198,5 @@ int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

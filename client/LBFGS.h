@@ -18,7 +18,7 @@
 #include "Parameters.h"
 
 #define LBFGS_EPS 1e-30
-
+namespace eonc {
 class LBFGS final : public Optimizer {
 
 public:
@@ -59,3 +59,5 @@ private:
   VectorType m_fPrev;
   std::shared_ptr<spdlog::logger> m_log;
 };
+
+} // namespace eonc

@@ -33,7 +33,7 @@
 #ifdef WITH_GP_SURROGATE
 #include "GPSurrogateJob.h"
 #endif
-
+namespace eonc {
 namespace helper_functions {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
   switch (params->main.job) {
@@ -118,3 +118,5 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
 }
 
 } // namespace helper_functions
+
+} // namespace eonc

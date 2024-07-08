@@ -9,8 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#ifndef ATOMICGPDIMER_H
-#define ATOMICGPDIMER_H
+#pragma once
 
 #include "Eigen.h"
 #include "LowestEigenmode.h"
@@ -26,6 +25,8 @@
 #include "subprojects/gprdimer/gpr/covariance_functions/SexpatCF.h"
 #include "subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
 #include "subprojects/gprdimer/managers/io/FileManager.h"
+
+namespace eonc {
 
 // dimer method to find the lowest curvature mode
 class AtomicGPDimer : public LowestEigenmode {
@@ -56,5 +57,4 @@ private:
   gpr::Observation init_observations, init_middle_point;
   gpr::Coord orient_init, R_init;
 };
-
-#endif
+} // namespace eonc

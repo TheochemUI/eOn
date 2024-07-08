@@ -14,12 +14,11 @@
 #include <limits.h>
 #include <math.h>
 #include <stdlib.h>
-#include <math.h>
-
 
 #include "EAM.h"
 #include "Parameters.h"
 
+namespace eonc {
 void EAM::cleanMemory() {
   if (initialized) {
     delete[] celllist_old;
@@ -467,3 +466,5 @@ double EAM::embedding_force(const double *func_coeff, double rho) {
   }
   return -result;
 }
+
+} // namespace eonc

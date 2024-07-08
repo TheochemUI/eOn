@@ -11,7 +11,7 @@
 */
 
 #include "SW.h"
-
+namespace eonc {
 void SW::initialize(void) { return; }
 
 void SW::cleanMemory(void) { return; }
@@ -25,3 +25,5 @@ void SW::force(long N, const double *R, const int *atomicNrs, double *F,
   sw_(&N, R, F, U, &box[0], &box[4], &box[8]);
   return;
 }
+
+} // namespace eonc

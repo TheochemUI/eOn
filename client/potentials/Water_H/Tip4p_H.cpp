@@ -12,7 +12,7 @@
 
 // the add H must be the last atom
 #include "Tip4p_H.h"
-
+namespace eonc {
 void Tip4p_H::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
@@ -129,3 +129,5 @@ void Tip4p_H::force(long N, const double *R, const int *atomicNrs, double *F,
 
   return;
 }
+
+} // namespace eonc

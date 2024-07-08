@@ -14,7 +14,8 @@
 #include "Potential.h"
 #include <string>
 #include <vector>
-
+namespace eonc {
+  using namespace helper_functions;
 /** @defgroup Jobs
  *
  * \brief ClientEON main procedures
@@ -71,3 +72,5 @@ public:
 namespace helper_functions {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
 } // namespace helper_functions
+
+} // namespace eonc

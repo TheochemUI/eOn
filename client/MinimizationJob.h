@@ -13,7 +13,7 @@
 
 #include "Job.h"
 #include "Parameters.h"
-
+namespace eonc {
 class MinimizationJob : public Job {
 public:
   MinimizationJob(std::unique_ptr<Parameters> parameters)
@@ -29,3 +29,5 @@ private:
   RunStatus status;
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

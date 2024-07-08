@@ -13,7 +13,7 @@
 #include "HelperFunctions.h"
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
-
+namespace eonc {
 int BasinHoppingSaddleSearch::run(void) {
   // minimize "saddle"
   saddle->relax(false, true, false, "displacementmin");
@@ -71,3 +71,5 @@ int BasinHoppingSaddleSearch::run(void) {
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }
 
 AtomMatrix BasinHoppingSaddleSearch::getEigenvector() { return eigenvector; }
+
+} // namespace eonc

@@ -15,7 +15,7 @@
 #include "Matter.h"
 #include "Parameters.h"
 #include "SaddleSearchMethod.h"
-
+namespace eonc {
 /**
  * @file
  * @ingroup Jobs
@@ -105,3 +105,5 @@ private:
   //! Force calls to find the prefactors
   size_t fCallsPrefactors;
 };
+
+} // namespace eonc

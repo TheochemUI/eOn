@@ -18,7 +18,7 @@
 #include "LowestEigenmode.h"
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
-
+namespace eonc {
 int DynamicsSaddleSearch::run(void) {
   std::vector<std::shared_ptr<Matter>> MDSnapshots;
   std::vector<double> MDTimes;
@@ -331,3 +331,5 @@ int DynamicsSaddleSearch::refineTransition(
 double DynamicsSaddleSearch::getEigenvalue() { return eigenvalue; }
 
 AtomMatrix DynamicsSaddleSearch::getEigenvector() { return eigenvector; }
+
+} // namespace eonc

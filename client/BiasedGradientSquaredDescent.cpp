@@ -16,7 +16,7 @@
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
-
+namespace eonc {
 class BGSDObjectiveFunction : public ObjectiveFunction {
 public:
   BGSDObjectiveFunction(std::shared_ptr<Matter> matterPassed,
@@ -167,3 +167,5 @@ double BiasedGradientSquaredDescent::getEigenvalue() { return eigenvalue; }
 AtomMatrix BiasedGradientSquaredDescent::getEigenvector() {
   return eigenvector;
 }
+
+} // namespace eonc

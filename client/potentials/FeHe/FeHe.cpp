@@ -14,7 +14,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+namespace eonc {
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
@@ -65,3 +65,5 @@ void FeHe::force(long N, const double *R, const int *atomicNrs, double *F,
   delete[] ISPEC;
   return;
 }
+
+} // namespace eonc

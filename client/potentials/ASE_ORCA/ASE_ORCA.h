@@ -19,6 +19,8 @@
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
 
+namespace eonc {
+
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
@@ -39,3 +41,5 @@ public:
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
+
+} // namespace eonc

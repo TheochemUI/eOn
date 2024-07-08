@@ -9,13 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#ifndef SteepestDescent_H
-#define SteepestDescent_H
-
+#pragma once
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "Parameters.h"
-
+namespace eonc {
 class SteepestDescent final : public Optimizer {
 public:
   SteepestDescent(std::shared_ptr<ObjectiveFunction> a_objf,
@@ -42,4 +40,4 @@ private:
   VectorType m_fPrev;
 };
 
-#endif
+} // namespace eonc

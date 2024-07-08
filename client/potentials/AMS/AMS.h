@@ -29,11 +29,13 @@
 #include <fstream>
 #include <string>
 
+namespace eonc {
+
 class AMS : public Potential {
 public:
   AMS(eonc::def::AMSParams amsp);
   ~AMS();
-  void initialize(){};
+  void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
@@ -74,3 +76,5 @@ private:
   std::string readFile(std::filesystem::path path);
   void recieveFromSystem(long N, double *F, double *U);
 };
+
+} // namespace eonc

@@ -20,6 +20,7 @@
 #include <pybind11/embed.h>
 
 using namespace std::string_literals; // For ""s
+using namespace eonc;
 
 int main(void) {
   std::string confile("pos.con");
