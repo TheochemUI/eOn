@@ -21,8 +21,9 @@ class QSC
 #endif
 {
 public:
-  QSC(Parameters& params)
-      : Potential(PotType::QSC, params) {
+  QSC()
+      : Potential(PotType::QSC) {
+    // TODO(rg): Expose these as parameters like LJ
     cutoff = 8.0;
     verlet_skin = 0.5;
     init = false;
@@ -37,8 +38,6 @@ public:
       i++;
     }
   }
-  // QSC()
-  //     : QSC(Parameters()) {}
   ~QSC(void);
 
   void initialize(){};

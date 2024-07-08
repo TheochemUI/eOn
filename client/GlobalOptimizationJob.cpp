@@ -198,10 +198,10 @@ void GlobalOptimizationJob::decisionStep(Matter *matter_cur,
     // matter_hop[0] = matter_cur[0];
     return;
   }
-  if (params->globopt.decisionMethod == "npew") {
+  if (params->globopt.decisionMethod == "npew"s) {
     acceptRejectNPEW(matter_cur, matter_hop);
     // GlobalOptimizationJob::update_minhop_param(matter_hop);
-  } else if (params->globopt.decisionMethod == "boltzmann") {
+  } else if (params->globopt.decisionMethod == "boltzmann"s) {
     acceptRejectBoltzmann(matter_cur, matter_hop);
   } else {
     log = spdlog::get("_traceback");
@@ -325,7 +325,7 @@ void GlobalOptimizationJob::mdescape(Matter *matter) {
     // {:4lu}", imd, epot - epot0, ekinc, etot - etot0, nummax, nummin);
     econs_max = std::max(econs_max, ekinc + epot);
     econs_min = std::min(econs_min, ekinc + epot);
-    if (nummin >= (size_t)mdmin) {
+    if (nummin >= mdmin) {
       if (nummax != nummin)
         SPDLOG_LOGGER_WARN(log, "WARNING: iproc,nummin,nummax {:4lu} {:4lu}",
                            nummin, nummax);

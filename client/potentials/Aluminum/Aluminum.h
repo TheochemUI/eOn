@@ -33,8 +33,8 @@ void potinit_();
 /** Aluminum potential.*/
 class Aluminum : public Potential {
 public:
-  Aluminum(Parameters &params)
-      : Potential(PotType::EAM_AL, params) {
+  Aluminum()
+      : Potential(PotType::EAM_AL) {
     potinit_();
   };
   ~Aluminum(void){};
