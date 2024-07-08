@@ -16,7 +16,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
-
+namespace eonc {
 using namespace std;
 
 std::vector<std::string> SaddleSearchJob::run(void) {
@@ -212,3 +212,5 @@ void SaddleSearchJob::printEndState(int status) {
 
   return;
 }
+
+} // namespace eonc

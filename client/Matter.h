@@ -14,12 +14,12 @@
 #include "Parameters.h"
 #include "Potential.h"
 #include <memory>
+#include <string>
 #include <spdlog/sinks/basic_file_sink.h>
 
+namespace eonc {
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
-
-#include <string>
 
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
@@ -231,3 +231,5 @@ private:
   double energyVariance;
   double potentialEnergy;
 };
+
+} // namespace eonc

@@ -10,9 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef TERSOFF_POTENTIAL
-#define TERSOFF_POTENTIAL
-
+#pragma once
 #include "../../Potential.h"
 
 /** External function implemented in Fortran to calculate interactions between
@@ -28,7 +26,7 @@ extern "C" {
 void tersoff_(const long int *N, const double *R, double *F, double *U,
               const double *bx, const double *by, const double *bz);
 }
-
+namespace eonc {
 /** Tersoff potential */
 class Tersoff : public Potential {
 
@@ -44,4 +42,4 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
 };
-#endif
+}

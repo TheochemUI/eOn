@@ -15,7 +15,7 @@
 #include "Matter.h"
 #include "Parameters.h"
 #include <vector>
-
+namespace eonc {
 // dimer method to find the lowest curvature mode
 class ImprovedDimer : public LowestEigenmode {
 
@@ -62,3 +62,5 @@ public:
   std::vector<VectorType> gradients;
   std::vector<VectorType> positions;
 };
+
+} // namespace eonc

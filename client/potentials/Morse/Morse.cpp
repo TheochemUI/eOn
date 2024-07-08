@@ -13,7 +13,7 @@
 #include "Morse.h"
 #include <cassert>
 #include <math.h>
-
+namespace eonc {
 /** @file
       @brief Morse potential for platinum
       @author Anonymous (possibly A. Pedersen or G. Henkelman ), revision: Jean
@@ -96,3 +96,5 @@ void Morse::morse(double r, double &energy, double &force) {
   energy = De_ * d * d - De_;
   force = 2 * De_ * d * (d - 1) * a_;
 }
+
+} // namespace eonc

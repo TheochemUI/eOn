@@ -10,15 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef CUH2_INTERFACE
-#define CUH2_INTERFACE
-
+#pragma once
 #include "../../Potential.h"
 
 // natms(2), ndim, U(1), R(ndim), F(ndim), box(3)
 extern "C" void c_force_eam(int *natms, int ndim, double *box, double *R,
                             double *F, double *U);
-
+namespace eonc {
 class CuH2 : public Potential {
 
 public:
@@ -32,4 +30,5 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif
+
+}

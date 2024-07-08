@@ -15,7 +15,7 @@
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
-
+namespace eonc {
 /**
  * @file
  * @ingroup Jobs
@@ -78,3 +78,5 @@ private:
 
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

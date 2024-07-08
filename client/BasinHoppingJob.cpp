@@ -16,7 +16,7 @@
 
 #include "BasinHoppingJob.h"
 #include "HelperFunctions.h"
-
+namespace eonc {
 using namespace helper_functions;
 
 std::vector<std::string> BasinHoppingJob::run(void) {
@@ -425,3 +425,5 @@ VectorType BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
 
   return dist;
 }
+
+} // namespace eonc

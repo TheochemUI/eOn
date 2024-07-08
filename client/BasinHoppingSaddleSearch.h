@@ -14,7 +14,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "SaddleSearchMethod.h"
-
+namespace eonc {
 class BasinHoppingSaddleSearch : public SaddleSearchMethod {
 public:
   BasinHoppingSaddleSearch(std::shared_ptr<Matter> reactant,
@@ -46,3 +46,5 @@ public:
 private:
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

@@ -16,12 +16,14 @@
 #include "../../Potential.h"
 #include "../AMS/AMS.h"
 
+namespace eonc {
+
 class AMS_IO : public Potential {
 
 public:
   AMS_IO(AMSParams amsp);
   ~AMS_IO();
-  void initialize(){};
+  void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
@@ -35,3 +37,5 @@ private:
   const char *forcefield;
   const char *xc;
 };
+
+} // namespace eonc

@@ -16,7 +16,7 @@
 #include "Potential.h"
 
 #include <stdlib.h>
-
+namespace eonc {
 std::vector<std::string> TestJob::run(void) {
   checkPotentials();
   checkFullSearch();
@@ -291,3 +291,5 @@ double TestJob::getForceDiff(std::string pot, double refForce) {
   //    printf("Force: %f\n", pos->maxForce());
   return pos->maxForce() - refForce;
 }
+
+} // namespace eonc

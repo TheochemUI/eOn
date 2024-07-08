@@ -20,7 +20,7 @@
 // #include "LJBinary.h"
 #include "../../Potential.h"
 #include <cmath>
-
+namespace eonc {
 class Morse : public Potential {
 public:
   Morse(const eonc::def::MorseParams &mpar)
@@ -44,3 +44,5 @@ private:
   double cutoff_;
   double energyCutoff_;
 };
+
+} // namespace eonc

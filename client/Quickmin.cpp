@@ -11,7 +11,7 @@
 */
 #include "Quickmin.h"
 #include "HelperFunctions.h"
-
+namespace eonc {
 int Quickmin::step(double a_maxMove) {
   VectorType force = -m_objf->getGradient();
   if (m_params->optim.QMSteepestDecent) {
@@ -40,3 +40,5 @@ int Quickmin::run(size_t a_maxSteps, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

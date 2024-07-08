@@ -14,10 +14,12 @@
 #include "../../EnvHelpers.hpp"
 #include <fenv.h>
 
+namespace eonc {
+
 // XXX: This always assumes that charge is 0, mult is 1
 // ASE default ----------------------------^ ---------^
 // See also: https://gitlab.com/ase/ase/-/issues/1357
-ASEOrcaPot::ASEOrcaPot(const eonc::def::ASEOrcaParams &a_p)
+ASEOrcaPot::ASEOrcaPot(const def::ASEOrcaParams &a_p)
     : Potential(PotType::ASE_ORCA),
       counter(1) {
   py::module_ sys = py::module_::import("sys");
@@ -73,3 +75,5 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
   counter++;
   return;
 }
+
+} // namespace eonc
