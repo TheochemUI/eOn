@@ -1,6 +1,6 @@
 # Tutorials
 
-We provide several full tutorials which demonstrate the usage of `eON` (both
+We provide several full tutorials which demonstrate the usage of `eOn` (both
 server and client).
 
 ```{toctree}

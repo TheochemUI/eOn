@@ -1,6 +1,6 @@
 # Client design
 
-Guidelines and rationale for the `C++` core of eON.
+Guidelines and rationale for the `C++` core of eOn.
 
 ```{toctree}
 :maxdepth: 2
