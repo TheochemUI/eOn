@@ -84,6 +84,7 @@ svn
 License](https://opensource.org/license/BSD-3-Clause).
 
 ## Vendored
+
 Some libraries[^2] are distributed along with `eOn`, namely:
 
 - `mcamc` which contains `libqd` :: BSD-3-Clause license

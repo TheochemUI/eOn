@@ -1,6 +1,6 @@
 # Working with the documentation
 
-`eON` is a relatively complex project, with both `C++` and `Python` sources,
+`eOn` is a relatively complex project, with both `C++` and `Python` sources,
 along with a large set of options.
 
 ```{versionchanged} 2.1_TBA

@@ -348,7 +348,7 @@ class CommunicatorConfig(BaseModel):
         description="Number of jobs per bundle.",
     )
     """
-    In ``eON``, a job is defined as a task that the ``eonclient`` executes, such
+    In ``eOn``, a job is defined as a task that the ``eonclient`` executes, such
     as a process search or a parallel replica run. Sometimes it makes sense to
     run more than one of the same type of job at a time.
 
@@ -380,7 +380,7 @@ class CommunicatorConfig(BaseModel):
         description="Path to the eon client binary.",
     )
     """
-    If only a name and not a path is given, ``eON`` looks for the binary in the
+    If only a name and not a path is given, ``eOn`` looks for the binary in the
     same directory as the configuration file. If not found there, it searches
     through the directories in the ``$PATH`` environment variable.
     """
@@ -401,7 +401,7 @@ class CommunicatorConfig(BaseModel):
         description="Name of the script that returns the job IDs of all the running and queued jobs for the cluster communicator.",
     )
     """
-    This may return more than just ``eON`` jobs.
+    This may return more than just ``eOn`` jobs.
     """
     cancel_job: str = Field(
         default="cancel_job.sh",
@@ -416,11 +416,11 @@ class CommunicatorConfig(BaseModel):
     )
     """
     It takes two command line arguments. The first is the name of the job. This
-    is not required for ``eON`` use, but is highly recommended so that users can
+    is not required for ``eOn`` use, but is highly recommended so that users can
     identify which job is which. The second argument is the working directory.
-    This is the path where the ``eON`` client should be executed. All of the
+    This is the path where the ``eOn`` client should be executed. All of the
     needed client files will be placed in this directory. The script must return
-    the job id of the submitted job. This is how ``eON`` internally keeps track
+    the job id of the submitted job. This is how ``eOn`` internally keeps track
     of jobs.
     """
 

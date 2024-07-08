@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "eON"
+project = "eOn"
 copyright = "2024, Henkelmann Group, Jonsson Group, Rohit Goswami"
 author = "Rohit Goswami"
 release = "2.0.0"
@@ -56,7 +56,7 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_book_theme"
-html_title = "eON"
+html_title = "eOn"
 html_static_path = ["_static"]
 
 html_theme_options = {

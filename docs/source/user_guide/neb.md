@@ -28,7 +28,7 @@ set as per the <project:optimizer.md> document.
 ```
 
 ```{note}
-`eON`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
+`eOn`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
 ```
 
 ```{versionadded} 3.0_TBA
