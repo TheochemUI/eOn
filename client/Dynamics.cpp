@@ -12,7 +12,7 @@
 #include "Dynamics.h"
 #include "Eigen.h"
 #include <math.h>
-
+namespace eonc {
 using namespace helper_functions;
 
 const char Dynamics::ANDERSEN[] = "andersen";
@@ -301,3 +301,5 @@ void Dynamics::langevinVerlet() {
   vel += 0.5 * dt * acc;
   matter->setVelocities(vel); // calculate velocities v(n+1)
 }
+
+} // namespace eonc

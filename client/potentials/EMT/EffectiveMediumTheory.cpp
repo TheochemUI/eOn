@@ -12,7 +12,7 @@
 
 #include "EffectiveMediumTheory.h"
 #include <string.h>
-
+namespace eonc {
 // General Functions
 void EffectiveMediumTheory::cleanMemory(void) {
   if (EMTObj != 0) {
@@ -102,3 +102,5 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
   delete[] pos;
   return;
 }
+
+} // namespace eonc

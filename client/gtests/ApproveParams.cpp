@@ -16,7 +16,9 @@
 #include <iostream>
 #include <string>
 
-std::ostream &operator<<(std::ostream &os, const Parameters &params) {
+namespace eonc {
+
+std::ostream &operator<<(std::ostream &os, const eonc::Parameters &params) {
   os << std::setprecision(18);
   os << "Current Parameters are: " << std::endl;
 
@@ -69,7 +71,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
 
   os << "\n[XTBPot]" << std::endl;
   os << "xtb_paramset: " << params.pot.xtbp.paramset << std::endl;
-  os << "xtb_elec_temperature: " << params.pot.xtbp.elec_temperature << std::endl;
+  os << "xtb_elec_temperature: " << params.pot.xtbp.elec_temperature
+     << std::endl;
   os << "xtb_maxiter: " << params.pot.xtbp.maxiter << std::endl;
   os << "xtb_acc: " << params.pot.xtbp.acc << std::endl;
 
@@ -472,10 +475,10 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   return os;
 }
-
-std::vector<Parameters> getParameters() {
+} // namespace eonc
+std::vector<eonc::Parameters> getParameters() {
   // Return test data for Parameters
-  return {Parameters()};
+  return {eonc::Parameters()};
 }
 
 TEST_CASE("VerifyParameters") {

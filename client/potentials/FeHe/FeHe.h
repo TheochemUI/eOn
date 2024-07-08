@@ -10,9 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 //-----------------------------------------------------------------------------------
-#ifndef FEHE_POTENTIAL
-#define FEHE_POTENTIAL
 
+#pragma once
 #include "../../Potential.h"
 
 /** External function implemented in Fortran
@@ -43,14 +42,16 @@ extern "C"
     void potinit_();
 }
 */
+namespace eonc {
 /** FeHe potential.*/
 class FeHe : public Potential {
 public:
   FeHe()
       : Potential(PotType::FEHE) {}
-  ~FeHe(void){};
+  ~FeHe(void) {};
   // To satisfy interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif
+
+} // namespace eonc

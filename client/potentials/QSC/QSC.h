@@ -14,7 +14,7 @@
 #ifndef QSC_STANDALONE
 #include "../../Potential.h"
 #endif
-
+namespace eonc {
 class QSC
 #ifndef QSC_STANDALONE
     : public Potential
@@ -40,7 +40,7 @@ public:
   }
   ~QSC(void);
 
-  void initialize(){};
+  void initialize() {};
   void initialize(long N, const double *R, const int *atomicNrs,
                   const double *box);
   void cleanMemory();
@@ -98,3 +98,5 @@ private:
   void calc_distance(const double *box, const double *R1, int i,
                      const double *R2, int j, struct distance *d);
 };
+
+} // namespace eonc

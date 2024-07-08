@@ -15,6 +15,7 @@
 #include <memory>
 
 using namespace Catch::Matchers;
+using namespace eonc;
 
 TEST_CASE("TestCell", "[MatterTest]") {
   auto params = std::make_shared<Parameters>();

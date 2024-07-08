@@ -24,7 +24,7 @@
 #include "subprojects/gprdimer/gpr/covariance_functions/SexpatCF.h"
 #include "subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
 #include "subprojects/gprdimer/structures/Structures.h"
-
+namespace eonc {
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
@@ -101,3 +101,5 @@ double AtomicGPDimer::getEigenvalue() {
 AtomMatrix AtomicGPDimer::getEigenvector() {
   return atomic_dimer.getFinalOrientation()->extractEigenMatrix();
 }
+
+} // namespace eonc

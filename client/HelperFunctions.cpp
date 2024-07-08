@@ -21,7 +21,7 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif
-
+namespace eonc {
 // Random number generator
 
 double helper_functions::random(long newSeed) {
@@ -775,3 +775,5 @@ void helper_functions::pushApart(std::shared_ptr<Matter> m1,
     // m1->matter2con("movie.con", true);
   }
 }
+
+} // namespace eonc

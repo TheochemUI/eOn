@@ -13,9 +13,9 @@
 #include "BondBoost.h"
 #include "HelperFunctions.h"
 #include <math.h>
+namespace eonc {
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
-
 BondBoost::BondBoost(Matter *matt, Parameters *params) {
   matter = matt;
   parameters = params;
@@ -389,3 +389,5 @@ long BondBoost::BondSelect() {
   }
   return nBBs_tmp;
 }
+
+} // namespace eonc

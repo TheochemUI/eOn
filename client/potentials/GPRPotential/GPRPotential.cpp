@@ -13,7 +13,7 @@
 #include "GPRPotential.h"
 #include "../../subprojects/gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
 #include "../../subprojects/gprdimer/structures/Structures.h"
-
+namespace eonc {
 namespace {
 
 const char *elementArray[] = {
@@ -89,3 +89,5 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
   // FIXME: Test conversion, E should only have one element here
   *U = observation.E[0];
 }
+
+} // namespace eonc

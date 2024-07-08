@@ -13,7 +13,7 @@
 #include "BondBoost.h"
 #include "Dynamics.h"
 #include "Optimizer.h"
-
+namespace eonc {
 std::vector<std::string> SafeHyperJob::run(void) {
   // TODO: Rework
   current = new Matter(pot, params);
@@ -447,3 +447,5 @@ long SafeHyperJob::refine(Matter *buff[], long length, Matter *reactant) {
 
   return (min + max) / 2 + 1;
 }
+
+} // namespace eonc

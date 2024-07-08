@@ -17,12 +17,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-// LAMMPS library inclusion
 #ifdef EONMPI
 #define LAMMPS_LIB_MPI
 #endif
-#include "library.h"
 
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+namespace eonc {
 LAMMPSPot::LAMMPSPot(std::shared_ptr<Parameters> p)
     : Potential(p) {
   numberOfAtoms = 0;
@@ -198,3 +198,5 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lammps_command(LAMMPSObj, "variable fz atom fz");
   lammps_command(LAMMPSObj, "variable pe equal pe");
 }
+
+} // namespace eonc

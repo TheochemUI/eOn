@@ -11,6 +11,12 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
+#pragma once
+namespace eonc {
+#ifndef EONMPI
+#include "fakempi.h"
+#endif
+
 #ifndef LAMMPS_LIBRARY_H
 #define LAMMPS_LIBRARY_H
 
@@ -312,3 +318,5 @@ int lammps_python_api_version();
 /* Local Variables:
  * fill-column: 72
  * End: */
+
+} // namespace eonc

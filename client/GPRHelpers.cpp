@@ -14,7 +14,7 @@
 #include <map>
 #include <set>
 #include <unordered_map>
-
+namespace eonc {
 gpr::InputParameters
 helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   gpr::InputParameters p;
@@ -250,3 +250,5 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   o.G.assignFromEigenMatrix(matter->getForces());
   return o;
 }
+
+} // namespace eonc

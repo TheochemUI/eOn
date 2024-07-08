@@ -20,6 +20,7 @@
 #endif
 
 #include "thirdparty/toml.hpp"
+namespace eonc {
 /** Contains all runtime parameters as parsed at start-up.*/
 class Parameters {
 private:
@@ -289,11 +290,11 @@ public:
                             filterMode is fraction */
     double minDisplacement; /** atoms with displacement between min1 or min2
                             and the saddle point are put in the Hessian */
-    ::Prefactor::RATE rate; ///< method to estimate prefactor
-    ::Prefactor::TYPE configuration; /** configuration for which the frequencies
+    eonc::Prefactor::RATE rate;   ///< method to estimate prefactor
+    eonc::Prefactor::TYPE configuration; /** configuration for which the frequencies
                                should be determined */
     bool allFreeAtoms; ///< use all free atom when determining the prefactor
-    ::Prefactor::FILTER filterScheme; /** "cutoff" or "fraction", which use
+    eonc::Prefactor::FILTER filterScheme; /** "cutoff" or "fraction", which use
                               prefactorMinDisplacement or
                               prefactorFilterFraction, respectively */
     double filterFraction; /** Include atoms whose summed motion comprise
@@ -451,3 +452,5 @@ public:
 private:
   std::string toLowerCase(std::string s);
 };
+
+} // namespace eonc

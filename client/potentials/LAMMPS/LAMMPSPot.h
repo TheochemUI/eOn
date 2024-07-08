@@ -12,9 +12,10 @@
 // serves as an interface between LAMMPS potentials maintained by SANDIA
 
 #pragma once
-
 #include "../../Parameters.h"
 #include "../../Potential.h"
+
+namespace eonc {
 
 class LAMMPSPot : public Potential {
 
@@ -34,3 +35,5 @@ private:
                      const double *box);
   bool realunits;
 };
+
+} // namespace eonc
