@@ -156,7 +156,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
               "[ParallelReplica] Simulation ended without seeing a transition");
           SPDLOG_LOGGER_DEBUG(
               log, "[ParallelReplica] Refining anyways to prevent bias...");
-          int tmpFcalls = Potential::fcalls;
+          // int tmpFcalls = Potential::fcalls;
           refineTransition(MDSnapshots, true);
           // refineForceCalls += Potential::fcalls - tmpFcalls;
         }
