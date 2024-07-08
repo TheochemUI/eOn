@@ -53,7 +53,7 @@ enum class PotType {
   TIP4P_H,
   SPCE,
   EAM_AL,
-  EAM_STANDALONe,
+  EAM_STANDALONE,
   EDIP,
   FEHE,
   LENOSKY_SI,

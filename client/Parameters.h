@@ -12,25 +12,27 @@
 #pragma once
 
 #include "BaseStructures.h"
+#include "definitions/PotParams.hpp"
 #include <string>
 
 #ifdef EONMPI
 #include "mpi.h"
 #endif
 
-// TODO(rg): Remove these when parameters goes away
-#include "potentials/LJ/LJ.h"
-
 #include "thirdparty/toml.hpp"
 /** Contains all runtime parameters as parsed at start-up.*/
 class Parameters {
 private:
-    void loadPot(const toml::table& config);
-    void loadLJParams(const toml::table &config);
+  void loadPot(const toml::table &config);
+  void loadLJParams(const toml::table &config);
+  void loadAMSParams(const toml::table &config);
+  void loadASEOrcaParams(const toml::table &config);
+  void loadMorseParams(const toml::table &config);
+  void loadXTBParams(const toml::table &config);
+  void loadCatLearnParams(const toml::table &config);
+
 public:
   Parameters();
-  ~Parameters() = default;
-  Parameters(const Parameters &) = default;
   int load(const std::string &filename);
 
   // Physical Constants
@@ -54,50 +56,22 @@ public:
   } main;
 
   // [Potential] //
-  struct Potential {
-    PotType potential;
-    double MPIPollPeriod;
-    bool LAMMPSLogging;
-    int LAMMPSThreads;
-    bool EMTRasmussen;
-    bool LogPotential;
-    std::string extPotPath;
+  struct PotParams {
+    PotType potential{PotType::LJ};
+    double MPIPollPeriod{0.25}; // seconds
+    bool LAMMPSLogging{false};
+    int LAMMPSThreads{0};
+    bool EMTRasmussen{false};
+    bool LogPotential{false};
+    std::string extPotPath{"./ext_pot"s};
     eonc::def::LJParams lj;
-    Potential()
-        : potential{PotType::LJ},
-          MPIPollPeriod{0.25} /* seconds */,
-          LAMMPSLogging{false},
-          LAMMPSThreads{0},
-          EMTRasmussen{false},
-          LogPotential{false},
-          extPotPath{"./ext_pot"s},
-          lj{eonc::def::LJParams()} {}
+    eonc::def::MorseParams mpar;
+    eonc::def::XTBParams xtbp;
   } pot;
 
-  struct AMS {              // Also for AMS_IO
-    std::string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
-    std::string forcefield; // OPt.ff etc. (REAXFF)
-    std::string model;      // Model hamiltonian (MOPAC)
-    std::string resources;  // DFTB
-    std::string xc;         // Exchange (BAND, ADF)
-    std::string basis;      // Basis (BAND, ADF)
-  } ams;
-
-  struct AMS_ENV {
-    std::string amshome;
-    std::string scm_tmpdir;
-    std::string scmlicense;
-    std::string scm_pythondir;
-    std::string amsbin;
-    std::string amsresources;
-  } amsenv;
-
-  struct XTBPot {
-    std::string paramset;
-    double elec_temperature;
-    size_t maxiter;
-    double acc;
-  } xtbpot;
+  eonc::def::AMSParams ams;
+  eonc::def::ASEOrcaParams aseorca;
+  eonc::def::CatLearnParams catl;
 
   struct StructureComparison {
     double
@@ -299,21 +273,6 @@ public:
     PotType potential; // ONLY: catlearn for now
   } surrogate;
 
-  struct CatLearn {
-    std::string path;
-    std::string model;
-    std::string prior;
-    bool use_deriv;
-    bool use_fingerprint;
-    bool parallel;
-  } catl;
-
-  struct ASEOrca {
-    std::string orca_path;
-    std::string orca_nproc;
-    std::string simpleinput;
-  } aseorca;
-
   struct Lanczos {
     double tolerance;   /** difference between the lowest eignevalues of two
                         successive iterations */
@@ -452,14 +411,15 @@ public:
     double stopEnergy;
   } bhop;
 
+  // [Global Optimization] //
   struct GlobalOptimization {
-    std::string moveMethod;
-    std::string decisionMethod;
-    size_t steps;
-    double beta;
-    double alpha;
-    long mdmin;
-    double targetEnergy;
+    std::string moveMethod{"md"s};
+    std::string decisionMethod{"npew"s};
+    size_t steps{10000};
+    double beta{1.05};
+    double alpha{1.02};
+    size_t mdmin{3};
+    double targetEnergy{-1.E8};
   } globopt;
 
   struct MonteCarlo {

@@ -25,7 +25,7 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 class CatLearnPot : public SurrogatePotential {
 
 public:
-  CatLearnPot(Parameters &a_p);
+  CatLearnPot(CatLearnParams a_p);
 
   // Functions
   void train_optimize(MatrixType features, MatrixType targets) override;

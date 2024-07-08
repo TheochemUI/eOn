@@ -23,8 +23,8 @@ class CuH2 : public Potential {
 
 public:
   // Functions
-  CuH2(Parameters &a_p)
-      : Potential(PotType::CUH2, a_p) {}
+  CuH2()
+      : Potential(PotType::CUH2) {}
 
   // To satisfy interface
   void cleanMemory(void);

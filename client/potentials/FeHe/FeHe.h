@@ -46,8 +46,8 @@ extern "C"
 /** FeHe potential.*/
 class FeHe : public Potential {
 public:
-  FeHe(Parameters& a_p)
-      : Potential(a_p) {}
+  FeHe()
+      : Potential(PotType::FEHE) {}
   ~FeHe(void){};
   // To satisfy interface
   void force(long N, const double *R, const int *atomicNrs, double *F,

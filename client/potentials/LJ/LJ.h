@@ -14,18 +14,6 @@
 // #include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
 
-namespace eonc::def {
-struct LJParams {
-  double u0;
-  double cutoff;
-  double psi;
-  LJParams()
-      : u0{1.0},
-        cutoff{15.0},
-        psi{1.0} {}
-};
-} // namespace eonc::def
-
 /** Lennard Jones potential.*/
 class LJ : public Potential {
 private:
@@ -35,7 +23,7 @@ private:
   double cuttOffU;
 
 public:
-  LJ(eonc::def::LJParams ljp)
+  LJ(eonc::def::LJParams& ljp)
       : Potential(PotType::LJ),
         u0{ljp.u0},
         cuttOffR{ljp.cutoff},

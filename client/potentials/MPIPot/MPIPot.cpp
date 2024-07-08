@@ -16,10 +16,10 @@
 #include <time.h>
 #include <unistd.h>
 
-MPIPot::MPIPot(std::shared_ptr<Parameters> p)
-    : Potential(p) {
-  potentialRank = p->MPIPotentialRank;
-  poll_period = p->MPIPollPeriod;
+MPIPot::MPIPot(int _MPIPotentialRank, double _MPIPollPeriod)
+    : Potential(PotType::MPI) {
+  potentialRank = _MPIPotentialRank;
+  poll_period = _MPIPollPeriod;
   return;
 }
 

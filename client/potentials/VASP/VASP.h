@@ -18,8 +18,8 @@
 class VASP : public Potential {
 
 public:
-  VASP(Parameters& a_p)
-      : Potential(a_p) {
+  VASP()
+      : Potential(PotType::VASP) {
     vaspRunCount++;
     // deleting leftovers from previous run
     system("rm -f TMPCAR");

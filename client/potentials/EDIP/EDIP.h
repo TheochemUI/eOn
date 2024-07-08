@@ -34,8 +34,8 @@ class EDIP : public Potential {
 public:
   // Functions
   // constructor
-  EDIP(Parameters &a_p)
-      : Potential(PotType::EDIP, a_p){};
+  EDIP()
+      : Potential(PotType::EDIP){};
 
   // To satisfy interface
   void cleanMemory(void);
