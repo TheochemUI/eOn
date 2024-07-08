@@ -60,18 +60,18 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
   os << "basis: " << params.ams.basis << std::endl;
 
   os << "\n[AMS_ENV]" << std::endl;
-  os << "amshome: " << params.amsenv.amshome << std::endl;
-  os << "scm_tmpdir: " << params.amsenv.scm_tmpdir << std::endl;
-  os << "scmlicense: " << params.amsenv.scmlicense << std::endl;
-  os << "scm_pythondir: " << params.amsenv.scm_pythondir << std::endl;
-  os << "amsbin: " << params.amsenv.amsbin << std::endl;
-  os << "amsresources: " << params.amsenv.amsresources << std::endl;
+  os << "amshome: " << params.ams.amsenv.amshome << std::endl;
+  os << "scm_tmpdir: " << params.ams.amsenv.scm_tmpdir << std::endl;
+  os << "scmlicense: " << params.ams.amsenv.scmlicense << std::endl;
+  os << "scm_pythondir: " << params.ams.amsenv.scm_pythondir << std::endl;
+  os << "amsbin: " << params.ams.amsenv.amsbin << std::endl;
+  os << "amsresources: " << params.ams.amsenv.amsresources << std::endl;
 
   os << "\n[XTBPot]" << std::endl;
-  os << "xtb_paramset: " << params.xtbpot.paramset << std::endl;
-  os << "xtb_elec_temperature: " << params.xtbpot.elec_temperature << std::endl;
-  os << "xtb_maxiter: " << params.xtbpot.maxiter << std::endl;
-  os << "xtb_acc: " << params.xtbpot.acc << std::endl;
+  os << "xtb_paramset: " << params.pot.xtbp.paramset << std::endl;
+  os << "xtb_elec_temperature: " << params.pot.xtbp.elec_temperature << std::endl;
+  os << "xtb_maxiter: " << params.pot.xtbp.maxiter << std::endl;
+  os << "xtb_acc: " << params.pot.xtbp.acc << std::endl;
 
   os << "\n[Structure Comparison]" << std::endl;
   os << "distanceDifference: " << params.structcomp.distanceDifference
