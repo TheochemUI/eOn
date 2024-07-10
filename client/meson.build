@@ -194,7 +194,7 @@ eonclib_sources = [
            # 'HessianJob.cpp',
            # 'TADJob.cpp',
            # 'ProcessSearchJob.cpp',
-           # 'Bundling.cpp',
+           'Bundling.cpp',
            # 'NudgedElasticBand.cpp',
            # 'MonteCarloJob.cpp',
            # 'DynamicsJob.cpp',
@@ -202,8 +202,8 @@ eonclib_sources = [
            # 'Hessian.cpp',
            # 'NudgedElasticBandJob.cpp',
            # 'DynamicsSaddleSearch.cpp',
-           # 'HelperFunctions.cpp',
-           # 'EnvHelpers.cc',
+           'HelperFunctions.cpp',
+           'EnvHelpers.cc',
            # # 'StringHelpers.cc', # Template
            # 'MatrixHelpers.hpp', # Template
            # 'Dimer.cpp',
@@ -214,8 +214,8 @@ eonclib_sources = [
            # 'MinimizationJob.cpp',
            # 'Quickmin.cpp',
            # 'ParallelReplicaJob.cpp',
-           # 'Potential.cpp',
-           # 'SurrogatePotential.cpp', # Part of the interface
+           'Potential.cpp',
+           'SurrogatePotential.cpp', # Part of the interface
            # 'BasinHoppingJob.cpp',
            # 'FIRE.cpp',
            # 'EpiCenters.cpp',
@@ -411,12 +411,12 @@ if get_option('with_python')
   #                 )
 endif
 
-ec2 = executable('testWriteR',
-                'testWriteR.cpp',
-                include_directories: _incdirs,
-                dependencies : _deps,
-                link_with : _linkto,
-                )
+# ec2 = executable('testWriteR',
+#                 'testWriteR.cpp',
+#                 include_directories: _incdirs,
+#                 dependencies : _deps,
+#                 link_with : _linkto,
+#                 )
 endif
 # ------------------------ Tests
 
