@@ -147,8 +147,8 @@ void commandLine(int argc, char **argv) {
     }
 
     auto pot = helper_functions::makePotential(*params);
-    auto matter = std::make_unique<Matter>(pot, params);
-    auto matter2 = std::make_unique<Matter>(pot, params);
+    auto matter = std::make_unique<Matter>(pot, params.get());
+    auto matter2 = std::make_unique<Matter>(pot, params.get());
     matter->con2matter(confile);
 
     string confileout;

@@ -240,68 +240,68 @@ Vector<int> Matter::getAtomicNrsFree() const {
   return this->atomicNrs.array() * getFreeV().cast<int>().array();
 }
 
-bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
-                   string prefixMovie, string prefixCheckpoint) {
-  auto objf = std::make_shared<MatterObjectiveFunction>(
-      std::make_shared<Matter>(*this), parameters);
-  auto optim =
-      helpers::create::mkOptim(objf, parameters->optim.method, parameters);
+// bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
+//                    string prefixMovie, string prefixCheckpoint) {
+//   auto objf =
+//       std::make_shared<MatterObjectiveFunction>(Matter(*this), parameters);
+//   auto optim =
+//       helpers::create::mkOptim(objf, parameters->optim.method, parameters);
 
-  ostringstream min;
-  min << prefixMovie;
-  if (writeMovie) {
-    matter2con(min.str(), false);
-  }
+//   ostringstream min;
+//   min << prefixMovie;
+//   if (writeMovie) {
+//     matter2con(min.str(), false);
+//   }
 
-  int iteration = 0;
-  if (!quiet) {
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
-                        "[Matter]", "Iter", "Step size",
-                        parameters->optim.convergenceMetricLabel, "Energy");
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
-                        "[Matter]", iteration, 0.0, objf->getConvergence(),
-                        getPotentialEnergy());
-  }
+//   int iteration = 0;
+//   if (!quiet) {
+//     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
+//                         "[Matter]", "Iter", "Step size",
+//                         parameters->optim.convergenceMetricLabel, "Energy");
+//     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+//                         "[Matter]", iteration, 0.0, objf->getConvergence(),
+//                         getPotentialEnergy());
+//   }
 
-  while (!objf->isConverged() && iteration < parameters->optim.maxIterations) {
+//   while (!objf->isConverged() && iteration < parameters->optim.maxIterations) {
 
-    AtomMatrix pos = getPositions();
+//     AtomMatrix pos = getPositions();
 
-    optim->step(parameters->optim.maxMove);
-    iteration++;
-    setPositionsFreeV(objf->getPositions());
+//     optim->step(parameters->optim.maxMove);
+//     iteration++;
+//     setPositionsFreeV(objf->getPositions());
 
-    double stepSize =
-        helper_functions::maxAtomMotion(pbc(getPositions() - pos));
+//     double stepSize =
+//         helper_functions::maxAtomMotion(pbc(getPositions() - pos));
 
-    if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, stepSize,
-                          objf->getConvergence(), getPotentialEnergy());
-    }
+//     if (!quiet) {
+//       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+//                           "[Matter]", iteration, stepSize,
+//                           objf->getConvergence(), getPotentialEnergy());
+//     }
 
-    if (writeMovie) {
-      matter2con(min.str(), true);
-    }
+//     if (writeMovie) {
+//       matter2con(min.str(), true);
+//     }
 
-    if (checkpoint) {
-      ostringstream chk;
-      chk << prefixCheckpoint << "_cp";
-      matter2con(chk.str(), false);
-    }
-  }
+//     if (checkpoint) {
+//       ostringstream chk;
+//       chk << prefixCheckpoint << "_cp";
+//       matter2con(chk.str(), false);
+//     }
+//   }
 
-  if (iteration == 0) {
-    if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, 0.0, objf->getConvergence(),
-                          getPotentialEnergy());
-    }
-  }
-  //    bool converged = optimizer->run(parameters->optMaxIterations,
-  //    parameters->optMaxMove);
-  return objf->isConverged();
-}
+//   if (iteration == 0) {
+//     if (!quiet) {
+//       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+//                           "[Matter]", iteration, 0.0, objf->getConvergence(),
+//                           getPotentialEnergy());
+//     }
+//   }
+//   //    bool converged = optimizer->run(parameters->optMaxIterations,
+//   //    parameters->optMaxMove);
+//   return objf->isConverged();
+// }
 
 VectorType Matter::getPositionsFreeV() const {
   return VectorType::Map(getPositionsFree().data(), 3 * numberOfFreeAtoms());
@@ -337,20 +337,20 @@ void Matter::setPositionsFreeV(const VectorType pos) {
   setPositionsFree(AtomMatrix::Map(pos.data(), numberOfFreeAtoms(), 3));
 }
 
-AtomMatrix Matter::getBiasForces() {
-  if (biasPotential != NULL) {
-    biasPotential->boost();
-  }
-  return biasForces.array() * getFree().array();
-}
+// AtomMatrix Matter::getBiasForces() {
+//   if (biasPotential != NULL) {
+//     biasPotential->boost();
+//   }
+//   return biasForces.array() * getFree().array();
+// }
 
-void Matter::setBiasPotential(BondBoost *bondBoost) {
-  biasPotential = bondBoost;
-}
+// void Matter::setBiasPotential(BondBoost *bondBoost) {
+//   biasPotential = bondBoost;
+// }
 
-void Matter::setBiasForces(const AtomMatrix bf) {
-  biasForces = bf.array() * getFree().array();
-}
+// void Matter::setBiasForces(const AtomMatrix bf) {
+//   biasForces = bf.array() * getFree().array();
+// }
 // return forces applied on all atoms in array 'force'
 AtomMatrix Matter::getForces() {
   computePotential();
@@ -888,14 +888,14 @@ void Matter::setForces(const AtomMatrix f) {
   forces = f.array() * getFree().array();
 }
 
-AtomMatrix Matter::getAccelerations() {
-  AtomMatrix totF = getForces() + getBiasForces();
-  AtomMatrix ret = totF.array() * getFree().array();
-  ret.col(0).array() /= masses.array();
-  ret.col(1).array() /= masses.array();
-  ret.col(2).array() /= masses.array();
-  return ret;
-}
+// AtomMatrix Matter::getAccelerations() {
+//   AtomMatrix totF = getForces() + getBiasForces();
+//   AtomMatrix ret = totF.array() * getFree().array();
+//   ret.col(0).array() /= masses.array();
+//   ret.col(1).array() /= masses.array();
+//   ret.col(2).array() /= masses.array();
+//   return ret;
+// }
 
 VectorType Matter::getMasses() const { return masses; }
 
