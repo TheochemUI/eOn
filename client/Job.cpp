@@ -33,9 +33,11 @@
 #ifdef WITH_GP_SURROGATE
 #include "GPSurrogateJob.h"
 #endif
+
 namespace eonc {
-  // TODO(rg): These should be jobparams
-std::unique_ptr<JobBase> makeJob(Parameters& params) {
+// TODO(rg): These should be jobparams
+std::unique_ptr<JobBase>
+makeJob(Parameters &params, std::optional<std::reference_wrapper<Matter>> mat) {
   switch (params.main.job) {
   // case JobType::Process_Search: {
   //   return (std::make_unique<ProcessSearchJob>(std::move(params)));
@@ -50,7 +52,7 @@ std::unique_ptr<JobBase> makeJob(Parameters& params) {
   //   break;
   // }
   case JobType::Point: {
-    return (std::make_unique<PointJob>(params));
+    return (std::make_unique<PointJob>(mat->get()));
     break;
   }
     //   case JobType::Parallel_Replica: {

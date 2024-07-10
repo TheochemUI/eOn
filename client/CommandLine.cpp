@@ -97,7 +97,8 @@ void commandLine(int argc, char **argv) {
 
     // TODO(rg):: Use this
     // if (result.count("tolerance")) {
-    //   params->structcomp.distanceDifference = result["tolerance"].as<double>();
+    //   params->structcomp.distanceDifference =
+    //   result["tolerance"].as<double>();
     // }
 
     if (sflag && mflag) {
@@ -139,10 +140,10 @@ void commandLine(int argc, char **argv) {
       params->optim.convergedForce = optConvergedForce;
     }
 
-    // auto pot = helper_functions::makePotential(*params);
-    // auto matter = Matter(pot);
+    auto pot = helper_functions::makePotential(*params);
+    auto matter = Matter(pot);
     // auto matter2 = Matter(pot);
-    // matter.con2matter(confile);
+    matter.con2matter(confile);
 
     // string confileout;
     // if (unmatched.size() == 2) {
@@ -155,8 +156,8 @@ void commandLine(int argc, char **argv) {
       params->main.job = JobType::Point;
       params->main.conFilename = confile;
       // Run PointJob
-      auto spj = makeJob(*params);
-      spj->run();
+      auto spj = makeJob(*params, matter);
+      auto res = spj->run();
     } else if (mflag) {
       // XXX: Finish
       // minimize(matter, confileout);
