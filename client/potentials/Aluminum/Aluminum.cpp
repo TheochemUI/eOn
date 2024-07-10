@@ -13,6 +13,8 @@
 #include "Aluminum.h"
 #include <assert.h>
 
+namespace eonc {
+
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
@@ -23,3 +25,5 @@ void Aluminum::force(long N, const double *R, const int *atomicNrs, double *F,
   variance = nullptr;
   return;
 }
+
+} // namespace eonc
