@@ -554,7 +554,7 @@ bool Matter::matter2con(FILE *file) {
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
+    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).c_str());
     fprintf(file, "Coordinates of Component %d\n", j + 1);
     for (i = first[j]; i < first[j + 1]; i++) {
       fprintf(file, "%22.17f %22.17f %22.17f %d %4ld\n", getPosition(i, 0),
@@ -950,7 +950,7 @@ bool Matter::matter2convel(FILE *file) {
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
+    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).c_str());
     fprintf(file, "Coordinates of Component %d\n", j + 1);
     for (i = first[j]; i < first[j + 1]; i++) {
       fprintf(file, "%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", getPosition(i, 0),
@@ -959,7 +959,7 @@ bool Matter::matter2convel(FILE *file) {
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
+    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).c_str());
     fprintf(file, "Velocities of Component %d\n", j + 1);
     for (i = first[j]; i < first[j + 1]; i++) {
       fprintf(file, "%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", velocities(i, 0),
