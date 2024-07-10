@@ -61,38 +61,6 @@ int symbol2atomicNumber(char const *symbol) {
 char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
-class MatterObjectiveFunction : public ObjectiveFunction {
-public:
-  MatterObjectiveFunction(std::shared_ptr<Matter> matterPassed,
-                          std::shared_ptr<Parameters> parametersPassed)
-      : ObjectiveFunction(matterPassed, parametersPassed) {}
-  ~MatterObjectiveFunction() = default;
-  double getEnergy() { return matter->getPotentialEnergy(); }
-  VectorType getGradient(bool fdstep = false) {
-    return -matter->getForcesFreeV();
-  }
-  void setPositions(VectorType x) { matter->setPositionsFreeV(x); }
-  VectorType getPositions() { return matter->getPositionsFreeV(); }
-  int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
-  bool isConverged() { return getConvergence() < params->optim.convergedForce; }
-  double getConvergence() {
-    if (params->optim.convergenceMetric == "norm") {
-      return matter->getForcesFreeV().norm();
-    } else if (params->optim.convergenceMetric == "max_atom") {
-      return matter->maxForce();
-    } else if (params->optim.convergenceMetric == "max_component") {
-      return matter->getForces().maxCoeff();
-    } else {
-      SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
-                      params->optim.convergenceMetric);
-      std::exit(1);
-    }
-  }
-  VectorType difference(VectorType a, VectorType b) {
-    return matter->pbcV(a - b);
-  }
-};
-
 Matter::Matter(const Matter &matter) { operator=(matter); }
 
 const Matter &Matter::operator=(const Matter &matter) {
