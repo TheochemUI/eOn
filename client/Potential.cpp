@@ -199,7 +199,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &a_p) {
     break;
   }
   case PotType::LENOSKY_SI: {
-    return (std::make_shared<Lenosky>(a_p));
+    return (std::make_shared<Lenosky>());
     break;
   }
   case PotType::SW_SI: {
@@ -207,7 +207,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &a_p) {
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (std::make_shared<Tersoff>(a_p));
+    return (std::make_shared<Tersoff>());
     break;
   }
 #endif
