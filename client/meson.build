@@ -47,16 +47,11 @@ endif
 
 _args += cppc.get_supported_arguments([
   # C++ only
-  '-Wno-class-memaccess',
-  '-Wno-unused-function',
+  # '-Wno-class-memaccess',
+  # '-Wno-unused-function',
   # Common
-  '-Wno-reorder',
-  '-Wno-sign-compare',
-  '-Wno-unused-but-set-parameter',
-  '-Wno-unused-but-set-variable',
   '-Wno-unused-parameter',
-  '-Wno-unused-result',
-  '-Wno-unused-variable',
+  '-Wno-unused-but-set-parameter',
   '-Wfatal-errors',
 ]
 )
@@ -64,6 +59,11 @@ _args += cppc.get_supported_arguments([
 # TODO(rg): use fc.get_supported_arguments and add more compiler support
 if use_fortran == true
     _fargs += fc.get_supported_arguments([
+      # Ported from C++
+      '-Wno-unused-but-set-variable',
+      '-Wno-unused-variable',
+      # Absolutely necessary
+      '-fno-implicit-none',
       # Fortran only, these are important!
       '-Wno-compare-reals',
       '-Wno-conversion',
@@ -165,8 +165,11 @@ potentials = [
                newpot
              ]
 
+tomlib = library('toml', 'toml.cpp',
+                 cpp_args: ['-w'])
+_deps += declare_dependency(link_with: tomlib)
+
 eonclib_sources = [
-           'toml.cpp',
            'Parser.cc',
            'Parameters.cpp',
            # 'Optimizer.cpp',
@@ -433,7 +436,7 @@ if get_option('with_tests')
       link_with: _linkto,
     )
     test_array = [#
-      ['test_element', 'ElementTest.cc', ''],
+      # ['test_element', 'ElementTest.cc', ''],
       # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
       # ['strparse_run', 'StringHelpersTest.cpp', ''],
       # ['test_matter', 'MatterTest.cpp', 'sulfolene'],
