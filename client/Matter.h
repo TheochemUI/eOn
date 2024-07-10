@@ -14,8 +14,8 @@
 #include "Parameters.h"
 #include "Potential.h"
 #include <memory>
-#include <string>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <string>
 
 namespace eonc {
 // This is a forward declaration of BondBoost to avoid a circular dependency.
@@ -29,14 +29,28 @@ class BondBoost;
  * (atom2xyz()).*/
 
 class Matter {
+  // TODO(rg):: These need to be parsed in again..
+  struct MatParams {
+    bool removeNetForce{true};
+  } mparams;
+  struct StructureComparison {
+    ///< The distance criterion for comparing geometries
+    double distanceDifference{0.1};
+    ///< radius used in the local atomic structure analysis
+    double neighborCutoff{3.3};
+    bool checkRotation{false};
+    bool indistinguishableAtoms{true};
+    double energyDifference{0.01};
+    bool removeTranslation{true};
+  } structcomp;
+
 public:
   ~Matter() = default;
-  Matter(std::shared_ptr<Potential> pot, Parameters* params)
+  Matter(std::shared_ptr<Potential> pot)
       : potential{pot},
-        usePeriodicBoundaries{params->main.usePBC},
+        usePeriodicBoundaries{true},
         recomputePotential{true},
         forceCalls{0},
-        parameters{params},
         nAtoms{0},
         positions{MatrixType::Zero(0, 3)},
         velocities{MatrixType::Zero(0, 3)},
@@ -212,7 +226,6 @@ private:
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
-  std::shared_ptr<Parameters> parameters;
   long nAtoms;
   AtomMatrix positions;
   AtomMatrix velocities;
