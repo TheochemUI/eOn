@@ -10,10 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Matter.h"
-#include "BondBoost.h"
+// #include "BondBoost.h"
 #include "HelperFunctions.h"
-#include "ObjectiveFunction.h"
-#include "Optimizer.h"
 #include "SurrogatePotential.h"
 #include <iostream>
 
