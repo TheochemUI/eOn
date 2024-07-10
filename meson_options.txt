@@ -16,6 +16,7 @@ option('with_gpr_optim', type : 'boolean', value : false)
 option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
 option('with_ase', type : 'boolean', value : false)
+option('with_asap_stacktrace', type : 'boolean', value : false)
 
 # option('someoption', type : 'string', value : 'optval', description : 'An option')
 # option('combo_opt', type : 'combo', choices : ['one', 'two', 'three'], value : 'three')
