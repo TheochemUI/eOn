@@ -50,7 +50,10 @@ _args += cppc.get_supported_arguments([
   # '-Wno-class-memaccess',
   # '-Wno-unused-function',
   # Common
+<<<<<<< HEAD
   '-Wno-unused-result',
+=======
+>>>>>>> 2c7db954 (BLD: Start adding back warnings)
   '-Wno-unused-parameter',
   '-Wno-unused-but-set-parameter',
   '-Wfatal-errors',
@@ -399,7 +402,7 @@ ec = executable('eonclient',
                 include_directories: _incdirs,
                 dependencies : _deps,
                 link_with : _linkto,
-                cpp_args : [_args, '-w'],
+                cpp_args : [_args],
                 link_args: _linkargs,
                 install : true)
 
