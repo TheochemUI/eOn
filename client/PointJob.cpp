@@ -15,16 +15,18 @@
 namespace eonc {
 std::vector<std::string> PointJob::run(void) {
   std::vector<std::string> returnFiles;
-  std::string posInFilename("pos.con");
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
   auto pot = helper_functions::makePotential(params);
 
-  Matter pos{Matter(pot, &params)};
-  pos.con2matter(posInFilename);
+  // TODO(rg):: Use parameters
+  Matter pos{Matter(pot)};
+  pos.con2matter(params.main.conFilename);
 
+  // SPDLOG_LOGGER_DEBUG(log, "(free) Forces:         {:.12f}",
+  //                     fmt::streamed(pos.getForcesFree()));
   SPDLOG_LOGGER_DEBUG(log, "Energy:         {:.12f}", pos.getPotentialEnergy());
-  SPDLOG_LOGGER_DEBUG(log, "Max atom force: {:.12f}", pos.maxForce());
+  SPDLOG_LOGGER_DEBUG(log, "Max atom force: {:.12e}", pos.maxForce());
 
   std::shared_ptr<spdlog::logger> fileLogger;
   fileLogger = spdlog::basic_logger_mt("point", "results.dat", true);
