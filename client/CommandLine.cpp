@@ -32,7 +32,8 @@ void singlePoint(std::unique_ptr<Matter> matter) {
 }
 
 void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
-  matter->relax(false, false);
+  // XXX: Fix this
+  // matter->relax(false, false);
   if (!confileout.empty()) {
     std::cout << "Saving relaxed structure to " << confileout << std::endl;
   } else {

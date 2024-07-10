@@ -13,11 +13,14 @@
 
 #include "Job.h"
 #include "Parameters.h"
+#include "Potential.h"
 namespace eonc {
-class PointJob : public Job {
+class PointJob : public Job<PointJob> {
+  Parameters &params;
+
 public:
-  PointJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
+  PointJob(Parameters &parameters)
+      : params{parameters} {
     log = spdlog::get("combi");
   }
   ~PointJob(void) = default;
