@@ -62,6 +62,6 @@ public:
   }
 };
 
-std::unique_ptr<JobBase> makeJob(std::unique_ptr<Parameters> params);
+std::unique_ptr<JobBase> makeJob(Parameters& params);
 
 } // namespace eonc

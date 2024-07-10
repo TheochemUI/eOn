@@ -13,7 +13,6 @@
 
 #include "Job.h"
 #include "Parameters.h"
-#include "Potential.h"
 namespace eonc {
 class PointJob : public Job<PointJob> {
   Parameters &params;

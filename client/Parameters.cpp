@@ -37,7 +37,6 @@ Parameters::Parameters() {
   main.conFilename = "pos.con"s;
   main.finiteDifference = 0.01;
   main.maxForceCalls = 0;
-  main.removeNetForce = true;
   main.usePBC = true;
 
   // [Prefactor] //
@@ -51,14 +50,6 @@ Parameters::Parameters() {
   prefactor.allFreeAtoms = false;
   prefactor.filterScheme = eonc::Prefactor::FILTER::FRACTION;
   prefactor.filterFraction = 0.90;
-
-  // [Structure Comparison] //
-  structcomp.distanceDifference = 0.1;
-  structcomp.neighborCutoff = 3.3;
-  structcomp.checkRotation = false;
-  structcomp.indistinguishableAtoms = true;
-  structcomp.energyDifference = 0.01;
-  structcomp.removeTranslation = true;
 
   // [Debug] //
   debug.writeMovies = false;
@@ -345,7 +336,6 @@ int Parameters::load(const std::string &filename) {
     main.conFilename = config["Main"]["con_filename"].value_or("pos.con"s);
     main.finiteDifference = config["Main"]["finite_difference"].value_or(0.01);
     main.maxForceCalls = config["Main"]["max_force_calls"].value_or(0L);
-    main.removeNetForce = config["Main"]["remove_net_force"].value_or(true);
     main.usePBC = config["Main"]["use_pbc"].value_or(true);
 
     // Initialize random generator
@@ -365,21 +355,6 @@ int Parameters::load(const std::string &filename) {
     loadASEOrcaParams(config);
     // [CatLearn]
     loadCatLearnParams(config);
-
-    // Structure Comparison section
-    structcomp.distanceDifference =
-        config["Structure_Comparison"]["distance_difference"].value_or(0.1);
-    structcomp.neighborCutoff =
-        config["Structure_Comparison"]["neighbor_cutoff"].value_or(3.3);
-    structcomp.checkRotation =
-        config["Structure_Comparison"]["check_rotation"].value_or(false);
-    structcomp.indistinguishableAtoms =
-        config["Structure_Comparison"]["indistinguishable_atoms"].value_or(
-            true);
-    structcomp.energyDifference =
-        config["Structure_Comparison"]["energy_difference"].value_or(0.01);
-    structcomp.removeTranslation =
-        config["Structure_Comparison"]["remove_translation"].value_or(true);
 
     // Process Search section
     procsearch.minimizeFirst =

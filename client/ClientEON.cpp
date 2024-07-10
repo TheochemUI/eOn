@@ -393,8 +393,7 @@ int main(int argc, char **argv) {
 
       // Determine what type of job we are running according to the parameters
       // file.
-      auto job = eonc::helper_functions::makeJob(
-          std::make_unique<eonc::Parameters>(parameters));
+      auto job = eonc::helper_functions::makeJob(parameters);
       if (job == nullptr) {
         printf("error: Unknown job: %s\n",
                std::string{

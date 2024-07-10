@@ -76,7 +76,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   cellInverse = matter.cellInverse;
   velocities = matter.velocities;
 
-  parameters = matter.parameters;
+  mparams = matter.mparams;
 
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
 
@@ -106,23 +106,21 @@ const Matter &Matter::operator=(const Matter &matter) {
 bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
-  if (parameters->structcomp.checkRotation && indistinguishable) {
+  if (structcomp.checkRotation && indistinguishable) {
     return helper_functions::sortedR(*this, matter,
-                                     parameters->structcomp.distanceDifference);
+                                     structcomp.distanceDifference);
   } else if (indistinguishable) {
-    if (this->numberOfFixedAtoms() == 0 and
-        parameters->structcomp.removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and structcomp.removeTranslation)
       helper_functions::translationRemove(*this, matter);
-    return helper_functions::identical(
-        *this, matter, parameters->structcomp.distanceDifference);
-  } else if (parameters->structcomp.checkRotation) {
-    return helper_functions::rotationMatch(
-        *this, matter, parameters->structcomp.distanceDifference);
+    return helper_functions::identical(*this, matter,
+                                       structcomp.distanceDifference);
+  } else if (structcomp.checkRotation) {
+    return helper_functions::rotationMatch(*this, matter,
+                                           structcomp.distanceDifference);
   } else {
-    if (this->numberOfFixedAtoms() == 0 and
-        parameters->structcomp.removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and structcomp.removeTranslation)
       helper_functions::translationRemove(*this, matter);
-    return (parameters->structcomp.distanceDifference) > perAtomNorm(matter);
+    return (structcomp.distanceDifference) > perAtomNorm(matter);
   }
 }
 
@@ -263,7 +261,8 @@ Vector<int> Matter::getAtomicNrsFree() const {
 //                         getPotentialEnergy());
 //   }
 
-//   while (!objf->isConverged() && iteration < parameters->optim.maxIterations) {
+//   while (!objf->isConverged() && iteration < parameters->optim.maxIterations)
+//   {
 
 //     AtomMatrix pos = getPositions();
 
@@ -811,7 +810,7 @@ void Matter::computePotential() {
     forceCalls += 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 && parameters->main.removeNetForce) {
+    if (isFixed.sum() == 0 && mparams.removeNetForce) {
       FixedVecType<3> tempForce(3);
       tempForce = forces.colwise().sum() / nAtoms;
 
