@@ -10,10 +10,11 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include <vector>
-#include <string>
-#include <memory>
+#include "Matter.h"
 #include "Parameters.h"
+#include <memory>
+#include <string>
+#include <vector>
 namespace eonc {
 /** @defgroup Jobs
  *
@@ -47,14 +48,12 @@ namespace eonc {
  * \note The run method must be implemented by each derived job class.
  */
 
-// Base class
 class JobBase {
 public:
   virtual ~JobBase() = default;
   virtual std::vector<std::string> run() = 0;
 };
 
-// Template class for derived job types
 template <typename T> class Job : public JobBase {
 public:
   std::vector<std::string> run() override {
@@ -62,6 +61,8 @@ public:
   }
 };
 
-std::unique_ptr<JobBase> makeJob(Parameters& params);
+std::unique_ptr<JobBase>
+makeJob(Parameters &params,
+        std::optional<std::reference_wrapper<Matter>> mat = std::nullopt);
 
 } // namespace eonc
