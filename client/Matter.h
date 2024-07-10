@@ -31,7 +31,7 @@ class BondBoost;
 class Matter {
 public:
   ~Matter() = default;
-  Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
+  Matter(std::shared_ptr<Potential> pot, Parameters* params)
       : potential{pot},
         usePeriodicBoundaries{params->main.usePBC},
         recomputePotential{true},
@@ -92,10 +92,6 @@ public:
   void setVelocity(
       long int atom, int axis,
       double velocity); // set the velocity of atom along axis to velocity
-  bool relax(bool quiet = false, bool writeMovie = false,
-             bool checkpoint = false, std::string prefixMovie = std::string(),
-             std::string prefixCheckpoint = std::string());
-
   AtomMatrix pbc(AtomMatrix diff) const;
   VectorType pbcV(VectorType diff) const;
 
