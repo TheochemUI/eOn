@@ -10,26 +10,17 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "CommandLine.h"
+#include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "Potential.h"
 #include "version.h"
 
 #include <cstdlib>
-#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <string>
 namespace eonc {
 using namespace std;
-
-void singlePoint(std::unique_ptr<Matter> matter) {
-  std::cout << "Energy:         " << std::fixed << std::setprecision(15)
-            << matter->getPotentialEnergy() << std::endl;
-  std::cout << "(free) Forces:         \n" << matter->getForcesFree() << "\n";
-  std::cout << "Max atom force: " << std::scientific << matter->maxForce()
-            << std::endl;
-}
 
 void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
   // XXX: Fix this
@@ -104,9 +95,10 @@ void commandLine(int argc, char **argv) {
       optConvergedForce = result["force"].as<double>();
     }
 
-    if (result.count("tolerance")) {
-      params->structcomp.distanceDifference = result["tolerance"].as<double>();
-    }
+    // TODO(rg):: Use this
+    // if (result.count("tolerance")) {
+    //   params->structcomp.distanceDifference = result["tolerance"].as<double>();
+    // }
 
     if (sflag && mflag) {
       std::cerr << "Cannot specify both minimization and single point"
@@ -147,29 +139,35 @@ void commandLine(int argc, char **argv) {
       params->optim.convergedForce = optConvergedForce;
     }
 
-    auto pot = helper_functions::makePotential(*params);
-    auto matter = std::make_unique<Matter>(pot, params.get());
-    auto matter2 = std::make_unique<Matter>(pot, params.get());
-    matter->con2matter(confile);
+    // auto pot = helper_functions::makePotential(*params);
+    // auto matter = Matter(pot);
+    // auto matter2 = Matter(pot);
+    // matter.con2matter(confile);
 
-    string confileout;
-    if (unmatched.size() == 2) {
-      confileout = unmatched[1];
-      if (cflag)
-        matter2->con2matter(confileout);
-    }
+    // string confileout;
+    // if (unmatched.size() == 2) {
+    //   confileout = unmatched[1];
+    //   if (cflag)
+    //     matter2.con2matter(confileout);
+    // }
 
     if (sflag) {
-      singlePoint(std::move(matter));
+      params->main.job = JobType::Point;
+      params->main.conFilename = confile;
+      // Run PointJob
+      auto spj = makeJob(*params);
+      spj->run();
     } else if (mflag) {
-      minimize(std::move(matter), confileout);
+      // XXX: Finish
+      // minimize(matter, confileout);
     } else if (cflag) {
-      params->structcomp.checkRotation = true;
-      if (matter->compare(*matter2, true)) {
-        std::cout << "Structures match" << std::endl;
-      } else {
-        std::cout << "Structures do not match" << std::endl;
-      }
+      // TODO(rg):: Use this
+      // params->structcomp.checkRotation = true;
+      // if (matter.compare(matter2, true)) {
+      //   std::cout << "Structures match" << std::endl;
+      // } else {
+      //   std::cout << "Structures do not match" << std::endl;
+      // }
     }
   } catch (const cxxopts::exceptions::exception &e) {
     std::cerr << "Error parsing options: " << e.what() << std::endl;

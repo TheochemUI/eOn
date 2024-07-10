@@ -52,7 +52,6 @@ public:
     std::string conFilename;
     double finiteDifference;
     long maxForceCalls;
-    bool removeNetForce;
     bool usePBC;
   } main;
 
@@ -73,17 +72,6 @@ public:
   eonc::def::AMSParams ams;
   eonc::def::ASEOrcaParams aseorca;
   eonc::def::CatLearnParams catl;
-
-  struct StructureComparison {
-    double
-        distanceDifference; ///< The distance criterion for comparing geometries
-    double
-        neighborCutoff; ///< radius used in the local atomic structure analysis
-    bool checkRotation;
-    bool indistinguishableAtoms;
-    double energyDifference;
-    bool removeTranslation;
-  } structcomp;
 
   struct ProcessSearch {
     bool minimizeFirst;
