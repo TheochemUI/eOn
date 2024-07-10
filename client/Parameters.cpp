@@ -98,9 +98,9 @@ Parameters::Parameters() {
   // [Saddle Search] //
   saddle.convergedForce = optim.convergedForce;
   saddle.maxJumpAttempts = 0; // from config.yaml
-  saddle.displaceType = EpiCenters::DISP_LOAD;
+  // saddle.displaceType = EpiCenters::DISP_LOAD;
   saddle.method = "min_mode"s;
-  saddle.minmodeMethod = LowestEigenmode::MINMODE_DIMER;
+  // saddle.minmodeMethod = LowestEigenmode::MINMODE_DIMER;
   saddle.maxEnergy = 20.0;
   saddle.maxIterations = 1000;
   saddle.displaceRadius = 4.0;
@@ -139,7 +139,7 @@ Parameters::Parameters() {
   dimer.improved = true;
   dimer.convergedAngle = 5.0; // degrees
   dimer.maxIterations = 1000;
-  dimer.optMethod = ImprovedDimer::OPT_CG;
+  // dimer.optMethod = ImprovedDimer::OPT_CG;
   dimer.torqueMin = 0.1;   // old dimer
   dimer.torqueMax = 1.0;   // old dimer
   dimer.rotationsMin = 1;  // old dimer
