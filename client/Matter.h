@@ -21,6 +21,10 @@ namespace eonc {
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
 
+// XXX: Really need this to go..
+constexpr size_t MAXC{100}; // maximum number of components for functions
+                            // matter2con and con2matter
+
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
  * etc. It also allow to associate a forcefield for the structure through a
@@ -140,8 +144,8 @@ public:
   double getMass(long int atom) const; // return the mass of the atom specified
   void setMass(long int atom, double mass); // set the mass of an atom
   void setMasses(VectorType massesIn);      // set the mass of an atom
-  long getAtomicNr(
-      long int atom) const; // return the atomic number of the atom specified
+  size_t getAtomicNr(
+      size_t atom) const; // return the atomic number of the atom specified
   void setAtomicNr(long int atom,
                    long atomicNr);      // set the atomic number of an atom
   Vector<int> getAtomicNrs() const;     // Get the vector of atomic numbers
