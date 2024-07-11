@@ -12,11 +12,6 @@
 
 #include "LJ.h"
 namespace eonc {
-// LJ::LJ(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
-//     this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
-//     return;
-// }
-
 // General Functions
 void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
                        double psiRecieved) {

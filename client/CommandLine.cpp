@@ -129,10 +129,10 @@ void commandLine(int argc, char **argv) {
       confile = unmatched[0];
     }
 
+    auto tbl =
+        toml::table{{"Potential", toml::table{{"potential", "unknown"}}}};
     if (!cflag) {
-      params->pot.potential = magic_enum::enum_cast<PotType>(
-                                  potential, magic_enum::case_insensitive)
-                                  .value_or(PotType::UNKNOWN);
+      tbl["Potential"].as_table()->insert_or_assign("potential", potential);
     }
 
     if (!sflag) {
@@ -142,7 +142,7 @@ void commandLine(int argc, char **argv) {
       params->optim.convergedForce = optConvergedForce;
     }
 
-    auto pot = helper_functions::makePotential(*params);
+    auto pot = makePotential(tbl);
     auto mat1 = Matter(pot);
     mat1.con2matter(confile);
 
