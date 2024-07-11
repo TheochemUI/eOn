@@ -12,9 +12,6 @@
 #include "Matter.h"
 #include "Element.hpp"
 // #include "BondBoost.h"
-#include "HelperFunctions.h"
-#include "SurrogatePotential.h"
-#include <iostream>
 
 // To write the R style data frame
 #include <fmt/os.h>
@@ -725,28 +722,28 @@ void Matter::computePotential() {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
     }
-    auto surrogatePotential =
-        std::dynamic_pointer_cast<SurrogatePotential>(potential);
-    if (surrogatePotential) {
-      // Surrogate potential case
-      auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
-          this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(), cell);
-      // Now populate full structures
-      this->potentialEnergy = freePE;
-      this->energyVariance = vari;
-      for (size_t idx{0}, jdx{0}; idx < nAtoms; idx++) {
-        if (!isFixed(idx)) {
-          forces.row(idx) = freeForces.row(jdx);
-          jdx++;
-        }
-      }
-    } else {
+    // auto surrogatePotential =
+    //     std::dynamic_pointer_cast<SurrogatePotential>(potential);
+    // if (surrogatePotential) {
+    //   // Surrogate potential case
+    //   auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
+    //       this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(), cell);
+    //   // Now populate full structures
+    //   this->potentialEnergy = freePE;
+    //   this->energyVariance = vari;
+    //   for (size_t idx{0}, jdx{0}; idx < nAtoms; idx++) {
+    //     if (!isFixed(idx)) {
+    //       forces.row(idx) = freeForces.row(jdx);
+    //       jdx++;
+    //     }
+    //   }
+    // } else {
       // Non-surrogate potential case
       auto [pE, frcs] =
           potential->get_ef(positions, atomicNrs.cast<int>(), cell);
       potentialEnergy = pE;
       forces = frcs;
-    }
+    // }
     // TODO(rg) :: Something about this isn't right..
     forceCalls += 1;
     recomputePotential = false;
