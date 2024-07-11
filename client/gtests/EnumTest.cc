@@ -16,7 +16,7 @@
 using namespace eonc;
 
 TEST_CASE("get_enum_toml valid input", "[get_enum_toml]") {
-  auto config = toml::table{{"Main", toml::table{{"job", "point"}}}};
+  const auto config = toml::table{{"Main", toml::table{{"job", "point"}}}};
 
   REQUIRE_NOTHROW([&]() {
     auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
@@ -25,28 +25,28 @@ TEST_CASE("get_enum_toml valid input", "[get_enum_toml]") {
 }
 
 TEST_CASE("get_enum_toml invalid enum value", "[get_enum_toml]") {
-  auto config = toml::table{{"Main", toml::table{{"job", "Invalid"}}}};
+  const auto config = toml::table{{"Main", toml::table{{"job", "Invalid"}}}};
 
   REQUIRE_THROWS_WITH(get_enum_toml<JobType>(config["Main"]["job"]),
                       "Invalid does not map to a valid option");
 }
 
 TEST_CASE("get_enum_toml missing node", "[get_enum_toml]") {
-  auto config = toml::table{{"Main", toml::table{{}}}};
+  const auto config = toml::table{{"Main", toml::table{{}}}};
 
   REQUIRE_THROWS_WITH(get_enum_toml<JobType>(config["Main"]["job"]),
                       "Node not found in TOML");
 }
 
 TEST_CASE("get_enum_toml non-string node", "[get_enum_toml]") {
-  auto config = toml::table{{"Main", toml::table{{"job", 42}}}};
+  const auto config = toml::table{{"Main", toml::table{{"job", 42}}}};
 
   REQUIRE_THROWS_WITH(get_enum_toml<JobType>(config["Main"]["job"]),
                       "Node not found in TOML");
 }
 
 TEST_CASE("get_enum_toml case insensitive match", "[get_enum_toml]") {
-  auto config = toml::table{{"Main", toml::table{{"job", "pOint"}}}};
+  const auto config = toml::table{{"Main", toml::table{{"job", "pOint"}}}};
 
   REQUIRE_NOTHROW([&]() {
     auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
