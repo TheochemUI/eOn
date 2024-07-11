@@ -154,7 +154,7 @@ void commandLine(int argc, char **argv) {
     if (sflag) {
       auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
       // Run PointJob
-      auto spj = makeJob(tbl, mat1);
+      auto spj = eonc::makeJob(tbl, mat1);
       auto res = spj->run();
     } else if (mflag) {
       // XXX: Finish
