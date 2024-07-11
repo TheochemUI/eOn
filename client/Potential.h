@@ -18,27 +18,36 @@
 
 namespace eonc {
 
-class Potential {
+class PotBase {
 protected:
-  PotType ptype;
   std::shared_ptr<spdlog::logger> m_log;
+  void initializeLogger() {
+    if (!spdlog::get("_potcalls")) {
+      // Create logger if it doesn't exist
+      m_log = spdlog::basic_logger_mt("_potcalls", "_potcalls.log", true);
+      m_log->set_pattern("[%l] [%Y-%m-%d %H:%M:%S] %v");
+    } else {
+      // Use existing logger
+      m_log = spdlog::get("_potcalls");
+    }
+    // if (m_log) {
+    //   m_log->trace("[{}] created",
+    //   magic_enum::enum_name<PotType>(getType()));
+    // }
+  }
 
 public:
-  size_t forceCallCounter;
-
-  // Main Constructor
-  Potential(PotType a_ptype)
-      : ptype{a_ptype},
-        forceCallCounter{0} {
+  PotBase() {
     SPDLOG_TRACE("CREATED WITH {}", forceCallCounter);
     initializeLogger();
   }
-
-  virtual ~Potential() {
+  size_t forceCallCounter{0};
+  virtual ~PotBase() {
     SPDLOG_TRACE("DESTROYED AFTER {}\n", forceCallCounter);
     if (m_log) {
-      m_log->trace("[{}] destroyed after {} calls",
-                   magic_enum::enum_name<PotType>(getType()), forceCallCounter);
+      // m_log->trace("[{}] destroyed after {} calls",
+      //              magic_enum::enum_name<PotType>(getType()),
+      //              forceCallCounter);
     } else {
       std::cerr << "Logger is not initialized\n";
     }
@@ -52,29 +61,19 @@ public:
 
   std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix pos, const Vector<int> atmnrs, const Matrix3S box);
+};
 
-  PotType getType() { return this->ptype; }
-
-  // Logger initialization
-  void initializeLogger() {
-    if (!spdlog::get("_potcalls")) {
-      // Create logger if it doesn't exist
-      m_log = spdlog::basic_logger_mt("_potcalls", "_potcalls.log", true);
-      m_log->set_pattern("[%l] [%Y-%m-%d %H:%M:%S] %v");
-    } else {
-      // Use existing logger
-      m_log = spdlog::get("_potcalls");
-    }
-    if (m_log) {
-      m_log->trace("[{}] created", magic_enum::enum_name<PotType>(getType()));
-    }
+template <typename T> class Potential : public PotBase {
+public:
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    return static_cast<T *>(this)->force(nAtoms, positions, atomicNrs, forces,
+                                         energy, variance, box);
   }
 };
 
+namespace helper_functions {
+std::shared_ptr<PotBase> makePotential(toml::table &config);
+} // namespace helper_functions
 } // namespace eonc
-
-namespace eonc::helper_functions {
-using namespace eonc;
-std::shared_ptr<Potential> makePotential(Parameters &params);
-std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params);
-} // namespace eonc::helper_functions
