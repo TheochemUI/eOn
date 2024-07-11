@@ -145,24 +145,24 @@ _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
 # Potentials
-subdir('potentials/EAM')
-subdir('potentials/EMT')
-subdir('potentials/ExtPot')
-subdir('potentials/IMD')
+# subdir('potentials/EAM')
+# subdir('potentials/EMT')
+# subdir('potentials/ExtPot')
+# subdir('potentials/IMD')
 subdir('potentials/LJ')
-subdir('potentials/LJCluster')
-subdir('potentials/Morse')
-subdir('potentials/NewPot')
+# subdir('potentials/LJCluster')
+# subdir('potentials/Morse')
+# subdir('potentials/NewPot')
 
 potentials = [
-               eam,
-               emt,
-               extpot,
-               imd,
+               # eam,
+               # emt,
+               # extpot,
+               # imd,
                lennard_jones,
-               lennard_jones_cluster,
-               morse,
-               newpot
+               # lennard_jones_cluster,
+               # morse,
+               # newpot
              ]
 
 tomlib = library('toml', 'toml.cpp',
@@ -232,145 +232,145 @@ eonclient_sources = [
 
 # ------------------- Options
 
-if get_option('with_gprd')
-  libgprd_proj = subproject('gpr_optim')
-  gprd_dep = libgprd_proj.get_variable('libgprd_dep')
-  # subdir('potentials/GPRPotential')
-  # potentials += [ gprpot ]
-  _args += ['-DWITH_GPRD']
-  eonclib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
-  _deps += [ gprd_dep ]
-endif
+# if get_option('with_gprd')
+#   libgprd_proj = subproject('gpr_optim')
+#   gprd_dep = libgprd_proj.get_variable('libgprd_dep')
+#   # subdir('potentials/GPRPotential')
+#   # potentials += [ gprpot ]
+#   _args += ['-DWITH_GPRD']
+#   eonclib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
+#   _deps += [ gprd_dep ]
+# endif
 
-if get_option('with_gp_surrogate')
-  _args += ['-DWITH_GP_SURROGATE']
-  eonclib_sources += ['GPSurrogateJob.cpp']
-    if get_option('with_catlearn')
-      # TODO: Cleanup, used for ase_orca too
-      # Embedding the interpreter
-      pyb11f_deps = [ dependency('pybind11'),
-                      declare_dependency(link_args: '-lstdc++') ]
-      _deps += [ pyb11f_deps ]
-      subdir('potentials/CatLearnPot')
-      potentials += [ catlearnpot ]
-      _args += ['-DWITH_CATLEARN']
-    endif
-endif
+# if get_option('with_gp_surrogate')
+#   _args += ['-DWITH_GP_SURROGATE']
+#   eonclib_sources += ['GPSurrogateJob.cpp']
+#     if get_option('with_catlearn')
+#       # TODO: Cleanup, used for ase_orca too
+#       # Embedding the interpreter
+#       pyb11f_deps = [ dependency('pybind11'),
+#                       declare_dependency(link_args: '-lstdc++') ]
+#       _deps += [ pyb11f_deps ]
+#       subdir('potentials/CatLearnPot')
+#       potentials += [ catlearnpot ]
+#       _args += ['-DWITH_CATLEARN']
+#     endif
+# endif
 
-if get_option('with_vasp')
-  if host_system != 'windows'
-    subdir('potentials/VASP')
-    potentials += [ vasp ]
-    _args += ['-DWITH_VASP']
-  endif
-endif
+# if get_option('with_vasp')
+#   if host_system != 'windows'
+#     subdir('potentials/VASP')
+#     potentials += [ vasp ]
+#     _args += ['-DWITH_VASP']
+#   endif
+# endif
 
-if get_option('with_water')
-  subdir('potentials/Water')
-  subdir('potentials/Water_Pt')
-  potentials += [ water, water_pt ]
-  _args += ['-DWITH_WATER']
-endif
+# if get_option('with_water')
+#   subdir('potentials/Water')
+#   subdir('potentials/Water_Pt')
+#   potentials += [ water, water_pt ]
+#   _args += ['-DWITH_WATER']
+# endif
 
-if get_option('with_ams')
-    # Optional, only for AMS
-    absl_dep = dependency('absl', method : 'cmake',
-      modules : [
-        'absl::base',
-        'absl::strings',
-        'absl::numeric',
-        'absl::utility',
-      ],
-      required : true,
-    )
-    boost_ams_dep = dependency('boost',
-      modules : [
-        'headers',
-        'asio',
-        'iostreams',
-      ],
-      required : true,
-    )
-    ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
-  _deps += ams_dep
-  # End AMS
-  subdir('potentials/AMS')
-  subdir('potentials/AMS_IO')
-  potentials += [ams, ams_io]
-  _args += ['-DWITH_AMS']
-endif
+# if get_option('with_ams')
+#     # Optional, only for AMS
+#     absl_dep = dependency('absl', method : 'cmake',
+#       modules : [
+#         'absl::base',
+#         'absl::strings',
+#         'absl::numeric',
+#         'absl::utility',
+#       ],
+#       required : true,
+#     )
+#     boost_ams_dep = dependency('boost',
+#       modules : [
+#         'headers',
+#         'asio',
+#         'iostreams',
+#       ],
+#       required : true,
+#     )
+#     ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
+#   _deps += ams_dep
+#   # End AMS
+#   subdir('potentials/AMS')
+#   subdir('potentials/AMS_IO')
+#   potentials += [ams, ams_io]
+#   _args += ['-DWITH_AMS']
+# endif
 
-if get_option('with_xtb')
-  xtb_proj = subproject('xtb')
-  xtb_dep = xtb_proj.get_variable('xtb_dep')
-  _deps += [xtb_dep]
-  subdir('potentials/XTBPot')
-  potentials += xtb_eon
-  _args += ['-DWITH_XTB']
-endif
+# if get_option('with_xtb')
+#   xtb_proj = subproject('xtb')
+#   xtb_dep = xtb_proj.get_variable('xtb_dep')
+#   _deps += [xtb_dep]
+#   subdir('potentials/XTBPot')
+#   potentials += xtb_eon
+#   _args += ['-DWITH_XTB']
+# endif
 
-if get_option('with_lammps')
-  subdir('potentials/LAMMPS')
-  potentials += [ lammps_pot ]
-  _args += ['-DLAMMPS_POT']
-endif
+# if get_option('with_lammps')
+#   subdir('potentials/LAMMPS')
+#   potentials += [ lammps_pot ]
+#   _args += ['-DLAMMPS_POT']
+# endif
 
-if get_option('with_python')
-  _args += ['-DWITH_PYTHON']
-  # subdir('potentials/PyAMFF')
-  # pyamff,
-  subdir('potentials/QSC')
-  potentials += [ qsc ]
-  if get_option('with_ase')
-    subdir('potentials/ASE')
-    potentials += [ ase ]
-    # TODO(rg): Annoying, use WITH_ style
-    _args += ['-DASE_POT']
-  endif
-endif
+# if get_option('with_python')
+#   _args += ['-DWITH_PYTHON']
+#   # subdir('potentials/PyAMFF')
+#   # pyamff,
+#   subdir('potentials/QSC')
+#   potentials += [ qsc ]
+#   if get_option('with_ase')
+#     subdir('potentials/ASE')
+#     potentials += [ ase ]
+#     # TODO(rg): Annoying, use WITH_ style
+#     _args += ['-DASE_POT']
+#   endif
+# endif
 
-if get_option('with_mpi')
-  subdir('potentials/MPIPot')
-  potentials += [ mpipot ]
-  _args += ['-DEONMPI']
-  mpi_dep = dependency('mpi')
-  _deps += [ mpi_dep ]
-endif
+# if get_option('with_mpi')
+#   subdir('potentials/MPIPot')
+#   potentials += [ mpipot ]
+#   _args += ['-DEONMPI']
+#   mpi_dep = dependency('mpi')
+#   _deps += [ mpi_dep ]
+# endif
 
-if get_option('with_fortran')
-  subdir('potentials/Aluminum')
-  subdir('potentials/EDIP')
-  subdir('potentials/FeHe')
-  subdir('potentials/Lenosky')
-  subdir('potentials/SW')
-  subdir('potentials/Tersoff')
-  if get_option('with_water')
-    subdir('potentials/Water_H')
-    potentials += [water_h]
-  endif
-  potentials += [aluminum, edip, fehe, lenosky, sw, tersoff]
-  _args += ['-DWITH_FORTRAN']
-endif
+# if get_option('with_fortran')
+#   subdir('potentials/Aluminum')
+#   subdir('potentials/EDIP')
+#   subdir('potentials/FeHe')
+#   subdir('potentials/Lenosky')
+#   subdir('potentials/SW')
+#   subdir('potentials/Tersoff')
+#   if get_option('with_water')
+#     subdir('potentials/Water_H')
+#     potentials += [water_h]
+#   endif
+#   potentials += [aluminum, edip, fehe, lenosky, sw, tersoff]
+#   _args += ['-DWITH_FORTRAN']
+# endif
 
-if get_option('with_cuh2')
-  subdir('potentials/CuH2')
-  potentials += [cuh2]
-  _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
-endif
+# if get_option('with_cuh2')
+#   subdir('potentials/CuH2')
+#   potentials += [cuh2]
+#   _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
+# endif
 
-if get_option('with_ase_orca')
-  # TODO: Cleanup, used for Catlearn too
-  # Embedding the interpreter
-  py = import('python').find_installation()
-  python_dep = py.dependency(embed: true, required: true)
-  pyb11f_deps = [ python_dep,
-                  dependency('pybind11'),
-                  declare_dependency(link_args: '-lstdc++') ]
-  _deps += [ pyb11f_deps ]
-  subdir('potentials/ASE_ORCA')
-  potentials += [ aseorca ]
-  _args += ['-DWITH_ASE_ORCA']
-endif
+# if get_option('with_ase_orca')
+#   # TODO: Cleanup, used for Catlearn too
+#   # Embedding the interpreter
+#   py = import('python').find_installation()
+#   python_dep = py.dependency(embed: true, required: true)
+#   pyb11f_deps = [ python_dep,
+#                   dependency('pybind11'),
+#                   declare_dependency(link_args: '-lstdc++') ]
+#   _deps += [ pyb11f_deps ]
+#   subdir('potentials/ASE_ORCA')
+#   potentials += [ aseorca ]
+#   _args += ['-DWITH_ASE_ORCA']
+# endif
 
 _linkto += potentials
 
