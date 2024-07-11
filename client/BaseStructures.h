@@ -113,7 +113,12 @@ enum class OptType {
   SD
 };
 
-enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
+enum class RunStatus {
+  NOT_BEGUN = 0,
+  GOOD,
+  FAIL_MAX_ITERATIONS,
+  FAIL_POTENTIAL_FAILED
+};
 
 namespace Prefactor {
 enum class TYPE { REACTANT, SADDLE, PRODUCT };
