@@ -1,4 +1,5 @@
 # Custom, other things are auto-ignored
+*_*
 subprojects
 /docs/source/apidocs/
 # /
