@@ -436,7 +436,8 @@ if get_option('with_tests')
       link_with: _linkto,
     )
     test_array = [#
-      # ['test_element', 'ElementTest.cc', ''],
+      ['test_element', 'ElementTest.cc', ''],
+      ['test_enum', 'EnumTest.cc', ''],
       # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
       # ['strparse_run', 'StringHelpersTest.cpp', ''],
       # ['test_matter', 'MatterTest.cpp', 'sulfolene'],
