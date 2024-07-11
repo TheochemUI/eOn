@@ -54,9 +54,12 @@ _args += cppc.get_supported_arguments([
   # '-Wno-class-memaccess',
   # '-Wno-unused-function',
   # Common
+  '-Wno-unused-result',
   '-Wno-unused-parameter',
   '-Wno-unused-but-set-parameter',
   '-Wfatal-errors',
+  # From Eigen
+  '-Wno-maybe-uninitialized',
 ]
 )
 
@@ -88,12 +91,6 @@ if use_fortran == true
     ])
 endif
 
-# Debugging, should be offloaded from here eventually
-_args += [
-  '-g3',
-  '-O0',
-]
-
 # Safer, saner default, can be turned off in release
 if get_option('buildtype') != 'release'
   _args += [
@@ -104,7 +101,7 @@ endif
 
 # Get the version and build date
 version_script = find_program('get_version.py')
-version_output = run_command(version_script).stdout().strip()
+version_output = run_command(version_script, check: true).stdout().strip()
 version_bits = version_output.split(',')
 version = version_bits[0]
 build_date = version_bits[1]
