@@ -16,6 +16,7 @@
 #include "HelperFunctions.h"
 #include "Job.h"
 #include "Parameters.h"
+#include "Parser.hpp"
 #include "version.h"
 
 #include <chrono>
@@ -384,7 +385,7 @@ int main(int argc, char **argv) {
       std::string config_file =
           eonc::helper_functions::getRelevantFile(parameters.main.inpFilename);
       printf("Loading parameter file %s\n", config_file.c_str());
-      error = parameters.load(config_file);
+      auto params = eonc::loadTOML(config_file);
 
       if (error) {
         fprintf(stderr, "\nproblem loading parameter file, stopping\n");
@@ -394,14 +395,7 @@ int main(int argc, char **argv) {
 
       // Determine what type of job we are running according to the parameters
       // file.
-      auto job = eonc::helper_functions::makeJob(parameters);
-      if (job == nullptr) {
-        printf("error: Unknown job: %s\n",
-               std::string{
-                   magic_enum::enum_name<eonc::JobType>(parameters.main.job)}
-                   .c_str());
-        return 1;
-      }
+      auto job = eonc::helper_functions::makeJob(params);
 
       std::vector<std::string> filenames;
       try {
