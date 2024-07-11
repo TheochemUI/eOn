@@ -1,11 +1,17 @@
-#include "Parser.hpp"
-
+#include "thirdparty/toml.hpp"
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
 namespace fs = std::filesystem;
 
 namespace eonc {
+
+void config_section(const toml::table &conf, const std::string_view key) {
+  if (conf.contains(key) && conf[key].is_table()) {
+  } else {
+    throw std::logic_error(fmt::format("Config must have section {}", key));
+  }
+}
 
 toml::table loadTOML(const std::string &fname) {
   fs::path fpath(fname);
