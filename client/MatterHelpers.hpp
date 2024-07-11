@@ -1,6 +1,6 @@
 #pragma once
 #include "Matter.h"
-#include "Parser.hpp"
+#include <functional>
 
 namespace eonc {
 
@@ -21,11 +21,18 @@ public:
   bool compare(const Matter &m1, const Matter &m2,
                const bool indistinguishable = false);
   StructComparer(Params scp_a)
-      : scparams{scp_a} {}
-  StructComparer(const toml::table &tbl) { fromTOML(tbl); }
+      : scparams{scp_a} {
+    setupCompareFunc();
+  }
+  StructComparer(const toml::table &tbl) {
+    fromTOML(tbl);
+    setupCompareFunc();
+  }
 
 private:
+  std::function<bool(const Matter &, const Matter &, double)> compareFunc;
   void fromTOML(const toml::table &tbl);
+  void setupCompareFunc(); // Setup cutoff
 };
 
 } // namespace eonc

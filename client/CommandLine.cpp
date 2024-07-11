@@ -12,12 +12,14 @@
 #include "CommandLine.h"
 #include "Job.h"
 #include "Matter.h"
+#include "MatterHelpers.hpp"
 #include "Parameters.h"
 #include "version.h"
 
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 namespace eonc {
 using namespace std;
@@ -141,33 +143,36 @@ void commandLine(int argc, char **argv) {
     }
 
     auto pot = helper_functions::makePotential(*params);
-    auto matter = Matter(pot);
-    // auto matter2 = Matter(pot);
-    matter.con2matter(confile);
+    auto mat1 = Matter(pot);
+    mat1.con2matter(confile);
 
-    // string confileout;
-    // if (unmatched.size() == 2) {
-    //   confileout = unmatched[1];
-    //   if (cflag)
-    //     matter2.con2matter(confileout);
-    // }
+    string confileout;
+    if (unmatched.size() == 2) {
+      confileout = unmatched[1];
+    }
 
     if (sflag) {
       auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
       // Run PointJob
-      auto spj = makeJob(tbl, matter);
+      auto spj = makeJob(tbl, mat1);
       auto res = spj->run();
     } else if (mflag) {
       // XXX: Finish
       // minimize(matter, confileout);
     } else if (cflag) {
-      // TODO(rg):: Use this
-      // params->structcomp.checkRotation = true;
-      // if (matter.compare(matter2, true)) {
-      //   std::cout << "Structures match" << std::endl;
-      // } else {
-      //   std::cout << "Structures do not match" << std::endl;
-      // }
+      if (unmatched.size() != 2) {
+        throw std::runtime_error("Comparison needs two files!");
+      }
+      auto mat2 = Matter(pot);
+      mat2.con2matter(confileout);
+      auto tbl = toml::table{
+          {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
+      auto sc = StructComparer(tbl);
+      if (sc.compare(mat1, mat2, true)) {
+        std::cout << "Structures match" << std::endl;
+      } else {
+        std::cout << "Structures do not match" << std::endl;
+      }
     }
   } catch (const cxxopts::exceptions::exception &e) {
     std::cerr << "Error parsing options: " << e.what() << std::endl;

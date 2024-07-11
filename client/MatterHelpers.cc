@@ -1,5 +1,6 @@
 #include "MatterHelpers.hpp"
 #include "HelperFunctions.h"
+#include "Parser.hpp"
 
 namespace eonc {
 
@@ -20,29 +21,39 @@ void StructComparer::fromTOML(const toml::table &tbl) {
       config["remove_translation"].value_or(scparams.removeTranslation);
 }
 
+void StructComparer::setupCompareFunc() {
+  compareFunc = [this](const Matter &m1Ref, const Matter &m2Ref,
+                       double distanceDifference) -> bool {
+    if (scparams.checkRotation && scparams.indistinguishableAtoms) {
+      return helper_functions::sortedR(m1Ref, m2Ref, distanceDifference);
+    } else if (scparams.indistinguishableAtoms) {
+      return helper_functions::identical(m1Ref, m2Ref, distanceDifference);
+    } else if (scparams.checkRotation) {
+      return helper_functions::rotationMatch(m1Ref, m2Ref, distanceDifference);
+    } else {
+      return distanceDifference > m1Ref.perAtomNorm(m2Ref);
+    }
+  };
+}
+
 bool StructComparer::compare(const Matter &m1, const Matter &m2,
                              const bool indistinguishable) {
-
-  if (m1.numberOfAtoms() != m2.numberOfAtoms())
+  if (m1.numberOfAtoms() != m2.numberOfAtoms()) {
     return false;
-  if (scparams.checkRotation && indistinguishable) {
-    return helper_functions::sortedR(m1, m2, scparams.distanceDifference);
-  } else if (indistinguishable) {
-    // XXX: This needs to work!
-    // if (m1.numberOfFixedAtoms() == 0 and scparams.removeTranslation) {
-    //   helper_functions::translationRemove(m1, m2);
-    // }
-    return helper_functions::identical(m1, m2, scparams.distanceDifference);
-  } else if (scparams.checkRotation) {
-    return helper_functions::rotationMatch(m1, m2, scparams.distanceDifference);
-  } else {
-    // XXX: This needs to work!
-    // if (m1.numberOfFixedAtoms() == 0 and scparams.removeTranslation) {
-    //   helper_functions::translationRemove(m1, m2);
-    // }
-    return (scparams.distanceDifference) > m1.perAtomNorm(m2);
   }
-  return false;
+
+  std::optional<std::pair<Matter, Matter>> maybeCopies;
+
+  if (m1.numberOfFixedAtoms() == 0 && scparams.removeTranslation) {
+    maybeCopies.emplace(m1, m2);
+    helper_functions::translationRemove(maybeCopies->first,
+                                        maybeCopies->second);
+  }
+
+  const auto &m1Ref = maybeCopies ? maybeCopies->first : m1;
+  const auto &m2Ref = maybeCopies ? maybeCopies->second : m2;
+
+  return compareFunc(m1Ref, m2Ref, scparams.distanceDifference);
 }
 
 } // namespace eonc
