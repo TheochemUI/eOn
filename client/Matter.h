@@ -62,7 +62,7 @@ public:
         biasForces{MatrixType::Zero(0, 3)},
         biasPotential{nullptr},
         masses{VectorType::Zero(0)},
-        atomicNrs{Vector<int>::Zero(0)},
+        atomicNrs{Vector<size_t>::Zero(0)},
         isFixed{Vector<int>::Zero(0)},
         cell{Matrix3S::Zero()},
         cellInverse{Matrix3S::Zero()},
@@ -98,8 +98,8 @@ public:
   void
   setPotential(std::shared_ptr<Potential> pot); // set potential function to use
   std::shared_ptr<Potential> getPotential();    // get potential function to use
-  void resize(long int nAtoms);   // set or reset the number of atoms
-  long int numberOfAtoms() const; // return the number of atoms
+  void resize(long int nAtoms); // set or reset the number of atoms
+  size_t numberOfAtoms() const; // return the number of atoms
   Matrix3S getCell() const;
   void setCell(Matrix3S newCell);
   double getPosition(long int atom, int axis)
@@ -147,11 +147,11 @@ public:
   size_t getAtomicNr(
       size_t atom) const; // return the atomic number of the atom specified
   void setAtomicNr(long int atom,
-                   long atomicNr);      // set the atomic number of an atom
-  Vector<int> getAtomicNrs() const;     // Get the vector of atomic numbers
-  Vector<int> getAtomicNrsFree() const; // Get the vector of atomic numbers
+                   long atomicNr);         // set the atomic number of an atom
+  Vector<size_t> getAtomicNrs() const;     // Get the vector of atomic numbers
+  Vector<size_t> getAtomicNrsFree() const; // Get the vector of atomic numbers
   void
-  setAtomicNrs(const Vector<int> atmnrs); // Get the vector of atomic numbers
+  setAtomicNrs(const Vector<size_t> atmnrs); // Get the vector of atomic numbers
 
   int getFixed(long int atom)
       const; // return true if the atom is fixed, false if it is movable
@@ -230,14 +230,14 @@ private:
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
-  long nAtoms;
+  size_t nAtoms;
   AtomMatrix positions;
   AtomMatrix velocities;
   AtomMatrix forces;
   AtomMatrix biasForces;
   BondBoost *biasPotential;
   VectorType masses;
-  Vector<int> atomicNrs;
+  Vector<size_t> atomicNrs;
   Vector<int> isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3S cell;
   Matrix3S cellInverse;
