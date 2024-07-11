@@ -39,8 +39,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   cellInverse = matter.cellInverse;
   velocities = matter.velocities;
 
-  mparams = matter.mparams;
-
+  removeNetForce = matter.removeNetForce;
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
 
   potential = matter.potential;
@@ -65,27 +64,6 @@ const Matter &Matter::operator=(const Matter &matter) {
 //         return (parameters->distanceDifference) > perAtomNorm(matter);
 //     }
 // }
-
-bool Matter::compare(const Matter &matter, bool indistinguishable) {
-  if (nAtoms != matter.numberOfAtoms())
-    return false;
-  if (structcomp.checkRotation && indistinguishable) {
-    return helper_functions::sortedR(*this, matter,
-                                     structcomp.distanceDifference);
-  } else if (indistinguishable) {
-    if (this->numberOfFixedAtoms() == 0 and structcomp.removeTranslation)
-      helper_functions::translationRemove(*this, matter);
-    return helper_functions::identical(*this, matter,
-                                       structcomp.distanceDifference);
-  } else if (structcomp.checkRotation) {
-    return helper_functions::rotationMatch(*this, matter,
-                                           structcomp.distanceDifference);
-  } else {
-    if (this->numberOfFixedAtoms() == 0 and structcomp.removeTranslation)
-      helper_functions::translationRemove(*this, matter);
-    return (structcomp.distanceDifference) > perAtomNorm(matter);
-  }
-}
 
 // bool Matter::operator!=(const Matter& matter) {
 //     return !operator==(matter);
@@ -116,7 +94,7 @@ VectorType Matter::pbcV(VectorType diffVector) const {
 }
 
 // Returns the maximum distance between two atoms in the Matter objects.
-double Matter::perAtomNorm(const Matter &matter) {
+double Matter::perAtomNorm(const Matter &matter) const {
   size_t i{0};
   double max_distance = 0.0;
 
@@ -773,7 +751,7 @@ void Matter::computePotential() {
     forceCalls += 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 && mparams.removeNetForce) {
+    if (isFixed.sum() == 0 && removeNetForce) {
       FixedVecType<3> tempForce(3);
       tempForce = forces.colwise().sum() / nAtoms;
 
