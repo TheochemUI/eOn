@@ -10,11 +10,12 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Matter.h"
-#include "Parameters.h"
-#include <memory>
 #include <string>
 #include <vector>
+
+#include "Matter.h"
+#include "thirdparty/toml.hpp"
+
 namespace eonc {
 /** @defgroup Jobs
  *
@@ -62,7 +63,7 @@ public:
 };
 
 std::unique_ptr<JobBase>
-makeJob(Parameters &params,
+makeJob(toml::table &config,
         std::optional<std::reference_wrapper<Matter>> mat = std::nullopt);
 
 } // namespace eonc

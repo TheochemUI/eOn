@@ -20,6 +20,7 @@
 // #include "NudgedElasticBandJob.h"
 // #include "ParallelReplicaJob.h"
 #include "Parameters.h"
+#include "Parser.hpp"
 #include "PointJob.h"
 // #include "PrefactorJob.h"
 // #include "ProcessSearchJob.h"
@@ -35,10 +36,15 @@
 #endif
 
 namespace eonc {
-// TODO(rg): These should be jobparams
+
 std::unique_ptr<JobBase>
-makeJob(Parameters &params, std::optional<std::reference_wrapper<Matter>> mat) {
-  switch (params.main.job) {
+makeJob(toml::table &config,
+        std::optional<std::reference_wrapper<Matter>> mat) {
+  config_section(config, "Main");
+  auto jtype = magic_enum::enum_cast<JobType>(
+      config["Main"]["job"].value<std::string>().value(),
+      magic_enum::case_insensitive);
+  switch (jtype.value()) {
   // case JobType::Process_Search: {
   //   return (std::make_unique<ProcessSearchJob>(std::move(params)));
   //   break;
