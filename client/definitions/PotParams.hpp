@@ -24,12 +24,6 @@ struct MorseParams {
   double cutoff{9.5};
 };
 
-struct LJParams {
-  double u0{1.0};
-  double cutoff{15.0};
-  double psi{1.0};
-};
-
 struct XTBParams {
   double acc{1.0};
   double elec_temperature{0.0};

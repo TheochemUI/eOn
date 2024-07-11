@@ -27,6 +27,7 @@ public:
   // To satisfy interface
   void cleanMemory(void);
 
+    // NOTE(miha) you can recenter the coordinates before and after the calls
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };

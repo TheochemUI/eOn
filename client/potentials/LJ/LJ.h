@@ -15,9 +15,22 @@
 #include "../../Potential.h"
 
 namespace eonc {
+namespace pot {
+struct LJParams {
+  double u0{1.0};
+  double cutoff{15.0};
+  double psi{1.0};
+  LJParams(const toml::table &tbl) {
+    // TODO(rg)
+    u0 = tbl["u0"].value_or(u0);
+    cutoff = tbl["cutoff"].value_or(cutoff);
+    psi = tbl["psi"].value_or(psi);
+  }
+};
+} // namespace pot
 
 /** Lennard Jones potential.*/
-class LJ : public Potential {
+class LJ : public Potential<LJ> {
 private:
   double u0;
   double cuttOffR;
@@ -25,9 +38,8 @@ private:
   double cuttOffU;
 
 public:
-  LJ(eonc::def::LJParams &ljp)
-      : Potential(PotType::LJ),
-        u0{ljp.u0},
+  LJ(pot::LJParams &ljp)
+      : u0{ljp.u0},
         cuttOffR{ljp.cutoff},
         psi{ljp.psi} {}
 
