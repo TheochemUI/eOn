@@ -1120,7 +1120,7 @@ void Matter::writeTibble(std::string fname) {
   return;
 }
 
-void Matter::setPotential(std::shared_ptr<Potential> pot) {
+void Matter::setPotential(std::shared_ptr<PotBase> pot) {
   this->potential = pot;
   recomputePotential = true;
 }
@@ -1137,6 +1137,6 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
-std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+std::shared_ptr<PotBase> Matter::getPotential() { return this->potential; }
 
 } // namespace eonc
