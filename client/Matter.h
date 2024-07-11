@@ -33,21 +33,6 @@ constexpr size_t MAXC{100}; // maximum number of components for functions
  * (atom2xyz()).*/
 
 class Matter {
-  // TODO(rg):: These need to be parsed in again..
-  struct MatParams {
-    bool removeNetForce{true};
-  } mparams;
-  struct StructureComparison {
-    ///< The distance criterion for comparing geometries
-    double distanceDifference{0.1};
-    ///< radius used in the local atomic structure analysis
-    double neighborCutoff{3.3};
-    bool checkRotation{false};
-    bool indistinguishableAtoms{true};
-    double energyDifference{0.01};
-    bool removeTranslation{true};
-  } structcomp;
-
 public:
   ~Matter() = default;
   Matter(std::shared_ptr<Potential> pot)
@@ -63,7 +48,7 @@ public:
 
   double
   distanceTo(const Matter &matter); // the distance to the given matter object
-  double perAtomNorm(const Matter &matter); // the maximum distance between two
+  double perAtomNorm(const Matter &matter) const; // the maximum distance between two
                                             // atoms in the Matter objects
   void
   setPotential(std::shared_ptr<Potential> pot); // set potential function to use
@@ -180,9 +165,12 @@ public:
 private:
   std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<Potential> potential;
-  bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
-  bool recomputePotential;    // boolean indicating if the potential energy
-                              // and forces need to be recalculated
+  // --- These should be parsed in
+  bool usePeriodicBoundaries{true};
+  // Indicates if the potential energy and forces need to be recalculated
+  bool recomputePotential{true};
+  bool removeNetForce{true};
+  // ----
   size_t forceCalls{0};
 
   // CON file header information, which is not used in the eon code
