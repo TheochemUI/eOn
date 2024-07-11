@@ -51,7 +51,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   std::string posInFilename("pos.con");
   std::string posOutFilename("min.con");
 
-  if (params->main.checkpoint) {
+  if (checkpoint) {
     FILE *pos_file;
     pos_file = fopen("pos_cp.con", "r");
     if (pos_file != NULL) {
@@ -65,8 +65,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   std::vector<std::string> returnFiles;
   returnFiles.push_back(posOutFilename);
 
-  auto pos = Matter(pot, params);
-  pos.con2matter(posInFilename);
+  _mat.con2matter(posInFilename);
 
   SPDLOG_LOGGER_DEBUG(log, "\nBeginning minimization of {}", posInFilename);
 
@@ -117,4 +116,62 @@ std::vector<std::string> MinimizationJob::run(void) {
   return returnFiles;
 }
 
+bool MinimizationJob::relax(bool quiet, bool writeMovie, bool checkpoint,
+                            string prefixMovie, string prefixCheckpoint) {
+  auto objf = std::make_shared<MinObjF>(_mat);
+  auto optim = helpers::create::mkOptim(objf, OptType::CG, parameters);
+
+  ostringstream min;
+  min << prefixMovie;
+  if (writeMovie) {
+    matter2con(min.str(), false);
+  }
+
+  int iteration = 0;
+  if (!quiet) {
+    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
+                        "[Matter]", "Iter", "Step size",
+                        parameters->optim.convergenceMetricLabel, "Energy");
+    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+                        "[Matter]", iteration, 0.0, objf->getConvergence(),
+                        getPotentialEnergy());
+  }
+
+  while (!objf->isConverged() && iteration < parameters->optim.maxIterations) {
+
+    AtomMatrix pos = _mat.getPositions();
+
+    optim->step(parameters->optim.maxMove);
+    iteration++;
+    setPositionsFreeV(objf->getPositions());
+
+    double stepSize =
+        helper_functions::maxAtomMotion(pbc(getPositions() - pos));
+
+    if (!quiet) {
+      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+                          "[Matter]", iteration, stepSize,
+                          objf->getConvergence(), getPotentialEnergy());
+    }
+
+    if (writeMovie) {
+      matter2con(min.str(), true);
+    }
+
+    if (checkpoint) {
+      ostringstream chk;
+      chk << prefixCheckpoint << "_cp";
+      matter2con(chk.str(), false);
+    }
+  }
+
+  if (iteration == 0) {
+    if (!quiet) {
+      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+                          "[Matter]", iteration, 0.0, objf->getConvergence(),
+                          getPotentialEnergy());
+    }
+  }
+  return objf->isConverged();
+}
 } // namespace eonc

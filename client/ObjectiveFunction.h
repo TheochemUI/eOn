@@ -15,6 +15,9 @@
 
 namespace eonc {
 class ObjectiveFunction {
+protected:
+  enum class Conv { NORM = 0, MAX_ATOM, MAX_COMPONENT };
+
 public:
   ObjectiveFunction() {}
   virtual ~ObjectiveFunction() {}
