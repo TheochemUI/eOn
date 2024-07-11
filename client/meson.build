@@ -213,7 +213,7 @@ eonclib_sources = [
            # 'Quickmin.cpp',
            # 'ParallelReplicaJob.cpp',
            'Potential.cpp',
-           'SurrogatePotential.cpp', # Part of the interface
+           # 'SurrogatePotential.cpp', # Part of the interface
            # 'BasinHoppingJob.cpp',
            # 'FIRE.cpp',
            # 'EpiCenters.cpp',
