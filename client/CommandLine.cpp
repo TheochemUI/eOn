@@ -153,10 +153,9 @@ void commandLine(int argc, char **argv) {
     // }
 
     if (sflag) {
-      params->main.job = JobType::Point;
-      params->main.conFilename = confile;
+      auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
       // Run PointJob
-      auto spj = makeJob(*params, matter);
+      auto spj = makeJob(tbl, matter);
       auto res = spj->run();
     } else if (mflag) {
       // XXX: Finish
