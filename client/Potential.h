@@ -30,9 +30,9 @@ protected:
       // Use existing logger
       m_log = spdlog::get("_potcalls");
     }
+    // TODO(rg): Fix this
     // if (m_log) {
-    //   m_log->trace("[{}] created",
-    //   magic_enum::enum_name<PotType>(getType()));
+    //   m_log->trace("[{}] created", typeid(this).name());
     // }
   }
 
@@ -44,13 +44,13 @@ public:
   size_t forceCallCounter{0};
   virtual ~PotBase() {
     SPDLOG_TRACE("DESTROYED AFTER {}\n", forceCallCounter);
-    if (m_log) {
-      // m_log->trace("[{}] destroyed after {} calls",
-      //              magic_enum::enum_name<PotType>(getType()),
-      //              forceCallCounter);
-    } else {
-      std::cerr << "Logger is not initialized\n";
-    }
+    // TODO(rg): Fix this
+    // if (m_log) {
+    //   m_log->trace("[{}] destroyed after {} calls", typeid(this).name(),
+    //                forceCallCounter);
+    // } else {
+    //   std::cerr << "Logger is not initialized\n";
+    // }
   }
 
   // Does not take into account the fixed / free atoms
@@ -73,7 +73,5 @@ public:
   }
 };
 
-namespace helper_functions {
-std::shared_ptr<PotBase> makePotential(toml::table &config);
-} // namespace helper_functions
+std::shared_ptr<PotBase> makePotential(const toml::table &config);
 } // namespace eonc

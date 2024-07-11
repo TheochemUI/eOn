@@ -64,7 +64,7 @@ public:
     bool EMTRasmussen{false};
     bool LogPotential{false};
     std::string extPotPath{"./ext_pot"s};
-    eonc::def::LJParams lj;
+    // eonc::def::LJParams lj;
     eonc::def::MorseParams mpar;
     eonc::def::XTBParams xtbp;
   } pot;
