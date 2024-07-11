@@ -394,7 +394,7 @@ int main(int argc, char **argv) {
 
       // Determine what type of job we are running according to the parameters
       // file.
-      auto job = eonc::helper_functions::makeJob(params);
+      auto job = eonc::makeJob(params);
 
       std::vector<std::string> filenames;
       try {
