@@ -304,4 +304,5 @@ std::shared_ptr<Potential> makePotential(toml::table &config) {
   }
 }
 
-} // namespace eonc::helper_functions
+} // namespace helper_functions
+} // namespace eonc
