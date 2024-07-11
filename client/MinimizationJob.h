@@ -42,20 +42,24 @@ public:
   VectorType difference(VectorType a, VectorType b) override;
 };
 
-class MinimizationJob : public Job {
+class MinimizationJob : public Job<MinimizationJob> {
+  Matter &_mat;
+
 public:
-  MinimizationJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
-        fcalls{0} {
+  MinimizationJob(Matter &mat_a)
+      : _mat{mat_a} {
     log = spdlog::get("combi");
   }
   ~MinimizationJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
-  size_t fcalls;
-  RunStatus status;
+  size_t fcalls{0};
+  bool checkpoint{false};
+  RunStatus status{RunStatus::NOT_BEGUN};
   std::shared_ptr<spdlog::logger> log;
+  bool relax(bool quiet, bool writeMovie, bool checkpoint,
+             std::string prefixMovie, std::string prefixCheckpoint);
 };
 
 } // namespace eonc
