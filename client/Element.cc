@@ -22,7 +22,7 @@ size_t symbol2atomicNumber(const std::string_view &symbol) {
 }
 
 std::string atomicNumber2symbol(size_t n) {
-  if (n >= 0 && n < static_cast<int>(Element::COUNTER)) {
+  if (n < static_cast<int>(Element::COUNTER)) {
     return std::string(magic_enum::enum_name(static_cast<Element>(n)));
   }
   return "Unknown";

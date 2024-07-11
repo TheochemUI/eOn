@@ -916,7 +916,7 @@ void Parameters::loadASEOrcaParams(const toml::table &config) {
 
 void Parameters::loadCatLearnParams(const toml::table &config) {
   if (config.contains("CatLearn") && config["CatLearn"].is_table()) {
-    const auto &aseOrcaTable = *config["CatLearn"].as_table();
+    // const auto &aseOrcaTable = *config["CatLearn"].as_table();
     // Case sensitive!!
     catl.path = config["CatLearn"]["path"].value_or(catl.path);
     catl.model = config["CatLearn"]["model"].value_or(catl.model);
