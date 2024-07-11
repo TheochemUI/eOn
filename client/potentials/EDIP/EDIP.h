@@ -10,11 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef EDIP_POTENTIAL
-#define EDIP_POTENTIAL
-
+#pragma once
 #include "../../Potential.h"
-
+namespace eonc {
 /** External function implemented in Fortran. Calculate interactions between
 molecules of water using forcefield EDIP.
 @param[in]	N           Number of atoms.
@@ -34,12 +32,13 @@ class EDIP : public Potential {
 public:
   // Functions
   // constructor
-  EDIP(std::shared_ptr<Parameters> params)
-      : Potential(PotType::EDIP, params){};
+  EDIP()
+      : Potential(PotType::EDIP) {};
 
   // To satisfy interface
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif
+
+} // namespace eonc

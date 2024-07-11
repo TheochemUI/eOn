@@ -15,10 +15,11 @@
 #include <memory>
 
 using namespace Catch::Matchers;
+using namespace eonc;
 
 TEST_CASE("TestCell", "[MatterTest]") {
   auto params = std::make_shared<Parameters>();
-  auto pot_default = helper_functions::makePotential(PotType::LJ, params);
+  auto pot_default = helper_functions::makePotential(PotType::LJ, *params);
   auto m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
@@ -39,7 +40,7 @@ TEST_CASE("TestCell", "[MatterTest]") {
 
 TEST_CASE("SetGetAtomicNrs", "[MatterTest]") {
   auto params = std::make_shared<Parameters>();
-  auto pot_default = helper_functions::makePotential(PotType::LJ, params);
+  auto pot_default = helper_functions::makePotential(PotType::LJ, *params);
   auto m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
@@ -59,14 +60,14 @@ TEST_CASE("SetGetAtomicNrs", "[MatterTest]") {
 
 TEST_CASE("SetPotential", "[MatterTest]") {
   auto params = std::make_shared<Parameters>();
-  auto pot_default = helper_functions::makePotential(PotType::LJ, params);
+  auto pot_default = helper_functions::makePotential(PotType::LJ, *params);
   auto m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
 
   double m1_ipot = m1->getPotentialEnergy();
   params->pot.potential = PotType::MORSE_PT;
-  auto pot = helper_functions::makePotential(params->pot.potential, params);
+  auto pot = helper_functions::makePotential(params->pot.potential, *params);
 
   REQUIRE(m1->getPotential() != pot);
   m1->setPotential(pot);

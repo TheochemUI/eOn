@@ -17,7 +17,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "ParallelReplicaJob.h"
-
+namespace eonc {
 std::vector<std::string> ParallelReplicaJob::run(void) {
   // load pos.con
   reactant = new Matter(pot, params);
@@ -156,7 +156,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
               "[ParallelReplica] Simulation ended without seeing a transition");
           SPDLOG_LOGGER_DEBUG(
               log, "[ParallelReplica] Refining anyways to prevent bias...");
-          int tmpFcalls = Potential::fcalls;
+          // int tmpFcalls = Potential::fcalls;
           refineTransition(MDSnapshots, true);
           // refineForceCalls += Potential::fcalls - tmpFcalls;
         }
@@ -293,3 +293,5 @@ int ParallelReplicaJob::refineTransition(std::vector<Matter *> MDSnapshots,
 
   return (min + max) / 2 + 1;
 }
+
+} // namespace eonc

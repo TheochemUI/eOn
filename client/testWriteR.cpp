@@ -13,10 +13,12 @@
 #include "Parameters.h"
 #include <cstdlib>
 
+using namespace eonc;
+
 int main(void) {
   std::string confile("pos.con");
   auto parameters = std::make_shared<Parameters>();
-  auto pot = helper_functions::makePotential(parameters);
+  auto pot = helper_functions::makePotential(*parameters);
   Matter *matter = new Matter(pot, parameters);
   matter->con2matter(confile);
   matter->writeTibble("rSysdat.txt"s);

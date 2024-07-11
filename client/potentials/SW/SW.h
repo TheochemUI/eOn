@@ -28,18 +28,14 @@ extern "C" {
 void sw_(const long int *N, const double *R, double *F, double *U,
          const double *bx, const double *by, const double *bz);
 }
-
+namespace eonc {
 /** SW potential.*/
 class SW : public Potential {
-private:
-  std::shared_ptr<Parameters> parameters;
-
 public:
   // Functions
   // constructor
-  SW(std::shared_ptr<Parameters> p)
-      : Potential(p),
-        parameters{p} {}
+  SW()
+      : Potential(PotType::SW_SI) {}
 
   // To satisfy interface
   void initialize(void);
@@ -48,3 +44,4 @@ public:
              double *U, double *variance, const double *box);
 };
 #endif
+}

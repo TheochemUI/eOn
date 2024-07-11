@@ -10,9 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef AMS_POT
-#define AMS_POT
-
+#pragma once
 #include "../../Matter.h"
 #include "../../Potential.h"
 
@@ -25,19 +23,19 @@
 #include <boost/process.hpp>
 #include <boost/process/environment.hpp>
 
-#include <algorithm>
 #include <filesystem>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fstream>
 #include <string>
 
-class AMS : public Potential {
+namespace eonc {
 
+class AMS : public Potential {
 public:
-  AMS(std::shared_ptr<Parameters> p);
+  AMS(eonc::def::AMSParams amsp);
   ~AMS();
-  void initialize(){};
+  void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
@@ -55,7 +53,7 @@ private:
   std::string engine, forcefield, model, xc, resources, basis;
   std::string engine_setup, engine_lower;
   // Generate run configuration
-  std::string generate_run(std::shared_ptr<Parameters> p);
+  std::string generate_run(Parameters &p);
   // Environment
   boost::process::native_environment nativenv;
   int amsevals;
@@ -79,4 +77,4 @@ private:
   void recieveFromSystem(long N, double *F, double *U);
 };
 
-#endif
+} // namespace eonc

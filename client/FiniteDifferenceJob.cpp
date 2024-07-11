@@ -13,7 +13,7 @@
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
-
+namespace eonc {
 using namespace helper_functions;
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {
@@ -72,3 +72,5 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   std::vector<std::string> empty;
   return empty;
 }
+
+} // namespace eonc

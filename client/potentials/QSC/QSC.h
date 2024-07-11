@@ -14,15 +14,16 @@
 #ifndef QSC_STANDALONE
 #include "../../Potential.h"
 #endif
-
+namespace eonc {
 class QSC
 #ifndef QSC_STANDALONE
     : public Potential
 #endif
 {
 public:
-  QSC(std::shared_ptr<Parameters> params)
-      : Potential(PotType::QSC, params) {
+  QSC()
+      : Potential(PotType::QSC) {
+    // TODO(rg): Expose these as parameters like LJ
     cutoff = 8.0;
     verlet_skin = 0.5;
     init = false;
@@ -37,11 +38,9 @@ public:
       i++;
     }
   }
-  QSC()
-      : QSC(std::make_shared<Parameters>()) {}
   ~QSC(void);
 
-  void initialize(){};
+  void initialize() {};
   void initialize(long N, const double *R, const int *atomicNrs,
                   const double *box);
   void cleanMemory();
@@ -99,3 +98,5 @@ private:
   void calc_distance(const double *box, const double *R1, int i,
                      const double *R2, int j, struct distance *d);
 };
+
+} // namespace eonc

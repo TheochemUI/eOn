@@ -11,38 +11,43 @@
 */
 
 #include "AMS.h"
-#include <iostream>
-#include <iterator>
 
 namespace bp = boost::process;
 
-AMS::AMS(std::shared_ptr<Parameters> p)
-    : Potential(PotType::AMS, p) {
+AMS::AMS(eonc::def::AMSParams amsp)
+    : Potential(PotType::AMS) {
   // Get the values from the configuration
   // All the parameter values are converted to lowercase in generate_run
-  this->engine = p->engine;
-  this->forcefield = p->forcefield;
-  this->model = p->model;
-  this->xc = p->xc;
-  this->resources = p->resources;
-  this->basis = p->basis;
+  this->engine = amsp.engine;
+  this->forcefield = amsp.forcefield;
+  this->model = amsp.model;
+  this->xc = amsp.xc;
+  this->resources = amsp.resources;
+  this->basis = amsp.basis;
   this->engine_setup = generate_run(p);
   // Environment
   // TODO: Add more checks for how this can be set
-  if (p->amshome.empty() && p->scm_tmpdir.empty() && p->scmlicense.empty() &&
-      p->scm_pythondir.empty() && p->amsbin.empty() &&
-      p->amsresources.empty()) {
+  if (amsp.amsenv.amshome.empty() && amsp.amsenv.scm_tmpdir.empty() &&
+      amsp.amsenv.scmlicense.empty() && amsp.amsenv.scm_pythondir.empty() &&
+      amsp.amsenv.amsbin.empty() && amsp.amsenv.amsresources.empty()) {
     nativenv = boost::this_process::environment();
   } else {
     nativenv = boost::this_process::environment();
     // Some of these can be derived from the others
-    nativenv["AMSHOME"] = p->amshome;
-    nativenv["SCM_TMPDIR"] = p->scm_tmpdir;
-    nativenv["SCMLICENSE"] = p->scmlicense;
-    nativenv["SCM_PYTHONDIR"] = p->scm_pythondir;
-    nativenv["AMSBIN"] = p->amsbin;
-    nativenv["AMSRESOURCES"] = p->amsresources;
-    nativenv["PATH"] += p->amsbin;
+    if (!amsp.amsenv.amshome.empty())
+      nativenv["AMSHOME"] = amsp.amsenv.amshome;
+    if (!amsp.amsenv.scm_tmpdir.empty())
+      nativenv["SCM_TMPDIR"] = amsp.amsenv.scm_tmpdir;
+    if (!amsp.amsenv.scmlicense.empty())
+      nativenv["SCMLICENSE"] = amsp.amsenv.scmlicense;
+    if (!amsp.amsenv.scm_pythondir.empty())
+      nativenv["SCM_PYTHONDIR"] = amsp.amsenv.scm_pythondir;
+    if (!amsp.amsenv.amsbin.empty())
+      nativenv["AMSBIN"] = amsp.amsenv.amsbin;
+    if (!amsp.amsenv.amsresources.empty())
+      nativenv["AMSRESOURCES"] = amsp.amsenv.amsresources;
+    if (!amsp.amsenv.amsbin.empty())
+      nativenv["PATH"] += amsp.amsenv.amsbin;
   }
   // Do not pass "" in the config files
   // std::cout<<nativenv["PATH"].to_string()<<std::endl;
@@ -466,7 +471,7 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   return;
 }
 
-std::string AMS::generate_run(std::shared_ptr<Parameters> p) {
+std::string AMS::generate_run(Parameters &p) {
   std::string engine_block; // Shadows the class variable
   // TODO: Use args everywhere, cleaner logic
   // Ensure capitals and existence

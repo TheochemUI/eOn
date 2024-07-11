@@ -11,13 +11,11 @@
 */
 
 #include <cstdio>
-#include <errno.h>
-#include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "IMD.h"
-
+namespace eonc {
 void IMD::cleanMemory(void) {
   system("rm -f imd_eon.out*");
   system("rm -f imd_eon.in.conf");
@@ -89,3 +87,5 @@ void IMD::readForceIMD(long N, double *F, double *U) {
   fclose(forceIMD);
   return;
 }
+
+} // namespace eonc

@@ -47,23 +47,23 @@ endif
 
 _args += cppc.get_supported_arguments([
   # C++ only
-  '-Wno-class-memaccess',
-  '-Wno-unused-function',
+  # '-Wno-class-memaccess',
+  # '-Wno-unused-function',
   # Common
-  '-Wno-reorder',
-  '-Wno-sign-compare',
-  '-Wno-unused-but-set-parameter',
-  '-Wno-unused-but-set-variable',
   '-Wno-unused-parameter',
-  '-Wno-unused-result',
-  '-Wno-unused-variable',
-  # '-Wfatal-errors',
+  '-Wno-unused-but-set-parameter',
+  '-Wfatal-errors',
 ]
 )
 
 # TODO(rg): use fc.get_supported_arguments and add more compiler support
 if use_fortran == true
     _fargs += fc.get_supported_arguments([
+      # Ported from C++
+      '-Wno-unused-but-set-variable',
+      '-Wno-unused-variable',
+      # Absolutely necessary
+      '-fno-implicit-none',
       # Fortran only, these are important!
       '-Wno-compare-reals',
       '-Wno-conversion',
@@ -165,55 +165,62 @@ potentials = [
                newpot
              ]
 
+tomlib = library('toml', 'toml.cpp',
+                 cpp_args: ['-w'])
+_deps += declare_dependency(link_with: tomlib)
+
 eonclib_sources = [
+           'Parser.cc',
            'Parameters.cpp',
-           'Optimizer.cpp',
-           'PrefactorJob.cpp',
-           'LBFGS.cpp',
-           'ReplicaExchangeJob.cpp',
-           'BondBoost.cpp',
+           # 'Optimizer.cpp',
+           # 'PrefactorJob.cpp',
+           # 'LBFGS.cpp',
+           # 'ReplicaExchangeJob.cpp',
+           # 'BondBoost.cpp',
            'Job.cpp',
-           'GlobalOptimization.cpp',
-           'LowestEigenmode.cpp',
-           'MinModeSaddleSearch.cpp',
-           'StructureComparisonJob.cpp',
-           'SteepestDescent.cpp',
-           'ImprovedDimer.cpp',
+           # 'GlobalOptimization.cpp',
+           # 'LowestEigenmode.cpp',
+           # 'MinModeSaddleSearch.cpp',
+           # 'StructureComparisonJob.cpp',
+           # 'SteepestDescent.cpp',
+           # 'ImprovedDimer.cpp',
            'PointJob.cpp',
-           'Prefactor.cpp',
-           'ConjugateGradients.cpp',
+           # 'Prefactor.cpp',
+           # 'ConjugateGradients.cpp',
            'Matter.cpp',
-           'FiniteDifferenceJob.cpp',
-           'Lanczos.cpp',
-           'HessianJob.cpp',
-           'TADJob.cpp',
-           'ProcessSearchJob.cpp',
+           'Element.cc',
+           # 'FiniteDifferenceJob.cpp',
+           # 'Lanczos.cpp',
+           # 'HessianJob.cpp',
+           # 'TADJob.cpp',
+           # 'ProcessSearchJob.cpp',
            'Bundling.cpp',
-           'NudgedElasticBand.cpp',
-           'MonteCarloJob.cpp',
-           'DynamicsJob.cpp',
-           'MonteCarlo.cpp',
-           'Hessian.cpp',
-           'NudgedElasticBandJob.cpp',
-           'DynamicsSaddleSearch.cpp',
+           # 'NudgedElasticBand.cpp',
+           # 'MonteCarloJob.cpp',
+           # 'DynamicsJob.cpp',
+           # 'MonteCarlo.cpp',
+           # 'Hessian.cpp',
+           # 'NudgedElasticBandJob.cpp',
+           # 'DynamicsSaddleSearch.cpp',
            'HelperFunctions.cpp',
-           # 'StringHelpers.cc', # Template
-           'MatrixHelpers.hpp', # Template
-           'Dimer.cpp',
-           'Dynamics.cpp',
-           'GlobalOptimizationJob.cpp',
-           'BiasedGradientSquaredDescent.cpp',
-           'SafeHyperJob.cpp',
-           'MinimizationJob.cpp',
-           'Quickmin.cpp',
-           'ParallelReplicaJob.cpp',
+           'EnvHelpers.cc',
+           # # 'StringHelpers.cc', # Template
+           # 'MatrixHelpers.hpp', # Template
+           # 'Dimer.cpp',
+           # 'Dynamics.cpp',
+           # 'GlobalOptimizationJob.cpp',
+           # 'BiasedGradientSquaredDescent.cpp',
+           # 'SafeHyperJob.cpp',
+           # 'MinimizationJob.cpp',
+           # 'Quickmin.cpp',
+           # 'ParallelReplicaJob.cpp',
            'Potential.cpp',
            'SurrogatePotential.cpp', # Part of the interface
-           'BasinHoppingJob.cpp',
-           'FIRE.cpp',
-           'EpiCenters.cpp',
-           'SaddleSearchJob.cpp',
-           'BasinHoppingSaddleSearch.cpp',
+           # 'BasinHoppingJob.cpp',
+           # 'FIRE.cpp',
+           # 'EpiCenters.cpp',
+           # 'SaddleSearchJob.cpp',
+           # 'BasinHoppingSaddleSearch.cpp',
 ]
 
 eonclient_sources = [
@@ -393,7 +400,7 @@ ec = executable('eonclient',
                 include_directories: _incdirs,
                 dependencies : _deps,
                 link_with : _linkto,
-                cpp_args : _args,
+                cpp_args : [_args, '-w'],
                 install : true)
 
 if get_option('with_tests')
@@ -406,12 +413,12 @@ if get_option('with_python')
   #                 )
 endif
 
-ec2 = executable('testWriteR',
-                'testWriteR.cpp',
-                include_directories: _incdirs,
-                dependencies : _deps,
-                link_with : _linkto,
-                )
+# ec2 = executable('testWriteR',
+#                 'testWriteR.cpp',
+#                 include_directories: _incdirs,
+#                 dependencies : _deps,
+#                 link_with : _linkto,
+#                 )
 endif
 # ------------------------ Tests
 
@@ -427,12 +434,13 @@ if get_option('with_tests')
       link_with: _linkto,
     )
     test_array = [#
+      # ['test_element', 'ElementTest.cc', ''],
       # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
       # ['strparse_run', 'StringHelpersTest.cpp', ''],
-      ['test_matter', 'MatterTest.cpp', 'sulfolene'],
-      ['test_pot', 'PotTest.cpp', 'sulfolene'],
-      ['approve_params', 'ApproveParams.cpp', ''],
-      ['approve_matter', 'ApproveMatter.cpp', 'sulfolene'],
+      # ['test_matter', 'MatterTest.cpp', 'sulfolene'],
+      # ['test_pot', 'PotTest.cpp', 'sulfolene'],
+      # ['approve_params', 'ApproveParams.cpp', ''],
+      # ['approve_matter', 'ApproveMatter.cpp', 'sulfolene'],
       # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
     ]
     foreach test : test_array

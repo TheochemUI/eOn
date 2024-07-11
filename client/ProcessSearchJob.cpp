@@ -17,7 +17,7 @@
 #include "MinModeSaddleSearch.h"
 #include "Prefactor.h"
 #include <iostream>
-
+namespace eonc {
 std::vector<std::string> ProcessSearchJob::run(void) {
   std::string reactantFilename("pos.con");
   std::string displacementFilename("displacement.con");
@@ -348,3 +348,5 @@ void ProcessSearchJob::printEndState(int status) {
     SPDLOG_LOGGER_ERROR(log, "Unknown status: %i!", status);
   return;
 }
+
+} // namespace eonc

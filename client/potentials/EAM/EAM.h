@@ -9,21 +9,24 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
+#pragma once
 #include <iostream>
 #include <math.h>
 
 #ifndef EAM_STANDALONE
 #include "../../Potential.h"
 #endif
-
+namespace eonc {
+// XXX: This is actually unused..
 class EAM
 #ifndef EAM_STANDALONE
     : public Potential
 #endif
 {
 public:
-  EAM(std::shared_ptr<Parameters> params)
-      : Potential(PotType::EAM_AL, params) {
+  EAM()
+      : Potential(PotType::EAM_STANDALONE) {
     celllist_new = 0;
     neigh_list = 0;
     initialized = false;
@@ -33,7 +36,6 @@ public:
     // for each cell in cell list.
     rc[0] = rc[1] = rc[2] = 6.0;
   };
-  // To satify interface
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *fullbox) override;
@@ -42,7 +44,7 @@ private:
   struct element_parameters {
     const int Z;                // Atomic Number
     const double Dm;            // Morse potential well depth
-    const double alphaM;        // Curvative at Morse minimum
+    const double alphaM;        // Curvature at Morse minimum
     const double Rm;            // Position of Morse minimum
     const double beta1;         // Density parameter 1
     const double beta2;         // Density parameter 2
@@ -75,3 +77,5 @@ private:
   double embedding_force(const double *func_coeff, double rho);
   element_parameters get_element_parameters(int atomic_number);
 };
+
+} // namespace eonc

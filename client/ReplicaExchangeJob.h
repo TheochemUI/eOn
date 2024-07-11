@@ -14,7 +14,7 @@
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
-
+namespace eonc {
 class ReplicaExchangeJob : public Job {
 public:
   ReplicaExchangeJob(std::unique_ptr<Parameters> parameters)
@@ -36,3 +36,5 @@ private:
   std::vector<std::string> returnFiles;
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

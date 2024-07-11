@@ -17,8 +17,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include <float.h>
 #include <string>
-#include <thirdparty/toml.hpp>
-
+namespace eonc {
 using namespace std::string_literals;
 
 Parameters::Parameters() {
@@ -38,7 +37,7 @@ Parameters::Parameters() {
   main.conFilename = "pos.con"s;
   main.finiteDifference = 0.01;
   main.maxForceCalls = 0;
-  main.removeNetForce = true;
+  main.usePBC = true;
 
   // [Prefactor] //
   prefactor.defaultValue = 0.0;
@@ -46,52 +45,11 @@ Parameters::Parameters() {
   prefactor.minValue = 1e+9;
   prefactor.withinRadius = 3.3;
   prefactor.minDisplacement = 0.25;
-  prefactor.rate = ::Prefactor::RATE::HTST;
-  prefactor.configuration = ::Prefactor::TYPE::REACTANT;
+  prefactor.rate = eonc::Prefactor::RATE::HTST;
+  prefactor.configuration = eonc::Prefactor::TYPE::REACTANT;
   prefactor.allFreeAtoms = false;
-  prefactor.filterScheme = ::Prefactor::FILTER::FRACTION;
+  prefactor.filterScheme = eonc::Prefactor::FILTER::FRACTION;
   prefactor.filterFraction = 0.90;
-
-  // [Potential] //
-  pot.potential = PotType::LJ;
-  pot.MPIPollPeriod = 0.25; // seconds
-  pot.LogPotential = false;
-  pot.LAMMPSLogging = false;
-  pot.LAMMPSThreads = 0;
-  pot.EMTRasmussen = false;
-  pot.extPotPath = "./ext_pot"s;
-
-  // [AMS] //
-  ams.engine = ""s;     // One of REAXFF MOPAC
-  ams.forcefield = ""s; // OPt.ff or something else
-  ams.model = ""s;      // PM7 PM3 or something
-  ams.xc = ""s;         // exchange-correlation functional
-  ams.basis = ""s;      // with xc
-  ams.resources = ""s;  // For DFTB
-
-  // [AMS_ENV] //
-  // Horrid little section to mimic amsrc.sh
-  // Assumes the entire thing is going to be set
-  amsenv.amshome = ""s;       // "/some/path/to/amshome/"s;
-  amsenv.scm_tmpdir = ""s;    // "/tmp"s;
-  amsenv.scm_pythondir = ""s; // "/.scm/python"s;
-  amsenv.amsbin = ""s;        // amshome.append("/bin"s);
-  amsenv.scmlicense = ""s;    // amshome.append("license.txt"s);
-  amsenv.amsresources = ""s;  // amshome.append("/atomicdata"s);
-
-  // [XTBPot] //
-  xtbpot.paramset = "GFNFF"s;
-  xtbpot.acc = 1.0;
-  xtbpot.elec_temperature = 0.0;
-  xtbpot.maxiter = 250;
-
-  // [Structure Comparison] //
-  structcomp.distanceDifference = 0.1;
-  structcomp.neighborCutoff = 3.3;
-  structcomp.checkRotation = false;
-  structcomp.indistinguishableAtoms = true;
-  structcomp.energyDifference = 0.01;
-  structcomp.removeTranslation = true;
 
   // [Debug] //
   debug.writeMovies = false;
@@ -131,9 +89,9 @@ Parameters::Parameters() {
   // [Saddle Search] //
   saddle.convergedForce = optim.convergedForce;
   saddle.maxJumpAttempts = 0; // from config.yaml
-  saddle.displaceType = EpiCenters::DISP_LOAD;
+  // saddle.displaceType = EpiCenters::DISP_LOAD;
   saddle.method = "min_mode"s;
-  saddle.minmodeMethod = LowestEigenmode::MINMODE_DIMER;
+  // saddle.minmodeMethod = LowestEigenmode::MINMODE_DIMER;
   saddle.maxEnergy = 20.0;
   saddle.maxIterations = 1000;
   saddle.displaceRadius = 4.0;
@@ -172,16 +130,12 @@ Parameters::Parameters() {
   dimer.improved = true;
   dimer.convergedAngle = 5.0; // degrees
   dimer.maxIterations = 1000;
-  dimer.optMethod = ImprovedDimer::OPT_CG;
+  // dimer.optMethod = ImprovedDimer::OPT_CG;
   dimer.torqueMin = 0.1;   // old dimer
   dimer.torqueMax = 1.0;   // old dimer
   dimer.rotationsMin = 1;  // old dimer
   dimer.rotationsMax = 10; // old dimer and new dimer
   dimer.removeRotation = false;
-
-  // [ASE_ORCA] //
-  aseorca.orca_path = ""s;
-  aseorca.orca_nproc = "1"s;
 
   // [Lanczos] //
   lanczos.tolerance = 0.01;
@@ -344,15 +298,6 @@ Parameters::Parameters() {
   bhop.writeUnique = false;
   bhop.stopEnergy = -DBL_MAX;
 
-  // [Global Optimization] //
-  globopt.moveMethod = "md"s;
-  globopt.decisionMethod = "npew"s;
-  globopt.steps = 10000;
-  globopt.beta = 1.05;
-  globopt.alpha = 1.02;
-  globopt.mdmin = 3;
-  globopt.targetEnergy = -1.E50;
-
   // [Monte Carlo] //
   monte_carlo.stepSize = 0.005;
   monte_carlo.steps = 1000;
@@ -364,15 +309,6 @@ Parameters::Parameters() {
   bgsd.Hforceconvergence = 0.01;
   bgsd.grad2energyconvergence = 0.000001;
   bgsd.grad2forceconvergence = 0.0001;
-
-  // [CatLearn] //
-  // No reasonable default for catl_path
-  catl.path = ""s;
-  catl.model = "gp"s;
-  catl.prior = "median"s;
-  catl.use_deriv = true;
-  catl.use_fingerprint = false;
-  catl.parallel = false;
 }
 
 std::string Parameters::toLowerCase(std::string s) {
@@ -400,7 +336,7 @@ int Parameters::load(const std::string &filename) {
     main.conFilename = config["Main"]["con_filename"].value_or("pos.con"s);
     main.finiteDifference = config["Main"]["finite_difference"].value_or(0.01);
     main.maxForceCalls = config["Main"]["max_force_calls"].value_or(0L);
-    main.removeNetForce = config["Main"]["remove_net_force"].value_or(true);
+    main.usePBC = config["Main"]["use_pbc"].value_or(true);
 
     // Initialize random generator
     if (main.randomSeed < 0) {
@@ -411,68 +347,14 @@ int Parameters::load(const std::string &filename) {
       helper_functions::random(main.randomSeed);
     }
 
-    // Potential section
-    pot.potential = magic_enum::enum_cast<PotType>(
-                        config["Potential"]["potential"].value_or("LJ"s),
-                        magic_enum::case_insensitive)
-                        .value_or(PotType::LJ);
-    pot.MPIPollPeriod = config["Potential"]["mpi_poll_period"].value_or(0.25);
-    pot.LAMMPSLogging = config["Potential"]["lammps_logging"].value_or(false);
-    pot.LAMMPSThreads = config["Potential"]["lammps_threads"].value_or(0);
-    pot.EMTRasmussen = config["Potential"]["emt_rasmussen"].value_or(false);
-    pot.extPotPath = config["Potential"]["ext_pot_path"].value_or("./ext_pot"s);
-    pot.LogPotential = config["Potential"]["log_potential"].value_or(
-        pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
-        pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
-
-    // AMS section
-    ams.engine = config["AMS"]["engine"].value_or(""s); // One of REAXFF MOPA
-    ams.forcefield =
-        config["AMS"]["forcefield"].value_or(""s); // OPt.ff or something else
-    ams.resources =
-        config["AMS"]["resources"].value_or(""s); // PM7 PM3 or something
-    ams.model =
-        config["AMS"]["model"].value_or(""s); // exchange-correlation functional
-    ams.xc = config["AMS"]["xc"].value_or(""s);       // with xc
-    ams.basis = config["AMS"]["basis"].value_or(""s); // For DFTB
-
-    // AMS_ENV section
-    // Horrid little section to mimic amsrc.sh
-    // Assumes the entire thing is going to be set
-    amsenv.amshome = config["AMS_ENV"]["amshome"].value_or(
-        ""s); // "/some/path/to/amshome/"s;
-    amsenv.scm_tmpdir =
-        config["AMS_ENV"]["scm_tmpdir"].value_or(""s); // "/tmp"s;
-    amsenv.scmlicense =
-        config["AMS_ENV"]["scmlicense"].value_or(""s); // "/.scm/python"s;
-    amsenv.scm_pythondir = config["AMS_ENV"]["scm_pythondir"].value_or(
-        ""s); // amshome.append("/bin"s);
-    amsenv.amsbin = config["AMS_ENV"]["amsbin"].value_or(
-        ""s); // amshome.append("license.txt"s);
-    amsenv.amsresources = config["AMS_ENV"]["amsresources"].value_or(
-        ""s); // amshome.append("/atomicdata"s);
-
-    // XTBPot section
-    xtbpot.paramset = config["XTBPot"]["paramset"].value_or("GFNFF"s);
-    xtbpot.acc = config["XTBPot"]["accuracy"].value_or(1.0);
-    xtbpot.elec_temperature =
-        config["XTBPot"]["electronic_temperature"].value_or(0.0);
-    xtbpot.maxiter = config["XTBPot"]["max_iterations"].value_or(250L);
-
-    // Structure Comparison section
-    structcomp.distanceDifference =
-        config["Structure_Comparison"]["distance_difference"].value_or(0.1);
-    structcomp.neighborCutoff =
-        config["Structure_Comparison"]["neighbor_cutoff"].value_or(3.3);
-    structcomp.checkRotation =
-        config["Structure_Comparison"]["check_rotation"].value_or(false);
-    structcomp.indistinguishableAtoms =
-        config["Structure_Comparison"]["indistinguishable_atoms"].value_or(
-            true);
-    structcomp.energyDifference =
-        config["Structure_Comparison"]["energy_difference"].value_or(0.01);
-    structcomp.removeTranslation =
-        config["Structure_Comparison"]["remove_translation"].value_or(true);
+    // [Potential]
+    loadPot(config);
+    // [AMS] and [AMS_ENV]
+    loadAMSParams(config);
+    // [ASE_ORCA]
+    loadASEOrcaParams(config);
+    // [CatLearn]
+    loadCatLearnParams(config);
 
     // Process Search section
     procsearch.minimizeFirst =
@@ -693,22 +575,22 @@ int Parameters::load(const std::string &filename) {
     prefactor.minDisplacement =
         config["Prefactor"]["min_displacement"].value_or(0.25);
     prefactor.rate =
-        magic_enum::enum_cast<::Prefactor::RATE>(
+        magic_enum::enum_cast<eonc::Prefactor::RATE>(
             config["Prefactor"]["rate_estimation"].value_or("htst"s),
             magic_enum::case_insensitive)
-            .value_or(::Prefactor::RATE::HTST);
+            .value_or(eonc::Prefactor::RATE::HTST);
     prefactor.configuration =
-        magic_enum::enum_cast<::Prefactor::TYPE>(
+        magic_enum::enum_cast<eonc::Prefactor::TYPE>(
             config["Prefactor"]["configuration"].value_or("reactant"s),
             magic_enum::case_insensitive)
-            .value_or(::Prefactor::TYPE::REACTANT);
+            .value_or(eonc::Prefactor::TYPE::REACTANT);
     prefactor.allFreeAtoms =
         config["Prefactor"]["all_free_atoms"].value_or(false);
     prefactor.filterScheme =
-        magic_enum::enum_cast<::Prefactor::FILTER>(
+        magic_enum::enum_cast<eonc::Prefactor::FILTER>(
             config["Prefactor"]["filter_scheme"].value_or("fraction"s),
             magic_enum::case_insensitive)
-            .value_or(::Prefactor::FILTER::FRACTION);
+            .value_or(eonc::Prefactor::FILTER::FRACTION);
     prefactor.filterFraction =
         config["Prefactor"]["filter_fraction"].value_or(0.90);
 
@@ -801,24 +683,6 @@ int Parameters::load(const std::string &filename) {
       if (surrogate.potential != PotType::CatLearn) {
         throw std::runtime_error("We only support catlearn for GP right now"s);
       }
-    }
-    // [CatLearn]
-    if (config.contains("CatLearn"s)) {
-      // Case sensitive!!
-      catl.path = config["CatLearn"]["path"].value_or(""s);
-      catl.model = config["CatLearn"]["model"].value_or("gp"s);
-      catl.prior = config["CatLearn"]["prior"].value_or("median"s);
-      catl.use_deriv = config["CatLearn"]["use_derivative"].value_or(true);
-      catl.parallel = config["CatLearn"]["parallel"].value_or(true);
-      catl.use_deriv = config["CatLearn"]["use_fingerprint"].value_or(false);
-    }
-    // [ASE_ORCA]
-    if (config.contains("ASE_ORCA"s)) {
-      // Case sensitive!!
-      // Can be used with environment variables
-      aseorca.orca_path = config["ASE_ORCA"]["orca_path"].value_or(""s);
-      aseorca.orca_nproc = config["ASE_ORCA"]["nproc"].value_or("1"s);
-      aseorca.simpleinput = config["ASE_ORCA"]["simpleinput"].value_or(""s);
     }
     // Replica Exchange section
     repexc.temperatureDistribution =
@@ -949,3 +813,120 @@ int Parameters::load(const std::string &filename) {
 
   return 0;
 }
+
+void Parameters::loadPot(const toml::table &config) {
+  if (config.contains("Potential") && config["Potential"].is_table()) {
+    const auto &potentialTable = *config["Potential"].as_table();
+
+    pot.potential = magic_enum::enum_cast<PotType>(
+                        potentialTable["potential"].value_or("LJ"s),
+                        magic_enum::case_insensitive)
+                        .value_or(PotType::LJ);
+    pot.MPIPollPeriod =
+        potentialTable["mpi_poll_period"].value_or(pot.MPIPollPeriod);
+    pot.LAMMPSLogging =
+        potentialTable["lammps_logging"].value_or(pot.LAMMPSLogging);
+    pot.LAMMPSThreads =
+        potentialTable["lammps_threads"].value_or(pot.LAMMPSThreads);
+    pot.EMTRasmussen =
+        potentialTable["emt_rasmussen"].value_or(pot.EMTRasmussen);
+    pot.extPotPath = potentialTable["ext_pot_path"].value_or(pot.extPotPath);
+    pot.LogPotential = potentialTable["log_potential"].value_or(
+        pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
+        pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
+
+    // Load other parameters if they exist
+    loadLJParams(potentialTable);
+    loadMorseParams(potentialTable);
+    loadXTBParams(potentialTable);
+  }
+}
+
+void Parameters::loadLJParams(const toml::table &config) {
+  if (config.contains("LJ") && config["LJ"].is_table()) {
+    const auto &ljTable = *config["LJ"].as_table();
+
+    pot.lj.u0 = ljTable["u0"].value_or(pot.lj.u0);
+    pot.lj.cutoff = ljTable["cutoff"].value_or(pot.lj.cutoff);
+    pot.lj.psi = ljTable["psi"].value_or(pot.lj.psi);
+  }
+}
+
+void Parameters::loadMorseParams(const toml::table &config) {
+  if (config.contains("Morse") && config["Morse"].is_table()) {
+    const auto &MorseTable = *config["Morse"].as_table();
+
+    pot.mpar.De = MorseTable["De"].value_or(pot.mpar.De);
+    pot.mpar.a = MorseTable["a"].value_or(pot.mpar.a);
+    pot.mpar.re = MorseTable["re"].value_or(pot.mpar.re);
+    pot.mpar.cutoff = MorseTable["cutoff"].value_or(pot.mpar.cutoff);
+  }
+}
+
+void Parameters::loadXTBParams(const toml::table &config) {
+  if (config.contains("XTBPot") && config["XTBPot"].is_table()) {
+    const auto &XTBPotTable = *config["XTBPot"].as_table();
+
+    pot.xtbp.paramset = XTBPotTable["param"].value_or(pot.xtbp.paramset);
+    pot.xtbp.acc = XTBPotTable["accuracy"].value_or(pot.xtbp.acc);
+    pot.xtbp.elec_temperature =
+        XTBPotTable["electronic_temperature"].value_or(pot.xtbp.acc);
+    pot.xtbp.maxiter = XTBPotTable["max_iterations"].value_or(pot.xtbp.maxiter);
+  }
+}
+
+void Parameters::loadAMSParams(const toml::table &config) {
+  if (config.contains("AMS") && config["AMS"].is_table()) {
+    const auto &amsTable = *config["AMS"].as_table();
+
+    ams.engine = amsTable["engine"].value_or(ams.engine);
+    ams.forcefield = amsTable["forcefield"].value_or(ams.forcefield);
+    ams.model = amsTable["model"].value_or(ams.model);
+    ams.resources = amsTable["resources"].value_or(ams.resources);
+    ams.xc = amsTable["xc"].value_or(ams.xc);
+    ams.basis = amsTable["basis"].value_or(ams.basis);
+  }
+
+  if (config.contains("AMS_ENV") && config["AMS_ENV"].is_table()) {
+    const auto &envTable = *config["AMS_ENV"].as_table();
+
+    ams.amsenv.amshome = envTable["amshome"].value_or(ams.amsenv.amshome);
+    ams.amsenv.scm_tmpdir =
+        envTable["scm_tmpdir"].value_or(ams.amsenv.scm_tmpdir);
+    ams.amsenv.scmlicense =
+        envTable["scmlicense"].value_or(ams.amsenv.scmlicense);
+    ams.amsenv.scm_pythondir =
+        envTable["scm_pythondir"].value_or(ams.amsenv.scm_pythondir);
+    ams.amsenv.amsbin = envTable["amsbin"].value_or(ams.amsenv.amsbin);
+    ams.amsenv.amsresources =
+        envTable["amsresources"].value_or(ams.amsenv.amsresources);
+  }
+}
+
+void Parameters::loadASEOrcaParams(const toml::table &config) {
+  if (config.contains("ASE_ORCA") && config["ASE_ORCA"].is_table()) {
+    const auto &aseOrcaTable = *config["ASE_ORCA"].as_table();
+
+    aseorca.orca_path = aseOrcaTable["orca_path"].value_or(aseorca.orca_path);
+    aseorca.orca_nproc = aseOrcaTable["nproc"].value_or(aseorca.orca_nproc);
+    aseorca.simpleinput =
+        aseOrcaTable["simpleinput"].value_or(aseorca.simpleinput);
+  }
+}
+
+void Parameters::loadCatLearnParams(const toml::table &config) {
+  if (config.contains("CatLearn") && config["CatLearn"].is_table()) {
+    // const auto &aseOrcaTable = *config["CatLearn"].as_table();
+    // Case sensitive!!
+    catl.path = config["CatLearn"]["path"].value_or(catl.path);
+    catl.model = config["CatLearn"]["model"].value_or(catl.model);
+    catl.prior = config["CatLearn"]["prior"].value_or(catl.prior);
+    catl.use_deriv =
+        config["CatLearn"]["use_derivative"].value_or(catl.use_deriv);
+    catl.parallel = config["CatLearn"]["parallel"].value_or(catl.parallel);
+    catl.use_deriv =
+        config["CatLearn"]["use_fingerprint"].value_or(catl.use_deriv);
+  }
+}
+
+} // namespace eonc

@@ -18,7 +18,7 @@
 #include "SaddleSearchMethod.h"
 
 #include <string>
-
+namespace eonc {
 class MinModeSaddleSearch : public SaddleSearchMethod {
 
 public:
@@ -68,3 +68,5 @@ private:
   double reactantEnergy;
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

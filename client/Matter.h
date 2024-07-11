@@ -15,11 +15,15 @@
 #include "Potential.h"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <string>
 
+namespace eonc {
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
 
-#include <string>
+// XXX: Really need this to go..
+constexpr size_t MAXC{100}; // maximum number of components for functions
+                            // matter2con and con2matter
 
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
@@ -29,14 +33,28 @@ class BondBoost;
  * (atom2xyz()).*/
 
 class Matter {
+  // TODO(rg):: These need to be parsed in again..
+  struct MatParams {
+    bool removeNetForce{true};
+  } mparams;
+  struct StructureComparison {
+    ///< The distance criterion for comparing geometries
+    double distanceDifference{0.1};
+    ///< radius used in the local atomic structure analysis
+    double neighborCutoff{3.3};
+    bool checkRotation{false};
+    bool indistinguishableAtoms{true};
+    double energyDifference{0.01};
+    bool removeTranslation{true};
+  } structcomp;
+
 public:
   ~Matter() = default;
-  Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
+  Matter(std::shared_ptr<Potential> pot)
       : potential{pot},
         usePeriodicBoundaries{true},
         recomputePotential{true},
         forceCalls{0},
-        parameters{params},
         nAtoms{0},
         positions{MatrixType::Zero(0, 3)},
         velocities{MatrixType::Zero(0, 3)},
@@ -44,7 +62,7 @@ public:
         biasForces{MatrixType::Zero(0, 3)},
         biasPotential{nullptr},
         masses{VectorType::Zero(0)},
-        atomicNrs{Vector<int>::Zero(0)},
+        atomicNrs{Vector<size_t>::Zero(0)},
         isFixed{Vector<int>::Zero(0)},
         cell{Matrix3S::Zero()},
         cellInverse{Matrix3S::Zero()},
@@ -80,8 +98,8 @@ public:
   void
   setPotential(std::shared_ptr<Potential> pot); // set potential function to use
   std::shared_ptr<Potential> getPotential();    // get potential function to use
-  void resize(long int nAtoms);   // set or reset the number of atoms
-  long int numberOfAtoms() const; // return the number of atoms
+  void resize(long int nAtoms); // set or reset the number of atoms
+  size_t numberOfAtoms() const; // return the number of atoms
   Matrix3S getCell() const;
   void setCell(Matrix3S newCell);
   double getPosition(long int atom, int axis)
@@ -92,10 +110,6 @@ public:
   void setVelocity(
       long int atom, int axis,
       double velocity); // set the velocity of atom along axis to velocity
-  bool relax(bool quiet = false, bool writeMovie = false,
-             bool checkpoint = false, std::string prefixMovie = std::string(),
-             std::string prefixCheckpoint = std::string());
-
   AtomMatrix pbc(AtomMatrix diff) const;
   VectorType pbcV(VectorType diff) const;
 
@@ -130,14 +144,14 @@ public:
   double getMass(long int atom) const; // return the mass of the atom specified
   void setMass(long int atom, double mass); // set the mass of an atom
   void setMasses(VectorType massesIn);      // set the mass of an atom
-  long getAtomicNr(
-      long int atom) const; // return the atomic number of the atom specified
+  size_t getAtomicNr(
+      size_t atom) const; // return the atomic number of the atom specified
   void setAtomicNr(long int atom,
-                   long atomicNr);      // set the atomic number of an atom
-  Vector<int> getAtomicNrs() const;     // Get the vector of atomic numbers
-  Vector<int> getAtomicNrsFree() const; // Get the vector of atomic numbers
+                   long atomicNr);         // set the atomic number of an atom
+  Vector<size_t> getAtomicNrs() const;     // Get the vector of atomic numbers
+  Vector<size_t> getAtomicNrsFree() const; // Get the vector of atomic numbers
   void
-  setAtomicNrs(const Vector<int> atmnrs); // Get the vector of atomic numbers
+  setAtomicNrs(const Vector<size_t> atmnrs); // Get the vector of atomic numbers
 
   int getFixed(long int atom)
       const; // return true if the atom is fixed, false if it is movable
@@ -216,18 +230,19 @@ private:
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
-  std::shared_ptr<Parameters> parameters;
-  long nAtoms;
+  size_t nAtoms;
   AtomMatrix positions;
   AtomMatrix velocities;
   AtomMatrix forces;
   AtomMatrix biasForces;
   BondBoost *biasPotential;
   VectorType masses;
-  Vector<int> atomicNrs;
+  Vector<size_t> atomicNrs;
   Vector<int> isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3S cell;
   Matrix3S cellInverse;
   double energyVariance;
   double potentialEnergy;
 };
+
+} // namespace eonc

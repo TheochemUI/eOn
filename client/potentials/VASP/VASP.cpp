@@ -26,6 +26,7 @@
 #endif
 
 #include "VASP.h"
+namespace eonc {
 bool VASP::firstRun = true;
 long VASP::vaspRunCount = 0;
 pid_t VASP::vaspPID = 0;
@@ -194,3 +195,5 @@ void VASP::readFU(long N, double *F, double *U) {
   fclose(FU);
   return;
 }
+
+} // namespace eonc

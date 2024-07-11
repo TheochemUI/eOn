@@ -11,10 +11,9 @@
 */
 
 #include "ExtPot.h"
-#include <iostream>
 #include <stdio.h>
 #include <unistd.h>
-
+namespace eonc {
 void ExtPot::cleanMemory(void) { return; }
 
 ExtPot::~ExtPot() { cleanMemory(); }
@@ -64,3 +63,5 @@ void ExtPot::recieveFromSystem(long N, double *F, double *U)
   fclose(in);
   return;
 }
+
+} // namespace eonc

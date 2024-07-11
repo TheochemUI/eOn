@@ -12,7 +12,7 @@
 
 #include "EffectiveMediumTheory.h"
 #include <string.h>
-
+namespace eonc {
 // General Functions
 void EffectiveMediumTheory::cleanMemory(void) {
   if (EMTObj != 0) {
@@ -73,7 +73,7 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
 
     AtomsObj->SetAtomicNumbers(atomicNrsTemp);
 
-    if (m_params->pot.EMTRasmussen) {
+    if (useEMTRasmussen) {
       EMTParameterObj = new EMTRasmussenParameterProvider();
       EMTObj = new EMT(EMTParameterObj);
     } else
@@ -102,3 +102,5 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
   delete[] pos;
   return;
 }
+
+} // namespace eonc

@@ -13,7 +13,7 @@
 #include "BondBoost.h"
 #include "Dynamics.h"
 #include "Optimizer.h"
-
+namespace eonc {
 std::vector<std::string> SafeHyperJob::run(void) {
   // TODO: Rework
   current = new Matter(pot, params);
@@ -30,7 +30,7 @@ std::vector<std::string> SafeHyperJob::run(void) {
   current->con2matter(reactantFilename);
 
   SPDLOG_LOGGER_DEBUG(log, "Minimizing initial reactant");
-  long refFCalls = Potential::fcalls;
+  // long refFCalls = Potential::fcalls;
   *reactant = *current;
   reactant->relax();
   // minimizeFCalls += (Potential::fcalls - refFCalls);
@@ -164,7 +164,7 @@ int SafeHyperJob::dynamics() {
     if ((nCheck == StateCheckInterval) && !newStateFlag) {
       nCheck = 0;  // reinitialize check state counter
       nRecord = 0; // restart the buffer
-      refFCalls = Potential::fcalls;
+      // refFCalls = Potential::fcalls;
       transitionFlag = checkState(current, reactant);
       // minimizeFCalls += Potential::fcalls - refFCalls;
       if (transitionFlag == true) {
@@ -183,7 +183,7 @@ int SafeHyperJob::dynamics() {
     if (transitionFlag) {
       // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
       // time.");
-      refFCalls = Potential::fcalls;
+      // refFCalls = Potential::fcalls;
       refineStep = refine(mdBuffer, mdBufferLength, reactant);
 
       transitionStep =
@@ -447,3 +447,5 @@ long SafeHyperJob::refine(Matter *buff[], long length, Matter *reactant) {
 
   return (min + max) / 2 + 1;
 }
+
+} // namespace eonc

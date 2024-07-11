@@ -90,6 +90,7 @@ class MainConfig(BaseModel):
         default=True,
         description="If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.",
     )
+    usePBC: bool = Field(default=True, description="Use periodic boundary conditions")
 
 
 class StructureComparisonConfig(BaseModel):
@@ -502,6 +503,7 @@ class PrefactorConfig(BaseModel):
 class PotentialConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
+    main: LJConfig
     mpi_poll_period: float = Field(
         default=0.25, description="Polling period for MPI potential."
     )
@@ -591,6 +593,18 @@ class PotentialConfig(BaseModel):
             else:
                 return False
         return v
+
+
+class LJConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    u0: float = Field(default=1.0, description="The depth of the LJ potential well.")
+    cutoff: float = Field(
+        default=15.0, description="The distance at which the LJ potential is cut off."
+    )
+    psi: float = Field(
+        default=1.0, description="The scaling factor for the LJ potential."
+    )
 
 
 class SaddleSearchConfig(BaseModel):

@@ -9,16 +9,16 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include <float.h>
 #include <limits.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "EAM.h"
 #include "Parameters.h"
 
+namespace eonc {
 void EAM::cleanMemory() {
   if (initialized) {
     delete[] celllist_old;
@@ -466,3 +466,5 @@ double EAM::embedding_force(const double *func_coeff, double rho) {
   }
   return -result;
 }
+
+} // namespace eonc

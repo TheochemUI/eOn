@@ -10,8 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef MORSE
-#define MORSE
+#pragma once
 /** @file
       @brief Morse potential for platinum
       @author Anonymous (possibly A. Pedersen or G. Henkelman), revision: Jean
@@ -21,19 +20,18 @@
 // #include "LJBinary.h"
 #include "../../Potential.h"
 #include <cmath>
-
+namespace eonc {
 class Morse : public Potential {
 public:
-  Morse(std::shared_ptr<Parameters> params)
-      : Potential(params),
-        De_{0.7102},
-        a_{1.6047},
-        re_{2.8970},
-        cutoff_{9.5} {
+  Morse(const eonc::def::MorseParams &mpar)
+      : Potential(PotType::MORSE_PT),
+        De_{mpar.De},
+        a_{mpar.a},
+        re_{mpar.re},
+        cutoff_{mpar.cutoff} {
     setParameters(De_, a_, re_, cutoff_);
-  };
+  }
   // Parameters De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
-  // Morse(double re, double De, double a, double cutoff);
   void force(long N, const double *R, const int *, double *F, double *U,
              double *variance, const double *box) override;
   void setParameters(double De, double a, double re, double cutoff);
@@ -46,4 +44,5 @@ private:
   double cutoff_;
   double energyCutoff_;
 };
-#endif
+
+} // namespace eonc

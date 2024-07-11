@@ -16,6 +16,7 @@
 #include "HelperFunctions.h"
 #include "Job.h"
 #include "Parameters.h"
+#include "Parser.hpp"
 #include "version.h"
 
 #include <chrono>
@@ -134,7 +135,7 @@ int main(int argc, char **argv) {
   _traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
   spdlog::register_logger(_traceback);
   //--- End logging setup
-  Parameters parameters;
+  eonc::Parameters parameters;
 
 #ifdef WITH_ASE_ORCA
   pybind11::scoped_interpreter guard{};
@@ -305,15 +306,15 @@ int main(int argc, char **argv) {
 
 #ifndef EONMPI
   if (argc > 1) {
-    commandLine(argc, argv);
+    eonc::commandLine(argc, argv);
     return 0;
   }
 #endif
 
-  enableFPE(); // from ExceptionsEON.h
+  eonc::enableFPE(); // from ExceptionsEON.h
 
   double beginTime = 0.0;
-  helper_functions::getTime(&beginTime, NULL, NULL);
+  eonc::helper_functions::getTime(&beginTime, NULL, NULL);
 
 #ifdef EONMPI
   // XXX: When do we stop? The server should probably tell everyone when to
@@ -359,7 +360,7 @@ int main(int argc, char **argv) {
     printSystemInfo();
 
     bool bundlingEnabled = true;
-    int bundleSize = getBundleSize();
+    int bundleSize = eonc::getBundleSize();
     if (bundleSize == 0) {
       bundleSize = 1;
     } else if (bundleSize == -1) {
@@ -376,15 +377,15 @@ int main(int argc, char **argv) {
         printf("Beginning Job %d of %d\n", i + 1, bundleSize);
       std::vector<std::string> unbundledFilenames;
       if (bundlingEnabled) {
-        unbundledFilenames = unbundle(i);
+        unbundledFilenames = eonc::unbundle(i);
       }
 
       // check to see if parameters file exists before loading
       int error = 0;
       std::string config_file =
-          helper_functions::getRelevantFile(parameters.main.inpFilename);
+          eonc::helper_functions::getRelevantFile(parameters.main.inpFilename);
       printf("Loading parameter file %s\n", config_file.c_str());
-      error = parameters.load(config_file);
+      auto params = eonc::loadTOML(config_file);
 
       if (error) {
         fprintf(stderr, "\nproblem loading parameter file, stopping\n");
@@ -394,14 +395,7 @@ int main(int argc, char **argv) {
 
       // Determine what type of job we are running according to the parameters
       // file.
-      auto job =
-          helper_functions::makeJob(std::make_unique<Parameters>(parameters));
-      if (job == nullptr) {
-        printf("error: Unknown job: %s\n",
-               std::string{magic_enum::enum_name<JobType>(parameters.main.job)}
-                   .c_str());
-        return 1;
-      }
+      auto job = eonc::helper_functions::makeJob(params);
 
       std::vector<std::string> filenames;
       try {
@@ -413,8 +407,8 @@ int main(int argc, char **argv) {
       filenames.push_back(std::string("client.log"));
 
       if (bundlingEnabled) {
-        bundle(i, filenames, &bundledFilenames);
-        deleteUnbundledFiles(unbundledFilenames);
+        eonc::bundle(i, filenames, &bundledFilenames);
+        eonc::deleteUnbundledFiles(unbundledFilenames);
       } else {
         bundledFilenames = filenames;
       }
@@ -432,7 +426,7 @@ int main(int argc, char **argv) {
 
   // Timing Information
   double utime = 0, stime = 0, rtime = 0;
-  helper_functions::getTime(&rtime, &utime, &stime);
+  eonc::helper_functions::getTime(&rtime, &utime, &stime);
   rtime = rtime - beginTime;
 
   // if (Potential::totalUserTime > 0) {

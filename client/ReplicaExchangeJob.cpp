@@ -14,7 +14,7 @@
 #include "Dynamics.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
-
+namespace eonc {
 std::vector<std::string> ReplicaExchangeJob::run(void) {
   long i, step,
       samplingSteps =
@@ -34,7 +34,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
 
   SPDLOG_LOGGER_DEBUG(log, "Running Replica Exchange");
 
-  long refForceCalls = Potential::fcalls;
+  // long refForceCalls = Potential::fcalls;
 
   // allocate a Matter and Dynamics object for each replica
   std::vector<std::shared_ptr<Matter>> replica;
@@ -143,3 +143,5 @@ void ReplicaExchangeJob::saveData(void) {
 
   return;
 }
+
+} // namespace eonc

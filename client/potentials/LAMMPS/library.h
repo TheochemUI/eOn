@@ -11,6 +11,8 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
+#pragma once
+namespace eonc {
 #ifndef EONMPI
 #include "fakempi.h"
 #endif
@@ -320,3 +322,5 @@ UNDOCUMENTED
 /* Local Variables:
  * fill-column: 72
  * End: */
+
+} // namespace eonc

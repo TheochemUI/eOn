@@ -13,33 +13,26 @@
 
 #include "Eigen.h"
 #include "Parameters.h"
-#include <algorithm>
 #include <iostream>
-#include <limits>
 #include <memory>
-#include <optional>
+
+namespace eonc {
 
 class Potential {
 protected:
   PotType ptype;
-  std::shared_ptr<Parameters> m_params;
   std::shared_ptr<spdlog::logger> m_log;
 
 public:
   size_t forceCallCounter;
 
   // Main Constructor
-  Potential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
+  Potential(PotType a_ptype)
       : ptype{a_ptype},
-        m_params{a_params},
         forceCallCounter{0} {
     SPDLOG_TRACE("CREATED WITH {}", forceCallCounter);
     initializeLogger();
   }
-
-  // Delegating Constructor
-  Potential(std::shared_ptr<Parameters> a_params)
-      : Potential(a_params->pot.potential, a_params) {}
 
   virtual ~Potential() {
     SPDLOG_TRACE("DESTROYED AFTER {}\n", forceCallCounter);
@@ -50,11 +43,6 @@ public:
       std::cerr << "Logger is not initialized\n";
     }
   }
-
-  static int fcalls;
-  static int fcallsTotal;
-  static int wu_fcallsTotal;
-  static double totalUserTime;
 
   // Does not take into account the fixed / free atoms
   // Variance here is null when not needed and that's OK
@@ -83,8 +71,10 @@ public:
   }
 };
 
-namespace helper_functions {
-std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params);
-std::shared_ptr<Potential> makePotential(PotType ptype,
-                                         std::shared_ptr<Parameters> params);
-} // namespace helper_functions
+} // namespace eonc
+
+namespace eonc::helper_functions {
+using namespace eonc;
+std::shared_ptr<Potential> makePotential(Parameters &params);
+std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params);
+} // namespace eonc::helper_functions

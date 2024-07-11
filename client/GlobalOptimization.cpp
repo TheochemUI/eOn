@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "GlobalOptimization.h"
-
+namespace eonc {
 GlobalOptimization::GlobalOptimization(Parameters *params) {
   parameters = params;
 }
@@ -18,3 +18,5 @@ GlobalOptimization::GlobalOptimization(Parameters *params) {
 GlobalOptimization::~GlobalOptimization(void) {}
 
 void GlobalOptimization::run(void) { SPDLOG_INFO("HELLO FROM GO\n"); }
+
+} // namespace eonc

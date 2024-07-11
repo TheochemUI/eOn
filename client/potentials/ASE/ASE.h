@@ -10,14 +10,14 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef ASE_POTENTIAL
-#define ASE_POTENTIAL
-
+#pragma once
 #include "../../Potential.h"
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
+
+namespace eonc {
 
 class ASE : public Potential {
 
@@ -31,10 +31,11 @@ private:
                          // forces and energy
 
 public:
-  ASE(shared_ptr<Parameters> a_params);
+  ASE(std::string extpot);
   virtual ~ASE() { SPDLOG_INFO("[ASE] called potential {} times", counter); }
 
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif
+
+} // namespace eonc

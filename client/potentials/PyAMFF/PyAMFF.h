@@ -10,9 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef PYAMFF_POTENTIAL
-#define PYAMFF_POTENTIAL
-
+#pragma once
 #include "../../Potential.h"
 
 // extern "C" void calc_eon(long *nAtoms, const double [], const double [],
@@ -32,4 +30,3 @@ public:
              double *U, double *variance, const double *box);
   bool new_pyamff;
 };
-#endif

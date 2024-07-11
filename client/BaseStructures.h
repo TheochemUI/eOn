@@ -27,6 +27,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+namespace eonc {
 using namespace std::string_literals; // For ""s
 
 // TODO(rg): Maybe put these in a namespace
@@ -53,6 +54,7 @@ enum class PotType {
   TIP4P_H,
   SPCE,
   EAM_AL,
+  EAM_STANDALONE,
   EDIP,
   FEHE,
   LENOSKY_SI,
@@ -118,3 +120,5 @@ enum class TYPE { REACTANT, SADDLE, PRODUCT };
 enum class RATE { HTST, QQHTST };
 enum class FILTER { CUTOFF, FRACTION };
 } // namespace Prefactor
+
+} // namespace eonc

@@ -14,7 +14,7 @@
 
 #include "Matter.h"
 #include "Parameters.h"
-
+namespace eonc {
 class Hessian {
 public:
   Hessian(Parameters *params, Matter *matter);
@@ -37,3 +37,5 @@ private:
   bool calculate(void);
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

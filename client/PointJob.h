@@ -12,12 +12,14 @@
 #pragma once
 
 #include "Job.h"
-#include "Parameters.h"
+#include "Matter.h"
+namespace eonc {
+class PointJob : public Job<PointJob> {
+  Matter &_mat;
 
-class PointJob : public Job {
 public:
-  PointJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
+  PointJob(Matter &mat_a)
+      : _mat{mat_a} {
     log = spdlog::get("combi");
   }
   ~PointJob(void) = default;
@@ -26,3 +28,5 @@ public:
 private:
   std::shared_ptr<spdlog::logger> log;
 };
+
+} // namespace eonc

@@ -11,9 +11,41 @@
 */
 #include "MinimizationJob.h"
 #include "BaseStructures.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
-#include "Optimizer.h"
+#include "magic_enum/magic_enum.hpp"
+namespace eonc {
+
+double MinObjF::getEnergy() const { return _mat.getPotentialEnergy(); }
+
+VectorType MinObjF::getGradient(bool fdstep) const {
+  return -_mat.getForcesFreeV();
+}
+
+VectorType MinObjF::getPositions() const { return _mat.getPositionsFreeV(); }
+
+int MinObjF::degreesOfFreedom() const { return 3 * _mat.numberOfFreeAtoms(); }
+
+bool MinObjF::isConverged() const { return getConvergence() < _convForce; }
+
+double MinObjF::getConvergence() const {
+  switch (_metric) {
+  case ObjectiveFunction::Conv::NORM:
+    return _mat.getForcesFreeV().norm();
+  case ObjectiveFunction::Conv::MAX_ATOM:
+    return _mat.maxForce();
+  case ObjectiveFunction::Conv::MAX_COMPONENT:
+    return _mat.getForces().maxCoeff();
+  default:
+    SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Minimize]"s,
+                    magic_enum::enum_name(_metric));
+    std::exit(1);
+  }
+}
+
+void MinObjF::setPositions(VectorType x) { _mat.setPositionsFreeV(x); }
+
+VectorType MinObjF::difference(VectorType a, VectorType b) {
+  return _mat.pbcV(a - b);
+}
 
 std::vector<std::string> MinimizationJob::run(void) {
   std::string posInFilename("pos.con");
@@ -33,15 +65,15 @@ std::vector<std::string> MinimizationJob::run(void) {
   std::vector<std::string> returnFiles;
   returnFiles.push_back(posOutFilename);
 
-  auto pos = std::make_shared<Matter>(pot, params);
-  pos->con2matter(posInFilename);
+  auto pos = Matter(pot, params);
+  pos.con2matter(posInFilename);
 
   SPDLOG_LOGGER_DEBUG(log, "\nBeginning minimization of {}", posInFilename);
 
   bool converged;
   try {
-    converged = pos->relax(false, params->debug.writeMovies,
-                           params->main.checkpoint, "minimization", "pos");
+    converged = pos.relax(false, params->debug.writeMovies,
+                          params->main.checkpoint, "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
       SPDLOG_LOGGER_DEBUG(log, "Minimization converged within tolerence");
@@ -84,3 +116,5 @@ std::vector<std::string> MinimizationJob::run(void) {
 
   return returnFiles;
 }
+
+} // namespace eonc

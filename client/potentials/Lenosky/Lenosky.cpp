@@ -12,6 +12,8 @@
 
 #include "Lenosky.h"
 
+namespace eonc {
+
 void Lenosky::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
@@ -23,3 +25,5 @@ void Lenosky::force(long N, const double *R, const int *atomicNrs, double *F,
   lenosky_(&N, R, F, U, &box[0], &box[4], &box[8]);
   return;
 }
+
+} // namespace eonc

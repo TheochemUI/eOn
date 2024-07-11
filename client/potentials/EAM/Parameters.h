@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #define NPARAMS 3
-
+namespace eonc {
 const EAM::element_parameters EAM::el_params[NPARAMS] = {
     /*
      * These are the definitions for element parameters and look like:
@@ -47,3 +47,5 @@ const EAM::element_parameters EAM::el_params[NPARAMS] = {
      5.5155,
      {-0.198791, -27.7663, 224.068, -594.101, 1316.31, -2070.62, 1973.14,
       -1012.02, 214.373}}};
+
+}

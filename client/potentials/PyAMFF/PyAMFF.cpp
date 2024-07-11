@@ -27,8 +27,9 @@ extern "C" void nncleanup();
 
 extern "C" void prepfNN(long *nAtoms, int *num_elements, int *max_fps,
                         const int[], int[]);
-
-PyAMFF::PyAMFF(void) {
+namespace eonc {
+PyAMFF::PyAMFF(void)
+    : Potential(PotType::PYAMFF) {
   new_pyamff = true;
   return;
 }
@@ -93,3 +94,5 @@ void PyAMFF::force(long N, const double *R, const int *atomicNrs, double *F,
 
   return;
 }
+
+} // namespace eonc

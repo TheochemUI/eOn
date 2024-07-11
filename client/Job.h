@@ -10,11 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Parameters.h"
-#include "Potential.h"
 #include <string>
 #include <vector>
 
+#include "Matter.h"
+#include "thirdparty/toml.hpp"
+
+namespace eonc {
 /** @defgroup Jobs
  *
  * \brief ClientEON main procedures
@@ -29,45 +31,39 @@
  * @file
  * @ingroup Jobs
  *
- * \brief The job class is used to serve as an abstract class for all jobs,
- *  as well as to call a job at runtime based off of the passed in parameters.
+ * \brief The Job template class is used to serve as a base class for all job
+ * types, providing a common interface to execute jobs at runtime based on the
+ * derived job type.
  *
- * The Static members are used to tell at runtime which job to run as set by the
- * parameters, and therefore as set by the config.init file. About half of the
- * jobs are standalone, while others are run from routines with the same name. A
- * certain subset of jobs do not run optimizers (SEE OVERVIEW) and are
- * documented in their own files accordingly.
+ * The template parameter is used to specify the specific job type, ensuring
+ * compile-time polymorphism and type safety. Each derived job class must
+ * implement the run method, providing the specific behavior for that job.
  *
+ * Jobs can be executed based on runtime parameters, and their behavior can be
+ * configured through the config.init file. The job execution framework supports
+ * both standalone jobs and jobs that are part of larger routines. Some jobs do
+ * not involve optimizers and are documented in their own respective files.
+ *
+ * \tparam T The specific job type derived from the Job base class.
+ *
+ * \note The run method must be implemented by each derived job class.
  */
 
-/**
- * Declaration of job class
- */
-
-class Job {
-private:
-protected:
-  // make const
-  JobType jtype;
-  std::shared_ptr<Parameters> params;
-  std::shared_ptr<Potential> pot;
-
+class JobBase {
 public:
-  Job(std::unique_ptr<Parameters> parameters)
-      : jtype{parameters->main.job},
-        params{std::make_shared<Parameters>(*std::move(parameters))},
-        pot{helper_functions::makePotential(params->pot.potential, params)} {}
-  Job(std::shared_ptr<Potential> potPassed,
-      std::shared_ptr<Parameters> parameters)
-      : jtype{parameters->main.job},
-        params{parameters},
-        pot{potPassed} {}
-  virtual ~Job() = default;
-  //! Virtual run; used solely for dynamic dispatch
+  virtual ~JobBase() = default;
   virtual std::vector<std::string> run() = 0;
-  JobType getType() { return this->jtype; };
 };
 
-namespace helper_functions {
-std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
-} // namespace helper_functions
+template <typename T> class Job : public JobBase {
+public:
+  std::vector<std::string> run() override {
+    return static_cast<T *>(this)->run();
+  }
+};
+
+std::unique_ptr<JobBase>
+makeJob(toml::table &config,
+        std::optional<std::reference_wrapper<Matter>> mat = std::nullopt);
+
+} // namespace eonc

@@ -10,10 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Matter.h"
-#include "BondBoost.h"
+#include "Element.hpp"
+// #include "BondBoost.h"
 #include "HelperFunctions.h"
-#include "ObjectiveFunction.h"
-#include "Optimizer.h"
 #include "SurrogatePotential.h"
 #include <iostream>
 
@@ -23,75 +22,7 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
-using namespace std;
-
-namespace {
-
-const char *elementArray[] = {
-    "Unknown", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na",
-    "Mg",      "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",
-    "Cr",      "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
-    "Kr",      "Rb", "Sr", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag",
-    "Cd",      "In", "Sn", "Sb", "Te", "I",  "Xe", "Cs", "Ba", "La", "Ce", "Pr",
-    "Nd",      "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
-    "Hf",      "Ta", "W",  "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi",
-    "Po",      "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U",  NULL};
-
-// guess the atom type from the atomic mass,
-std::string mass2atom(double atomicmass) {
-  return elementArray[int(atomicmass + .5)];
-}
-
-const int MAXC =
-    100; // maximum number of components for functions matter2con and con2matter
-
-int symbol2atomicNumber(char const *symbol) {
-  int i = 0;
-
-  while (elementArray[i] != NULL) {
-    if (strcmp(symbol, elementArray[i]) == 0) {
-      return i;
-    }
-    i++;
-  }
-  // invalid symbol
-  return -1;
-}
-
-char const *atomicNumber2symbol(int n) { return elementArray[n]; }
-} // namespace
-
-class MatterObjectiveFunction : public ObjectiveFunction {
-public:
-  MatterObjectiveFunction(std::shared_ptr<Matter> matterPassed,
-                          std::shared_ptr<Parameters> parametersPassed)
-      : ObjectiveFunction(matterPassed, parametersPassed) {}
-  ~MatterObjectiveFunction() = default;
-  double getEnergy() { return matter->getPotentialEnergy(); }
-  VectorType getGradient(bool fdstep = false) {
-    return -matter->getForcesFreeV();
-  }
-  void setPositions(VectorType x) { matter->setPositionsFreeV(x); }
-  VectorType getPositions() { return matter->getPositionsFreeV(); }
-  int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
-  bool isConverged() { return getConvergence() < params->optim.convergedForce; }
-  double getConvergence() {
-    if (params->optim.convergenceMetric == "norm") {
-      return matter->getForcesFreeV().norm();
-    } else if (params->optim.convergenceMetric == "max_atom") {
-      return matter->maxForce();
-    } else if (params->optim.convergenceMetric == "max_component") {
-      return matter->getForces().maxCoeff();
-    } else {
-      SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
-                      params->optim.convergenceMetric);
-      std::exit(1);
-    }
-  }
-  VectorType difference(VectorType a, VectorType b) {
-    return matter->pbcV(a - b);
-  }
-};
+namespace eonc {
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
 
@@ -108,7 +39,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   cellInverse = matter.cellInverse;
   velocities = matter.velocities;
 
-  parameters = matter.parameters;
+  mparams = matter.mparams;
 
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
 
@@ -138,23 +69,21 @@ const Matter &Matter::operator=(const Matter &matter) {
 bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
-  if (parameters->structcomp.checkRotation && indistinguishable) {
+  if (structcomp.checkRotation && indistinguishable) {
     return helper_functions::sortedR(*this, matter,
-                                     parameters->structcomp.distanceDifference);
+                                     structcomp.distanceDifference);
   } else if (indistinguishable) {
-    if (this->numberOfFixedAtoms() == 0 and
-        parameters->structcomp.removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and structcomp.removeTranslation)
       helper_functions::translationRemove(*this, matter);
-    return helper_functions::identical(
-        *this, matter, parameters->structcomp.distanceDifference);
-  } else if (parameters->structcomp.checkRotation) {
-    return helper_functions::rotationMatch(
-        *this, matter, parameters->structcomp.distanceDifference);
+    return helper_functions::identical(*this, matter,
+                                       structcomp.distanceDifference);
+  } else if (structcomp.checkRotation) {
+    return helper_functions::rotationMatch(*this, matter,
+                                           structcomp.distanceDifference);
   } else {
-    if (this->numberOfFixedAtoms() == 0 and
-        parameters->structcomp.removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and structcomp.removeTranslation)
       helper_functions::translationRemove(*this, matter);
-    return (parameters->structcomp.distanceDifference) > perAtomNorm(matter);
+    return (structcomp.distanceDifference) > perAtomNorm(matter);
   }
 }
 
@@ -188,13 +117,13 @@ VectorType Matter::pbcV(VectorType diffVector) const {
 
 // Returns the maximum distance between two atoms in the Matter objects.
 double Matter::perAtomNorm(const Matter &matter) {
-  long i = 0;
+  size_t i{0};
   double max_distance = 0.0;
 
   if (matter.numberOfAtoms() == nAtoms) {
     AtomMatrix diff = pbc(positions - matter.positions);
     for (i = 0; i < nAtoms; i++) {
-      max_distance = max(diff.row(i).norm(), max_distance);
+      max_distance = std::max(diff.row(i).norm(), max_distance);
     }
   }
   return max_distance;
@@ -227,7 +156,7 @@ void Matter::resize(const long int length) {
   recomputePotential = true;
 }
 
-long int Matter::numberOfAtoms() const { return (nAtoms); }
+size_t Matter::numberOfAtoms() const { return (nAtoms); }
 
 Matrix3S Matter::getCell() const { return cell; }
 
@@ -258,7 +187,7 @@ VectorType Matter::getPositionsV() const {
 
 AtomMatrix Matter::getPositionsFree() const {
   AtomMatrix ret(numberOfFreeAtoms(), 3);
-  int i, j = 0;
+  size_t i{0}, j{0};
   for (i = 0; i < nAtoms; i++) {
     if (!isFixed(i)) {
       ret.row(j) = positions.row(i);
@@ -268,72 +197,73 @@ AtomMatrix Matter::getPositionsFree() const {
   return ret;
 }
 
-Vector<int> Matter::getAtomicNrsFree() const {
-  return this->atomicNrs.array() * getFreeV().cast<int>().array();
+Vector<size_t> Matter::getAtomicNrsFree() const {
+  return this->atomicNrs.array() * getFreeV().cast<size_t>().array();
 }
 
-bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
-                   string prefixMovie, string prefixCheckpoint) {
-  auto objf = std::make_shared<MatterObjectiveFunction>(
-      std::make_shared<Matter>(*this), parameters);
-  auto optim =
-      helpers::create::mkOptim(objf, parameters->optim.method, parameters);
+// bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
+//                    string prefixMovie, string prefixCheckpoint) {
+//   auto objf =
+//       std::make_shared<MatterObjectiveFunction>(Matter(*this), parameters);
+//   auto optim =
+//       helpers::create::mkOptim(objf, parameters->optim.method, parameters);
 
-  ostringstream min;
-  min << prefixMovie;
-  if (writeMovie) {
-    matter2con(min.str(), false);
-  }
+//   ostringstream min;
+//   min << prefixMovie;
+//   if (writeMovie) {
+//     matter2con(min.str(), false);
+//   }
 
-  int iteration = 0;
-  if (!quiet) {
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
-                        "[Matter]", "Iter", "Step size",
-                        parameters->optim.convergenceMetricLabel, "Energy");
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
-                        "[Matter]", iteration, 0.0, objf->getConvergence(),
-                        getPotentialEnergy());
-  }
+//   int iteration = 0;
+//   if (!quiet) {
+//     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
+//                         "[Matter]", "Iter", "Step size",
+//                         parameters->optim.convergenceMetricLabel, "Energy");
+//     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+//                         "[Matter]", iteration, 0.0, objf->getConvergence(),
+//                         getPotentialEnergy());
+//   }
 
-  while (!objf->isConverged() && iteration < parameters->optim.maxIterations) {
+//   while (!objf->isConverged() && iteration < parameters->optim.maxIterations)
+//   {
 
-    AtomMatrix pos = getPositions();
+//     AtomMatrix pos = getPositions();
 
-    optim->step(parameters->optim.maxMove);
-    iteration++;
-    setPositionsFreeV(objf->getPositions());
+//     optim->step(parameters->optim.maxMove);
+//     iteration++;
+//     setPositionsFreeV(objf->getPositions());
 
-    double stepSize =
-        helper_functions::maxAtomMotion(pbc(getPositions() - pos));
+//     double stepSize =
+//         helper_functions::maxAtomMotion(pbc(getPositions() - pos));
 
-    if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, stepSize,
-                          objf->getConvergence(), getPotentialEnergy());
-    }
+//     if (!quiet) {
+//       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+//                           "[Matter]", iteration, stepSize,
+//                           objf->getConvergence(), getPotentialEnergy());
+//     }
 
-    if (writeMovie) {
-      matter2con(min.str(), true);
-    }
+//     if (writeMovie) {
+//       matter2con(min.str(), true);
+//     }
 
-    if (checkpoint) {
-      ostringstream chk;
-      chk << prefixCheckpoint << "_cp";
-      matter2con(chk.str(), false);
-    }
-  }
+//     if (checkpoint) {
+//       ostringstream chk;
+//       chk << prefixCheckpoint << "_cp";
+//       matter2con(chk.str(), false);
+//     }
+//   }
 
-  if (iteration == 0) {
-    if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, 0.0, objf->getConvergence(),
-                          getPotentialEnergy());
-    }
-  }
-  //    bool converged = optimizer->run(parameters->optMaxIterations,
-  //    parameters->optMaxMove);
-  return objf->isConverged();
-}
+//   if (iteration == 0) {
+//     if (!quiet) {
+//       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+//                           "[Matter]", iteration, 0.0, objf->getConvergence(),
+//                           getPotentialEnergy());
+//     }
+//   }
+//   //    bool converged = optimizer->run(parameters->optMaxIterations,
+//   //    parameters->optMaxMove);
+//   return objf->isConverged();
+// }
 
 VectorType Matter::getPositionsFreeV() const {
   return VectorType::Map(getPositionsFree().data(), 3 * numberOfFreeAtoms());
@@ -355,7 +285,7 @@ void Matter::setPositionsV(const VectorType pos) {
 
 void Matter::setPositionsFree(const AtomMatrix pos) {
   // FIXME: Ensure pos and existing data are in the same form with atom ids
-  int i, j = 0;
+  size_t i{0}, j{0};
   for (i = 0; i < nAtoms; i++) {
     if (!isFixed(i)) {
       positions.row(i) = pos.row(j);
@@ -369,25 +299,25 @@ void Matter::setPositionsFreeV(const VectorType pos) {
   setPositionsFree(AtomMatrix::Map(pos.data(), numberOfFreeAtoms(), 3));
 }
 
-AtomMatrix Matter::getBiasForces() {
-  if (biasPotential != NULL) {
-    biasPotential->boost();
-  }
-  return biasForces.array() * getFree().array();
-}
+// AtomMatrix Matter::getBiasForces() {
+//   if (biasPotential != NULL) {
+//     biasPotential->boost();
+//   }
+//   return biasForces.array() * getFree().array();
+// }
 
-void Matter::setBiasPotential(BondBoost *bondBoost) {
-  biasPotential = bondBoost;
-}
+// void Matter::setBiasPotential(BondBoost *bondBoost) {
+//   biasPotential = bondBoost;
+// }
 
-void Matter::setBiasForces(const AtomMatrix bf) {
-  biasForces = bf.array() * getFree().array();
-}
+// void Matter::setBiasForces(const AtomMatrix bf) {
+//   biasForces = bf.array() * getFree().array();
+// }
 // return forces applied on all atoms in array 'force'
 AtomMatrix Matter::getForces() {
   computePotential();
   AtomMatrix ret = forces;
-  int i;
+  size_t i{0};
   for (i = 0; i < nAtoms; i++) {
     if (isFixed[i]) {
       ret.row(i).setZero();
@@ -403,7 +333,7 @@ VectorType Matter::getForcesV() {
 AtomMatrix Matter::getForcesFree() {
   AtomMatrix allForces = getForces();
   AtomMatrix ret(numberOfFreeAtoms(), 3);
-  int i, j = 0;
+  size_t i{0}, j{0};
   for (i = 0; i < nAtoms; i++) {
     if (!isFixed[i]) {
       ret.row(j) = allForces.row(i);
@@ -445,12 +375,12 @@ void Matter::setMass(long int indexAtom, double mass) {
 }
 
 void Matter::setMasses(VectorType massesIn) {
-  for (int i = 0; i < nAtoms; i++) {
+  for (size_t i = 0; i < nAtoms; i++) {
     masses[i] = massesIn[i];
   }
 }
 
-long Matter::getAtomicNr(long int indexAtom) const {
+size_t Matter::getAtomicNr(size_t indexAtom) const {
   return (atomicNrs[indexAtom]);
 }
 
@@ -480,7 +410,7 @@ double Matter::getPotentialEnergy() {
 
 double Matter::getKineticEnergy() const {
   double K = 0;
-  for (long int i = 0; i < nAtoms; i++) {
+  for (size_t i = 0; i < nAtoms; i++) {
     if (!isFixed[i])
       K += masses[i] * 0.5 * velocities.row(i).squaredNorm();
   }
@@ -506,7 +436,7 @@ void Matter::resetForceCalls() {
 void Matter::matter2xyz(std::string filename,
                         bool append /*Append if file already exist*/) {
   FILE *file;
-  long int i;
+  size_t i;
   filename += ".xyz";
   if (append) {
     file = fopen(filename.c_str(), "ab");
@@ -514,7 +444,7 @@ void Matter::matter2xyz(std::string filename,
     file = fopen(filename.c_str(), "wb");
   }
   if (file == 0) {
-    cerr << "Can't create file " << filename << endl;
+    SPDLOG_LOGGER_CRITICAL(m_log, "[ERROR] Can't create {}", filename);
     exit(1);
   }
   fprintf(file, "%ld\nGenerated by EON\n", numberOfAtoms());
@@ -525,8 +455,9 @@ void Matter::matter2xyz(std::string filename,
   }
 
   for (i = 0; i < numberOfAtoms(); i++) {
+    // TODO(rg): Check this a bit, seems to have bad types
     fprintf(file, "%s\t%11.6f\t%11.6f\t%11.6f\n",
-            atomicNumber2symbol(getAtomicNr(i)), getPosition(i, 0),
+            atomicNumber2symbol(getAtomicNr(i)).c_str(), getPosition(i, 0),
             getPosition(i, 1), getPosition(i, 2));
   }
   fclose(file);
@@ -551,15 +482,14 @@ bool Matter::matter2con(std::string filename, bool append) {
 }
 
 bool Matter::matter2con(FILE *file) {
-  long int i;
-  int j;
-  long int Nfix = 0;  // Nfix to store the number of fixed atoms
-  int Ncomponent = 0; // used to store the number of components (eg water: two
-                      // components H and O)
-  int first[MAXC]; // to store the position of the first atom of each component
-                   // plus at the end the total number of atoms
+  size_t i{0}, j{0};
+  size_t Nfix = 0;       // Nfix to store the number of fixed atoms
+  size_t Ncomponent = 0; // used to store the number of components (eg water:
+                         // two components H and O)
+  size_t first[MAXC];    // to store the position of the first atom of each
+                         // component plus at the end the total number of atoms
   double mass[MAXC];
-  long atomicNrs[MAXC];
+  size_t atomicNrs[MAXC];
   first[0] = 0;
 
   if (usePeriodicBoundaries) {
@@ -613,9 +543,9 @@ bool Matter::matter2con(FILE *file) {
   fputs(headerCon5, file);
   fputs(headerCon6, file);
 
-  fprintf(file, "%d\n", Ncomponent);
+  fprintf(file, "%lud\n", Ncomponent);
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%d ", first[j + 1] - first[j]);
+    fprintf(file, "%lud ", first[j + 1] - first[j]);
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
@@ -623,8 +553,8 @@ bool Matter::matter2con(FILE *file) {
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
-    fprintf(file, "Coordinates of Component %d\n", j + 1);
+    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).c_str());
+    fprintf(file, "Coordinates of Component %lud\n", j + 1);
     for (i = first[j]; i < first[j + 1]; i++) {
       fprintf(file, "%22.17f %22.17f %22.17f %d %4ld\n", getPosition(i, 0),
               getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
@@ -665,8 +595,7 @@ bool Matter::con2matter(FILE *file) {
   //        // return false for error
   //    }
 
-  long int i;
-  int j;
+  size_t i{0}, j{0};
 
   fgets(headerCon2, sizeof(line), file);
 
@@ -709,9 +638,9 @@ bool Matter::con2matter(FILE *file) {
   fgets(headerCon6, sizeof(line), file);
 
   fgets(line, sizeof(line), file);
-  int Ncomponent; // Number of components or different types of atoms  (eg
-                  // water: two components H and O)
-  if (sscanf(line, "%d", &Ncomponent) == 0) {
+  size_t Ncomponent; // Number of components or different types of atoms  (eg
+                     // water: two components H and O)
+  if (sscanf(line, "%lud", &Ncomponent) == 0) {
     SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
                               "component is assumed instead");
     Ncomponent = 1;
@@ -726,8 +655,8 @@ bool Matter::con2matter(FILE *file) {
 
   // stores the position of the first atom of each element
   // 'MAXC+1': the last element is used to store the total number of atom
-  long int first[MAXC + 1];
-  long int Natoms = 0;
+  size_t first[MAXC + 1];
+  size_t Natoms = 0;
   first[0] = 0;
 
   // Now we want to know the number of atom of each type. Ex with H2O, two
@@ -741,7 +670,7 @@ bool Matter::con2matter(FILE *file) {
           m_log, "input con file does not list the number of each component");
       return false;
     }
-    if (sscanf(split, "%ld", &Natoms) != 1) {
+    if (sscanf(split, "%lud", &Natoms) != 1) {
       SPDLOG_LOGGER_ERROR(
           m_log, "input con file does not list the number of each component");
       return false;
@@ -817,19 +746,17 @@ void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
-      potential = helper_functions::makePotential(parameters->pot.potential,
-                                                  parameters);
     }
     auto surrogatePotential =
         std::dynamic_pointer_cast<SurrogatePotential>(potential);
     if (surrogatePotential) {
       // Surrogate potential case
       auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
-          this->getPositionsFree(), this->getAtomicNrsFree(), cell);
+          this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(), cell);
       // Now populate full structures
       this->potentialEnergy = freePE;
       this->energyVariance = vari;
-      for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
+      for (size_t idx{0}, jdx{0}; idx < nAtoms; idx++) {
         if (!isFixed(idx)) {
           forces.row(idx) = freeForces.row(jdx);
           jdx++;
@@ -837,7 +764,8 @@ void Matter::computePotential() {
       }
     } else {
       // Non-surrogate potential case
-      auto [pE, frcs] = potential->get_ef(positions, atomicNrs, cell);
+      auto [pE, frcs] =
+          potential->get_ef(positions, atomicNrs.cast<int>(), cell);
       potentialEnergy = pE;
       forces = frcs;
     }
@@ -845,11 +773,11 @@ void Matter::computePotential() {
     forceCalls += 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 && parameters->main.removeNetForce) {
+    if (isFixed.sum() == 0 && mparams.removeNetForce) {
       FixedVecType<3> tempForce(3);
       tempForce = forces.colwise().sum() / nAtoms;
 
-      for (long int i = 0; i < nAtoms; i++) {
+      for (size_t i = 0; i < nAtoms; i++) {
         forces.row(i) -= tempForce.transpose();
       }
     }
@@ -875,19 +803,19 @@ double Matter::maxForce(void) {
 
   // I think this can be done in one line with the rowwise method
   double maxForce = 0.0;
-  for (int i = 0; i < nAtoms; i++) {
+  for (size_t i = 0; i < nAtoms; i++) {
     if (getFixed(i)) {
       continue;
     }
-    maxForce = max(forces.row(i).norm(), maxForce);
+    maxForce = std::max(forces.row(i).norm(), maxForce);
   }
   return maxForce;
 }
 
-Vector<int> Matter::getAtomicNrs() const { return this->atomicNrs; }
+Vector<size_t> Matter::getAtomicNrs() const { return this->atomicNrs; }
 
-void Matter::setAtomicNrs(const Vector<int> atmnrs) {
-  if (atmnrs.size() != this->nAtoms) {
+void Matter::setAtomicNrs(const Vector<size_t> atmnrs) {
+  if (static_cast<size_t>(atmnrs.size()) != this->nAtoms) {
     throw std::invalid_argument(
         "Vector of atomic numbers not equal to the number of atoms");
   } else {
@@ -897,7 +825,7 @@ void Matter::setAtomicNrs(const Vector<int> atmnrs) {
 
 AtomMatrix Matter::getFree() const {
   AtomMatrix ret(nAtoms, 3);
-  int i, j;
+  size_t i{0}, j{0};
   for (i = 0; i < nAtoms; i++) {
     for (j = 0; j < 3; j++) {
       ret(i, j) = double(!bool(isFixed(i)));
@@ -922,14 +850,14 @@ void Matter::setForces(const AtomMatrix f) {
   forces = f.array() * getFree().array();
 }
 
-AtomMatrix Matter::getAccelerations() {
-  AtomMatrix totF = getForces() + getBiasForces();
-  AtomMatrix ret = totF.array() * getFree().array();
-  ret.col(0).array() /= masses.array();
-  ret.col(1).array() /= masses.array();
-  ret.col(2).array() /= masses.array();
-  return ret;
-}
+// AtomMatrix Matter::getAccelerations() {
+//   AtomMatrix totF = getForces() + getBiasForces();
+//   AtomMatrix ret = totF.array() * getFree().array();
+//   ret.col(0).array() /= masses.array();
+//   ret.col(1).array() /= masses.array();
+//   ret.col(2).array() /= masses.array();
+//   return ret;
+// }
 
 VectorType Matter::getMasses() const { return masses; }
 
@@ -947,15 +875,14 @@ bool Matter::matter2convel(std::string filename) {
 }
 
 bool Matter::matter2convel(FILE *file) {
-  long int i;
-  int j;
-  long int Nfix = 0;  // Nfix to store the number of fixed atoms
-  int Ncomponent = 0; // used to store the number of components (eg water: two
-                      // components H and O)
-  int first[MAXC]; // to store the position of the first atom of each component
-                   // plus at the end the total number of atoms
+  size_t i{0}, j{0};
+  size_t Nfix = 0;       // Nfix to store the number of fixed atoms
+  size_t Ncomponent = 0; // used to store the number of components (eg water:
+                         // two components H and O)
+  size_t first[MAXC];    // to store the position of the first atom of each
+                         // component plus at the end the total number of atoms
   double mass[MAXC];
-  long atomicNrs[MAXC];
+  size_t atomicNrs[MAXC];
   first[0] = 0;
 
   if (usePeriodicBoundaries) {
@@ -1009,9 +936,9 @@ bool Matter::matter2convel(FILE *file) {
   fputs(headerCon5, file);
   fputs(headerCon6, file);
 
-  fprintf(file, "%d\n", Ncomponent);
+  fprintf(file, "%lud\n", Ncomponent);
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%d ", first[j + 1] - first[j]);
+    fprintf(file, "%lud ", first[j + 1] - first[j]);
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
@@ -1021,8 +948,8 @@ bool Matter::matter2convel(FILE *file) {
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
-    fprintf(file, "Coordinates of Component %d\n", j + 1);
+    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).c_str());
+    fprintf(file, "Coordinates of Component %lud\n", j + 1);
     for (i = first[j]; i < first[j + 1]; i++) {
       fprintf(file, "%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", getPosition(i, 0),
               getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
@@ -1030,8 +957,8 @@ bool Matter::matter2convel(FILE *file) {
   }
   fprintf(file, "\n");
   for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
-    fprintf(file, "Velocities of Component %d\n", j + 1);
+    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).c_str());
+    fprintf(file, "Velocities of Component %lud\n", j + 1);
     for (i = first[j]; i < first[j + 1]; i++) {
       fprintf(file, "%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", velocities(i, 0),
               velocities(i, 1), velocities(i, 2), getFixed(i), i);
@@ -1071,8 +998,7 @@ bool Matter::convel2matter(FILE *file) {
   //        // return false for error
   //    }
 
-  long int i;
-  int j;
+  size_t i{0}, j{0};
 
   fgets(headerCon2, sizeof(line), file);
 
@@ -1115,9 +1041,9 @@ bool Matter::convel2matter(FILE *file) {
   fgets(headerCon6, sizeof(line), file);
 
   fgets(line, sizeof(line), file);
-  int Ncomponent; // Number of components or different types of atoms. For
-                  // instance H2O has two components (H and O).
-  if (sscanf(line, "%d", &Ncomponent) == 0) {
+  size_t Ncomponent; // Number of components or different types of atoms. For
+                     // instance H2O has two components (H and O).
+  if (sscanf(line, "%lud", &Ncomponent) == 0) {
     SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
                               "component is assumed instead");
     Ncomponent = 1;
@@ -1132,14 +1058,14 @@ bool Matter::convel2matter(FILE *file) {
   /* to store the position of the
       first atom of each element 'MAXC+1': the last element is used to store the
      total number of atom.*/
-  long int first[MAXC + 1];
-  long int Natoms = 0;
+  size_t first[MAXC + 1];
+  size_t Natoms = 0;
   first[0] = 0;
 
   // Now we want to know the number of atom of each type. Ex with H2O, two
   // hydrogens and one oxygen
   for (j = 0; j < Ncomponent; j++) {
-    fscanf(file, "%ld", &Natoms);
+    fscanf(file, "%lud", &Natoms);
     first[j + 1] = Natoms + first[j];
   }
 
@@ -1204,7 +1130,7 @@ void Matter::writeTibble(std::string fname) {
   double eSys = this->getPotentialEnergy();
   AtomMatrix pos = this->getPositions();
   out.print("x y z fx fy fz energy mass symbol atmID fixed\n");
-  for (auto idx{0}; idx < this->numberOfAtoms(); idx++) {
+  for (size_t idx{0}; idx < this->numberOfAtoms(); idx++) {
     out.print(
         "{x} {y} {z} {fx} {fy} {fz} {energy} {mass} {symbol} {idx} {fixed}\n",
         "x"_a = pos.row(idx)[0], "y"_a = pos.row(idx)[1],
@@ -1237,3 +1163,5 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+
+} // namespace eonc

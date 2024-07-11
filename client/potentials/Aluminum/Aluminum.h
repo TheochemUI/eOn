@@ -9,10 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-//-----------------------------------------------------------------------------------
-#ifndef ALUMINUM_POTENTIAL
-#define ALUMINUM_POTENTIAL
 
+#pragma once
 #include "../../Potential.h"
 
 /** External function implemented in Fortran
@@ -32,16 +30,19 @@ extern "C" {
 void potinit_();
 }
 
+namespace eonc {
+
 /** Aluminum potential.*/
 class Aluminum : public Potential {
 public:
-  Aluminum(std::shared_ptr<Parameters> params)
-      : Potential(PotType::EAM_AL, params) {
+  Aluminum()
+      : Potential(PotType::EAM_AL) {
     potinit_();
   };
-  ~Aluminum(void){};
+  ~Aluminum(void) {};
   // To satisfy interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif
+
+} // namespace eonc

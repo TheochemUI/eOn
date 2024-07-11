@@ -22,11 +22,11 @@
 
 namespace py = pybind11;
 
-ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
-    : Potential(PotType::ASE_ORCA, a_params),
+ASEOrcaPot::ASEOrcaPot(std::string extpot)
+    : Potential(PotType::ASE_ORCA),
       guard{} {
   counter = 1;
-  std::string py_file = a_params->extPotPath;
+  std::string py_file = extpot;
 
   // import
   try {

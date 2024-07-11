@@ -10,24 +10,23 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef NEWPOT_INTERFACE
-#define NEWPOT_INTERFACE
+#pragma once
 
 #include "../../Potential.h"
-
+namespace eonc {
 /** Template to use if user want to provide potential. */
 class NewPot : public Potential {
 
 private:
-  //	Variables
+  // Variables
   double fake1;
   double fake2;
 
 public:
   // Functions
   // constructor and destructor
-  NewPot(std::shared_ptr<Parameters> p)
-      : Potential(p),
+  NewPot()
+      : Potential(PotType::NEW),
         fake1{0},
         fake2{0} {};
 
@@ -37,4 +36,4 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif
+} // namespace eonc

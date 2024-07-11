@@ -11,16 +11,15 @@
 */
 
 #include "AMS_IO.h"
-#include <iostream>
 #include <string>
 #include <unistd.h>
 
-AMS_IO::AMS_IO(std::shared_ptr<Parameters> p)
-    : Potential(PotType::AMS_IO, p) {
-  engine = p->engine.c_str();
-  forcefield = p->forcefield.c_str();
-  model = p->model.c_str();
-  xc = p->xc.c_str();
+AMS_IO::AMS_IO(AMSParams amsp)
+    : Potential(PotType::AMS_IO) {
+  engine = amsp.engine.c_str();
+  forcefield = amsp.forcefield.c_str();
+  model = amsp.model.c_str();
+  xc = amsp.xc.c_str();
   return;
 }
 

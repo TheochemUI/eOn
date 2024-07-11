@@ -11,12 +11,10 @@
 */
 #include <csignal>
 #include <limits>
-#include <time.h>
-#include <utility>
 
-#include "HelperFunctions.h"
 #include "Parameters.h"
 #include "Potential.h"
+
 #ifdef WITH_CATLEARN
 #include "potentials/CatLearnPot/CatLearnPot.h"
 #endif
@@ -103,13 +101,7 @@
 #include "potentials/XTBPot/XTBPot.h"
 #endif
 
-#include <limits>
-
-// TODO(rg): These aren't really used anymore, just there for eyecandy
-int Potential::fcalls = 0;
-int Potential::fcallsTotal = 0;
-int Potential::wu_fcallsTotal = 0;
-double Potential::totalUserTime = 0.0;
+namespace eonc {
 
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
                                                  const Vector<int> atmnrs,
@@ -127,115 +119,116 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
   return std::make_tuple(energy, forces);
 };
 
-namespace helper_functions {
-std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params) {
-  return makePotential(params->pot.potential, params);
+} // namespace eonc
+namespace eonc::helper_functions {
+std::shared_ptr<Potential> makePotential(Parameters &a_p) {
+  return makePotential(a_p.pot.potential, a_p);
 }
-std::shared_ptr<Potential> makePotential(PotType ptype,
-                                         std::shared_ptr<Parameters> params) {
+std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &a_p) {
   switch (ptype) {
-  // TODO: Every potential must know their own type
   case PotType::EMT: {
-    return (std::make_shared<EffectiveMediumTheory>(params));
+    return (std::make_shared<EffectiveMediumTheory>(a_p.pot.EMTRasmussen,
+                                                    a_p.main.usePBC));
     break;
   }
   case PotType::EXT: {
-    return (std::make_shared<ExtPot>(params));
+    return (std::make_shared<ExtPot>(a_p.pot.extPotPath));
     break;
   }
   case PotType::LJ: {
-    return (std::make_shared<LJ>(params));
+    return (std::make_shared<LJ>(a_p.pot.lj));
     break;
   }
   case PotType::LJCLUSTER: {
-    return (std::make_shared<LJCluster>(params));
+    return (std::make_shared<LJCluster>(a_p.pot.lj));
     break;
   }
   case PotType::MORSE_PT: {
-    return (std::make_shared<Morse>(params));
+    return (std::make_shared<Morse>(a_p.pot.mpar));
     break;
   }
 #ifdef NEW_POT
   case PotType::NEW: {
-    return (std::make_shared<NewPot>(params));
+    return (std::make_shared<NewPot>(a_p));
     break;
   }
 #endif
 #ifdef CUH2_POT
   case PotType::CUH2: {
-    return (std::make_shared<CuH2>(params));
+    return (std::make_shared<CuH2>());
     break;
   }
 #endif
 #ifdef IMD_POT
   case PotType::IMD: {
-    return (std::make_shared<IMD>(params));
+    return (std::make_shared<IMD>());
     break;
   }
 #endif
 #ifdef WITH_WATER
   case PotType::TIP4P: {
-    return (std::make_shared<Tip4p>(params));
+    return (std::make_shared<Tip4p>());
     break;
   }
   case PotType::SPCE: {
-    return (std::make_shared<SpceCcl>(params));
+    return (std::make_shared<SpceCcl>(a_p));
     break;
   }
 #ifdef WITH_FORTRAN
   case PotType::TIP4P_PT: {
-    return (std::make_shared<Tip4p_Pt>(params));
+    return (std::make_shared<Tip4p_Pt>(a_p));
     break;
   }
   case PotType::TIP4P_H: {
-    return (std::make_shared<Tip4p_H>(params));
+    return (std::make_shared<Tip4p_H>(a_p));
     break;
   }
 #endif
 #endif
 #ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
-    return (std::make_shared<Aluminum>(params));
+    return (std::make_shared<Aluminum>());
     break;
   }
   case PotType::EDIP: {
-    return (std::make_shared<EDIP>(params));
+    return (std::make_shared<EDIP>());
     break;
   }
   case PotType::FEHE: {
-    return (std::make_shared<FeHe>(params));
+    return (std::make_shared<FeHe>());
     break;
   }
   case PotType::LENOSKY_SI: {
-    return (std::make_shared<Lenosky>(params));
+    return (std::make_shared<Lenosky>());
     break;
   }
   case PotType::SW_SI: {
-    return (std::make_shared<SW>(params));
+    return (std::make_shared<SW>());
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (std::make_shared<Tersoff>(params));
+    return (std::make_shared<Tersoff>());
     break;
   }
 #endif
 #ifndef WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
-    return (std::make_shared<VASP>(params));
+    return (std::make_shared<VASP>(a_p));
     break;
   }
 #endif
 #endif
 #ifdef LAMMPS_POT
   case PotType::LAMMPS: {
-    return (std::make_shared<lammps>(params));
+    return (std::make_shared<lammps>());
     break;
   }
 #endif
 #ifdef EONMPI
   case PotType::MPI: {
-    return (std::make_shared<MPIPot>(params));
+    return (
+        std::make_shared<MPIPot>(a_p.MPIPotentialRank, a_p.pot.MPIPollPeriod));
     break;
   }
 #endif
@@ -248,7 +241,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #endif
 #ifdef ASE_POT
   case PotType::ASE_POT: {
-    return (std::make_shared<ASE_POT>(params));
+    return (std::make_shared<ASE_POT>(a_p.pot.extPotPath));
     break;
   }
 #endif
@@ -268,11 +261,11 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   // }
 #ifdef WITH_AMS
   case PotType::AMS: {
-    return (std::make_shared<AMS>(params));
+    return (std::make_shared<AMS>(a_p.ams));
     break;
   }
   case PotType::AMS_IO: {
-    return (std::make_shared<AMS_IO>(params));
+    return (std::make_shared<AMS_IO>(a_p.ams));
     break;
   }
 #endif
@@ -289,20 +282,20 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   // }
 #ifdef WITH_CATLEARN
   case PotType::CatLearn: {
-    return (std::make_shared<CatLearnPot>(params));
+    return (std::make_shared<CatLearnPot>(a_p.catl));
     break;
   }
 #endif
 // TODO: Handle Fortran interaction
 #ifdef WITH_XTB
   case PotType::XTB: {
-    return (std::make_shared<XTBPot>(params));
+    return (std::make_shared<XTBPot>(a_p));
     break;
   }
 #endif
 #ifdef WITH_ASE_ORCA
   case PotType::ASE_ORCA: {
-    return (std::make_shared<ASEOrcaPot>(params));
+    return (std::make_shared<ASEOrcaPot>(a_p.aseorca));
     break;
   }
 #endif
@@ -314,4 +307,4 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 }
 
-} // namespace helper_functions
+} // namespace eonc::helper_functions

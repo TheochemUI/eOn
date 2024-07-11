@@ -10,17 +10,15 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#ifndef EXT_POT
-#define EXT_POT
-
+#pragma once
 #include "../../Potential.h"
-
+namespace eonc {
 class ExtPot : public Potential {
 
 public:
-  ExtPot(std::shared_ptr<Parameters> p)
-      : Potential(p),
-        eon_extpot_path{p->pot.extPotPath.c_str()} {};
+  ExtPot(std::string extPotPath)
+      : Potential(PotType::EXT),
+        eon_extpot_path{extPotPath.c_str()} {};
   ~ExtPot();
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -33,4 +31,4 @@ private:
   const char *eon_extpot_path;
 };
 
-#endif
+}

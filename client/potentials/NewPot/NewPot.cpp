@@ -11,12 +11,12 @@
 */
 
 #include "NewPot.h"
-
+namespace eonc {
 void NewPot::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
-// adress to supercell size
+// address to supercell size
 void NewPot::force(long N, const double *R, const int *atomicNrs, double *F,
                    double *U, double *variance, const double *box) {
   variance = nullptr;
@@ -30,3 +30,5 @@ void NewPot::force(long N, const double *R, const int *atomicNrs, double *F,
   *U = fake2;
   return;
 }
+
+} // namespace eonc

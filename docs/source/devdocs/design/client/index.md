@@ -7,5 +7,7 @@ Guidelines and rationale for the `C++` core of eOn.
 :caption: Components
 
 types
+memory
 parameters
+potentials
 ```
