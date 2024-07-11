@@ -19,7 +19,7 @@
 // #include "MonteCarloJob.h"
 // #include "NudgedElasticBandJob.h"
 // #include "ParallelReplicaJob.h"
-#include "Parameters.h"
+#include "BaseStructures.h"
 #include "Parser.hpp"
 #include "PointJob.h"
 // #include "PrefactorJob.h"
@@ -41,10 +41,8 @@ std::unique_ptr<JobBase>
 makeJob(toml::table &config,
         std::optional<std::reference_wrapper<Matter>> mat) {
   config_section(config, "Main");
-  auto jtype = magic_enum::enum_cast<JobType>(
-      config["Main"]["job"].value<std::string>().value(),
-      magic_enum::case_insensitive);
-  switch (jtype.value()) {
+  auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
+  switch (jtype) {
   // case JobType::Process_Search: {
   //   return (std::make_unique<ProcessSearchJob>(std::move(params)));
   //   break;
