@@ -51,39 +51,9 @@ class Matter {
 public:
   ~Matter() = default;
   Matter(std::shared_ptr<Potential> pot)
-      : potential{pot},
-        usePeriodicBoundaries{true},
-        recomputePotential{true},
-        forceCalls{0},
-        nAtoms{0},
-        positions{MatrixType::Zero(0, 3)},
-        velocities{MatrixType::Zero(0, 3)},
-        forces{MatrixType::Zero(0, 3)},
-        biasForces{MatrixType::Zero(0, 3)},
-        biasPotential{nullptr},
-        masses{VectorType::Zero(0)},
-        atomicNrs{Vector<size_t>::Zero(0)},
-        isFixed{Vector<int>::Zero(0)},
-        cell{Matrix3S::Zero()},
-        cellInverse{Matrix3S::Zero()},
-        energyVariance{0.0},
-        potentialEnergy{0.0} {
-
+      : potential{pot} {
     m_log = spdlog::get("combi");
-    if (spdlog::get("matters")) {
-      m_log = spdlog::get("matters");
-    } else {
-      m_log = spdlog::basic_logger_mt("matters", "_matter.log", true);
-    }
-  } // the number of atoms shall be set later
-    // using resize()
-  // TODO: This is a placeholder, it delegates to the standard constructor
-  // Matter(std::shared_ptr<Parameters> parameters)
-  //     : Matter(parameters.get()) {
-  // } // the number of atoms shall be set later using resize()
-  // Matter(Parameters *parameters,
-  //        long int nAtoms);      // prepare the object for use with nAtoms
-  //        atoms
+  }
   Matter(const Matter &matter);                  // create a copy of matter
   const Matter &operator=(const Matter &matter); // copy the matter object
   // bool operator==(const Matter& matter); // true if differences in positions
@@ -209,12 +179,11 @@ public:
 
 private:
   std::shared_ptr<spdlog::logger> m_log;
-  std::shared_ptr<Potential>
-      potential; // pointer to function calculating the energy and forces
+  std::shared_ptr<Potential> potential;
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
   bool recomputePotential;    // boolean indicating if the potential energy
                               // and forces need to be recalculated
-  size_t forceCalls; // keep track of how many force calls have been performed
+  size_t forceCalls{0};
 
   // CON file header information, which is not used in the eon code
   char headerCon1[512];
@@ -230,19 +199,20 @@ private:
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
-  size_t nAtoms;
-  AtomMatrix positions;
-  AtomMatrix velocities;
-  AtomMatrix forces;
-  AtomMatrix biasForces;
-  BondBoost *biasPotential;
-  VectorType masses;
-  Vector<size_t> atomicNrs;
-  Vector<int> isFixed; // array of bool, false for movable atom, true for fixed
-  Matrix3S cell;
-  Matrix3S cellInverse;
-  double energyVariance;
-  double potentialEnergy;
+  size_t nAtoms{0};
+  AtomMatrix positions{MatrixType::Zero(0, 3)};
+  AtomMatrix velocities{MatrixType::Zero(0, 3)};
+  AtomMatrix forces{MatrixType::Zero(0, 3)};
+  AtomMatrix biasForces{MatrixType::Zero(0, 3)};
+  BondBoost *biasPotential{nullptr};
+  VectorType masses{VectorType::Zero(0)};
+  Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
+  Vector<int> isFixed{Vector<int>::Zero(
+      0)}; // array of bool, false for movable atom, true for fixed
+  Matrix3S cell{Matrix3S::Zero()};
+  Matrix3S cellInverse{Matrix3S::Zero()};
+  double energyVariance{0.0};
+  double potentialEnergy{0.0};
 };
 
 } // namespace eonc
