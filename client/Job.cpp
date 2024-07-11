@@ -38,7 +38,7 @@
 namespace eonc {
 
 std::unique_ptr<JobBase>
-makeJob(toml::table &config,
+makeJob(const toml::table &config,
         std::optional<std::reference_wrapper<Matter>> mat) {
   config_section(config, "Main");
   auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
