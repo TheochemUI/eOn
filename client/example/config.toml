@@ -1,0 +1,19 @@
+[Main]
+job = "saddle_search"
+random_seed = 1573
+finite_difference = 0.001
+
+[Saddle_Search]
+min_mode_method = "dimer"
+
+[Potential]
+potential = "morse_pt"
+
+[Optimizer]
+opt_method = "lbfgs"
+converged_force = 0.001
+max_iterations = 1000
+
+[Dimer]
+converged_angle=5.0
+rotations_max=10
