@@ -21,10 +21,10 @@ namespace eonc::pot {
 void zeroForceOut(const size_t &nAtoms, ForceOut *efvd);
 
 template <typename T> class registry {
-public:
   std::vector<size_t> instanceForceCalls;
   std::vector<bool> instanceActive;
 
+public:
   registry() { addInstance(); }
 
   void incrementForceCalls() {
