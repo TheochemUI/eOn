@@ -22,8 +22,9 @@ void LJ::setParameters(const Params &ljp) {
   return;
 }
 
-double LJ::calc_cutoffU(const LJ::Params &p) {
-  return (4 * u0 * (pow(psi / cutoff_R, 12) - pow(psi / cutoff_R, 6)));
+double LJ::calc_cutoffU(const LJ::Params &p_a) {
+  return (4 * p_a.u0 *
+          (pow(p_a.psi / p_a.cutoff_R, 12) - pow(p_a.psi / p_a.cutoff_R, 6)));
 }
 
 void LJ::forceImpl(const ForceInput &params, ForceOut *efvd) {
