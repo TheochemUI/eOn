@@ -17,8 +17,10 @@
 #include <vector>
 
 namespace eonc::pot {
+// Safe mode checks
 // Typically this is done by the caller, however it is here as a sanity check
 void zeroForceOut(const size_t &nAtoms, ForceOut *efvd);
+void checkParams(const ForceInput &params);
 
 template <typename T> class registry {
   std::vector<size_t> instanceForceCalls;
