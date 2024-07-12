@@ -57,40 +57,39 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
   REQUIRE(pot1->getTotalForceCalls() == 2);
 }
 
-// TODO(rg): Static variables, so there's no way to have multiple tests, since
-// state is retained... TEST_CASE("Multiple potential instances", "[potential]")
-// {
-//   const auto config =
-//       toml::table{{"Potential", toml::table{{"potential", "LJ"}}}};
+TEST_CASE("Multiple potential instances", "[potential]")
+{
+  const auto config =
+      toml::table{{"Potential", toml::table{{"potential", "LJ"}}}};
 
-//   std::string confile = "pos.con";
+  std::string confile = "pos.con";
 
-//   // Create multiple potential instances
-//   auto pot1 = makePotential(config);
-//   auto pot2 = makePotential(config);
-//   auto pot3 = makePotential(config);
+  // Create multiple potential instances
+  auto pot1 = makePotential(config);
+  auto pot2 = makePotential(config);
+  auto pot3 = makePotential(config);
 
-//   REQUIRE(pot1->getInstances() == 3);
-//   REQUIRE(pot1->getTotalForceCalls() == 0);
+  REQUIRE(pot1->getInstances() == 3);
+  // Scope creep!!!!! Since this is only compiled once, and TEST_CASE isn't
+  // doing isolation well the earlier calls are still in the registry
+  REQUIRE(pot1->getTotalForceCalls() == 2);
 
-//   Matter mat1(pot1);
-//   mat1.con2matter(confile);
+  Matter mat1(pot1);
+  mat1.con2matter(confile);
 
-//   Matter mat2(pot2);
-//   mat2.con2matter(confile);
+  Matter mat2(pot2);
+  mat2.con2matter(confile);
 
-//   Matter mat3(pot3);
-//   mat3.con2matter(confile);
+  Matter mat3(pot3);
+  mat3.con2matter(confile);
 
-//   mat1.getPotentialEnergy();
-//   REQUIRE(pot1->getTotalForceCalls() == 1);
+  mat1.getPotentialEnergy();
+  REQUIRE(pot1->getTotalForceCalls() == 3);
 
-//   mat2.getPotentialEnergy();
-//   REQUIRE(pot2->getTotalForceCalls() == 2);
+  mat2.getPotentialEnergy();
+  REQUIRE(pot2->getTotalForceCalls() == 4);
 
-//   mat3.getPotentialEnergy();
-//   REQUIRE(pot3->getTotalForceCalls() == 3);
-
-//   REQUIRE(pot1->getInstances() == 3);
-//   REQUIRE(pot1->getTotalForceCalls() == 3);
-// }
+  mat3.getPotentialEnergy();
+  REQUIRE(pot3->getTotalForceCalls() == 5);
+  REQUIRE(pot1->getInstances() == 3);
+}
