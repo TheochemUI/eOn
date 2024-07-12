@@ -11,9 +11,9 @@
 */
 #pragma once
 
-#include "C_Structs.h"
-#include "Eigen.h"
-#include "PotHelpers.hpp"
+#include "client/C_Structs.h"
+#include "client/Eigen.h"
+#include "client/potentials/PotHelpers.hpp"
 #include "thirdparty/toml.hpp"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
