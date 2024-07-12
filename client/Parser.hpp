@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef NDEBUG
+#ifdef EON_CHECKS
 #include "fmt/core.h"
 #endif
 
@@ -13,8 +13,9 @@ namespace eonc {
 toml::table loadTOML(const std::string &fname);
 void config_section(const toml::table &conf, const std::string_view key);
 
-template <typename T> T get_enum_toml(const toml::node_view<const toml::node> &conf) {
-#ifndef NDEBUG
+template <typename T>
+T get_enum_toml(const toml::node_view<const toml::node> &conf) {
+#ifdef EON_CHECKS
   if (!conf.is_string()) {
     throw std::logic_error("Node not found in TOML");
   }
@@ -23,7 +24,7 @@ template <typename T> T get_enum_toml(const toml::node_view<const toml::node> &c
   auto cval = conf.value<std::string>();
   auto enum_value =
       magic_enum::enum_cast<T>(cval.value(), magic_enum::case_insensitive);
-#ifndef NDEBUG
+#ifdef EON_CHECKS
   if (!enum_value.has_value()) {
     throw std::runtime_error(
         fmt::format("{} does not map to a valid option", cval.value()));

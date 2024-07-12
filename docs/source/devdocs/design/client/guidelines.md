@@ -3,6 +3,11 @@
 We try to follow the [C++ core
 guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines).
 
+## Preprocessor directives
+
+- We have `EON_CHECKS` true for all but release builds
+ + Meant to be used for additional checks (possibly including better errors)
+
 ## Naming
 
 Naming is hard. Try to make it easier with these rules:
