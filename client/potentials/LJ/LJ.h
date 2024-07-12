@@ -15,39 +15,39 @@
 #include "../../Potential.h"
 
 namespace eonc {
-namespace pot {
-struct LJParams {
-  double u0{1.0};
-  double cutoff{15.0};
-  double psi{1.0};
-  LJParams(const toml::table &tbl) {
-    // TODO(rg)
-    u0 = tbl["u0"].value_or(u0);
-    cutoff = tbl["cutoff"].value_or(cutoff);
-    psi = tbl["psi"].value_or(psi);
-  }
-};
-} // namespace pot
 
 /** Lennard Jones potential.*/
 class LJ : public Potential<LJ> {
+public:
+  struct Params {
+    double u0{1.0};
+    double cutoff_R{15.0};
+    double psi{1.0};
+    Params(const toml::table &tbl) {
+      u0 = tbl["u0"].value_or(u0);
+      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
+      psi = tbl["psi"].value_or(psi);
+    }
+  };
+
 private:
   double u0;
-  double cuttOffR;
+  double cutoff_R;
   double psi;
-  double cuttOffU;
+  double cutoff_U;
+
+  double calc_cutoffU(const Params &p);
 
 public:
-  LJ(pot::LJParams &ljp)
+  LJ(const Params &ljp)
       : u0{ljp.u0},
-        cuttOffR{ljp.cutoff},
-        psi{ljp.psi} {}
+        cutoff_R{ljp.cutoff_R},
+        psi{ljp.psi},
+        cutoff_U{calc_cutoffU(ljp)} {}
 
-  ~LJ() = default;
+  void force(const ForceInput &params, ForceOut *efvdat) override final;
 
-  void force(const ForceInput &params, ForceOut *efvdat) override;
-
-  void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
+  void setParameters(const Params &ljp);
 };
 
 } // namespace eonc
