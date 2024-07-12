@@ -32,7 +32,7 @@
 // #include "potentials/ExtPot/ExtPot.h"
 #include "potentials/LJ/LJ.h"
 // #include "potentials/LJCluster/LJCluster.h"
-// #include "potentials/Morse/Morse.h"
+#include "potentials/Morse/Morse.h"
 
 // #ifdef WITH_FORTRAN
 // #include "potentials/Aluminum/Aluminum.h"
@@ -125,10 +125,11 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     //     return (std::make_shared<LJCluster>(a_p.pot.lj));
     //     break;
     //   }
-    //   case PotType::MORSE_PT: {
-    //     return (std::make_shared<Morse>(a_p.pot.mpar));
-    //     break;
-    //   }
+  case PotType::MORSE_PT: {
+    auto params = Morse::Params(config);
+    return (std::make_shared<Morse>(params));
+    break;
+  }
     // #ifdef NEW_POT
     //   case PotType::NEW: {
     //     return (std::make_shared<NewPot>(a_p));
