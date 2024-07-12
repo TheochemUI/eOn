@@ -64,10 +64,10 @@ One consequence of this is there is now, in this single instance, `C_Structs.h`
 structures which are do not **default initialize** their values, thus setting
 them apart from the structs used elsewhere, e.g. for parameters.
 
-With this, the public interface is simply:
+With this, the interface to be implemented by the class is simply:
 
 ```{code-block} C
-void force(const ForceInput &params, ForceOut *efvdat) override;
+void forceImpl(const ForceInput &params, ForceOut *efvdat) override;
 ```
 
 Where additional input or output parameters can be added without making
@@ -80,9 +80,14 @@ each type with an `enum` and track it in base, we leverage CRTP to form a
 registry of functions. This registry:
 
 - Provides the calls per instance of the derived class
+- Uses CRTP to ensure the count is incremented per instance as well
+  + This is made clearer by the change in name from `force` to `forceImpl`
 
 This design is closely aligned to discussions in
 {cite:t}`dpt-pikusHandsonDesignPatterns2023,dpt-iglbergerSoftwareDesignDesign2022`.
+
+We can instrument as many Potential objects as required and get both instance
+counts and the number of instances.
 
 ## References
 
