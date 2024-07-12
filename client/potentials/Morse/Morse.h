@@ -23,10 +23,10 @@ public:
     double re{2.8970};
     double cutoff{9.5};
     Params(const toml::table &tbl) {
-      De = tbl["De"].value_or(De);
-      a = tbl["a"].value_or(a);
-      re = tbl["re"].value_or(re);
-      cutoff = tbl["cutoff"].value_or(cutoff);
+      De = tbl["Potential"]["De"].value_or(De);
+      a = tbl["Potential"]["a"].value_or(a);
+      re = tbl["Potential"]["re"].value_or(re);
+      cutoff = tbl["Potential"]["cutoff"].value_or(cutoff);
     }
   };
 
