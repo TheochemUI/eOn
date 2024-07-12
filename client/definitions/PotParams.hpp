@@ -16,14 +16,6 @@ using namespace std::string_literals;
 
 namespace eonc::def {
 using namespace helper_functions;
-struct MorseParams {
-  // De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
-  double De{0.7102};
-  double a{1.6047};
-  double re{2.8970};
-  double cutoff{9.5};
-};
-
 struct XTBParams {
   double acc{1.0};
   double elec_temperature{0.0};

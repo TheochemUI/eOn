@@ -25,10 +25,8 @@ namespace eonc {
 class Parameters {
 private:
   void loadPot(const toml::table &config);
-  void loadLJParams(const toml::table &config);
   void loadAMSParams(const toml::table &config);
   void loadASEOrcaParams(const toml::table &config);
-  void loadMorseParams(const toml::table &config);
   void loadXTBParams(const toml::table &config);
   void loadCatLearnParams(const toml::table &config);
 
@@ -64,8 +62,6 @@ public:
     bool EMTRasmussen{false};
     bool LogPotential{false};
     std::string extPotPath{"./ext_pot"s};
-    // eonc::def::LJParams lj;
-    eonc::def::MorseParams mpar;
     eonc::def::XTBParams xtbp;
   } pot;
 
