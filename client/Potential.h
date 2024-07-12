@@ -23,7 +23,6 @@ namespace eonc {
 
 class PotBase {
 protected:
-  std::shared_ptr<spdlog::logger> m_log;
   // Does not take into account the fixed / free atoms
   // Callers responsibility that ForceOut has enough space!!!
   // Protected since this is really only to be implemented... callers use get_ef
