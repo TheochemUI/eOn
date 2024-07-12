@@ -834,30 +834,7 @@ void Parameters::loadPot(const toml::table &config) {
         pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
 
     // Load other parameters if they exist
-    // loadLJParams(potentialTable);
-    loadMorseParams(potentialTable);
     loadXTBParams(potentialTable);
-  }
-}
-
-void Parameters::loadLJParams(const toml::table &config) {
-  if (config.contains("LJ") && config["LJ"].is_table()) {
-    // const auto &ljTable = *config["LJ"].as_table();
-
-    // pot.lj.u0 = ljTable["u0"].value_or(pot.lj.u0);
-    // pot.lj.cutoff = ljTable["cutoff"].value_or(pot.lj.cutoff);
-    // pot.lj.psi = ljTable["psi"].value_or(pot.lj.psi);
-  }
-}
-
-void Parameters::loadMorseParams(const toml::table &config) {
-  if (config.contains("Morse") && config["Morse"].is_table()) {
-    const auto &MorseTable = *config["Morse"].as_table();
-
-    pot.mpar.De = MorseTable["De"].value_or(pot.mpar.De);
-    pot.mpar.a = MorseTable["a"].value_or(pot.mpar.a);
-    pot.mpar.re = MorseTable["re"].value_or(pot.mpar.re);
-    pot.mpar.cutoff = MorseTable["cutoff"].value_or(pot.mpar.cutoff);
   }
 }
 
