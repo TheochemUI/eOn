@@ -11,8 +11,8 @@
 */
 #pragma once
 
-#include "Eigen.h"
 #include "C_Structs.h"
+#include "Eigen.h"
 #include "thirdparty/toml.hpp"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
