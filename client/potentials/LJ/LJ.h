@@ -12,7 +12,7 @@
 
 #pragma once
 // #include "../../system_unit.h" // unit converters
-#include "../../Potential.h"
+#include "client/Potential.h"
 
 namespace eonc {
 
