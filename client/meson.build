@@ -152,7 +152,7 @@ _args += ['-DSPDLOG_FMT_EXTERNAL']
 # subdir('potentials/IMD')
 subdir('potentials/LJ')
 # subdir('potentials/LJCluster')
-# subdir('potentials/Morse')
+subdir('potentials/Morse')
 # subdir('potentials/NewPot')
 
 potentials = [
@@ -162,7 +162,7 @@ potentials = [
                # imd,
                lennard_jones,
                # lennard_jones_cluster,
-               # morse,
+               morse,
                # newpot
              ]
 
