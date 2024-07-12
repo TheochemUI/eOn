@@ -36,18 +36,18 @@ private:
   double psi;
   double cutoff_U{0};
 
-  double calc_cutoffU(const Params &p_a);
+  double calc_cutoffU(const LJ::Params &);
 
 public:
-  LJ(const Params &ljp)
-      : u0{ljp.u0},
-        cutoff_R{ljp.cutoff_R},
-        psi{ljp.psi},
-        cutoff_U{calc_cutoffU(ljp)} {}
+  LJ(const LJ::Params &p_a)
+      : u0{p_a.u0},
+        cutoff_R{p_a.cutoff_R},
+        psi{p_a.psi},
+        cutoff_U{calc_cutoffU(p_a)} {}
 
-  void forceImpl(const ForceInput &params, ForceOut *efvd) override final;
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 
-  void setParameters(const Params &ljp);
+  void setParameters(const LJ::Params &);
 };
 
 } // namespace eonc
