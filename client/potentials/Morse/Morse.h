@@ -21,7 +21,7 @@
 #include "../../Potential.h"
 #include <cmath>
 namespace eonc {
-class Morse : public Potential<Morse> {
+class Morse final : public Potential<Morse> {
 public:
   struct Params {
     // De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
@@ -51,7 +51,7 @@ public:
         a_{mpar.a},
         re_{mpar.re},
         cutoff_{mpar.cutoff} {}
-  void forceImpl(const ForceInput &params, ForceOut *efvdat) override;
+  void forceImpl(const ForceInput &params, ForceOut *efvdat) override final;
   void setParameters(const Params &mpar);
 };
 
