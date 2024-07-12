@@ -28,6 +28,7 @@ double LJ::calc_cutoffU(const LJ::Params &p) {
 
 void LJ::forceImpl(const ForceInput &params, ForceOut *efvd) {
 #ifdef EON_CHECKS
+  eonc::pot::checkParams(params);
   eonc::pot::zeroForceOut(params.nAtoms, efvd);
 #endif
   double diffR{0}, diffRX{0}, diffRY{0}, diffRZ{0}, dU{0}, a{0}, b{0};
@@ -49,7 +50,7 @@ void LJ::forceImpl(const ForceInput &params, ForceOut *efvd) {
         a = pow(psi / diffR, 6);
         b = 4 * u0 * a;
 
-        efvd->energy = efvd->energy + b * (a - 1) - cutoff_U;
+        efvd->energy += b * (a - 1) - cutoff_U;
 
         dU = -6 * b / diffR * (2 * a - 1);
         // F is the negative derivative
