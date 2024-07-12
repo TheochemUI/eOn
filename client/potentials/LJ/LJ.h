@@ -34,7 +34,7 @@ private:
   double u0;
   double cutoff_R;
   double psi;
-  double cutoff_U;
+  double cutoff_U{0};
 
   double calc_cutoffU(const Params &p);
 
