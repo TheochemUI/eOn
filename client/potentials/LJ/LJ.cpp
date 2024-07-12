@@ -26,7 +26,7 @@ double LJ::calc_cutoffU(const LJ::Params &p) {
   return (4 * u0 * (pow(psi / cutoff_R, 12) - pow(psi / cutoff_R, 6)));
 }
 
-void LJ::force(const ForceInput &params, ForceOut *efvd) {
+void LJ::forceImpl(const ForceInput &params, ForceOut *efvd) {
 #ifdef EON_CHECKS
   eonc::pot::zeroForceOut(params.nAtoms, efvd);
 #endif

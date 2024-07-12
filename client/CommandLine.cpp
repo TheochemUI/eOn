@@ -14,6 +14,7 @@
 #include "Matter.h"
 #include "MatterHelpers.hpp"
 #include "Parameters.h"
+#include "Potential.h"
 #include "version.h"
 
 #include <cstdlib>
