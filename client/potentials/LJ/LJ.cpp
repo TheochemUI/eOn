@@ -14,14 +14,16 @@
 #include "../../PotHelpers.hpp"
 namespace eonc {
 // General Functions
-void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
-                       double psiRecieved) {
-  u0 = u0Recieved;
-  psi = psiRecieved;
-
-  cuttOffR = cuttOffRRecieved;
-  cuttOffU = 4 * u0 * (pow(psi / cuttOffR, 12) - pow(psi / cuttOffR, 6));
+void LJ::setParameters(const Params &ljp) {
+  u0 = ljp.u0;
+  psi = ljp.psi;
+  cutoff_R = ljp.cutoff_R;
+  cutoff_U = calc_cutoffU(ljp);
   return;
+}
+
+double LJ::calc_cutoffU(const LJ::Params &p) {
+  return (4 * u0 * (pow(psi / cutoff_R, 12) - pow(psi / cutoff_R, 6)));
 }
 
 void LJ::force(const ForceInput &params, ForceOut *efvd) {
@@ -42,12 +44,12 @@ void LJ::force(const ForceInput &params, ForceOut *efvd) {
 
       diffR = sqrt(diffRX * diffRX + diffRY * diffRY + diffRZ * diffRZ);
 
-      if (diffR < cuttOffR) {
+      if (diffR < cutoff_R) {
         // 4u0((psi/r0)^12-(psi/r0)^6)
         a = pow(psi / diffR, 6);
         b = 4 * u0 * a;
 
-        efvd->energy = efvd->energy + b * (a - 1) - cuttOffU;
+        efvd->energy = efvd->energy + b * (a - 1) - cutoff_U;
 
         dU = -6 * b / diffR * (2 * a - 1);
         // F is the negative derivative
