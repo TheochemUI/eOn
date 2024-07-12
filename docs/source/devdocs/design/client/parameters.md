@@ -22,18 +22,12 @@ a massive `Parameters` object, which was then passed around. Several comments:
 
 While this addressed some of the issues, it is still not clean enough.
 
-```{todo}
-An `unordered_map` is read into from the TOML file, or kept as the standard TOML
-output. Each class has its own parameters, which are initialized either from the
-TOML output or directly through the initializer. Since we use a factory pattern
-for many objects anyway, this should be fairly straightforward.
-```
-
 ## Second approximation
 
 The eventual goal is to have complete locality of options with their classes.
 This means we want to define the parameters and defaults as close to the objects
-as possible.
+as possible. To ensure this we have each concrete potential define a `Params`
+public struct and use that instead.
 
 ### Example: LJ Parameters
 
@@ -114,15 +108,53 @@ struct Potential {
 } pot;
 ```
 
-The final improvement is to replace parameters completely, by a simple parser,
-so as to prevent having to include headers in `Parameters.h` and quickly enable
-more input file formats.
+The final improvement discussed earlier is to ensure complete locality, becoming:
 
 ```{code-block} cpp
-// TODO(rg): Remove these when parameters goes away
-#include "potentials/LJ/LJ.h"
+class LJ : public Potential<LJ> {
+public:
+  struct Params {
+    double u0{1.0};
+    double cutoff_R{15.0};
+    double psi{1.0};
+    Params(const toml::table &tbl) {
+      u0 = tbl["u0"].value_or(u0);
+      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
+      psi = tbl["psi"].value_or(psi);
+    }
+  };
+
+private:
+  double u0;
+  double cutoff_R;
+  double psi;
+  double cutoff_U{0};
+
+  double calc_cutoffU(const Params &p);
+
+public:
+  LJ(const Params &ljp)
+      : u0{ljp.u0},
+        cutoff_R{ljp.cutoff_R},
+        psi{ljp.psi},
+        cutoff_U{calc_cutoffU(ljp)} {}
+
+  void force(const ForceInput &params, ForceOut *efvdat) override final;
+
+  void setParameters(const Params &ljp);
+};
 ```
 
-```{note}
-Unfortunately, until the parser is setup, the structures have to live out of the class definitions to prevent requiring a bunch of `ifdef` directives for the conditionally included potentials and jobs.
+Where we can see that the input is always via the structure, since with
+aggregate named initialization we eliminate a host of positional argument
+errors.
+
+```{code-block} cpp
+case PotType::LJ: {
+  // auto params = LJ::Params(config);
+  // or
+  auto params = LJ::Params(.u0=1.0, .cutoff_R=15.0, .psi=1.0);
+  return (std::make_shared<LJ>(params));
+  break;
+}
 ```
