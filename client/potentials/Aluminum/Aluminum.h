@@ -11,7 +11,7 @@
 */
 
 #pragma once
-#include "../../Potential.h"
+#include "client/Potential.h"
 
 /** External function implemented in Fortran
 @param[in]	N           number of atoms

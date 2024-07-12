@@ -11,7 +11,7 @@
 */
 
 #include "LJ.h"
-#include "../../PotHelpers.hpp"
+#include "client/potentials/PotHelpers.hpp"
 namespace eonc {
 // General Functions
 void LJ::setParameters(const Params &ljp) {

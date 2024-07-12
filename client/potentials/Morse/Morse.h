@@ -11,7 +11,7 @@
 */
 
 #pragma once
-#include "../../Potential.h"
+#include "client/Potential.h"
 #include <cmath>
 namespace eonc {
 class Morse final : public Potential<Morse> {
