@@ -17,6 +17,9 @@ Naming is hard. Try to make it easier with these rules:
 
 - Pure virtual classes (`ObjectiveFunction`) should have long names
 - Derived classes should abbreviate, e.g. `MinObjF`
+- Header files and declarations should not have any names
+  + Since they don't matter and can go out of sync
+  + Constructors are an exception, due to member list initialization
 
 ## Constructors
 

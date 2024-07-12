@@ -20,6 +20,19 @@ Conceptually, the `Potential` objects are a good place for inheritance. They
 have only one layer down and only one public facing function. Like the `Job`
 instances, they construct parameters from `toml::table` instances directly.
 
+### Naming
+
+Since naming is hard, we prefer to use the following conventions:
+
+- `Params` for the structure of parameters
+  - Should take a constructor for `const toml::table &tbl`
+  - The default for the struct will handle other cases
+  - Never use `Params` without a quantifier! e.g. `LJ::Params` in arguments
+- `_a` for arguments
+  - Single letter (`p_a`) for parameters
+- `fip` for `ForceInput` (see below)
+- `efvd` for `ForceOut` (see below)
+
 ### Structured force calls
 
 The older interface was
@@ -81,7 +94,7 @@ registry of functions. This registry:
 
 - Provides the calls per instance of the derived class
 - Uses CRTP to ensure the count is incremented per instance as well
-  + This is made clearer by the change in name from `force` to `forceImpl`
+  - This is made clearer by the change in name from `force` to `forceImpl`
 
 This design is closely aligned to discussions in
 {cite:t}`dpt-pikusHandsonDesignPatterns2023,dpt-iglbergerSoftwareDesignDesign2022`.
