@@ -338,8 +338,8 @@ eonclient_sources = [
 #   _deps += [ mpi_dep ]
 # endif
 
-# if get_option('with_fortran')
-#   subdir('potentials/Aluminum')
+if get_option('with_fortran')
+  subdir('potentials/Aluminum')
 #   subdir('potentials/EDIP')
 #   subdir('potentials/FeHe')
 #   subdir('potentials/Lenosky')
@@ -349,9 +349,10 @@ eonclient_sources = [
 #     subdir('potentials/Water_H')
 #     potentials += [water_h]
 #   endif
-#   potentials += [aluminum, edip, fehe, lenosky, sw, tersoff]
-#   _args += ['-DWITH_FORTRAN']
-# endif
+  potentials += [aluminum,]
+#   edip, fehe, lenosky, sw, tersoff]
+  _args += ['-DWITH_FORTRAN']
+endif
 
 # if get_option('with_cuh2')
 #   subdir('potentials/CuH2')
