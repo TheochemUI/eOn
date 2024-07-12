@@ -11,7 +11,7 @@
 */
 
 #include "Morse.h"
-#include "../../PotHelpers.hpp"
+#include "client/potentials/PotHelpers.hpp"
 #include <cassert>
 #include <math.h>
 namespace eonc {

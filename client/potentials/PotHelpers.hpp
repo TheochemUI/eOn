@@ -11,7 +11,7 @@
 */
 #pragma once
 
-#include "C_Structs.h"
+#include "../C_Structs.h"
 
 namespace eonc::pot {
 // Safe mode checks

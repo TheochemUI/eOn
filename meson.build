@@ -20,7 +20,7 @@ _args = [] # Extra arguments
 _fargs = [] # Fortran arguments
 _deps = [] # Dependencies
 _linkto = [] # All the sub-libraries
-_incdirs = [] # All the includes
+_incdirs = [include_directories('.')] # All the includes
 
 subdir('client')
 
