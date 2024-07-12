@@ -8,6 +8,14 @@ from pydantic import (
 from typing import Optional, Any, Union
 from typing_extensions import Literal
 import random
+import os
+
+def get_value_from_env_or_param(env_var, default_value, required):
+    return os.getenv(env_var, default_value)
+
+
+def PDef(first, second):
+    return first if first else second
 
 
 class MainConfig(BaseModel):
@@ -503,7 +511,9 @@ class PrefactorConfig(BaseModel):
 class PotentialConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    main: LJConfig
+    lj: LJConfig
+    morse: MorseConfig
+    aseorca: ASEOrcaConfig
     mpi_poll_period: float = Field(
         default=0.25, description="Polling period for MPI potential."
     )
@@ -604,6 +614,48 @@ class LJConfig(BaseModel):
     )
     psi: float = Field(
         default=1.0, description="The scaling factor for the LJ potential."
+    )
+
+
+class MorseConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    De: float = Field(
+        default=0.7102, description="The depth of the Morse potential well in eV."
+    )
+    a: float = Field(
+        default=1.6047,
+        description="The width of the Morse potential well in 1/Angstrom.",
+    )
+    re: float = Field(
+        default=2.8970, description="The equilibrium bond distance in Angstrom."
+    )
+    cutoff: float = Field(
+        default=9.5,
+        description="The cutoff distance for the Morse potential in Angstrom.",
+    )
+
+
+class ASEOrcaConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    orca_path: str = Field(
+        default_factory=lambda: get_value_from_env_or_param(
+            "ORCA_COMMAND", PDef("", ""), False
+        ),
+        description="Path to the ORCA executable.",
+    )
+    simpleinput: str = Field(
+        default_factory=lambda: get_value_from_env_or_param(
+            "ORCA_SIMPLEINPUT", PDef("ENGRAD HF-3c", "ENGRAD HF-3c"), False
+        ),
+        description="Default input for ORCA.",
+    )
+    orca_nproc: str = Field(
+        default_factory=lambda: get_value_from_env_or_param(
+            "ORCA_NPROC", PDef("1", "auto"), False
+        ),
+        description="Number of processors for ORCA.",
     )
 
 
