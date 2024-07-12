@@ -11,6 +11,7 @@
 */
 
 #include "LJ.h"
+#include "../../PotHelpers.hpp"
 namespace eonc {
 // General Functions
 void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
@@ -24,6 +25,9 @@ void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
 }
 
 void LJ::force(const ForceInput &params, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::zeroForceOut(params.nAtoms, efvd);
+#endif
   double diffR{0}, diffRX{0}, diffRY{0}, diffRZ{0}, dU{0}, a{0}, b{0};
   for (size_t i = 0; i < params.nAtoms - 1; i++) {
     for (size_t j = i + 1; j < params.nAtoms; j++) {
