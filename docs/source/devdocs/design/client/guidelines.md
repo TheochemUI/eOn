@@ -25,7 +25,8 @@ Naming is hard. Try to make it easier with these rules:
 - `_a` for arguments
   - Single letter (`p_a`) for parameters
 - Class private internal variables shall be prefixed by `_`
-  + Internal structs are an exception, e.g. `LJ::Params` need no `__`
+  + Internal structs are an exception, e.g. `LJ::Params` need no `_`
+  + Where additional clarification is needed, use `this->_`
 
 ## Constructors
 

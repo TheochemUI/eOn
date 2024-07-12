@@ -6,42 +6,6 @@ subprojects
 /*.tmp
 /*.pyc
 
-# /client/
-/client/client
-/client/*.a
-
-# /client/potentials/
-
-# /client/potentials/Aluminum/
-/client/potentials/Aluminum/*.a
-
-# /client/potentials/EDIP/
-/client/potentials/EDIP/*.a
-
-# /client/potentials/EMT/
-/client/potentials/EMT/*.a
-
-# /client/potentials/LJ/
-/client/potentials/LJ/*.a
-
-# /client/potentials/Lenosky/
-/client/potentials/Lenosky/*.a
-
-# /client/potentials/Morse/
-/client/potentials/Morse/*.a
-
-# /client/potentials/NewPot/
-/client/potentials/NewPot/*.a
-
-# /client/potentials/SW/
-/client/potentials/SW/*.a
-
-# /client/potentials/Tersoff/
-/client/potentials/Tersoff/*.a
-
-# /client/potentials/VASP/
-/client/potentials/VASP/*.a
-
 # /docs/
 /docs/_build
 

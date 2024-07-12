@@ -349,8 +349,6 @@ int Parameters::load(const std::string &filename) {
     loadPot(config);
     // [AMS] and [AMS_ENV]
     loadAMSParams(config);
-    // [ASE_ORCA]
-    loadASEOrcaParams(config);
     // [CatLearn]
     loadCatLearnParams(config);
 
@@ -875,17 +873,6 @@ void Parameters::loadAMSParams(const toml::table &config) {
     ams.amsenv.amsbin = envTable["amsbin"].value_or(ams.amsenv.amsbin);
     ams.amsenv.amsresources =
         envTable["amsresources"].value_or(ams.amsenv.amsresources);
-  }
-}
-
-void Parameters::loadASEOrcaParams(const toml::table &config) {
-  if (config.contains("ASE_ORCA") && config["ASE_ORCA"].is_table()) {
-    const auto &aseOrcaTable = *config["ASE_ORCA"].as_table();
-
-    aseorca.orca_path = aseOrcaTable["orca_path"].value_or(aseorca.orca_path);
-    aseorca.orca_nproc = aseOrcaTable["nproc"].value_or(aseorca.orca_nproc);
-    aseorca.simpleinput =
-        aseOrcaTable["simpleinput"].value_or(aseorca.simpleinput);
   }
 }
 

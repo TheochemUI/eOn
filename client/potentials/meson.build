@@ -149,18 +149,18 @@ endif
 #   _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
 # endif
 
-# if get_option('with_ase_orca')
-#   # TODO: Cleanup, used for Catlearn too
-#   # Embedding the interpreter
-#   py = import('python').find_installation()
-#   python_dep = py.dependency(embed: true, required: true)
-#   pyb11f_deps = [ python_dep,
-#                   dependency('pybind11'),
-#                   declare_dependency(link_args: '-lstdc++') ]
-#   _deps += [ pyb11f_deps ]
-#   subdir('ASE_ORCA')
-#   potentials += [ aseorca ]
-#   _args += ['-DWITH_ASE_ORCA']
-# endif
+if get_option('with_ase_orca')
+  # TODO: Cleanup, used for Catlearn too
+  # Embedding the interpreter
+  py = import('python').find_installation()
+  python_dep = py.dependency(embed: true, required: true)
+  pyb11f_deps = [ python_dep,
+                  dependency('pybind11'),
+                  declare_dependency(link_args: '-lstdc++') ]
+  _deps += [ pyb11f_deps ]
+  subdir('ASE_ORCA')
+  potentials += [ aseorca ]
+  _args += ['-DWITH_ASE_ORCA']
+endif
 
 _linkto += potentials
