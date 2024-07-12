@@ -3,6 +3,9 @@
 We try to follow the [C++ core
 guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines).
 
+Additionally, we fully embrace the modern value semantics of C++ over heap
+oriented code.
+
 ## Preprocessor directives
 
 - We have `EON_CHECKS` true for all but release builds
