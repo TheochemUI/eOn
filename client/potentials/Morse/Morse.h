@@ -11,13 +11,6 @@
 */
 
 #pragma once
-/** @file
-      @brief Morse potential for platinum
-      @author Anonymous (possibly A. Pedersen or G. Henkelman), revision: Jean
-   Claude C. Berthet, Rohit Goswami
-      @date Unknown, revision: 2024, University of Iceland
-      */
-// #include "LJBinary.h"
 #include "../../Potential.h"
 #include <cmath>
 namespace eonc {
