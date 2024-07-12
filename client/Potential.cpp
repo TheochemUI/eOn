@@ -83,9 +83,9 @@
 // #include "potentials/AMS_IO/AMS_IO.h"
 // #endif
 
-// #ifdef WITH_ASE_ORCA
-// #include "potentials/ASE_ORCA/ASE_ORCA.h"
-// #endif
+#ifdef WITH_ASE_ORCA
+#include "potentials/ASE_ORCA/ASE_ORCA.h"
+#endif
 
 // #ifdef WITH_WATER
 // #include "potentials/Water/Water.hpp"

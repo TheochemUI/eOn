@@ -26,7 +26,6 @@ class Parameters {
 private:
   void loadPot(const toml::table &config);
   void loadAMSParams(const toml::table &config);
-  void loadASEOrcaParams(const toml::table &config);
   void loadXTBParams(const toml::table &config);
   void loadCatLearnParams(const toml::table &config);
 
@@ -66,7 +65,6 @@ public:
   } pot;
 
   eonc::def::AMSParams ams;
-  eonc::def::ASEOrcaParams aseorca;
   eonc::def::CatLearnParams catl;
 
   struct ProcessSearch {
