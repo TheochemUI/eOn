@@ -20,6 +20,7 @@
 #include "version.h"
 
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -451,5 +452,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-  exit(0);
+  spdlog::drop_all();
+  spdlog::shutdown();
+  std::exit(0);
 }
