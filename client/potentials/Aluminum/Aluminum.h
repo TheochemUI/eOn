@@ -36,7 +36,7 @@ namespace eonc {
 class Aluminum : public Potential<Aluminum> {
 public:
   Aluminum() { potinit_(); };
-  void forceImpl(const ForceInput &params, ForceOut *efvdat) override;
+  void forceImpl(const ForceInput &, ForceOut *) override;
 };
 
 } // namespace eonc
