@@ -126,163 +126,164 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     //     break;
     //   }
   case PotType::MORSE_PT: {
-    auto params = Morse::Params(config);
+    auto params = Morse::Params(config["Potential"]["Morse"]);
     return (std::make_shared<Morse>(params));
     break;
   }
-    // #ifdef NEW_POT
-    //   case PotType::NEW: {
-    //     return (std::make_shared<NewPot>(a_p));
-    //     break;
-    //   }
-    // #endif
-    // #ifdef CUH2_POT
-    //   case PotType::CUH2: {
-    //     return (std::make_shared<CuH2>());
-    //     break;
-    //   }
-    // #endif
-    // #ifdef IMD_POT
-    //   case PotType::IMD: {
-    //     return (std::make_shared<IMD>());
-    //     break;
-    //   }
-    // #endif
-    // #ifdef WITH_WATER
-    //   case PotType::TIP4P: {
-    //     return (std::make_shared<Tip4p>());
-    //     break;
-    //   }
-    //   case PotType::SPCE: {
-    //     return (std::make_shared<SpceCcl>(a_p));
-    //     break;
-    //   }
-    // #ifdef WITH_FORTRAN
-    //   case PotType::TIP4P_PT: {
-    //     return (std::make_shared<Tip4p_Pt>(a_p));
-    //     break;
-    //   }
-    //   case PotType::TIP4P_H: {
-    //     return (std::make_shared<Tip4p_H>(a_p));
-    //     break;
-    //   }
-    // #endif
-    // #endif
-    #ifdef WITH_FORTRAN
-      case PotType::EAM_AL: {
-        return (std::make_shared<Aluminum>());
-        break;
-      }
-    //   case PotType::EDIP: {
-    //     return (std::make_shared<EDIP>());
-    //     break;
-    //   }
-    //   case PotType::FEHE: {
-    //     return (std::make_shared<FeHe>());
-    //     break;
-    //   }
-    //   case PotType::LENOSKY_SI: {
-    //     return (std::make_shared<Lenosky>());
-    //     break;
-    //   }
-    //   case PotType::SW_SI: {
-    //     return (std::make_shared<SW>());
-    //     break;
-    //   }
-    //   case PotType::TERSOFF_SI: {
-    //     return (std::make_shared<Tersoff>());
-    //     break;
-    //   }
-    #endif
-    // #ifndef WIN32
-    // #ifdef WITH_VASP
-    //   case PotType::VASP: {
-    //     return (std::make_shared<VASP>(a_p));
-    //     break;
-    //   }
-    // #endif
-    // #endif
-    // #ifdef LAMMPS_POT
-    //   case PotType::LAMMPS: {
-    //     return (std::make_shared<lammps>());
-    //     break;
-    //   }
-    // #endif
-    // #ifdef EONMPI
-    //   case PotType::MPI: {
-    //     return (
-    //         std::make_shared<MPIPot>(a_p.MPIPotentialRank,
-    //         a_p.pot.MPIPollPeriod));
-    //     break;
-    //   }
-    // #endif
-    // #ifdef WITH_PYTHON
-    // #ifdef PYAMFF_POT
-    //   case PotType::PYAMFF: {
-    //     return (std::make_shared<PyAMFF>());
-    //     break;
-    //   }
-    // #endif
-    // #ifdef ASE_POT
-    //   case PotType::ASE_POT: {
-    //     return (std::make_shared<ASE_POT>(a_p.pot.extPotPath));
-    //     break;
-    //   }
-    // #endif
-    //   case PotType::QSC: {
-    //     return (std::make_shared<QSC>());
-    //     break;
-    //   }
-    // #endif
-    //   // Unused
-    //   // case PotType::BOPFOX: {
-    //   //   return "bopfox"s;
-    //   //   break;
-    //   // }
-    //   // case PotType::BOP: {
-    //   //   return "bop"s;
-    //   //   break;
-    //   // }
-    // #ifdef WITH_AMS
-    //   case PotType::AMS: {
-    //     return (std::make_shared<AMS>(a_p.ams));
-    //     break;
-    //   }
-    //   case PotType::AMS_IO: {
-    //     return (std::make_shared<AMS_IO>(a_p.ams));
-    //     break;
-    //   }
-    // #endif
-    // #ifdef WITH_GPRD
-    //   // case PotType::GPR: {
-    //   //   return "gpr"s;
-    //   //   break;
-    //   // }
-    // #endif
-    //   // case PotType::PYTHON: {
-    //   //   TODO: Implement
-    //   //   return "python"s;
-    //   //   break;
-    //   // }
-    // #ifdef WITH_CATLEARN
-    //   case PotType::CatLearn: {
-    //     return (std::make_shared<CatLearnPot>(a_p.catl));
-    //     break;
-    //   }
-    // #endif
-    // // TODO: Handle Fortran interaction
-    // #ifdef WITH_XTB
-    //   case PotType::XTB: {
-    //     return (std::make_shared<XTBPot>(a_p));
-    //     break;
-    //   }
-    // #endif
-    // #ifdef WITH_ASE_ORCA
-    //   case PotType::ASE_ORCA: {
-    //     return (std::make_shared<ASEOrcaPot>(a_p.aseorca));
-    //     break;
-    //   }
-    // #endif
+// #ifdef NEW_POT
+//   case PotType::NEW: {
+//     return (std::make_shared<NewPot>(a_p));
+//     break;
+//   }
+// #endif
+// #ifdef CUH2_POT
+//   case PotType::CUH2: {
+//     return (std::make_shared<CuH2>());
+//     break;
+//   }
+// #endif
+// #ifdef IMD_POT
+//   case PotType::IMD: {
+//     return (std::make_shared<IMD>());
+//     break;
+//   }
+// #endif
+// #ifdef WITH_WATER
+//   case PotType::TIP4P: {
+//     return (std::make_shared<Tip4p>());
+//     break;
+//   }
+//   case PotType::SPCE: {
+//     return (std::make_shared<SpceCcl>(a_p));
+//     break;
+//   }
+// #ifdef WITH_FORTRAN
+//   case PotType::TIP4P_PT: {
+//     return (std::make_shared<Tip4p_Pt>(a_p));
+//     break;
+//   }
+//   case PotType::TIP4P_H: {
+//     return (std::make_shared<Tip4p_H>(a_p));
+//     break;
+//   }
+// #endif
+// #endif
+#ifdef WITH_FORTRAN
+  case PotType::EAM_AL: {
+    return (std::make_shared<Aluminum>());
+    break;
+  }
+//   case PotType::EDIP: {
+//     return (std::make_shared<EDIP>());
+//     break;
+//   }
+//   case PotType::FEHE: {
+//     return (std::make_shared<FeHe>());
+//     break;
+//   }
+//   case PotType::LENOSKY_SI: {
+//     return (std::make_shared<Lenosky>());
+//     break;
+//   }
+//   case PotType::SW_SI: {
+//     return (std::make_shared<SW>());
+//     break;
+//   }
+//   case PotType::TERSOFF_SI: {
+//     return (std::make_shared<Tersoff>());
+//     break;
+//   }
+#endif
+// #ifndef WIN32
+// #ifdef WITH_VASP
+//   case PotType::VASP: {
+//     return (std::make_shared<VASP>(a_p));
+//     break;
+//   }
+// #endif
+// #endif
+// #ifdef LAMMPS_POT
+//   case PotType::LAMMPS: {
+//     return (std::make_shared<lammps>());
+//     break;
+//   }
+// #endif
+// #ifdef EONMPI
+//   case PotType::MPI: {
+//     return (
+//         std::make_shared<MPIPot>(a_p.MPIPotentialRank,
+//         a_p.pot.MPIPollPeriod));
+//     break;
+//   }
+// #endif
+// #ifdef WITH_PYTHON
+// #ifdef PYAMFF_POT
+//   case PotType::PYAMFF: {
+//     return (std::make_shared<PyAMFF>());
+//     break;
+//   }
+// #endif
+// #ifdef ASE_POT
+//   case PotType::ASE_POT: {
+//     return (std::make_shared<ASE_POT>(a_p.pot.extPotPath));
+//     break;
+//   }
+// #endif
+//   case PotType::QSC: {
+//     return (std::make_shared<QSC>());
+//     break;
+//   }
+// #endif
+//   // Unused
+//   // case PotType::BOPFOX: {
+//   //   return "bopfox"s;
+//   //   break;
+//   // }
+//   // case PotType::BOP: {
+//   //   return "bop"s;
+//   //   break;
+//   // }
+// #ifdef WITH_AMS
+//   case PotType::AMS: {
+//     return (std::make_shared<AMS>(a_p.ams));
+//     break;
+//   }
+//   case PotType::AMS_IO: {
+//     return (std::make_shared<AMS_IO>(a_p.ams));
+//     break;
+//   }
+// #endif
+// #ifdef WITH_GPRD
+//   // case PotType::GPR: {
+//   //   return "gpr"s;
+//   //   break;
+//   // }
+// #endif
+//   // case PotType::PYTHON: {
+//   //   TODO: Implement
+//   //   return "python"s;
+//   //   break;
+//   // }
+// #ifdef WITH_CATLEARN
+//   case PotType::CatLearn: {
+//     return (std::make_shared<CatLearnPot>(a_p.catl));
+//     break;
+//   }
+// #endif
+// // TODO: Handle Fortran interaction
+// #ifdef WITH_XTB
+//   case PotType::XTB: {
+//     return (std::make_shared<XTBPot>(a_p));
+//     break;
+//   }
+// #endif
+#ifdef WITH_ASE_ORCA
+  case PotType::ASE_ORCA: {
+    auto params = ASEOrcaPot::Params(config["Potential"]["ASE_ORCA"]);
+    return (std::make_shared<ASEOrcaPot>(params));
+    break;
+  }
+#endif
   default:
     SPDLOG_ERROR("No known potential could be constructed from {}",
                  magic_enum::enum_name(ptype));
