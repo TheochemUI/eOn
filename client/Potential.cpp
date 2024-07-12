@@ -103,17 +103,6 @@
 
 namespace eonc {
 
-std::tuple<double, AtomMatrix> PotBase::get_ef(const AtomMatrix pos,
-                                               const Vector<size_t> atmnrs,
-                                               const Matrix3S box) {
-  size_t nAtoms{static_cast<size_t>(pos.rows())};
-  // When not in debug mode the initial values are unchecked
-  AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
-  ForceOut efd{forces.data(), 0, 0};
-  this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
-  return std::make_tuple(efd.energy, forces);
-};
-
 std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   config_section(config, "Potential");
   auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]);
