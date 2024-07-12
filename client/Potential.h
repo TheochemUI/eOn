@@ -12,9 +12,36 @@
 #pragma once
 
 #include "Eigen.h"
-#include "Parameters.h"
-#include <iostream>
+#include "thirdparty/toml.hpp"
 #include <memory>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct {
+  // pointer to number of atoms, pointer to array of positions
+  // address to supercell size
+  const size_t nAtoms;
+  const double *pos;
+  const size_t *atmnrs;
+  const double *box;
+} ForceInput;
+
+typedef struct {
+  // pointer to array of forces
+  double *F;
+  // Internal energy
+  double energy;
+  // Variance here is 0 when not needed and that's OK
+  double variance;
+} ForceOut;
+
+#ifdef __cplusplus
+}
+#endif
 
 namespace eonc {
 
@@ -36,6 +63,11 @@ protected:
     // }
   }
 
+  // Does not take into account the fixed / free atoms
+  // Callers responsibility that ForceOut has enough space!!!
+  // Protected since this is really only to be implemented... callers use get_ef
+  void virtual force(const ForceInput &params, ForceOut *efvd) = 0;
+
 public:
   PotBase() {
     SPDLOG_TRACE("CREATED WITH {}", forceCallCounter);
@@ -53,23 +85,16 @@ public:
     // }
   }
 
-  // Does not take into account the fixed / free atoms
-  // Variance here is null when not needed and that's OK
-  void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
-                     double *forces, double *energy, double *variance,
-                     const double *box) = 0;
-
+  // Safer, saner returns, and also allocates memory for force()
+  // TODO(rg):: A variant return can unify SurrogatePotential and Potential
   std::tuple<double, AtomMatrix>
-  get_ef(const AtomMatrix pos, const Vector<int> atmnrs, const Matrix3S box);
+  get_ef(const AtomMatrix pos, const Vector<size_t> atmnrs, const Matrix3S box);
 };
 
 template <typename T> class Potential : public PotBase {
 public:
-  void force(long nAtoms, const double *positions, const int *atomicNrs,
-             double *forces, double *energy, double *variance,
-             const double *box) override {
-    return static_cast<T *>(this)->force(nAtoms, positions, atomicNrs, forces,
-                                         energy, variance, box);
+  void force(const ForceInput &params, ForceOut *efvd) override {
+    return static_cast<T *>(this)->force(params, efvd);
   }
 };
 

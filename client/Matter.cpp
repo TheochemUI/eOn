@@ -740,7 +740,7 @@ void Matter::computePotential() {
     // } else {
       // Non-surrogate potential case
       auto [pE, frcs] =
-          potential->get_ef(positions, atomicNrs.cast<int>(), cell);
+          potential->get_ef(positions, atomicNrs, cell);
       potentialEnergy = pE;
       forces = frcs;
     // }
