@@ -10,7 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include <csignal>
-#include <limits>
 
 #include "BaseStructures.h"
 #include "Parser.hpp"
