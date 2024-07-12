@@ -29,7 +29,7 @@ std::vector<std::string> PointJob::run(void) {
 
   fileLogger->set_pattern("%v");
   fileLogger->info("{:.12f} Energy", energy);
-  fileLogger->info("{:.12f} Max_Force", maxForce);
+  fileLogger->info("{:.12e} Max_Force", maxForce);
 
   spdlog::drop("point");
   fileLogger.reset();
