@@ -12,16 +12,8 @@
 
 #include "Morse.h"
 #include "client/potentials/PotHelpers.hpp"
-#include <cassert>
-#include <math.h>
+#include <cmath>
 namespace eonc {
-/** @file
-      @brief Morse potential for platinum
-      @author Anonymous (possibly A. Pedersen or G. Henkelman ), revision: Jean
-   Claude C. Berthet
-      @date Unknown, revision: 2010, University of Iceland
-      */
-
 /** @class Morse
       @brief Morse potential for platinum.
       Default parameters are for platinum, but parameters for other atoms may be
@@ -30,33 +22,33 @@ namespace eonc {
       http://en.wikipedia.org/wiki/Morse_potential .
       */
 
-void Morse::setParameters(const Params &mpar) {
-  re_ = mpar.re;
-  De_ = mpar.De;
-  a_ = mpar.a;
-  cutoff_ = mpar.cutoff;
+void Morse::setParameters(const Morse::Params &p_a) {
+  _re = p_a.re;
+  _De = p_a.De;
+  _a = p_a.a;
+  _cutoff = p_a.cutoff;
 }
 
-void Morse::forceImpl(const ForceInput &params, ForceOut *efvd) {
+void Morse::forceImpl(const ForceInput &fip, ForceOut *efvd) {
 #ifdef EON_CHECKS
-  eonc::pot::checkParams(params);
-  eonc::pot::zeroForceOut(params.nAtoms, efvd);
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
 #endif
   double diffR = 0, diffRX{0}, diffRY{0}, diffRZ{0};
 
   // Initializing en
-  for (size_t i = 0; i < params.nAtoms; i++) {
-    for (size_t j = i + 1; j < params.nAtoms; j++) {
-      diffRX = params.pos[3 * i] - params.pos[3 * j];
-      diffRY = params.pos[3 * i + 1] - params.pos[3 * j + 1];
-      diffRZ = params.pos[3 * i + 2] - params.pos[3 * j + 2];
+  for (size_t i = 0; i < fip.nAtoms; i++) {
+    for (size_t j = i + 1; j < fip.nAtoms; j++) {
+      diffRX = fip.pos[3 * i] - fip.pos[3 * j];
+      diffRY = fip.pos[3 * i + 1] - fip.pos[3 * j + 1];
+      diffRZ = fip.pos[3 * i + 2] - fip.pos[3 * j + 2];
       // floor = largest integer value less than argument
-      diffRX = diffRX - params.box[0] * floor(diffRX / params.box[0] + 0.5);
-      diffRY = diffRY - params.box[4] * floor(diffRY / params.box[4] + 0.5);
-      diffRZ = diffRZ - params.box[8] * floor(diffRZ / params.box[8] + 0.5);
+      diffRX = diffRX - fip.box[0] * floor(diffRX / fip.box[0] + 0.5);
+      diffRY = diffRY - fip.box[4] * floor(diffRY / fip.box[4] + 0.5);
+      diffRZ = diffRZ - fip.box[8] * floor(diffRZ / fip.box[8] + 0.5);
       diffR = sqrt(diffRX * diffRX + diffRY * diffRY + diffRZ * diffRZ);
       assert(std::isnormal(diffR));
-      if (diffR < cutoff_) {
+      if (diffR < _cutoff) {
         double force{0}, energy{0};
         morse(diffR, energy, force);
         efvd->energy += energy;
@@ -66,7 +58,7 @@ void Morse::forceImpl(const ForceInput &params, ForceOut *efvd) {
         efvd->F[3 * j] -= force * diffRX / diffR;
         efvd->F[3 * j + 1] -= force * diffRY / diffR;
         efvd->F[3 * j + 2] -= force * diffRZ / diffR;
-        efvd->energy -= energyCutoff_;
+        efvd->energy -= _energyCutoff;
       }
     }
   }
@@ -80,9 +72,9 @@ void Morse::forceImpl(const ForceInput &params, ForceOut *efvd) {
       @see #Morse for equation.
       */
 void Morse::morse(double r, double &energy, double &force) {
-  double const d = 1 - exp(-a_ * (r - re_));
-  energy = De_ * d * d - De_;
-  force = 2 * De_ * d * (d - 1) * a_;
+  double const d = 1 - exp(-_a * (r - _re));
+  energy = _De * d * d - _De;
+  force = 2 * _De * d * (d - 1) * _a;
 }
 
 } // namespace eonc
