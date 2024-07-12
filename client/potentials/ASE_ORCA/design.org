@@ -20,3 +20,22 @@ h2.set_calculator(calc)
 h2.get_potential_energy()
 h2.get_forces()
 #+end_src
+
+This is quite elegant, setup basically requires:
+
+#+begin_src bash
+export ORCA_COMMAND=$(which orca)
+ORCA_SIMPLEINPUT="PM3 ENGRAD" eonclient -s pos.con -p ase_orca
+ORCA_SIMPLEINPUT="B3LYP ENGRAD" eonclient -s pos.con -p ase_orca
+#+end_src
+
+In fact (not recommended) one can technically run anything with this.
+
+#+begin_src bash
+ORCA_SIMPLEINPUT="HF OPT" eonclient -s client/gtests/data/systems/ally_vinyl_ether_re/pos.con -p ase_orca
+#+end_src
+
+The full set of environment variables are:
+- ~ORCA_COMMAND~ for the path
+- ~ORCA_SIMPLEINPUT~ for the command
+- ~ORCA_NPROC~ for the number of processors
