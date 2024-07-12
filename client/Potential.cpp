@@ -34,14 +34,14 @@
 // #include "potentials/LJCluster/LJCluster.h"
 #include "potentials/Morse/Morse.h"
 
-// #ifdef WITH_FORTRAN
-// #include "potentials/Aluminum/Aluminum.h"
+#ifdef WITH_FORTRAN
+#include "potentials/Aluminum/Aluminum.h"
 // #include "potentials/EDIP/EDIP.h"
 // #include "potentials/FeHe/FeHe.h"
 // #include "potentials/Lenosky/Lenosky.h"
 // #include "potentials/SW/SW.h"
 // #include "potentials/Tersoff/Tersoff.h"
-// #endif
+#endif
 
 // #ifdef WITH_PYTHON
 
@@ -168,11 +168,11 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     //   }
     // #endif
     // #endif
-    // #ifdef WITH_FORTRAN
-    //   case PotType::EAM_AL: {
-    //     return (std::make_shared<Aluminum>());
-    //     break;
-    //   }
+    #ifdef WITH_FORTRAN
+      case PotType::EAM_AL: {
+        return (std::make_shared<Aluminum>());
+        break;
+      }
     //   case PotType::EDIP: {
     //     return (std::make_shared<EDIP>());
     //     break;
@@ -193,7 +193,7 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     //     return (std::make_shared<Tersoff>());
     //     break;
     //   }
-    // #endif
+    #endif
     // #ifndef WIN32
     // #ifdef WITH_VASP
     //   case PotType::VASP: {

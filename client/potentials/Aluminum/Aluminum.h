@@ -33,16 +33,10 @@ void potinit_();
 namespace eonc {
 
 /** Aluminum potential.*/
-class Aluminum : public Potential {
+class Aluminum : public Potential<Aluminum> {
 public:
-  Aluminum()
-      : Potential(PotType::EAM_AL) {
-    potinit_();
-  };
-  ~Aluminum(void) {};
-  // To satisfy interface
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+  Aluminum() { potinit_(); };
+  void forceImpl(const ForceInput &params, ForceOut *efvdat) override;
 };
 
 } // namespace eonc
