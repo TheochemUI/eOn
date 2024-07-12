@@ -30,7 +30,7 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
     natmc.insert(atomicNrs[idx]);
   }
 
-#ifndef NDEBUG
+#ifdef EON_CHECKS
   // Check for Copper (29) and Hydrogen (1)
   if (natmc.count(29) == 0 || natmc.count(1) == 0) {
     throw std::runtime_error("The system does not have Copper or Hydrogen, but "
@@ -42,7 +42,7 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
   natms[0] = static_cast<int>(natmc.count(29)); // Cu
   natms[1] = static_cast<int>(natmc.count(1));  // H
 
-#ifndef NDEBUG
+#ifdef EON_CHECKS
   // Check for other atom types
   if (natms[0] + natms[1] != N) {
     throw std::runtime_error("The system has other atom types, but the CuH2 "
