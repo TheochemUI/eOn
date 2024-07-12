@@ -45,7 +45,7 @@ public:
         psi{ljp.psi},
         cutoff_U{calc_cutoffU(ljp)} {}
 
-  void forceImpl(const ForceInput &params, ForceOut *efvdat) override;
+  void forceImpl(const ForceInput &params, ForceOut *efvd) override final;
 
   void setParameters(const Params &ljp);
 };
