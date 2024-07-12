@@ -39,6 +39,7 @@ public:
 
 template <typename T>
 class Potential : public PotBase, public pot::registry<T> {
+
 protected:
   void force(const ForceInput &params, ForceOut *efvd) override final {
     pot::registry<T>::incrementForceCalls();
@@ -46,6 +47,9 @@ protected:
   }
 
 public:
+  Potential() = default;
+  virtual ~Potential() { pot::registry<T>::removeInstance(); }
+  Potential(const Potential &) { pot::registry<T>::addInstance(); }
   // To be implemented by the child classes
   virtual void forceImpl(const ForceInput &params, ForceOut *efvd) = 0;
   // Safer, saner returns, and also allocates memory for force()
@@ -62,9 +66,11 @@ public:
     return std::make_tuple(efd.energy, forces);
   };
 
-  size_t getInstances() const override final { return pot::registry<T>::count; }
+  size_t getInstances() const override final {
+    return pot::registry<T>::getInstances();
+  }
   size_t getTotalForceCalls() const override final {
-    return pot::registry<T>::forceCalls;
+    return pot::registry<T>::getTotalForceCalls();
   }
 };
 
