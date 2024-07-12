@@ -189,6 +189,7 @@ private:
 
   // Stuff which used to be in MatterPrivateData
   size_t nAtoms{0};
+  size_t npotcalls{0};
   AtomMatrix positions{MatrixType::Zero(0, 3)};
   AtomMatrix velocities{MatrixType::Zero(0, 3)};
   AtomMatrix forces{MatrixType::Zero(0, 3)};

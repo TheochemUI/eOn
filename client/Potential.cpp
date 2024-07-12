@@ -111,7 +111,6 @@ std::tuple<double, AtomMatrix> PotBase::get_ef(const AtomMatrix pos,
   AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
   ForceOut efd{forces.data(), 0, 0};
   this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
-  forceCallCounter++;
   return std::make_tuple(efd.energy, forces);
 };
 
