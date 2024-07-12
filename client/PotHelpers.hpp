@@ -12,6 +12,9 @@
 #pragma once
 
 #include "C_Structs.h"
+#include <algorithm>
+#include <numeric>
+#include <vector>
 
 namespace eonc::pot {
 // Typically this is done by the caller, however it is here as a sanity check
@@ -19,52 +22,42 @@ void zeroForceOut(const size_t &nAtoms, ForceOut *efvd);
 
 template <typename T> class registry {
 public:
-  static size_t count;
-  static size_t forceCalls;
-  static T *head;
-  T *prev;
-  T *next;
+  std::vector<size_t> instanceForceCalls;
+  std::vector<bool> instanceActive;
 
-protected:
-  registry() {
-    ++count;
-    prev = nullptr;
-    next = head;
-    head = static_cast<T *>(this);
-    if (next) {
-      next->prev = head;
+  registry() { addInstance(); }
+
+  void incrementForceCalls() {
+    for (size_t i = 0; i < instanceActive.size(); ++i) {
+      if (instanceActive[i]) {
+        instanceForceCalls[i]++;
+        break;
+      }
     }
   }
 
-  registry(const registry &) {
-    ++count;
-    prev = nullptr;
-    next = head;
-    head = static_cast<T *>(this);
-    if (next) {
-      next->prev = head;
-    }
+  size_t getTotalForceCalls() const {
+    return std::accumulate(instanceForceCalls.begin(), instanceForceCalls.end(),
+                           0);
   }
 
-  ~registry() {
-    --count;
-    if (prev) {
-      prev->next = next;
-    }
-    if (next) {
-      next->prev = prev;
-    }
-    if (head == this) {
-      head = next;
-    }
+  size_t getInstances() const {
+    return std::count(instanceActive.begin(), instanceActive.end(), true);
   }
 
-public:
-  static void incrementForceCalls() { ++forceCalls; }
+  void addInstance() {
+    instanceForceCalls.push_back(0);
+    instanceActive.push_back(true);
+  }
+
+  void removeInstance() {
+    for (size_t i = 0; i < instanceActive.size(); ++i) {
+      if (instanceActive[i]) {
+        instanceActive[i] = false;
+        break;
+      }
+    }
+  }
 };
-
-template <typename T> size_t registry<T>::count = 0;
-template <typename T> size_t registry<T>::forceCalls = 0;
-template <typename T> T *registry<T>::head = nullptr;
 
 } // namespace eonc::pot
