@@ -842,7 +842,7 @@ void Parameters::loadPot(const toml::table &config) {
 
 void Parameters::loadLJParams(const toml::table &config) {
   if (config.contains("LJ") && config["LJ"].is_table()) {
-    const auto &ljTable = *config["LJ"].as_table();
+    // const auto &ljTable = *config["LJ"].as_table();
 
     // pot.lj.u0 = ljTable["u0"].value_or(pot.lj.u0);
     // pot.lj.cutoff = ljTable["cutoff"].value_or(pot.lj.cutoff);
