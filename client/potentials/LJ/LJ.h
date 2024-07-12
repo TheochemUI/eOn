@@ -24,9 +24,9 @@ public:
     double cutoff_R{15.0};
     double psi{1.0};
     Params(const toml::table &tbl) {
-      u0 = tbl["u0"].value_or(u0);
-      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
-      psi = tbl["psi"].value_or(psi);
+      u0 = tbl["Potential"]["LJ"]["u0"].value_or(u0);
+      cutoff_R = tbl["Potential"]["LJ"]["cutoff"].value_or(cutoff_R);
+      psi = tbl["Potential"]["LJ"]["psi"].value_or(psi);
     }
   };
 
@@ -36,7 +36,7 @@ private:
   double psi;
   double cutoff_U{0};
 
-  double calc_cutoffU(const Params &p);
+  double calc_cutoffU(const Params &p_a);
 
 public:
   LJ(const Params &ljp)
