@@ -739,6 +739,7 @@ void Matter::computePotential() {
     //   }
     // } else {
       // Non-surrogate potential case
+      npotcalls++;
       auto [pE, frcs] =
           potential->get_ef(positions, atomicNrs, cell);
       potentialEnergy = pE;
@@ -1126,7 +1127,7 @@ void Matter::setPotential(std::shared_ptr<PotBase> pot) {
 }
 
 size_t Matter::getPotentialCalls() const {
-  return this->potential->forceCallCounter;
+  return this->npotcalls;
 }
 
 double Matter::getEnergyVariance() { return this->energyVariance; }
