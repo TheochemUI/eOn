@@ -12,36 +12,11 @@
 #pragma once
 
 #include "Eigen.h"
+#include "C_Structs.h"
 #include "thirdparty/toml.hpp"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct {
-  // pointer to number of atoms, pointer to array of positions
-  // address to supercell size
-  const size_t nAtoms;
-  const double *pos;
-  const size_t *atmnrs;
-  const double *box;
-} ForceInput;
-
-typedef struct {
-  // pointer to array of forces
-  double *F;
-  // Internal energy
-  double energy;
-  // Variance here is 0 when not needed and that's OK
-  double variance;
-} ForceOut;
-
-#ifdef __cplusplus
-}
-#endif
 
 namespace eonc {
 
