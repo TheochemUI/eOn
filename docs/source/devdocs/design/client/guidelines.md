@@ -17,9 +17,15 @@ Naming is hard. Try to make it easier with these rules:
 
 - Pure virtual classes (`ObjectiveFunction`) should have long names
 - Derived classes should abbreviate, e.g. `MinObjF`
-- Header files and declarations should not have any names
+- Header files and declarations should not have any names, **for struct arguments**
   + Since they don't matter and can go out of sync
   + Constructors are an exception, due to member list initialization
+  + Also `C` style calls like `force`
+    + Anything with multiple arguments should still be named for clarity
+- `_a` for arguments
+  - Single letter (`p_a`) for parameters
+- Class private internal variables shall be prefixed by `_`
+  + Internal structs are an exception, e.g. `LJ::Params` need no `__`
 
 ## Constructors
 

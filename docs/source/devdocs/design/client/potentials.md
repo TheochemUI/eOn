@@ -25,11 +25,10 @@ instances, they construct parameters from `toml::table` instances directly.
 Since naming is hard, we prefer to use the following conventions:
 
 - `Params` for the structure of parameters
-  - Should take a constructor for `const toml::table &tbl`
+  - Should take a constructor for `const toml::node_view<const toml::node> &tbl`
   - The default for the struct will handle other cases
   - Never use `Params` without a quantifier! e.g. `LJ::Params` in arguments
-- `_a` for arguments
-  - Single letter (`p_a`) for parameters
+  - The caller must pass the node of interest `config["Potential"]["Morse"]`
 - `fip` for `ForceInput` (see below)
 - `efvd` for `ForceOut` (see below)
 
@@ -80,7 +79,7 @@ them apart from the structs used elsewhere, e.g. for parameters.
 With this, the interface to be implemented by the class is simply:
 
 ```{code-block} C
-void forceImpl(const ForceInput &params, ForceOut *efvdat) override;
+void forceImpl(const ForceInput &, ForceOut *) override;
 ```
 
 Where additional input or output parameters can be added without making

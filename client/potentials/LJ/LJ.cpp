@@ -15,10 +15,10 @@
 namespace eonc {
 // General Functions
 void LJ::setParameters(const LJ::Params &p_a) {
-  u0 = p_a.u0;
-  psi = p_a.psi;
-  cutoff_R = p_a.cutoff_R;
-  cutoff_U = calc_cutoffU(p_a);
+  _u0 = p_a.u0;
+  _psi = p_a.psi;
+  _cutoff_R = p_a.cutoff_R;
+  _cutoff_U = calc_cutoffU(p_a);
   return;
 }
 
@@ -46,12 +46,12 @@ void LJ::forceImpl(const ForceInput &fip, ForceOut *efvd) {
 
       diffR = sqrt(diffRX * diffRX + diffRY * diffRY + diffRZ * diffRZ);
 
-      if (diffR < cutoff_R) {
+      if (diffR < _cutoff_R) {
         // 4u0((psi/r0)^12-(psi/r0)^6)
-        a = pow(psi / diffR, 6);
-        b = 4 * u0 * a;
+        a = pow(_psi / diffR, 6);
+        b = 4 * _u0 * a;
 
-        efvd->energy += b * (a - 1) - cutoff_U;
+        efvd->energy += b * (a - 1) - _cutoff_U;
 
         dU = -6 * b / diffR * (2 * a - 1);
         // F is the negative derivative

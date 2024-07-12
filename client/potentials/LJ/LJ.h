@@ -23,27 +23,27 @@ public:
     double u0{1.0};
     double cutoff_R{15.0};
     double psi{1.0};
-    Params(const toml::table &tbl) {
-      u0 = tbl["Potential"]["LJ"]["u0"].value_or(u0);
-      cutoff_R = tbl["Potential"]["LJ"]["cutoff"].value_or(cutoff_R);
-      psi = tbl["Potential"]["LJ"]["psi"].value_or(psi);
+    Params(const toml::node_view<const toml::node> &tbl) {
+      u0 = tbl["u0"].value_or(u0);
+      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
+      psi = tbl["psi"].value_or(psi);
     }
   };
 
 private:
-  double u0;
-  double cutoff_R;
-  double psi;
-  double cutoff_U{0};
+  double _u0;
+  double _cutoff_R;
+  double _psi;
+  double _cutoff_U{0};
 
   double calc_cutoffU(const LJ::Params &);
 
 public:
   LJ(const LJ::Params &p_a)
-      : u0{p_a.u0},
-        cutoff_R{p_a.cutoff_R},
-        psi{p_a.psi},
-        cutoff_U{calc_cutoffU(p_a)} {}
+      : _u0{p_a.u0},
+        _cutoff_R{p_a.cutoff_R},
+        _psi{p_a.psi},
+        _cutoff_U{calc_cutoffU(p_a)} {}
 
   void forceImpl(const ForceInput &, ForceOut *) override final;
 
