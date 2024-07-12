@@ -15,27 +15,11 @@
 using namespace std::string_literals;
 
 namespace eonc::def {
-using namespace helper_functions;
 struct XTBParams {
   double acc{1.0};
   double elec_temperature{0.0};
   size_t maxiter{250};
   std::string paramset{"GNFF"s};
-};
-
-struct ASEOrcaParams {
-  std::string orca_path;
-  std::string simpleinput;
-  std::string orca_nproc;
-  ASEOrcaParams()
-      : orca_path{get_value_from_env_or_param("ORCA_COMMAND", PDef(""s, ""s),
-                                              "", false)},
-        simpleinput{get_value_from_env_or_param(
-            "ORCA_SIMPLEINPUT", PDef("ENGRAD HF-3c", "ENGRAD HF-3c"),
-            "Using ENGRAD HF-3c as a default input, set simpleinput or the "
-            "environment variable ORCA_SIMPLEINPUT.\n")},
-        orca_nproc{get_value_from_env_or_param("ORCA_NPROC", PDef("1"s, "auto"),
-                                               "", false)} {}
 };
 
 struct AMS_ENV {
