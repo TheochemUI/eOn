@@ -12,6 +12,7 @@
 #include <csignal>
 #include <limits>
 
+#include "BaseStructures.h"
 #include "Parser.hpp"
 #include "Potential.h"
 
@@ -104,18 +105,14 @@
 namespace eonc {
 
 std::tuple<double, AtomMatrix> PotBase::get_ef(const AtomMatrix pos,
-                                               const Vector<int> atmnrs,
+                                               const Vector<size_t> atmnrs,
                                                const Matrix3S box) {
-  double energy{std::numeric_limits<double>::infinity()};
-  long nAtoms{pos.rows()};
+  size_t nAtoms{static_cast<size_t>(pos.rows())};
   AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
-  double var{0}; // no variance for true potentials
-  this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
-              box.data());
+  ForceOut efd{forces.data(), std::numeric_limits<double>::infinity(), 0};
+  this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
   forceCallCounter++;
-  // m_log->trace("[{}] {} so far", typeid(*this).name(), forceCallCounter);
-
-  return std::make_tuple(energy, forces);
+  return std::make_tuple(efd.energy, forces);
 };
 
 std::shared_ptr<PotBase> makePotential(const toml::table &config) {
