@@ -138,16 +138,14 @@ if get_option('with_fortran')
 #     subdir('Water_H')
 #     potentials += [water_h]
 #   endif
-  potentials += [aluminum,]
+  subdir('CuH2')
+  potentials += [
+                 aluminum,
+                 cuh2,
+  ]
 #   edip, fehe, lenosky, sw, tersoff]
   _args += ['-DWITH_FORTRAN']
 endif
-
-# if get_option('with_cuh2')
-#   subdir('CuH2')
-#   potentials += [cuh2]
-#   _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
-# endif
 
 if get_option('with_ase_orca')
   # TODO: Cleanup, used for Catlearn too
