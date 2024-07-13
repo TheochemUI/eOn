@@ -8,6 +8,11 @@
 ! Repo:
 ! https://github.com/TheochemUI/eOn
 
+module eam_routines
+  use eam_dat
+  implicit none
+  contains
+
       SUBROUTINE force_eam(natms,ndim,box,R,F,U)
 
         IMPLICIT NONE
@@ -16,10 +21,6 @@
         REAL*8 U(1)
         REAL*8 R(ndim),F(ndim)
         REAL*8 box(3)
-
-
-        INCLUDE 'commonblks/combig.cmn'
-        INCLUDE 'commonblks/comparam.cmn'
 
         nH=natms(2)
         nCuCl=natms(1)
@@ -59,8 +60,6 @@
 
       IMPLICIT NONE
 
-      include 'commonblks/combig.cmn'
-      include 'commonblks/comparam.cmn'
 
       REAL*8 rho(maxatoms),dFdrho(maxatoms),dr(3),dummy
       REAL*8 rhoij,f_phi,rhoji,f_rhoij,drhoji_r,time,rij
@@ -348,8 +347,6 @@
       IMPLICIT NONE
       REAL*8 rhotot2,rhotot3,rhotot4,rhotot5,rhotot6,rhotot7,rhotot8,embede,rhotot,dfdrho
 
-      INCLUDE 'commonblks/comparam.cmn'
-
       rhotot2 = rhotot**2
       rhotot3 = rhotot2*rhotot
       rhotot4 = rhotot3*rhotot
@@ -372,8 +369,6 @@
       IMPLICIT NONE
       REAL*8 rhotot2,rhotot3,rhotot4,rhotot5,rhotot,embede,dfdrho
 
-      INCLUDE 'commonblks/comparam.cmn'
-
       rhotot2 = rhotot**2
       rhotot3 = rhotot2*rhotot
       rhotot4 = rhotot3*rhotot
@@ -389,10 +384,9 @@
 !:::::::::::::
       subroutine EAMPhiCuCu (R, phiij, dphidroverr)
 
+
       IMPLICIT NONE
       REAL*8 term1,term2,phiij,dphidroverr,R
-
-      INCLUDE 'commonblks/comparam.cmn'
 
       term1 = DACuCu*EXP(-alphaACuCu*R)
       term2 = DBCuCu*EXP(-alphaBCuCu*R)
@@ -406,10 +400,9 @@
     !:::::::::::::
       subroutine EAMPhiHCu (R, phiij, dphidroverr)
 
+
       IMPLICIT NONE
       REAL*8 term1,term2,phiij,dphidroverr,R
-
-      INCLUDE 'commonblks/comparam.cmn'
 
       term1 = DAHCu*EXP(-alphaAHCu*R)
       term2 = DBHCu*EXP(-alphaBHCu*R)
@@ -423,10 +416,9 @@
 !:::::::::::::
       subroutine EAMPhiHH (R, phiij, dphidroverr)
 
+
       IMPLICIT NONE
       REAL*8 term1,term2,phiij,dphidroverr,R
-
-      INCLUDE 'commonblks/comparam.cmn'
 
       term1 = DAHH*EXP(-alphaAHH*R)
       term2 = DBHH*EXP(-alphaBHH*R)
@@ -440,11 +432,10 @@
 !:::::::::::::
       subroutine EAMRhoCu (R, rho, drhodroverr, indic)
 
+
       IMPLICIT NONE
       REAL*8 R,term1,rinv,term2,term3,rho,drhodroverr
       INTEGER indic
-
-      INCLUDE 'commonblks/comparam.cmn'
 
       Rinv = 1.0/R
       term1 = EXP(-betaACu*R)
@@ -462,11 +453,10 @@
 !:::::::::::::
       subroutine EAMRhoH (R, rho, drhodroverr, indic)
 
+
       IMPLICIT NONE
       REAL*8 R,term1,rinv,term2,term3,rho,drhodroverr
       INTEGER indic
-
-      INCLUDE 'commonblks/comparam.cmn'
 
       Rinv = 1.0/R
       term1 = EXP(-betaAH*R)
@@ -482,11 +472,10 @@
 
       SUBROUTINE potinit()
 
+
         IMPLICIT NONE
         REAL*8 phitemp,dphidr_r,rhotemp,drhodr_r,potpar(18,3)
         INTEGER i
-
-        INCLUDE 'commonblks/comparam.cmn'
 
         rcut = 6.10000
         rskin = 6.30000
@@ -616,3 +605,5 @@
         drhoHdr_r = drhodr_r
 
       END SUBROUTINE potinit
+
+end module eam_routines
