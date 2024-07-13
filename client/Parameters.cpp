@@ -11,9 +11,7 @@
 */
 #include "Parameters.h"
 #include "BaseStructures.h"
-#include "EpiCenters.h"
 #include "HelperFunctions.h"
-#include "ImprovedDimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include <float.h>
 #include <string>
@@ -351,8 +349,6 @@ int Parameters::load(const std::string &filename) {
     loadPot(config);
     // [AMS] and [AMS_ENV]
     loadAMSParams(config);
-    // [ASE_ORCA]
-    loadASEOrcaParams(config);
     // [CatLearn]
     loadCatLearnParams(config);
 
@@ -836,30 +832,7 @@ void Parameters::loadPot(const toml::table &config) {
         pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
 
     // Load other parameters if they exist
-    loadLJParams(potentialTable);
-    loadMorseParams(potentialTable);
     loadXTBParams(potentialTable);
-  }
-}
-
-void Parameters::loadLJParams(const toml::table &config) {
-  if (config.contains("LJ") && config["LJ"].is_table()) {
-    const auto &ljTable = *config["LJ"].as_table();
-
-    pot.lj.u0 = ljTable["u0"].value_or(pot.lj.u0);
-    pot.lj.cutoff = ljTable["cutoff"].value_or(pot.lj.cutoff);
-    pot.lj.psi = ljTable["psi"].value_or(pot.lj.psi);
-  }
-}
-
-void Parameters::loadMorseParams(const toml::table &config) {
-  if (config.contains("Morse") && config["Morse"].is_table()) {
-    const auto &MorseTable = *config["Morse"].as_table();
-
-    pot.mpar.De = MorseTable["De"].value_or(pot.mpar.De);
-    pot.mpar.a = MorseTable["a"].value_or(pot.mpar.a);
-    pot.mpar.re = MorseTable["re"].value_or(pot.mpar.re);
-    pot.mpar.cutoff = MorseTable["cutoff"].value_or(pot.mpar.cutoff);
   }
 }
 
@@ -900,17 +873,6 @@ void Parameters::loadAMSParams(const toml::table &config) {
     ams.amsenv.amsbin = envTable["amsbin"].value_or(ams.amsenv.amsbin);
     ams.amsenv.amsresources =
         envTable["amsresources"].value_or(ams.amsenv.amsresources);
-  }
-}
-
-void Parameters::loadASEOrcaParams(const toml::table &config) {
-  if (config.contains("ASE_ORCA") && config["ASE_ORCA"].is_table()) {
-    const auto &aseOrcaTable = *config["ASE_ORCA"].as_table();
-
-    aseorca.orca_path = aseOrcaTable["orca_path"].value_or(aseorca.orca_path);
-    aseorca.orca_nproc = aseOrcaTable["nproc"].value_or(aseorca.orca_nproc);
-    aseorca.simpleinput =
-        aseOrcaTable["simpleinput"].value_or(aseorca.simpleinput);
   }
 }
 

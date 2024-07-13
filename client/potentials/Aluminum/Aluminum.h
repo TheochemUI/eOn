@@ -11,7 +11,7 @@
 */
 
 #pragma once
-#include "../../Potential.h"
+#include "client/Potential.h"
 
 /** External function implemented in Fortran
 @param[in]	N           number of atoms
@@ -33,16 +33,10 @@ void potinit_();
 namespace eonc {
 
 /** Aluminum potential.*/
-class Aluminum : public Potential {
+class Aluminum : public Potential<Aluminum> {
 public:
-  Aluminum()
-      : Potential(PotType::EAM_AL) {
-    potinit_();
-  };
-  ~Aluminum(void) {};
-  // To satisfy interface
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+  Aluminum() { potinit_(); };
+  void forceImpl(const ForceInput &, ForceOut *) override;
 };
 
 } // namespace eonc

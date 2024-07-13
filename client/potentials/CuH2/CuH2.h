@@ -11,24 +11,19 @@
 */
 
 #pragma once
-#include "../../Potential.h"
+#include "client/Potential.h"
 
 // natms(2), ndim, U(1), R(ndim), F(ndim), box(3)
-extern "C" void c_force_eam(int *natms, int ndim, double *box, double *R,
-                            double *F, double *U);
+extern "C" {
+void c_force_eam(int natms[2], int ndim, double box[3], double *R, double *F,
+                 double U[1]);
+}
 namespace eonc {
-class CuH2 : public Potential {
+class CuH2 final : public Potential<CuH2> {
 
 public:
-  // Functions
-  CuH2()
-      : Potential(PotType::CUH2) {}
-
-  // To satisfy interface
-  void cleanMemory(void);
-
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+  // NOTE(miha) you can recenter the coordinates before and after the calls
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
-}
+} // namespace eonc

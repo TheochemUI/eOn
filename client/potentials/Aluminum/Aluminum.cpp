@@ -15,14 +15,14 @@
 
 namespace eonc {
 
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// address to supercell size
-void Aluminum::force(long N, const double *R, const int *atomicNrs, double *F,
-                     double *U, double *variance, const double *box) {
-  assert((int)N > 1);
-  force_(&N, R, F, U, &box[0], &box[4], &box[8]);
-  variance = nullptr;
+void Aluminum::forceImpl(const ForceInput &params, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(params);
+  eonc::pot::zeroForceOut(params.nAtoms, efvd);
+#endif
+  const long int N = params.nAtoms;
+  force_(&N, params.pos, efvd->F, &efvd->energy, &params.box[0], &params.box[4],
+         &params.box[8]);
   return;
 }
 

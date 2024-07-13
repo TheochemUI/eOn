@@ -35,7 +35,7 @@ constexpr size_t MAXC{100}; // maximum number of components for functions
 class Matter {
 public:
   ~Matter() = default;
-  Matter(std::shared_ptr<Potential> pot)
+  Matter(std::shared_ptr<PotBase> pot)
       : potential{pot} {
     m_log = spdlog::get("combi");
   }
@@ -51,8 +51,8 @@ public:
   double perAtomNorm(const Matter &matter) const; // the maximum distance between two
                                             // atoms in the Matter objects
   void
-  setPotential(std::shared_ptr<Potential> pot); // set potential function to use
-  std::shared_ptr<Potential> getPotential();    // get potential function to use
+  setPotential(std::shared_ptr<PotBase> pot); // set potential function to use
+  std::shared_ptr<PotBase> getPotential();    // get potential function to use
   void resize(long int nAtoms); // set or reset the number of atoms
   size_t numberOfAtoms() const; // return the number of atoms
   Matrix3S getCell() const;
@@ -164,7 +164,7 @@ public:
 
 private:
   std::shared_ptr<spdlog::logger> m_log;
-  std::shared_ptr<Potential> potential;
+  std::shared_ptr<PotBase> potential;
   // --- These should be parsed in
   bool usePeriodicBoundaries{true};
   // Indicates if the potential energy and forces need to be recalculated
@@ -188,6 +188,7 @@ private:
 
   // Stuff which used to be in MatterPrivateData
   size_t nAtoms{0};
+  size_t npotcalls{0};
   AtomMatrix positions{MatrixType::Zero(0, 3)};
   AtomMatrix velocities{MatrixType::Zero(0, 3)};
   AtomMatrix forces{MatrixType::Zero(0, 3)};

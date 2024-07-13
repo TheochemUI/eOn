@@ -12,31 +12,42 @@
 
 #pragma once
 // #include "../../system_unit.h" // unit converters
-#include "../../Potential.h"
+#include "client/Potential.h"
 
 namespace eonc {
 
 /** Lennard Jones potential.*/
-class LJ : public Potential {
+class LJ final : public Potential<LJ> {
+public:
+  struct Params {
+    double u0{1.0};
+    double cutoff_R{15.0};
+    double psi{1.0};
+    Params(const toml::node_view<const toml::node> &tbl) {
+      u0 = tbl["u0"].value_or(u0);
+      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
+      psi = tbl["psi"].value_or(psi);
+    }
+  };
+
 private:
-  double u0;
-  double cuttOffR;
-  double psi;
-  double cuttOffU;
+  double _u0;
+  double _cutoff_R;
+  double _psi;
+  double _cutoff_U{0};
+
+  double calc_cutoffU(const LJ::Params &);
 
 public:
-  LJ(eonc::def::LJParams &ljp)
-      : Potential(PotType::LJ),
-        u0{ljp.u0},
-        cuttOffR{ljp.cutoff},
-        psi{ljp.psi} {}
+  LJ(const LJ::Params &p_a)
+      : _u0{p_a.u0},
+        _cutoff_R{p_a.cutoff_R},
+        _psi{p_a.psi},
+        _cutoff_U{calc_cutoffU(p_a)} {}
 
-  ~LJ() = default;
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
-
-  void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
+  void setParameters(const LJ::Params &);
 };
 
 } // namespace eonc

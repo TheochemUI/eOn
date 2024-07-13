@@ -3,12 +3,30 @@
 We try to follow the [C++ core
 guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines).
 
+Additionally, we fully embrace the modern value semantics of C++ over heap
+oriented code.
+
+## Preprocessor directives
+
+- We have `EON_CHECKS` true for all but release builds
+ + Meant to be used for additional checks (possibly including better errors)
+
 ## Naming
 
 Naming is hard. Try to make it easier with these rules:
 
 - Pure virtual classes (`ObjectiveFunction`) should have long names
 - Derived classes should abbreviate, e.g. `MinObjF`
+- Header files and declarations should not have any names, **for struct arguments**
+  + Since they don't matter and can go out of sync
+  + Constructors are an exception, due to member list initialization
+  + Also `C` style calls like `force`
+    + Anything with multiple arguments should still be named for clarity
+- `_a` for arguments
+  - Single letter (`p_a`) for parameters
+- Class private internal variables shall be prefixed by `_`
+  + Internal structs are an exception, e.g. `LJ::Params` need no `_`
+  + Where additional clarification is needed, use `this->_`
 
 ## Constructors
 

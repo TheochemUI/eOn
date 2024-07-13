@@ -11,70 +11,61 @@
 */
 #pragma once
 
-#include "Eigen.h"
-#include "Parameters.h"
-#include <iostream>
+#include "client/C_Structs.h"
+#include "client/Eigen.h"
+#include "client/potentials/PotHelpers.hpp"
+#include "thirdparty/toml.hpp"
 #include <memory>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 namespace eonc {
 
-class Potential {
+class PotBase {
 protected:
-  PotType ptype;
-  std::shared_ptr<spdlog::logger> m_log;
+  // Does not take into account the fixed / free atoms
+  // Callers responsibility that ForceOut has enough space!!!
+  // Protected since this is really only to be implemented... callers use get_ef
+  virtual void force(const ForceInput &params, ForceOut *efvd) = 0;
 
 public:
-  size_t forceCallCounter;
+  virtual std::tuple<double, AtomMatrix> get_ef(const AtomMatrix pos,
+                                                const Vector<size_t> atmnrs,
+                                                const Matrix3S box) = 0;
+  virtual size_t getInstances() const = 0;
+  virtual size_t getTotalForceCalls() const = 0;
+};
 
-  // Main Constructor
-  Potential(PotType a_ptype)
-      : ptype{a_ptype},
-        forceCallCounter{0} {
-    SPDLOG_TRACE("CREATED WITH {}", forceCallCounter);
-    initializeLogger();
+template <typename T>
+class Potential : public PotBase, public pot::registry<T> {
+protected:
+  void force(const ForceInput &params, ForceOut *efvd) override final {
+    pot::registry<T>::incrementForceCalls();
+    return static_cast<T *>(this)->forceImpl(params, efvd);
   }
 
-  virtual ~Potential() {
-    SPDLOG_TRACE("DESTROYED AFTER {}\n", forceCallCounter);
-    if (m_log) {
-      m_log->trace("[{}] destroyed after {} calls",
-                   magic_enum::enum_name<PotType>(getType()), forceCallCounter);
-    } else {
-      std::cerr << "Logger is not initialized\n";
-    }
-  }
+public:
+  // To be implemented by the child classes
+  virtual void forceImpl(const ForceInput &params, ForceOut *efvd) = 0;
+  // Safer, saner returns, and also allocates memory for force()
+  // TODO(rg):: A variant return can unify SurrogatePotential and Potential
+  std::tuple<double, AtomMatrix> get_ef(const AtomMatrix pos,
+                                        const Vector<size_t> atmnrs,
+                                        const Matrix3S box) override final {
+    size_t nAtoms{static_cast<size_t>(pos.rows())};
+    // When not in debug mode the initial values are unchecked
+    // So the initial data in efd matters!
+    AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
+    ForceOut efd{forces.data(), 0, 0};
+    this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
+    return std::make_tuple(efd.energy, forces);
+  };
 
-  // Does not take into account the fixed / free atoms
-  // Variance here is null when not needed and that's OK
-  void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
-                     double *forces, double *energy, double *variance,
-                     const double *box) = 0;
-
-  std::tuple<double, AtomMatrix>
-  get_ef(const AtomMatrix pos, const Vector<int> atmnrs, const Matrix3S box);
-
-  PotType getType() { return this->ptype; }
-
-  // Logger initialization
-  void initializeLogger() {
-    if (!spdlog::get("_potcalls")) {
-      // Create logger if it doesn't exist
-      m_log = spdlog::basic_logger_mt("_potcalls", "_potcalls.log", true);
-      m_log->set_pattern("[%l] [%Y-%m-%d %H:%M:%S] %v");
-    } else {
-      // Use existing logger
-      m_log = spdlog::get("_potcalls");
-    }
-    if (m_log) {
-      m_log->trace("[{}] created", magic_enum::enum_name<PotType>(getType()));
-    }
+  size_t getInstances() const override final { return pot::registry<T>::count; }
+  size_t getTotalForceCalls() const override final {
+    return pot::registry<T>::forceCalls;
   }
 };
 
+std::shared_ptr<PotBase> makePotential(const toml::table &config);
 } // namespace eonc
-
-namespace eonc::helper_functions {
-using namespace eonc;
-std::shared_ptr<Potential> makePotential(Parameters &params);
-std::shared_ptr<Potential> makePotential(PotType ptype, Parameters &params);
-} // namespace eonc::helper_functions

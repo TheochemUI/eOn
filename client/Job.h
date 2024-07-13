@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "Matter.h"
+#include "client/Matter.h"
 #include "thirdparty/toml.hpp"
 
 namespace eonc {
@@ -63,7 +63,7 @@ public:
 };
 
 std::unique_ptr<JobBase>
-makeJob(toml::table &config,
+makeJob(const toml::table &config,
         std::optional<std::reference_wrapper<Matter>> mat = std::nullopt);
 
 } // namespace eonc
