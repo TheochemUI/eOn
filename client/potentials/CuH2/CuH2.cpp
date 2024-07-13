@@ -14,20 +14,15 @@
 #include <set>
 
 namespace eonc {
-void CuH2::cleanMemory(void) { return; }
 
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// address to supercell size
-void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
-                 double *U, double *variance, const double *box) {
-  variance = nullptr;
+void CuH2::forceImpl(const ForceInput &fip, ForceOut *efvd) {
   std::multiset<int> natmc;
   int natms[2]{0, 0}; // Always Cu, then H
-  int ndim{3 * static_cast<int>(N)};
+  double U[1]{0};     // Fortran takes an array of size 1
+  int ndim{3 * static_cast<int>(fip.nAtoms)};
 
-  for (long idx{0}; idx < N; ++idx) {
-    natmc.insert(atomicNrs[idx]);
+  for (size_t idx{0}; idx < fip.nAtoms; ++idx) {
+    natmc.insert(fip.atmnrs[idx]);
   }
 
 #ifdef EON_CHECKS
@@ -44,18 +39,20 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
 
 #ifdef EON_CHECKS
   // Check for other atom types
-  if (natms[0] + natms[1] != N) {
+  if (natms[0] + natms[1] != static_cast<int>(fip.nAtoms)) {
     throw std::runtime_error("The system has other atom types, but the CuH2 "
                              "potential was requested");
   }
 #endif
 
   // The box only takes the diagonal (assumes cubic)
-  double box_eam[]{box[0], box[4], box[8]};
+  double box_eam[]{fip.box[0], fip.box[4], fip.box[8]};
 
-  c_force_eam(natms, ndim, box_eam, const_cast<double *>(R), F, U);
-  *U += 697.311695; // Adjust U by a constant value, approximately minimum for
-                    // the CuH2 slab
+  c_force_eam(natms, ndim, box_eam, const_cast<double *>(fip.pos), efvd->F, U);
+  efvd->energy = U[0];
+  // *U += 697.311695; // Adjust U by a constant value, approximately minimum
+  // for
+  //                   // the CuH2 slab
   return;
 }
 

@@ -41,6 +41,7 @@
 // #include "potentials/Lenosky/Lenosky.h"
 // #include "potentials/SW/SW.h"
 // #include "potentials/Tersoff/Tersoff.h"
+#include "potentials/CuH2/CuH2.h"
 #endif
 
 // #ifdef WITH_PYTHON
@@ -65,11 +66,6 @@
 
 // #ifdef NEW_POT
 // #include "potentials/NewPot/NewPot.h"
-// #endif
-
-// // TODO: This should be guarded by WITH_FORTRAN as well
-// #ifdef CUH2_POT
-// #include "potentials/CuH2/CuH2.h"
 // #endif
 
 // #ifndef WIN32
@@ -136,12 +132,6 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
 //     break;
 //   }
 // #endif
-// #ifdef CUH2_POT
-//   case PotType::CUH2: {
-//     return (std::make_shared<CuH2>());
-//     break;
-//   }
-// #endif
 // #ifdef IMD_POT
 //   case PotType::IMD: {
 //     return (std::make_shared<IMD>());
@@ -171,6 +161,10 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
 #ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
     return (std::make_shared<Aluminum>());
+    break;
+  }
+  case PotType::CUH2: {
+    return (std::make_shared<CuH2>());
     break;
   }
 //   case PotType::EDIP: {
