@@ -26,4 +26,4 @@ std::string get_value_from_env_or_param(const char *env_variable,
                                         const std::string &warning_message = "",
                                         const bool is_mandatory = false);
 
-} // namespace eonc
+} // namespace eonc::def
