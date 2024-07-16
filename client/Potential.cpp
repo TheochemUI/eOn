@@ -113,7 +113,8 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   //   break;
   // }
   case PotType::LJ: {
-    auto params = LJ::Params(config["Potential"]["LJ"]);
+    auto params = LJ::Params();
+    params.from_toml(config["Potential"]["LJ"]);
     return (std::make_shared<LJ>(params));
     break;
   }
