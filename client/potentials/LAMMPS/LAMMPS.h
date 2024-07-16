@@ -1,7 +1,6 @@
 // serves as an interface between LAMMPS potentials maintained by SANDIA
 
-#ifndef LAMMPS
-#define LAMMPS
+#pragma once
 
 #include "../../Parameters.h"
 #include "../../Potential.h"
@@ -11,7 +10,7 @@ class lammps : public Potential {
 public:
   lammps(std::shared_ptr<Parameters> p);
   ~lammps(void);
-  void initialize(){};
+  void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
@@ -24,4 +23,3 @@ private:
                      const double *box);
   bool realunits;
 };
-#endif
