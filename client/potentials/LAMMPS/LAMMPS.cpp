@@ -9,7 +9,8 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 // General Functions
-lammps::lammps(std::shared_ptr<Params> p) : Potential(p) {
+lammps::lammps(std::shared_ptr<Parameters> p)
+    : Potential(p) {
   numberOfAtoms = 0;
   LAMMPSObj = NULL;
   for (int i = 0; i < 9; i++)
@@ -95,7 +96,7 @@ void lammps::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   int nargs = 7;
   lammps_argv[0] = "";
   lammps_argv[1] = "-log";
-  if (params->LAMMPSLogging) {
+  if (m_params->LAMMPSLogging) {
     lammps_argv[2] = "log.lammps";
   } else {
     lammps_argv[2] = "none";
@@ -105,13 +106,13 @@ void lammps::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lammps_argv[5] = "-screen";
   lammps_argv[6] = "none";
 
-  if (params->LAMMPSThreads > 0) {
+  if (m_params->LAMMPSThreads > 0) {
     lammps_argv[7] = "-suffix";
     lammps_argv[8] = "omp";
     nargs += 2;
   }
 #ifdef EONMPI
-  lammps_open(nargs, lammps_argv, params->MPIClientComm, &LAMMPSObj);
+  lammps_open(nargs, lammps_argv, m_params->MPIClientComm, &LAMMPSObj);
 #else
   lammps_open_no_mpi(nargs, lammps_argv, &LAMMPSObj);
 #endif
@@ -119,8 +120,8 @@ void lammps::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
 
   char cmd[200];
 
-  if (params->LAMMPSThreads > 0) {
-    snprintf(cmd, 200, "package omp %i force/neigh", params->LAMMPSThreads);
+  if (m_params->LAMMPSThreads > 0) {
+    snprintf(cmd, 200, "package omp %i force/neigh", m_params->LAMMPSThreads);
     lammps_command(ptr, cmd);
   }
 
