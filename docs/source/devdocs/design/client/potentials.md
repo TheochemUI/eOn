@@ -10,11 +10,12 @@ AtomMatrix force(long nAtoms, AtomMatrix positions,
 ```{versionchanged} 2.x
 - To support surrogate potentials, the signature include `double *variance` which is typically `nullptr` for exact potentials.
 - A factory function is used for thread-safety instead of the static raw pointer `getPotential`
-- `static` usage has been curtailed for thread-safety
-- `parameters` are no longer required to consrtuct a potential, just the type of potential
 ```
 
 ## Redesign
+
+```{versionchanged} 3.x
+```
 
 Conceptually, the `Potential` objects are a good place for inheritance. They
 have only one layer down and only one public facing function. Like the `Job`
@@ -25,12 +26,56 @@ instances, they construct parameters from `toml::table` instances directly.
 Since naming is hard, we prefer to use the following conventions:
 
 - `Params` for the structure of parameters
-  - Should take a constructor for `const toml::node_view<const toml::node> &tbl`
-  - The default for the struct will handle other cases
-  - Never use `Params` without a quantifier! e.g. `LJ::Params` in arguments
-  - The caller must pass the node of interest `config["Potential"]["Morse"]`
+  - Derived from base `PotParams` to enforce `from_toml` for setting inputs
+  - Since it is a plain data object, structured designated initializers work for
+    the defaults.
+  - Never use `Params` without a quantifier! e.g. `LJ::Params` in arguments.
 - `fip` for `ForceInput` (see below)
 - `efvd` for `ForceOut` (see below)
+
+### Parameters
+
+
+```{code-block} cpp
+class LJ final : public Potential<LJ> {
+public:
+  struct Params final : public PotParams {
+    double u0{1.0};
+    double cutoff_R{15.0};
+    double psi{1.0};
+    void from_toml(const toml::node_view<const toml::node> &tbl) override {
+      u0 = tbl["u0"].value_or(u0);
+      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
+      psi = tbl["psi"].value_or(psi);
+    }
+  };
+};
+```
+
+Where we have to refrain from using a more elegant constructor to prevent having
+to write more boilerplate (a plain data struct) for the parameters due to the
+designated [initializers handling of
+C++](https://stackoverflow.com/questions/64770166/why-i-can-not-use-designated-initalizers-with-structs-that-are-not-aggregates).
+
+The `PotParams` class simply enforces the constraint of having a `from_toml` method.
+
+```{code-block} cpp
+struct PotParams {
+  virtual ~PotParams() = default;
+  virtual void from_toml(const toml::node_view<const toml::node> &tbl) = 0;
+};
+```
+
+If there are no parameters to be set by the user, then the class doesn't have a
+`Params` struct at all.
+
+```{code-block} cpp
+class Aluminum : public Potential<Aluminum> {
+public:
+  Aluminum() { potinit_(); };
+  void forceImpl(const ForceInput &, ForceOut *) override;
+};
+```
 
 ### Structured force calls
 
