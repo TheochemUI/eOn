@@ -16,18 +16,12 @@
 namespace eonc {
 class Morse final : public Potential<Morse> {
 public:
-  struct Params final : public PotParams {
+  struct Params final {
     // De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
     double De{0.7102};
     double a{1.6047};
     double re{2.8970};
     double cutoff{9.5};
-    void from_toml(const toml::node_view<const toml::node> &tbl) override {
-      De = tbl["Potential"]["Morse"]["De"].value_or(De);
-      a = tbl["Potential"]["Morse"]["a"].value_or(a);
-      re = tbl["Potential"]["Morse"]["re"].value_or(re);
-      cutoff = tbl["Potential"]["Morse"]["cutoff"].value_or(cutoff);
-    }
   };
 
 private:

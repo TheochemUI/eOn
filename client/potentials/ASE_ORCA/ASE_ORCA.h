@@ -28,7 +28,7 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 
 class ASEOrcaPot final : public Potential<ASEOrcaPot> {
 public:
-  struct Params final : public PotParams {
+  struct Params final {
     std::string orca_path{def::get_value_from_env_or_param(
         "ORCA_COMMAND", def::PDef(""s, ""s), "", false)};
     std::string simpleinput{get_value_from_env_or_param(
@@ -37,11 +37,6 @@ public:
         "environment variable ORCA_SIMPLEINPUT.\n")};
     std::string orca_nproc{def::get_value_from_env_or_param(
         "ORCA_NPROC", def::PDef("1"s, "auto"), "", false)};
-    void from_toml(const toml::node_view<const toml::node> &tbl) override {
-      orca_path = tbl["ASE_ORCA"]["orca_path"].value_or(orca_path);
-      orca_nproc = tbl["ASE_ORCA"]["nproc"].value_or(orca_nproc);
-      simpleinput = tbl["ASE_ORCA"]["simpleinput"].value_or(simpleinput);
-    }
   };
 
 private:

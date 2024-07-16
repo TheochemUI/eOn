@@ -125,7 +125,7 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     //   }
   case PotType::MORSE_PT: {
     auto params = Morse::Params();
-    params.from_toml(config["Potential"]["Morse"]);
+    eonc::pot::from_toml(params, config["Potential"]["Morse"]);
     return (std::make_shared<Morse>(params));
     break;
   }
@@ -277,7 +277,7 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
 #ifdef WITH_ASE_ORCA
   case PotType::ASE_ORCA: {
     auto params = ASEOrcaPot::Params();
-    params.from_toml(config["Potential"]["ASE_ORCA"]);
+    eonc::pot::from_toml(params, config["Potential"]["ASE_ORCA"]);
     return (std::make_shared<ASEOrcaPot>(params));
     break;
   }
