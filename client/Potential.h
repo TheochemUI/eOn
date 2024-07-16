@@ -21,11 +21,6 @@
 
 namespace eonc {
 
-struct PotParams {
-  virtual ~PotParams() = default;
-  virtual void from_toml(const toml::node_view<const toml::node> &tbl) = 0;
-};
-
 class PotBase {
 protected:
   // Does not take into account the fixed / free atoms

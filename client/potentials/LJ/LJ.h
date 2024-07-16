@@ -13,22 +13,16 @@
 #pragma once
 // #include "../../system_unit.h" // unit converters
 #include "client/Potential.h"
-#include "toml.hpp"
 
 namespace eonc {
 
 /** Lennard Jones potential.*/
 class LJ final : public Potential<LJ> {
 public:
-  struct Params final : public PotParams {
+  struct Params final {
     double u0{1.0};
     double cutoff_R{15.0};
     double psi{1.0};
-    void from_toml(const toml::node_view<const toml::node> &tbl) override {
-      u0 = tbl["u0"].value_or(u0);
-      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
-      psi = tbl["psi"].value_or(psi);
-    }
   };
 
 private:

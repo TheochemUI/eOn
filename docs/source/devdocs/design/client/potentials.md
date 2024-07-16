@@ -39,31 +39,46 @@ Since naming is hard, we prefer to use the following conventions:
 ```{code-block} cpp
 class LJ final : public Potential<LJ> {
 public:
-  struct Params final : public PotParams {
+  struct Params final : {
     double u0{1.0};
     double cutoff_R{15.0};
     double psi{1.0};
-    void from_toml(const toml::node_view<const toml::node> &tbl) override {
-      u0 = tbl["u0"].value_or(u0);
-      cutoff_R = tbl["cutoff"].value_or(cutoff_R);
-      psi = tbl["psi"].value_or(psi);
-    }
   };
 };
 ```
 
-Where we have to refrain from using a more elegant constructor to prevent having
-to write more boilerplate (a plain data struct) for the parameters due to the
-designated [initializers handling of
-C++](https://stackoverflow.com/questions/64770166/why-i-can-not-use-designated-initalizers-with-structs-that-are-not-aggregates).
+Where we have to refrain from using a constructor or even a method to prevent
+having to write more boilerplate (a plain data struct) for the parameters due to
+the designated [initializers handling of
+C++](https://stackoverflow.com/questions/64770166/why-i-can-not-use-designated-initalizers-with-structs-that-are-not-aggregates). By ensuring a simpler plain data struct we can initialize it with less overhead and this decouples the parameter parsing from the class.
 
-The `PotParams` class simply enforces the constraint of having a `from_toml` method.
+Instead, for each set of parameters, a corresponding entry in `ParseTOML.{hpp,cc}` must be made:
 
 ```{code-block} cpp
-struct PotParams {
-  virtual ~PotParams() = default;
-  virtual void from_toml(const toml::node_view<const toml::node> &tbl) = 0;
-};
+// .hpp
+namespace eonc::pot {
+void from_toml(LJ::Params &, const toml::node_view<const toml::node> &);
+}
+
+// .cc
+namespace eonc::pot {
+void from_toml(LJ::Params &p_a, const toml::node_view<const toml::node> &tbl) {
+  p_a.u0 = tbl["u0"].value_or(p_a.u0);
+  p_a.cutoff_R = tbl["cutoff"].value_or(p_a.cutoff_R);
+  p_a.psi = tbl["psi"].value_or(p_a.psi);
+}
+}
+```
+
+Usage becomes:
+
+```{code-block} cpp
+  case PotType::LJ: {
+    auto params = LJ::Params();
+    eonc::pot::from_toml(config["Potential"]["LJ"]);
+    return (std::make_shared<LJ>(params));
+    break;
+  }
 ```
 
 If there are no parameters to be set by the user, then the class doesn't have a
@@ -75,6 +90,15 @@ public:
   Aluminum() { potinit_(); };
   void forceImpl(const ForceInput &, ForceOut *) override;
 };
+```
+
+The benefit of the designated initalizer becomes obvious for reuse:
+
+```{code-block} cpp
+LJCluster(const LJCluster::Params &p_a)
+    : _lj{LJ(&LJ::Params{.u0 = p_a,
+                         .cutoff_R = std::numeric_limits<double>::infinity(),
+                         .psi = p_a.psi})} {}
 ```
 
 ### Structured force calls

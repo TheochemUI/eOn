@@ -14,6 +14,7 @@
 #include "BaseStructures.h"
 #include "Parser.hpp"
 #include "Potential.h"
+#include "potentials/ParseTOML.hpp"
 
 // #ifdef WITH_CATLEARN
 // #include "potentials/CatLearnPot/CatLearnPot.h"
@@ -114,7 +115,7 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   // }
   case PotType::LJ: {
     auto params = LJ::Params();
-    params.from_toml(config["Potential"]["LJ"]);
+    eonc::pot::from_toml(params, config["Potential"]["LJ"]);
     return (std::make_shared<LJ>(params));
     break;
   }
