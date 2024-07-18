@@ -1,7 +1,6 @@
 // serves as an interface between LAMMPS potentials maintained by SANDIA
 
-#ifndef LAMMPS
-#define LAMMPS
+#pragma once
 
 #include "../../Parameters.h"
 #include "../../Potential.h"
@@ -24,4 +23,3 @@ private:
                      const double *box);
   bool realunits;
 };
-#endif
