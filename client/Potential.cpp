@@ -51,7 +51,7 @@
 #endif
 
 #ifdef LAMMPS_POT
-#include "potentials/LAMMPS/LAMMPS.h"
+#include "potentials/LAMMPS/LAMMPSPot.h"
 #endif
 
 #ifdef NEW_POT
@@ -218,7 +218,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #endif
 #ifdef LAMMPS_POT
   case PotType::LAMMPS: {
-    return (std::make_shared<lammps>(params));
+    return (std::make_shared<LAMMPSPot>(params));
     break;
   }
 #endif
