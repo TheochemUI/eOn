@@ -13,35 +13,25 @@
 #pragma once
 
 // #include "../../system_unit.h" // unit converters
-#include "../../Potential.h"
+#include "client/Potential.h"
+#include "client/potentials/LJ/LJ.h"
+#include <limits>
 namespace eonc {
 /** Lennard Jones potential.*/
-class LJCluster : public Potential {
-
+class LJCluster final : public Potential<LJCluster> {
+// NOTE(rg): Do we need LJCluster params?
 private:
-  // Variables
-  double u0;
-  double cuttOffR;
-  double psi;
-
-  double cuttOffU;
+  LJ _lj;
 
 public:
-  // Functions
-  // constructor
-  LJCluster(eonc::def::LJParams &ljp)
-      : Potential(PotType::LJCLUSTER),
-        u0{ljp.u0},
-        cuttOffR{ljp.cutoff},
-        psi{ljp.psi} {}
+  LJCluster(const LJ::Params &p_a)
+      : _lj{LJ(LJ::Params{.u0 = p_a.u0,
+                          .cutoff_R = std::numeric_limits<double>::infinity(),
+                          .psi = p_a.psi})} {}
 
   ~LJCluster();
 
-  // Just to satisfy interface
-  void cleanMemory();
-
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
-  void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
+  void forceImpl(const ForceInput &, ForceOut *) override final;
+  void setParameters(double r0Recieved, double psiRecieved);
 };
 } // namespace eonc
