@@ -1,4 +1,4 @@
-#include "LAMMPS.h"
+#include "LAMMPSPot.h"
 #include "library.h"
 #include <map>
 #include <string.h>
@@ -6,29 +6,26 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#pragma GCC diagnostic ignored "-Wwrite-strings"
-
-// General Functions
-lammps::lammps(std::shared_ptr<Parameters> p)
+LAMMPSPot::LAMMPSPot(std::shared_ptr<Parameters> p)
     : Potential(p) {
   numberOfAtoms = 0;
-  LAMMPSObj = NULL;
+  LAMMPSObj = nullptr;
   for (int i = 0; i < 9; i++)
     oldBox[i] = 0.0;
 }
 
-lammps::~lammps() { cleanMemory(); }
+LAMMPSPot::~LAMMPSPot() { cleanMemory(); }
 
-void lammps::cleanMemory(void) {
-  if (LAMMPSObj != NULL) {
+void LAMMPSPot::cleanMemory(void) {
+  if (LAMMPSObj != nullptr) {
     lammps_close(LAMMPSObj);
-    LAMMPSObj = NULL;
+    LAMMPSObj = nullptr;
   }
   return;
 }
 
-void lammps::force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, double *variance, const double *box) {
+void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
+                      double *U, double *variance, const double *box) {
   variance = nullptr;
   int i;
   bool newLammps = false;
@@ -45,7 +42,7 @@ void lammps::force(long N, const double *R, const int *atomicNrs, double *F,
   lammps_scatter_atoms(LAMMPSObj, "x", 1, 3, R);
   lammps_command(LAMMPSObj, "run 1 pre no post no");
 
-  double *pe = (double *)lammps_extract_variable(LAMMPSObj, "pe", NULL);
+  double *pe = (double *)lammps_extract_variable(LAMMPSObj, "pe", nullptr);
   *U = *pe;
   free(pe);
 
@@ -73,13 +70,13 @@ void lammps::force(long N, const double *R, const int *atomicNrs, double *F,
   free(fz);
 }
 
-void lammps::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
-                           const double *box) {
+void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
+                              const double *box) {
   numberOfAtoms = N;
   for (int i = 0; i < 9; i++)
     oldBox[i] = box[i];
 
-  if (LAMMPSObj != NULL) {
+  if (LAMMPSObj != nullptr) {
     cleanMemory();
   }
 
