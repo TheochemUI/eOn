@@ -27,7 +27,7 @@ class PotentialBase {
 public:
   PotentialBase();
   PotentialBase(double cutoff, double switchingWidth);
-  virtual ~PotentialBase(){};
+  virtual ~PotentialBase() {};
   double getCutoff() const;
   void setCutoff(double cutoff);
   double getSwitchingWidth() const;

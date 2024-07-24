@@ -31,4 +31,4 @@ public:
              double *U, double *variance, const double *box) override;
 };
 
-}
+} // namespace eonc
