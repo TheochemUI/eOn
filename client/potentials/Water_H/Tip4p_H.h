@@ -50,4 +50,4 @@ public:
 private:
   std::shared_ptr<Tip4p> tip4p_pot;
 };
-}
+} // namespace eonc

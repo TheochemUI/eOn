@@ -69,4 +69,4 @@ public:
              double *U, double *variance, const double *box);
 };
 
-}
+} // namespace eonc
