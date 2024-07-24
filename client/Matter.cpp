@@ -727,7 +727,8 @@ void Matter::computePotential() {
     // if (surrogatePotential) {
     //   // Surrogate potential case
     //   auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
-    //       this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(), cell);
+    //       this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(),
+    //       cell);
     //   // Now populate full structures
     //   this->potentialEnergy = freePE;
     //   this->energyVariance = vari;
@@ -738,12 +739,11 @@ void Matter::computePotential() {
     //     }
     //   }
     // } else {
-      // Non-surrogate potential case
-      npotcalls++;
-      auto [pE, frcs] =
-          potential->get_ef(positions, atomicNrs, cell);
-      potentialEnergy = pE;
-      forces = frcs;
+    // Non-surrogate potential case
+    npotcalls++;
+    auto [pE, frcs] = potential->get_ef(positions, atomicNrs, cell);
+    potentialEnergy = pE;
+    forces = frcs;
     // }
     // TODO(rg) :: Something about this isn't right..
     forceCalls += 1;
@@ -1126,9 +1126,7 @@ void Matter::setPotential(std::shared_ptr<PotBase> pot) {
   recomputePotential = true;
 }
 
-size_t Matter::getPotentialCalls() const {
-  return this->npotcalls;
-}
+size_t Matter::getPotentialCalls() const { return this->npotcalls; }
 
 double Matter::getEnergyVariance() { return this->energyVariance; }
 

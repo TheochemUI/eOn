@@ -19,7 +19,7 @@
 namespace eonc {
 /** Lennard Jones potential.*/
 class LJCluster final : public Potential<LJCluster> {
-// NOTE(rg): Do we need LJCluster params?
+  // NOTE(rg): Do we need LJCluster params?
 private:
   LJ _lj;
 

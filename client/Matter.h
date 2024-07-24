@@ -48,8 +48,9 @@ public:
 
   double
   distanceTo(const Matter &matter); // the distance to the given matter object
-  double perAtomNorm(const Matter &matter) const; // the maximum distance between two
-                                            // atoms in the Matter objects
+  double
+  perAtomNorm(const Matter &matter) const; // the maximum distance between two
+                                           // atoms in the Matter objects
   void
   setPotential(std::shared_ptr<PotBase> pot); // set potential function to use
   std::shared_ptr<PotBase> getPotential();    // get potential function to use
