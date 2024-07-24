@@ -18,8 +18,8 @@
 class HelperFunctionsTest : public ObjectiveTest {
 
 public:
-  HelperFunctionsTest(){};
-  ~HelperFunctionsTest(){};
+  HelperFunctionsTest() {};
+  ~HelperFunctionsTest() {};
   int test();
 
 private:

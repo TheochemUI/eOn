@@ -18,7 +18,7 @@ using std::ostream;
 class Vec {
 public:
   /// Dummy constructor needed by STL containers.
-  Vec(){};
+  Vec() {};
   /// Construct a 3-vector from three doubles.
   Vec(double x0, double x1, double x2);
   /// Dot product

@@ -31,4 +31,4 @@ private:
   const char *eon_extpot_path;
 };
 
-}
+} // namespace eonc

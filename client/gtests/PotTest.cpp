@@ -61,8 +61,8 @@ TEST_CASE_METHOD(PotTest, "getType", "[PotTest]") {
 
 TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
   SetUp();
-  auto matEq =
-      std::bind(::helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+  auto matEq = std::bind(::helper_functions::eigenEquality<AtomMatrix>, _1, _2,
+                         threshold);
 
   double energy_lj{-8.9245539406};
   AtomMatrix forces_lj{MatrixType::Zero(m1->numberOfAtoms(), 3)};

@@ -43,9 +43,11 @@ std::vector<std::string> PrefactorJob::run(void) {
     // TODO(rg): Also an enum candidate
     if (params->prefactor.configuration == eonc::Prefactor::TYPE::REACTANT) {
       matterFilename = reactantFilename;
-    } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::SADDLE) {
+    } else if (params->prefactor.configuration ==
+               eonc::Prefactor::TYPE::SADDLE) {
       matterFilename = saddleFilename;
-    } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::PRODUCT) {
+    } else if (params->prefactor.configuration ==
+               eonc::Prefactor::TYPE::PRODUCT) {
       matterFilename = productFilename;
     }
     reactant->con2matter(matterFilename);
@@ -72,7 +74,8 @@ std::vector<std::string> PrefactorJob::run(void) {
   } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::SADDLE) {
     Hessian hessian(params.get(), saddle.get());
     freqs = hessian.getFreqs(saddle.get(), atoms);
-  } else if (params->prefactor.configuration == eonc::Prefactor::TYPE::PRODUCT) {
+  } else if (params->prefactor.configuration ==
+             eonc::Prefactor::TYPE::PRODUCT) {
     Hessian hessian(params.get(), product.get());
     freqs = hessian.getFreqs(product.get(), atoms);
   }
