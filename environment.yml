@@ -19,8 +19,8 @@ dependencies:
   - eigen==3.4.0
   # AMS
   - boost-cpp
-  - fmt
-  - spdlog
+  - "fmt<=10"
+  - "spdlog<=1.14"
   - abseil-cpp
   # Testing
   - pytest
