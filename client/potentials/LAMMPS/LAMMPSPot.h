@@ -5,11 +5,11 @@
 #include "../../Parameters.h"
 #include "../../Potential.h"
 
-class lammps : public Potential {
+class LAMMPSPot : public Potential {
 
 public:
-  lammps(std::shared_ptr<Parameters> p);
-  ~lammps(void);
+  LAMMPSPot(std::shared_ptr<Parameters> p);
+  ~LAMMPSPot(void);
   void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
