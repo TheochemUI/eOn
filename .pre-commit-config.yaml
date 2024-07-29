@@ -26,7 +26,13 @@ repos:
     - id: clang-format
       name: clang-format
       entry: clang-format
-      exclude: 'thirdparty/'
+      exclude: |
+        (?x)(
+        thirdparty|
+        xtb.h|
+        mastereqn|
+        libqd
+        )
       language: system
       types_or: [c, c++, cuda]
       args: ["-fallback-style=none", "-style=file", "-i"]
