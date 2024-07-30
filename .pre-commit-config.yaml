@@ -22,7 +22,25 @@ repos:
       entry: cpplint
       language: system
       types_or: [c++, c]
-      args: ["--exclude=client/thirdparty/", "--exclude=tools/mastereqn/", "--exclude=eon/mcamc/libqd/",  "--filter=-whitespace/comments,-runtime/references,-whitespace/indent,-whitespace/parens,-whitespace/braces,-whitespace/line_length,-whitespace/newline,-build/include_order,-readability/todo,-build/namespaces"]
+      exclude: |
+        (?x)(
+        thirdparty|
+        xtb.h|
+        mastereqn|
+        libqd
+        )
+      args: [
+      "--filter=-whitespace/comments,
+      -runtime/references,
+      -whitespace/indent,
+      -whitespace/parens,
+      -whitespace/braces,
+      -whitespace/line_length,
+      -whitespace/newline,
+      -build/include_order,
+      -readability/todo,
+      -build/namespaces"
+      ]
     - id: clang-format
       name: clang-format
       entry: clang-format
