@@ -1,15 +1,15 @@
 * About
-- A modern, elegant approach to working with [[https://theory.cm.utexas.edu/eon/][EON]]
+- A modern, elegant approach to working with [[https://theochemui.github.io/eOn/][eOn]]
 ** Build
 *** Conda
 We provide a ~conda~ environment, which is only partially supported for reproducible usage, since it depends on local compilers.
 #+begin_src bash
-micromamba create -f environment.yml
+micromamba create -n eongit -f conda-lock.yml
 micromamba activate eongit
 #+end_src
 This leads to the most robust installation approach:
 #+begin_src bash
-meson setup bbdir --prefix=$CONDA_PREFIX
+meson setup bbdir --prefix=$CONDA_PREFIX --libbdir=lib
 meson install -C bbdir
 #+end_src
 The server is accessed through ~python -m eon.server~.
@@ -22,34 +22,10 @@ activated environment.
 This is the preferred method.
 #+begin_src bash
 cd client
-# in conda, add  --prefix=$CONDA_PREFIX
+# in conda, add --prefix=$CONDA_PREFIX --libdir=lib
 meson setup bbdir --buildtype=debug -Dbuild_tests=true
 meson test -C bbdir
 #+end_src
-**** Writing and Registering Tests
-We find that, rather than build each executable by hand or even register each one by hand, we can leverage the array iteration features of the ~meson~ language.
-#+begin_src python
-if get_option('build_tests')
-  _args += ['-DEONTEST'] # Unused
-  _deps += [ gtest_dep ]
-test_array = [#
-  ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
-             ]
-foreach test : test_array
-  test(test.get(0),
-       executable(test.get(1),
-          sources : ['gtests/'+test.get(2)],
-          dependencies : [ eon_deps, gtest_dep, gmock_dep ],
-          link_with : eclib,
-          cpp_args : eon_extra_args
-                 ),
-        workdir : meson.source_root() + test.get(3)
-      )
-endforeach
-endif
-#+end_src
-** Usage
-Included is the ~eonc.rb~ helper in ~tools/gprdimer/~, which can be used with any of the ~gtests/data/systems~ and a suitable configuration file.
 * Contributing
 *Do* run ~pre-commit~ before actually submitting pull requests!
 #+begin_src bash

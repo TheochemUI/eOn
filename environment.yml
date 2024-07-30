@@ -1,6 +1,6 @@
 # To use:
 #
-#   $ micromamba env create -f environment.yml  # `conda` works too for this command
+#   $ micromamba create -n eongit -f conda-lock.yml # conda works for this as well
 #   $ micromamba activate eongit
 #
 name: eongit
@@ -16,25 +16,15 @@ dependencies:
   - pkg-config
   - openblas
   # Pinned
-  - eigen==3.4.0
-  # AMS
-  - boost-cpp
+  - "eigen==3.4.0"
   - "fmt<=10"
   - "spdlog<=1.14"
+  # AMS
+  - boost-cpp
   - abseil-cpp
-  # Testing
-  - pytest
-  - pytest-datadir
-  # Extras
-  - numpy
-  - ase
-  - PyYAML
-  - pytest
-  - pytest-datadir
-  - sh
-  # Docs
-  - towncrier
-  - pipx
-  # Lint
+  # Python helpers
+  - pipx # conda-lock pdm towncrier
+  # Lint, handled by pre-commit
   - cppcheck
   - cpplint
+  - ruff
