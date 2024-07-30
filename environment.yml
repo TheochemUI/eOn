@@ -24,9 +24,7 @@ dependencies:
   - abseil-cpp
   # Docs
   - towncrier
-  - pipx
-  # Locker
-  - conda-lock
+  - pipx # conda-lock pdm
   # Lint
   - cppcheck
   - cpplint
