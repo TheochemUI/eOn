@@ -46,7 +46,7 @@ jobs:
         if: matrix.os == 'windows-2022'
         shell: pwsh
         run: |
-          # Windows gfotran can't handle iso_c_binding...
+          # Windows gfortran can't handle iso_c_binding...
           meson wrap install fmt
           meson setup bbdir --prefix $env:CONDA_PREFIX --libdir=lib -Dwith_cuh2=false
           meson install -C bbdir
