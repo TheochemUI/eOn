@@ -19,6 +19,17 @@ repos:
   -   id: end-of-file-fixer
   -   id: check-yaml
   -   id: check-added-large-files
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.5.5
+  hooks:
+    # Run the linter.
+    - id: ruff
+      types_or: [ python, pyi, jupyter ]
+      args: [ --fix, --unsafe-fixes ]
+    # Run the formatter.
+    - id: ruff-format
+      types_or: [ python, pyi, jupyter ]
 - repo: local
   hooks:
     # - id: cppcheck
