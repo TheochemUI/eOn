@@ -22,10 +22,9 @@ dependencies:
   # AMS
   - boost-cpp
   - abseil-cpp
-  # Docs
-  - towncrier
-  - pipx # conda-lock pdm
-  # Lint
+  # Python helpers
+  - pipx # conda-lock pdm towncrier
+  # Lint, handled by pre-commit
   - cppcheck
   - cpplint
   - ruff

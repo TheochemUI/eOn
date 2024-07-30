@@ -4,7 +4,7 @@
 *** Conda
 We provide a ~conda~ environment, which is only partially supported for reproducible usage, since it depends on local compilers.
 #+begin_src bash
-micromamba create -f environment.yml
+micromamba create -n eongit -f conda-lock.yml
 micromamba activate eongit
 #+end_src
 This leads to the most robust installation approach:
