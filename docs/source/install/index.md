@@ -1,6 +1,6 @@
 # Installation
 
-Eon is divided up into two separate programs: a server and a client. The client
+eOn is divided up into two separate programs: a server and a client. The client
 does most of the computation (e.g. saddle searches, minimizations, and molecular
 dynamics) while the server creates the input for the client and processes its
 results.
@@ -8,14 +8,14 @@ results.
 # Obtaining sources
 
 ```{versionadded} 2.0
-`eON` is now developed and distributed primarily via GitHub.
+`eOn` is now developed and distributed primarily via GitHub.
 ```
 
-Assuming access has been granted to the Github repository:
+Once git is present[^1]:
 
 ```{code-block} bash
-git clone https://github.com/TheochemUI/EONgit.git
-cd EONgit
+git clone https://github.com/TheochemUI/eOn.git
+cd eOn
 ```
 
 ````{margin}
@@ -28,10 +28,10 @@ cd EONgit
 
 ## Setup
 
-We provide a `conda` environment.
+We provide a `conda` environment, with dependencies handled by `conda-lock`.
 
 ```{code-block} bash
-micromamba create -f environment.yml
+micromamba create -n eongit -f conda-lock.yml
 micromamba activate eongit
 ```
 
@@ -74,11 +74,11 @@ svn
 
 # Licenses
 
-`eON` is released under the [BSD 3-Clause
+`eOn` is released under the [BSD 3-Clause
 License](https://opensource.org/license/BSD-3-Clause).
 
 ## Vendored
-Some libraries[^1] are distributed along with `eON`, namely:
+Some libraries[^2] are distributed along with `eOn`, namely:
 
 - `mcamc` which contains `libqd` :: BSD-3-Clause license
 ```{versionadded} 2.0
@@ -94,4 +94,5 @@ Some libraries[^1] are distributed along with `eON`, namely:
 
 <!-- pipx run pdm run sphinx-build -b html docs/source docs/build/html -->
 
-[^1]: All with compatible licenses
+[^1]: Installation instructions [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+[^2]: All with compatible licenses
