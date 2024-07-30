@@ -1,5 +1,5 @@
 * About
-- A modern, elegant approach to working with [[https://theory.cm.utexas.edu/eon/][EON]]
+- A modern, elegant approach to working with [[https://theochemui.github.io/eOn/][eOn]]
 ** Build
 *** Conda
 We provide a ~conda~ environment, which is only partially supported for reproducible usage, since it depends on local compilers.
@@ -22,7 +22,7 @@ activated environment.
 This is the preferred method.
 #+begin_src bash
 cd client
-# in conda, add  --prefix=$CONDA_PREFIX
+# in conda, add --prefix=$CONDA_PREFIX --libdir=lib
 meson setup bbdir --buildtype=debug -Dbuild_tests=true
 meson test -C bbdir
 #+end_src
