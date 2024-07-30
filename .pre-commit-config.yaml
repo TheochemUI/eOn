@@ -1,12 +1,27 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 fail_fast: false
+exclude: |
+  (?x)(
+  thirdparty|
+  xtb.h|
+  mastereqn|
+  libqd
+  )
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.0.1
   hooks:
-  -   id: trailing-whitespace
+  # -   id: trailing-whitespace
   -   id: end-of-file-fixer
+      exclude: |
+        (?x)(
+        newsfragments|
+        _static|
+        approval_tests|
+        pyx|
+        pyproject
+        )
   -   id: check-yaml
   -   id: check-added-large-files
 - repo: local
@@ -16,19 +31,12 @@ repos:
       entry: cppcheck
       language: system
       types_or: [c++, c]
-      args: ["--error-exitcode=0", "-iclient/thirdparty", "-itools/mastereqn/", "eon/mcamc/libqd/"]
+      args: ["--error-exitcode=0"]
     - id: cpplint
       name: cpplint
       entry: cpplint
       language: system
       types_or: [c++, c]
-      exclude: |
-        (?x)(
-        thirdparty|
-        xtb.h|
-        mastereqn|
-        libqd
-        )
       args: [
       "--filter=-whitespace/comments,
       -runtime/references,
@@ -44,13 +52,6 @@ repos:
     - id: clang-format
       name: clang-format
       entry: clang-format
-      exclude: |
-        (?x)(
-        thirdparty|
-        xtb.h|
-        mastereqn|
-        libqd
-        )
       language: system
       types_or: [c, c++, cuda]
       args: ["-fallback-style=none", "-style=file", "-i"]
