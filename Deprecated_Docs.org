@@ -119,6 +119,8 @@ cd gtests
 cp ../../gtests/data/gpr_dimer/client.log ../../gtests/data/gpr_dimer/config.ini ../../gtests/data/gpr_dimer/direction.dat ../../gtests/data/gpr_dimer/displacement.con ../../gtests/data/gpr_dimer/mode.dat ../../gtests/data/gpr_dimer/pos.con ../../gtests/data/gpr_dimer/results.dat .
 gdb gprdimereon # or lldb
 #+end_src
+*** Usage for GPRD
+Included is the ~eonc.rb~ helper in ~tools/gprdimer/~, which can be used with any of the ~gtests/data/systems~ and a suitable configuration file.
 * TODO Development Rosetta
 ** Machine Learning Concepts
 ** EON Concepts
