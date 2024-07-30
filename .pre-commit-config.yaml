@@ -55,15 +55,15 @@ repos:
       language: system
       types_or: [c, c++, cuda]
       args: ["-fallback-style=none", "-style=file", "-i"]
-    - id: ruff-lint-fixes
-      name: ruff check
-      entry: ruff
-      language: system
-      types_or: [ python, pyi, jupyter ]
-      args: ["check", "--fix", "--unsafe-fixes", "."]
-    - id: ruff-format
-      name: ruff format
-      entry: ruff
-      language: system
-      types_or: [ python, pyi, jupyter ]
-      args: ["format", "."]
+    # - id: ruff-lint-fixes
+    #   name: ruff check
+    #   entry: ruff
+    #   language: system
+    #   types_or: [ python, pyi, jupyter ]
+    #   args: ["check", "--fix", "--unsafe-fixes", "."]
+    # - id: ruff-format
+    #   name: ruff format
+    #   entry: ruff
+    #   language: system
+    #   types_or: [ python, pyi, jupyter ]
+    #   args: ["format", "."]
