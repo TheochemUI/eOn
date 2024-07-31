@@ -18,7 +18,8 @@ namespace eonc {
 
 /** Lennard Jones potential.*/
 class LJ final : public Potential<LJ> {
-    friend class LJCluster;
+  friend class LJCluster;
+
 public:
   struct Params final {
     double u0{1.0};

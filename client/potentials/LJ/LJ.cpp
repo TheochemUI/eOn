@@ -39,12 +39,12 @@ void LJ::forceImpl(const ForceInput &fip, ForceOut *efvd) {
       diffRY = fip.pos[3 * i + 1] - fip.pos[3 * j + 1];
       diffRZ = fip.pos[3 * i + 2] - fip.pos[3 * j + 2];
 
-      if (fip.box!=nullptr) {
-      // This is for use within LJCluster
-      // floor = largest integer value less than argument
-      diffRX = diffRX - fip.box[0] * floor(diffRX / fip.box[0] + 0.5);
-      diffRY = diffRY - fip.box[4] * floor(diffRY / fip.box[4] + 0.5);
-      diffRZ = diffRZ - fip.box[8] * floor(diffRZ / fip.box[8] + 0.5);
+      if (fip.box != nullptr) {
+        // This is for use within LJCluster
+        // floor = largest integer value less than argument
+        diffRX = diffRX - fip.box[0] * floor(diffRX / fip.box[0] + 0.5);
+        diffRY = diffRY - fip.box[4] * floor(diffRY / fip.box[4] + 0.5);
+        diffRZ = diffRZ - fip.box[8] * floor(diffRZ / fip.box[8] + 0.5);
       }
 
       diffR = sqrt(diffRX * diffRX + diffRY * diffRY + diffRZ * diffRZ);
