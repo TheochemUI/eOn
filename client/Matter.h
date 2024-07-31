@@ -167,7 +167,7 @@ private:
   std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<PotBase> potential;
   // --- These should be parsed in
-  bool usePeriodicBoundaries{params->main.usePBC};
+  bool usePeriodicBoundaries{true};
   // Indicates if the potential energy and forces need to be recalculated
   bool recomputePotential{true};
   bool removeNetForce{true};
