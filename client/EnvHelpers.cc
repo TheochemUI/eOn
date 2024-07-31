@@ -30,4 +30,4 @@ std::string get_value_from_env_or_param(const char *env_variable,
   return default_value;
 }
 
-} // namespace eonc
+} // namespace eonc::def
