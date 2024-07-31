@@ -290,4 +290,4 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   }
 }
 
-// } // namespace eonc
+} // namespace eonc
