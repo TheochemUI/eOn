@@ -57,8 +57,7 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
   REQUIRE(pot1->getTotalForceCalls() == 2);
 }
 
-TEST_CASE("Multiple potential instances", "[potential]")
-{
+TEST_CASE("Multiple potential instances", "[potential]") {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "LJ"}}}};
 
