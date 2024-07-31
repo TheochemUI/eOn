@@ -108,15 +108,17 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
     }
   }
 
-
 #ifdef EONMPI
   // TODO(rg):  Suffix should be a parameter
-  const char *lmpargv[] = { "liblammps", "-log", "none", "-echo", "log", "-screen", "none", "-suffix", "omp"};
-  int lmpargc = sizeof(lmpargv)/sizeof(const char *);
-  LAMMPSObj = lammps_open(lmpargc, (char **)lmpargv, m_params->MPIClientComm, nullptr);
+  const char *lmpargv[] = {"liblammps", "-log", "none",    "-echo", "log",
+                           "-screen",   "none", "-suffix", "omp"};
+  int lmpargc = sizeof(lmpargv) / sizeof(const char *);
+  LAMMPSObj =
+      lammps_open(lmpargc, (char **)lmpargv, m_params->MPIClientComm, nullptr);
 #else
-  const char *lmpargv[] = { "liblammps", "-log", "none", "-echo", "log", "-screen", "none"};
-  int lmpargc = sizeof(lmpargv)/sizeof(const char *);
+  const char *lmpargv[] = {"liblammps", "-log",    "none", "-echo",
+                           "log",       "-screen", "none"};
+  int lmpargc = sizeof(lmpargv) / sizeof(const char *);
   LAMMPSObj = lammps_open_no_mpi(lmpargc, (char **)lmpargv, NULL);
 #endif
 
