@@ -308,6 +308,20 @@ def rot_match(a, b):
     acm = sum(a.r)/len(a)
     bcm = sum(b.r)/len(b)
 
+    # SVD algorithm ("Least-Squares Fitting of Two 3-D Point Sets" by Arun, Huang, and Blostein)
+    ta_r = a.r - acm
+    tb_r = b.r - bcm
+    H = numpy.dot(ta_r.transpose() , tb_r)
+    U, S, V = numpy.linalg.svd(H)
+    R = numpy.dot(U, V)
+    if numpy.linalg.det(R) < 0:
+        V[2] *= -1
+        R = numpy.dot(U, V)
+    ta_r = numpy.dot(ta_r, R)
+    dist = max(numpy.linalg.norm(ta_r - tb_r, axis=1))
+    return dist < config.comp_eps_r
+
+    ''' Quaternion algorithm
     ta = a.copy()
     tb = b.copy()
     ta.r -= acm
@@ -326,21 +340,20 @@ def rot_match(a, b):
     szz = m[2][2]
 
     n = numpy.zeros((4,4))
-    n[0][1] = syz-szy
-    n[0][2] = szx-sxz
-    n[0][3] = sxy-syx
+    n[0][1] = syz - szy
+    n[0][2] = szx - sxz
+    n[0][3] = sxy - syx
 
-    n[1][2] = sxy+syx
-    n[1][3] = szx+sxz
-
+    n[1][2] = sxy + syx
+    n[1][3] = szx + sxz
     n[2][3] = syz + szy
 
     n += n.transpose()
 
-    n[0][0] = sxx + syy + szz
-    n[1][1] = sxx-syy-szz
-    n[2][2] = -sxx + syy -szz
-    n[3][3] = -sxx -syy + szz
+    n[0][0] =  sxx + syy + szz
+    n[1][1] =  sxx - syy - szz
+    n[2][2] = -sxx + syy - szz
+    n[3][3] = -sxx - syy + szz
 
     w,v = numpy.linalg.eig(n)
     maxw = 0
@@ -376,6 +389,7 @@ def rot_match(a, b):
 
     dist = max(per_atom_norm(ta.r - tb.r, ta.box))
     return dist < config.comp_eps_r
+    '''
 
     ### This gives the RMSD faster, but does not give the optimial rotation
     ### this could be amended by solving for the eigenvector corresponding to the largest eigenvalue
