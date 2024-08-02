@@ -144,7 +144,8 @@ _args += ['-DSPDLOG_FMT_EXTERNAL']
 subdir('potentials')
 
 tomlib = library('toml', 'toml.cpp',
-                 cpp_args: ['-w'])
+                 cpp_args: ['-w'],
+                 install: true)
 _deps += declare_dependency(link_with: tomlib)
 
 eonclib_sources = [
