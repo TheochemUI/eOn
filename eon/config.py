@@ -262,7 +262,7 @@ class ConfigClass:
         self.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
         self.random_mode = parser.getboolean('Saddle Search', 'random_mode')
         if self.displace_listed_atom_weight != 0.0:
-            self.disp_listed_atoms = [ int(c.lstrip()) for c in parser.get('Saddle Search', 'displace_atom_list').split(',') ]
+            self.disp_listed_atoms = [ (string.strip(c)) for c in parser.get('Saddle Search', 'displace_atom_list').split(',') ]
             if self.disp_listed_atoms == ['None']:
                 self.disp_listed_atoms = []
         if self.displace_listed_type_weight != 0.0:
