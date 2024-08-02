@@ -24,8 +24,12 @@ extern "C" {
 // These are the only structs without member initialization since they are
 // C-style
 typedef struct {
-  // pointer to number of atoms, pointer to array of positions
-  // address to supercell size
+  /**
+  @param[in] nAtoms           Number of atoms.
+  @param[in] pos              Pointer to an array of positions Angstrom.
+  @param[in] atmnrs           Pointer to an array of atomic numbers.
+  @param[in] box              Pointer to supercell dimensions in Angstrom.
+  */
   const size_t nAtoms;
   const double *pos;
   const size_t *atmnrs;
@@ -33,11 +37,14 @@ typedef struct {
 } ForceInput;
 
 typedef struct {
-  // pointer to array of forces
+  /**
+  @param[out] F           Array used to return the forces resulting from
+  interactions between molecules. Forces are in eV/Angstrom.
+  @param[out] energy      Energy in eV.
+  @param[out] variance    Variance, 0 when not needed.
+   */
   double *F;
-  // Internal energy
   double energy;
-  // Variance here is 0 when not needed and that's OK
   double variance;
 } ForceOut;
 
