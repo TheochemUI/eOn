@@ -15,14 +15,14 @@
 
 namespace eonc {
 
-void Aluminum::forceImpl(const ForceInput &params, ForceOut *efvd) {
+void Aluminum::forceImpl(const ForceInput &fip, ForceOut *efvd) {
 #ifdef EON_CHECKS
-  eonc::pot::checkParams(params);
-  eonc::pot::zeroForceOut(params.nAtoms, efvd);
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
 #endif
-  const long int N = params.nAtoms;
-  force_(&N, params.pos, efvd->F, &efvd->energy, &params.box[0], &params.box[4],
-         &params.box[8]);
+  const long int N = fip.nAtoms;
+  force_(&N, fip.pos, efvd->F, &efvd->energy, &fip.box[0], &fip.box[4],
+         &fip.box[8]);
   return;
 }
 
