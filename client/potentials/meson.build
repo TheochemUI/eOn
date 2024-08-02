@@ -138,7 +138,7 @@ if get_option('with_fortran')
   subdir('FeHe')
   subdir('Lenosky')
   subdir('SW')
-#   subdir('Tersoff')
+  subdir('Tersoff')
 #   if get_option('with_water')
 #     subdir('Water_H')
 #     potentials += [water_h]
@@ -151,8 +151,8 @@ if get_option('with_fortran')
                  fehe,
                  lenosky,
                  sw,
+                 tersoff,
   ]
-#   tersoff]
   _args += ['-DWITH_FORTRAN']
 endif
 
