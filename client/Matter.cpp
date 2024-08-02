@@ -776,16 +776,7 @@ void Matter::applyPeriodicBoundary() {
 double Matter::maxForce(void) {
   // Ensures that the forces are up to date
   computePotential();
-
-  // I think this can be done in one line with the rowwise method
-  double maxForce = 0.0;
-  for (size_t i = 0; i < nAtoms; i++) {
-    if (getFixed(i)) {
-      continue;
-    }
-    maxForce = std::max(forces.row(i).norm(), maxForce);
-  }
-  return maxForce;
+  return (getForcesFree()).rowwise().norm().maxCoeff();
 }
 
 Vector<size_t> Matter::getAtomicNrs() const { return this->atomicNrs; }
