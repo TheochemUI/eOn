@@ -54,7 +54,6 @@ _args += cppc.get_supported_arguments([
   # '-Wno-class-memaccess',
   # '-Wno-unused-function',
   # Common
-  '-Wno-unused-result',
   '-Wno-unused-parameter',
   '-Wno-unused-but-set-parameter',
   '-Wfatal-errors',
