@@ -9,12 +9,12 @@ C Repo:
 C https://github.com/TheochemUI/eOn
 
 c   version e93:   add gregs SPF routine for chain relaxation
-c   EAM version b91:   add FPI forces and potential by calling FPIforce
+c   EAM version b91:   add FPI alforcess and potential by calling FPIalforces
 c
 C     THIS SUBROUTINE COMPUTES THE FORCES by calling GAGAFE for each type of
 c     interaction.
 
-      SUBROUTINE FORCE(N, R, F, U, BX, BY, BZ)
+      SUBROUTINE ALFORCES(N, R, F, U, BX, BY, BZ)
 
       implicit real * 8 (a - h, o - z)
 

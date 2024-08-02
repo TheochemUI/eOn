@@ -21,7 +21,7 @@ void Aluminum::forceImpl(const ForceInput &fip, ForceOut *efvd) {
   eonc::pot::zeroForceOut(fip.nAtoms, efvd);
 #endif
   const long int N = fip.nAtoms;
-  force_(&N, fip.pos, efvd->F, &efvd->energy, &fip.box[0], &fip.box[4],
+  alforces_(&N, fip.pos, efvd->F, &efvd->energy, &fip.box[0], &fip.box[4],
          &fip.box[8]);
   return;
 }
