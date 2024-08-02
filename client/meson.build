@@ -386,6 +386,7 @@ eclib = library('eonclib',
                 dependencies : _deps,
                 link_with : _linkto,
                 cpp_args : _args,
+                link_args: _linkargs,
                 install : true)
 
 _linkto += eclib
@@ -405,7 +406,8 @@ ec = executable('eonclient',
                 include_directories: _incdirs,
                 dependencies : _deps,
                 link_with : _linkto,
-                cpp_args : _args,
+                cpp_args : [_args, '-w'],
+                link_args: _linkargs,
                 install : true)
 
 if get_option('with_tests')
