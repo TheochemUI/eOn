@@ -19,7 +19,7 @@ std::vector<std::string> PointJob::run(void) {
   double energy = _mat.getPotentialEnergy();
   auto maxForce = _mat.maxForce();
 
-  // SPDLOG_LOGGER_DEBUG(log, "(free) Forces:         {:.12f}",
+  // SPDLOG_LOGGER_DEBUG(log, "(free) Forces:         {:.12}",
   //                     fmt::streamed(_mat.getForcesFree()));
   SPDLOG_LOGGER_DEBUG(log, "Energy:         {:.12f}", energy);
   SPDLOG_LOGGER_DEBUG(log, "Max atom force: {:.12e}", maxForce);
