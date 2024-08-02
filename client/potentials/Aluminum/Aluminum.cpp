@@ -22,7 +22,7 @@ void Aluminum::forceImpl(const ForceInput &fip, ForceOut *efvd) {
 #endif
   const long int N = fip.nAtoms;
   alforces_(&N, fip.pos, efvd->F, &efvd->energy, &fip.box[0], &fip.box[4],
-         &fip.box[8]);
+            &fip.box[8]);
   return;
 }
 
