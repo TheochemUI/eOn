@@ -37,12 +37,12 @@
 
 #ifdef WITH_FORTRAN
 #include "potentials/Aluminum/Aluminum.h"
+#include "potentials/CuH2/CuH2.h"
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/SW/SW.h"
-// #include "potentials/Tersoff/Tersoff.h"
-#include "potentials/CuH2/CuH2.h"
+#include "potentials/Tersoff/Tersoff.h"
 #endif
 
 // #ifdef WITH_PYTHON
@@ -186,10 +186,10 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     return (std::make_shared<SW>());
     break;
   }
-//   case PotType::TERSOFF_SI: {
-//     return (std::make_shared<Tersoff>());
-//     break;
-//   }
+  case PotType::TERSOFF_SI: {
+    return (std::make_shared<Tersoff>());
+    break;
+  }
 #endif
 // #ifndef WIN32
 // #ifdef WITH_VASP
