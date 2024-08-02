@@ -43,6 +43,12 @@ meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib
 meson install -C bbdir
 ```
 
+Some additional performance can be gained with `ccache` and `mold`, which can be
+passed with `--native-file`:
+
+- With ccache, add `--native-file nativeFiles/ccache_gnu.ini`
+- With mold, add `--native-file nativeFiles/mold.ini`
+
 The server is accessed through `python -m eon.server`, and the `eonclient`
 binary is automatically made available in the activated environment..
 
