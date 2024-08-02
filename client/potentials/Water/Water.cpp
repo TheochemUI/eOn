@@ -11,23 +11,24 @@
 */
 #include "Water.hpp"
 namespace eonc {
-void Tip4p::force(long N, const double *R, const int *atomicNrs, double *F,
-                  double *U, const double *box) {
-  double diagbox[3];
-  diagbox[0] = box[0];
-  diagbox[1] = box[4];
-  diagbox[2] = box[8];
-  computeHH_O_(N, R, F, *U, diagbox, 0);
+void Tip4p::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const long int N = fip.nAtoms;
+  std::array<double, 3> diagbox{fip.box[0], fip.box[4], fip.box[8]};
+  computeHH_O_(N, fip.pos, efvd->F, efvd->energy, diagbox.data(), 0);
 }
 
-void SpceCcl::force(long N, const double *R, const int *atomicNrs, double *F,
-                    double *U, double *variance, const double *box) {
-  variance = nullptr;
-  double diagbox[3];
-  diagbox[0] = box[0];
-  diagbox[1] = box[4];
-  diagbox[2] = box[8];
-  computeHH_O_(N, R, F, *U, diagbox, 0);
+void SpceCcl::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const long int N = fip.nAtoms;
+  std::array<double, 3> diagbox{fip.box[0], fip.box[4], fip.box[8]};
+  computeHH_O_(N, fip.pos, efvd->F, efvd->energy, diagbox.data(), 0);
 }
 
 } // namespace eonc
