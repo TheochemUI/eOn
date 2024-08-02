@@ -41,7 +41,8 @@ class Potential : public PotBase, public pot::registry<T> {
 protected:
   void force(const ForceInput &params, ForceOut *efvd) override final {
     pot::registry<T>::incrementForceCalls();
-    return static_cast<T *>(this)->forceImpl(params, efvd);
+    static_cast<T *>(this)->forceImpl(params, efvd);
+    return;
   }
 
 public:
