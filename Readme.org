@@ -9,7 +9,7 @@ micromamba activate eongit
 #+end_src
 This leads to the most robust installation approach:
 #+begin_src bash
-meson setup bbdir --prefix=$CONDA_PREFIX --libbdir=lib
+meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --native-file nativeFiles/mold.ini --native-file nativeFiles/ccache_gnu.ini
 meson install -C bbdir
 #+end_src
 The server is accessed through ~python -m eon.server~.
