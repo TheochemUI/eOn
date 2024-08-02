@@ -23,7 +23,7 @@ eV/Angstrom
 @param[in]  bx, by, bz  pointer to box dimensions in Angstrom
 */
 void alforces_(const long int *N, const double *R, double *F, double *U,
-            const double *bx, const double *by, const double *bz);
+               const double *bx, const double *by, const double *bz);
 void potinit_();
 }
 
