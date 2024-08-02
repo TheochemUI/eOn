@@ -12,15 +12,14 @@
 
 #include "EDIP.h"
 namespace eonc {
-void EDIP::cleanMemory(void) { return; }
-
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// address to supercell size
-void EDIP::force(long N, const double *R, const int *atomicNrs, double *F,
-                 double *U, double *variance, const double *box) {
-  variance = nullptr;
-  edip_(&N, R, F, U, &box[0], &box[4], &box[8]);
+void EDIP::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const long int N = fip.nAtoms;
+  edip_(&N, fip.pos, efvd->F, &efvd->energy, &fip.box[0], &fip.box[4],
+        &fip.box[8]);
   return;
 }
 
