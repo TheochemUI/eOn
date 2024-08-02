@@ -39,7 +39,7 @@
 #include "potentials/Aluminum/Aluminum.h"
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/FeHe/FeHe.h"
-// #include "potentials/Lenosky/Lenosky.h"
+#include "potentials/Lenosky/Lenosky.h"
 // #include "potentials/SW/SW.h"
 // #include "potentials/Tersoff/Tersoff.h"
 #include "potentials/CuH2/CuH2.h"
@@ -178,10 +178,10 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     return (std::make_shared<FeHe>());
     break;
   }
-//   case PotType::LENOSKY_SI: {
-//     return (std::make_shared<Lenosky>());
-//     break;
-//   }
+  case PotType::LENOSKY_SI: {
+    return (std::make_shared<Lenosky>());
+    break;
+  }
 //   case PotType::SW_SI: {
 //     return (std::make_shared<SW>());
 //     break;

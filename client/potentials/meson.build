@@ -136,7 +136,7 @@ if get_option('with_fortran')
   subdir('Aluminum')
   subdir('EDIP')
   subdir('FeHe')
-#   subdir('Lenosky')
+  subdir('Lenosky')
 #   subdir('SW')
 #   subdir('Tersoff')
 #   if get_option('with_water')
@@ -149,8 +149,9 @@ if get_option('with_fortran')
                  cuh2,
                  edip,
                  fehe,
+                 lenosky,
   ]
-#   lenosky, sw, tersoff]
+#   sw, tersoff]
   _args += ['-DWITH_FORTRAN']
 endif
 
