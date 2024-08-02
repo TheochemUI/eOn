@@ -50,10 +50,6 @@ _args += cppc.get_supported_arguments([
   # '-Wno-class-memaccess',
   # '-Wno-unused-function',
   # Common
-<<<<<<< HEAD
-  '-Wno-unused-result',
-=======
->>>>>>> 2c7db954 (BLD: Start adding back warnings)
   '-Wno-unused-parameter',
   '-Wno-unused-but-set-parameter',
   '-Wfatal-errors',
