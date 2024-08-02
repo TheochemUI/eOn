@@ -135,7 +135,7 @@ potentials = [
 if get_option('with_fortran')
   subdir('Aluminum')
   subdir('EDIP')
-#   subdir('FeHe')
+  subdir('FeHe')
 #   subdir('Lenosky')
 #   subdir('SW')
 #   subdir('Tersoff')
@@ -148,8 +148,9 @@ if get_option('with_fortran')
                  aluminum,
                  cuh2,
                  edip,
+                 fehe,
   ]
-#   fehe, lenosky, sw, tersoff]
+#   lenosky, sw, tersoff]
   _args += ['-DWITH_FORTRAN']
 endif
 

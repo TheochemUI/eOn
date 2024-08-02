@@ -14,44 +14,34 @@
 #pragma once
 #include "../../Potential.h"
 
+extern "C" {
 /** External function implemented in Fortran
-@param[in]	N           number of atoms
-@param[in]	RX          array of x positions of the atoms in Angstrom
-@param[in]	RY          array of x positions of the atoms in Angstrom
-@param[in]	RZ          array of x positions of the atoms in Angstrom
-@param[in]	ISPEC       array of species itentifiers; Fe = 0, He = 1
-@param[out]	FX          array used to return the x forces between atoms, in
+@param[in] N           number of atoms
+@param[in] RX          array of x positions of the atoms in Angstrom
+@param[in] RY          array of x positions of the atoms in Angstrom
+@param[in] RZ          array of x positions of the atoms in Angstrom
+@param[in] ISPEC       array of species itentifiers; Fe = 0, He = 1
+@param[out] FX          array used to return the x forces between atoms, in
 eV/Angstrom
-@param[out]	FY          array used to return the y forces between atoms, in
+@param[out] FY          array used to return the y forces between atoms, in
 eV/Angstrom
-@param[out]	FZ          array used to return the z forces between atoms, in
+@param[out] FZ          array used to return the z forces between atoms, in
 eV/Angstrom
-@param[out]	U           pointer to energy in eV
+@param[out] U           pointer to energy in eV
 @param[in]  bx, by, bz  pointer to box dimensions in Angstrom
 */
-
-extern "C" {
 void feforce_(const long int *N, const double *RX, const double *RY,
               const double *RZ, const int *ISPEC, double *FX, double *FY,
               double *FZ, double *U, const double *bx, const double *by,
               const double *bz);
 }
-/* No potential initialization
-extern "C"
-{
-    void potinit_();
-}
-*/
+
 namespace eonc {
 /** FeHe potential.*/
-class FeHe : public Potential {
+class FeHe : public Potential<FeHe> {
 public:
-  FeHe()
-      : Potential(PotType::FEHE) {}
-  ~FeHe(void) {};
-  // To satisfy interface
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+  FeHe() {}
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
 } // namespace eonc

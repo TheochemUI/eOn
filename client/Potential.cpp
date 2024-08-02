@@ -38,7 +38,7 @@
 #ifdef WITH_FORTRAN
 #include "potentials/Aluminum/Aluminum.h"
 #include "potentials/EDIP/EDIP.h"
-// #include "potentials/FeHe/FeHe.h"
+#include "potentials/FeHe/FeHe.h"
 // #include "potentials/Lenosky/Lenosky.h"
 // #include "potentials/SW/SW.h"
 // #include "potentials/Tersoff/Tersoff.h"
@@ -174,10 +174,10 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     return (std::make_shared<EDIP>());
     break;
   }
-//   case PotType::FEHE: {
-//     return (std::make_shared<FeHe>());
-//     break;
-//   }
+  case PotType::FEHE: {
+    return (std::make_shared<FeHe>());
+    break;
+  }
 //   case PotType::LENOSKY_SI: {
 //     return (std::make_shared<Lenosky>());
 //     break;
