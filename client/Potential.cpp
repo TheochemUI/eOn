@@ -84,13 +84,13 @@
 #include "potentials/ASE_ORCA/ASE_ORCA.h"
 #endif
 
-// #ifdef WITH_WATER
-// #include "potentials/Water/Water.hpp"
+#ifdef WITH_WATER
+#include "potentials/Water/Water.hpp"
 // #ifdef WITH_FORTRAN
 // #include "potentials/Water_H/Tip4p_H.h"
 // #endif
 // #include "potentials/Water_Pt/Tip4p_Pt.hpp"
-// #endif
+#endif
 
 // // Should respect Fortran availability
 
@@ -141,15 +141,20 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
 //     break;
 //   }
 // #endif
-// #ifdef WITH_WATER
-//   case PotType::TIP4P: {
-//     return (std::make_shared<Tip4p>());
-//     break;
-//   }
-//   case PotType::SPCE: {
-//     return (std::make_shared<SpceCcl>(a_p));
-//     break;
-//   }
+#ifdef WITH_WATER
+  case PotType::TIP4P: {
+    // TODO(rg): SVN returns different results for the forces of
+    // client/gtests/data/systems/cuh2_neb_test/init.con
+    return (std::make_shared<Tip4p>());
+    break;
+  }
+  case PotType::SPCE: {
+    // TODO(rg): SVN returns different results for the forces of
+    // client/gtests/data/systems/cuh2_neb_test/init.con
+    // client/example/pos.con
+    return (std::make_shared<SpceCcl>());
+    break;
+  }
 // #ifdef WITH_FORTRAN
 //   case PotType::TIP4P_PT: {
 //     return (std::make_shared<Tip4p_Pt>(a_p));
@@ -160,7 +165,7 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
 //     break;
 //   }
 // #endif
-// #endif
+#endif
 #ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
     return (std::make_shared<Aluminum>());

@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 /** @file
-Wrapper for Eon
+Wrapper for eOn
 @author Jean-Claude C. Berthet
 @date 2007
 University of Iceland
@@ -21,33 +21,19 @@ University of Iceland
 #include "spce_ccl.hpp"
 #include "tip4p_ccl.hpp"
 namespace eonc {
-class Tip4p : public Potential, private forcefields::Tip4p {
+class Tip4p : public Potential<Tip4p>, private forcefields::Tip4p {
 public:
   Tip4p()
-      : Potential(PotType::TIP4P),
-        // TODO(rg): Expose these like LJ
+      : // TODO(rg): Expose these like LJ
         forcefields::Tip4p(8.5, 1.0) {};
-  // Functions
-  // constructor and destructor
-
-  // To satisfy interface
-  void cleanMemory(void) {}
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, const double *box) override;
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
-class SpceCcl : public Potential, private forcefields::SpceCcl {
+class SpceCcl : public Potential<SpceCcl>, private forcefields::SpceCcl {
 public:
-  SpceCcl(std::shared_ptr<Parameters> params)
-      : Potential(params),
-        forcefields::SpceCcl(8.5, 1.0) {}
-  // Functions
-  // constructor and destructor
-
-  // To satisfy interface
-  void cleanMemory(void) {}
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+  SpceCcl()
+      : forcefields::SpceCcl(8.5, 1.0) {}
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
 } // namespace eonc

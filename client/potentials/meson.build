@@ -139,10 +139,13 @@ if get_option('with_fortran')
   subdir('Lenosky')
   subdir('SW')
   subdir('Tersoff')
-#   if get_option('with_water')
-#     subdir('Water_H')
-#     potentials += [water_h]
-#   endif
+  if get_option('with_water')
+    _args += ['-DWITH_WATER']
+    subdir('Water')
+    potentials += [water]
+    # subdir('Water_H')
+    # potentials += [water_h]
+  endif
   subdir('CuH2')
   potentials += [
                  aluminum,
