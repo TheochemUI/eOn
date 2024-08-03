@@ -42,6 +42,7 @@ enum class PotType {
   // Only add to the end of this!!!
   UNKNOWN = 0,
   EMT,
+  EMT_RAS,
   EXT,
   LJ,
   LJCLUSTER,
