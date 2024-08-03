@@ -133,10 +133,6 @@ void Matter::resize(const long int length) {
 
 size_t Matter::numberOfAtoms() const { return (nAtoms); }
 
-Matrix3S Matter::getCell() const { return cell; }
-
-void Matter::setCell(Matrix3S newCell) { cell = newCell; }
-
 double Matter::getPosition(long int indexAtom, int axis) const {
   return positions(indexAtom, axis);
 }

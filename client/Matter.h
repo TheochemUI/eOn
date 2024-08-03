@@ -50,8 +50,6 @@ public:
   std::shared_ptr<PotBase> getPotential();
   void resize(long int nAtoms);
   size_t numberOfAtoms() const;
-  Matrix3S getCell() const;
-  void setCell(Matrix3S newCell);
   double getPosition(long int atom, int axis) const;
   void setPosition(long int atom, int axis, double position);
   void setVelocity(long int atom, int axis, double velocity);
@@ -129,6 +127,8 @@ public:
   VectorType getFreeV() const;
   VectorType getMasses() const;
 
+  Matrix3S cell{Matrix3S::Zero()};
+
 private:
   std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<PotBase> potential;
@@ -165,7 +165,6 @@ private:
   Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
   // array of bool, false for movable atom, true for fixed
   Vector<int> isFixed{Vector<int>::Zero(0)};
-  Matrix3S cell{Matrix3S::Zero()};
   Matrix3S cellInverse{Matrix3S::Zero()};
   double energyVariance{0.0};
   double potentialEnergy{0.0};
