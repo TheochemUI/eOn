@@ -34,7 +34,6 @@ constexpr size_t MAXC{100}; // maximum number of components for functions
 
 class Matter {
 public:
-  ~Matter() = default;
   Matter(std::shared_ptr<PotBase> pot)
       : potential{pot} {
     m_log = spdlog::get("combi");
@@ -45,43 +44,28 @@ public:
   // are below differenceDistance bool operator!=(const Matter& matter); //
   // inverse of ==
   bool compare(const Matter &matter, bool indistinguishable = false);
-
-  double
-  distanceTo(const Matter &matter); // the distance to the given matter object
-  double
-  perAtomNorm(const Matter &matter) const; // the maximum distance between two
-                                           // atoms in the Matter objects
-  void
-  setPotential(std::shared_ptr<PotBase> pot); // set potential function to use
-  std::shared_ptr<PotBase> getPotential();    // get potential function to use
-  void resize(long int nAtoms); // set or reset the number of atoms
-  size_t numberOfAtoms() const; // return the number of atoms
+  double distanceTo(const Matter &matter);
+  double perAtomNorm(const Matter &matter) const;
+  void setPotential(std::shared_ptr<PotBase> pot);
+  std::shared_ptr<PotBase> getPotential();
+  void resize(long int nAtoms);
+  size_t numberOfAtoms() const;
   Matrix3S getCell() const;
   void setCell(Matrix3S newCell);
-  double getPosition(long int atom, int axis)
-      const; // return the position of an atom along one of the axis
-  void setPosition(
-      long int atom, int axis,
-      double position); // set the position of atom along axis to position
-  void setVelocity(
-      long int atom, int axis,
-      double velocity); // set the velocity of atom along axis to velocity
+  double getPosition(long int atom, int axis) const;
+  void setPosition(long int atom, int axis, double position);
+  void setVelocity(long int atom, int axis, double velocity);
   AtomMatrix pbc(AtomMatrix diff) const;
   VectorType pbcV(VectorType diff) const;
 
   size_t getPotentialCalls() const;
-  AtomMatrix getPositions() const; // return coordinates of atoms in array pos
+  AtomMatrix getPositions() const;
   VectorType getPositionsV() const;
-  AtomMatrix
-  getPositionsFree() const; // return coordinates of free atoms in array pos
+  AtomMatrix getPositionsFree() const;
   VectorType getPositionsFreeV() const;
-  void
-  setPositions(const AtomMatrix pos); // update Matter with the new positions of
-                                      // the free atoms given in array pos
+  void setPositions(const AtomMatrix pos);
   void setPositionsV(const VectorType pos);
-  void setPositionsFree(
-      const AtomMatrix pos); // update Matter with the new positions of the free
-                             // atoms given in array pos
+  void setPositionsFree(const AtomMatrix pos);
   void setPositionsFreeV(const VectorType pos);
 
   AtomMatrix getVelocities() const;
@@ -91,72 +75,56 @@ public:
   void setForces(const AtomMatrix f);
   AtomMatrix getAccelerations();
 
-  AtomMatrix getForces(); // return forces applied on all atoms in array force
+  AtomMatrix getForces();
   AtomMatrix getBiasForces();
   VectorType getForcesV();
   AtomMatrix getForcesFree();
   VectorType getForcesFreeV();
 
-  double getMass(long int atom) const; // return the mass of the atom specified
-  void setMass(long int atom, double mass); // set the mass of an atom
-  void setMasses(VectorType massesIn);      // set the mass of an atom
-  size_t getAtomicNr(
-      size_t atom) const; // return the atomic number of the atom specified
-  void setAtomicNr(long int atom,
-                   long atomicNr);         // set the atomic number of an atom
-  Vector<size_t> getAtomicNrs() const;     // Get the vector of atomic numbers
-  Vector<size_t> getAtomicNrsFree() const; // Get the vector of atomic numbers
-  void
-  setAtomicNrs(const Vector<size_t> atmnrs); // Get the vector of atomic numbers
+  double getMass(long int atom) const;
+  void setMass(long int atom, double mass);
+  void setMasses(VectorType massesIn);
+  size_t getAtomicNr(size_t atom) const;
+  void setAtomicNr(long int atom, long atomicNr);
+  Vector<size_t> getAtomicNrs() const;
+  Vector<size_t> getAtomicNrsFree() const;
+  void setAtomicNrs(const Vector<size_t> atmnrs);
 
-  int getFixed(long int atom)
-      const; // return true if the atom is fixed, false if it is movable
-  void setFixed(long int atom,
-                int isFixed); // set the atom to fixed (true) or movable (false)
+  int getFixed(long int atom) const;
+  // set the atom to fixed (true) or movable (false)
+  void setFixed(long int atom, int isFixed);
   // void setPotentialEnergy(double);
   double getEnergyVariance();
   // VectorType getForceVariance();
   // double getMaxVariance();
   double getPotentialEnergy();
   double getKineticEnergy() const;
-  double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic
-                                // plus potential energy)
+  // return the mechanical energy (i.e. kinetic
+  // plus potential energy)
+  double getMechanicalEnergy();
 
-  double distance(long index1, long index2)
-      const; // return the distance between two atoms in same configuration
+  double distance(long index1, long index2) const;
   double pdistance(long index1, long index2, int axis) const;
-  double distance(const Matter &matter, long index)
-      const; // the distance between the same atom in two cofigurations
+  double distance(const Matter &matter, long index) const;
 
-  long int
-  numberOfFreeAtoms() const; // return the number of free (or movable) atoms
-  long int numberOfFixedAtoms() const; // return the number of fixed atoms
+  long int numberOfFreeAtoms() const;
+  long int numberOfFixedAtoms() const;
 
-  size_t
-  getForceCalls() const; // return how many force calls that have been performed
-  void resetForceCalls(); // zeroing the value of force calls
+  size_t getForceCalls() const;
+  void resetForceCalls();
 
   double maxForce(void);
 
   void writeTibble(std::string filename);
-  bool con2matter(std::string filename); // read con file into Matter, return
-                                         // true if successful
-  bool con2matter(FILE *file); // read con file and load data into Matter,
-                               // return true if successful
-  bool
-  convel2matter(std::string filename); // read con file with both coordinates
-                                       // and velocities into Matter
-  bool convel2matter(FILE *file); // read con file with both coordinates and
-                                  // velocities and load data into Matter
+  bool con2matter(std::string filename);
+  bool con2matter(FILE *file);
+  bool convel2matter(std::string filename);
+  bool convel2matter(FILE *file);
   bool matter2con(const std::string &, bool = false);
   bool matter2con(std::ofstream &file);
-  bool
-  matter2convel(std::string filename); // print con file with both coordinates
-                                       // and velocities  in Class Matter
-  bool matter2convel(FILE *file); // print con file with both coordinates and
-                                  // velocities from data in Class Matter
-  void matter2xyz(std::string filename,
-                  bool append = false); // print xyz file from data in Matter
+  bool matter2convel(std::string filename);
+  bool matter2convel(FILE *file);
+  void matter2xyz(std::string filename, bool append = false);
   AtomMatrix getFree() const;
   VectorType getFreeV() const;
   VectorType getMasses() const;
@@ -195,8 +163,8 @@ private:
   BondBoost *biasPotential{nullptr};
   VectorType masses{VectorType::Zero(0)};
   Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
-  Vector<int> isFixed{Vector<int>::Zero(
-      0)}; // array of bool, false for movable atom, true for fixed
+  // array of bool, false for movable atom, true for fixed
+  Vector<int> isFixed{Vector<int>::Zero(0)};
   Matrix3S cell{Matrix3S::Zero()};
   Matrix3S cellInverse{Matrix3S::Zero()};
   double energyVariance{0.0};
