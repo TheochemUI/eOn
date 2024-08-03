@@ -12,7 +12,6 @@
 
 #include <cstdio>
 #include <errno.h>
-#include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -102,10 +101,13 @@ bool VASP::vaspRunning() {
   return true;
 }
 
-void VASP::force(long N, const double *R, const int *atomicNrs, double *F,
-                 double *U, double *variance, const double *box) {
-  variance = nullptr;
-  writePOSCAR(N, R, atomicNrs, box);
+void VASP::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const long int N = fip.nAtoms;
+  writePOSCAR(N, fip.pos, fip.atmnrs, fip.box);
 
   if (!vaspRunning()) {
     spawnVASP();
@@ -120,13 +122,13 @@ void VASP::force(long N, const double *R, const int *atomicNrs, double *F,
     vaspRunning();
   }
   // printf("\n");
-  readFU(N, F, U);
+  readFU(N, efvd->F, &efvd->energy);
   remove("FU");
   vaspRunCount++;
   return;
 }
 
-void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs,
+void VASP::writePOSCAR(long N, const double *R, const size_t *atomicNrs,
                        const double *box) {
   // Positions are scaled
   long i = 0;
