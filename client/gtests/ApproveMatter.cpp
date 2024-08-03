@@ -12,6 +12,7 @@
 #include "ApprovalTests.hpp"
 #include "Matter.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "client/io/ConWriter.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -182,8 +183,8 @@ TEST_CASE("VerifyMatter2Con") {
   auto testMatter = getTestMatter();
   REQUIRE(testMatter.size() > 0);
   std::string filename = "test_output.con";
-  bool success = testMatter[0].matter2con(filename);
-  REQUIRE(success);
+  eonc::io::ConWriter conWriter;
+  conWriter.write(testMatter[0], filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }
