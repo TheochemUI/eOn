@@ -140,6 +140,22 @@ spdlog_dep = dependency('spdlog', required : true)
 _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
+# Handle client flags
+if get_option('with_lammps')
+  _args += ['-DLAMMPS_POT']
+endif
+
+if get_option('with_fortran')
+  _args += ['-DWITH_FORTRAN']
+  if get_option('with_water')
+    _args += ['-DWITH_WATER']
+  endif
+endif
+
+if get_option('with_ase_orca')
+  _args += ['-DWITH_ASE_ORCA']
+endif
+
 # Potentials
 subdir('potentials')
 
