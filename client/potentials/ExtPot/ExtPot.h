@@ -13,22 +13,18 @@
 #pragma once
 #include "../../Potential.h"
 namespace eonc {
-class ExtPot : public Potential {
+class ExtPot : public Potential<ExtPot> {
 
 public:
   ExtPot(std::string extPotPath)
-      : Potential(PotType::EXT),
-        eon_extpot_path{extPotPath.c_str()} {};
-  ~ExtPot();
-  void cleanMemory(void);
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+      : eon_extpot_path{extPotPath.c_str()} {};
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 
 private:
-  void passToSystem(long N, const double *R, const int *atomicNrs,
+  void passToSystem(long N, const double *R, const size_t *atomicNrs,
                     const double *box);
-  void recieveFromSystem(long N, double *F, double *U);
-  const char *eon_extpot_path;
+  void receiveFromSystem(long N, double *F, double *U);
+  std::string eon_extpot_path;
 };
 
 } // namespace eonc

@@ -20,6 +20,7 @@
 #include "version.h"
 
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -395,7 +396,7 @@ int main(int argc, char **argv) {
 
       // Determine what type of job we are running according to the parameters
       // file.
-      auto job = eonc::helper_functions::makeJob(params);
+      auto job = eonc::makeJob(params);
 
       std::vector<std::string> filenames;
       try {
@@ -452,5 +453,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-  exit(0);
+  spdlog::drop_all();
+  spdlog::shutdown();
+  std::exit(0);
 }

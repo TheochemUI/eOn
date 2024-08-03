@@ -16,57 +16,31 @@
 #pragma once
 #include "Asap/Atoms.h"
 #include "Asap/EMT.h"
-#include "Asap/EMTDefaultParameterProvider.h"
 #include "Asap/EMTRasmussenParameterProvider.h"
 #include "Asap/SuperCell.h"
-#include "Asap/Vec.h"
 
-#include "../../Parameters.h"
 #include "../../Potential.h"
 namespace eonc {
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is
  * hardcoded to describe.*/
-class EffectiveMediumTheory : public Potential {
-
+class EffectiveMediumTheory : public Potential<EffectiveMediumTheory> {
 private:
-  // Variables
-  long numberOfAtoms;
+  size_t numberOfAtoms;
   bool periodicity[3];
-  Atoms *AtomsObj;
-  EMTDefaultParameterProvider *EMTParameterObj;
-  EMT *EMTObj;
-  SuperCell *SuperCellObj;
+  std::unique_ptr<SuperCell> SuperCellObj;
+  std::unique_ptr<Atoms> AtomsObj;
+  std::unique_ptr<EMTRasmussenParameterProvider> EMTRasmussenParams;
+  std::unique_ptr<EMT> EMTObj;
   bool useEMTRasmussen, usePBC;
+  void initialize(const ForceInput &fip);
 
 public:
-  // Functions
-  // constructor and destructor
-  EffectiveMediumTheory(bool useEMTRasmussen, bool usePBC)
-      : Potential(PotType::EMT),
-        useEMTRasmussen{useEMTRasmussen},
-        usePBC{usePBC} {
-    // dummy variables
-    AtomsObj = nullptr;
-    EMTObj = nullptr;
-    SuperCellObj = nullptr;
-    EMTParameterObj = nullptr;
-    numberOfAtoms = 0;
-
-    if (usePBC == false) {
-      throw std::invalid_argument(
-          "EMT should have periodic boundary conditions in all directions");
-    }
-    // should have periodic boundary conditions in all directions
-    periodicity[0] = true;
-    periodicity[1] = true;
-    periodicity[2] = true;
-  };
-  ~EffectiveMediumTheory(void) {};
-  void cleanMemory(void);
-
-  // To satisfy interface
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+  EffectiveMediumTheory(bool useEMTRasmussen)
+      : numberOfAtoms{0},
+        // TODO(rg): Enforce this somehow
+        periodicity{true, true, true},
+        useEMTRasmussen{useEMTRasmussen} {}
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
 } // namespace eonc

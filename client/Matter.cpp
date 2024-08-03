@@ -12,9 +12,6 @@
 #include "Matter.h"
 #include "Element.hpp"
 // #include "BondBoost.h"
-#include "HelperFunctions.h"
-#include "SurrogatePotential.h"
-#include <iostream>
 
 // To write the R style data frame
 #include <fmt/os.h>
@@ -725,28 +722,29 @@ void Matter::computePotential() {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
     }
-    auto surrogatePotential =
-        std::dynamic_pointer_cast<SurrogatePotential>(potential);
-    if (surrogatePotential) {
-      // Surrogate potential case
-      auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
-          this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(), cell);
-      // Now populate full structures
-      this->potentialEnergy = freePE;
-      this->energyVariance = vari;
-      for (size_t idx{0}, jdx{0}; idx < nAtoms; idx++) {
-        if (!isFixed(idx)) {
-          forces.row(idx) = freeForces.row(jdx);
-          jdx++;
-        }
-      }
-    } else {
-      // Non-surrogate potential case
-      auto [pE, frcs] =
-          potential->get_ef(positions, atomicNrs.cast<int>(), cell);
-      potentialEnergy = pE;
-      forces = frcs;
-    }
+    // auto surrogatePotential =
+    //     std::dynamic_pointer_cast<SurrogatePotential>(potential);
+    // if (surrogatePotential) {
+    //   // Surrogate potential case
+    //   auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
+    //       this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(),
+    //       cell);
+    //   // Now populate full structures
+    //   this->potentialEnergy = freePE;
+    //   this->energyVariance = vari;
+    //   for (size_t idx{0}, jdx{0}; idx < nAtoms; idx++) {
+    //     if (!isFixed(idx)) {
+    //       forces.row(idx) = freeForces.row(jdx);
+    //       jdx++;
+    //     }
+    //   }
+    // } else {
+    // Non-surrogate potential case
+    npotcalls++;
+    auto [pE, frcs] = potential->get_ef(positions, atomicNrs, cell);
+    potentialEnergy = pE;
+    forces = frcs;
+    // }
     // TODO(rg) :: Something about this isn't right..
     forceCalls += 1;
     recomputePotential = false;
@@ -778,16 +776,7 @@ void Matter::applyPeriodicBoundary() {
 double Matter::maxForce(void) {
   // Ensures that the forces are up to date
   computePotential();
-
-  // I think this can be done in one line with the rowwise method
-  double maxForce = 0.0;
-  for (size_t i = 0; i < nAtoms; i++) {
-    if (getFixed(i)) {
-      continue;
-    }
-    maxForce = std::max(forces.row(i).norm(), maxForce);
-  }
-  return maxForce;
+  return (getForcesFree()).rowwise().norm().maxCoeff();
 }
 
 Vector<size_t> Matter::getAtomicNrs() const { return this->atomicNrs; }
@@ -1123,14 +1112,12 @@ void Matter::writeTibble(std::string fname) {
   return;
 }
 
-void Matter::setPotential(std::shared_ptr<Potential> pot) {
+void Matter::setPotential(std::shared_ptr<PotBase> pot) {
   this->potential = pot;
   recomputePotential = true;
 }
 
-size_t Matter::getPotentialCalls() const {
-  return this->potential->forceCallCounter;
-}
+size_t Matter::getPotentialCalls() const { return this->npotcalls; }
 
 double Matter::getEnergyVariance() { return this->energyVariance; }
 
@@ -1140,6 +1127,6 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
-std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+std::shared_ptr<PotBase> Matter::getPotential() { return this->potential; }
 
 } // namespace eonc

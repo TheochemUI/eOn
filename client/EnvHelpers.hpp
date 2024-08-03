@@ -11,8 +11,7 @@
 */
 #pragma once
 #include <string>
-namespace eonc {
-namespace helper_functions {
+namespace eonc::def {
 
 struct PDef {
   std::string param;
@@ -26,6 +25,5 @@ std::string get_value_from_env_or_param(const char *env_variable,
                                         const PDef val_def,
                                         const std::string &warning_message = "",
                                         const bool is_mandatory = false);
-} // namespace helper_functions
 
-} // namespace eonc
+} // namespace eonc::def

@@ -8,11 +8,18 @@ from pydantic import (
 from typing import Optional, Any, Union
 from typing_extensions import Literal
 import random
+import os
+
+def get_value_from_env_or_param(env_var, default_value, required):
+    return os.getenv(env_var, default_value)
+
+
+def PDef(first, second):
+    return first if first else second
 
 
 class MainConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     job: Literal[
         "akmc",
         "basin_hopping",
@@ -95,7 +102,6 @@ class MainConfig(BaseModel):
 
 class StructureComparisonConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     energy_difference: float = Field(
         default=0.01,
         description="How different in energy two configurations must be to be considered different structures.",
@@ -136,7 +142,6 @@ class StructureComparisonConfig(BaseModel):
 
 class AKMCConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     confidence: float = Field(
         default=0.99,
         description="The confidence (out of 1.0) criterion for moving to the next state.",
@@ -183,7 +188,6 @@ class AKMCConfig(BaseModel):
 
 class BasinHoppingConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     steps: int = Field(
         default=10000,
         description="Number of steps to take at the assigned temperature.",
@@ -280,7 +284,6 @@ class BasinHoppingConfig(BaseModel):
 
 class PathsConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     main_directory: str = Field(
         default="./",
         description="This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.",
@@ -333,7 +336,6 @@ class PathsConfig(BaseModel):
 
 class CommunicatorConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     type: Literal["local", "cluster", "mpi"] = Field(
         default="local",
         description="Communicator type",
@@ -428,7 +430,6 @@ class CommunicatorConfig(BaseModel):
 
 class ProcessSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     minimization_offset: float = Field(
         default=None,
         description="This is the distance images bracketing the saddle are displaced.",
@@ -503,7 +504,9 @@ class PrefactorConfig(BaseModel):
 class PotentialConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    main: LJConfig
+    lj: LJConfig
+    morse: MorseConfig
+    aseorca: ASEOrcaConfig
     mpi_poll_period: float = Field(
         default=0.25, description="Polling period for MPI potential."
     )
@@ -517,6 +520,7 @@ class PotentialConfig(BaseModel):
         "eam_al",
         "edip",
         "emt",
+        "emt_ras",
         "ext",
         "fehe",
         "gpr",
@@ -556,6 +560,7 @@ class PotentialConfig(BaseModel):
      - ``eam_al``: Embedded atom method parameterized for aluminum.
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
      - ``emt``: Effective medium theory, for metals.
+     - ``emt_ras``: Effective medium theory, for metals, with the Rasmussen parameters.
      - ``ext``: External potential with system call interface.
      - ``fehe``: Potential for iron-hydrogen systems.
      - ``gpr``: Gaussian process regression potential.
@@ -607,9 +612,50 @@ class LJConfig(BaseModel):
     )
 
 
-class SaddleSearchConfig(BaseModel):
+class MorseConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
+    De: float = Field(
+        default=0.7102, description="The depth of the Morse potential well in eV."
+    )
+    a: float = Field(
+        default=1.6047,
+        description="The width of the Morse potential well in 1/Angstrom.",
+    )
+    re: float = Field(
+        default=2.8970, description="The equilibrium bond distance in Angstrom."
+    )
+    cutoff: float = Field(
+        default=9.5,
+        description="The cutoff distance for the Morse potential in Angstrom.",
+    )
+
+
+class ASEOrcaConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    orca_path: str = Field(
+        default_factory=lambda: get_value_from_env_or_param(
+            "ORCA_COMMAND", PDef("", ""), False
+        ),
+        description="Path to the ORCA executable.",
+    )
+    simpleinput: str = Field(
+        default_factory=lambda: get_value_from_env_or_param(
+            "ORCA_SIMPLEINPUT", PDef("ENGRAD HF-3c", "ENGRAD HF-3c"), False
+        ),
+        description="Default input for ORCA.",
+    )
+    orca_nproc: str = Field(
+        default_factory=lambda: get_value_from_env_or_param(
+            "ORCA_NPROC", PDef("1", "auto"), False
+        ),
+        description="Number of processors for ORCA.",
+    )
+
+
+class SaddleSearchConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
     method: Literal["min_mode", "dynamics"] = Field(
         default="min_mode", description="Method to locate the saddle point."
     )
@@ -812,7 +858,6 @@ class SaddleSearchConfig(BaseModel):
 
 class KDBConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     use_kdb: bool = False
     kdb_only: bool = Field(
         default=False,
@@ -831,7 +876,6 @@ class KDBConfig(BaseModel):
 
 class RecyclingConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     use_recycling: bool = Field(default=True, description="Turn recycling on and off.")
     move_distance: float = Field(
         default=0.2,
@@ -866,7 +910,6 @@ class RecyclingConfig(BaseModel):
 
 class CoarseGrainingConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     use_mcamc: bool = Field(
         default=False,
         description="This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used.",
@@ -976,7 +1019,6 @@ class CoarseGrainingConfig(BaseModel):
 
 class OptimizerConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     opt_method: Literal["box", "cg", "qm", "lbfgs", "fire"] = Field(
         default="cg",
         description="The optimization method to use.",
@@ -1099,7 +1141,6 @@ class SDConfig(BaseModel):
 
 class RefineConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     refine_opt_method: Literal["none", "cg", "lbfgs", "fire", "box", "qm"] = Field(
         default="none",
         description="The optimization method to use for refinement.",
@@ -1120,7 +1161,6 @@ class RefineConfig(BaseModel):
 
 class DebugConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     save_stdout: bool = Field(
         default=False,
         description="Save the standard output from the client to a file named stdout_0.dat.",
@@ -1461,7 +1501,6 @@ class HyperdynamicsConfig(BaseModel):
 
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-
     main: MainConfig
     structure_comparison: StructureComparisonConfig
     akmc: AKMCConfig

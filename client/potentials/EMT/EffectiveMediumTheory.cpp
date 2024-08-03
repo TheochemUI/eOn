@@ -13,94 +13,63 @@
 #include "EffectiveMediumTheory.h"
 #include <string.h>
 namespace eonc {
-// General Functions
-void EffectiveMediumTheory::cleanMemory(void) {
-  if (EMTObj != 0) {
-    delete EMTObj;
-    EMTObj = 0;
+
+void EffectiveMediumTheory::initialize(const ForceInput &fip) {
+  const size_t N = fip.nAtoms;
+  numberOfAtoms = N;
+
+  std::vector<Vec> pos(N);
+  std::vector<int> atomicNrsTemp(N);
+  for (size_t i = 0; i < N; ++i) {
+    pos[i] = Vec(fip.pos[3 * i], fip.pos[3 * i + 1], fip.pos[3 * i + 2]);
+    atomicNrsTemp[i] = static_cast<int>(fip.atmnrs[i]);
   }
-  if (SuperCellObj != 0) {
-    delete SuperCellObj;
-    SuperCellObj = 0;
+
+  std::array<Vec, 3> tempBasis = {Vec(fip.box[0], fip.box[1], fip.box[2]),
+                                  Vec(fip.box[3], fip.box[4], fip.box[5]),
+                                  Vec(fip.box[6], fip.box[7], fip.box[8])};
+
+  SuperCellObj = std::make_unique<SuperCell>(tempBasis.data(), periodicity);
+  AtomsObj = std::make_unique<Atoms>(pos.data(), static_cast<int>(N),
+                                     SuperCellObj.get());
+  AtomsObj->SetAtomicNumbers(atomicNrsTemp.data());
+
+  if (useEMTRasmussen) {
+    EMTRasmussenParams = std::make_unique<EMTRasmussenParameterProvider>();
+    EMTObj = std::make_unique<EMT>(EMTRasmussenParams.get());
+  } else {
+    EMTObj = std::make_unique<EMT>(nullptr);
   }
-  if (AtomsObj != 0) {
-    delete AtomsObj;
-    AtomsObj = 0;
-  }
-  if (EMTParameterObj != 0) {
-    delete EMTParameterObj;
-    EMTParameterObj = 0;
-  }
-  return;
+
+  AtomsObj->SetCalculator(EMTObj.get());
 }
 
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// adress to supercell size
-void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
-                                  double *F, double *U, double *variance,
-                                  const double *box) {
-  variance = nullptr;
-  int i, j;
-  double *pos;
+void EffectiveMediumTheory::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const size_t N = fip.nAtoms;
 
-  pos = new double[3 * N];
-
-  for (i = 0; i < 3 * N; i++)
-    pos[i] = R[i];
-
-  // an atom has been deposited
   if (numberOfAtoms != N) {
-    numberOfAtoms = N;
-    cleanMemory();
-    int *atomicNrsTemp;
-    atomicNrsTemp = new int[N];
-
-    // create new atoms / emt potential with N atoms
-    Vec tempBasisX(box[0], box[1], box[2]);
-    Vec tempBasisY(box[3], box[4], box[5]);
-    Vec tempBasisZ(box[6], box[7], box[8]);
-    Vec tempBasis[3];
-    tempBasis[0] = tempBasisX;
-    tempBasis[1] = tempBasisY;
-    tempBasis[2] = tempBasisZ;
-
-    SuperCellObj = new SuperCell(tempBasis, periodicity);
-    AtomsObj = new Atoms((Vec *)pos, N, SuperCellObj);
-
-    for (j = 0; j < N; j++)
-      atomicNrsTemp[j] = int(atomicNrs[j]);
-
-    AtomsObj->SetAtomicNumbers(atomicNrsTemp);
-
-    if (useEMTRasmussen) {
-      EMTParameterObj = new EMTRasmussenParameterProvider();
-      EMTObj = new EMT(EMTParameterObj);
-    } else
-      EMTObj = new EMT(NULL);
-
-    AtomsObj->SetCalculator(EMTObj);
-    delete[] atomicNrsTemp;
+    initialize(fip);
+  } else {
+    std::vector<Vec> pos(N);
+    for (size_t i = 0; i < N; ++i) {
+      pos[i] = Vec(fip.pos[3 * i], fip.pos[3 * i + 1], fip.pos[3 * i + 2]);
+    }
+    AtomsObj->SetCartesianPositions(pos.data());
   }
-  AtomsObj->SetCartesianPositions((Vec *)pos);
-  // update the box
-  Vec tempBasisX(box[0], box[1], box[2]);
-  Vec tempBasisY(box[3], box[4], box[5]);
-  Vec tempBasisZ(box[6], box[7], box[8]);
-  Vec tempBasis[3];
-  tempBasis[0] = tempBasisX;
-  tempBasis[1] = tempBasisY;
-  tempBasis[2] = tempBasisZ;
-  AtomsObj->SetUnitCell(tempBasis, true);
 
-  *U = EMTObj->GetPotentialEnergy();
+  std::array<Vec, 3> tempBasis = {Vec(fip.box[0], fip.box[1], fip.box[2]),
+                                  Vec(fip.box[3], fip.box[4], fip.box[5]),
+                                  Vec(fip.box[6], fip.box[7], fip.box[8])};
+  AtomsObj->SetUnitCell(tempBasis.data(), true);
 
-  // converts data from EMT to suite EON
-  const Vec *tempF = EMTObj->GetCartesianForces();
-  memcpy(F, tempF, N * sizeof(Vec));
+  efvd->energy = EMTObj->GetPotentialEnergy();
 
-  delete[] pos;
-  return;
+  const auto &tempF = EMTObj->GetCartesianForces();
+  std::memcpy(efvd->F, tempF, N * sizeof(Vec));
 }
 
 } // namespace eonc
