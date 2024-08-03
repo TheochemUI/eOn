@@ -13,27 +13,21 @@
 #include "EffectiveMediumTheory.h"
 #include <string.h>
 namespace eonc {
-void EffectiveMediumTheory::cleanMemory() {
-  EMTObj.reset();
-  SuperCellObj.reset();
-  AtomsObj.reset();
-  EMTParameterObj.reset();
-}
 
 void EffectiveMediumTheory::initialize(const ForceInput &fip) {
   const size_t N = fip.nAtoms;
   numberOfAtoms = N;
 
-  pos.resize(N);
-  atomicNrsTemp.resize(N);
+  std::vector<Vec> pos(N);
+  std::vector<int> atomicNrsTemp(N);
   for (size_t i = 0; i < N; ++i) {
     pos[i] = Vec(fip.pos[3 * i], fip.pos[3 * i + 1], fip.pos[3 * i + 2]);
     atomicNrsTemp[i] = static_cast<int>(fip.atmnrs[i]);
   }
 
-  tempBasis = {Vec(fip.box[0], fip.box[1], fip.box[2]),
-               Vec(fip.box[3], fip.box[4], fip.box[5]),
-               Vec(fip.box[6], fip.box[7], fip.box[8])};
+  std::array<Vec, 3> tempBasis = {Vec(fip.box[0], fip.box[1], fip.box[2]),
+                                  Vec(fip.box[3], fip.box[4], fip.box[5]),
+                                  Vec(fip.box[6], fip.box[7], fip.box[8])};
 
   SuperCellObj = std::make_unique<SuperCell>(tempBasis.data(), periodicity);
   AtomsObj = std::make_unique<Atoms>(pos.data(), static_cast<int>(N),
@@ -41,8 +35,8 @@ void EffectiveMediumTheory::initialize(const ForceInput &fip) {
   AtomsObj->SetAtomicNumbers(atomicNrsTemp.data());
 
   if (useEMTRasmussen) {
-    EMTParameterObj = std::make_unique<EMTRasmussenParameterProvider>();
-    EMTObj = std::make_unique<EMT>(EMTParameterObj.get());
+    EMTRasmussenParams = std::make_unique<EMTRasmussenParameterProvider>();
+    EMTObj = std::make_unique<EMT>(EMTRasmussenParams.get());
   } else {
     EMTObj = std::make_unique<EMT>(nullptr);
   }
@@ -58,19 +52,18 @@ void EffectiveMediumTheory::forceImpl(const ForceInput &fip, ForceOut *efvd) {
   const size_t N = fip.nAtoms;
 
   if (numberOfAtoms != N) {
-    cleanMemory();
     initialize(fip);
   } else {
-    pos.resize(N);
+    std::vector<Vec> pos(N);
     for (size_t i = 0; i < N; ++i) {
       pos[i] = Vec(fip.pos[3 * i], fip.pos[3 * i + 1], fip.pos[3 * i + 2]);
     }
     AtomsObj->SetCartesianPositions(pos.data());
   }
 
-  tempBasis = {Vec(fip.box[0], fip.box[1], fip.box[2]),
-               Vec(fip.box[3], fip.box[4], fip.box[5]),
-               Vec(fip.box[6], fip.box[7], fip.box[8])};
+  std::array<Vec, 3> tempBasis = {Vec(fip.box[0], fip.box[1], fip.box[2]),
+                                  Vec(fip.box[3], fip.box[4], fip.box[5]),
+                                  Vec(fip.box[6], fip.box[7], fip.box[8])};
   AtomsObj->SetUnitCell(tempBasis.data(), true);
 
   efvd->energy = EMTObj->GetPotentialEnergy();
