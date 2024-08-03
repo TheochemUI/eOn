@@ -52,13 +52,12 @@ potentials = [
 #     endif
 # endif
 
-# if get_option('with_vasp')
-#   if host_system != 'windows'
-#     subdir('VASP')
-#     potentials += [ vasp ]
-#     _args += ['-DWITH_VASP']
-#   endif
-# endif
+if get_option('with_vasp')
+  if host_system != 'windows'
+    subdir('VASP')
+    potentials += [ vasp ]
+  endif
+endif
 
 # if get_option('with_ams')
 #     # Optional, only for AMS

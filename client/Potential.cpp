@@ -69,11 +69,11 @@
 // #include "potentials/NewPot/NewPot.h"
 // #endif
 
-// #ifndef WIN32
-// #ifdef WITH_VASP
-// #include "potentials/VASP/VASP.h"
-// #endif
-// #endif
+#ifndef WIN32
+#ifdef WITH_VASP
+#include "potentials/VASP/VASP.h"
+#endif
+#endif
 
 // #ifdef WITH_AMS
 // #include "potentials/AMS/AMS.h"
@@ -199,14 +199,15 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     break;
   }
 #endif
-// #ifndef WIN32
-// #ifdef WITH_VASP
-//   case PotType::VASP: {
-//     return (std::make_shared<VASP>(a_p));
-//     break;
-//   }
-// #endif
-// #endif
+#ifndef WIN32
+#ifdef WITH_VASP
+  case PotType::VASP: {
+    // TODO(rg):: This should probably take parameters
+    return (std::make_shared<VASP>());
+    break;
+  }
+#endif
+#endif
 #ifdef LAMMPS_POT
   case PotType::LAMMPS: {
     auto params = LAMMPSPot::Params();
