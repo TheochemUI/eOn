@@ -35,18 +35,11 @@ private:
   void initialize(const ForceInput &fip);
 
 public:
-  EffectiveMediumTheory(bool useEMTRasmussen, bool usePBC)
+  EffectiveMediumTheory(bool useEMTRasmussen)
       : numberOfAtoms{0},
-        useEMTRasmussen{useEMTRasmussen},
-        usePBC{usePBC} {
-    if (usePBC == false) {
-      throw std::invalid_argument(
-          "EMT should have periodic boundary conditions in all directions");
-    }
-    periodicity[0] = true;
-    periodicity[1] = true;
-    periodicity[2] = true;
-  }
+        // TODO(rg): Enforce this somehow
+        periodicity{true, true, true},
+        useEMTRasmussen{useEMTRasmussen} {}
   void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
