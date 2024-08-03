@@ -14,7 +14,7 @@ _linkto += potaids
 
 # subdir('EAM')
 subdir('EMT')
-# subdir('ExtPot')
+subdir('ExtPot')
 # subdir('IMD')
 subdir('LJ')
 # subdir('LJCluster')
@@ -24,7 +24,7 @@ subdir('Morse')
 potentials = [
                # eam,
                emt,
-               # extpot,
+               extpot,
                # imd,
                lennard_jones,
                # lennard_jones_cluster,
