@@ -26,47 +26,41 @@
 namespace eonc {
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is
  * hardcoded to describe.*/
-class EffectiveMediumTheory : public Potential {
-
+class EffectiveMediumTheory : public Potential<EffectiveMediumTheory> {
 private:
-  // Variables
-  long numberOfAtoms;
+  size_t numberOfAtoms;
   bool periodicity[3];
-  Atoms *AtomsObj;
-  EMTDefaultParameterProvider *EMTParameterObj;
-  EMT *EMTObj;
-  SuperCell *SuperCellObj;
+  std::unique_ptr<SuperCell> SuperCellObj;
+  std::unique_ptr<Atoms> AtomsObj;
+  std::unique_ptr<EMTRasmussenParameterProvider> EMTParameterObj;
+  std::unique_ptr<EMT> EMTObj;
   bool useEMTRasmussen, usePBC;
 
-public:
-  // Functions
-  // constructor and destructor
-  EffectiveMediumTheory(bool useEMTRasmussen, bool usePBC)
-      : Potential(PotType::EMT),
-        useEMTRasmussen{useEMTRasmussen},
-        usePBC{usePBC} {
-    // dummy variables
-    AtomsObj = nullptr;
-    EMTObj = nullptr;
-    SuperCellObj = nullptr;
-    EMTParameterObj = nullptr;
-    numberOfAtoms = 0;
+  std::array<Vec, 3> tempBasis;
+  std::vector<Vec> pos;
+  std::vector<int> atomicNrsTemp;
 
-    if (usePBC == false) {
+  void initialize(const ForceInput &fip);
+  void cleanMemory();
+
+public:
+  EffectiveMediumTheory(bool useEMTRasmussen, bool usePBC)
+      : numberOfAtoms{0},
+        useEMTRasmussen{useEMTRasmussen},
+        usePBC{usePBC},
+        tempBasis{},
+        pos{},
+        atomicNrsTemp{} {
+    if (!usePBC) {
       throw std::invalid_argument(
           "EMT should have periodic boundary conditions in all directions");
     }
-    // should have periodic boundary conditions in all directions
     periodicity[0] = true;
     periodicity[1] = true;
     periodicity[2] = true;
-  };
-  ~EffectiveMediumTheory(void) {};
-  void cleanMemory(void);
+  }
 
-  // To satisfy interface
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
 } // namespace eonc
