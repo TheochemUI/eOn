@@ -13,7 +13,7 @@ potaids = library('potaids',
 _linkto += potaids
 
 # subdir('EAM')
-# subdir('EMT')
+subdir('EMT')
 # subdir('ExtPot')
 # subdir('IMD')
 subdir('LJ')
@@ -23,7 +23,7 @@ subdir('Morse')
 
 potentials = [
                # eam,
-               # emt,
+               emt,
                # extpot,
                # imd,
                lennard_jones,
@@ -58,13 +58,6 @@ potentials = [
 #     potentials += [ vasp ]
 #     _args += ['-DWITH_VASP']
 #   endif
-# endif
-
-# if get_option('with_water')
-#   subdir('Water')
-#   subdir('Water_Pt')
-#   potentials += [ water, water_pt ]
-#   _args += ['-DWITH_WATER']
 # endif
 
 # if get_option('with_ams')
