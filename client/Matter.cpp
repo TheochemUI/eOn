@@ -439,102 +439,95 @@ void Matter::matter2xyz(std::string filename,
 }
 
 // Print atomic coordinates to a .con file
-bool Matter::matter2con(std::string filename, bool append) {
-  bool state;
-  FILE *file;
-  int pos = filename.find_last_of('.');
-  if (filename.compare(pos + 1, 3, "con")) {
-    filename += ".con";
-  };
+bool Matter::matter2con(const std::string &filename, bool append) {
+  std::ofstream file;
   if (append) {
-    file = fopen(filename.c_str(), "ab");
+    file.open(filename, std::ios::app | std::ios::binary);
   } else {
-    file = fopen(filename.c_str(), "wb");
+    file.open(filename, std::ios::binary);
   }
-  state = matter2con(file);
-  fclose(file);
-  return (state);
+
+  if (!file.is_open()) {
+    SPDLOG_LOGGER_ERROR(m_log, "Failed to open file: {}", filename);
+    return false;
+  }
+
+  return matter2con(file);
 }
 
-bool Matter::matter2con(FILE *file) {
-  size_t i{0}, j{0};
-  size_t Nfix = 0;       // Nfix to store the number of fixed atoms
-  size_t Ncomponent = 0; // used to store the number of components (eg water:
-                         // two components H and O)
-  size_t first[MAXC];    // to store the position of the first atom of each
-                         // component plus at the end the total number of atoms
-  double mass[MAXC];
-  size_t atomicNrs[MAXC];
-  first[0] = 0;
-
+bool Matter::matter2con(std::ofstream &file) {
   if (usePeriodicBoundaries) {
-    applyPeriodicBoundary(); // Transform the coordinate to use the minimum
-                             // image convention.
+    applyPeriodicBoundary();
   }
 
-  if (numberOfAtoms() > 0) {
-    if (getFixed(0))
-      Nfix = 1; // count the number of fixed atoms
-    mass[0] = getMass(0);
-    atomicNrs[0] = getAtomicNr(0);
-  };
-  j = 0;
-  for (i = 1; i < numberOfAtoms(); i++) {
-    if (getFixed(i))
-      Nfix++; // count the number of fixed atoms
-    if (getAtomicNr(i) !=
-        atomicNrs[j]) { // check if there is a second component
-      j++;
-      if (j >= MAXC) {
-        SPDLOG_LOGGER_ERROR(m_log,
-                            "Does not support more than {} components and the "
-                            "atoms must be ordered by component.",
-                            MAXC);
-        return false;
-      };
-      mass[j] = getMass(i);
-      atomicNrs[j] = getAtomicNr(i);
-      first[j] = i;
+  size_t numAtoms = numberOfAtoms();
+  if (numAtoms == 0) {
+    return false;
+  }
+
+  std::vector<size_t> componentStartIndices;
+  std::vector<double> masses;
+  std::vector<size_t> atomicNumbers;
+
+  componentStartIndices.reserve(numAtoms /
+                                2); // Estimate to reduce reallocations
+  masses.reserve(numAtoms / 2);
+  atomicNumbers.reserve(numAtoms / 2);
+
+  componentStartIndices.push_back(0);
+  masses.push_back(getMass(0));
+  atomicNumbers.push_back(getAtomicNr(0));
+
+  for (size_t i = 1, currentComponent = 0; i < numAtoms; ++i) {
+    if (getAtomicNr(i) != atomicNumbers[currentComponent]) {
+      ++currentComponent;
+      masses.push_back(getMass(i));
+      atomicNumbers.push_back(getAtomicNr(i));
+      componentStartIndices.push_back(i);
     }
   }
-  first[j + 1] = numberOfAtoms();
-  Ncomponent = j + 1;
+  componentStartIndices.push_back(numAtoms);
+  size_t numComponents = masses.size();
 
-  fputs(headerCon1, file);
-  fputs(headerCon2, file);
-  double lengths[3];
-  lengths[0] = cell.row(0).norm();
-  lengths[1] = cell.row(1).norm();
-  lengths[2] = cell.row(2).norm();
-  fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
-  double angles[3];
-  angles[0] =
-      acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) * 180 / M_PI;
-  angles[1] =
-      acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) * 180 / M_PI;
-  angles[2] =
-      acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) * 180 / M_PI;
-  fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-  fputs(headerCon5, file);
-  fputs(headerCon6, file);
+  file << headerCon1 << headerCon2;
 
-  fprintf(file, "%lud\n", Ncomponent);
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%lud ", first[j + 1] - first[j]);
+  Eigen::Vector3d lengths = cell.rowwise().norm();
+  file << fmt::format("{}\t{}\t{}\n", lengths(0), lengths(1), lengths(2));
+
+  Eigen::Vector3d angles;
+  angles(0) =
+      std::acos(cell.row(0).dot(cell.row(1)) / (lengths(0) * lengths(1))) *
+      180 / M_PI;
+  angles(1) =
+      std::acos(cell.row(0).dot(cell.row(2)) / (lengths(0) * lengths(2))) *
+      180 / M_PI;
+  angles(2) =
+      std::acos(cell.row(1).dot(cell.row(2)) / (lengths(1) * lengths(2))) *
+      180 / M_PI;
+  file << fmt::format("{}\t{}\t{}\n", angles(0), angles(1), angles(2));
+
+  file << headerCon5 << headerCon6;
+
+  file << numComponents << "\n";
+  for (size_t j = 0; j < numComponents; ++j) {
+    file << (componentStartIndices[j + 1] - componentStartIndices[j]) << " ";
   }
-  fprintf(file, "\n");
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%f ", mass[j]);
+  file << "\n";
+  for (double mass : masses) {
+    file << mass << " ";
   }
-  fprintf(file, "\n");
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).c_str());
-    fprintf(file, "Coordinates of Component %lud\n", j + 1);
-    for (i = first[j]; i < first[j + 1]; i++) {
-      fprintf(file, "%22.17f %22.17f %22.17f %d %4ld\n", getPosition(i, 0),
-              getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
+  file << "\n";
+  for (size_t j = 0; j < numComponents; ++j) {
+    file << atomicNumber2symbol(atomicNumbers[j]) << "\n";
+    file << fmt::format("Coordinates of Component {}\n", j + 1);
+    for (size_t i = componentStartIndices[j]; i < componentStartIndices[j + 1];
+         ++i) {
+      file << fmt::format("{:.17f} {:.17f} {:.17f} {} {:4}\n",
+                          getPosition(i, 0), getPosition(i, 1),
+                          getPosition(i, 2), getFixed(i), i);
     }
   }
+
   return true;
 }
 
