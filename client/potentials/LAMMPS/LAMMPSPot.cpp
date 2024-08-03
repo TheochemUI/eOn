@@ -9,9 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "LAMMPS.h"
+#include "LAMMPSPot.h"
 #include "library.h"
-#include <map>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -23,8 +22,10 @@
 
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 namespace eonc {
-LAMMPSPot::LAMMPSPot(std::shared_ptr<Parameters> p)
-    : Potential(p) {
+LAMMPSPot::LAMMPSPot(const LAMMPSPot::Params &p_a)
+    : _mpicomm{p_a.MPIClientComm},
+      _lmpThreads{p_a.LAMMPSThreads},
+      _suffix{p_a.suffix} {
   numberOfAtoms = 0;
   LAMMPSObj = nullptr;
   std::fill_n(oldBox, 9, 0.0);
@@ -40,29 +41,32 @@ void LAMMPSPot::cleanMemory(void) {
   return;
 }
 
-void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
-                      double *U, double *variance, const double *box) {
-  variance = nullptr;
+void LAMMPSPot::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const long int N = fip.nAtoms;
   int i;
   bool newLammps = false;
   for (int i = 0; i < 9; i++) {
-    if (oldBox[i] != box[i])
+    if (oldBox[i] != fip.box[i])
       newLammps = true;
   }
   if (numberOfAtoms != N)
     newLammps = true;
   if (newLammps) {
-    makeNewLAMMPS(N, R, atomicNrs, box);
+    makeNewLAMMPS(N, fip.pos, fip.atmnrs, fip.box);
   }
   if (!LAMMPSObj) {
     throw std::runtime_error("Should have a LAMMPS instance by now");
   }
 
-  lammps_scatter_atoms(LAMMPSObj, "x", 1, 3, const_cast<double *>(R));
+  lammps_scatter_atoms(LAMMPSObj, "x", 1, 3, const_cast<double *>(fip.pos));
   lammps_command(LAMMPSObj, "run 1 pre no post no");
 
   double *pe = (double *)lammps_extract_variable(LAMMPSObj, "pe", nullptr);
-  *U = *pe;
+  efvd->energy = *pe;
   free(pe);
 
   double *fx = (double *)lammps_extract_variable(LAMMPSObj, "fx", "all");
@@ -70,17 +74,17 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   double *fz = (double *)lammps_extract_variable(LAMMPSObj, "fz", "all");
 
   for (i = 0; i < N; i++) {
-    F[3 * i + 0] = fx[i];
-    F[3 * i + 1] = fy[i];
-    F[3 * i + 2] = fz[i];
+    efvd->F[3 * i + 0] = fx[i];
+    efvd->F[3 * i + 1] = fy[i];
+    efvd->F[3 * i + 2] = fz[i];
   }
 
   // convert from kCal/mol -> eV if LAMMPS is using real units
 
   if (realunits) {
-    *U = *U / 23.0609;
+    efvd->energy = efvd->energy / 23.0609;
     for (i = 0; i < 3 * N; i++) {
-      F[i] = F[i] / 23.0609;
+      efvd->F[i] = efvd->F[i] / 23.0609;
     }
   }
 
@@ -89,7 +93,7 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   free(fz);
 }
 
-void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
+void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const size_t *atomicNrs,
                               const double *box) {
   numberOfAtoms = N;
   for (int i = 0; i < 9; i++)
@@ -124,8 +128,8 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
 
   char cmd[200];
 
-  if (m_params->LAMMPSThreads > 0) {
-    snprintf(cmd, 200, "package omp %i force/neigh", m_params->LAMMPSThreads);
+  if (_lmpThreads > 0) {
+    snprintf(cmd, 200, "package omp %i force/neigh", _lmpThreads);
     lammps_command(LAMMPSObj, cmd);
   }
 

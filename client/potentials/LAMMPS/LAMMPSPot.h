@@ -12,26 +12,40 @@
 // serves as an interface between LAMMPS potentials maintained by SANDIA
 
 #pragma once
-#include "../../Parameters.h"
 #include "../../Potential.h"
+
+#ifndef EONMPI
+#include "fakempi.h"
+#endif
 
 namespace eonc {
 
-class LAMMPSPot : public Potential {
+class LAMMPSPot : public Potential<LAMMPSPot> {
 
 public:
-  LAMMPSPot(std::shared_ptr<Parameters> p);
+  struct Params final {
+    MPI_Comm MPIClientComm{-1};
+    int LAMMPSThreads{0};
+    std::string suffix{"omp"};
+  };
+
+private:
+  MPI_Comm _mpicomm;
+  int _lmpThreads;
+  std::string _suffix;
+
+public:
+  LAMMPSPot(const LAMMPSPot::Params &);
   ~LAMMPSPot(void);
   void initialize() {};
   void cleanMemory(void);
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 
 private:
   long numberOfAtoms;
   double oldBox[9];
   void *LAMMPSObj;
-  void makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
+  void makeNewLAMMPS(long N, const double *R, const size_t *atomicNrs,
                      const double *box);
   bool realunits;
 };
