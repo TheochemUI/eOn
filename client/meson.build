@@ -156,6 +156,12 @@ if get_option('with_ase_orca')
   _args += ['-DWITH_ASE_ORCA']
 endif
 
+if get_option('with_vasp')
+  if host_system != 'windows'
+    _args += ['-DWITH_VASP']
+  endif
+endif
+
 # Potentials
 subdir('potentials')
 
