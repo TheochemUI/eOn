@@ -118,8 +118,6 @@ public:
   bool con2matter(FILE *file);
   bool convel2matter(std::string filename);
   bool convel2matter(FILE *file);
-  bool matter2con(const std::string &, bool = false);
-  bool matter2con(std::ofstream &file);
   bool matter2convel(std::string filename);
   bool matter2convel(FILE *file);
   void matter2xyz(std::string filename, bool append = false);
@@ -129,15 +127,16 @@ public:
 
   Matrix3S cell{Matrix3S::Zero()};
 
+  // --- These should be parsed in
+  bool usePeriodicBoundaries{true};
+  bool removeNetForce{true};
+  // ----
+
 private:
   std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<PotBase> potential;
-  // --- These should be parsed in
-  bool usePeriodicBoundaries{true};
   // Indicates if the potential energy and forces need to be recalculated
   bool recomputePotential{true};
-  bool removeNetForce{true};
-  // ----
   size_t forceCalls{0};
 
   // CON file header information, which is not used in the eon code
