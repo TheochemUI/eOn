@@ -10,10 +10,10 @@ void from_toml(LJ::Params &p_a, const toml::node_view<const toml::node> &tbl) {
 
 void from_toml(Morse::Params &p_a,
                const toml::node_view<const toml::node> &tbl) {
-  p_a.De = tbl["Potential"]["Morse"]["De"].value_or(p_a.De);
-  p_a.a = tbl["Potential"]["Morse"]["a"].value_or(p_a.a);
-  p_a.re = tbl["Potential"]["Morse"]["re"].value_or(p_a.re);
-  p_a.cutoff = tbl["Potential"]["Morse"]["cutoff"].value_or(p_a.cutoff);
+  p_a.De = tbl["De"].value_or(p_a.De);
+  p_a.a = tbl["a"].value_or(p_a.a);
+  p_a.re = tbl["re"].value_or(p_a.re);
+  p_a.cutoff = tbl["cutoff"].value_or(p_a.cutoff);
 }
 
 #ifdef WITH_ASE_ORCA
