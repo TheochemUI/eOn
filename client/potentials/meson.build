@@ -143,8 +143,8 @@ if get_option('with_fortran')
     _args += ['-DWITH_WATER']
     subdir('Water')
     potentials += [water]
-    # subdir('Water_H')
-    # potentials += [water_h]
+    subdir('Water_H')
+    potentials += [water_h]
   endif
   subdir('CuH2')
   potentials += [
