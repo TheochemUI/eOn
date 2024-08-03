@@ -156,3 +156,34 @@ std::vector<eonc::Matter> getMatter() {
 TEST_CASE("VerifyMatter") {
   ApprovalTests::Approvals::verifyAll("matter", getMatter());
 }
+
+std::string readFileContent(const std::string &filename) {
+  std::ifstream file(filename);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
+}
+
+std::vector<eonc::Matter> getTestMatter() {
+  const auto config =
+      toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
+  auto pot_default = eonc::makePotential(config);
+  auto matter = eonc::Matter(pot_default);
+  std::string confile("pos.con");
+  matter.con2matter(confile);
+  for (size_t idx = 0; idx < 3; idx++) {
+    matter.setFixed(idx, true);
+  }
+
+  return {matter};
+}
+
+TEST_CASE("VerifyMatter2Con") {
+  auto testMatter = getTestMatter();
+  REQUIRE(testMatter.size() > 0);
+  std::string filename = "test_output.con";
+  bool success = testMatter[0].matter2con(filename);
+  REQUIRE(success);
+  std::string fileContent = readFileContent(filename);
+  ApprovalTests::Approvals::verify(fileContent);
+}
