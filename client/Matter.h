@@ -148,10 +148,8 @@ public:
                                        // and velocities into Matter
   bool convel2matter(FILE *file); // read con file with both coordinates and
                                   // velocities and load data into Matter
-  bool
-  matter2con(std::string filename,
-             bool append = false); // print con file from data in Class Matter
-  bool matter2con(FILE *file);     // print con file from data in Class Matter
+  bool matter2con(const std::string &, bool = false);
+  bool matter2con(std::ofstream &file);
   bool
   matter2convel(std::string filename); // print con file with both coordinates
                                        // and velocities  in Class Matter
