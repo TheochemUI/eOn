@@ -11,57 +11,57 @@
 */
 
 #include "ExtPot.h"
+#include <iomanip>
 #include <stdio.h>
 #include <unistd.h>
 namespace eonc {
-void ExtPot::cleanMemory(void) { return; }
 
-ExtPot::~ExtPot() { cleanMemory(); }
-
-void ExtPot::force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, double *variance, const double *box) {
-  variance = nullptr;
-  passToSystem(N, R, atomicNrs, box);
-  system(eon_extpot_path);
-  recieveFromSystem(N, F, U);
+void ExtPot::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const long int N = fip.nAtoms;
+  passToSystem(N, fip.pos, fip.atmnrs, fip.box);
+  int result = std::system(eon_extpot_path.c_str());
+  if (result != 0) {
+    throw std::runtime_error("Error executing external potential system call.");
+  }
+  receiveFromSystem(N, efvd->F, &efvd->energy);
   return;
 }
 
-void ExtPot::passToSystem(long N, const double *R, const int *atomicNrs,
-                          const double *box)
-// 'positions' of all particles and box
-{
-  FILE *out;
-  out = fopen("from_eon_to_extpot", "w");
-
-  for (int i = 0; i < 3; i++) {
-    fprintf(out, "%.19f\t%.19f\t%.19f\n", box[i * 3 + 0], box[i * 3 + 1],
-            box[i * 3 + 2]);
+void ExtPot::passToSystem(long N, const double *R, const size_t *atomicNrs,
+                          const double *box) {
+  std::ofstream out("from_eon_to_extpot");
+  if (!out) {
+    throw std::runtime_error(
+        "Could not open 'from_eon_to_extpot' for writing.");
   }
 
-  for (int i = 0; i < N; i++) {
-    fprintf(out, "%i\t%.19f\t%.19f\t%.19f\n", atomicNrs[i], R[i * 3 + 0],
-            R[i * 3 + 1], R[i * 3 + 2]);
+  for (int i = 0; i < 3; ++i) {
+    out << std::fixed << std::setprecision(19) << box[i * 3 + 0] << "\t"
+        << box[i * 3 + 1] << "\t" << box[i * 3 + 2] << "\n";
   }
-  fclose(out);
-  return;
+
+  for (long i = 0; i < N; ++i) {
+    out << atomicNrs[i] << "\t" << R[i * 3 + 0] << "\t" << R[i * 3 + 1] << "\t"
+        << R[i * 3 + 2] << "\n";
+  }
 }
 
-void ExtPot::recieveFromSystem(long N, double *F, double *U)
-// first line must be the total 'energy', the following lines should be the
-// 'forces'
-{
-  FILE *in;
-  in = fopen("from_extpot_to_eon", "r");
-
-  fscanf(in, "%lf", U);
-
-  for (int i = 0; i < N; i++) {
-    fscanf(in, "%lf %lf %lf", &F[i * 3 + 0], &F[i * 3 + 1], &F[i * 3 + 2]);
+void ExtPot::receiveFromSystem(long N, double *F, double *U) {
+  std::ifstream in("from_extpot_to_eon");
+  if (!in) {
+    throw std::runtime_error(
+        "Could not open 'from_extpot_to_eon' for reading.");
   }
 
-  fclose(in);
-  return;
+  in >> *U;
+
+  for (long i = 0; i < N; ++i) {
+    in >> F[i * 3 + 0] >> F[i * 3 + 1] >> F[i * 3 + 2];
+  }
 }
 
 } // namespace eonc
