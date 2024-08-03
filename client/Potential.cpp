@@ -11,10 +11,10 @@
 */
 #include <csignal>
 
-#include "BaseStructures.h"
-#include "Parser.hpp"
-#include "Potential.h"
-#include "potentials/ParseTOML.hpp"
+#include "client/BaseStructures.h"
+#include "client/Parser.hpp"
+#include "client/Potential.h"
+#include "client/potentials/ParseTOML.hpp"
 
 // #ifdef WITH_CATLEARN
 // #include "potentials/CatLearnPot/CatLearnPot.h"
@@ -29,73 +29,73 @@
 // #endif
 
 // #include "potentials/EAM/EAM.h"
-#include "potentials/EMT/EffectiveMediumTheory.h"
-#include "potentials/ExtPot/ExtPot.h"
-#include "potentials/LJ/LJ.h"
+#include "client/potentials/EMT/EffectiveMediumTheory.h"
+#include "client/potentials/ExtPot/ExtPot.h"
+#include "client/potentials/LJ/LJ.h"
 // #include "potentials/LJCluster/LJCluster.h"
-#include "potentials/Morse/Morse.h"
+#include "client/potentials/Morse/Morse.h"
 
 #ifdef WITH_FORTRAN
-#include "potentials/Aluminum/Aluminum.h"
-#include "potentials/CuH2/CuH2.h"
-#include "potentials/EDIP/EDIP.h"
-#include "potentials/FeHe/FeHe.h"
-#include "potentials/Lenosky/Lenosky.h"
-#include "potentials/SW/SW.h"
-#include "potentials/Tersoff/Tersoff.h"
+#include "client/potentials/Aluminum/Aluminum.h"
+#include "client/potentials/CuH2/CuH2.h"
+#include "client/potentials/EDIP/EDIP.h"
+#include "client/potentials/FeHe/FeHe.h"
+#include "client/potentials/Lenosky/Lenosky.h"
+#include "client/potentials/SW/SW.h"
+#include "client/potentials/Tersoff/Tersoff.h"
 #endif
 
 // #ifdef WITH_PYTHON
 
 // #ifdef PYAMFF_POT
-// #include "potentials/PyAMFF/PyAMFF.h"
+// #include "client/potentials/PyAMFF/PyAMFF.h"
 // #endif
 // #ifdef ASE_POT
-// #include "potentials/ASE/ASE.h"
+// #include "client/potentials/ASE/ASE.h"
 // #endif
 
-// #include "potentials/QSC/QSC.h"
+// #include "client/potentials/QSC/QSC.h"
 // #endif
 
 // #ifdef EONMPI
-// #include "potentials/MPIPot/MPIPot.h"
+// #include "client/potentials/MPIPot/MPIPot.h"
 // #endif
 
 #ifdef LAMMPS_POT
-#include "potentials/LAMMPS/LAMMPSPot.h"
+#include "client/potentials/LAMMPS/LAMMPSPot.h"
 #endif
 
 // #ifdef NEW_POT
-// #include "potentials/NewPot/NewPot.h"
+// #include "client/potentials/NewPot/NewPot.h"
 // #endif
 
 #ifndef WIN32
 #ifdef WITH_VASP
-#include "potentials/VASP/VASP.h"
+#include "client/potentials/VASP/VASP.h"
 #endif
 #endif
 
 // #ifdef WITH_AMS
-// #include "potentials/AMS/AMS.h"
-// #include "potentials/AMS_IO/AMS_IO.h"
+// #include "client/potentials/AMS/AMS.h"
+// #include "client/potentials/AMS_IO/AMS_IO.h"
 // #endif
 
 #ifdef WITH_ASE_ORCA
-#include "potentials/ASE_ORCA/ASE_ORCA.h"
+#include "client/potentials/ASE_ORCA/ASE_ORCA.h"
 #endif
 
 #ifdef WITH_WATER
-#include "potentials/Water/Water.hpp"
+#include "client/potentials/Water/Water.hpp"
 #ifdef WITH_FORTRAN
-#include "potentials/Water_H/Tip4p_H.h"
+#include "client/potentials/Water_H/Tip4p_H.h"
 #endif
-#include "potentials/Water_Pt/Tip4p_Pt.hpp"
+#include "client/potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
 // // Should respect Fortran availability
 
 // #ifdef WITH_XTB
-// #include "potentials/XTBPot/XTBPot.h"
+// #include "client/potentials/XTBPot/XTBPot.h"
 // #endif
 
 namespace eonc {
