@@ -145,6 +145,8 @@ if get_option('with_fortran')
     potentials += [water]
     subdir('Water_H')
     potentials += [water_h]
+    subdir('Water_Pt')
+    potentials += [water_pt]
   endif
   subdir('CuH2')
   potentials += [

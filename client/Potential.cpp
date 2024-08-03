@@ -89,7 +89,7 @@
 #ifdef WITH_FORTRAN
 #include "potentials/Water_H/Tip4p_H.h"
 #endif
-// #include "potentials/Water_Pt/Tip4p_Pt.hpp"
+#include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
 // // Should respect Fortran availability
@@ -156,10 +156,10 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     break;
   }
 #ifdef WITH_FORTRAN
-  // case PotType::TIP4P_PT: {
-  //   return (std::make_shared<Tip4p_Pt>(a_p));
-  //   break;
-  // }
+  case PotType::TIP4P_PT: {
+    return (std::make_shared<Tip4p_Pt>());
+    break;
+  }
   case PotType::TIP4P_H: {
     return (std::make_shared<Tip4p_H>());
     break;
