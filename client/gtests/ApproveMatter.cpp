@@ -67,9 +67,9 @@ auto getForcesFreeVConst(const eonc::Matter &matter) {
   return const_cast<eonc::Matter &>(matter).getForcesFreeV();
 }
 
-auto getBiasForcesConst(const eonc::Matter &matter) {
-  return const_cast<eonc::Matter &>(matter).getBiasForces();
-}
+// auto getBiasForcesConst(const eonc::Matter &matter) {
+//   return const_cast<eonc::Matter &>(matter).getBiasForces();
+// }
 
 namespace eonc {
 
@@ -141,10 +141,10 @@ std::ostream &operator<<(std::ostream &os, const eonc::Matter &matter) {
 std::vector<eonc::Matter> getMatter() {
   // Return test data for Matter
   // TODO(rg): Add more objects
-  auto params = std::make_shared<eonc::Parameters>();
-  auto pot_default =
-      eonc::helper_functions::makePotential(eonc::PotType::LJ, *params);
-  auto m1 = eonc::Matter(pot_default, params);
+  const auto config =
+      toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
+  auto pot_default = eonc::makePotential(config);
+  auto m1 = eonc::Matter(pot_default);
   std::string confile("pos.con"); // Sulfolene
   m1.con2matter(confile);
   for (size_t idx{0}; idx < 3; idx++) {
