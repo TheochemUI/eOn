@@ -21,3 +21,4 @@ asap = shared_library('asap', asap_files,
                       link_with : _linkto,
                       cpp_args : asap_args,
                       install : true)
+_linkto += asap
