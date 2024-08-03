@@ -11,8 +11,9 @@
 */
 
 #pragma once
-#include "../../Potential.h"
+#include "client/Potential.h"
 
+extern "C" {
 /** External function implemented in Fortran
 @param[in]	N           number of atoms
 @param[in]	R           array to positions of the atoms in Angstrom
@@ -21,28 +22,18 @@ eV/Angstrom
 @param[out]	U           pointer to energy in eV
 @param[in]  bx, by, bz  pointer to box dimensions in Angstrom
 */
-
-extern "C" {
-void force_(const long int *N, const double *R, double *F, double *U,
-            const double *bx, const double *by, const double *bz);
-}
-extern "C" {
+void alforces_(const long int *N, const double *R, double *F, double *U,
+               const double *bx, const double *by, const double *bz);
 void potinit_();
 }
 
 namespace eonc {
 
 /** Aluminum potential.*/
-class Aluminum : public Potential {
+class Aluminum : public Potential<Aluminum> {
 public:
-  Aluminum()
-      : Potential(PotType::EAM_AL) {
-    potinit_();
-  };
-  ~Aluminum(void) {};
-  // To satisfy interface
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+  Aluminum() { potinit_(); };
+  void forceImpl(const ForceInput &, ForceOut *) override;
 };
 
 } // namespace eonc

@@ -10,26 +10,38 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include <cstdio>
-#include <errno.h>
+#include "VASP.h"
+
+#include <cerrno>
+#include <cstring>
+#include <fcntl.h>
 #include <iostream>
-#include <stdlib.h>
+#include <stdexcept>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
-#ifdef WIN32
-#include <windows.h>
-#define sleep(n) Sleep(1000 * n)
-// #define popen _popen
-#else
-#include <fcntl.h>
-#include <sys/wait.h>
-#endif
-
-#include "VASP.h"
 namespace eonc {
+
 bool VASP::firstRun = true;
 long VASP::vaspRunCount = 0;
 pid_t VASP::vaspPID = 0;
+
+void runVaspProcess() {
+  int outFd = open("vaspout", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+  if (outFd == -1) {
+    throw std::runtime_error(std::string("error opening vaspout: ") +
+                             std::strerror(errno));
+  }
+  dup2(outFd, STDOUT_FILENO);
+  dup2(outFd, STDERR_FILENO);
+  close(outFd);
+
+  if (execlp("./runvasp.sh", "./runvasp.sh", nullptr) == -1) {
+    throw std::runtime_error(std::string("error spawning vasp: ") +
+                             std::strerror(errno));
+  }
+}
 
 void VASP::cleanMemory(void) {
   vaspRunCount--;
@@ -42,158 +54,134 @@ void VASP::cleanMemory(void) {
 }
 
 void VASP::spawnVASP() {
-  if ((vaspPID = fork()) == -1) {
-    fprintf(stderr, "error forking for vasp: %s\n", strerror(errno));
-    exit(1);
-  }
-
-  if (vaspPID) {
-    /* We are the parent */
-    setvbuf(stdout, (char *)NULL, _IONBF, 0); // non-buffered output
-  } else {
-    /* We are the child */
-    int outFd = open("vaspout", O_CREAT | O_WRONLY | O_TRUNC, 0644);
-    dup2(outFd, 1);
-    dup2(outFd, 2);
-    /*
-            char vaspPath[1024];
-            if(strncpy(vaspPath, "vasp", 1024)) {
-    //        if(strncpy("vasp", vaspPath, 1024)) {
-
-                fprintf(stderr, "problem resolving vasp filename\n");
-                exit(1);
-            }
-    */
-    /* if (0)
-            {
-                if (execlp(vaspPath, "vasp", NULL) == -1)
-                {
-                    fprintf(stderr, "error spawning vasp: %s\n",
-    strerror(errno)); exit(1);
-                }
-            }
-            else
-            {
-    //            if (execlp("mpirun", "mpirun", "-n", "8", "vasp", NULL) == -1)
-    */
-    if (execlp("./runvasp.sh", "./runvasp.sh", NULL) == -1) {
-      fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
-      exit(1);
+  vaspProcess = std::async(std::launch::async, []() {
+    try {
+      runVaspProcess();
+    } catch (const std::exception &e) {
+      std::cerr << e.what() << std::endl;
+      std::exit(EXIT_FAILURE);
     }
-    //       }
-  }
+  });
 }
 
 bool VASP::vaspRunning() {
-  pid_t pid;
-  int status;
-
   if (vaspPID == 0) {
     return false;
   }
+  int status;
+  pid_t pid = waitpid(vaspPID, &status, WNOHANG);
 
-  pid = waitpid(vaspPID, &status, WNOHANG);
-
-  if (pid) {
-    fprintf(stderr, "vasp died unexpectedly!\n");
-    exit(1);
+  if (pid == -1) {
+    std::cerr << "Error in waitpid\n";
+    std::exit(EXIT_FAILURE);
+  } else if (pid > 0) {
+    std::cerr << "vasp died unexpectedly!\n";
+    std::exit(EXIT_FAILURE);
   }
-
   return true;
 }
 
-void VASP::force(long N, const double *R, const int *atomicNrs, double *F,
-                 double *U, double *variance, const double *box) {
-  variance = nullptr;
-  writePOSCAR(N, R, atomicNrs, box);
+void VASP::forceImpl(const ForceInput &fip, ForceOut *efvd) {
+#ifdef EON_CHECKS
+  eonc::pot::checkParams(fip);
+  eonc::pot::zeroForceOut(fip.nAtoms, efvd);
+#endif
+  const long int N = fip.nAtoms;
+  writePOSCAR(N, fip.pos, fip.atmnrs, fip.box);
 
   if (!vaspRunning()) {
     spawnVASP();
   }
 
-  // printf("vasp force call");
-  // fflush(stdout);
-  while (access("FU", F_OK) == -1) {
-    sleep(1);
-    // printf(".");
-    // fflush(stdout);
+  // Wait for the "FU" file to be created
+  while (!std::filesystem::exists("FU")) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     vaspRunning();
   }
-  // printf("\n");
-  readFU(N, F, U);
-  remove("FU");
+
+  readFU(N, efvd->F, &efvd->energy);
+  std::filesystem::remove("FU");
   vaspRunCount++;
-  return;
 }
 
-void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs,
+void VASP::writePOSCAR(long N, const double *R, const size_t *atomicNrs,
                        const double *box) {
   // Positions are scaled
   long i = 0;
   long i_old = 0;
-  FILE *POSCAR;
 
-  POSCAR = fopen("POSCAR", "w");
+  std::ofstream poscar("POSCAR");
+
+  if (!poscar.is_open()) {
+    throw std::runtime_error("Could not open POSCAR file for writing.");
+  }
 
   // header line (treated as a comment)
+  std::string header = fmt::format("{} ", atomicNrs[0]);
   i_old = 0;
-  fprintf(POSCAR, "%d ", atomicNrs[0]);
   for (i = 0; i < N; i++) {
     if (atomicNrs[i] != atomicNrs[i_old]) {
-      fprintf(POSCAR, "%d ", atomicNrs[i]);
+      header += fmt::format("{} ", atomicNrs[i]);
       i_old = i;
     }
   }
-  fprintf(POSCAR, ": Atomic numbers\n");
+  header += ": Atomic numbers\n";
+  poscar << header;
 
   // boundary box
-  fprintf(POSCAR, "1.0\n");
-  fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[0], box[1], box[2]);
-  fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[3], box[4], box[5]);
-  fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[6], box[7], box[8]);
+  poscar << "1.0\n";
+  for (i = 0; i < 9; i += 3) {
+    poscar << fmt::format(" {:.8f}\t{:.8f}\t{:.8f}\n", box[i], box[i + 1],
+                          box[i + 2]);
+  }
 
   // the number of atoms of each different atomic type
   i_old = 0;
   for (i = 0; i < N; i++) {
     if (atomicNrs[i] != atomicNrs[i_old]) {
-      fprintf(POSCAR, "%li ", i - i_old);
+      poscar << fmt::format("{} ", i - i_old);
       i_old = i;
     }
   }
-  fprintf(POSCAR, "%li\n", N - i_old);
+  poscar << fmt::format("{}\n", N - i_old);
 
   // coordinates for all atoms
-  fprintf(POSCAR, "Cartesian\n");
+  poscar << "Cartesian\n";
   for (i = 0; i < N; i++) {
-    fprintf(POSCAR, "%.19f\t%.19f\t%.19f\t T T T\n", R[i * 3 + 0], R[i * 3 + 1],
-            R[i * 3 + 2]);
+    poscar << fmt::format("{:.19f}\t{:.19f}\t{:.19f}\t T T T\n", R[i * 3 + 0],
+                          R[i * 3 + 1], R[i * 3 + 2]);
   }
-  fclose(POSCAR);
+  poscar.close();
 
   if (firstRun) {
     firstRun = false;
   } else {
-    FILE *NEWCAR = fopen("NEWCAR", "w");
-    fclose(NEWCAR);
+    std::ofstream newcar("NEWCAR");
+    if (!newcar.is_open()) {
+      throw std::runtime_error("Could not open NEWCAR file for writing.");
+    }
+    newcar.close();
   }
-
-  //    FILE *NEWCAR = fopen("NEWCAR", "w");
-  //    fclose(NEWCAR);
-
-  return;
 }
 
 void VASP::readFU(long N, double *F, double *U) {
-  FILE *FU;
-  FU = fopen("FU", "r");
+  std::ifstream fu("FU");
 
-  fscanf(FU, "%lf", U);
-
-  for (int i = 0; i < N; i++) {
-    fscanf(FU, "%lf %lf %lf", &F[i * 3 + 0], &F[i * 3 + 1], &F[i * 3 + 2]);
+  if (!fu.is_open()) {
+    throw std::runtime_error("Could not open FU file for reading.");
   }
-  fclose(FU);
-  return;
+
+  fu >> *U;
+
+  for (long i = 0; i < N; ++i) {
+    fu >> F[i * 3 + 0] >> F[i * 3 + 1] >> F[i * 3 + 2];
+  }
+
+  if (!fu) {
+    throw std::runtime_error("Error reading FU file.");
+  }
+
+  fu.close();
 }
 
 } // namespace eonc

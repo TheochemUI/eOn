@@ -12,31 +12,39 @@
 
 #pragma once
 // #include "../../system_unit.h" // unit converters
-#include "../../Potential.h"
+#include "client/Potential.h"
 
 namespace eonc {
 
 /** Lennard Jones potential.*/
-class LJ : public Potential {
-private:
-  double u0;
-  double cuttOffR;
-  double psi;
-  double cuttOffU;
+class LJ final : public Potential<LJ> {
+  friend class LJCluster;
 
 public:
-  LJ(eonc::def::LJParams &ljp)
-      : Potential(PotType::LJ),
-        u0{ljp.u0},
-        cuttOffR{ljp.cutoff},
-        psi{ljp.psi} {}
+  struct Params final {
+    double u0{1.0};
+    double cutoff_R{15.0};
+    double psi{1.0};
+  };
 
-  ~LJ() = default;
+private:
+  double _u0;
+  double _cutoff_R;
+  double _psi;
+  double _cutoff_U{0};
 
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) override;
+  double calc_cutoffU(const LJ::Params &);
 
-  void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
+public:
+  LJ(const LJ::Params &p_a)
+      : _u0{p_a.u0},
+        _cutoff_R{p_a.cutoff_R},
+        _psi{p_a.psi},
+        _cutoff_U{calc_cutoffU(p_a)} {}
+
+  void forceImpl(const ForceInput &, ForceOut *) override final;
+
+  void setParameters(const LJ::Params &);
 };
 
 } // namespace eonc

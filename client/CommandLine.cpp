@@ -14,6 +14,7 @@
 #include "Matter.h"
 #include "MatterHelpers.hpp"
 #include "Parameters.h"
+#include "Potential.h"
 #include "version.h"
 
 #include <cstdlib>
@@ -129,10 +130,10 @@ void commandLine(int argc, char **argv) {
       confile = unmatched[0];
     }
 
+    auto tbl =
+        toml::table{{"Potential", toml::table{{"potential", "unknown"}}}};
     if (!cflag) {
-      params->pot.potential = magic_enum::enum_cast<PotType>(
-                                  potential, magic_enum::case_insensitive)
-                                  .value_or(PotType::UNKNOWN);
+      tbl["Potential"].as_table()->insert_or_assign("potential", potential);
     }
 
     if (!sflag) {
@@ -142,7 +143,7 @@ void commandLine(int argc, char **argv) {
       params->optim.convergedForce = optConvergedForce;
     }
 
-    auto pot = helper_functions::makePotential(*params);
+    auto pot = makePotential(tbl);
     auto mat1 = Matter(pot);
     mat1.con2matter(confile);
 
@@ -154,7 +155,7 @@ void commandLine(int argc, char **argv) {
     if (sflag) {
       auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
       // Run PointJob
-      auto spj = makeJob(tbl, mat1);
+      auto spj = eonc::makeJob(tbl, mat1);
       auto res = spj->run();
     } else if (mflag) {
       // XXX: Finish
@@ -180,5 +181,4 @@ void commandLine(int argc, char **argv) {
     exit(1);
   }
 }
-
 } // namespace eonc
