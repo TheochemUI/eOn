@@ -79,7 +79,7 @@ std::ostream &operator<<(std::ostream &os, const eonc::Matter &matter) {
 
   // Methods without parameters
   os << "Number of atoms: \n" << matter.numberOfAtoms() << std::endl;
-  os << "Cell: \n" << matter.getCell() << std::endl;
+  os << "Cell: \n" << matter.cell << std::endl;
   os << "Potential calls: \n" << matter.getPotentialCalls() << std::endl;
   os << "Positions: \n" << matter.getPositions() << std::endl;
   os << "Positions (Vector): \n"
