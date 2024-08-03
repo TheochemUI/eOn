@@ -12,6 +12,8 @@
 
 #pragma once
 #include "../../Potential.h"
+#include <filesystem>
+#include <future>
 
 namespace eonc {
 
@@ -20,23 +22,15 @@ class VASP : public Potential<VASP> {
 public:
   VASP() {
     vaspRunCount++;
-    // deleting leftovers from previous run
-    system("rm -f TMPCAR");
-    system("rm -f CHG");
-    system("rm -f CHGCAR");
-    system("rm -f CONTCAR");
-    system("rm -f DOSCAR");
-    system("rm -f EIGENVAL");
-    system("rm -f IBZKPT");
-    system("rm -f NEWCAR");
-    system("rm -f FU");
-    system("rm -f OSZICAR");
-    system("rm -f OUTCAR");
-    system("rm -f PCDAT");
-    system("rm -f POSCAR");
-    system("rm -f TMPCAR");
-    system("rm -f WAVECAR");
-    system("rm -f XDATCAR");
+    // Deleting leftovers from previous run
+    const std::vector<std::string> filesToRemove = {
+        "TMPCAR",   "CHG",    "CHGCAR", "CONTCAR", "DOSCAR",
+        "EIGENVAL", "IBZKPT", "NEWCAR", "FU",      "OSZICAR",
+        "OUTCAR",   "PCDAT",  "POSCAR", "WAVECAR", "XDATCAR"};
+
+    for (const auto &file : filesToRemove) {
+      std::filesystem::remove(file);
+    }
   }
   ~VASP() { cleanMemory(); }
   void cleanMemory(void);
@@ -48,6 +42,7 @@ private:
   void readFU(long N, double *F, double *U);
   void spawnVASP();
   bool vaspRunning();
+  std::future<void> vaspProcess;
   static bool firstRun;
   static long vaspRunCount;
   static pid_t vaspPID;
