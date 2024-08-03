@@ -105,7 +105,11 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]);
   switch (ptype) {
   case PotType::EMT: {
-    return (std::make_shared<EffectiveMediumTheory>(false, true));
+    return (std::make_shared<EffectiveMediumTheory>(false));
+    break;
+  }
+  case PotType::EMT_RAS: {
+    return (std::make_shared<EffectiveMediumTheory>(true));
     break;
   }
   // case PotType::EXT: {
