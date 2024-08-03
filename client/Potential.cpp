@@ -86,9 +86,9 @@
 
 #ifdef WITH_WATER
 #include "potentials/Water/Water.hpp"
-// #ifdef WITH_FORTRAN
-// #include "potentials/Water_H/Tip4p_H.h"
-// #endif
+#ifdef WITH_FORTRAN
+#include "potentials/Water_H/Tip4p_H.h"
+#endif
 // #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
@@ -155,16 +155,16 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     return (std::make_shared<SpceCcl>());
     break;
   }
-// #ifdef WITH_FORTRAN
-//   case PotType::TIP4P_PT: {
-//     return (std::make_shared<Tip4p_Pt>(a_p));
-//     break;
-//   }
-//   case PotType::TIP4P_H: {
-//     return (std::make_shared<Tip4p_H>(a_p));
-//     break;
-//   }
-// #endif
+#ifdef WITH_FORTRAN
+  // case PotType::TIP4P_PT: {
+  //   return (std::make_shared<Tip4p_Pt>(a_p));
+  //   break;
+  // }
+  case PotType::TIP4P_H: {
+    return (std::make_shared<Tip4p_H>());
+    break;
+  }
+#endif
 #endif
 #ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
