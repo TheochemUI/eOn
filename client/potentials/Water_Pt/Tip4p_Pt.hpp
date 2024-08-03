@@ -20,19 +20,12 @@ University of Iceland
 #include "../../Potential.h"
 #include "zhu_philpott.hpp"
 namespace eonc {
-class Tip4p_Pt : public Potential, private forcefields::ZhuPhilpott<> {
+class Tip4p_Pt : public Potential<Tip4p_Pt>,
+                 private forcefields::ZhuPhilpott<> {
 public:
   Tip4p_Pt()
-      : Potential(PotType::TIP4P_PT),
-        // TODO(rg): Expose these
-        forcefields::ZhuPhilpott<>(8.5, 1.0) {};
-  // Functions
-  // constructor and destructor
-
-  // To satisfy interface
-  void initialize(void) {}
-  void cleanMemory(void) {}
-  void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+      : // TODO(rg): Expose these
+        forcefields::ZhuPhilpott<>(8.5, 1.0) {}
+  void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 } // namespace eonc
