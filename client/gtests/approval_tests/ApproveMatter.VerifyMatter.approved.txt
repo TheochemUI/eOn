@@ -115,11 +115,11 @@ Fixed Atoms:
 Energy Variance: 
 0
 Potential Energy: 
--8.9245813
+-8.9245539
 Kinetic Energy: 
 0
 Mechanical Energy: 
--8.9245813
+-8.9245539
 Number of Free Atoms: 
 10
 Number of Fixed Atoms: 
