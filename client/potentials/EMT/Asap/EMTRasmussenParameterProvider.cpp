@@ -108,7 +108,7 @@ emt_parameters *EMTRasmussenParameterProvider::GetNewParameters(int element) {
   }
 #endif
   else {
-    throw Exception("This element isn't defined in EMT.");
+    throw std::runtime_error("This element isn't defined in EMT.");
   }
   //  else
   //      throw AsapError("Unknown element Z = ") << element;
