@@ -16,12 +16,9 @@
 #pragma once
 #include "Asap/Atoms.h"
 #include "Asap/EMT.h"
-#include "Asap/EMTDefaultParameterProvider.h"
 #include "Asap/EMTRasmussenParameterProvider.h"
 #include "Asap/SuperCell.h"
-#include "Asap/Vec.h"
 
-#include "../../Parameters.h"
 #include "../../Potential.h"
 namespace eonc {
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is
@@ -32,26 +29,17 @@ private:
   bool periodicity[3];
   std::unique_ptr<SuperCell> SuperCellObj;
   std::unique_ptr<Atoms> AtomsObj;
-  std::unique_ptr<EMTRasmussenParameterProvider> EMTParameterObj;
+  std::unique_ptr<EMTRasmussenParameterProvider> EMTRasmussenParams;
   std::unique_ptr<EMT> EMTObj;
   bool useEMTRasmussen, usePBC;
-
-  std::array<Vec, 3> tempBasis;
-  std::vector<Vec> pos;
-  std::vector<int> atomicNrsTemp;
-
   void initialize(const ForceInput &fip);
-  void cleanMemory();
 
 public:
   EffectiveMediumTheory(bool useEMTRasmussen, bool usePBC)
       : numberOfAtoms{0},
         useEMTRasmussen{useEMTRasmussen},
-        usePBC{usePBC},
-        tempBasis{},
-        pos{},
-        atomicNrsTemp{} {
-    if (!usePBC) {
+        usePBC{usePBC} {
+    if (usePBC == false) {
       throw std::invalid_argument(
           "EMT should have periodic boundary conditions in all directions");
     }
@@ -59,7 +47,6 @@ public:
     periodicity[1] = true;
     periodicity[2] = true;
   }
-
   void forceImpl(const ForceInput &, ForceOut *) override final;
 };
 
