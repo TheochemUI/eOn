@@ -1,3 +1,19 @@
+if get_option('with_lammps')
+  _args += ['-DLAMMPS_POT']
+endif
+
+if get_option('with_fortran')
+  _args += ['-DWITH_FORTRAN']
+  if get_option('with_water')
+    _args += ['-DWITH_WATER']
+  endif
+endif
+
+if get_option('with_ase_orca')
+  _args += ['-DWITH_ASE_ORCA']
+endif
+
+
 potaids = library('potaids',
                 sources : files(
                   [
@@ -104,11 +120,10 @@ potentials = [
 #   _args += ['-DWITH_XTB']
 # endif
 
-# if get_option('with_lammps')
-#   subdir('LAMMPS')
-#   potentials += [ lammps_pot ]
-#   _args += ['-DLAMMPS_POT']
-# endif
+if get_option('with_lammps')
+  subdir('LAMMPS')
+  potentials += [ lammps_pot ]
+endif
 
 # if get_option('with_python')
 #   _args += ['-DWITH_PYTHON']
@@ -140,7 +155,6 @@ if get_option('with_fortran')
   subdir('SW')
   subdir('Tersoff')
   if get_option('with_water')
-    _args += ['-DWITH_WATER']
     subdir('Water')
     potentials += [water]
     subdir('Water_H')
@@ -158,7 +172,6 @@ if get_option('with_fortran')
                  sw,
                  tersoff,
   ]
-  _args += ['-DWITH_FORTRAN']
 endif
 
 if get_option('with_ase_orca')
@@ -172,7 +185,6 @@ if get_option('with_ase_orca')
   _deps += [ pyb11f_deps ]
   subdir('ASE_ORCA')
   potentials += [ aseorca ]
-  _args += ['-DWITH_ASE_ORCA']
 endif
 
 _linkto += potentials

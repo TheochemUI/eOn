@@ -61,9 +61,9 @@
 // #include "potentials/MPIPot/MPIPot.h"
 // #endif
 
-// #ifdef LAMMPS_POT
-// #include "potentials/LAMMPS/LAMMPSPot.h"
-// #endif
+#ifdef LAMMPS_POT
+#include "potentials/LAMMPS/LAMMPSPot.h"
+#endif
 
 // #ifdef NEW_POT
 // #include "potentials/NewPot/NewPot.h"
@@ -204,12 +204,14 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
 //   }
 // #endif
 // #endif
-// #ifdef LAMMPS_POT
-//   case PotType::LAMMPS: {
-//     return (std::make_shared<LAMMPSPot>(params));
-//     break;
-//   }
-// #endif
+#ifdef LAMMPS_POT
+  case PotType::LAMMPS: {
+    auto params = LAMMPSPot::Params();
+    eonc::pot::from_toml(params, config["Potential"]["LAMMPS"]);
+    return (std::make_shared<LAMMPSPot>(params));
+    break;
+  }
+#endif
 // #ifdef EONMPI
 //   case PotType::MPI: {
 //     return (

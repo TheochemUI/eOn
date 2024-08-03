@@ -24,4 +24,13 @@ void from_toml(ASEOrcaPot::Params &p_a,
   p_a.simpleinput = tbl["ASE_ORCA"]["simpleinput"].value_or(p_a.simpleinput);
 }
 #endif
+
+#ifdef LAMMPS_POT
+void from_toml(LAMMPSPot::Params &p_a,
+               const toml::node_view<const toml::node> &tbl) {
+  p_a.MPIClientComm = tbl["MPIClientComm"].value_or(p_a.MPIClientComm);
+  p_a.LAMMPSThreads = tbl["LAMMPSThreads"].value_or(p_a.LAMMPSThreads);
+  p_a.suffix = tbl["suffix"].value_or(p_a.suffix);
+}
+#endif
 } // namespace eonc::pot
