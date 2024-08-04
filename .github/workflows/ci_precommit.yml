@@ -16,4 +16,4 @@ jobs:
     - name: Run precommit
       shell: bash -l {0}
       run: |
-        pipx run pre-commit run -a
+        pre-commit run -a
