@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "client/IOHelpers.hpp"
+#include "client/io/IOHelpers.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
 using namespace eonc;

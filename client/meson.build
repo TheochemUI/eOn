@@ -174,9 +174,47 @@ tomlib = library('toml', 'toml.cpp',
                  install: true)
 _deps += declare_dependency(link_with: tomlib)
 
+ecparser_srcs = [
+  'Parser.cc',
+  'EnvHelpers.cc',
+]
+
+ecparser = library(
+  'ecparser',
+  sources: files(ecparser_srcs),
+  include_directories: _incdirs,
+  dependencies: _deps,
+  link_with: _linkto,
+  cpp_args: _args,
+  install: true,
+)
+
+_linkto += ecparser
+
+ecmat_srcs = [
+  'Parameters.cpp', # TODO(rg) remove
+  'Element.cc',
+  'Matter.cpp',
+  'MatterHelpers.cc',
+  'HelperFunctions.cpp',
+]
+
+ecmat = library(
+  'ecmat',
+  sources: files(ecmat_srcs),
+  include_directories: _incdirs,
+  dependencies: _deps,
+  link_with: _linkto,
+  cpp_args: _args,
+  install: true,
+)
+
+_linkto += ecmat
+
+# IO operations
+subdir('io')
+
 eonclib_sources = [
-           'Parser.cc',
-           'Parameters.cpp',
            # 'Optimizer.cpp',
            # 'PrefactorJob.cpp',
            # 'LBFGS.cpp',
@@ -192,16 +230,6 @@ eonclib_sources = [
            'PointJob.cpp',
            # 'Prefactor.cpp',
            # 'ConjugateGradients.cpp',
-           'Element.cc',
-           'Matter.cpp',
-           'MatterHelpers.cc',
-           'IOHelpers.cc',
-           'io/IOBase.cc',
-           'io/ConBase.cc',
-           'io/ConWriter.cc',
-           'io/ConvelWriter.cc',
-           'io/XYZWriter.cc',
-           'io/TibbleWriter.cc',
            # 'FiniteDifferenceJob.cpp',
            # 'Lanczos.cpp',
            # 'HessianJob.cpp',
@@ -215,8 +243,6 @@ eonclib_sources = [
            # 'Hessian.cpp',
            # 'NudgedElasticBandJob.cpp',
            # 'DynamicsSaddleSearch.cpp',
-           'HelperFunctions.cpp',
-           'EnvHelpers.cc',
            # # 'StringHelpers.cc', # Template
            # 'MatrixHelpers.hpp', # Template
            # 'Dimer.cpp',
