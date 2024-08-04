@@ -5,6 +5,7 @@ ecio_srcs = [
   'ConvelWriter.cc',
   'XYZWriter.cc',
   'TibbleWriter.cc',
+  'WriteCreator.cc',
 ]
 
 ecio = library(
