@@ -14,6 +14,7 @@
 #include "client/Matter.h"
 #include "client/io/ConWriter.hpp"
 #include "client/io/ConvelWriter.hpp"
+#include "client/io/TibbleWriter.hpp"
 #include "client/io/XYZWriter.hpp"
 
 #include <iostream>
@@ -67,7 +68,8 @@ TEST_CASE("VerifyMatter2Convel") {
 TEST_CASE("VerifyMatter2Tibble") {
   auto testMatter = getTestMatter()[0];
   std::string filename = "test_output.txt";
-  testMatter.writeTibble(filename);
+  eonc::io::TibbleWriter tibWriter;
+  tibWriter.write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }

@@ -113,7 +113,6 @@ public:
 
   double maxForce(void);
 
-  void writeTibble(std::string filename);
   bool con2matter(std::string filename);
   bool con2matter(FILE *file);
   bool convel2matter(std::string filename);

@@ -197,6 +197,7 @@ eonclib_sources = [
            'io/ConWriter.cc',
            'io/ConvelWriter.cc',
            'io/XYZWriter.cc',
+           'io/TibbleWriter.cc',
            # 'FiniteDifferenceJob.cpp',
            # 'Lanczos.cpp',
            # 'HessianJob.cpp',
