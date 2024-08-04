@@ -120,7 +120,6 @@ public:
   bool convel2matter(FILE *file);
   bool matter2convel(std::string filename);
   bool matter2convel(FILE *file);
-  void matter2xyz(std::string filename, bool append = false);
   AtomMatrix getFree() const;
   VectorType getFreeV() const;
   VectorType getMasses() const;
