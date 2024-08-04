@@ -11,8 +11,8 @@
 */
 
 #include "client/io/ConBase.hpp"
-#include "Element.hpp"
-#include "client/IOHelpers.hpp"
+#include "client/Element.hpp"
+#include "client/io/IOHelpers.hpp"
 #include <iostream>
 
 namespace eonc::io {
