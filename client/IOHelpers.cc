@@ -43,7 +43,7 @@ namespace eonc::io {
  *   VectorType uniqueVec = getUniqueElements(vec);
  *   // uniqueVec now contains: 1, 2, 3, 4, 5, 6
  */
-VectorType getUniqueElements(const VectorType &vec) {
+VectorType getUniqueValues(const VectorType &vec) {
   // Map to store unique elements and their insertion order
   std::map<double, size_t> elementOrder;
   size_t order = 0;
@@ -70,6 +70,31 @@ VectorType getUniqueElements(const VectorType &vec) {
   }
 
   return uniqueVec;
+}
+
+Vector<size_t> getUniqueCounts(const Vector<size_t> &vec) {
+  // Map to store unique elements and their counts
+  std::map<double, size_t> elementCounts;
+
+  // Iterate through the input vector and count each unique element
+  for (auto i = 0; i < vec.size(); ++i) {
+    elementCounts[vec(i)]++;
+  }
+
+  // Create a new variable to hold the counts in the original order of their
+  // first appearance
+  Vector<size_t> uniqueCounts(elementCounts.size());
+  size_t index = 0;
+
+  for (auto i = 0; i < vec.size(); ++i) {
+    if (elementCounts.find(vec(i)) != elementCounts.end()) {
+      uniqueCounts(index++) = elementCounts[vec(i)];
+      // Remove the element to ensure it's counted only once
+      elementCounts.erase(vec(i));
+    }
+  }
+
+  return uniqueCounts;
 }
 
 } // namespace eonc::io
