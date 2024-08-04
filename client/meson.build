@@ -195,6 +195,7 @@ eonclib_sources = [
            'Element.cc',
            'Matter.cpp',
            'MatterHelpers.cc',
+           'IOHelpers.cc',
            'io/IOBase.cc',
            'io/ConWriter.cc',
            # 'FiniteDifferenceJob.cpp',
