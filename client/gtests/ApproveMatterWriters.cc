@@ -38,19 +38,19 @@ std::vector<eonc::Matter> getTestMatter() {
 }
 
 TEST_CASE("VerifyMatter2Con") {
-  auto testMatter = getTestMatter();
+  auto testMatter = getTestMatter()[0];
   std::string filename = "test_output.con";
-  eonc::io::ConWriter conWriter;
-  conWriter.write(testMatter[0], filename);
+  auto conWriter = std::make_unique<eonc::io::ConWriter>();
+  conWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }
 
 TEST_CASE("VerifyMatter2XYZ") {
-  auto testMatter = getTestMatter();
+  auto testMatter = getTestMatter()[0];
   std::string filename = "test_output.xyz";
-  eonc::io::XYZWriter xyzWriter;
-  xyzWriter.write(testMatter[0], filename);
+  auto XYZWriter = std::make_unique<eonc::io::XYZWriter>();
+  XYZWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }
@@ -59,8 +59,8 @@ TEST_CASE("VerifyMatter2Convel") {
   auto testMatter = getTestMatter()[0];
   testMatter.setVelocities(testMatter.getPositionsFree().array() + 3);
   std::string filename = "test_output.con";
-  eonc::io::ConvelWriter conVWriter;
-  conVWriter.write(testMatter, filename);
+  auto ConvelWriter = std::make_unique<eonc::io::ConvelWriter>();
+  ConvelWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }
@@ -68,8 +68,8 @@ TEST_CASE("VerifyMatter2Convel") {
 TEST_CASE("VerifyMatter2Tibble") {
   auto testMatter = getTestMatter()[0];
   std::string filename = "test_output.txt";
-  eonc::io::TibbleWriter tibWriter;
-  tibWriter.write(testMatter, filename);
+  auto TibbleWriter = std::make_unique<eonc::io::TibbleWriter>();
+  TibbleWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }

@@ -18,20 +18,22 @@
 
 namespace eonc::io {
 
-// Base class for writing
-template <typename Derived> class WriteBase {
+class WriteBase {
 public:
-  bool write(const Matter &matter, const std::string &filename,
-             bool append = false) {
-    std::ofstream file;
-    ensureFileOpen(file, filename, append);
+  virtual bool write(const Matter &, const std::string &, bool = false) = 0;
+};
 
-    if (!file.is_open()) {
-      return false;
-    }
+template <typename T> class Writer : public WriteBase {
+public:
+  // To be implemented by the child classes
+  virtual bool writeImpl(const Matter &, std::ofstream &) = 0;
 
-    bool success = static_cast<Derived *>(this)->writeImpl(matter, file);
-    file.close();
+  bool write(const Matter &mat, const std::string &fname,
+             bool append = false) override final {
+    std::ofstream fout;
+    ensureFileOpen(fout, fname, append);
+    bool success = static_cast<T *>(this)->writeImpl(mat, fout);
+    fout.close();
     return success;
   }
 };

@@ -14,9 +14,9 @@
 #include "client/io/IOBase.hpp"
 
 namespace eonc::io {
-class XYZWriter : public WriteBase<XYZWriter> {
+class XYZWriter final : public Writer<XYZWriter> {
 public:
-  bool writeImpl(const Matter &mat, std::ofstream &fout);
+  bool writeImpl(const Matter &mat, std::ofstream &fout) override;
 };
 
 } // namespace eonc::io

@@ -14,9 +14,9 @@
 #include "client/io/IOBase.hpp"
 
 namespace eonc::io {
-class TibbleWriter : public WriteBase<TibbleWriter> {
+class TibbleWriter final : public Writer<TibbleWriter> {
 public:
-  bool writeImpl(const Matter &mat, std::ofstream &fout);
+  bool writeImpl(const Matter &mat, std::ofstream &fout) override;
 };
 
 } // namespace eonc::io

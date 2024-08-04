@@ -15,9 +15,9 @@
 #include "client/io/IOBase.hpp"
 
 namespace eonc::io {
-class ConvelWriter : public WriteBase<ConvelWriter>, public ConBaseWriter {
+class ConvelWriter final : public Writer<ConvelWriter>, public ConBaseWriter {
 public:
-  bool writeImpl(const Matter &, std::ofstream &);
+  bool writeImpl(const Matter &, std::ofstream &) override;
 };
 
 } // namespace eonc::io
