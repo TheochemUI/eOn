@@ -32,8 +32,8 @@ bool ConWriter::writeImpl(const Matter &mat, std::ofstream &fout) {
   std::vector<double> masses;
   std::vector<size_t> atomicNumbers;
 
-  componentStartIndices.reserve(numAtoms /
-                                2); // Estimate to reduce reallocations
+  // Estimate to reduce reallocations
+  componentStartIndices.reserve(numAtoms / 2);
   masses.reserve(numAtoms / 2);
   atomicNumbers.reserve(numAtoms / 2);
 
@@ -55,7 +55,8 @@ bool ConWriter::writeImpl(const Matter &mat, std::ofstream &fout) {
   fout << preHeader[0] << preHeader[1];
 
   Eigen::Vector3d lengths = mat.cell.rowwise().norm();
-  fout << fmt::format("{}\t{}\t{}\n", lengths(0), lengths(1), lengths(2));
+  fout << fmt::format("{:.6f} {:.6f} {:.6f}\n", lengths(0), lengths(1),
+                      lengths(2));
 
   Eigen::Vector3d angles;
   angles(0) = std::acos(mat.cell.row(0).dot(mat.cell.row(1)) /
@@ -67,27 +68,37 @@ bool ConWriter::writeImpl(const Matter &mat, std::ofstream &fout) {
   angles(2) = std::acos(mat.cell.row(1).dot(mat.cell.row(2)) /
                         (lengths(1) * lengths(2))) *
               180 / M_PI;
-  fout << fmt::format("{}\t{}\t{}\n", angles(0), angles(1), angles(2));
+  fout << fmt::format("{:.6f} {:.6f} {:.6f}\n", angles(0), angles(1),
+                      angles(2));
 
   fout << postHeader[0] << postHeader[1];
 
   fout << numComponents << "\n";
   for (size_t j = 0; j < numComponents; ++j) {
-    fout << (componentStartIndices[j + 1] - componentStartIndices[j]) << " ";
+    fout << (componentStartIndices[j + 1] - componentStartIndices[j]);
+    if (j < numComponents - 1) {
+      fout << " ";
+    }
   }
   fout << "\n";
-  for (double mass : masses) {
-    fout << mass << " ";
+  for (size_t j = 0; j < numComponents; ++j) {
+    fout << fmt::format("{:.6f}", masses[j]);
+    if (j < numComponents - 1) {
+      fout << " ";
+    }
   }
   fout << "\n";
   for (size_t j = 0; j < numComponents; ++j) {
     fout << atomicNumber2symbol(atomicNumbers[j]) << "\n";
-    fout << fmt::format("Coordinates of Component {}\n", j + 1);
+    fout << fmt::format("Coordinates of component{:4}\n", j + 1);
     for (size_t i = componentStartIndices[j]; i < componentStartIndices[j + 1];
          ++i) {
-      fout << fmt::format("{:.17f} {:.17f} {:.17f} {} {:4}\n",
-                          mat.getPosition(i, 0), mat.getPosition(i, 1),
-                          mat.getPosition(i, 2), mat.getFixed(i), i);
+      fout << fmt::format("{:.6f} {:.6f} {:.6f} {} {}", mat.getPosition(i, 0),
+                          mat.getPosition(i, 1), mat.getPosition(i, 2),
+                          mat.getFixed(i), i + 1);
+      if (j < numComponents - 1) {
+        fout << "\n";
+      }
     }
   }
 
