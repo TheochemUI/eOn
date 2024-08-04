@@ -56,7 +56,7 @@ TEST_CASE("VerifyMatter2XYZ") {
 TEST_CASE("VerifyMatter2Convel") {
   auto testMatter = getTestMatter()[0];
   testMatter.setVelocities(testMatter.getPositionsFree().array() + 3);
-  std::string filename = "testout.con";
+  std::string filename = "test_output.con";
   eonc::io::ConvelWriter conVWriter;
   conVWriter.write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
