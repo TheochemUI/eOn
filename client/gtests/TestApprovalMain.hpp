@@ -14,5 +14,5 @@
 
 // This puts "received" and "approved" files in approval_tests/ sub-directory,
 // keeping the test source directory tidy:
-auto directoryDisposer =
+const auto directoryDisposer =
     ApprovalTests::Approvals::useApprovalsSubdirectory("approval_tests");

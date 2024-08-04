@@ -9,9 +9,9 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "BaseStructures.h"
-#include "Parser.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "client/BaseStructures.h"
+#include "client/Parser.hpp"
 
 using namespace eonc;
 

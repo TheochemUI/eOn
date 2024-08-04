@@ -9,12 +9,13 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ApprovalTests.hpp"
-#include "Matter.h"
-#include "catch2/catch_amalgamated.hpp"
+#include "TestApprovalMain.hpp"
+
+#include "client/Matter.h"
 #include "client/io/ConWriter.hpp"
+#include "client/io/ConvelWriter.hpp"
 #include "client/io/XYZWriter.hpp"
-#include "io/ConvelWriter.hpp"
+
 #include <iostream>
 #include <string>
 
