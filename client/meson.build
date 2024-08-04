@@ -312,6 +312,7 @@ if get_option('with_tests')
     test_array = [#
       ['test_element', 'ElementTest.cc', ''],
       ['test_enum', 'EnumTest.cc', ''],
+      ['test_iohelp', 'IOHelpersTest.cc', ''],
       ['test_potcount', 'PotCountTest.cc', '../saddle_search'],
       # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
       # ['strparse_run', 'StringHelpersTest.cpp', ''],
