@@ -42,16 +42,16 @@ bool TibbleWriter::writeImpl(const Matter &mat, std::ofstream &fout) {
   const AtomMatrix pos = mat.getPositions();
   fout << "x y z fx fy fz energy mass symbol atmID fixed\n";
   for (size_t idx{0}; idx < nAtoms; idx++) {
-    fout << fmt::format(
-        "{x} {y} {z} {fx} {fy} {fz} {energy} {mass} {symbol} {idx} {fixed}\n",
-        "x"_a = pos.row(idx)[0], "y"_a = pos.row(idx)[1],
-        "z"_a = pos.row(idx)[2], "fx"_a = fSys.row(idx)[0],
-        "fy"_a = fSys.row(idx)[1], "fz"_a = fSys.row(idx)[2], "energy"_a = eSys,
-        "mass"_a = mat.getMass(idx),
-        "symbol"_a = atomicNumber2symbol(mat.getAtomicNr(idx)),
-        "idx"_a = (idx + 1),
-        /* NOTE(rg): idx MAY not be the same id as before */
-        "fixed"_a = mat.getFixed(idx));
+    fout << fmt::format("{x:.6f} {y:.6f} {z:.6f} {fx:.6f} {fy:.6f} {fz:.6f} "
+                        "{energy:.6f} {mass:.6f} {symbol} {idx} {fixed}\n",
+                        "x"_a = pos.row(idx)[0], "y"_a = pos.row(idx)[1],
+                        "z"_a = pos.row(idx)[2], "fx"_a = fSys.row(idx)[0],
+                        "fy"_a = fSys.row(idx)[1], "fz"_a = fSys.row(idx)[2],
+                        "energy"_a = eSys, "mass"_a = mat.getMass(idx),
+                        "symbol"_a = atomicNumber2symbol(mat.getAtomicNr(idx)),
+                        "idx"_a = (idx + 1),
+                        /* NOTE(rg): idx MAY not be the same id as before */
+                        "fixed"_a = mat.getFixed(idx));
   }
 
   return true;
