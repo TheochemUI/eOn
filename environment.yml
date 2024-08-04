@@ -24,7 +24,9 @@ dependencies:
   - abseil-cpp
   # Python helpers
   - pipx # conda-lock pdm towncrier
+  - pre-commit
   # Lint, handled by pre-commit
   - cppcheck
   - cpplint
+  - clang-format
   - ruff
