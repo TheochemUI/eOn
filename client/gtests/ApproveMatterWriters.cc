@@ -14,6 +14,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "client/io/ConWriter.hpp"
 #include "client/io/XYZWriter.hpp"
+#include "io/ConvelWriter.hpp"
 #include <iostream>
 #include <string>
 
@@ -48,6 +49,16 @@ TEST_CASE("VerifyMatter2XYZ") {
   std::string filename = "test_output.xyz";
   eonc::io::XYZWriter xyzWriter;
   xyzWriter.write(testMatter[0], filename);
+  std::string fileContent = readFileContent(filename);
+  ApprovalTests::Approvals::verify(fileContent);
+}
+
+TEST_CASE("VerifyMatter2Convel") {
+  auto testMatter = getTestMatter()[0];
+  testMatter.setVelocities(testMatter.getPositionsFree().array() + 3);
+  std::string filename = "testout.con";
+  eonc::io::ConvelWriter conVWriter;
+  conVWriter.write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }
