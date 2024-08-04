@@ -9,9 +9,9 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Matter.h"
 #include "catch2/catch_amalgamated.hpp"
-#include "thirdparty/toml.hpp"
+#include "client/Matter.h"
+#include "client/thirdparty/toml.hpp"
 
 using namespace eonc;
 
