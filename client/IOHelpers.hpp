@@ -13,5 +13,6 @@
 #include "client/Eigen.h"
 
 namespace eonc::io {
-VectorType getUniqueElements(const VectorType &vec);
-}
+VectorType getUniqueValues(const VectorType &vec);
+Vector<size_t> getUniqueCounts(const Vector<size_t> &vec);
+} // namespace eonc::io
