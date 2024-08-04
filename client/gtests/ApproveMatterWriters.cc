@@ -30,10 +30,6 @@ std::vector<eonc::Matter> getTestMatter() {
   auto matter = eonc::Matter(pot_default);
   std::string confile("pos.con");
   matter.con2matter(confile);
-  for (size_t idx = 0; idx < 3; idx++) {
-    matter.setFixed(idx, true);
-  }
-
   return {matter};
 }
 
