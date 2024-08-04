@@ -345,13 +345,6 @@ int Parameters::load(const std::string &filename) {
       helper_functions::random(main.randomSeed);
     }
 
-    // [Potential]
-    loadPot(config);
-    // [AMS] and [AMS_ENV]
-    loadAMSParams(config);
-    // [CatLearn]
-    loadCatLearnParams(config);
-
     // Process Search section
     procsearch.minimizeFirst =
         config["Process_Search"]["minimize_first"].value_or(true);
@@ -790,105 +783,12 @@ int Parameters::load(const std::string &filename) {
       return 1;
     }
 
-    if (pot.potential == PotType::AMS || pot.potential == PotType::AMS_IO) {
-      if (ams.forcefield.empty() && ams.model.empty() && ams.xc.empty()) {
-        spdlog::error("[AMS] Must provide at least forcefield or model or xc"s);
-        return 1;
-      }
-
-      if (!ams.forcefield.empty() && !ams.model.empty() && !ams.xc.empty()) {
-        spdlog::error("[AMS] Must provide either forcefield or model"s);
-        return 1;
-      }
-    }
-
   } catch (const std::exception &e) {
     spdlog::error("Error parsing the configuration file: {}", e.what());
     return 1;
   }
 
   return 0;
-}
-
-void Parameters::loadPot(const toml::table &config) {
-  if (config.contains("Potential") && config["Potential"].is_table()) {
-    const auto &potentialTable = *config["Potential"].as_table();
-
-    pot.potential = magic_enum::enum_cast<PotType>(
-                        potentialTable["potential"].value_or("LJ"s),
-                        magic_enum::case_insensitive)
-                        .value_or(PotType::LJ);
-    pot.MPIPollPeriod =
-        potentialTable["mpi_poll_period"].value_or(pot.MPIPollPeriod);
-    pot.LAMMPSLogging =
-        potentialTable["lammps_logging"].value_or(pot.LAMMPSLogging);
-    pot.LAMMPSThreads =
-        potentialTable["lammps_threads"].value_or(pot.LAMMPSThreads);
-    pot.EMTRasmussen =
-        potentialTable["emt_rasmussen"].value_or(pot.EMTRasmussen);
-    pot.extPotPath = potentialTable["ext_pot_path"].value_or(pot.extPotPath);
-    pot.LogPotential = potentialTable["log_potential"].value_or(
-        pot.potential == PotType::MPI || pot.potential == PotType::VASP ||
-        pot.potential == PotType::BOPFOX || pot.potential == PotType::BOP);
-
-    // Load other parameters if they exist
-    loadXTBParams(potentialTable);
-  }
-}
-
-void Parameters::loadXTBParams(const toml::table &config) {
-  if (config.contains("XTBPot") && config["XTBPot"].is_table()) {
-    const auto &XTBPotTable = *config["XTBPot"].as_table();
-
-    pot.xtbp.paramset = XTBPotTable["param"].value_or(pot.xtbp.paramset);
-    pot.xtbp.acc = XTBPotTable["accuracy"].value_or(pot.xtbp.acc);
-    pot.xtbp.elec_temperature =
-        XTBPotTable["electronic_temperature"].value_or(pot.xtbp.acc);
-    pot.xtbp.maxiter = XTBPotTable["max_iterations"].value_or(pot.xtbp.maxiter);
-  }
-}
-
-void Parameters::loadAMSParams(const toml::table &config) {
-  if (config.contains("AMS") && config["AMS"].is_table()) {
-    const auto &amsTable = *config["AMS"].as_table();
-
-    ams.engine = amsTable["engine"].value_or(ams.engine);
-    ams.forcefield = amsTable["forcefield"].value_or(ams.forcefield);
-    ams.model = amsTable["model"].value_or(ams.model);
-    ams.resources = amsTable["resources"].value_or(ams.resources);
-    ams.xc = amsTable["xc"].value_or(ams.xc);
-    ams.basis = amsTable["basis"].value_or(ams.basis);
-  }
-
-  if (config.contains("AMS_ENV") && config["AMS_ENV"].is_table()) {
-    const auto &envTable = *config["AMS_ENV"].as_table();
-
-    ams.amsenv.amshome = envTable["amshome"].value_or(ams.amsenv.amshome);
-    ams.amsenv.scm_tmpdir =
-        envTable["scm_tmpdir"].value_or(ams.amsenv.scm_tmpdir);
-    ams.amsenv.scmlicense =
-        envTable["scmlicense"].value_or(ams.amsenv.scmlicense);
-    ams.amsenv.scm_pythondir =
-        envTable["scm_pythondir"].value_or(ams.amsenv.scm_pythondir);
-    ams.amsenv.amsbin = envTable["amsbin"].value_or(ams.amsenv.amsbin);
-    ams.amsenv.amsresources =
-        envTable["amsresources"].value_or(ams.amsenv.amsresources);
-  }
-}
-
-void Parameters::loadCatLearnParams(const toml::table &config) {
-  if (config.contains("CatLearn") && config["CatLearn"].is_table()) {
-    // const auto &aseOrcaTable = *config["CatLearn"].as_table();
-    // Case sensitive!!
-    catl.path = config["CatLearn"]["path"].value_or(catl.path);
-    catl.model = config["CatLearn"]["model"].value_or(catl.model);
-    catl.prior = config["CatLearn"]["prior"].value_or(catl.prior);
-    catl.use_deriv =
-        config["CatLearn"]["use_derivative"].value_or(catl.use_deriv);
-    catl.parallel = config["CatLearn"]["parallel"].value_or(catl.parallel);
-    catl.use_deriv =
-        config["CatLearn"]["use_fingerprint"].value_or(catl.use_deriv);
-  }
 }
 
 } // namespace eonc

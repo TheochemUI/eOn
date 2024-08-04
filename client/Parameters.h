@@ -12,23 +12,15 @@
 #pragma once
 
 #include "BaseStructures.h"
-#include "definitions/PotParams.hpp"
 #include <string>
 
 #ifdef EONMPI
 #include "mpi.h"
 #endif
 
-#include "thirdparty/toml.hpp"
 namespace eonc {
 /** Contains all runtime parameters as parsed at start-up.*/
 class Parameters {
-private:
-  void loadPot(const toml::table &config);
-  void loadAMSParams(const toml::table &config);
-  void loadXTBParams(const toml::table &config);
-  void loadCatLearnParams(const toml::table &config);
-
 public:
   Parameters();
   int load(const std::string &filename);
@@ -61,11 +53,7 @@ public:
     bool EMTRasmussen{false};
     bool LogPotential{false};
     std::string extPotPath{"./ext_pot"s};
-    eonc::def::XTBParams xtbp;
   } pot;
-
-  eonc::def::AMSParams ams;
-  eonc::def::CatLearnParams catl;
 
   struct ProcessSearch {
     bool minimizeFirst;
