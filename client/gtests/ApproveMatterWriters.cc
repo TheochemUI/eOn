@@ -12,10 +12,7 @@
 #include "TestApprovalMain.hpp"
 
 #include "client/Matter.h"
-#include "client/io/ConWriter.hpp"
-#include "client/io/ConvelWriter.hpp"
-#include "client/io/TibbleWriter.hpp"
-#include "client/io/XYZWriter.hpp"
+#include "client/io/WriteCreator.hpp"
 
 #include <iostream>
 #include <string>
@@ -39,8 +36,9 @@ std::vector<eonc::Matter> getTestMatter() {
 
 TEST_CASE("VerifyMatter2Con") {
   auto testMatter = getTestMatter()[0];
+  const auto config = toml::table{{"Main", toml::table{{"write", "con"}}}};
   std::string filename = "test_output.con";
-  auto conWriter = std::make_unique<eonc::io::ConWriter>();
+  auto conWriter = eonc::io::mkWriter(config);
   conWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
@@ -48,8 +46,9 @@ TEST_CASE("VerifyMatter2Con") {
 
 TEST_CASE("VerifyMatter2XYZ") {
   auto testMatter = getTestMatter()[0];
+  const auto config = toml::table{{"Main", toml::table{{"write", "xyz"}}}};
   std::string filename = "test_output.xyz";
-  auto XYZWriter = std::make_unique<eonc::io::XYZWriter>();
+  auto XYZWriter = eonc::io::mkWriter(config);
   XYZWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
@@ -57,9 +56,10 @@ TEST_CASE("VerifyMatter2XYZ") {
 
 TEST_CASE("VerifyMatter2Convel") {
   auto testMatter = getTestMatter()[0];
+  const auto config = toml::table{{"Main", toml::table{{"write", "convel"}}}};
   testMatter.setVelocities(testMatter.getPositionsFree().array() + 3);
   std::string filename = "test_output.con";
-  auto ConvelWriter = std::make_unique<eonc::io::ConvelWriter>();
+  auto ConvelWriter = eonc::io::mkWriter(config);
   ConvelWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
@@ -67,8 +67,9 @@ TEST_CASE("VerifyMatter2Convel") {
 
 TEST_CASE("VerifyMatter2Tibble") {
   auto testMatter = getTestMatter()[0];
+  const auto config = toml::table{{"Main", toml::table{{"write", "tibble"}}}};
   std::string filename = "test_output.txt";
-  auto TibbleWriter = std::make_unique<eonc::io::TibbleWriter>();
+  auto TibbleWriter = eonc::io::mkWriter(config);
   TibbleWriter->write(testMatter, filename);
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
