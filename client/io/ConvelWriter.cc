@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "client/io/ConWriter.hpp"
+#include "client/io/ConvelWriter.hpp"
 
 namespace eonc::io {
 
@@ -31,8 +31,8 @@ namespace eonc::io {
  *       The function uses unique masses and atomic numbers while preserving the
  *       order of their first occurrences.
  */
-bool ConWriter::writeImpl(const Matter &mat, std::ofstream &fout) {
-  return writeBase(mat, fout, false);
+bool ConvelWriter::writeImpl(const Matter &mat, std::ofstream &fout) {
+  return writeBase(mat, fout, true);
 }
 
 } // namespace eonc::io
