@@ -15,6 +15,7 @@
 #include "MatterHelpers.hpp"
 #include "Parameters.h"
 #include "Potential.h"
+#include "io/ConWriter.hpp"
 #include "version.h"
 
 #include <cstdlib>
@@ -33,7 +34,8 @@ void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
   } else {
     std::cout << "No output file specified, not saving" << std::endl;
   }
-  matter->matter2con(confileout);
+  eonc::io::ConWriter con;
+  con.write(*matter, confileout);
 }
 
 void commandLine(int argc, char **argv) {
