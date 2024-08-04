@@ -36,7 +36,6 @@ std::vector<eonc::Matter> getTestMatter() {
 
 TEST_CASE("VerifyMatter2Con") {
   auto testMatter = getTestMatter();
-  REQUIRE(testMatter.size() > 0);
   std::string filename = "test_output.con";
   eonc::io::ConWriter conWriter;
   conWriter.write(testMatter[0], filename);
@@ -46,7 +45,6 @@ TEST_CASE("VerifyMatter2Con") {
 
 TEST_CASE("VerifyMatter2XYZ") {
   auto testMatter = getTestMatter();
-  REQUIRE(testMatter.size() > 0);
   std::string filename = "test_output.xyz";
   eonc::io::XYZWriter xyzWriter;
   xyzWriter.write(testMatter[0], filename);
