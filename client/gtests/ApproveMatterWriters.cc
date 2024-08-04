@@ -63,3 +63,11 @@ TEST_CASE("VerifyMatter2Convel") {
   std::string fileContent = readFileContent(filename);
   ApprovalTests::Approvals::verify(fileContent);
 }
+
+TEST_CASE("VerifyMatter2Tibble") {
+  auto testMatter = getTestMatter()[0];
+  std::string filename = "test_output.txt";
+  testMatter.writeTibble(filename);
+  std::string fileContent = readFileContent(filename);
+  ApprovalTests::Approvals::verify(fileContent);
+}
