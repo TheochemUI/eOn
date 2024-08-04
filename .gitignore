@@ -654,3 +654,4 @@ compile_commands.json
 !/.vscode/extensions.json
 !/.vscode/*.code-snippets
 !/client/gtests
+!/client/gtests/approval_tests
