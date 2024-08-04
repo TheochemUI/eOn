@@ -1,6 +1,5 @@
 ecio_srcs = [
   'IOHelpers.cc',
-  'IOBase.cc',
   'ConBase.cc',
   'ConWriter.cc',
   'ConvelWriter.cc',

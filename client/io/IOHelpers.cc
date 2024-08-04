@@ -10,6 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "IOHelpers.hpp"
+#include <fmt/core.h>
+#include <fstream>
 #include <map>
 
 namespace eonc::io {
@@ -95,6 +97,57 @@ Vector<size_t> getUniqueCounts(const Vector<size_t> &vec) {
   }
 
   return uniqueCounts;
+}
+
+/**
+ * @brief Ensures that the output file stream is open.
+ *
+ * This function attempts to open the specified output file stream.
+ * If the `append` flag is true, it opens the file in append mode.
+ * If the file does not exist, it throws an exception.
+ * If the `append` flag is false, it opens the file in truncate mode.
+ *
+ * @param file The output file stream to be opened.
+ * @param filename The path of the file to be opened.
+ * @param append Flag indicating whether to open the file in append mode.
+ *
+ * @throws std::runtime_error If the file does not exist when appending.
+ */
+void ensureFileOpen(std::ofstream &file, const std::filesystem::path &filename,
+                    bool append) {
+  if (append) {
+    file.open(filename, std::ios::out | std::ios::app);
+    if (!file.is_open()) {
+      throw std::runtime_error(
+          fmt::format("Cannot open file {} for appending", filename.c_str()));
+    }
+  } else {
+    file.open(filename, std::ios::out | std::ios::trunc);
+    if (!file.is_open()) {
+      throw std::runtime_error(
+          fmt::format("Cannot open file {} for writing", filename.c_str()));
+    }
+  }
+}
+
+/**
+ * @brief Ensures that the input file stream is open.
+ *
+ * This function attempts to open the specified input file stream.
+ * If the file does not exist or cannot be opened, it throws an exception.
+ *
+ * @param file The input file stream to be opened.
+ * @param filename The path of the file to be opened.
+ *
+ * @throws std::runtime_error If the file does not exist or cannot be opened.
+ */
+void ensureFileOpen(std::ifstream &file,
+                    const std::filesystem::path &filename) {
+  file.open(filename, std::ios::in);
+  if (!file.is_open()) {
+    throw std::runtime_error(
+        fmt::format("Cannot open file {}", filename.c_str()));
+  }
 }
 
 } // namespace eonc::io

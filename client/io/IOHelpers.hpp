@@ -11,8 +11,12 @@
 */
 #pragma once
 #include "client/Eigen.h"
+#include <filesystem>
 
 namespace eonc::io {
-VectorType getUniqueValues(const VectorType &vec);
-Vector<size_t> getUniqueCounts(const Vector<size_t> &vec);
+VectorType getUniqueValues(const VectorType &);
+Vector<size_t> getUniqueCounts(const Vector<size_t> &);
+
+void ensureFileOpen(std::ofstream &, const std::filesystem::path &, bool);
+void ensureFileOpen(std::ifstream &, const std::filesystem::path &);
 } // namespace eonc::io
