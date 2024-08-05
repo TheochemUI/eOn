@@ -67,6 +67,13 @@ repos:
       language: system
       types_or: [c, c++, cuda]
       args: ["-fallback-style=none", "-style=file", "-i"]
+    - id: meson-format
+      name: meson format
+      entry: meson
+      language: system
+      types: [meson]
+      files: \.build$
+      args: ["format", "-i"]
     # - id: ruff-lint-fixes
     #   name: ruff check
     #   entry: ruff
