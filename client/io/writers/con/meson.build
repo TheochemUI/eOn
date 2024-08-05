@@ -1,10 +1,6 @@
 _linkto += library(
     'ecio_con',
-    sources: [
-      'ConBase.cc',
-      'ConWriter.cc',
-      'ConvelWriter.cc',
-    ],
+    sources: ['ConBase.cc', 'ConWriter.cc', 'ConvelWriter.cc'],
     include_directories: _incdirs,
     dependencies: _deps,
     link_with: _linkto,
