@@ -1,15 +1,12 @@
-potaids = library('potaids',
-                sources : files(
-                  [
-                    'PotHelpers.cc',
-                    'ParseTOML.cc',
-                  ]
-                ),
-                include_directories: _incdirs,
-                dependencies : _deps,
-                link_with : _linkto,
-                cpp_args : _args,
-                install : true)
+potaids = library(
+    'potaids',
+    sources: files('ParseTOML.cc', 'PotHelpers.cc'),
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
+)
 _linkto += potaids
 
 # subdir('EAM')
@@ -22,15 +19,15 @@ subdir('Morse')
 # subdir('NewPot')
 
 potentials = [
-               # eam,
-               emt,
-               extpot,
-               # imd,
-               lennard_jones,
-               # lennard_jones_cluster,
-               morse,
-               # newpot
-             ]
+# eam,
+    emt,
+    extpot,
+    # imd,
+    lennard_jones,
+    # lennard_jones_cluster,
+    morse,
+    # newpot
+]
 
 # if get_option('with_gprd')
 #   # subdir('GPRPotential')
@@ -53,10 +50,10 @@ potentials = [
 # endif
 
 if get_option('with_vasp')
-  if host_system != 'windows'
-    subdir('VASP')
-    potentials += [ vasp ]
-  endif
+    if host_system != 'windows'
+        subdir('VASP')
+        potentials += [vasp]
+    endif
 endif
 
 # if get_option('with_ams')
@@ -97,8 +94,8 @@ endif
 # endif
 
 if get_option('with_lammps')
-  subdir('LAMMPS')
-  potentials += [ lammps_pot ]
+    subdir('LAMMPS')
+    potentials += [lammps_pot]
 endif
 
 # if get_option('with_python')
@@ -124,43 +121,37 @@ endif
 # endif
 
 if get_option('with_fortran')
-  subdir('Aluminum')
-  subdir('EDIP')
-  subdir('FeHe')
-  subdir('Lenosky')
-  subdir('SW')
-  subdir('Tersoff')
-  if get_option('with_water')
-    subdir('Water')
-    potentials += [water]
-    subdir('Water_H')
-    potentials += [water_h]
-    subdir('Water_Pt')
-    potentials += [water_pt]
-  endif
-  subdir('CuH2')
-  potentials += [
-                 aluminum,
-                 cuh2,
-                 edip,
-                 fehe,
-                 lenosky,
-                 sw,
-                 tersoff,
-  ]
+    subdir('Aluminum')
+    subdir('EDIP')
+    subdir('FeHe')
+    subdir('Lenosky')
+    subdir('SW')
+    subdir('Tersoff')
+    if get_option('with_water')
+        subdir('Water')
+        potentials += [water]
+        subdir('Water_H')
+        potentials += [water_h]
+        subdir('Water_Pt')
+        potentials += [water_pt]
+    endif
+    subdir('CuH2')
+    potentials += [aluminum, cuh2, edip, fehe, lenosky, sw, tersoff]
 endif
 
 if get_option('with_ase_orca')
-  # TODO: Cleanup, used for Catlearn too
-  # Embedding the interpreter
-  py = import('python').find_installation()
-  python_dep = py.dependency(embed: true, required: true)
-  pyb11f_deps = [ python_dep,
-                  dependency('pybind11'),
-                  declare_dependency(link_args: '-lstdc++') ]
-  _deps += [ pyb11f_deps ]
-  subdir('ASE_ORCA')
-  potentials += [ aseorca ]
+# TODO: Cleanup, used for Catlearn too
+    # Embedding the interpreter
+    py = import('python').find_installation()
+    python_dep = py.dependency(embed: true, required: true)
+    pyb11f_deps = [
+        python_dep,
+        dependency('pybind11'),
+        declare_dependency(link_args: '-lstdc++'),
+    ]
+    _deps += [pyb11f_deps]
+    subdir('ASE_ORCA')
+    potentials += [aseorca]
 endif
 
 _linkto += potentials
