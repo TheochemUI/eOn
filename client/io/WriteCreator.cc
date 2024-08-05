@@ -1,10 +1,10 @@
 #include "client/Parser.hpp"
 
-#include "client/io/ConWriter.hpp"
-#include "client/io/ConvelWriter.hpp"
-#include "client/io/TibbleWriter.hpp"
 #include "client/io/WriteCreator.hpp"
-#include "client/io/XYZWriter.hpp"
+#include "client/io/writers/con/ConWriter.hpp"
+#include "client/io/writers/con/ConvelWriter.hpp"
+#include "client/io/writers/tibble/TibbleWriter.hpp"
+#include "client/io/writers/xyz/XYZWriter.hpp"
 
 namespace eonc::io {
 std::unique_ptr<WriteBase> mkWriter(const toml::table &config) {

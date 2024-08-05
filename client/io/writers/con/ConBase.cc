@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "client/io/ConBase.hpp"
+#include "client/io/writers/con/ConBase.hpp"
 #include "client/Element.hpp"
 #include "client/io/IOHelpers.hpp"
 #include <iostream>
