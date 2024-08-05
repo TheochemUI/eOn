@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "client/io/TibbleWriter.hpp"
+#include "client/io/writers/tibble/TibbleWriter.hpp"
 #include "client/Element.hpp"
 
 namespace eonc::io {

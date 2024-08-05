@@ -1,20 +1,23 @@
-ecio_srcs = [
-  'IOHelpers.cc',
-  'ConBase.cc',
-  'ConWriter.cc',
-  'ConvelWriter.cc',
-  'XYZWriter.cc',
-  'TibbleWriter.cc',
-  'WriteCreator.cc',
-]
-
-ecio = library(
-  'ecio',
-  sources : files(ecio_srcs),
-  include_directories: _incdirs,
-  dependencies : _deps,
-  link_with : _linkto,
-  cpp_args : _args,
-  install : true
+_linkto += library(
+    'ecio_helpers',
+    'IOHelpers.cc',
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
 )
-_linkto += ecio
+
+subdir('writers')
+
+# Creator function
+
+_linkto += library(
+    'ecio_creat',
+    'WriteCreator.cc',
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
+)

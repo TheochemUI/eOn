@@ -15,7 +15,7 @@
 #include "MatterHelpers.hpp"
 #include "Parameters.h"
 #include "Potential.h"
-#include "io/ConWriter.hpp"
+#include "io/WriteCreator.hpp"
 #include "version.h"
 
 #include <cstdlib>
@@ -34,8 +34,9 @@ void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
   } else {
     std::cout << "No output file specified, not saving" << std::endl;
   }
-  eonc::io::ConWriter con;
-  con.write(*matter, confileout);
+  const auto config = toml::table{{"Main", toml::table{{"write", "con"}}}};
+  auto con = eonc::io::mkWriter(config);
+  con->write(*matter, confileout);
 }
 
 void commandLine(int argc, char **argv) {

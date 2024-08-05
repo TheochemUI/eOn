@@ -11,11 +11,11 @@
 */
 #pragma once
 #include "client/Matter.h"
-#include "client/io/ConBase.hpp"
 #include "client/io/IOBase.hpp"
+#include "client/io/writers/con/ConBase.hpp"
 
 namespace eonc::io {
-class ConWriter final : public Writer<ConWriter>, public ConBaseWriter {
+class ConvelWriter final : public Writer<ConvelWriter>, public ConBaseWriter {
 public:
   bool writeImpl(const Matter &, std::ofstream &) override;
 };

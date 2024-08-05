@@ -10,9 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "client/io/XYZWriter.hpp"
+#include "client/io/writers/xyz/XYZWriter.hpp"
 #include "client/Element.hpp"
-#include <iostream>
 
 namespace eonc::io {
 
