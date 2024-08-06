@@ -138,8 +138,7 @@ void commandLine(int argc, char **argv) {
         toml::table{{"Potential", toml::table{{"potential", "unknown"}}}};
     if (!cflag) {
       tbl["Potential"].as_table()->insert_or_assign("potential", potential);
-    }
-    if (sflag) {
+    } else {
       // For structure comparison, we need only to ensure a potential exists..
       tbl["Potential"].as_table()->insert_or_assign("potential", "lj");
     }
@@ -173,7 +172,7 @@ void commandLine(int argc, char **argv) {
         throw std::runtime_error("Comparison needs two files!");
       }
       auto mat2 = Matter(pot);
-      eonc::mat::from_con(mat2, confile);
+      eonc::mat::from_con(mat2, confileout);
       auto tbl = toml::table{
           {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
       auto sc = eonc::mat::StructComparer(tbl);
