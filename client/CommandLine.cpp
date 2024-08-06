@@ -15,6 +15,7 @@
 #include "Potential.h"
 #include "client/io/WriteCreator.hpp"
 #include "client/matter/Matter.h"
+#include "client/matter/MatterCreator.hpp"
 #include "client/matter/StructComparer.hpp"
 #include "version.h"
 
@@ -153,6 +154,7 @@ void commandLine(int argc, char **argv) {
     auto pot = makePotential(tbl);
     auto mat1 = Matter(pot);
     mat1.con2matter(confile);
+    eonc::mat::from_con(mat1, confile);
 
     string confileout;
     if (unmatched.size() == 2) {
@@ -172,7 +174,7 @@ void commandLine(int argc, char **argv) {
         throw std::runtime_error("Comparison needs two files!");
       }
       auto mat2 = Matter(pot);
-      mat2.con2matter(confileout);
+      eonc::mat::from_con(mat2, confile);
       auto tbl = toml::table{
           {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
       auto sc = eonc::mat::StructComparer(tbl);

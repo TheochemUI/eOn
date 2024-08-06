@@ -2,6 +2,7 @@ ecmat_srcs = [
     '../Element.cc',
     'Matter.cpp',
     'MatterHelpers.cc',
+    'MatterCreator.cc',
     'StructComparer.cc',
 ]
 
