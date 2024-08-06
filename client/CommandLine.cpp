@@ -138,6 +138,10 @@ void commandLine(int argc, char **argv) {
     if (!cflag) {
       tbl["Potential"].as_table()->insert_or_assign("potential", potential);
     }
+    if (sflag) {
+      // For structure comparison, we need only to ensure a potential exists..
+      tbl["Potential"].as_table()->insert_or_assign("potential", "lj");
+    }
 
     if (!sflag) {
       params->optim.method = magic_enum::enum_cast<OptType>(
