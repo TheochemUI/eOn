@@ -11,8 +11,8 @@
 */
 #include "TestApprovalMain.hpp"
 
-#include "client/Matter.h"
 #include "client/io/WriteCreator.hpp"
+#include "client/matter/Matter.h"
 
 #include <iostream>
 #include <string>

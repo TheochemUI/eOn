@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "catch2/catch_amalgamated.hpp"
-#include "client/Matter.h"
+#include "client/matter/Matter.h"
 #include "client/thirdparty/toml.hpp"
 
 using namespace eonc;

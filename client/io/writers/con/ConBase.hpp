@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "client/Matter.h"
+#include "client/matter/Matter.h"
 
 namespace eonc::io {
 class ConBaseWriter {

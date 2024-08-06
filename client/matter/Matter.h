@@ -10,9 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Eigen.h"
-#include "Parameters.h"
-#include "Potential.h"
+#include "client/Eigen.h"
+#include "client/Parameters.h"
+#include "client/Potential.h"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <string>

@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "client/Matter.h"
 #include "client/io/IOHelpers.hpp"
+#include "client/matter/Matter.h"
 
 #include <fstream>
 #include <string>
