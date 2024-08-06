@@ -11,6 +11,7 @@
 */
 #include "catch2/catch_amalgamated.hpp"
 #include "client/matter/Matter.h"
+#include "client/matter/MatterCreator.hpp"
 #include "client/thirdparty/toml.hpp"
 
 using namespace eonc;
@@ -33,10 +34,10 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
 
   // Create Matter objects
   Matter mat1(pot1);
-  mat1.con2matter(confile);
+  mat::from_con(mat1, confile);
 
   Matter mat2(pot2);
-  mat2.con2matter(confile);
+  mat::from_con(mat2, confile);
 
   mat2.getPotentialEnergy();
   REQUIRE(pot2->getTotalForceCalls() == 1);
@@ -74,13 +75,13 @@ TEST_CASE("Multiple potential instances", "[potential]") {
   REQUIRE(pot1->getTotalForceCalls() == 2);
 
   Matter mat1(pot1);
-  mat1.con2matter(confile);
+  mat::from_con(mat1, confile);
 
   Matter mat2(pot2);
-  mat2.con2matter(confile);
+  mat::from_con(mat2, confile);
 
   Matter mat3(pot3);
-  mat3.con2matter(confile);
+  mat::from_con(mat3, confile);
 
   mat1.getPotentialEnergy();
   REQUIRE(pot1->getTotalForceCalls() == 3);

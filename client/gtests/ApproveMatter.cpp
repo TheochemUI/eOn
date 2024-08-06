@@ -12,6 +12,7 @@
 #include "TestApprovalMain.hpp"
 
 #include "client/matter/Matter.h"
+#include "client/matter/MatterCreator.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -147,7 +148,7 @@ std::vector<eonc::Matter> getMatter() {
   auto pot_default = eonc::makePotential(config);
   auto m1 = eonc::Matter(pot_default);
   std::string confile("pos.con"); // Sulfolene
-  m1.con2matter(confile);
+  eonc::mat::from_con(m1, confile);
   for (size_t idx{0}; idx < 3; idx++) {
     m1.setFixed(idx, true);
   }
