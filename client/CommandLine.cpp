@@ -11,11 +11,11 @@
 */
 #include "CommandLine.h"
 #include "Job.h"
-#include "Matter.h"
-#include "MatterHelpers.hpp"
 #include "Parameters.h"
 #include "Potential.h"
-#include "io/WriteCreator.hpp"
+#include "client/io/WriteCreator.hpp"
+#include "client/matter/Matter.h"
+#include "client/matter/MatterHelpers.hpp"
 #include "version.h"
 
 #include <cstdlib>

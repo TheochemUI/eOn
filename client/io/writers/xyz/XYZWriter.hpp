@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "client/Matter.h"
 #include "client/io/IOBase.hpp"
+#include "client/matter/Matter.h"
 
 namespace eonc::io {
 class XYZWriter final : public Writer<XYZWriter> {

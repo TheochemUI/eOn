@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "client/Matter.h"
+#include "client/matter/Matter.h"
 #include "thirdparty/toml.hpp"
 
 namespace eonc {

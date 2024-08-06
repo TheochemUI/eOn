@@ -11,7 +11,7 @@
 */
 #pragma once
 #include "Eigen.h"
-#include "Matter.h"
+#include "client/matter/Matter.h"
 #include <string>
 #include <vector>
 

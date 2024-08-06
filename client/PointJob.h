@@ -11,8 +11,8 @@
 */
 #pragma once
 
-#include "Job.h"
-#include "Matter.h"
+#include "client/Job.h"
+#include "client/matter/Matter.h"
 namespace eonc {
 class PointJob : public Job<PointJob> {
   Matter &_mat;

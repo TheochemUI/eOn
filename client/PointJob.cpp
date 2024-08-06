@@ -10,7 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "PointJob.h"
-#include "Matter.h"
 namespace eonc {
 std::vector<std::string> PointJob::run(void) {
   std::vector<std::string> returnFiles;
