@@ -113,8 +113,6 @@ public:
 
   double maxForce(void);
 
-  bool con2matter(std::string filename);
-  bool con2matter(FILE *file);
   bool convel2matter(std::string filename);
   bool convel2matter(FILE *file);
   AtomMatrix getFree() const;
