@@ -11,7 +11,7 @@
 */
 #include "TestApprovalMain.hpp"
 
-#include "client/Matter.h"
+#include "client/matter/Matter.h"
 
 #include <iomanip>
 #include <iostream>

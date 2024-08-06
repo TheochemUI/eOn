@@ -172,6 +172,9 @@ if get_option('with_vasp')
     endif
 endif
 
+# Subprojects
+_deps += subproject('readCon').get_variable('readcon_dep')
+
 # Potentials
 subdir('potentials')
 
@@ -192,25 +195,7 @@ ecparser = library(
 
 _linkto += ecparser
 
-ecmat_srcs = [
-    'Parameters.cpp',  # TODO(rg) remove
-    'Element.cc',
-    'Matter.cpp',
-    'MatterHelpers.cc',
-    'HelperFunctions.cpp',
-]
-
-ecmat = library(
-    'ecmat',
-    sources: files(ecmat_srcs),
-    include_directories: _incdirs,
-    dependencies: _deps,
-    link_with: _linkto,
-    cpp_args: _args,
-    install: true,
-)
-
-_linkto += ecmat
+subdir('matter')
 
 # IO operations
 subdir('io')

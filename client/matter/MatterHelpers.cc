@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "MatterHelpers.hpp"
-#include "HelperFunctions.h"
-#include "Parser.hpp"
+#include "client/HelperFunctions.h"
+#include "client/Parser.hpp"
 
 namespace eonc {
 
