@@ -1,5 +1,4 @@
 ecmat_srcs = [
-    '../Parameters.cpp',  # TODO(rg) remove
     '../Element.cc',
     'Matter.cpp',
     'MatterHelpers.cc',

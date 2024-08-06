@@ -11,7 +11,6 @@
 */
 #pragma once
 #include "client/Eigen.h"
-#include "client/Parameters.h"
 #include "client/Potential.h"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -143,7 +142,6 @@ private:
   char headerCon6[512];
 
   void computePotential();
-  void initializeDataMembers(std::shared_ptr<Parameters> parameters);
   void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);

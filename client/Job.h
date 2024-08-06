@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "client/Parameters.h"
 #include "client/matter/Matter.h"
 #include "thirdparty/toml.hpp"
 
