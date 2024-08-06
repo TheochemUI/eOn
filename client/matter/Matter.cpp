@@ -360,6 +360,7 @@ void Matter::setFixed(long int indexAtom, int isFixed_passed) {
   isFixed[indexAtom] = isFixed_passed;
 }
 
+void Matter::setFixedMask(const Vector<int> &fixmask) { isFixed = fixmask; }
 // void Matter::setPotentialEnergy(double epot_input)
 //{
 //	potentialEnergy=epot_input;
