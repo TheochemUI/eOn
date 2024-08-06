@@ -153,7 +153,6 @@ void commandLine(int argc, char **argv) {
 
     auto pot = makePotential(tbl);
     auto mat1 = Matter(pot);
-    mat1.con2matter(confile);
     eonc::mat::from_con(mat1, confile);
 
     string confileout;

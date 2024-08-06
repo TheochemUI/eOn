@@ -13,6 +13,7 @@
 
 #include "client/io/WriteCreator.hpp"
 #include "client/matter/Matter.h"
+#include "client/matter/MatterCreator.hpp"
 
 #include <iostream>
 #include <string>
@@ -30,7 +31,7 @@ std::vector<eonc::Matter> getTestMatter() {
   auto pot_default = eonc::makePotential(config);
   auto matter = eonc::Matter(pot_default);
   std::string confile("pos.con");
-  matter.con2matter(confile);
+  eonc::mat::from_con(matter, confile);
   return {matter};
 }
 
