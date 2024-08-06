@@ -13,12 +13,6 @@
 #include "client/Element.hpp"
 // #include "BondBoost.h"
 
-// To write the R style data frame
-#include <fmt/os.h>
-#include <memory>
-#include <spdlog/spdlog.h>
-#include <stdexcept>
-
 namespace eonc {
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
