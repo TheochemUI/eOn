@@ -10,40 +10,22 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Matter.h"
-#include <functional>
+#include "client/matter/Matter.h"
 
-namespace eonc {
+namespace eonc::mat {
 
-class StructComparer {
-public:
-  struct Params {
-    ///< The distance criterion for comparing geometries
-    double distanceDifference{0.1};
-    ///< radius used in the local atomic structure analysis
-    double neighborCutoff{3.3};
-    bool checkRotation{false};
-    bool indistinguishableAtoms{true};
-    double energyDifference{0.01};
-    bool removeTranslation{true};
-  } scparams;
+bool rotationMatch(const Matter &m1, const Matter &m2, const double max_diff);
+void rotationRemove(const AtomMatrix r1, std::shared_ptr<Matter> m2);
+void rotationRemove(const std::shared_ptr<Matter> m1,
+                    std::shared_ptr<Matter> m2);
+void translationRemove(Matter &m1, const AtomMatrix r1);
+void translationRemove(Matter &m1, const Matter &m2);
 
-  // TODO(rg):: Indistinguishable conflicts with default Param
-  bool compare(const Matter &m1, const Matter &m2,
-               const bool indistinguishable = false);
-  StructComparer(Params scp_a)
-      : scparams{scp_a} {
-    setupCompareFunc();
-  }
-  StructComparer(const toml::table &tbl) {
-    fromTOML(tbl);
-    setupCompareFunc();
-  }
+bool identical(const Matter &m1, const Matter &m2,
+               const double distanceDifference);
+bool sortedR(const Matter &m1, const Matter &m2,
+             const double distanceDifference);
+void pushApart(std::shared_ptr<Matter> m1, double minDistance);
+void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 
-private:
-  std::function<bool(const Matter &, const Matter &, double)> compareFunc;
-  void fromTOML(const toml::table &tbl);
-  void setupCompareFunc(); // Setup cutoff
-};
-
-} // namespace eonc
+} // namespace eonc::mat

@@ -195,6 +195,16 @@ ecparser = library(
 
 _linkto += ecparser
 
+_linkto += library(
+    'echelpers',
+    sources: files('HelperFunctions.cpp'),
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
+)
+
 subdir('matter')
 
 # IO operations
