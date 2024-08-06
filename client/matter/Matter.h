@@ -90,6 +90,7 @@ public:
   int getFixed(long int atom) const;
   // set the atom to fixed (true) or movable (false)
   void setFixed(long int atom, int isFixed);
+  void setFixedMask(const Vector<int> &);
   // void setPotentialEnergy(double);
   double getEnergyVariance();
   // VectorType getForceVariance();
@@ -147,7 +148,6 @@ private:
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
-  size_t nAtoms{0};
   size_t npotcalls{0};
   AtomMatrix positions{MatrixType::Zero(0, 3)};
   AtomMatrix velocities{MatrixType::Zero(0, 3)};
@@ -158,9 +158,13 @@ private:
   Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
   // array of bool, false for movable atom, true for fixed
   Vector<int> isFixed{Vector<int>::Zero(0)};
-  Matrix3S cellInverse{Matrix3S::Zero()};
   double energyVariance{0.0};
   double potentialEnergy{0.0};
+
+public:
+  size_t nAtoms{0};
+  // TODO(rg): Should really not be public
+  Matrix3S cellInverse{Matrix3S::Zero()};
 };
 
 } // namespace eonc
