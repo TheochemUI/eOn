@@ -1,4 +1,4 @@
-aseorca = library(
+_linkto += library(
     'aseorca',
     'ASE_ORCA.cpp',
     '../../EnvHelpers.cc',
