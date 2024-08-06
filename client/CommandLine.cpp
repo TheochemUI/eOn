@@ -15,7 +15,7 @@
 #include "Potential.h"
 #include "client/io/WriteCreator.hpp"
 #include "client/matter/Matter.h"
-#include "client/matter/MatterHelpers.hpp"
+#include "client/matter/StructComparer.hpp"
 #include "version.h"
 
 #include <cstdlib>
@@ -171,7 +171,7 @@ void commandLine(int argc, char **argv) {
       mat2.con2matter(confileout);
       auto tbl = toml::table{
           {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
-      auto sc = StructComparer(tbl);
+      auto sc = eonc::mat::StructComparer(tbl);
       if (sc.compare(mat1, mat2, true)) {
         std::cout << "Structures match" << std::endl;
       } else {

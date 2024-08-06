@@ -13,6 +13,7 @@
 #include "BaseStructures.h"
 #include "HelperFunctions.h"
 #include "magic_enum/magic_enum.hpp"
+#include "thirdparty/toml.hpp"
 #include <float.h>
 #include <string>
 namespace eonc {

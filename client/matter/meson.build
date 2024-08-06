@@ -3,10 +3,10 @@ ecmat_srcs = [
     '../Element.cc',
     'Matter.cpp',
     'MatterHelpers.cc',
-    '../HelperFunctions.cpp',
+    'StructComparer.cc',
 ]
 
-ecmat = library(
+_linkto += library(
     'ecmat',
     sources: files(ecmat_srcs),
     include_directories: _incdirs,
@@ -15,5 +15,3 @@ ecmat = library(
     cpp_args: _args,
     install: true,
 )
-
-_linkto += ecmat
