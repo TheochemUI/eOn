@@ -216,6 +216,7 @@ eonclib_sources = [
 # 'LBFGS.cpp',
 # 'ReplicaExchangeJob.cpp',
 # 'BondBoost.cpp',
+    'Parameters.cpp',  # TODO(rg) remove
     'Job.cpp',
     # 'GlobalOptimization.cpp',
     # 'LowestEigenmode.cpp',
