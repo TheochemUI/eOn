@@ -1,39 +1,67 @@
-potaids = library(
-    'potaids',
-    sources: files('ParseTOML.cc', 'PotHelpers.cc'),
-    include_directories: _incdirs,
-    dependencies: _deps,
-    link_with: _linkto,
-    cpp_args: _args,
-    install: true,
-)
-_linkto += potaids
+potss = ssmod.source_set()
+potss.add(files('ParseTOML.cc', 'PotHelpers.cc'))
 
 # subdir('EAM')
 subdir('EMT')
 subdir('ExtPot')
 # subdir('IMD')
-subdir('LJ')
+potss.add(files('LJ/LJ.cpp'))
 # subdir('LJCluster')
-subdir('Morse')
+potss.add(files('Morse/Morse.cpp'))
 # subdir('NewPot')
+potss.add(when: 'WITH_VASP', if_true: files('VASP/VASP.cpp'))
+subdir('LAMMPS')
+potss.add(
+    when: 'WITH_FORTRAN',
+    if_true: files(
+# Aluminum needs help, since it has commonblks
+# 'Aluminum/fofrhoDblexp.f',
+# 'Aluminum/dfrhoDblexp.f',
+# 'Aluminum/potinit.f',
+# 'Aluminum/alforces.f',
+# 'Aluminum/Aluminum.cpp',
+# 'Aluminum/gagafeDblexp.f',
+# 'Aluminum/embedenergy.f',
+# 'Aluminum/sumembforce.f',
+        'CuH2/CuH2.cpp',
+        'CuH2/eam_dat.f90',
+        'CuH2/eam_isoc.f90',
+        'CuH2/eamroutines.f90',
+        'EDIP/EDIP.cpp',
+        'EDIP/edipFortran.f90',
+        'FeHe/FeHe.cpp',
+        'FeHe/feforce.f',
+        'Lenosky/Lenosky.cpp',
+        'Lenosky/lenoskyFortran.f90',
+        'SW/SW.cpp',
+        'SW/SWFortran.f90',
+        'Tersoff/Tersoff.cpp',
+        'Tersoff/tersoffFortran.f90',
+    ),
+)
+potss.add(
+    when: ['WITH_FORTRAN', 'WITH_WATER'],
+    if_true: files(
+        'Water/Water.cpp',
+        'Water/ccl.cpp',
+        'Water/potential_base.cpp',
+        'Water/spce_ccl.cpp',
+        'Water/tip4p_ccl.cpp',
+        'Water_H/Tip4p_H.cpp',
+        'Water_H/potH_H2O.f90',
+        'Water_Pt/Tip4p_Pt.cpp',
+        'Water_Pt/zhu_philpott.cpp',
+        'Water_Pt/zhu_philpott_parameters.cpp',
+    ),
+)
 
-potentials = [
-# eam,
-    emt,
-    extpot,
-    # imd,
-    lennard_jones,
-    # lennard_jones_cluster,
-    morse,
-    # newpot
-]
-
+# TODO(rg): Port to sourceset
 # if get_option('with_gprd')
 #   # subdir('GPRPotential')
 #   # potentials += [ gprpot ]
 # endif
 
+# TODO(rg): Port to sourceset
 # if get_option('with_gp_surrogate')
 #   _args += ['-DWITH_GP_SURROGATE']
 #   eonclib_sources += ['GPSurrogateJob.cpp']
@@ -48,13 +76,6 @@ potentials = [
 #       _args += ['-DWITH_CATLEARN']
 #     endif
 # endif
-
-if get_option('with_vasp')
-    if host_system != 'windows'
-        subdir('VASP')
-        potentials += [vasp]
-    endif
-endif
 
 # if get_option('with_ams')
 #     # Optional, only for AMS
@@ -93,11 +114,6 @@ endif
 #   _args += ['-DWITH_XTB']
 # endif
 
-if get_option('with_lammps')
-    subdir('LAMMPS')
-    potentials += [lammps_pot]
-endif
-
 # if get_option('with_python')
 #   _args += ['-DWITH_PYTHON']
 #   # subdir('PyAMFF')
@@ -120,25 +136,6 @@ endif
 #   _deps += [ mpi_dep ]
 # endif
 
-if get_option('with_fortran')
-    subdir('Aluminum')
-    subdir('EDIP')
-    subdir('FeHe')
-    subdir('Lenosky')
-    subdir('SW')
-    subdir('Tersoff')
-    if get_option('with_water')
-        subdir('Water')
-        potentials += [water]
-        subdir('Water_H')
-        potentials += [water_h]
-        subdir('Water_Pt')
-        potentials += [water_pt]
-    endif
-    subdir('CuH2')
-    potentials += [aluminum, cuh2, edip, fehe, lenosky, sw, tersoff]
-endif
-
 if get_option('with_ase_orca')
 # TODO: Cleanup, used for Catlearn too
     # Embedding the interpreter
@@ -151,7 +148,4 @@ if get_option('with_ase_orca')
     ]
     _deps += [pyb11f_deps]
     subdir('ASE_ORCA')
-    potentials += [aseorca]
 endif
-
-_linkto += potentials
