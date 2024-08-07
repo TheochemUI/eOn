@@ -16,4 +16,7 @@ namespace eonc::mat {
 
 void from_con(Matter &mat, const std::string &fname);
 
+void conCell(Matter &, const std::array<double, 3> &,
+             const std::array<double, 3> &);
+
 } // namespace eonc::mat
