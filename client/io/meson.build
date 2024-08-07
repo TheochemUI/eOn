@@ -1,12 +1,23 @@
-ioss = ssmod.source_set()
-ioss.add(
-    files(
-        'IOHelpers.cc',
-        'WriteCreator.cc',
-        'writers/con/ConBase.cc',
-        'writers/con/ConWriter.cc',
-        'writers/con/ConvelWriter.cc',
-        'writers/tibble/TibbleWriter.cc',
-        'writers/xyz/XYZWriter.cc',
-    ),
+_linkto += library(
+    'ecio_helpers',
+    'IOHelpers.cc',
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
+)
+
+subdir('writers')
+
+# Creator function
+
+_linkto += library(
+    'ecio_creat',
+    'WriteCreator.cc',
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
 )
