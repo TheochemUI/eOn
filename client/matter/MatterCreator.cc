@@ -15,6 +15,41 @@
 
 namespace eonc::mat {
 
+void conCell(Matter &mat, const std::array<double, 3> &_lengths,
+             const std::array<double, 3> &_degrees) {
+  Matrix3S cell = Matrix3S::Zero();
+  bool isOrthogonal = std::all_of(_degrees.begin(), _degrees.end(),
+                                  [](double angle) { return angle == 90.0; });
+
+  if (isOrthogonal) {
+    for (int i = 0; i < 3; ++i) {
+      cell(i, i) = _lengths[i];
+    }
+  } else {
+    std::array<double, 3> radians;
+    std::transform(_degrees.begin(), _degrees.end(), radians.begin(),
+                   [](double angle) { return angle * M_PI / 180.0; });
+    // Perform trigonometric calculations on angles to fill cell matrix
+    cell(0, 0) = 1.0;
+    cell(1, 0) = cos(radians[0]);
+    cell(1, 1) = sin(radians[0]);
+    cell(2, 0) = cos(radians[1]);
+    cell(2, 1) = (cos(radians[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
+
+    cell(0, 0) *= _lengths[0];
+    cell(1, 0) *= _lengths[1];
+    cell(1, 1) *= _lengths[1];
+    cell(2, 0) *= _lengths[2];
+    cell(2, 1) *= _lengths[2];
+    cell(2, 2) *= _lengths[2];
+  }
+
+  mat.cell = cell;
+  mat.cellInverse = cell.inverse();
+  return;
+}
+
 void from_con(Matter &mat, const std::string &fname) {
   std::ifstream file(fname);
   if (!file.is_open()) {
@@ -29,42 +64,16 @@ void from_con(Matter &mat, const std::string &fname) {
   file.getline(line, sizeof(line));
   headerCon2 = line;
 
-  double lengths[3];
+  std::array<double, 3> lengths;
   file.getline(line, sizeof(line));
   sscanf(line, "%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
 
-  double angles[3];
+  std::array<double, 3> angles;
   file.getline(line, sizeof(line));
   headerCon4 = line;
   sscanf(headerCon4.c_str(), "%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
 
-  Matrix3S cell = Matrix3S::Zero();
-  if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-    cell(0, 0) = lengths[0];
-    cell(1, 1) = lengths[1];
-    cell(2, 2) = lengths[2];
-  } else {
-    for (auto &angle : angles) {
-      angle *= M_PI / 180.0;
-    }
-
-    cell(0, 0) = 1.0;
-    cell(1, 0) = cos(angles[0]);
-    cell(1, 1) = sin(angles[0]);
-    cell(2, 0) = cos(angles[1]);
-    cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
-
-    cell(0, 0) *= lengths[0];
-    cell(1, 0) *= lengths[1];
-    cell(1, 1) *= lengths[1];
-    cell(2, 0) *= lengths[2];
-    cell(2, 1) *= lengths[2];
-    cell(2, 2) *= lengths[2];
-  }
-  Matrix3S cellInverse = cell.inverse();
-  mat.cell = cell;
-  mat.cellInverse = cellInverse;
+  conCell(mat, lengths, angles);
 
   file.getline(line, sizeof(line));
   headerCon5 = line;
@@ -74,11 +83,9 @@ void from_con(Matter &mat, const std::string &fname) {
   file.getline(line, sizeof(line));
   size_t Ncomponent;
   if (sscanf(line, "%zu", &Ncomponent) != 1) {
+    SPDLOG_INFO("The number of components cannot be read. One "
+                "component is assumed instead");
     Ncomponent = 1;
-  }
-
-  if ((Ncomponent > 100) || (Ncomponent < 1)) {
-    throw std::runtime_error("Unsupported number of components");
   }
 
   size_t first[101];
