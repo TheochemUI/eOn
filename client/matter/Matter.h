@@ -129,8 +129,6 @@ public:
 private:
   std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<PotBase> potential;
-  // Indicates if the potential energy and forces need to be recalculated
-  bool recomputePotential{true};
   size_t forceCalls{0};
 
   // CON file header information, which is not used in the eon code
@@ -141,28 +139,30 @@ private:
   char headerCon6[512];
 
   void computePotential();
-  void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
   size_t npotcalls{0};
-  AtomMatrix positions{MatrixType::Zero(0, 3)};
   AtomMatrix velocities{MatrixType::Zero(0, 3)};
   AtomMatrix forces{MatrixType::Zero(0, 3)};
   AtomMatrix biasForces{MatrixType::Zero(0, 3)};
   BondBoost *biasPotential{nullptr};
-  VectorType masses{VectorType::Zero(0)};
-  Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
   // array of bool, false for movable atom, true for fixed
-  Vector<int> isFixed{Vector<int>::Zero(0)};
   double energyVariance{0.0};
   double potentialEnergy{0.0};
 
 public:
+  void applyPeriodicBoundary();
   size_t nAtoms{0};
   // TODO(rg): Should really not be public
   Matrix3S cellInverse{Matrix3S::Zero()};
+  // Indicates if the potential energy and forces need to be recalculated
+  bool recomputePotential{true};
+  AtomMatrix positions{MatrixType::Zero(0, 3)};
+  VectorType masses{VectorType::Zero(0)};
+  Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
+  Vector<int> isFixed{Vector<int>::Zero(0)};
 };
 
 } // namespace eonc
