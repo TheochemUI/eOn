@@ -2,6 +2,7 @@ test_args = _args
 test_deps = _deps
 test_array = [  #
     ['test_element', 'ElementTest.cc', ''],
+    ['test_matter_cache', 'MatterCache.cc', ''],
     ['test_enum', 'EnumTest.cc', ''],
     ['test_iohelp', 'IOHelpersTest.cc', ''],
     ['test_potcount', 'PotCountTest.cc', '../saddle_search'],
