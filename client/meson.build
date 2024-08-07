@@ -172,6 +172,18 @@ if get_option('with_vasp')
     endif
 endif
 
+# Subprojects
+cmake = import('cmake')
+opt_var = cmake.subproject_options()
+# Boost static libs needs
+opt_var.add_cmake_defines(
+    {'CMAKE_BUILD_TYPE': 'Release', 'Boost_USE_STATIC_LIBS': false},
+)
+
+cmcachelot = cmake.subproject('cachelot', options: opt_var)
+message('CMake targets:\n - ' + '\n - '.join(cmcachelot.target_list()))
+_deps += cmcachelot.dependency('cachelot')
+
 # Potentials
 subdir('potentials')
 
