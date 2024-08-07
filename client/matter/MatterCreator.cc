@@ -12,8 +12,24 @@
 #include "client/matter/MatterCreator.hpp"
 #include "client/Eigen.h"
 #include "client/Element.hpp"
+#include <fstream>
 
 namespace eonc::mat {
+
+std::optional<std::string> readLine(std::ifstream &file) {
+  std::string line;
+  if (std::getline(file, line)) {
+    return line;
+  }
+  return std::nullopt;
+}
+
+std::array<double, 3> readArray(const std::string &line) {
+  std::array<double, 3> arr;
+  std::istringstream iss(line);
+  iss >> arr[0] >> arr[1] >> arr[2];
+  return arr;
+}
 
 void conCell(Matter &mat, const std::array<double, 3> &_lengths,
              const std::array<double, 3> &_degrees) {
@@ -50,38 +66,17 @@ void conCell(Matter &mat, const std::array<double, 3> &_lengths,
   return;
 }
 
-void from_con(Matter &mat, const std::string &fname) {
-  std::ifstream file(fname);
-  if (!file.is_open()) {
-    throw std::runtime_error("Failed to open file: " + fname);
-  }
-
-  auto readLine = [&file]() -> std::optional<std::string> {
-    std::string line;
-    if (std::getline(file, line)) {
-      return line;
-    }
-    return std::nullopt;
-  };
-
-  auto readArray = [](const std::string &line) -> std::array<double, 3> {
-    std::array<double, 3> arr;
-    std::istringstream iss(line);
-    iss >> arr[0] >> arr[1] >> arr[2];
-    return arr;
-  };
-
-  std::string headerCon1 = *readLine();
-  std::string headerCon2 = *readLine();
-  auto lengths = readArray(*readLine());
-  auto angles = readArray(*readLine());
-  std::string headerCon4 = *readLine();
-  std::string headerCon5 = *readLine();
+void ConFileParser::con_headers(std::ifstream &file, Matter &mat) {
+  headers[0] = *readLine(file);
+  headers[1] = *readLine(file);
+  auto lengths = readArray(*readLine(file));
+  auto angles = readArray(*readLine(file));
+  headers[2] = *readLine(file);
+  headers[3] = *readLine(file);
 
   conCell(mat, lengths, angles);
 
-  size_t Ncomponent{0};
-  if (auto line = readLine()) {
+  if (auto line = readLine(file)) {
     std::istringstream iss(*line);
     if (!(iss >> Ncomponent)) {
       SPDLOG_INFO("The number of components cannot be read. One component is "
@@ -90,14 +85,14 @@ void from_con(Matter &mat, const std::string &fname) {
     }
   }
 
-  SPDLOG_INFO("Got {} components", Ncomponent);
-
   if (Ncomponent < 1) {
     throw std::runtime_error("Unsupported number of components");
   }
 
-  std::vector<size_t> first(Ncomponent + 1, 0);
-  if (auto line = readLine()) {
+  first.resize(Ncomponent + 1, 0);
+
+  size_t totalAtoms{0};
+  if (auto line = readLine(file)) {
     std::istringstream iss(*line);
     for (size_t j = 0; j < Ncomponent; ++j) {
       size_t Natoms;
@@ -105,51 +100,87 @@ void from_con(Matter &mat, const std::string &fname) {
         throw std::runtime_error("Invalid component count");
       }
       first[j + 1] = Natoms + first[j];
+      totalAtoms += Natoms;
     }
   }
 
   mat.resize(first[Ncomponent]);
+  std::vector<double> mass(totalAtoms);
 
-  std::vector<double> mass(Ncomponent);
-  if (auto line = readLine()) {
+  if (auto line = readLine(file)) {
     std::istringstream iss(*line);
     for (size_t j = 0; j < Ncomponent; ++j) {
-      if (!(iss >> mass[j])) {
+      double componentMass;
+      if (!(iss >> componentMass)) {
         throw std::runtime_error("Invalid mass entry");
       }
+      std::fill(mass.begin() + first[j], mass.begin() + first[j + 1],
+                componentMass);
     }
   }
+  mat.setMasses(VectorType::Map(mass.data(), totalAtoms));
+}
 
+void ConFileParser::read_cartesian_fix_index(std::ifstream &file, Matter &mat,
+                                             AtomMatrix &mdat,
+                                             const bool set_atmnr_) {
+  int atomicNr = -1;
   for (size_t j = 0; j < Ncomponent; ++j) {
-    if (auto line = readLine()) {
-      std::istringstream iss(*line);
-      std::string symbol;
-      iss >> symbol;
-      int atomicNr = symbol2atomicNumber(symbol);
+    if (auto line = readLine(file)) {
+      if (set_atmnr_) {
+        std::istringstream iss(*line);
+        std::string symbol;
+        iss >> symbol;
+        atomicNr = symbol2atomicNumber(symbol);
+      }
 
       // Skip:
       // Coordinates of component blah
-      readLine();
+      readLine(file);
 
       for (size_t i = first[j]; i < first[j + 1]; ++i) {
-        mat.setMass(i, mass[j]);
-        mat.setAtomicNr(i, atomicNr);
-        if (auto line = readLine()) {
+        if (set_atmnr_) {
+          mat.setAtomicNr(i, atomicNr);
+        }
+        if (auto line = readLine(file)) {
           std::istringstream iss(*line);
-          if (!(iss >> mat.positions(i, 0) >> mat.positions(i, 1) >>
-                mat.positions(i, 2) >> mat.isFixed[i])) {
-            throw std::runtime_error("Error parsing atom data");
+          if (!(iss >> mdat(i, 0) >> mdat(i, 1) >> mdat(i, 2) >>
+                mat.isFixed[i])) {
+            throw std::runtime_error("Error parsing data: " + *line);
           }
         }
       }
     }
   }
+}
 
+void ConFileParser::finalize_matter(Matter &mat) {
   if (mat.usePeriodicBoundaries) {
     mat.applyPeriodicBoundary();
   }
-
   mat.recomputePotential = true;
+}
+
+void ConFileParser::parse(Matter &mat, const std::string &fname) {
+  std::ifstream _file(fname);
+  if (!_file.is_open()) {
+    throw std::runtime_error("Failed to open file: " + fname);
+  }
+  int pos = fname.find_last_of('.');
+  if (fname.compare(pos + 1, 3, "con")) {
+    con_headers(_file, mat);
+    read_cartesian_fix_index(_file, mat, mat.positions, true);
+    finalize_matter(mat);
+  } else if (fname.compare(pos + 1, 3, "convel")) {
+    con_headers(_file, mat);
+    read_cartesian_fix_index(_file, mat, mat.positions, true);
+    // Empty line between velocities and positions
+    readLine(_file);
+    read_cartesian_fix_index(_file, mat, mat.velocities, false);
+    finalize_matter(mat);
+  } else {
+    throw std::runtime_error("File extension is not convel or con.");
+  }
 }
 
 } // namespace eonc::mat
