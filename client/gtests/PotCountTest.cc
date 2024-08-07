@@ -34,10 +34,12 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
   REQUIRE(pot2->getTotalForceCalls() == 0);
 
   // Create Matter objects
-  Matter mat1(pot1);
+  auto cachelot = cachelot::cache::Cache::Create(
+      eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
+  Matter mat1(pot1, &cachelot);
   cfp.parse(mat1, confile);
 
-  Matter mat2(pot2);
+  Matter mat2(pot2, &cachelot);
   cfp.parse(mat2, confile);
 
   mat2.getPotentialEnergy();
@@ -70,19 +72,21 @@ TEST_CASE("Multiple potential instances", "[potential]") {
   auto pot1 = makePotential(config);
   auto pot2 = makePotential(config);
   auto pot3 = makePotential(config);
+  auto cachelot = cachelot::cache::Cache::Create(
+      eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
 
   REQUIRE(pot1->getInstances() == 3);
   // Scope creep!!!!! Since this is only compiled once, and TEST_CASE isn't
   // doing isolation well the earlier calls are still in the registry
   REQUIRE(pot1->getTotalForceCalls() == 2);
 
-  Matter mat1(pot1);
+  Matter mat1(pot1, &cachelot);
   cfp.parse(mat1, confile);
 
-  Matter mat2(pot2);
+  Matter mat2(pot2, &cachelot);
   cfp.parse(mat2, confile);
 
-  Matter mat3(pot3);
+  Matter mat3(pot3, &cachelot);
   cfp.parse(mat3, confile);
 
   mat1.getPotentialEnergy();

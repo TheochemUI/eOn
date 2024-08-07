@@ -146,7 +146,9 @@ std::vector<eonc::Matter> getMatter() {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
   auto pot_default = eonc::makePotential(config);
-  auto m1 = eonc::Matter(pot_default);
+  auto cachelot = cachelot::cache::Cache::Create(
+      eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
+  auto m1 = eonc::Matter(pot_default, &cachelot);
   std::string confile("pos.con"); // Sulfolene
   eonc::mat::ConFileParser cfp;
   cfp.parse(m1, confile);

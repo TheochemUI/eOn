@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/matter/Matter.h"
+#include <cachelot/hash_fnv1a.h>
 // #include "BondBoost.h"
 
 namespace eonc {
@@ -35,6 +36,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
   recomputePotential = matter.recomputePotential;
+  myCache = matter.myCache;
 
   return *this;
 }
@@ -392,45 +394,36 @@ void Matter::resetForceCalls() {
 }
 
 void Matter::computePotential() {
-  if (recomputePotential) {
-    if (!potential) {
-      throw(std::runtime_error("Whoops, you need a potential.."));
-    }
-    // auto surrogatePotential =
-    //     std::dynamic_pointer_cast<SurrogatePotential>(potential);
-    // if (surrogatePotential) {
-    //   // Surrogate potential case
-    //   auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
-    //       this->getPositionsFree(), this->getAtomicNrsFree().cast<int>(),
-    //       cell);
-    //   // Now populate full structures
-    //   this->potentialEnergy = freePE;
-    //   this->energyVariance = vari;
-    //   for (size_t idx{0}, jdx{0}; idx < nAtoms; idx++) {
-    //     if (!isFixed(idx)) {
-    //       forces.row(idx) = freeForces.row(jdx);
-    //       jdx++;
-    //     }
-    //   }
-    // } else {
-    // Non-surrogate potential case
-    npotcalls++;
-    auto [pE, frcs] = potential->get_ef(positions, atomicNrs, cell);
-    potentialEnergy = pE;
-    forces = frcs;
-    // }
-    // TODO(rg) :: Something about this isn't right..
-    forceCalls += 1;
-    recomputePotential = false;
+  size_t currentHash = computeHash();
+  cachelot::cache::HashFunction calc_hash =
+      cachelot::fnv1a<cachelot::cache::Cache::hash_type>::hasher();
+  cachelot::slice cache_key(reinterpret_cast<const char *>(&currentHash),
+                            sizeof(currentHash));
 
-    if (isFixed.sum() == 0 && removeNetForce) {
-      FixedVecType<3> tempForce(3);
-      tempForce = forces.colwise().sum() / nAtoms;
-
-      for (size_t i = 0; i < nAtoms; i++) {
-        forces.row(i) -= tempForce.transpose();
-      }
-    }
+  // Try to retrieve from cache
+  auto found_item = myCache->do_get(cache_key, calc_hash(cache_key));
+  if (found_item) {
+    // If found in cache, use the cached value
+    std::tie(potentialEnergy, forces) =
+        *(std::tuple<double, AtomMatrix> *)(found_item->value().str().c_str());
+    std::cout << "Found " << potentialEnergy << std::endl;
+    // SPDLOG_INFO("Found, so reusing {}",
+    // std::string(found_item->value().begin(), found_item->value().end()));
+  } else {
+    // If not found in cache, compute potential energy
+    auto tiedEF = potential->get_ef(positions, atomicNrs, cell);
+    std::tie(potentialEnergy, forces) = tiedEF;
+    // Store the computed value in the cache
+    // TODO(rg): The size of this doesn't seem right, calculate the exact size
+    // using Natoms and the rest.
+    cachelot::slice value_slice((char *)(&tiedEF),
+                                sizeof(std::tuple<double, AtomMatrix>));
+    SPDLOG_INFO("Not found, so adding {}", potentialEnergy);
+    auto new_item = myCache->create_item(cache_key, calc_hash(cache_key),
+                                         value_slice.length(), 0,
+                                         cachelot::cache::Item::infinite_TTL);
+    new_item->assign_value(value_slice);
+    myCache->do_set(new_item);
   }
 }
 
@@ -518,5 +511,21 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<PotBase> Matter::getPotential() { return this->potential; }
+
+size_t Matter::computeHash() const {
+  size_t seed = hash_initial;
+
+  // Hash positions
+  for (int i = 0; i < positions.size(); ++i) {
+    hash_combine(seed, positions.data()[i]);
+  }
+
+  // Hash fixed mask
+  for (const auto &flag : isFixed) {
+    hash_combine(seed, flag);
+  }
+
+  return seed;
+}
 
 } // namespace eonc
