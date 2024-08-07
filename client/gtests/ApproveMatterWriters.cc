@@ -29,7 +29,9 @@ std::vector<eonc::Matter> getTestMatter() {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
   auto pot_default = eonc::makePotential(config);
-  auto matter = eonc::Matter(pot_default);
+  auto cachelot = cachelot::cache::Cache::Create(
+      eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
+  auto matter = eonc::Matter(pot_default, &cachelot);
   std::string confile("pos.con");
   eonc::mat::ConFileParser cfp;
   cfp.parse(matter, confile);
