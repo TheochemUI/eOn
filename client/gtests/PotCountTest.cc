@@ -21,6 +21,7 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
       toml::table{{"Potential", toml::table{{"potential", "LJ"}}}};
 
   std::string confile = "pos.con";
+  eonc::mat::ConFileParser cfp;
 
   // Create two potential instances
   auto pot1 = makePotential(config);
@@ -34,10 +35,10 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
 
   // Create Matter objects
   Matter mat1(pot1);
-  mat::from_con(mat1, confile);
+  cfp.parse(mat1, confile);
 
   Matter mat2(pot2);
-  mat::from_con(mat2, confile);
+  cfp.parse(mat2, confile);
 
   mat2.getPotentialEnergy();
   REQUIRE(pot2->getTotalForceCalls() == 1);
@@ -63,6 +64,7 @@ TEST_CASE("Multiple potential instances", "[potential]") {
       toml::table{{"Potential", toml::table{{"potential", "LJ"}}}};
 
   std::string confile = "pos.con";
+  eonc::mat::ConFileParser cfp;
 
   // Create multiple potential instances
   auto pot1 = makePotential(config);
@@ -75,13 +77,13 @@ TEST_CASE("Multiple potential instances", "[potential]") {
   REQUIRE(pot1->getTotalForceCalls() == 2);
 
   Matter mat1(pot1);
-  mat::from_con(mat1, confile);
+  cfp.parse(mat1, confile);
 
   Matter mat2(pot2);
-  mat::from_con(mat2, confile);
+  cfp.parse(mat2, confile);
 
   Matter mat3(pot3);
-  mat::from_con(mat3, confile);
+  cfp.parse(mat3, confile);
 
   mat1.getPotentialEnergy();
   REQUIRE(pot1->getTotalForceCalls() == 3);
