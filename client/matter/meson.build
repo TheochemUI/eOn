@@ -1,5 +1,6 @@
 ecmat_srcs = [
     '../Element.cc',
+    'PeriodicBoundaryConditions.cc',
     'Matter.cpp',
     'MatterHelpers.cc',
     'MatterCreator.cc',
