@@ -8,7 +8,13 @@ be. In practice, it is desirable to be able to construct empty matter objects,
 especially because having to correctly initialize `Matter` before use can be
 restrictive, i.e. lazy loading of data is desirable.
 
-## Changes
 
-- `con2matter(confilename)` is now `from_con(Matter, confilename)`
-  + Done to ensure the `Matter` object is independent of supported input sources
+```{versionchanged} 3.x
+- Matter objects do not hold headers, these are stored in ConFileParser
+```
+
+```{versionadded} 3.x
+```
+
+
+- `Matter` is now populated by `ConFileParser`, which handles validation and works for both `con` and `convel` files .
