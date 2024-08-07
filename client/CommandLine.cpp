@@ -152,7 +152,8 @@ void commandLine(int argc, char **argv) {
 
     auto pot = makePotential(tbl);
     auto mat1 = Matter(pot);
-    eonc::mat::from_con(mat1, confile);
+    eonc::mat::ConFileParser cfp;
+    cfp.parse(mat1, confile);
 
     string confileout;
     if (unmatched.size() == 2) {
@@ -172,7 +173,7 @@ void commandLine(int argc, char **argv) {
         throw std::runtime_error("Comparison needs two files!");
       }
       auto mat2 = Matter(pot);
-      eonc::mat::from_con(mat2, confileout);
+      cfp.parse(mat2, confileout);
       auto tbl = toml::table{
           {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
       auto sc = eonc::mat::StructComparer(tbl);
