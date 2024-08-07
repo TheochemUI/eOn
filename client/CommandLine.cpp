@@ -151,7 +151,9 @@ void commandLine(int argc, char **argv) {
     }
 
     auto pot = makePotential(tbl);
-    auto mat1 = Matter(pot);
+    auto cachelot = cachelot::cache::Cache::Create(
+        eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
+    auto mat1 = Matter(pot, &cachelot);
     eonc::mat::ConFileParser cfp;
     cfp.parse(mat1, confile);
 
@@ -172,7 +174,7 @@ void commandLine(int argc, char **argv) {
       if (unmatched.size() != 2) {
         throw std::runtime_error("Comparison needs two files!");
       }
-      auto mat2 = Matter(pot);
+      auto mat2 = Matter(pot, &cachelot);
       cfp.parse(mat2, confileout);
       auto tbl = toml::table{
           {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
