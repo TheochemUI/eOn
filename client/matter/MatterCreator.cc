@@ -12,75 +12,124 @@
 #include "client/matter/MatterCreator.hpp"
 #include "client/Eigen.h"
 #include "client/Element.hpp"
-#include "magic_enum/magic_enum.hpp"
-#include "readCon/include/ReadCon.hpp"
 
 namespace eonc::mat {
 
 void from_con(Matter &mat, const std::string &fname) {
-  std::vector<std::string> fconts =
-      yodecon::helpers::file::read_con_file(fname);
-  auto singleCon =
-      yodecon::create_single_con<yodecon::types::ConFrameVec>(fconts);
-  const size_t natoms = singleCon.atom_id.size();
-  mat.nAtoms = natoms;
-  mat.resize(natoms);
+  std::ifstream file(fname);
+  if (!file.is_open()) {
+    throw std::runtime_error("Failed to open file: " + fname);
+  }
 
-  // Set the cell and its inverse
-  // TODO(rg) : Refactor out
-  Matrix3S cell{Matrix3S::Zero()}, cellInverse{Matrix3S::Zero()};
-  if (singleCon.angles[0] == 90.0 && singleCon.angles[1] == 90.0 &&
-      singleCon.angles[2] == 90.0) {
-    cell(0, 0) = singleCon.boxl[0];
-    cell(1, 1) = singleCon.boxl[1];
-    cell(2, 2) = singleCon.boxl[2];
+  char line[255];
+  std::string headerCon1, headerCon2, headerCon4, headerCon5, headerCon6;
+
+  file.getline(line, sizeof(line));
+  headerCon1 = line;
+  file.getline(line, sizeof(line));
+  headerCon2 = line;
+
+  double lengths[3];
+  file.getline(line, sizeof(line));
+  sscanf(line, "%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
+
+  double angles[3];
+  file.getline(line, sizeof(line));
+  headerCon4 = line;
+  sscanf(headerCon4.c_str(), "%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
+
+  Matrix3S cell = Matrix3S::Zero();
+  if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
+    cell(0, 0) = lengths[0];
+    cell(1, 1) = lengths[1];
+    cell(2, 2) = lengths[2];
   } else {
-    singleCon.angles[0] *= M_PI / 180.0;
-    singleCon.angles[1] *= M_PI / 180.0;
-    singleCon.angles[2] *= M_PI / 180.0;
+    for (auto &angle : angles) {
+      angle *= M_PI / 180.0;
+    }
 
     cell(0, 0) = 1.0;
-    cell(1, 0) = cos(singleCon.angles[0]);
-    cell(1, 1) = sin(singleCon.angles[0]);
-    cell(2, 0) = cos(singleCon.angles[1]);
-    cell(2, 1) =
-        (cos(singleCon.angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+    cell(1, 0) = cos(angles[0]);
+    cell(1, 1) = sin(angles[0]);
+    cell(2, 0) = cos(angles[1]);
+    cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
     cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
 
-    cell(0, 0) *= singleCon.boxl[0];
-    cell(1, 0) *= singleCon.boxl[1];
-    cell(1, 1) *= singleCon.boxl[1];
-    cell(2, 0) *= singleCon.boxl[2];
-    cell(2, 1) *= singleCon.boxl[2];
-    cell(2, 2) *= singleCon.boxl[2];
+    cell(0, 0) *= lengths[0];
+    cell(1, 0) *= lengths[1];
+    cell(1, 1) *= lengths[1];
+    cell(2, 0) *= lengths[2];
+    cell(2, 1) *= lengths[2];
+    cell(2, 2) *= lengths[2];
   }
-  cellInverse = cell.inverse();
+  Matrix3S cellInverse = cell.inverse();
   mat.cell = cell;
   mat.cellInverse = cellInverse;
 
-  // Set other quantities
-  AtomMatrix pos(natoms, 3);
-  VectorType masses(natoms);
-  Vector<size_t> atmnrs(natoms);
-  Vector<int> isFixed(natoms);
-  for (size_t idx{0}; idx < natoms; idx++) {
-    // Needed since std::vector<bool> doesn't have .data()
-    isFixed[idx] = static_cast<int>(singleCon.is_fixed[idx]);
-    pos(idx, 0) = singleCon.x[idx];
-    pos(idx, 1) = singleCon.y[idx];
-    pos(idx, 2) = singleCon.z[idx];
-    const auto elem =
-        magic_enum::enum_cast<Element>(singleCon.symbol[idx]).value();
-    // value() will fail anyway if an unsupported element is found
-    const auto edat = elementData.find(elem)->second;
-    masses[idx] = edat.atomicMass;
-    atmnrs[idx] = edat.atomicNumber;
+  file.getline(line, sizeof(line));
+  headerCon5 = line;
+  file.getline(line, sizeof(line));
+  headerCon6 = line;
+
+  file.getline(line, sizeof(line));
+  size_t Ncomponent;
+  if (sscanf(line, "%zu", &Ncomponent) != 1) {
+    Ncomponent = 1;
   }
-  mat.setMasses(masses);
-  mat.setAtomicNrs(atmnrs);
-  mat.setFixedMask(isFixed);
-  // Automatically applies periodic boundaries and sets recomputePotential
-  mat.setPositions(pos);
+
+  if ((Ncomponent > 100) || (Ncomponent < 1)) {
+    throw std::runtime_error("Unsupported number of components");
+  }
+
+  size_t first[101];
+  size_t Natoms = 0;
+  first[0] = 0;
+
+  file.getline(line, sizeof(line));
+  char *split = strtok(line, " \t");
+  for (size_t j = 0; j < Ncomponent; j++) {
+    if (!split || sscanf(split, "%zu", &Natoms) != 1) {
+      throw std::runtime_error("Invalid component count");
+    }
+    first[j + 1] = Natoms + first[j];
+    split = strtok(NULL, " \t");
+  }
+
+  mat.resize(first[Ncomponent]);
+
+  double mass[100];
+  file.getline(line, sizeof(line));
+  split = strtok(line, " \t");
+  for (size_t j = 0; j < Ncomponent; j++) {
+    if (!split || sscanf(split, "%lf", &mass[j]) != 1) {
+      throw std::runtime_error("Invalid mass entry");
+    }
+    split = strtok(NULL, " \t");
+  }
+
+  for (size_t j = 0; j < Ncomponent; j++) {
+    char symbol[3];
+    file.getline(line, sizeof(line));
+    sscanf(line, "%2s", symbol);
+    int atomicNr = symbol2atomicNumber(symbol);
+    file.getline(line, sizeof(line)); // skip one line
+    for (size_t i = first[j]; i < first[j + 1]; i++) {
+      mat.setMass(i, mass[j]);
+      mat.setAtomicNr(i, atomicNr);
+      file.getline(line, sizeof(line));
+      if (sscanf(line, "%lf %lf %lf %d", &mat.positions(i, 0),
+                 &mat.positions(i, 1), &mat.positions(i, 2),
+                 &mat.isFixed[i]) != 4) {
+        throw std::runtime_error("Error parsing atom data");
+      }
+    }
+  }
+
+  if (mat.usePeriodicBoundaries) {
+    mat.applyPeriodicBoundary();
+  }
+
+  mat.recomputePotential = true;
 }
 
 } // namespace eonc::mat
