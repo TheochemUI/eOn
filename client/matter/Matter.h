@@ -20,10 +20,6 @@ namespace eonc {
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
 
-// XXX: Really need this to go..
-constexpr size_t MAXC{100}; // maximum number of components for functions
-                            // matter2con and con2matter
-
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
  * etc. It also allow to associate a forcefield for the structure through a
@@ -42,7 +38,6 @@ public:
   // bool operator==(const Matter& matter); // true if differences in positions
   // are below differenceDistance bool operator!=(const Matter& matter); //
   // inverse of ==
-  bool compare(const Matter &matter, bool indistinguishable = false);
   double distanceTo(const Matter &matter);
   double perAtomNorm(const Matter &matter) const;
   void setPotential(std::shared_ptr<PotBase> pot);
@@ -113,8 +108,6 @@ public:
 
   double maxForce(void);
 
-  bool convel2matter(std::string filename);
-  bool convel2matter(FILE *file);
   AtomMatrix getFree() const;
   VectorType getFreeV() const;
   VectorType getMasses() const;
@@ -131,20 +124,12 @@ private:
   std::shared_ptr<PotBase> potential;
   size_t forceCalls{0};
 
-  // CON file header information, which is not used in the eon code
-  char headerCon1[512];
-  char headerCon2[512];
-  char headerCon4[512];
-  char headerCon5[512];
-  char headerCon6[512];
-
   void computePotential();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
   size_t npotcalls{0};
-  AtomMatrix velocities{MatrixType::Zero(0, 3)};
   AtomMatrix forces{MatrixType::Zero(0, 3)};
   AtomMatrix biasForces{MatrixType::Zero(0, 3)};
   BondBoost *biasPotential{nullptr};
@@ -160,6 +145,7 @@ public:
   // Indicates if the potential energy and forces need to be recalculated
   bool recomputePotential{true};
   AtomMatrix positions{MatrixType::Zero(0, 3)};
+  AtomMatrix velocities{MatrixType::Zero(0, 3)};
   VectorType masses{VectorType::Zero(0)};
   Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
   Vector<int> isFixed{Vector<int>::Zero(0)};

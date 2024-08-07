@@ -31,7 +31,8 @@ std::vector<eonc::Matter> getTestMatter() {
   auto pot_default = eonc::makePotential(config);
   auto matter = eonc::Matter(pot_default);
   std::string confile("pos.con");
-  eonc::mat::from_con(matter, confile);
+  eonc::mat::ConFileParser cfp;
+  cfp.parse(matter, confile);
   return {matter};
 }
 

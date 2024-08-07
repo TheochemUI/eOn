@@ -10,7 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/matter/Matter.h"
-#include "client/Element.hpp"
 // #include "BondBoost.h"
 
 namespace eonc {
@@ -36,12 +35,6 @@ const Matter &Matter::operator=(const Matter &matter) {
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
   recomputePotential = matter.recomputePotential;
-
-  strcpy(headerCon1, matter.headerCon1);
-  strcpy(headerCon2, matter.headerCon2);
-  strcpy(headerCon4, matter.headerCon4);
-  strcpy(headerCon5, matter.headerCon5);
-  strcpy(headerCon6, matter.headerCon6);
 
   return *this;
 }
@@ -508,162 +501,6 @@ void Matter::setForces(const AtomMatrix f) {
 // }
 
 VectorType Matter::getMasses() const { return masses; }
-
-bool Matter::convel2matter(std::string filename) {
-  bool state;
-  FILE *file;
-  // Add the .con extension to filename if it is not already there.
-  int pos = filename.find_last_of('.');
-  if (filename.compare(pos + 1, 3, "con")) {
-    filename += ".con";
-  }
-  file = fopen(filename.c_str(), "rb");
-  if (!file) {
-    SPDLOG_LOGGER_ERROR(m_log, "File {} was not found.", filename);
-    return (false);
-  }
-  state = convel2matter(file);
-  fclose(file);
-  return (state);
-}
-
-bool Matter::convel2matter(FILE *file) {
-  char line[255]; // Temporary string of character to read from the file.
-  fgets(headerCon1, sizeof(line), file);
-
-  //    if (strchr(headerCon1,'\r')) {
-  //        /* Files created on Windows or on Mac with Excell have carriage
-  //        returns (\r) instead of or along with the new line charater (\n). C
-  //        recognises only the \n as the end of line. */ cerr << "A carriage
-  //        return ('\\r') has been detected. To work correctly, new lines
-  //        should be indicated by the new line character (\\n)."; return false;
-  //        // return false for error
-  //    }
-
-  size_t i{0}, j{0};
-
-  fgets(headerCon2, sizeof(line), file);
-
-  double lengths[3];
-  // The third line contains the length of the periodic cell
-  fgets(line, sizeof(line), file);
-  sscanf(line, "%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
-
-  double angles[3];
-  fgets(headerCon4, sizeof(line), file);
-  // The fourth line contains the angles of the cell vectors
-  sscanf(headerCon4, "%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
-
-  if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-    cell(0, 0) = lengths[0];
-    cell(1, 1) = lengths[1];
-    cell(2, 2) = lengths[2];
-  } else {
-    angles[0] *= M_PI / 180.0;
-    angles[1] *= M_PI / 180.0;
-    angles[2] *= M_PI / 180.0;
-
-    cell(0, 0) = 1.0;
-    cell(1, 0) = cos(angles[0]);
-    cell(1, 1) = sin(angles[0]);
-    cell(2, 0) = cos(angles[1]);
-    cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
-
-    cell(0, 0) *= lengths[0];
-    cell(1, 0) *= lengths[1];
-    cell(1, 1) *= lengths[1];
-    cell(2, 0) *= lengths[2];
-    cell(2, 1) *= lengths[2];
-    cell(2, 2) *= lengths[2];
-  }
-  cellInverse = cell.inverse();
-
-  fgets(headerCon5, sizeof(line), file);
-  fgets(headerCon6, sizeof(line), file);
-
-  fgets(line, sizeof(line), file);
-  size_t Ncomponent; // Number of components or different types of atoms. For
-                     // instance H2O has two components (H and O).
-  if (sscanf(line, "%lud", &Ncomponent) == 0) {
-    SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
-                              "component is assumed instead");
-    Ncomponent = 1;
-  }
-  if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    SPDLOG_LOGGER_ERROR(
-        m_log,
-        "con2atoms doesn't support more that {} components or less than 1",
-        MAXC);
-    return false;
-  }
-  /* to store the position of the
-      first atom of each element 'MAXC+1': the last element is used to store the
-     total number of atom.*/
-  size_t first[MAXC + 1];
-  size_t Natoms = 0;
-  first[0] = 0;
-
-  // Now we want to know the number of atom of each type. Ex with H2O, two
-  // hydrogens and one oxygen
-  for (j = 0; j < Ncomponent; j++) {
-    fscanf(file, "%lud", &Natoms);
-    first[j + 1] = Natoms + first[j];
-  }
-
-  fgets(line, sizeof(line), file); // Discard the rest of the line
-  // Set the total number of atoms, and allocates memory
-  resize(first[Ncomponent]);
-  double mass[MAXC];
-  for (j = 0; j < Ncomponent; j++) {
-    // Now we want to know the number of atom of each type. Ex with
-    // H2O, two hydrogens and one oxygen
-    fscanf(file, "%lf", &mass[j]);
-    // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
-  }
-
-  fgets(line, sizeof(line), file); // discard rest of the line
-  int atomicNr;
-  int fixed;
-  double x, y, z;
-  for (j = 0; j < Ncomponent; j++) {
-    char symbol[3];
-    fgets(line, sizeof(line), file);
-    sscanf(line, "%2s\n", symbol);
-    atomicNr = symbol2atomicNumber(symbol);
-    fgets(line, sizeof(line), file); // skip one line
-    for (i = first[j]; i < first[j + 1]; i++) {
-      setMass(i, mass[j]);
-      setAtomicNr(i, atomicNr);
-      fgets(line, sizeof(line), file);
-      sscanf(line, "%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-      setPosition(i, 0, x);
-      setPosition(i, 1, y);
-      setPosition(i, 2, z);
-      setFixed(i, static_cast<bool>(fixed));
-    }
-  }
-
-  fgets(line, sizeof(line), file);
-  for (j = 0; j < Ncomponent; j++) {
-    fgets(line, sizeof(line), file);
-    fgets(line, sizeof(line), file); // skip one line
-    for (i = first[j]; i < first[j + 1]; i++) {
-      fgets(line, sizeof(line), file);
-      sscanf(line, "%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-      setVelocity(i, 0, x);
-      setVelocity(i, 1, y);
-      setVelocity(i, 2, z);
-    }
-  }
-
-  if (usePeriodicBoundaries) {
-    applyPeriodicBoundary(); // Transform the coordinate to use the minimum
-                             // image convention.
-  }
-  //    potential_ = new Potential(parameters_);
-  return (true);
-}
 
 void Matter::setPotential(std::shared_ptr<PotBase> pot) {
   this->potential = pot;

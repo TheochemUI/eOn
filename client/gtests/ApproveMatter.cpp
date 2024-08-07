@@ -148,7 +148,8 @@ std::vector<eonc::Matter> getMatter() {
   auto pot_default = eonc::makePotential(config);
   auto m1 = eonc::Matter(pot_default);
   std::string confile("pos.con"); // Sulfolene
-  eonc::mat::from_con(m1, confile);
+  eonc::mat::ConFileParser cfp;
+  cfp.parse(m1, confile);
   for (size_t idx{0}; idx < 3; idx++) {
     m1.setFixed(idx, true);
   }
