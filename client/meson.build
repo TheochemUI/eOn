@@ -181,11 +181,13 @@ cmake = import('cmake')
 opt_var = cmake.subproject_options()
 # Boost static libs needs
 opt_var.add_cmake_defines(
-    {'CMAKE_BUILD_TYPE': 'Release', 'Boost_USE_STATIC_LIBS': false},
+    {
+        'CMAKE_BUILD_TYPE': 'Release',
+        'Boost_USE_STATIC_LIBS': false,
+        'NO_SERVER': true,
+    },
 )
-
 cmcachelot = cmake.subproject('cachelot', options: opt_var)
-message('CMake targets:\n - ' + '\n - '.join(cmcachelot.target_list()))
 _deps += cmcachelot.dependency('cachelot')
 
 # Potentials
