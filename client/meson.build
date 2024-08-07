@@ -111,7 +111,7 @@ architecture = host_machine.cpu_family()
 message(host_system)
 message(architecture)
 
-# Configure the version file
+# Configure the header file
 configure_file(
     input: 'version.h.in',
     output: 'version.h',
@@ -123,25 +123,18 @@ configure_file(
     },
 )
 
-# Setup source set
-ssmod = import('sourceset')
-ss = ssmod.source_set()
-config = configuration_data()
-
-# Handle client flags
-config.set('LAMMPS_POT', get_option('with_lammps'))
-config.set('WITH_FORTRAN', get_option('with_fortran'))
-config.set('WITH_WATER', get_option('with_water'))
-config.set('WITH_ASE_ORCA', get_option('with_ase_orca'))
-if host_system != 'windows'
-    config.set('WITH_VASP', get_option('with_vasp'))
+# Dependencies
+if not is_windows
+# libm for Unix systems
+    m_dep = cppc.find_library('m', required: false)
+    _deps += m_dep
+    # For building with clang
+    _deps += [declare_dependency(link_args: '-lstdc++')]
 endif
 
-# TODO(rg): This doesn't really have to be generated like so, consider it for an
-# install candidate
-eoncconf = configure_file(output: 'eonc_conf.h', configuration: config)
+threads_dep = dependency('threads', required: true)
+_deps += threads_dep
 
-# Dependencies
 eigen_dep = dependency(
     'Eigen3',
     method: 'cmake',
@@ -157,84 +150,114 @@ spdlog_dep = dependency('spdlog', required: true)
 _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
+# Handle client flags
+if get_option('with_lammps')
+    _args += ['-DLAMMPS_POT']
+endif
+
+if get_option('with_fortran')
+    _args += ['-DWITH_FORTRAN']
+    if get_option('with_water')
+        _args += ['-DWITH_WATER']
+    endif
+endif
+
+if get_option('with_ase_orca')
+    _args += ['-DWITH_ASE_ORCA']
+endif
+
+if get_option('with_vasp')
+    if host_system != 'windows'
+        _args += ['-DWITH_VASP']
+    endif
+endif
+
 # Subprojects
 _deps += subproject('readCon').get_variable('readcon_dep')
 
 # Potentials
 subdir('potentials')
-ss.add_all(potss)
 
 tomlib = library('toml', 'toml.cpp', cpp_args: ['-w'], install: true)
 _deps += declare_dependency(link_with: tomlib)
 
-ss.add(files('EnvHelpers.cc', 'HelperFunctions.cpp', 'Parser.cc'))
+ecparser_srcs = ['Parser.cc', 'EnvHelpers.cc']
 
-ss.add(
-    files(
-        'Element.cc',
-        'matter/Matter.cpp',
-        'matter/MatterCreator.cc',
-        'matter/MatterHelpers.cc',
-        'matter/StructComparer.cc',
-    ),
+ecparser = library(
+    'ecparser',
+    sources: files(ecparser_srcs),
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
 )
+
+_linkto += ecparser
+
+_linkto += library(
+    'echelpers',
+    sources: files('HelperFunctions.cpp'),
+    include_directories: _incdirs,
+    dependencies: _deps,
+    link_with: _linkto,
+    cpp_args: _args,
+    install: true,
+)
+
+subdir('matter')
 
 # IO operations
 subdir('io')
-ss.add_all(ioss)
 
-ss.add(
-    files(
-        'Bundling.cpp',
-        'Job.cpp',
-        'Parameters.cpp',
-        'PointJob.cpp',
-        'Potential.cpp',
-    ),
-)
-# eonclib_sources = [
+eonclib_sources = [
 # 'Optimizer.cpp',
 # 'PrefactorJob.cpp',
 # 'LBFGS.cpp',
 # 'ReplicaExchangeJob.cpp',
 # 'BondBoost.cpp',
-# 'GlobalOptimization.cpp',
-# 'LowestEigenmode.cpp',
-# 'MinModeSaddleSearch.cpp',
-# 'StructureComparisonJob.cpp',
-# 'SteepestDescent.cpp',
-# 'ImprovedDimer.cpp',
-# 'Prefactor.cpp',
-# 'ConjugateGradients.cpp',
-# 'FiniteDifferenceJob.cpp',
-# 'Lanczos.cpp',
-# 'HessianJob.cpp',
-# 'TADJob.cpp',
-# 'ProcessSearchJob.cpp',
-# 'NudgedElasticBand.cpp',
-# 'MonteCarloJob.cpp',
-# 'DynamicsJob.cpp',
-# 'MonteCarlo.cpp',
-# 'Hessian.cpp',
-# 'NudgedElasticBandJob.cpp',
-# 'DynamicsSaddleSearch.cpp',
-# # 'StringHelpers.cc', # Template
-# 'MatrixHelpers.hpp', # Template
-# 'Dimer.cpp',
-# 'Dynamics.cpp',
-# 'GlobalOptimizationJob.cpp',
-# 'BiasedGradientSquaredDescent.cpp',
-# 'SafeHyperJob.cpp',
-# 'MinimizationJob.cpp',
-# 'Quickmin.cpp',
-# 'ParallelReplicaJob.cpp',
-# 'SurrogatePotential.cpp', # Part of the interface
-# 'BasinHoppingJob.cpp',
-# 'FIRE.cpp',
-# 'EpiCenters.cpp',
-# 'SaddleSearchJob.cpp',
-# 'BasinHoppingSaddleSearch.cpp',
-# ]
+    'Parameters.cpp',  # TODO(rg) remove
+    'Job.cpp',
+    # 'GlobalOptimization.cpp',
+    # 'LowestEigenmode.cpp',
+    # 'MinModeSaddleSearch.cpp',
+    # 'StructureComparisonJob.cpp',
+    # 'SteepestDescent.cpp',
+    # 'ImprovedDimer.cpp',
+    'PointJob.cpp',
+    # 'Prefactor.cpp',
+    # 'ConjugateGradients.cpp',
+    # 'FiniteDifferenceJob.cpp',
+    # 'Lanczos.cpp',
+    # 'HessianJob.cpp',
+    # 'TADJob.cpp',
+    # 'ProcessSearchJob.cpp',
+    'Bundling.cpp',
+    # 'NudgedElasticBand.cpp',
+    # 'MonteCarloJob.cpp',
+    # 'DynamicsJob.cpp',
+    # 'MonteCarlo.cpp',
+    # 'Hessian.cpp',
+    # 'NudgedElasticBandJob.cpp',
+    # 'DynamicsSaddleSearch.cpp',
+    # # 'StringHelpers.cc', # Template
+    # 'MatrixHelpers.hpp', # Template
+    # 'Dimer.cpp',
+    # 'Dynamics.cpp',
+    # 'GlobalOptimizationJob.cpp',
+    # 'BiasedGradientSquaredDescent.cpp',
+    # 'SafeHyperJob.cpp',
+    # 'MinimizationJob.cpp',
+    # 'Quickmin.cpp',
+    # 'ParallelReplicaJob.cpp',
+    'Potential.cpp',
+    # 'SurrogatePotential.cpp', # Part of the interface
+    # 'BasinHoppingJob.cpp',
+    # 'FIRE.cpp',
+    # 'EpiCenters.cpp',
+    # 'SaddleSearchJob.cpp',
+    # 'BasinHoppingSaddleSearch.cpp',
+]
 
 eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
 
@@ -250,15 +273,13 @@ eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
 
 # --------------------- Library
 
-ssconfig = ss.apply(config)
 eclib = library(
     'eonclib',
-    sources: ssconfig.sources(),
+    sources: eonclib_sources,
     include_directories: _incdirs,
-    dependencies: [ssconfig.dependencies(), _deps],
+    dependencies: _deps,
     link_with: _linkto,
     cpp_args: _args,
-    fortran_args: ['-fno-implicit-none'],
     link_args: _linkargs,
     install: true,
 )
@@ -267,7 +288,7 @@ _linkto += eclib
 
 # Export variable
 eclib_dep = declare_dependency(
-    link_with: _linkto,
+    link_with: [eclib, _linkto],
     include_directories: _incdirs,
     compile_args: _fargs + _args,
     dependencies: _deps,

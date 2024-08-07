@@ -1,3 +1,11 @@
 subdir('Asap')
 
-potss.add(files('EffectiveMediumTheory.cpp'))
+emt = shared_library(
+    'emt',
+    'EffectiveMediumTheory.cpp',
+    dependencies: _deps,
+    cpp_args: _args,
+    link_with: _linkto,
+    include_directories: _incdirs,
+    install: true,
+)
