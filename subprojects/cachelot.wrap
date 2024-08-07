@@ -1,0 +1,11 @@
+[wrap-git]
+directory=cachelot
+# Waiting on:
+# https://github.com/cachelot/cachelot/pull/39
+url=https://github.com/HaoZeke/cachelot.git
+revision=4cb4c6b9c11c361e4999452420ce6150a887a336
+depth=1
+method=cmake
+
+[provide]
+cachelot=cachelot_dep
