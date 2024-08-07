@@ -176,9 +176,6 @@ if get_option('with_vasp')
     endif
 endif
 
-# Subprojects
-_deps += subproject('readCon').get_variable('readcon_dep')
-
 # Potentials
 subdir('potentials')
 
