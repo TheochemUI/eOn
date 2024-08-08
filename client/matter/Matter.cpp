@@ -510,8 +510,7 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 std::shared_ptr<PotBase> Matter::getPotential() { return this->potential; }
 
 size_t Matter::computeHash() const {
-  // TODO(rg) :: Might get away with 32 bit
-  xxh::hash_state_t<64> hash_stream;
+  xxh::hash_state_t<32> hash_stream;
   for (auto idx = 0; idx < positions.size(); ++idx) {
     hash_stream.update(reinterpret_cast<const char *>(&positions.data()[idx]),
                        sizeof(positions.data()[idx]));
