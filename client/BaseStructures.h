@@ -19,13 +19,6 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
-// TODO(rg) :: These defines need to be tested for and set in meson.build
-#define HAVE_ALIGNED_ALLOC 1
-#define HAVE_POSIX_MEMALIGN 1
-#define CACHELOT_PLATFORM_BITS 64
-#include <cachelot/cache.h>
-#include <cachelot/common.h>
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/cfg/env.h> // support for loading levels from the environment variable
 #include <spdlog/fmt/ostr.h> // support for user defined types
@@ -134,13 +127,4 @@ enum class RATE { HTST, QQHTST };
 enum class FILTER { CUTOFF, FRACTION };
 } // namespace Prefactor
 
-template <typename T>
-inline void hash_combine(std::size_t &seed, const T &value) {
-  std::hash<T> hasher;
-  seed ^= hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-
-constexpr size_t cache_memory = 64 * cachelot::Megabyte;
-constexpr size_t page_size = 4 * cachelot::Megabyte;
-constexpr size_t hash_initial = 131072;
 } // namespace eonc

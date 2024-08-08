@@ -10,7 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/matter/Matter.h"
-#include "client/thirdparty/xxhash.hpp"
 #include <cachelot/hash_fnv1a.h>
 #include <stdexcept>
 // #include "BondBoost.h"
@@ -37,7 +36,6 @@ const Matter &Matter::operator=(const Matter &matter) {
 
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
-  myCache = matter.myCache;
 
   return *this;
 }
@@ -392,31 +390,17 @@ void Matter::resetForceCalls() {
 }
 
 void Matter::computePotential() {
-  size_t currentHash = computeHash();
-  auto chash = std::to_string(currentHash);
-  cachelot::slice cache_key(chash.c_str(), chash.size());
-  SPDLOG_INFO("Current Hash is {}, with key {}", currentHash, cache_key.str());
-  // Try to retrieve from cache
-  auto found_item = myCache->do_get(cache_key, currentHash);
-  if (found_item) {
-    std::tie(potentialEnergy, forces) =
-        *(std::tuple<double, AtomMatrix> *)(found_item->value().str().c_str());
-    std::cout << "Found " << potentialEnergy << std::endl;
-  } else {
-    auto tiedEF = potential->get_ef(positions, atomicNrs, cell);
-    std::tie(potentialEnergy, forces) = tiedEF;
-    // TODO(rg): The size of this doesn't seem right, calculate the exact size
-    // using Natoms and the rest.
-    cachelot::slice value_slice((char *)(&tiedEF),
-                                sizeof(std::tuple<double, AtomMatrix>));
-    auto new_item =
-        myCache->create_item(cache_key, currentHash, value_slice.length(), 0,
-                             cachelot::cache::Item::infinite_TTL);
-    new_item->assign_value(value_slice);
-    bool isDone = myCache->do_add(new_item);
-    SPDLOG_INFO("{} :: Not found, so adding {}", isDone, potentialEnergy);
-    if (not isDone) {
-      throw std::runtime_error("Key collision for Potential cache");
+  if (!potential) {
+    throw(std::runtime_error("Whoops, you need a potential.."));
+  }
+  std::tie(potentialEnergy, forces) =
+      potential->get_ef(positions, atomicNrs, cell);
+  if (isFixed.sum() == 0 && /* params->removeNetForce */ false) {
+    Eigen::Vector3d tempForce(3);
+    tempForce = forces.colwise().sum() / nAtoms;
+
+    for (long int i = 0; i < nAtoms; i++) {
+      forces.row(i) -= tempForce.transpose();
     }
   }
 }
@@ -504,18 +488,5 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<PotBase> Matter::getPotential() { return this->potential; }
-
-size_t Matter::computeHash() const {
-  xxh::hash_state_t<32> hash_stream;
-  for (auto idx = 0; idx < positions.size(); ++idx) {
-    hash_stream.update(reinterpret_cast<const char *>(&positions.data()[idx]),
-                       sizeof(positions.data()[idx]));
-  }
-  for (auto idx = 0; idx < isFixed.size(); ++idx) {
-    hash_stream.update(reinterpret_cast<const char *>(&isFixed[idx]),
-                       sizeof(isFixed[idx]));
-  }
-  return hash_stream.digest();
-}
 
 } // namespace eonc
