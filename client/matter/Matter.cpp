@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/matter/Matter.h"
+#include "client/thirdparty/xxhash.hpp"
 #include <cachelot/hash_fnv1a.h>
 #include <stdexcept>
 // #include "BondBoost.h"
@@ -509,19 +510,17 @@ double Matter::getEnergyVariance() { return this->energyVariance; }
 std::shared_ptr<PotBase> Matter::getPotential() { return this->potential; }
 
 size_t Matter::computeHash() const {
-  size_t seed = hash_initial;
-
-  // Hash positions
-  for (int i = 0; i < positions.size(); ++i) {
-    hash_combine(seed, positions.data()[i]);
+  // TODO(rg) :: Might get away with 32 bit
+  xxh::hash_state_t<64> hash_stream;
+  for (auto idx = 0; idx < positions.size(); ++idx) {
+    hash_stream.update(reinterpret_cast<const char *>(&positions.data()[idx]),
+                       sizeof(positions.data()[idx]));
   }
-
-  // Hash fixed mask
-  for (const auto &flag : isFixed) {
-    hash_combine(seed, flag);
+  for (auto idx = 0; idx < isFixed.size(); ++idx) {
+    hash_stream.update(reinterpret_cast<const char *>(&isFixed[idx]),
+                       sizeof(isFixed[idx]));
   }
-
-  return seed;
+  return hash_stream.digest();
 }
 
 } // namespace eonc
