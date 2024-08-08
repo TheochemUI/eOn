@@ -168,15 +168,6 @@ void commandLine(int argc, char **argv) {
       // Run PointJob
       auto spj = eonc::makeJob(tbl, mat1);
       auto res = spj->run();
-      auto pot2 = makePotential(
-          toml::table{{"Potential", toml::table{{"potential", "morse_pt"}}}});
-      pot2->set_cache(&CACHELOT_CMD);
-      mat1.setPotential(pot2);
-      spj = eonc::makeJob(tbl, mat1);
-      spj->run();
-      mat1.setPotential(pot);
-      spj = eonc::makeJob(tbl, mat1);
-      spj->run();
     } else if (mflag) {
       // XXX: Finish
       // minimize(matter, confileout);
