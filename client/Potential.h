@@ -87,54 +87,62 @@ public:
                                         const Vector<size_t> &atmnrs,
                                         const Matrix3S &box) override final {
     const size_t nAtoms{static_cast<size_t>(pos.rows())};
-    const size_t currentHash = getHash(pos, atmnrs);
     // When not in debug mode the initial values are unchecked
     // So the initial data in efd matters!
     AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
     ForceOut efd{forces.data(), 0, 0};
     if (this->potCache != nullptr) {
-      SPDLOG_TRACE("Cache present and hit");
-      const auto chash = std::to_string(currentHash);
-      cachelot::slice cache_key(chash.c_str(), chash.size());
-      SPDLOG_TRACE("Current Hash is {}, with key {}", currentHash,
-                   cache_key.str());
-
-      auto found_item = potCache->do_get(cache_key, currentHash);
-      if (found_item) {
-        // Deserialize the cached value
-        auto buffer = found_item->value().str();
-        std::memcpy(&efd.energy, buffer.c_str(), sizeof(double));
-        std::memcpy(forces.data(), buffer.c_str() + sizeof(double),
-                    forces.size() * sizeof(double));
-        SPDLOG_TRACE("Found {}", efd.energy);
-      } else {
-        SPDLOG_TRACE("Cache present and miss");
-        this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
-
-        // Serialize the value
-        size_t value_size = sizeof(double) + forces.size() * sizeof(double);
-        std::vector<char> buffer(value_size);
-        std::memcpy(buffer.data(), &efd.energy, sizeof(double));
-        std::memcpy(buffer.data() + sizeof(double), forces.data(),
-                    forces.size() * sizeof(double));
-
-        cachelot::slice value_slice(buffer.data(), buffer.size());
-        auto new_item =
-            potCache->create_item(cache_key, currentHash, value_slice.length(),
-                                  0, cachelot::cache::Item::infinite_TTL);
-        new_item->assign_value(value_slice);
-        bool isDone = potCache->do_add(new_item);
-        SPDLOG_TRACE("{} :: Not found, so added {}", isDone, efd.energy);
-        if (not isDone) {
-          throw std::runtime_error("Key collision for Potential cache");
-        }
-      }
+      SPDLOG_TRACE("Cache present");
+      handle_cache(pos, atmnrs, box, efd, forces);
     } else {
       SPDLOG_TRACE("Cache not present");
       this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
     }
     return std::make_tuple(efd.energy, forces);
   };
+
+  // TODO(rg) :: Put this in a separate class
+  void handle_cache(const AtomMatrix &pos, const Vector<size_t> &atmnrs,
+                    const Matrix3S &box, ForceOut &efd, AtomMatrix &forces) {
+    // TODO(rg):: This can probably be parsed faster
+    const size_t nAtoms{static_cast<size_t>(pos.rows())};
+    const size_t currentHash = getHash(pos, atmnrs);
+    const auto chash = std::to_string(currentHash);
+    cachelot::slice cache_key(chash.c_str(), chash.size());
+    SPDLOG_TRACE("Current Hash is {}, with key {}", currentHash,
+                 cache_key.str());
+    auto found_item = potCache->do_get(cache_key, currentHash);
+    if (found_item) {
+      SPDLOG_TRACE("Cache hit");
+      // Deserialize the cached value
+      auto buffer = found_item->value().str();
+      std::memcpy(&efd.energy, buffer.c_str(), sizeof(double));
+      std::memcpy(forces.data(), buffer.c_str() + sizeof(double),
+                  forces.size() * sizeof(double));
+      SPDLOG_TRACE("Found {}", efd.energy);
+    } else {
+      SPDLOG_TRACE("Cache miss");
+      this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
+
+      // Serialize the value
+      size_t value_size = sizeof(double) + forces.size() * sizeof(double);
+      std::vector<char> buffer(value_size);
+      std::memcpy(buffer.data(), &efd.energy, sizeof(double));
+      std::memcpy(buffer.data() + sizeof(double), forces.data(),
+                  forces.size() * sizeof(double));
+
+      cachelot::slice value_slice(buffer.data(), buffer.size());
+      auto new_item =
+          potCache->create_item(cache_key, currentHash, value_slice.length(), 0,
+                                cachelot::cache::Item::infinite_TTL);
+      new_item->assign_value(value_slice);
+      bool isDone = potCache->do_add(new_item);
+      SPDLOG_TRACE("{} :: Not found, so added {}", isDone, efd.energy);
+      if (not isDone) {
+        throw std::runtime_error("Key collision for Potential cache");
+      }
+    }
+  }
 
   size_t getInstances() const override final { return pot::registry<T>::count; }
   size_t getTotalForceCalls() const override final {
