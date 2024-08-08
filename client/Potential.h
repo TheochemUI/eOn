@@ -19,12 +19,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
-#if defined(__APPLE__) && defined(__aarch64__)
-// See https://github.com/RedSpah/xxhash_cpp/issues/33
-#define XXH_VECTOR 0
-#endif
-
-#include <xxhash.hpp>
+#include <xxhash.h>
 
 #include "client/potentials/PotentialCache.hpp"
 
@@ -57,19 +52,28 @@ protected:
 private:
   size_t computeHash(const AtomMatrix &pos,
                      const Vector<size_t> &atmnrs) const {
-    // TODO(rg): Make hash_state_t<32>, hash3_state_t<64> a parameter
-    xxh::hash3_state_t<64> hash_stream;
-    for (auto idx = 0; idx < pos.size(); ++idx) {
-      hash_stream.update(reinterpret_cast<const char *>(&pos.data()[idx]),
-                         sizeof(pos.data()[idx]));
+    XXH64_state_t *state = XXH64_createState();
+    if (state == nullptr) {
+      throw std::runtime_error("Failed to create XXH64 state");
     }
+
+    // TODO(rg):: seed should be a user parameter
+    XXH64_reset(state, 1995);
+
+    XXH64_update(state, reinterpret_cast<const void *>(pos.data()),
+                 sizeof(double) * pos.size());
     for (auto idx = 0; idx < atmnrs.size(); ++idx) {
-      hash_stream.update(reinterpret_cast<const char *>(&atmnrs[idx]),
-                         sizeof(atmnrs[idx]));
+      XXH64_update(state, reinterpret_cast<const void *>(&atmnrs[idx]),
+                   sizeof(atmnrs[idx]));
     }
     const std::string type_name = typeid(T).name();
-    hash_stream.update(type_name);
-    return hash_stream.digest();
+    XXH64_update(state, type_name.data(), type_name.size());
+
+    // Finalize the hash computation and free state
+    size_t hash_result = XXH64_digest(state);
+    XXH64_freeState(state);
+
+    return hash_result;
   }
 
 public:

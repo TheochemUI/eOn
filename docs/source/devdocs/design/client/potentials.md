@@ -184,9 +184,9 @@ Essentially there are three states, gated by a simple `nullptr` check
 
 ### Hashing
 
-The hash function is a streaming, **non cryptographic** 32-bit hash computed by
-the [xxh header-only library](https://github.com/RedSpah/xxhash_cpp) which
-implements the [xxhash](https://xxhash.com/) algorithm. The hash is computed on the basis of:
+The hash function is a streaming, **non cryptographic** hash computed by the
+[xxhash](https://xxhash.com/) library's `XXH3` algorithm. The hash is computed
+on the basis of:
 
 - Position data
 - Atomic numbers
