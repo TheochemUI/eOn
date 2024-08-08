@@ -17,7 +17,7 @@ test_array = [  #
 ]
 if get_option('buildtype') != 'release'
 # This test gives different outputs on debug
-    test_array += ['test_enum', 'EnumTest.cc', '']
+    test_array += [['test_enum', 'EnumTest.cc', '']]
 endif
 foreach test : test_array
     test(
