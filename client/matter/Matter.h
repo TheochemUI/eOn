@@ -18,12 +18,6 @@ namespace eonc {
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
 
-/* Data describing an atomic structure. This class has been devised to handle
- * information about an atomic structure such as positions, velocities, masses,
- * etc. It also allow to associate a forcefield for the structure through a
- * pointer to function (potential()). The class can read and save data to a .con
- * file (atom2con() and con2atom()). It can also save to a .xyz file
- * (atom2xyz()).*/
 class Matter {
 public:
   Matter(std::shared_ptr<PotBase> pot)
