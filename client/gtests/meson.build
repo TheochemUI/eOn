@@ -3,8 +3,8 @@ test_deps = _deps
 test_array = [  #
     ['test_element', 'ElementTest.cc', ''],
     ['test_matter_cache', 'MatterCache.cc', 'sulfolene'],
-    ['test_enum', 'EnumTest.cc', ''],
     ['test_iohelp', 'IOHelpersTest.cc', ''],
+    ['test_potcachekey', 'PotCacheKey.cc', ''],
     ['test_potcount', 'PotCountTest.cc', '../saddle_search'],
     # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
     # ['strparse_run', 'StringHelpersTest.cpp', ''],
@@ -15,6 +15,10 @@ test_array = [  #
     ['approve_matter_writers', 'ApproveMatterWriters.cc', 'sulfolene'],
     # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
 ]
+if get_option('buildtype') != 'release'
+# This test gives different outputs on debug
+    test_array += ['test_enum', 'EnumTest.cc', '']
+endif
 foreach test : test_array
     test(
         test.get(0),
