@@ -41,8 +41,9 @@ You can contact the author at :
 
 /* Intrinsics
 * Sadly has to be included in the global namespace or literally everything breaks
+* Not for M1 Macs
 */
-#if (defined(__ARM_NEON) && defined(__APPLE__))
+#if (defined(__ARM_NEON) && defined(__APPLE__) && not defined(__aarch64__))
 #include "sse2neon.h"
 #else
 #include <immintrin.h>
