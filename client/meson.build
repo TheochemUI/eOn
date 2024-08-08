@@ -176,9 +176,8 @@ endif
 
 # Subprojects
 cmake = import('cmake')
-opt_var = cmake.subproject_options()
-# Boost static libs needs
-opt_var.add_cmake_defines(
+optv_cachelot = cmake.subproject_options()
+optv_cachelot.add_cmake_defines(
     {
         'CMAKE_BUILD_TYPE': 'Release',
         'Boost_USE_STATIC_LIBS': false,
@@ -188,8 +187,15 @@ opt_var.add_cmake_defines(
         'CMAKE_C_FLAGS': '-w',
     },
 )
-cmcachelot = cmake.subproject('cachelot', options: opt_var)
+cmcachelot = cmake.subproject('cachelot', options: optv_cachelot)
 _deps += cmcachelot.dependency('cachelot')
+
+optv_xxhashpp = cmake.subproject_options()
+optv_xxhashpp.add_cmake_defines(
+    {'CMAKE_BUILD_TYPE': 'Release', 'CMAKE_POSITION_INDEPENDENT_CODE': true},
+)
+cmxxhashpp = cmake.subproject('xxhashpp', options: optv_xxhashpp)
+_deps += cmxxhashpp.dependency('xxhash_cpp')
 
 # Potentials
 subdir('potentials')
