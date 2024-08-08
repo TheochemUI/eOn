@@ -124,16 +124,17 @@ private:
   std::shared_ptr<PotBase> potential;
   size_t forceCalls{0};
 
+  // TODO(rg) :: Remove for const correctness
   void computePotential();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
   size_t computeHash() const;
   // Stuff which used to be in MatterPrivateData
   size_t npotcalls{0};
+  // TODO(rg):: Do we need to store forces and potential energy anymore..
   AtomMatrix forces{MatrixType::Zero(0, 3)};
   AtomMatrix biasForces{MatrixType::Zero(0, 3)};
   BondBoost *biasPotential{nullptr};
-  // array of bool, false for movable atom, true for fixed
   double energyVariance{0.0};
   double potentialEnergy{0.0};
 
@@ -143,12 +144,11 @@ public:
   size_t nAtoms{0};
   // TODO(rg): Should really not be public
   Matrix3S cellInverse{Matrix3S::Zero()};
-  // Indicates if the potential energy and forces need to be recalculated
-  bool recomputePotential{true};
   AtomMatrix positions{MatrixType::Zero(0, 3)};
   AtomMatrix velocities{MatrixType::Zero(0, 3)};
   VectorType masses{VectorType::Zero(0)};
   Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
+  // array of bool, false for movable atom, true for fixed
   Vector<int> isFixed{Vector<int>::Zero(0)};
 };
 
