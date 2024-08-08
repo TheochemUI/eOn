@@ -393,35 +393,31 @@ void Matter::resetForceCalls() {
 
 void Matter::computePotential() {
   size_t currentHash = computeHash();
-  cachelot::cache::HashFunction calc_hash =
-      cachelot::fnv1a<cachelot::cache::Cache::hash_type>::hasher();
-  cachelot::slice cache_key(reinterpret_cast<const char *>(&currentHash),
-                            sizeof(currentHash));
-
+  auto chash = std::to_string(currentHash);
+  cachelot::slice cache_key(chash.c_str(), chash.size());
+  SPDLOG_INFO("Current Hash is {}, with key {}", currentHash, cache_key.str());
   // Try to retrieve from cache
-  auto found_item = myCache->do_get(cache_key, calc_hash(cache_key));
+  auto found_item = myCache->do_get(cache_key, currentHash);
   if (found_item) {
-    // If found in cache, use the cached value
     std::tie(potentialEnergy, forces) =
         *(std::tuple<double, AtomMatrix> *)(found_item->value().str().c_str());
     std::cout << "Found " << potentialEnergy << std::endl;
-    // SPDLOG_INFO("Found, so reusing {}",
-    // std::string(found_item->value().begin(), found_item->value().end()));
   } else {
-    // If not found in cache, compute potential energy
     auto tiedEF = potential->get_ef(positions, atomicNrs, cell);
     std::tie(potentialEnergy, forces) = tiedEF;
-    // Store the computed value in the cache
     // TODO(rg): The size of this doesn't seem right, calculate the exact size
     // using Natoms and the rest.
     cachelot::slice value_slice((char *)(&tiedEF),
                                 sizeof(std::tuple<double, AtomMatrix>));
-    SPDLOG_INFO("Not found, so adding {}", potentialEnergy);
-    auto new_item = myCache->create_item(cache_key, calc_hash(cache_key),
-                                         value_slice.length(), 0,
-                                         cachelot::cache::Item::infinite_TTL);
+    auto new_item =
+        myCache->create_item(cache_key, currentHash, value_slice.length(), 0,
+                             cachelot::cache::Item::infinite_TTL);
     new_item->assign_value(value_slice);
-    myCache->do_set(new_item);
+    bool isDone = myCache->do_add(new_item);
+    SPDLOG_INFO("{} :: Not found, so adding {}", isDone, potentialEnergy);
+    if (not isDone) {
+      throw std::runtime_error("Key collision for Potential cache");
+    }
   }
 }
 
