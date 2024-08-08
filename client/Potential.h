@@ -38,12 +38,11 @@ protected:
   // Does not take into account the fixed / free atoms
   // Callers responsibility that ForceOut has enough space!!!
   // Protected since this is really only to be implemented... callers use get_ef
-  virtual void force(const ForceInput &params, ForceOut *efvd) = 0;
+  virtual void force(const ForceInput &, ForceOut *) = 0;
 
 public:
-  virtual std::tuple<double, AtomMatrix> get_ef(const AtomMatrix pos,
-                                                const Vector<size_t> atmnrs,
-                                                const Matrix3S box) = 0;
+  virtual std::tuple<double, AtomMatrix>
+  get_ef(const AtomMatrix &, const Vector<size_t> &, const Matrix3S &) = 0;
   virtual size_t getInstances() const = 0;
   virtual size_t getTotalForceCalls() const = 0;
   void set_cache(cachelot::cache::Cache *cc) { potCache = cc; }
@@ -80,16 +79,16 @@ public:
   virtual void forceImpl(const ForceInput &params, ForceOut *efvd) = 0;
   // Safer, saner returns, and also allocates memory for force()
   // TODO(rg):: A variant return can unify SurrogatePotential and Potential
-  std::tuple<double, AtomMatrix> get_ef(const AtomMatrix pos,
-                                        const Vector<size_t> atmnrs,
-                                        const Matrix3S box) override final {
+  std::tuple<double, AtomMatrix> get_ef(const AtomMatrix &pos,
+                                        const Vector<size_t> &atmnrs,
+                                        const Matrix3S &box) override final {
     const size_t nAtoms{static_cast<size_t>(pos.rows())};
     const size_t currentHash = computeHash(pos, atmnrs);
     // When not in debug mode the initial values are unchecked
     // So the initial data in efd matters!
     AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
     ForceOut efd{forces.data(), 0, 0};
-    if (this->potCache) {
+    if (this->potCache != nullptr) {
       SPDLOG_INFO("Cache present and hit");
       const auto chash = std::to_string(currentHash);
       cachelot::slice cache_key(chash.c_str(), chash.size());
