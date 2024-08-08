@@ -3,7 +3,6 @@ _incdirs += [include_directories('thirdparty')]
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
-
 use_fortran = false
 if get_option('with_fortran') or get_option('with_xtb') or get_option(
     'with_cuh2',
@@ -190,12 +189,8 @@ optv_cachelot.add_cmake_defines(
 cmcachelot = cmake.subproject('cachelot', options: optv_cachelot)
 _deps += cmcachelot.dependency('cachelot')
 
-optv_xxhashpp = cmake.subproject_options()
-optv_xxhashpp.add_cmake_defines(
-    {'CMAKE_BUILD_TYPE': 'Release', 'CMAKE_POSITION_INDEPENDENT_CODE': true},
-)
-cmxxhashpp = cmake.subproject('xxhashpp', options: optv_xxhashpp)
-_deps += cmxxhashpp.dependency('xxhash_cpp')
+# Wrap installed
+_deps += subproject('xxhash').get_variable('xxhash_dep')
 
 # Potentials
 subdir('potentials')
