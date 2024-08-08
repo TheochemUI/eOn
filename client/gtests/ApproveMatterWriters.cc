@@ -25,15 +25,14 @@ std::string readFileContent(const std::string &filename) {
   return buffer.str();
 }
 
-const auto cachelot_eonctest = cachelot::cache::Cache::Create(
+auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
     eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
 
 std::vector<eonc::Matter> getTestMatter() {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
   auto pot_default = eonc::makePotential(config);
-  auto matter = eonc::Matter(
-      pot_default, const_cast<cachelot::cache::Cache *>(&cachelot_eonctest));
+  auto matter = eonc::Matter(pot_default, &CACHELOT_EONCTEST);
   std::string confile("pos.con");
   eonc::mat::ConFileParser cfp;
   cfp.parse(matter, confile);
