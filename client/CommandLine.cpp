@@ -151,9 +151,12 @@ void commandLine(int argc, char **argv) {
     }
 
     auto CACHELOT_CMD = cachelot::cache::Cache::Create(
-        eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
+        eonc::cache::cache_memory, eonc::cache::page_size,
+        eonc::cache::hash_initial, true);
+    auto pcache = eonc::cache::PotentialCache();
+    pcache.set_cache(&CACHELOT_CMD);
     auto pot = makePotential(tbl);
-    pot->set_cache(&CACHELOT_CMD);
+    pot->set_cache(&pcache);
     auto mat1 = Matter(pot);
     eonc::mat::ConFileParser cfp;
     cfp.parse(mat1, confile);

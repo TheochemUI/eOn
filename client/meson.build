@@ -66,6 +66,8 @@ _args += cppc.get_supported_arguments(
         '-Wfatal-errors',
         # From Eigen
         '-Wno-maybe-uninitialized',
+        # From cachelot
+        '-Wno-ignored-qualifiers',
     ],
 )
 
