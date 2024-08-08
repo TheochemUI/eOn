@@ -20,21 +20,12 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
-// TODO(rg) :: These defines need to be tested for and set in meson.build
-#define HAVE_ALIGNED_ALLOC 1
-#define HAVE_POSIX_MEMALIGN 1
-#define CACHELOT_PLATFORM_BITS 64
-#include <cachelot/cache.h>
-#include <cachelot/common.h>
+#include "client/potentials/PotentialCache.hpp"
 
 namespace eonc {
-constexpr size_t cache_memory = 64 * cachelot::Megabyte;
-constexpr size_t page_size = 4 * cachelot::Megabyte;
-constexpr size_t hash_initial = 131072;
-
 class PotBase {
 protected:
-  cachelot::cache::Cache *potCache = nullptr;
+  eonc::cache::PotentialCache *pcache = nullptr;
   // Does not take into account the fixed / free atoms
   // Callers responsibility that ForceOut has enough space!!!
   // Protected since this is really only to be implemented... callers use get_ef
@@ -45,7 +36,7 @@ public:
   get_ef(const AtomMatrix &, const Vector<size_t> &, const Matrix3S &) = 0;
   virtual size_t getInstances() const = 0;
   virtual size_t getTotalForceCalls() const = 0;
-  void set_cache(cachelot::cache::Cache *cc) { potCache = cc; }
+  void set_cache(eonc::cache::PotentialCache *cc) { pcache = cc; }
 };
 
 template <typename T>
@@ -60,6 +51,7 @@ protected:
 private:
   size_t computeHash(const AtomMatrix &pos,
                      const Vector<size_t> &atmnrs) const {
+    // TODO(rg): Make 32, 64 a parameter
     xxh::hash_state_t<32> hash_stream;
     for (auto idx = 0; idx < pos.size(); ++idx) {
       hash_stream.update(reinterpret_cast<const char *>(&pos.data()[idx]),
@@ -91,7 +83,7 @@ public:
     // So the initial data in efd matters!
     AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
     ForceOut efd{forces.data(), 0, 0};
-    if (this->potCache != nullptr) {
+    if (this->pcache != nullptr) {
       SPDLOG_TRACE("Cache present");
       handle_cache(pos, atmnrs, box, efd, forces);
     } else {
@@ -107,40 +99,18 @@ public:
     // TODO(rg):: This can probably be parsed faster
     const size_t nAtoms{static_cast<size_t>(pos.rows())};
     const size_t currentHash = getHash(pos, atmnrs);
-    const auto chash = std::to_string(currentHash);
-    cachelot::slice cache_key(chash.c_str(), chash.size());
-    SPDLOG_TRACE("Current Hash is {}, with key {}", currentHash,
-                 cache_key.str());
-    auto found_item = potCache->do_get(cache_key, currentHash);
+    SPDLOG_TRACE("Current hash and key is {}", currentHash);
+    const eonc::cache::KeyHash kv{currentHash};
+    auto found_item = pcache->find(kv);
     if (found_item) {
       SPDLOG_TRACE("Cache hit");
-      // Deserialize the cached value
-      auto buffer = found_item->value().str();
-      std::memcpy(&efd.energy, buffer.c_str(), sizeof(double));
-      std::memcpy(forces.data(), buffer.c_str() + sizeof(double),
-                  forces.size() * sizeof(double));
+      pcache->deserialize_hit(found_item, efd, forces);
       SPDLOG_TRACE("Found {}", efd.energy);
     } else {
       SPDLOG_TRACE("Cache miss");
       this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
-
-      // Serialize the value
-      size_t value_size = sizeof(double) + forces.size() * sizeof(double);
-      std::vector<char> buffer(value_size);
-      std::memcpy(buffer.data(), &efd.energy, sizeof(double));
-      std::memcpy(buffer.data() + sizeof(double), forces.data(),
-                  forces.size() * sizeof(double));
-
-      cachelot::slice value_slice(buffer.data(), buffer.size());
-      auto new_item =
-          potCache->create_item(cache_key, currentHash, value_slice.length(), 0,
-                                cachelot::cache::Item::infinite_TTL);
-      new_item->assign_value(value_slice);
-      bool isDone = potCache->do_add(new_item);
-      SPDLOG_TRACE("{} :: Not found, so added {}", isDone, efd.energy);
-      if (not isDone) {
-        throw std::runtime_error("Key collision for Potential cache");
-      }
+      pcache->add_serialized(kv, efd, forces);
+      SPDLOG_TRACE("Not found in cache, so added {}", efd.energy);
     }
   }
 

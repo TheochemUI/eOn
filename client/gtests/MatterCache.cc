@@ -19,13 +19,16 @@ using namespace eonc;
 using namespace std::chrono;
 
 auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
-    eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
+    eonc::cache::cache_memory, eonc::cache::page_size,
+    eonc::cache::hash_initial, true);
 
 TEST_CASE("Matter caching", "[Matter]") {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
   auto pot_default = eonc::makePotential(config);
-  pot_default->set_cache(&CACHELOT_EONCTEST);
+  auto pcache = eonc::cache::PotentialCache();
+  pcache.set_cache(&CACHELOT_EONCTEST);
+  pot_default->set_cache(&pcache);
 
   auto matter = eonc::Matter(pot_default);
   std::string confile("pos.con");
