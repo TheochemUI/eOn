@@ -75,6 +75,10 @@ private:
   }
 
 public:
+  // Mostly for testing
+  size_t getHash(const AtomMatrix &pos, const Vector<size_t> &atmnrs) const {
+    return computeHash(pos, atmnrs);
+  }
   // To be implemented by the child classes
   virtual void forceImpl(const ForceInput &params, ForceOut *efvd) = 0;
   // Safer, saner returns, and also allocates memory for force()
@@ -83,7 +87,7 @@ public:
                                         const Vector<size_t> &atmnrs,
                                         const Matrix3S &box) override final {
     const size_t nAtoms{static_cast<size_t>(pos.rows())};
-    const size_t currentHash = computeHash(pos, atmnrs);
+    const size_t currentHash = getHash(pos, atmnrs);
     // When not in debug mode the initial values are unchecked
     // So the initial data in efd matters!
     AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
