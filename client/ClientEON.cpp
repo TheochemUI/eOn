@@ -22,6 +22,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
+#include <spdlog/cfg/env.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <string.h>
@@ -116,6 +117,7 @@ void printSystemInfo() {
 
 int main(int argc, char **argv) {
   // --- Start Logging setup
+  spdlog::cfg::load_env_levels();
   // Sinks
   spdlog::flush_every(std::chrono::seconds(3));
   auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
