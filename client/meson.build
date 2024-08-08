@@ -129,14 +129,8 @@ configure_file(
 )
 
 # Dependencies
-if not is_windows
-# libm for Unix systems
-    m_dep = cppc.find_library('m', required: false)
-    _deps += m_dep
-    # For building with clang
-    _deps += [declare_dependency(link_args: '-lstdc++')]
-endif
-
+# Needed for spdlog
+# See https://github.com/gabime/spdlog/issues/58
 threads_dep = dependency('threads', required: true)
 _deps += threads_dep
 
