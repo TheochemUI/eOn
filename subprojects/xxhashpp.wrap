@@ -1,0 +1,9 @@
+[wrap-git]
+directory=xxhash_cpp
+url=https://github.com/RedSpah/xxhash_cpp.git
+revision=ad24e1c174f855cfdebc22ad4e678fd3fee3b943
+depth=1
+method=cmake
+
+[provide]
+xxhashpp=xxhash_cpp_dep
