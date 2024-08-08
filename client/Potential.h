@@ -34,7 +34,7 @@ constexpr size_t hash_initial = 131072;
 
 class PotBase {
 protected:
-  cachelot::cache::Cache *potCache;
+  cachelot::cache::Cache *potCache = nullptr;
   // Does not take into account the fixed / free atoms
   // Callers responsibility that ForceOut has enough space!!!
   // Protected since this is really only to be implemented... callers use get_ef
