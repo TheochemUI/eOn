@@ -181,6 +181,8 @@ opt_var.add_cmake_defines(
         'CMAKE_BUILD_TYPE': 'Release',
         'Boost_USE_STATIC_LIBS': false,
         'NO_SERVER': true,
+        'CMAKE_CXX_FLAGS': '-w',
+        'CMAKE_POSITION_INDEPENDENT_CODE': true,
     },
 )
 cmcachelot = cmake.subproject('cachelot', options: opt_var)
