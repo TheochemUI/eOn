@@ -10,10 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "catch2/catch_amalgamated.hpp"
-#include "client/matter/Matter.h"
 #include "client/matter/MatterCreator.hpp"
 #include <chrono>
-#include <memory>
 
 using namespace Catch::Matchers;
 using namespace eonc;
@@ -26,7 +24,8 @@ TEST_CASE("Matter caching", "[Matter]") {
   auto pot_default = eonc::makePotential(config);
   auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
       eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
-  auto matter = eonc::Matter(pot_default, &CACHELOT_EONCTEST);
+  pot_default->set_cache(&CACHELOT_EONCTEST);
+  auto matter = eonc::Matter(pot_default);
   std::string confile("pos.con");
   eonc::mat::ConFileParser cfp;
   cfp.parse(matter, confile);
@@ -64,7 +63,7 @@ TEST_CASE("Matter caching", "[Matter]") {
   SECTION("Cache hit on older elements") {
     cfp.parse(matter, confile);
 
-    auto start = high_resolution_clock::now();
+    start = high_resolution_clock::now();
     matter.getPotentialEnergy();
     auto end2 = high_resolution_clock::now();
     auto duration2 = duration_cast<nanoseconds>(end2 - start).count();
