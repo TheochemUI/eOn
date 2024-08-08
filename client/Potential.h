@@ -89,11 +89,11 @@ public:
     AtomMatrix forces{MatrixType::Zero(nAtoms, 3)};
     ForceOut efd{forces.data(), 0, 0};
     if (this->potCache != nullptr) {
-      SPDLOG_INFO("Cache present and hit");
+      SPDLOG_TRACE("Cache present and hit");
       const auto chash = std::to_string(currentHash);
       cachelot::slice cache_key(chash.c_str(), chash.size());
-      SPDLOG_INFO("Current Hash is {}, with key {}", currentHash,
-                  cache_key.str());
+      SPDLOG_TRACE("Current Hash is {}, with key {}", currentHash,
+                   cache_key.str());
 
       auto found_item = potCache->do_get(cache_key, currentHash);
       if (found_item) {
@@ -102,9 +102,9 @@ public:
         std::memcpy(&efd.energy, buffer.c_str(), sizeof(double));
         std::memcpy(forces.data(), buffer.c_str() + sizeof(double),
                     forces.size() * sizeof(double));
-        std::cout << "Found " << efd.energy << std::endl;
+        SPDLOG_TRACE("Found {}", efd.energy);
       } else {
-        SPDLOG_INFO("Cache present and miss");
+        SPDLOG_TRACE("Cache present and miss");
         this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
 
         // Serialize the value
@@ -120,13 +120,13 @@ public:
                                   0, cachelot::cache::Item::infinite_TTL);
         new_item->assign_value(value_slice);
         bool isDone = potCache->do_add(new_item);
-        SPDLOG_INFO("{} :: Not found, so added {}", isDone, efd.energy);
+        SPDLOG_TRACE("{} :: Not found, so added {}", isDone, efd.energy);
         if (not isDone) {
           throw std::runtime_error("Key collision for Potential cache");
         }
       }
     } else {
-      SPDLOG_INFO("Cache not present");
+      SPDLOG_TRACE("Cache not present");
       this->force({nAtoms, pos.data(), atmnrs.data(), box.data()}, &efd);
     }
     return std::make_tuple(efd.energy, forces);
