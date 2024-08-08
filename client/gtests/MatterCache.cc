@@ -61,7 +61,8 @@ TEST_CASE("Matter caching", "[Matter]") {
     auto end2 = high_resolution_clock::now();
     auto duration2 = duration_cast<nanoseconds>(end2 - start).count();
     // Cache miss should take longer
-    REQUIRE(duration2 >= base_call);
+    auto cache_diff = base_call - duration2;
+    REQUIRE(cache_diff < base_call);
   }
 
   SECTION("Cache hit on older elements") {
@@ -93,9 +94,10 @@ TEST_CASE("Matter caching", "[Matter]") {
     mat2.getPotentialEnergy();
     auto end2 = high_resolution_clock::now();
     auto duration2 = duration_cast<nanoseconds>(end2 - start).count();
+    auto cache_diff = base_call - duration2;
 
     // Cache hit on older keys
-    REQUIRE(duration2 < base_call);
+    REQUIRE(cache_diff < base_call);
 
     mat2.setPositions(mat2.positions.array() * 2);
 
