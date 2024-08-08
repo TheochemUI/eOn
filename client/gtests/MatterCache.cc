@@ -24,9 +24,9 @@ TEST_CASE("Matter caching", "[Matter]") {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
   auto pot_default = eonc::makePotential(config);
-  auto cachelot = cachelot::cache::Cache::Create(
+  auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
       eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
-  auto matter = eonc::Matter(pot_default, &cachelot);
+  auto matter = eonc::Matter(pot_default, &CACHELOT_EONCTEST);
   std::string confile("pos.con");
   eonc::mat::ConFileParser cfp;
   cfp.parse(matter, confile);
