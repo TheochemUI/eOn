@@ -18,9 +18,6 @@
 #include <iostream>
 #include <string>
 
-auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
-    eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
-
 std::string toSpaceSeparatedString(const Eigen::VectorXd &vec) {
   std::ostringstream oss;
   for (int i = 0; i < vec.size(); ++i) {
@@ -149,7 +146,7 @@ std::vector<eonc::Matter> getMatter() {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
   auto pot_default = eonc::makePotential(config);
-  auto m1 = eonc::Matter(pot_default, &CACHELOT_EONCTEST);
+  auto m1 = eonc::Matter(pot_default);
   std::string confile("pos.con"); // Sulfolene
   eonc::mat::ConFileParser cfp;
   cfp.parse(m1, confile);

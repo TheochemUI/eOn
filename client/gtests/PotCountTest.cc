@@ -34,31 +34,29 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
   REQUIRE(pot2->getTotalForceCalls() == 0);
 
   // Create Matter objects
-  auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
-      eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
-  Matter mat1(pot1, &CACHELOT_EONCTEST);
+  Matter mat1(pot1);
   cfp.parse(mat1, confile);
 
-  Matter mat2(pot2, &CACHELOT_EONCTEST);
+  Matter mat2(pot2);
   cfp.parse(mat2, confile);
 
   mat2.getPotentialEnergy();
   REQUIRE(pot2->getTotalForceCalls() == 1);
   REQUIRE(pot1->getTotalForceCalls() == 1);
 
-  // Matter caches, so shouldn't change
+  // Matter no longer caches, changes
   mat2.getPotentialEnergy();
-  REQUIRE(pot2->getTotalForceCalls() == 1);
-  REQUIRE(pot1->getTotalForceCalls() == 1);
+  REQUIRE(pot2->getTotalForceCalls() == 2);
+  REQUIRE(pot1->getTotalForceCalls() == 2);
 
   // Change positions and call getPotentialEnergy again
   mat2.setPositions(mat1.getPositions().array() + 3.0);
   mat2.getPotentialEnergy();
-  REQUIRE(pot2->getTotalForceCalls() == 2);
+  REQUIRE(pot2->getTotalForceCalls() == 3);
 
   // Check final counts and instances
   REQUIRE(pot1->getInstances() == 2);
-  REQUIRE(pot1->getTotalForceCalls() == 2);
+  REQUIRE(pot1->getTotalForceCalls() == 3);
 }
 
 TEST_CASE("Multiple potential instances", "[potential]") {
@@ -72,34 +70,29 @@ TEST_CASE("Multiple potential instances", "[potential]") {
   auto pot1 = makePotential(config);
   auto pot2 = makePotential(config);
   auto pot3 = makePotential(config);
-  auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
-      eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
 
   REQUIRE(pot1->getInstances() == 3);
   // Scope creep!!!!! Since this is only compiled once, and TEST_CASE isn't
   // doing isolation well the earlier calls are still in the registry
-  REQUIRE(pot1->getTotalForceCalls() == 2);
+  REQUIRE(pot1->getTotalForceCalls() == 3);
 
-  Matter mat1(pot1, &CACHELOT_EONCTEST);
+  Matter mat1(pot1);
   cfp.parse(mat1, confile);
 
-  Matter mat2(pot2, &CACHELOT_EONCTEST);
+  Matter mat2(pot2);
   cfp.parse(mat2, confile);
 
-  Matter mat3(pot3, &CACHELOT_EONCTEST);
+  Matter mat3(pot3);
   cfp.parse(mat3, confile);
 
   mat1.getPotentialEnergy();
-  REQUIRE(pot1->getTotalForceCalls() == 3);
+  REQUIRE(pot1->getTotalForceCalls() == 4);
 
-  // NOTE(rg) :: Since mat2 shares the same cache as mat1, the force calls are
-  // unchanged
+  // NOTE(rg) :: These are without cache
   mat2.getPotentialEnergy();
-  REQUIRE(pot2->getTotalForceCalls() == 3);
+  REQUIRE(pot2->getTotalForceCalls() == 5);
 
-  // NOTE(rg) :: Since mat3 shares the same cache as mat1, the force calls are
-  // unchanged
   mat3.getPotentialEnergy();
-  REQUIRE(pot3->getTotalForceCalls() == 3);
+  REQUIRE(pot3->getTotalForceCalls() == 6);
   REQUIRE(pot1->getInstances() == 3);
 }
