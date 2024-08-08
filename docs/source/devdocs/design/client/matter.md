@@ -32,9 +32,46 @@ short-circuit recalculations at the same state. Essentially, the
 cache of size one, which notably prevented const-correctness of methods, and
 prevented re-use of previous calculations.
 
+The new design requires `Matter` to be constructed with a `cachelot` instance,
+with the parameters set at runtime but offers the ability to re-use older
+calculations and also for different `Matter` objects to share the same cache. 
+
+```{code-block} cpp
+const auto config = toml::table{{"Potential", toml::table{{"potential", "LJ"}}}};
+
+std::string confile = "pos.con";
+eonc::mat::ConFileParser cfp;
+auto pot1 = makePotential(config);
+auto pot2 = makePotential(config);
+auto pot3 = makePotential(config);
+
+auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(eonc::cache_memory,
+eonc::page_size, eonc::hash_initial, true);
+
+Matter mat1(pot1, &CACHELOT_EONCTEST);
+cfp.parse(mat1, confile);
+
+Matter mat2(pot2, &CACHELOT_EONCTEST);
+cfp.parse(mat2, confile);
+
+Matter mat3(pot3, &CACHELOT_EONCTEST);
+cfp.parse(mat3, confile);
+
+mat1.getPotentialEnergy();
+REQUIRE(pot1->getTotalForceCalls() == 1);
+
+mat2.getPotentialEnergy();
+REQUIRE(pot2->getTotalForceCalls() == 1);
+
+mat3.getPotentialEnergy();
+REQUIRE(pot3->getTotalForceCalls() == 1);
+REQUIRE(pot1->getInstances() == 3);
+```
+
 ```{todo}
 ```
-The new design requires `Matter` to be constructed with a `cachelot` instance, with the parameters set at runtime but offers the ability to re-use older calculations and eventually:
+
+Eventually:
 
 - Run in an async thread (TODO(rg))
 - Be used for structure comparison (TODO(rg))
