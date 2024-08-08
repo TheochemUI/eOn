@@ -51,8 +51,8 @@ protected:
 private:
   size_t computeHash(const AtomMatrix &pos,
                      const Vector<size_t> &atmnrs) const {
-    // TODO(rg): Make 32, 64 a parameter
-    xxh::hash_state_t<32> hash_stream;
+    // TODO(rg): Make hash_state_t<32>, hash3_state_t<64> a parameter
+    xxh::hash3_state_t<64> hash_stream;
     for (auto idx = 0; idx < pos.size(); ++idx) {
       hash_stream.update(reinterpret_cast<const char *>(&pos.data()[idx]),
                          sizeof(pos.data()[idx]));
