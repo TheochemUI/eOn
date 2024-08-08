@@ -150,10 +150,11 @@ void commandLine(int argc, char **argv) {
       params->optim.convergedForce = optConvergedForce;
     }
 
-    auto pot = makePotential(tbl);
-    auto cachelot = cachelot::cache::Cache::Create(
+    auto CACHELOT_CMD = cachelot::cache::Cache::Create(
         eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
-    auto mat1 = Matter(pot, &cachelot);
+    auto pot = makePotential(tbl);
+    pot->set_cache(&CACHELOT_CMD);
+    auto mat1 = Matter(pot);
     eonc::mat::ConFileParser cfp;
     cfp.parse(mat1, confile);
 
@@ -167,6 +168,15 @@ void commandLine(int argc, char **argv) {
       // Run PointJob
       auto spj = eonc::makeJob(tbl, mat1);
       auto res = spj->run();
+      auto pot2 = makePotential(
+          toml::table{{"Potential", toml::table{{"potential", "morse_pt"}}}});
+      pot2->set_cache(&CACHELOT_CMD);
+      mat1.setPotential(pot2);
+      spj = eonc::makeJob(tbl, mat1);
+      spj->run();
+      mat1.setPotential(pot);
+      spj = eonc::makeJob(tbl, mat1);
+      spj->run();
     } else if (mflag) {
       // XXX: Finish
       // minimize(matter, confileout);
@@ -174,7 +184,7 @@ void commandLine(int argc, char **argv) {
       if (unmatched.size() != 2) {
         throw std::runtime_error("Comparison needs two files!");
       }
-      auto mat2 = Matter(pot, &cachelot);
+      auto mat2 = Matter(pot);
       cfp.parse(mat2, confileout);
       auto tbl = toml::table{
           {"Structure_Comparison", toml::table{{"checkRotation", true}}}};

@@ -10,12 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "client/BaseStructures.h"
 #include "client/Eigen.h"
 #include "client/Potential.h"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <string>
 namespace eonc {
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
@@ -28,9 +26,8 @@ class BondBoost;
  * (atom2xyz()).*/
 class Matter {
 public:
-  Matter(std::shared_ptr<PotBase> pot, cachelot::cache::Cache *cache)
-      : potential{pot},
-        myCache{cache} {
+  Matter(std::shared_ptr<PotBase> pot)
+      : potential{pot} {
     m_log = spdlog::get("combi");
   }
   Matter(const Matter &matter);                  // create a copy of matter
@@ -139,7 +136,6 @@ private:
   double potentialEnergy{0.0};
 
 public:
-  cachelot::cache::Cache *myCache;
   void applyPeriodicBoundary();
   size_t nAtoms{0};
   // TODO(rg): Should really not be public
