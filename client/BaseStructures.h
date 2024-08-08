@@ -19,6 +19,7 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
+// TODO(rg) :: These defines need to be tested for and set in meson.build
 #define HAVE_ALIGNED_ALLOC 1
 #define HAVE_POSIX_MEMALIGN 1
 #define CACHELOT_PLATFORM_BITS 64
