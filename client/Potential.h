@@ -62,12 +62,10 @@ private:
 
     XXH64_update(state, reinterpret_cast<const void *>(pos.data()),
                  sizeof(double) * pos.size());
-    for (auto idx = 0; idx < atmnrs.size(); ++idx) {
-      XXH64_update(state, reinterpret_cast<const void *>(&atmnrs[idx]),
-                   sizeof(atmnrs[idx]));
-    }
-    const std::string type_name = typeid(T).name();
-    XXH64_update(state, type_name.data(), type_name.size());
+    XXH64_update(state, reinterpret_cast<const void *>(atmnrs.data()),
+                 sizeof(size_t) * atmnrs.size());
+    const std::string potential_name = typeid(T).name();
+    XXH64_update(state, potential_name.data(), potential_name.size());
 
     // Finalize the hash computation and free state
     size_t hash_result = XXH64_digest(state);
@@ -103,7 +101,6 @@ public:
     return std::make_tuple(efd.energy, forces);
   };
 
-  // TODO(rg) :: Put this in a separate class
   void handle_cache(const AtomMatrix &pos, const Vector<size_t> &atmnrs,
                     const Matrix3S &box, ForceOut &efd, AtomMatrix &forces) {
     // TODO(rg):: This can probably be parsed faster
