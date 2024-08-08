@@ -15,10 +15,10 @@
 #include "client/Eigen.h"
 #include "client/potentials/PotHelpers.hpp"
 #include "client/thirdparty/toml.hpp"
-#include "client/thirdparty/xxhash.hpp"
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
+#include <xxhash.hpp>
 
 #include "client/potentials/PotentialCache.hpp"
 
