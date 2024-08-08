@@ -34,12 +34,12 @@ TEST_CASE("Potential instance counting and force calls", "[potential]") {
   REQUIRE(pot2->getTotalForceCalls() == 0);
 
   // Create Matter objects
-  auto cachelot = cachelot::cache::Cache::Create(
+  auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
       eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
-  Matter mat1(pot1, &cachelot);
+  Matter mat1(pot1, &CACHELOT_EONCTEST);
   cfp.parse(mat1, confile);
 
-  Matter mat2(pot2, &cachelot);
+  Matter mat2(pot2, &CACHELOT_EONCTEST);
   cfp.parse(mat2, confile);
 
   mat2.getPotentialEnergy();
@@ -72,7 +72,7 @@ TEST_CASE("Multiple potential instances", "[potential]") {
   auto pot1 = makePotential(config);
   auto pot2 = makePotential(config);
   auto pot3 = makePotential(config);
-  auto cachelot = cachelot::cache::Cache::Create(
+  auto CACHELOT_EONCTEST = cachelot::cache::Cache::Create(
       eonc::cache_memory, eonc::page_size, eonc::hash_initial, true);
 
   REQUIRE(pot1->getInstances() == 3);
@@ -80,22 +80,26 @@ TEST_CASE("Multiple potential instances", "[potential]") {
   // doing isolation well the earlier calls are still in the registry
   REQUIRE(pot1->getTotalForceCalls() == 2);
 
-  Matter mat1(pot1, &cachelot);
+  Matter mat1(pot1, &CACHELOT_EONCTEST);
   cfp.parse(mat1, confile);
 
-  Matter mat2(pot2, &cachelot);
+  Matter mat2(pot2, &CACHELOT_EONCTEST);
   cfp.parse(mat2, confile);
 
-  Matter mat3(pot3, &cachelot);
+  Matter mat3(pot3, &CACHELOT_EONCTEST);
   cfp.parse(mat3, confile);
 
   mat1.getPotentialEnergy();
   REQUIRE(pot1->getTotalForceCalls() == 3);
 
+  // NOTE(rg) :: Since mat2 shares the same cache as mat1, the force calls are
+  // unchanged
   mat2.getPotentialEnergy();
-  REQUIRE(pot2->getTotalForceCalls() == 4);
+  REQUIRE(pot2->getTotalForceCalls() == 3);
 
+  // NOTE(rg) :: Since mat3 shares the same cache as mat1, the force calls are
+  // unchanged
   mat3.getPotentialEnergy();
-  REQUIRE(pot3->getTotalForceCalls() == 5);
+  REQUIRE(pot3->getTotalForceCalls() == 3);
   REQUIRE(pot1->getInstances() == 3);
 }
