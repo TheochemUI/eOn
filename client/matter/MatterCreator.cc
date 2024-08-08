@@ -158,7 +158,6 @@ void ConFileParser::finalize_matter(Matter &mat) {
   if (mat.usePeriodicBoundaries) {
     mat.applyPeriodicBoundary();
   }
-  mat.recomputePotential = true;
 }
 
 void ConFileParser::parse(Matter &mat, const std::string &fname) {

@@ -11,6 +11,7 @@
 */
 #include "client/matter/Matter.h"
 #include <cachelot/hash_fnv1a.h>
+#include <stdexcept>
 // #include "BondBoost.h"
 
 namespace eonc {
@@ -35,7 +36,6 @@ const Matter &Matter::operator=(const Matter &matter) {
 
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
-  recomputePotential = matter.recomputePotential;
   myCache = matter.myCache;
 
   return *this;
@@ -117,7 +117,6 @@ void Matter::resize(const long int length) {
     isFixed.resize(length);
     isFixed.setZero();
   }
-  recomputePotential = true;
 }
 
 size_t Matter::numberOfAtoms() const { return (nAtoms); }
@@ -131,7 +130,6 @@ void Matter::setPosition(long int indexAtom, int axis, double position) {
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
   }
-  recomputePotential = true;
 }
 
 void Matter::setVelocity(long int indexAtom, int axis, double vel) {
@@ -235,7 +233,6 @@ void Matter::setPositions(const AtomMatrix pos) {
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
   }
-  recomputePotential = true;
 }
 
 // Same but takes vector instead of n x 3 matrix
@@ -252,7 +249,6 @@ void Matter::setPositionsFree(const AtomMatrix pos) {
       j += 1;
     }
   }
-  recomputePotential = true;
 }
 
 void Matter::setPositionsFreeV(const VectorType pos) {
@@ -346,7 +342,6 @@ size_t Matter::getAtomicNr(size_t indexAtom) const {
 
 void Matter::setAtomicNr(long int indexAtom, long atomicNr) {
   atomicNrs[indexAtom] = atomicNr;
-  recomputePotential = true;
 }
 
 int Matter::getFixed(long int indexAtom) const { return (isFixed[indexAtom]); }
@@ -362,11 +357,13 @@ void Matter::setFixedMask(const Vector<int> &fixmask) { isFixed = fixmask; }
 // }
 
 double Matter::getPotentialEnergy() {
-  if (nAtoms > 0) {
-    computePotential();
-    return potentialEnergy;
-  } else
-    return 0.0;
+#ifdef EON_CHECKS
+  if (nAtoms <= 0) {
+    throw std::runtime_error("Called for a potential with 0 atoms");
+  }
+#endif
+  computePotential();
+  return potentialEnergy;
 }
 
 double Matter::getKineticEnergy() const {
@@ -497,7 +494,6 @@ VectorType Matter::getMasses() const { return masses; }
 
 void Matter::setPotential(std::shared_ptr<PotBase> pot) {
   this->potential = pot;
-  recomputePotential = true;
 }
 
 size_t Matter::getPotentialCalls() const { return this->npotcalls; }
