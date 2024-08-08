@@ -18,6 +18,12 @@
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
+
+#if defined(__APPLE__) && defined(__aarch64__)
+// See https://github.com/RedSpah/xxhash_cpp/issues/33
+#define XXH_VECTOR 0
+#endif
+
 #include <xxhash.hpp>
 
 #include "client/potentials/PotentialCache.hpp"
