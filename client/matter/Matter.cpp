@@ -23,7 +23,6 @@ const Matter &Matter::operator=(const Matter &matter) {
   resize(nAtoms);
 
   positions = matter.positions;
-  forces = matter.forces;
   masses = matter.masses;
   atomicNrs = matter.atomicNrs;
   isFixed = matter.isFixed;
@@ -35,7 +34,6 @@ const Matter &Matter::operator=(const Matter &matter) {
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
 
   potential = matter.potential;
-  potentialEnergy = matter.potentialEnergy;
 
   return *this;
 }
@@ -103,9 +101,6 @@ void Matter::resize(const long int length) {
 
     biasForces.resize(length, 3);
     biasForces.setZero();
-
-    forces.resize(length, 3);
-    forces.setZero();
 
     masses.resize(length);
     masses.setZero();
@@ -261,31 +256,44 @@ void Matter::setPositionsFreeV(const VectorType pos) {
 //   return biasForces.array() * getFree().array();
 // }
 
+// void Matter::setBiasForces(const AtomMatrix bf) {
+//   biasForces = bf.array() * getFree().array();
+// }
+
 // void Matter::setBiasPotential(BondBoost *bondBoost) {
 //   biasPotential = bondBoost;
 // }
 
-// void Matter::setBiasForces(const AtomMatrix bf) {
-//   biasForces = bf.array() * getFree().array();
-// }
-// return forces applied on all atoms in array 'force'
-AtomMatrix Matter::getForces() {
-  computePotential();
-  AtomMatrix ret = forces;
+AtomMatrix Matter::getForces() const {
+  if (!potential) {
+    throw(std::runtime_error("Whoops, you need a potential.."));
+  }
+
+  auto &&[_, frcs] = potential->get_ef(positions, atomicNrs, cell);
+
+  if (isFixed.sum() == 0 && /* params->removeNetForce */ false) {
+    Eigen::Vector3d tempForce(3);
+    tempForce = frcs.colwise().sum() / nAtoms;
+
+    for (long int i = 0; i < nAtoms; i++) {
+      frcs.row(i) -= tempForce.transpose();
+    }
+  }
+
   size_t i{0};
   for (i = 0; i < nAtoms; i++) {
     if (isFixed[i]) {
-      ret.row(i).setZero();
+      frcs.row(i).setZero();
     }
   }
-  return ret;
+  return frcs;
 }
 
-VectorType Matter::getForcesV() {
+VectorType Matter::getForcesV() const {
   return VectorType::Map(getForces().data(), 3 * numberOfAtoms());
 }
 
-AtomMatrix Matter::getForcesFree() {
+AtomMatrix Matter::getForcesFree() const {
   AtomMatrix allForces = getForces();
   AtomMatrix ret(numberOfFreeAtoms(), 3);
   size_t i{0}, j{0};
@@ -298,7 +306,7 @@ AtomMatrix Matter::getForcesFree() {
   return ret;
 }
 
-VectorType Matter::getForcesFreeV() {
+VectorType Matter::getForcesFreeV() const {
   return VectorType::Map(getForcesFree().data(), 3 * numberOfFreeAtoms());
 }
 
@@ -355,14 +363,17 @@ void Matter::setFixedMask(const Vector<int> &fixmask) { isFixed = fixmask; }
 //	potentialEnergy=epot_input;
 // }
 
-double Matter::getPotentialEnergy() {
+double Matter::getPotentialEnergy() const {
 #ifdef EON_CHECKS
   if (nAtoms <= 0) {
     throw std::runtime_error("Called for a potential with 0 atoms");
   }
 #endif
-  computePotential();
-  return potentialEnergy;
+  if (!potential) {
+    throw(std::runtime_error("Whoops, you need a potential.."));
+  }
+  auto &&[potE, _] = potential->get_ef(positions, atomicNrs, cell);
+  return potE;
 }
 
 double Matter::getKineticEnergy() const {
@@ -389,22 +400,6 @@ void Matter::resetForceCalls() {
   return;
 }
 
-void Matter::computePotential() {
-  if (!potential) {
-    throw(std::runtime_error("Whoops, you need a potential.."));
-  }
-  std::tie(potentialEnergy, forces) =
-      potential->get_ef(positions, atomicNrs, cell);
-  if (isFixed.sum() == 0 && /* params->removeNetForce */ false) {
-    Eigen::Vector3d tempForce(3);
-    tempForce = forces.colwise().sum() / nAtoms;
-
-    for (long int i = 0; i < nAtoms; i++) {
-      forces.row(i) -= tempForce.transpose();
-    }
-  }
-}
-
 // Transform the coordinate to use the minimum image convention.
 void Matter::applyPeriodicBoundary() {
   AtomMatrix ddiff = positions * cellInverse;
@@ -420,7 +415,6 @@ void Matter::applyPeriodicBoundary() {
 
 double Matter::maxForce(void) {
   // Ensures that the forces are up to date
-  computePotential();
   return (getForcesFree()).rowwise().norm().maxCoeff();
 }
 
@@ -456,10 +450,6 @@ AtomMatrix Matter::getVelocities() const {
 
 void Matter::setVelocities(const AtomMatrix v) {
   velocities = v.array() * getFree().array();
-}
-
-void Matter::setForces(const AtomMatrix f) {
-  forces = f.array() * getFree().array();
 }
 
 // AtomMatrix Matter::getAccelerations() {
