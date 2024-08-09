@@ -53,16 +53,16 @@ public:
 
   AtomMatrix getVelocities() const;
   void setVelocities(const AtomMatrix v);
-  void setBiasForces(const AtomMatrix bf);
-  void setBiasPotential(BondBoost *bondBoost);
-  void setForces(const AtomMatrix f);
   AtomMatrix getAccelerations();
 
-  AtomMatrix getForces();
-  AtomMatrix getBiasForces();
-  VectorType getForcesV();
-  AtomMatrix getForcesFree();
-  VectorType getForcesFreeV();
+  AtomMatrix getForces() const;
+  VectorType getForcesV() const;
+  AtomMatrix getForcesFree() const;
+  VectorType getForcesFreeV() const;
+
+  // AtomMatrix getBiasForces();
+  // void setBiasForces(const AtomMatrix bf);
+  // void setBiasPotential(BondBoost *bondBoost);
 
   double getMass(long int atom) const;
   void setMass(long int atom, double mass);
@@ -81,7 +81,7 @@ public:
   double getEnergyVariance();
   // VectorType getForceVariance();
   // double getMaxVariance();
-  double getPotentialEnergy();
+  double getPotentialEnergy() const;
   double getKineticEnergy() const;
   // return the mechanical energy (i.e. kinetic
   // plus potential energy)
@@ -115,19 +115,15 @@ private:
   std::shared_ptr<PotBase> potential;
   size_t forceCalls{0};
 
-  // TODO(rg) :: Remove for const correctness
-  void computePotential();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
   size_t computeHash() const;
   // Stuff which used to be in MatterPrivateData
   size_t npotcalls{0};
   // TODO(rg):: Do we need to store forces and potential energy anymore..
-  AtomMatrix forces{MatrixType::Zero(0, 3)};
   AtomMatrix biasForces{MatrixType::Zero(0, 3)};
   BondBoost *biasPotential{nullptr};
   double energyVariance{0.0};
-  double potentialEnergy{0.0};
 
 public:
   void applyPeriodicBoundary();
