@@ -9,11 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "MatterHelpers.hpp"
-#include "HelperFunctions.h"
-#include "Parser.hpp"
+#include "client/matter/StructComparer.hpp"
+#include "client/Parser.hpp"
+#include "client/matter/MatterHelpers.hpp"
 
-namespace eonc {
+namespace eonc::mat {
 
 void StructComparer::fromTOML(const toml::table &tbl) {
   config_section(tbl, "Structure_Comparison");
@@ -36,11 +36,11 @@ void StructComparer::setupCompareFunc() {
   compareFunc = [this](const Matter &m1Ref, const Matter &m2Ref,
                        double distanceDifference) -> bool {
     if (scparams.checkRotation && scparams.indistinguishableAtoms) {
-      return helper_functions::sortedR(m1Ref, m2Ref, distanceDifference);
+      return sortedR(m1Ref, m2Ref, distanceDifference);
     } else if (scparams.indistinguishableAtoms) {
-      return helper_functions::identical(m1Ref, m2Ref, distanceDifference);
+      return identical(m1Ref, m2Ref, distanceDifference);
     } else if (scparams.checkRotation) {
-      return helper_functions::rotationMatch(m1Ref, m2Ref, distanceDifference);
+      return rotationMatch(m1Ref, m2Ref, distanceDifference);
     } else {
       return distanceDifference > m1Ref.perAtomNorm(m2Ref);
     }
@@ -57,8 +57,7 @@ bool StructComparer::compare(const Matter &m1, const Matter &m2,
 
   if (m1.numberOfFixedAtoms() == 0 && scparams.removeTranslation) {
     maybeCopies.emplace(m1, m2);
-    helper_functions::translationRemove(maybeCopies->first,
-                                        maybeCopies->second);
+    translationRemove(maybeCopies->first, maybeCopies->second);
   }
 
   const auto &m1Ref = maybeCopies ? maybeCopies->first : m1;
@@ -67,4 +66,4 @@ bool StructComparer::compare(const Matter &m1, const Matter &m2,
   return compareFunc(m1Ref, m2Ref, scparams.distanceDifference);
 }
 
-} // namespace eonc
+} // namespace eonc::mat

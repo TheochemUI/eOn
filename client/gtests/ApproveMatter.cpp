@@ -9,9 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ApprovalTests.hpp"
-#include "Matter.h"
-#include "catch2/catch_amalgamated.hpp"
+#include "TestApprovalMain.hpp"
+
+#include "client/matter/Matter.h"
+#include "client/matter/MatterCreator.hpp"
+
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -67,9 +69,9 @@ auto getForcesFreeVConst(const eonc::Matter &matter) {
   return const_cast<eonc::Matter &>(matter).getForcesFreeV();
 }
 
-auto getBiasForcesConst(const eonc::Matter &matter) {
-  return const_cast<eonc::Matter &>(matter).getBiasForces();
-}
+// auto getBiasForcesConst(const eonc::Matter &matter) {
+//   return const_cast<eonc::Matter &>(matter).getBiasForces();
+// }
 
 namespace eonc {
 
@@ -79,7 +81,7 @@ std::ostream &operator<<(std::ostream &os, const eonc::Matter &matter) {
 
   // Methods without parameters
   os << "Number of atoms: \n" << matter.numberOfAtoms() << std::endl;
-  os << "Cell: \n" << matter.getCell() << std::endl;
+  os << "Cell: \n" << matter.cell << std::endl;
   os << "Potential calls: \n" << matter.getPotentialCalls() << std::endl;
   os << "Positions: \n" << matter.getPositions() << std::endl;
   os << "Positions (Vector): \n"
@@ -100,6 +102,7 @@ std::ostream &operator<<(std::ostream &os, const eonc::Matter &matter) {
      << toSpaceSeparatedString(getForcesFreeVConst(matter)) << std::endl;
   os << "Masses: \n" << matter.getMasses() << std::endl;
   os << "Atomic Numbers: \n" << matter.getAtomicNrs() << std::endl;
+  os << "Atomic Indices: \n" << matter.atmindices << std::endl;
   os << "Fixed Atoms: \n" << matter.getFixed(3) << std::endl;
   os << "Energy Variance: \n" << getEnergyVarianceConst(matter) << std::endl;
   os << "Potential Energy: \n" << getPotentialEnergyConst(matter) << std::endl;
@@ -141,12 +144,13 @@ std::ostream &operator<<(std::ostream &os, const eonc::Matter &matter) {
 std::vector<eonc::Matter> getMatter() {
   // Return test data for Matter
   // TODO(rg): Add more objects
-  auto params = std::make_shared<eonc::Parameters>();
-  auto pot_default =
-      eonc::helper_functions::makePotential(eonc::PotType::LJ, *params);
-  auto m1 = eonc::Matter(pot_default, params);
+  const auto config =
+      toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
+  auto pot_default = eonc::makePotential(config);
+  auto m1 = eonc::Matter(pot_default);
   std::string confile("pos.con"); // Sulfolene
-  m1.con2matter(confile);
+  eonc::mat::ConFileParser cfp;
+  cfp.parse(m1, confile);
   for (size_t idx{0}; idx < 3; idx++) {
     m1.setFixed(idx, true);
   }
