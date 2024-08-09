@@ -29,6 +29,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   cell = matter.cell;
   cellInverse = matter.cellInverse;
   velocities = matter.velocities;
+  atmindices = matter.atmindices;
 
   removeNetForce = matter.removeNetForce;
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
@@ -110,6 +111,9 @@ void Matter::resize(const long int length) {
 
     isFixed.resize(length);
     isFixed.setZero();
+
+    atmindices.resize(length);
+    atmindices.setZero();
   }
 }
 

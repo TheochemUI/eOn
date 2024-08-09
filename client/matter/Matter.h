@@ -136,6 +136,7 @@ public:
   Vector<size_t> atomicNrs{Vector<size_t>::Zero(0)};
   // array of bool, false for movable atom, true for fixed
   Vector<int> isFixed{Vector<int>::Zero(0)};
+  Vector<int> atmindices{Vector<int>::Zero(0)};
 };
 
 } // namespace eonc

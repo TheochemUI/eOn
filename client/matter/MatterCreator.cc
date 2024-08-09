@@ -145,7 +145,7 @@ void ConFileParser::read_cartesian_fix_index(std::ifstream &file, Matter &mat,
         if (auto line = readLine(file)) {
           std::istringstream iss(*line);
           if (!(iss >> mdat(i, 0) >> mdat(i, 1) >> mdat(i, 2) >>
-                mat.isFixed[i])) {
+                mat.isFixed[i] >> mat.atmindices[i])) {
             throw std::runtime_error("Error parsing data: " + *line);
           }
         }
