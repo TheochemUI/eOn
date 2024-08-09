@@ -170,6 +170,34 @@ This design is closely aligned to discussions in
 We can instrument as many Potential objects as required and get both instance
 counts and the number of instances.
 
+## Caching
+
+```{versionadded} 3.x
+```
+
+Each instance of a potential can have a [cachelot cache](https://cachelot.io/)
+set via `set_cache`. This is hidden from the consumers of the potentials, i.e
+from the Matter objects. `char` is of size 1, so the data is stored as cast to
+`char`.
+
+Essentially there are three states, gated by a simple `nullptr` check
+
+### Hashing
+
+The hash function is a streaming, **non cryptographic** hash computed by the
+[xxhash](https://xxhash.com/) library's `XXH3` algorithm. The hash is computed
+on the basis of:
+
+- Position data
+- Atomic numbers
+- The potential typename
+
+Crucially, without the CRTP style registries which mean at compile time, the
+potential types are known, the hash would not be correct, as the same positions
+and atomic numbers can be used by different matter objects with different
+potentials.
+
+
 ## References
 
 ```{bibliography}

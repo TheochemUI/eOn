@@ -10,10 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Matter.h"
+#include "client/matter/Matter.h"
 #include <functional>
 
-namespace eonc {
+namespace eonc::mat {
 
 class StructComparer {
 public:
@@ -46,4 +46,4 @@ private:
   void setupCompareFunc(); // Setup cutoff
 };
 
-} // namespace eonc
+} // namespace eonc::mat

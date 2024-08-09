@@ -6,7 +6,64 @@
 We have a robust testsuite, consisting of unit tests, approval tests, and a few
 integration tests.
 
-## Writing and Registering Tests
+## Writing Approval Tests
+
+As different functions (reading and writing) get spun out of `Matter`, the following testing protocol is to be enforced.
+
+A simple file reader is to drive the entire equality process.
+
+```{code-block} cpp
+std::string readFileContent(const std::string &filename) {
+  std::ifstream file(filename);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
+}
+``` 
+
+Matter objects may be generated in the standard way, for writers this could be:
+
+```{code-block} cpp
+std::vector<eonc::Matter> getTestMatter() {
+  const auto config =
+      toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
+  auto pot_default = eonc::makePotential(config);
+  auto matter = eonc::Matter(pot_default);
+  std::string confile("pos.con");
+  matter.con2matter(confile);
+  return {matter};
+}
+```
+
+Crucially, the **first approval** is done with the _old method_
+
+```{code-block} cpp
+TEST_CASE("VerifyMatter2Con") {
+  auto testMatter = getTestMatter()[0];
+  std::string filename = "test_output.con";
+  testMatter.matter2con(filename);
+  std::string fileContent = readFileContent(filename);
+  ApprovalTests::Approvals::verify(fileContent);
+}
+```
+
+Once this has been approved, then the new method / function / design is to be
+used.
+
+```{code-block} cpp
+TEST_CASE("VerifyMatter2Con") {
+  auto testMatter = getTestMatter();
+  std::string filename = "test_output.con";
+  eonc::io::ConWriter conWriter;
+  conWriter.write(testMatter[0], filename);
+  std::string fileContent = readFileContent(filename);
+  ApprovalTests::Approvals::verify(fileContent);
+}
+```
+
+In this manner, the resulting functions rigorously pass consistency checks.
+
+## Registering Tests
 
 We find that, rather than build each executable by hand or even register each
 one by hand, we can leverage the array iteration features of the `meson`

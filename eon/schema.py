@@ -10,6 +10,7 @@ from typing_extensions import Literal
 import random
 import os
 
+
 def get_value_from_env_or_param(env_var, default_value, required):
     return os.getenv(env_var, default_value)
 
@@ -98,6 +99,16 @@ class MainConfig(BaseModel):
         description="If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.",
     )
     usePBC: bool = Field(default=True, description="Use periodic boundary conditions")
+    writer: Literal["con", "convel", "xyz", "tibble"] = Field(
+        default="con", description="The output file format."
+    )
+    """
+    Options:
+    - ``con``: Reference implementation of the ``con`` file format.
+    - ``convel``: Enhanced ``con`` format with velocity information.
+    - ``xyz``: Standard output format for positions, slightly lossy.
+    - ``tibble``: Force augmented space separated output meant for easy use with R or other CSV style processors.
+    """
 
 
 class StructureComparisonConfig(BaseModel):

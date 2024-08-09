@@ -110,16 +110,30 @@ Atomic Numbers:
  1
  1
 16
+Atomic Indices: 
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
 Fixed Atoms: 
 0
 Energy Variance: 
 0
 Potential Energy: 
--8.9245813
+-8.9245539
 Kinetic Energy: 
 0
 Mechanical Energy: 
--8.9245813
+-8.9245539
 Number of Free Atoms: 
 10
 Number of Fixed Atoms: 

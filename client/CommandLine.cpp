@@ -11,10 +11,12 @@
 */
 #include "CommandLine.h"
 #include "Job.h"
-#include "Matter.h"
-#include "MatterHelpers.hpp"
 #include "Parameters.h"
 #include "Potential.h"
+#include "client/io/WriteCreator.hpp"
+#include "client/matter/Matter.h"
+#include "client/matter/MatterCreator.hpp"
+#include "client/matter/StructComparer.hpp"
 #include "version.h"
 
 #include <cstdlib>
@@ -33,7 +35,9 @@ void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
   } else {
     std::cout << "No output file specified, not saving" << std::endl;
   }
-  matter->matter2con(confileout);
+  const auto config = toml::table{{"Main", toml::table{{"write", "con"}}}};
+  auto con = eonc::io::mkWriter(config);
+  con->write(*matter, confileout);
 }
 
 void commandLine(int argc, char **argv) {
@@ -134,6 +138,9 @@ void commandLine(int argc, char **argv) {
         toml::table{{"Potential", toml::table{{"potential", "unknown"}}}};
     if (!cflag) {
       tbl["Potential"].as_table()->insert_or_assign("potential", potential);
+    } else {
+      // For structure comparison, we need only to ensure a potential exists..
+      tbl["Potential"].as_table()->insert_or_assign("potential", "lj");
     }
 
     if (!sflag) {
@@ -143,9 +150,16 @@ void commandLine(int argc, char **argv) {
       params->optim.convergedForce = optConvergedForce;
     }
 
+    auto CACHELOT_CMD = cachelot::cache::Cache::Create(
+        eonc::cache::cache_memory, eonc::cache::page_size,
+        eonc::cache::hash_initial, true);
+    auto pcache = eonc::cache::PotentialCache();
+    pcache.set_cache(&CACHELOT_CMD);
     auto pot = makePotential(tbl);
+    pot->set_cache(&pcache);
     auto mat1 = Matter(pot);
-    mat1.con2matter(confile);
+    eonc::mat::ConFileParser cfp;
+    cfp.parse(mat1, confile);
 
     string confileout;
     if (unmatched.size() == 2) {
@@ -165,10 +179,10 @@ void commandLine(int argc, char **argv) {
         throw std::runtime_error("Comparison needs two files!");
       }
       auto mat2 = Matter(pot);
-      mat2.con2matter(confileout);
+      cfp.parse(mat2, confileout);
       auto tbl = toml::table{
           {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
-      auto sc = StructComparer(tbl);
+      auto sc = eonc::mat::StructComparer(tbl);
       if (sc.compare(mat1, mat2, true)) {
         std::cout << "Structures match" << std::endl;
       } else {
