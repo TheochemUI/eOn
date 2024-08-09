@@ -102,6 +102,7 @@ std::ostream &operator<<(std::ostream &os, const eonc::Matter &matter) {
      << toSpaceSeparatedString(getForcesFreeVConst(matter)) << std::endl;
   os << "Masses: \n" << matter.getMasses() << std::endl;
   os << "Atomic Numbers: \n" << matter.getAtomicNrs() << std::endl;
+  os << "Atomic Indices: \n" << matter.atmindices << std::endl;
   os << "Fixed Atoms: \n" << matter.getFixed(3) << std::endl;
   os << "Energy Variance: \n" << getEnergyVarianceConst(matter) << std::endl;
   os << "Potential Energy: \n" << getPotentialEnergyConst(matter) << std::endl;
