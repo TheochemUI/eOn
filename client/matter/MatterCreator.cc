@@ -104,7 +104,7 @@ void ConFileParser::con_headers(std::ifstream &file, Matter &mat) {
     }
   }
 
-  mat.resize(first[Ncomponent]);
+  mat.resize(totalAtoms);
   std::vector<double> mass(totalAtoms);
 
   if (auto line = readLine(file)) {
