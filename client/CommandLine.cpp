@@ -11,6 +11,7 @@
 */
 #include "CommandLine.h"
 #include "Job.h"
+#include "JobCreator.hpp"
 #include "Parameters.h"
 #include "Potential.h"
 #include "client/io/WriteCreator.hpp"
@@ -169,8 +170,13 @@ void commandLine(int argc, char **argv) {
     if (sflag) {
       auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
       // Run PointJob
-      auto spj = eonc::makeJob(tbl, mat1);
-      auto res = spj->run();
+      auto spj = makeJob(tbl, mat1);
+      bool res = spj->run();
+      if (!res) {
+        throw std::runtime_error("Something went wrong running the job");
+      }
+      // spj.runImpl();
+      // bool res = std::visit(JobRunner{}, spj);
     } else if (mflag) {
       // XXX: Finish
       // minimize(matter, confileout);

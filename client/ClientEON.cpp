@@ -395,25 +395,27 @@ int main(int argc, char **argv) {
         abort();
       }
 
-      // Determine what type of job we are running according to the parameters
-      // file.
-      auto job = eonc::makeJob(params);
+      //   // Determine what type of job we are running according to the
+      //   parameters
+      //   // file.
+      //   XXX(rg):: This needs to be fixed now
+      //   auto job = eonc::makeJob(params);
 
-      std::vector<std::string> filenames;
-      try {
-        filenames = job->run();
-      } catch (int e) {
-        SPDLOG_CRITICAL("[ERROR] job exited on error %d\n", e);
-      }
+      //   std::vector<std::string> filenames;
+      //   try {
+      //     filenames = job->run();
+      //   } catch (int e) {
+      //     SPDLOG_CRITICAL("[ERROR] job exited on error %d\n", e);
+      //   }
 
-      filenames.push_back(std::string("client.log"));
+      //   filenames.push_back(std::string("client.log"));
 
-      if (bundlingEnabled) {
-        eonc::bundle(i, filenames, &bundledFilenames);
-        eonc::deleteUnbundledFiles(unbundledFilenames);
-      } else {
-        bundledFilenames = filenames;
-      }
+      //   if (bundlingEnabled) {
+      //     eonc::bundle(i, filenames, &bundledFilenames);
+      //     eonc::deleteUnbundledFiles(unbundledFilenames);
+      //   } else {
+      //     bundledFilenames = filenames;
+      //   }
     }
 
 #ifdef EONMPI
