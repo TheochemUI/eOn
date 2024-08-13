@@ -157,70 +157,6 @@ Vector<size_t> Matter::getAtomicNrsFree() const {
   return this->atomicNrs.array() * getFreeV().cast<size_t>().array();
 }
 
-// bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
-//                    string prefixMovie, string prefixCheckpoint) {
-//   auto objf =
-//       std::make_shared<MatterObjectiveFunction>(Matter(*this), parameters);
-//   auto optim =
-//       helpers::create::mkOptim(objf, parameters->optim.method, parameters);
-
-//   ostringstream min;
-//   min << prefixMovie;
-//   if (writeMovie) {
-//     matter2con(min.str(), false);
-//   }
-
-//   int iteration = 0;
-//   if (!quiet) {
-//     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
-//                         "[Matter]", "Iter", "Step size",
-//                         parameters->optim.convergenceMetricLabel, "Energy");
-//     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
-//                         "[Matter]", iteration, 0.0, objf->getConvergence(),
-//                         getPotentialEnergy());
-//   }
-
-//   while (!objf->isConverged() && iteration < parameters->optim.maxIterations)
-//   {
-
-//     AtomMatrix pos = getPositions();
-
-//     optim->step(parameters->optim.maxMove);
-//     iteration++;
-//     setPositionsFreeV(objf->getPositions());
-
-//     double stepSize =
-//         helper_functions::maxAtomMotion(pbc(getPositions() - pos));
-
-//     if (!quiet) {
-//       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-//                           "[Matter]", iteration, stepSize,
-//                           objf->getConvergence(), getPotentialEnergy());
-//     }
-
-//     if (writeMovie) {
-//       matter2con(min.str(), true);
-//     }
-
-//     if (checkpoint) {
-//       ostringstream chk;
-//       chk << prefixCheckpoint << "_cp";
-//       matter2con(chk.str(), false);
-//     }
-//   }
-
-//   if (iteration == 0) {
-//     if (!quiet) {
-//       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-//                           "[Matter]", iteration, 0.0, objf->getConvergence(),
-//                           getPotentialEnergy());
-//     }
-//   }
-//   //    bool converged = optimizer->run(parameters->optMaxIterations,
-//   //    parameters->optMaxMove);
-//   return objf->isConverged();
-// }
-
 VectorType Matter::getPositionsFreeV() const {
   return VectorType::Map(getPositionsFree().data(), 3 * numberOfFreeAtoms());
 }
@@ -417,7 +353,7 @@ void Matter::applyPeriodicBoundary() {
   positions = ddiff * cell;
 }
 
-double Matter::maxForce(void) {
+double Matter::getMaxForce(void) const {
   // Ensures that the forces are up to date
   return (getForcesFree()).rowwise().norm().maxCoeff();
 }

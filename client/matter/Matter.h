@@ -97,7 +97,7 @@ public:
   size_t getForceCalls() const;
   void resetForceCalls();
 
-  double maxForce(void);
+  double getMaxForce(void) const;
 
   AtomMatrix getFree() const;
   VectorType getFreeV() const;
