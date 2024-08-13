@@ -14,7 +14,7 @@
 #include "Bundling.h"
 #include "CommandLine.h"
 #include "HelperFunctions.h"
-#include "Job.h"
+#include "Job.hpp"
 #include "Parameters.h"
 #include "Parser.hpp"
 #include "version.h"
