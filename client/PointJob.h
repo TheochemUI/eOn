@@ -23,7 +23,7 @@ public:
     log = spdlog::get("combi");
   }
   ~PointJob(void) = default;
-  std::vector<std::string> run(void) override;
+  bool runImpl(void) override final;
 
 private:
   std::shared_ptr<spdlog::logger> log;
