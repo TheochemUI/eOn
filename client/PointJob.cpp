@@ -11,7 +11,7 @@
 */
 #include "PointJob.h"
 namespace eonc {
-bool PointJob::runImpl(void) {
+bool PointJob::runImpl(Matter &_mat) {
   double energy = _mat.getPotentialEnergy();
   auto maxForce = _mat.maxForce();
 

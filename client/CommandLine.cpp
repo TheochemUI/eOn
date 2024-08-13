@@ -169,13 +169,11 @@ void commandLine(int argc, char **argv) {
     if (sflag) {
       auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
       // Run PointJob
-      auto spj = mkJob(tbl, mat1);
-      bool result = std::visit(JobRunner{}, spj);
+      auto spj = mkJob(tbl);
+      bool result = JobRunner(spj, mat1);
       if (!result) {
         throw std::runtime_error("Something went wrong running the job");
       }
-      // spj.runImpl();
-      // bool res = std::visit(JobRunner{}, spj);
     } else if (mflag) {
       // XXX: Finish
       // minimize(matter, confileout);
