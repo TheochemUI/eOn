@@ -11,10 +11,7 @@
 */
 #include "PointJob.h"
 namespace eonc {
-std::vector<std::string> PointJob::run(void) {
-  std::vector<std::string> returnFiles;
-  std::string resultsFilename("results.dat");
-  returnFiles.push_back(resultsFilename);
+bool PointJob::runImpl(void) {
   double energy = _mat.getPotentialEnergy();
   auto maxForce = _mat.maxForce();
 
@@ -32,7 +29,7 @@ std::vector<std::string> PointJob::run(void) {
 
   spdlog::drop("point");
   fileLogger.reset();
-  return returnFiles;
+  return true;
 }
 
 } // namespace eonc

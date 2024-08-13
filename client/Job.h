@@ -10,12 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include <string>
-#include <vector>
 
-#include "client/Parameters.h"
-#include "client/matter/Matter.h"
-#include "thirdparty/toml.hpp"
+#include <memory>
 
 namespace eonc {
 /** @defgroup Jobs
@@ -41,7 +37,7 @@ namespace eonc {
  * implement the run method, providing the specific behavior for that job.
  *
  * Jobs can be executed based on runtime parameters, and their behavior can be
- * configured through the config.init file. The job execution framework supports
+ * configured through the config.toml file. The job execution framework supports
  * both standalone jobs and jobs that are part of larger routines. Some jobs do
  * not involve optimizers and are documented in their own respective files.
  *
@@ -53,18 +49,22 @@ namespace eonc {
 class JobBase {
 public:
   virtual ~JobBase() = default;
-  virtual std::vector<std::string> run() = 0;
+  // No need to track the output files, which can vary by user parameter anyway,
+  // a boolean is sufficient
+  // TODO(rg) :: Consider populating a struct, RunResults with the boolean and
+  // the files generated if needed (YAGNI)
+  virtual bool run() = 0;
+  // virtual JobBase* clone() const = 0;
 };
 
 template <typename T> class Job : public JobBase {
 public:
-  std::vector<std::string> run() override {
-    return static_cast<T *>(this)->run();
+  bool run() override { return static_cast<T *>(this)->runImpl(); }
+  virtual bool runImpl() = 0;
+  // For cloning
+  std::unique_ptr<T> clone() const {
+    return std::unique_ptr<T>(new T(*static_cast<const T *>(this)));
   }
 };
-
-std::unique_ptr<JobBase>
-makeJob(const toml::table &config,
-        std::optional<std::reference_wrapper<Matter>> mat = std::nullopt);
 
 } // namespace eonc
