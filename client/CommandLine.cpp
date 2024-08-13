@@ -10,9 +10,12 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "CommandLine.h"
+#include "ConjugateGradients.h"
 #include "Job.hpp"
+#include "Optimizer.h"
 #include "Parameters.h"
 #include "Potential.h"
+#include "RelaxJob.hpp"
 #include "client/io/WriteCreator.hpp"
 #include "client/matter/Matter.h"
 #include "client/matter/MatterCreator.hpp"
@@ -27,9 +30,12 @@
 namespace eonc {
 using namespace std;
 
-void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
+void minimize(Matter &matter, const string &confileout) {
   // XXX: Fix this
-  // matter->relax(false, false);
+  auto objf = MatterObjectiveFunction({"norm", 1e-2}, matter);
+  auto blah = toml::table{{"Optimizer", toml::table{{"method", "cg"}}}};
+  auto optim = helpers::create::mkOptim(objf, blah);
+  optim->runOpt(1000, 0.02);
   if (!confileout.empty()) {
     std::cout << "Saving relaxed structure to " << confileout << std::endl;
   } else {
@@ -37,7 +43,7 @@ void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
   }
   const auto config = toml::table{{"Main", toml::table{{"write", "con"}}}};
   auto con = eonc::io::mkWriter(config);
-  con->write(*matter, confileout);
+  con->write(matter, confileout);
 }
 
 void commandLine(int argc, char **argv) {
@@ -176,7 +182,7 @@ void commandLine(int argc, char **argv) {
       }
     } else if (mflag) {
       // XXX: Finish
-      // minimize(matter, confileout);
+      minimize(mat1, confileout);
     } else if (cflag) {
       if (unmatched.size() != 2) {
         throw std::runtime_error("Comparison needs two files!");

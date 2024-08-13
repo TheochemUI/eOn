@@ -13,7 +13,10 @@
 
 #include "Eigen.h"
 #include "ObjectiveFunction.h"
-#include "Parameters.h"
+#include "client/thirdparty/toml.hpp"
+#include <fmt/core.h>
+#include <iostream>
+#include <spdlog/spdlog.h>
 namespace eonc {
 /** @defgroup Optimizers
  *
@@ -43,44 +46,50 @@ namespace eonc {
  * Declaration of the optimizer class
  */
 
-class Optimizer {
-private:
-  const OptType m_otype;
+class OptimBase {
+public:
+  OptimBase(const ObjectiveFunction &objectiveFunction)
+      : m_objf(std::cref(objectiveFunction)) {}
+
+  virtual ~OptimBase() = default;
+
+  virtual bool step(ScalarType a_maxMove) = 0;
+  virtual bool runOpt(size_t a_maxIter, ScalarType a_maxMove) = 0;
 
 protected:
-  //! Parameters set by the config.init file
-  std::shared_ptr<Parameters> m_params;
-  //! An objective function relating a certain job method to the conjugate
-  //! gradient optimizer
-  std::shared_ptr<ObjectiveFunction> m_objf;
+  const ObjectiveFunction &m_objf;
+  size_t iters{0};
+};
 
+template <typename T> class Optimizer : public OptimBase {
 public:
-  Optimizer(std::shared_ptr<ObjectiveFunction> a_objf,
-            std::shared_ptr<Parameters> a_params)
-      : m_otype{a_params->optim.method},
-        m_params{a_params},
-        m_objf{a_objf} {
-    SPDLOG_WARN("You should explicitly set an optimizer while constructing the "
-                "optimizer!!\n Defaulting to opt_method from the parameters");
+  using OptimBase::OptimBase;
+
+protected:
+  bool step(ScalarType maxMove) override final {
+    return static_cast<T *>(this)->stepImpl(maxMove);
   }
-  Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
-            std::shared_ptr<Parameters> a_params)
-      : m_otype{a_optype},
-        m_params{a_params},
-        m_objf{a_objf} {}
-  //! optimizer deconstructor
-  virtual ~Optimizer() {};
-  //! Template for stepping the optimizer, returns convergence
-  virtual int step(double a_maxMove) = 0;
-  //! Template for running the optimizer; uses a series of steps, checking for
-  //! convergence each time
-  virtual int run(size_t a_maxIterations, double a_maxMove) = 0;
+
+  bool runOpt(size_t maxIter, ScalarType maxMove) override final {
+    while (!m_objf.isConverged() && iters < maxIter) {
+      auto pos = m_objf.getPositions();
+      step(maxMove);
+      // if (!static_cast<T *>(this)->stepImpl(maxMove)) {
+      //   return false; // Stop if the step fails
+      // }
+      iters++;
+      // double stepSize =
+      //     helper_functions::maxAtomMotion(pbc(m_objf.getPositions() - pos));
+      std::cout << fmt::format("{} {}  {} ", "[Matter]\n", iters,
+                               m_objf.getConvergence(), m_objf.getEnergy());
+    }
+    return m_objf.isConverged();
+  }
 };
 
 namespace helpers::create {
-std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
-                                   OptType a_otype,
-                                   std::shared_ptr<Parameters> a_params);
+std::unique_ptr<OptimBase> mkOptim(const ObjectiveFunction &,
+                                   const toml::table &);
 }
 
 } // namespace eonc

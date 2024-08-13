@@ -13,7 +13,7 @@
 namespace eonc {
 bool PointJob::runImpl(Matter &_mat) {
   double energy = _mat.getPotentialEnergy();
-  auto maxForce = _mat.maxForce();
+  auto maxForce = _mat.getMaxForce();
 
   // SPDLOG_LOGGER_DEBUG(log, "(free) Forces:         {:.12}",
   //                     fmt::streamed(_mat.getForcesFree()));
