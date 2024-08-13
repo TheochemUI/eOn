@@ -14,15 +14,11 @@
 #include "client/matter/Matter.h"
 namespace eonc {
 class PointJob {
-  Matter &_mat;
 
 public:
-  PointJob(Matter &mat_a)
-      : _mat{mat_a} {
-    log = spdlog::get("combi");
-  }
+  PointJob() { log = spdlog::get("combi"); }
   ~PointJob(void) = default;
-  bool runImpl(void);
+  bool runImpl(Matter &);
 
 private:
   std::shared_ptr<spdlog::logger> log;
