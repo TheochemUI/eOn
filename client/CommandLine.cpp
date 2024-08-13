@@ -10,8 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "CommandLine.h"
-#include "Job.h"
-#include "JobCreator.hpp"
+#include "Job.hpp"
 #include "Parameters.h"
 #include "Potential.h"
 #include "client/io/WriteCreator.hpp"
@@ -170,9 +169,9 @@ void commandLine(int argc, char **argv) {
     if (sflag) {
       auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
       // Run PointJob
-      auto spj = makeJob(tbl, mat1);
-      bool res = spj->run();
-      if (!res) {
+      auto spj = mkJob(tbl, mat1);
+      bool result = std::visit(JobRunner{}, spj);
+      if (!result) {
         throw std::runtime_error("Something went wrong running the job");
       }
       // spj.runImpl();

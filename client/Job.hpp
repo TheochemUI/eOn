@@ -11,7 +11,11 @@
 */
 #pragma once
 
-#include <memory>
+#include "BaseStructures.h"
+#include "Parser.hpp"
+#include "client/PointJob.h"
+#include "thirdparty/toml.hpp"
+#include <variant>
 
 namespace eonc {
 /** @defgroup Jobs
@@ -32,39 +36,38 @@ namespace eonc {
  * types, providing a common interface to execute jobs at runtime based on the
  * derived job type.
  *
- * The template parameter is used to specify the specific job type, ensuring
- * compile-time polymorphism and type safety. Each derived job class must
- * implement the run method, providing the specific behavior for that job.
+ * The variant ensures compile-time polymorphism and type safety. Each derived
+ * job class must implement the runImpl method, providing the specific behavior
+ * for that job.
  *
  * Jobs can be executed based on runtime parameters, and their behavior can be
  * configured through the config.toml file. The job execution framework supports
  * both standalone jobs and jobs that are part of larger routines. Some jobs do
  * not involve optimizers and are documented in their own respective files.
- *
- * \tparam T The specific job type derived from the Job base class.
+
  *
  * \note The run method must be implemented by each derived job class.
  */
 
-class JobBase {
-public:
-  virtual ~JobBase() = default;
-  // No need to track the output files, which can vary by user parameter anyway,
-  // a boolean is sufficient
-  // TODO(rg) :: Consider populating a struct, RunResults with the boolean and
-  // the files generated if needed (YAGNI)
-  virtual bool run() = 0;
-  // virtual JobBase* clone() const = 0;
-};
+using JobVariant = std::variant<PointJob /*, OtherJobTypes */>;
 
-template <typename T> class Job : public JobBase {
-public:
-  bool run() override { return static_cast<T *>(this)->runImpl(); }
-  virtual bool runImpl() = 0;
-  // For cloning
-  std::unique_ptr<T> clone() const {
-    return std::unique_ptr<T>(new T(*static_cast<const T *>(this)));
+template <typename... Args>
+JobVariant mkJob(const toml::table &config, Args &&...args) {
+  config_section(config, "Main");
+  auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
+
+  switch (jtype) {
+  case JobType::Point: {
+    return PointJob(std::forward<Args>(args)...);
   }
+  default: {
+    throw std::runtime_error("No known job could be constructed");
+  }
+  }
+}
+
+struct JobRunner {
+  template <typename T> bool operator()(T &job) const { return job.runImpl(); }
 };
 
 } // namespace eonc
