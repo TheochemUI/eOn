@@ -51,23 +51,35 @@ namespace eonc {
 
 using JobVariant = std::variant<PointJob /*, OtherJobTypes */>;
 
-template <typename... Args>
-JobVariant mkJob(const toml::table &config, Args &&...args) {
-  config_section(config, "Main");
-  auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
+JobVariant mkJob(const toml::table &);
 
-  switch (jtype) {
-  case JobType::Point: {
-    return PointJob(std::forward<Args>(args)...);
-  }
-  default: {
-    throw std::runtime_error("No known job could be constructed");
-  }
-  }
-}
+// Templated struct to handle job execution
+template <typename... Args> struct JobRunnerImpl {
+  std::tuple<Args &&...> args; // Store arguments as references
 
-struct JobRunner {
-  template <typename T> bool operator()(T &job) const { return job.runImpl(); }
+  // Perfectly forward the arguments to the tuple
+  JobRunnerImpl(Args &&...args)
+      : args(std::forward<Args>(args)...) {}
+
+  // Callable operator to handle the job type
+  template <typename JobType> bool operator()(JobType &job) const {
+    return applyImpl(job, std::index_sequence_for<Args...>{});
+  }
+
+private:
+  // Helper function to unpack the tuple and forward arguments to the job's
+  // runImpl method
+  template <typename JobType, std::size_t... I>
+  bool applyImpl(JobType &job, std::index_sequence<I...>) const {
+    return job.runImpl(std::forward<Args>(std::get<I>(args))...);
+  }
 };
+
+// Wrapper function to execute the JobRunnerImpl with the variant
+template <typename... Args>
+bool JobRunner(JobVariant &jobVariant, Args &&...args) {
+  return std::visit(JobRunnerImpl<Args &&...>(std::forward<Args>(args)...),
+                    jobVariant);
+}
 
 } // namespace eonc
