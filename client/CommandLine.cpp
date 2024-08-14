@@ -11,10 +11,8 @@
 */
 #include "CommandLine.h"
 #include "Job.hpp"
-#include "Optimizer.h"
 #include "Parameters.h"
 #include "Potential.h"
-#include "RelaxJob.hpp"
 #include "client/io/WriteCreator.hpp"
 #include "client/matter/Matter.h"
 #include "client/matter/MatterCreator.hpp"
@@ -30,8 +28,8 @@ namespace eonc {
 using namespace std;
 
 void minimize(Matter &matter, const string &confileout) {
-  // XXX: Fix this
-  auto tbl = toml::table{{"Main", toml::table{{"job", "minimization"}}}};
+  auto tbl = toml::table{
+      {"Main", toml::table{{"job", "minimization"}, {"write", "con"}}}};
   auto relax = mkJob(tbl);
   bool result = JobRunner(relax, matter);
   if (!result) {
@@ -42,8 +40,7 @@ void minimize(Matter &matter, const string &confileout) {
   } else {
     std::cout << "No output file specified, not saving" << std::endl;
   }
-  const auto config = toml::table{{"Main", toml::table{{"write", "con"}}}};
-  auto con = eonc::io::mkWriter(config);
+  auto con = eonc::io::mkWriter(tbl);
   con->write(matter, confileout);
 }
 
