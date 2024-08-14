@@ -279,7 +279,13 @@ eonclib_sources = [
     # 'BasinHoppingSaddleSearch.cpp',
 ]
 
-eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
+# Should Log.cc not be in its own thing for other libraries?
+eonclient_sources = [
+    'fpe_handler.cpp',
+    'ClientEON.cpp',
+    'CommandLine.cpp',
+    'Log.cc',
+]
 
 # ------------------- Options
 

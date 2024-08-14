@@ -15,11 +15,11 @@
 #include "CommandLine.h"
 #include "HelperFunctions.h"
 #include "Job.hpp"
+#include "Log.hpp"
 #include "Parameters.h"
 #include "Parser.hpp"
 #include "version.h"
 
-#include <chrono>
 #include <cstdlib>
 #include <filesystem>
 #include <string.h>
@@ -60,81 +60,64 @@
 #include <mach/mach.h>
 #include <mach/task_info.h>
 
-void print_memory_usage() {
+void print_memory_usage(std::shared_ptr<spdlog::logger> log) {
   struct task_basic_info t_info;
   mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
   if (KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO,
                                 (task_info_t)&t_info, &t_info_count)) {
-    printf("Failed to get task info\n");
+    SPDLOG_LOGGER_ERROR(log, "Failed to get task info");
     return;
   }
 
   unsigned int rss = t_info.resident_size;
   unsigned int vs = t_info.virtual_size;
-  printf(
-      "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
-      (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+  SPDLOG_LOGGER_INFO("\nmemory usage:\nresident size (MB): {:8.2f}\nvirtual "
+                     "size (MB):  {:8.2f}",
+                     static_cast<double>(rss / 1024 / 1024),
+                     static_cast<double>(vs / 1024 / 1024));
 }
 #endif
 #endif
 
-void printSystemInfo() {
-  spdlog::info("EON Client");
-  spdlog::info("VERSION: {}", VERSION);
-  spdlog::info("BUILD DATE: {}\n", BUILD_DATE);
+void printSystemInfo(std::shared_ptr<spdlog::logger> log) {
+  SPDLOG_LOGGER_INFO(log, "EON Client");
+  SPDLOG_LOGGER_INFO(log, "VERSION: {}", VERSION);
+  SPDLOG_LOGGER_INFO(log, "BUILD DATE: {}\n", BUILD_DATE);
 #ifndef __aarch64__
-  spdlog::info("OS: {}", OS_INFO);
-  spdlog::info("Arch: {}", ARCH);
+  SPDLOG_LOGGER_INFO(log, "OS: {}", OS_INFO);
+  SPDLOG_LOGGER_INFO(log, "Arch: {}", ARCH);
 #endif
 
 #ifdef _WIN32
   TCHAR hostname[MAX_COMPUTERNAME_LENGTH + 1];
   DWORD size = sizeof(hostname) / sizeof(hostname[0]);
   if (GetComputerName(hostname, &size)) {
-    spdlog::info("Hostname: {}", hostname);
+    SPDLOG_LOGGER_INFO(log, "Hostname: {}", hostname);
   } else {
-    spdlog::error("Failed to get hostname");
+    SPDLOG_LOGGER_ERROR(log, "Failed to get hostname");
   }
-  spdlog::info("PID: {}", GetCurrentProcessId());
+  SPDLOG_LOGGER_INFO(log, "PID: {}", GetCurrentProcessId());
 #else
   struct utsname systemInfo;
   int status = uname(&systemInfo);
   if (status == 0) {
-    spdlog::info("Hostname: {}", systemInfo.nodename);
-    spdlog::info("PID: {}", getpid());
+    SPDLOG_LOGGER_INFO(log, "Hostname: {}", systemInfo.nodename);
+    SPDLOG_LOGGER_INFO(log, "PID: {}", getpid());
   } else {
-    spdlog::error("Failed to get system information");
+    SPDLOG_LOGGER_ERROR(log, "Failed to get system information");
   }
 #endif
 
   std::filesystem::path cwd = std::filesystem::current_path();
-  spdlog::info("DIR: {}", cwd.string());
+  SPDLOG_LOGGER_INFO(log, "DIR: {}", cwd.string());
 }
 
 int main(int argc, char **argv) {
   // --- Start Logging setup
-  spdlog::cfg::load_env_levels();
-  // Sinks
-  spdlog::flush_every(std::chrono::seconds(3));
-  auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-  auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-      "client_spdlog.log", true); // Overwrite existing
-  auto logger = std::make_shared<spdlog::logger>(
-      "combi", spdlog::sinks_init_list({console_sink, file_sink}));
-  spdlog::register_logger(logger);
-  logger->set_pattern("%v");
-  spdlog::set_default_logger(logger);
-  // Traceback logger
-  spdlog::set_level(spdlog::level::trace);
-  auto trace_csink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-  auto trace_fsink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-      "client_traceback.log", true); // Overwrite existing
-  auto _traceback = std::make_shared<spdlog::logger>(
-      "_traceback", spdlog::sinks_init_list({trace_csink, trace_fsink}));
-  _traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
-  spdlog::register_logger(_traceback);
-  //--- End logging setup
+  eonc::setup_logger_GLOBAL();
+  auto logger = spdlog::get("combi");
+  // End logging setup
   eonc::Parameters parameters;
 
 #if defined WITH_ASE_ORCA || WITH_PYTHON
@@ -356,7 +339,7 @@ int main(int argc, char **argv) {
     }
 #endif
 
-    printSystemInfo();
+    printSystemInfo(logger);
 
     bool bundlingEnabled = true;
     int bundleSize = eonc::getBundleSize();
@@ -441,7 +424,8 @@ int main(int argc, char **argv) {
 
 #ifdef OSX
 #ifndef __aarch64__
-  print_memory_usage();
+  // TODO(rg) :: Either make it more generic or just remove it..
+  print_memory_usage(logger);
 #endif
 #endif
 
@@ -453,7 +437,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-  spdlog::drop_all();
-  spdlog::shutdown();
+  // Only once
+  eonc::logger_cleanup_GLOBAL();
   std::exit(0);
 }

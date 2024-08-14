@@ -9,9 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+// Includes logging macros
 #include "Parameters.h"
 #include "BaseStructures.h"
 #include "HelperFunctions.h"
+#include "client/Log.hpp" // IWYU pragma: keep
 #include "magic_enum/magic_enum.hpp"
 #include "thirdparty/toml.hpp"
 #include <float.h>
