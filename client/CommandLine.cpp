@@ -10,7 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "CommandLine.h"
-#include "ConjugateGradients.h"
 #include "Job.hpp"
 #include "Optimizer.h"
 #include "Parameters.h"
@@ -32,10 +31,12 @@ using namespace std;
 
 void minimize(Matter &matter, const string &confileout) {
   // XXX: Fix this
-  auto objf = MatterObjectiveFunction({"norm", 1e-2}, matter);
-  auto blah = toml::table{{"Optimizer", toml::table{{"method", "cg"}}}};
-  auto optim = helpers::create::mkOptim(objf, blah);
-  optim->runOpt(1000, 0.02);
+  auto tbl = toml::table{{"Main", toml::table{{"job", "minimization"}}}};
+  auto relax = mkJob(tbl);
+  bool result = JobRunner(relax, matter);
+  if (!result) {
+    throw std::runtime_error("Something went wrong running the job");
+  }
   if (!confileout.empty()) {
     std::cout << "Saving relaxed structure to " << confileout << std::endl;
   } else {

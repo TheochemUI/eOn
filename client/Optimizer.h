@@ -71,19 +71,7 @@ protected:
   }
 
   bool runOpt(size_t maxIter, ScalarType maxMove) override final {
-    while (!m_objf.isConverged() && iters < maxIter) {
-      auto pos = m_objf.getPositions();
-      step(maxMove);
-      // if (!static_cast<T *>(this)->stepImpl(maxMove)) {
-      //   return false; // Stop if the step fails
-      // }
-      iters++;
-      // double stepSize =
-      //     helper_functions::maxAtomMotion(pbc(m_objf.getPositions() - pos));
-      std::cout << fmt::format("{} {}  {} ", "[Matter]\n", iters,
-                               m_objf.getConvergence(), m_objf.getEnergy());
-    }
-    return m_objf.isConverged();
+    return static_cast<T *>(this)->runOptImpl(maxIter, maxMove);
   }
 };
 

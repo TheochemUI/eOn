@@ -22,6 +22,7 @@
 #include "BaseStructures.h"
 #include "Parser.hpp"
 #include "PointJob.h"
+#include "RelaxJob.hpp"
 #include <variant>
 // #include "PrefactorJob.h"
 // #include "ProcessSearchJob.h"
@@ -44,6 +45,9 @@ JobVariant mkJob(const toml::table &config) {
   switch (jtype) {
   case JobType::Point: {
     return PointJob();
+  }
+  case JobType::Minimization: {
+    return RelaxJob();
   }
   default: {
     throw std::runtime_error("No known job could be constructed");
