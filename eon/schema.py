@@ -21,6 +21,8 @@ def PDef(first, second):
 
 class MainConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
+    ep_one: str = Field(default="pos.con", description="First matter object input")
+    ep_two: str = Field(default="product.con", description="Second matter object source")
     job: Literal[
         "akmc",
         "basin_hopping",
