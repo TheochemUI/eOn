@@ -252,7 +252,6 @@ eonclib_sources = [
     # 'HessianJob.cpp',
     # 'TADJob.cpp',
     # 'ProcessSearchJob.cpp',
-    'Bundling.cpp',
     # 'NudgedElasticBand.cpp',
     # 'MonteCarloJob.cpp',
     # 'DynamicsJob.cpp',
