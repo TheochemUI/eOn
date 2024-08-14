@@ -13,6 +13,7 @@
 
 #include "BaseStructures.h"
 #include "Parser.hpp"
+#include "RelaxJob.hpp"
 #include "client/PointJob.h"
 #include "thirdparty/toml.hpp"
 #include <variant>
@@ -49,7 +50,7 @@ namespace eonc {
  * \note The run method must be implemented by each derived job class.
  */
 
-using JobVariant = std::variant<PointJob /*, OtherJobTypes */>;
+using JobVariant = std::variant<PointJob, RelaxJob /*, OtherJobTypes */>;
 
 JobVariant mkJob(const toml::table &);
 

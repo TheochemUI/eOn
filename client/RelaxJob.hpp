@@ -45,12 +45,12 @@ private:
 
 class RelaxJob {
 public:
-  RelaxJob() { log = spdlog::get("combi"); }
+  RelaxJob() { m_log = spdlog::get("combi"); }
   ~RelaxJob(void) = default;
   bool runImpl(Matter &);
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> m_log;
 };
 
 } // namespace eonc
