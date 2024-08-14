@@ -19,7 +19,6 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/cfg/env.h> // support for loading levels from the environment variable
 #include <spdlog/fmt/ostr.h> // support for user defined types
 #include <spdlog/logger.h>

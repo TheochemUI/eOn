@@ -22,9 +22,6 @@
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
-#include <spdlog/cfg/env.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
 #include <string.h>
 #include <time.h>
 

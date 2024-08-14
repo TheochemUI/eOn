@@ -17,6 +17,7 @@ option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
 option('with_ase', type : 'boolean', value : false)
 option('with_asap_stacktrace', type : 'boolean', value : false)
+option('log_level', type : 'combo', choices : ['trace', 'debug', 'info'], value : 'debug')
 
 # option('someoption', type : 'string', value : 'optval', description : 'An option')
 # option('combo_opt', type : 'combo', choices : ['one', 'two', 'three'], value : 'three')
