@@ -53,10 +53,10 @@ public:
   ConjugateGradients(const ObjectiveFunction &a_objf,
                      const ConjugateGradients::Params &p_a)
       : Optimizer(a_objf),
+        m_p{p_a},
         m_directionOld{(a_objf.getPositions()).setZero()},
         m_forceOld{(a_objf.getPositions()).setZero()}, // use setZero instead
-        m_cg_i{0},
-        m_p{p_a} {
+        m_cg_i{0} {
     if (spdlog::get("cg")) {
       m_log = spdlog::get("cg");
     } else {
@@ -78,6 +78,7 @@ public:
   VectorType getStep();
 
 private:
+  const ConjugateGradients::Params m_p;
   //! Current step direction of the conjugate gradient
   VectorType m_direction;
   //! Algorithms previous step direction
@@ -89,7 +90,6 @@ private:
   //! Previous force vector
   VectorType m_forceOld;
   std::shared_ptr<spdlog::logger> m_log;
-  const ConjugateGradients::Params m_p;
 
   //! Counts the number of discrete steps until algorithm convergence
   size_t m_cg_i;
