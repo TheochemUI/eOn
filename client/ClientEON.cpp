@@ -10,9 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "Bundling.h"
 #include "CommandLine.h"
 #include "HelperFunctions.h"
+#include "Job.hpp"
 #include "Log.hpp"
 #include "Parameters.h"
 #include "Parser.hpp"
@@ -339,62 +339,18 @@ int main(int argc, char **argv) {
 
     printSystemInfo(logger);
 
-    bool bundlingEnabled = true;
-    int bundleSize = eonc::getBundleSize();
-    if (bundleSize == 0) {
-      bundleSize = 1;
-    } else if (bundleSize == -1) {
-      // Not using bundling
-      bundleSize = 1;
-      bundlingEnabled = false;
-    }
+    // check to see if parameters file exists before loading
+    std::string config_file =
+        eonc::helper_functions::getRelevantFile(parameters.main.inpFilename);
+    SPDLOG_LOGGER_INFO(logger, "Loading parameter file {}", config_file);
+    auto params = eonc::loadTOML(config_file);
+    auto job = eonc::mkJob(params);
 
-    std::vector<std::string> bundledFilenames;
-    for (int i = 0; i < bundleSize; i++) {
-      // Potential::fcalls = 0;
-      // Potential::fcallsTotal = 0;
-      if (bundleSize > 1)
-        printf("Beginning Job %d of %d\n", i + 1, bundleSize);
-      std::vector<std::string> unbundledFilenames;
-      if (bundlingEnabled) {
-        unbundledFilenames = eonc::unbundle(i);
-      }
-
-      // check to see if parameters file exists before loading
-      int error = 0;
-      std::string config_file =
-          eonc::helper_functions::getRelevantFile(parameters.main.inpFilename);
-      printf("Loading parameter file %s\n", config_file.c_str());
-      auto params = eonc::loadTOML(config_file);
-
-      if (error) {
-        fprintf(stderr, "\nproblem loading parameter file, stopping\n");
-        exit(1);
-        abort();
-      }
-
-      //   // Determine what type of job we are running according to the
-      //   parameters
-      //   // file.
-      //   XXX(rg):: This needs to be fixed now
-      //   auto job = eonc::makeJob(params);
-
-      //   std::vector<std::string> filenames;
-      //   try {
-      //     filenames = job->run();
-      //   } catch (int e) {
-      //     SPDLOG_CRITICAL("[ERROR] job exited on error %d\n", e);
-      //   }
-
-      //   filenames.push_back(std::string("client.log"));
-
-      //   if (bundlingEnabled) {
-      //     eonc::bundle(i, filenames, &bundledFilenames);
-      //     eonc::deleteUnbundledFiles(unbundledFilenames);
-      //   } else {
-      //     bundledFilenames = filenames;
-      //   }
-    }
+    // TODO(rg) :: This needs to know how many matter objects to create!!
+    // bool result = eonc::JobRunner(job);
+    // if (!result) {
+    //   throw std::runtime_error("Something went wrong running the job");
+    // }
 
 #ifdef EONMPI
     if (client_standalone) {
