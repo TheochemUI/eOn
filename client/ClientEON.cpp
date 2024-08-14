@@ -10,11 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "BaseStructures.h"
 #include "Bundling.h"
 #include "CommandLine.h"
 #include "HelperFunctions.h"
-#include "Job.hpp"
 #include "Log.hpp"
 #include "Parameters.h"
 #include "Parser.hpp"
