@@ -179,7 +179,6 @@ void commandLine(int argc, char **argv) {
         throw std::runtime_error("Something went wrong running the job");
       }
     } else if (mflag) {
-      // XXX: Finish
       minimize(mat1, confileout);
     } else if (cflag) {
       if (unmatched.size() != 2) {
