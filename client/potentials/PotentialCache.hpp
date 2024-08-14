@@ -43,6 +43,7 @@ struct KeyHash {
 
 // Helper which doesn't compute the hashes, since those are obtained based on
 // the Potential<T>
+// TODO(rg) :: Consider reworking as a singleton like the logger
 class PotentialCache {
 private:
   cachelot::cache::Cache *potCache = nullptr;
