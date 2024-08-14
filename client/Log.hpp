@@ -19,24 +19,22 @@
 
 namespace eonc {
 
+// As per
+// https://www.modernescpp.com/index.php/thread-safe-initialization-of-a-singleton/
 class LogManager {
 public:
-  LogManager() { setup_logger(); }
-
-  ~LogManager() { cleanup_logger(); }
-
-  // Deleted copy constructor and assignment operator to prevent copying
-  LogManager(const LogManager &) = delete;
-  LogManager &operator=(const LogManager &) = delete;
-
-  static std::shared_ptr<LogManager> create() {
-    return std::make_shared<LogManager>();
-  }
+  static LogManager *getInstance();
 
 private:
   void setup_logger();
-
   void cleanup_logger();
+  LogManager() { setup_logger(); }
+  ~LogManager() { cleanup_logger(); }
+  LogManager(const LogManager &) = delete;
+  LogManager &operator=(const LogManager &) = delete;
+
+  static std::atomic<LogManager *> instance;
+  static std::mutex lmMutex;
 };
 
 } // namespace eonc

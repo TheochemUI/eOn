@@ -115,7 +115,7 @@ void printSystemInfo(std::shared_ptr<spdlog::logger> log) {
 
 int main(int argc, char **argv) {
   // --- Start Logging setup
-  auto logger_manager = eonc::LogManager::create();
+  eonc::LogManager::getInstance();
   auto logger = spdlog::get("combi");
   // End logging setup
   eonc::Parameters parameters;
