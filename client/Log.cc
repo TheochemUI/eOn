@@ -13,7 +13,7 @@
 
 namespace eonc {
 
-void setup_logger_GLOBAL() {
+void LogManager::setup_logger() {
   spdlog::cfg::load_env_levels();
   // Sinks
   spdlog::flush_every(std::chrono::seconds(3));
@@ -34,12 +34,10 @@ void setup_logger_GLOBAL() {
       "_traceback", spdlog::sinks_init_list({trace_csink, trace_fsink}));
   _traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
   spdlog::register_logger(_traceback);
-  return;
 }
 
-void logger_cleanup_GLOBAL() {
+void LogManager::cleanup_logger() {
   spdlog::drop_all();
   spdlog::shutdown();
 }
-
 } // namespace eonc
