@@ -105,6 +105,9 @@ if get_option('buildtype') != 'release'
     _args += ['-DEON_CHECKS=TRUE']
 endif
 
+loglvl = get_option('log_level').to_upper()
+_args += [f'-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_@loglvl@']
+
 
 # Get the version and build date
 version_script = find_program('get_version.py')
