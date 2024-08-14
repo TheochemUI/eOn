@@ -10,8 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/RelaxJob.hpp"
-#include "BaseStructures.h"
+#include "client/HelperFunctions.h"
 #include "client/Optimizer.h"
+
 namespace eonc {
 double MatterObjectiveFunction::getEnergy() const {
   return matter.getPotentialEnergy();
@@ -59,7 +60,7 @@ VectorType MatterObjectiveFunction::difference(const VectorType &a,
 
 bool RelaxJob::runImpl(Matter &mat) {
   // TODO(rg): params are from toml
-  eonc::MatterObjectiveFunction objf({"norm", 1e-4}, mat);
+  eonc::MatterObjectiveFunction objf({"norm", 1e-3}, mat);
 
   const auto config = toml::table{{"Optimizer", toml::table{{"method", "cg"}}}};
   auto optim = helpers::create::mkOptim(objf, config);
@@ -71,15 +72,14 @@ bool RelaxJob::runImpl(Matter &mat) {
   // }
   bool quiet = false;
   const size_t maxIter = 1000;
-  const double maxMove = 2.5;
+  const double maxMove = 0.2;
   int iteration = 0;
   if (!quiet) {
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
-                        "[Matter]", "Iter", "Step size",
-                        parameters->optim.convergenceMetricLabel, "Energy");
+                        "[Matter]", "Iter", "Step size", "norm", "Energy");
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
-                        "[Matter]", iteration, 0.0, objf->getConvergence(),
-                        getPotentialEnergy());
+                        "[Matter]", iteration, 0.0, objf.getConvergence(),
+                        objf.getEnergy());
   }
 
   while (!objf.isConverged() && iteration < maxIter) {
@@ -90,13 +90,13 @@ bool RelaxJob::runImpl(Matter &mat) {
     iteration++;
     mat.setPositionsFreeV(objf.getPositions());
 
-    // double stepSize =
-    //     helper_functions::maxAtomMotion(pbc(getPositions() - pos));
+    double stepSize = helper_functions::maxAtomMotionV(
+        mat.pbcV(mat.getPositionsFreeV() - pos));
 
     if (!quiet) {
       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, 0, /*stepsize*/
-                          objf.getConvergence(), getPotentialEnergy());
+                          "[Matter]", iteration, stepSize,
+                          objf.getConvergence(), objf.getEnergy());
     }
 
     // if (writeMovie) {
@@ -114,7 +114,7 @@ bool RelaxJob::runImpl(Matter &mat) {
     if (!quiet) {
       SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
                           "[Matter]", iteration, 0.0, objf.getConvergence(),
-                          getPotentialEnergy());
+                          objf.getEnergy());
     }
   }
   //    bool converged = optimizer->run(parameters->optMaxIterations,

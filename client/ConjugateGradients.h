@@ -12,7 +12,7 @@
 #pragma once
 #include "Eigen.h"
 #include "Optimizer.h"
-#include "Parameters.h"
+#include <spdlog/sinks/basic_file_sink.h>
 namespace eonc {
 /**
  * @file
@@ -40,6 +40,7 @@ public:
     bool line_search{false};
     size_t max_line_serach_iter{10};
     ScalarType finite_diff{0.01};
+    bool saddle_bowl_breakout{false};
   };
 
 public:
@@ -71,7 +72,8 @@ public:
    * Either calls the single_step or line_search method depending on the
    * parameters \return whether or not the algorithm has converged
    */
-  bool stepImpl(double a_maxMove);
+  bool stepImpl(ScalarType);
+  bool runOptImpl(size_t, ScalarType);
   //! Gets the direction of the next step
   VectorType getStep();
 

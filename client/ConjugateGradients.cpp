@@ -138,56 +138,66 @@ int ConjugateGradients::single_step(double a_maxMove) {
     stepSize = projectedForce1 / curvature;
   }
 
-  // TODO(rg) Port
-  // if (m_params.saddle.bowlBreakout and a_maxMove < 0.0) {
-  //   stepSize = -a_maxMove;
-  //   a_maxMove = -a_maxMove;
-  // }
+  if (m_p.saddle_bowl_breakout and a_maxMove < 0.0) {
+    stepSize = -a_maxMove;
+    a_maxMove = -a_maxMove;
+  }
 
-  // if (!m_params.optim.CGNoOvershooting) {
-  //   if (m_params.saddle.bowlBreakout) {
-  //     // max displacement is based on system not single atom
-  //     pos += helper_functions::maxMotionAppliedV(stepSize * m_directionNorm,
-  //                                                a_maxMove);
-  //   } else {
-  //     pos += helper_functions::maxAtomMotionAppliedV(stepSize *
-  //     m_directionNorm,
-  //                                                    a_maxMove);
-  //   }
-  //   m_objf.setPositions(pos);
-  // } else {
-  // negative if product of the projected forces before and after the step are
-  // in opposite directions
-  double passedMinimum = -1.;
-  double forceChange = 0.;
-  while (passedMinimum < 0. and
-         (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
-    posStep = pos + helper_functions::maxAtomMotionAppliedV(
-                        stepSize * m_directionNorm, a_maxMove);
-    const_cast<ObjectiveFunction &>(m_objf).setPositions(posStep);
-    forceAfterStep = -m_objf.getGradient(true);
-    projectedForce2 = forceAfterStep.dot(m_directionNorm);
+  if (!m_p.no_overshooting) {
+    if (m_p.saddle_bowl_breakout) {
+      // max displacement is based on system not single atom
+      pos += helper_functions::maxMotionAppliedV(stepSize * m_directionNorm,
+                                                 a_maxMove);
+    } else {
+      pos += helper_functions::maxAtomMotionAppliedV(stepSize * m_directionNorm,
+                                                     a_maxMove);
+    }
+    const_cast<ObjectiveFunction &>(m_objf).setPositions(pos);
+  } else {
+    // negative if product of the projected forces before and after the step are
+    // in opposite directions
+    double passedMinimum = -1.;
+    double forceChange = 0.;
+    while (passedMinimum < 0. and
+           (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
+      posStep = pos + helper_functions::maxAtomMotionAppliedV(
+                          stepSize * m_directionNorm, a_maxMove);
+      const_cast<ObjectiveFunction &>(m_objf).setPositions(posStep);
+      forceAfterStep = -m_objf.getGradient(true);
+      projectedForce2 = forceAfterStep.dot(m_directionNorm);
 
-    passedMinimum = projectedForce1 * projectedForce2;
-    if (passedMinimum < 0. and
-        (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
-      forceChange = (projectedForce1 - projectedForce2);
-      stepSize = (projectedForce1 / forceChange) * stepSize;
-      SPDLOG_LOGGER_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
-                          forceChange, stepSize);
+      passedMinimum = projectedForce1 * projectedForce2;
+      if (passedMinimum < 0. and
+          (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
+        forceChange = (projectedForce1 - projectedForce2);
+        stepSize = (projectedForce1 / forceChange) * stepSize;
+        SPDLOG_LOGGER_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
+                            forceChange, stepSize);
+      }
     }
   }
-  // }
-  // if (m_params.optim.CGKnockOutMaxMove) {
-  //   if (stepSize >= a_maxMove) {
-  //     // knockout old search direction
-  //     m_directionOld = m_objf.getPositions() * 0.0;
-  //     m_forceOld = m_objf.getPositions() * 0.0;
-  //     SPDLOG_LOGGER_DEBUG(m_log, "Resetting the old search direction");
-  //   }
-  // }
+  if (m_p.knock_out_max_move) {
+    if (stepSize >= a_maxMove) {
+      // knockout old search direction
+      m_directionOld = m_objf.getPositions() * 0.0;
+      m_forceOld = m_objf.getPositions() * 0.0;
+      SPDLOG_LOGGER_DEBUG(m_log, "Resetting the old search direction");
+    }
+  }
 
   return m_objf.isConverged() ? 1 : 0;
+}
+
+bool ConjugateGradients::runOptImpl(size_t maxIterations, ScalarType maxMove) {
+  int iterations = 0;
+  while (!m_objf.isConverged() && iterations <= maxIterations) {
+    stepImpl(maxMove);
+    iterations++;
+  }
+  //    return objf->isConverged();
+  if (m_objf.isConverged())
+    return 1;
+  return 0;
 }
 
 } // namespace eonc
