@@ -16,6 +16,7 @@
 #include "Log.hpp"
 #include "Parameters.h"
 #include "Parser.hpp"
+#include "client/matter/MatterHelpers.hpp"
 #include "version.h"
 
 #include <cstdlib>
@@ -344,13 +345,22 @@ int main(int argc, char **argv) {
         eonc::helper_functions::getRelevantFile(parameters.main.inpFilename);
     SPDLOG_LOGGER_INFO(logger, "Loading parameter file {}", config_file);
     auto params = eonc::loadTOML(config_file);
+
+    auto CACHELOT_CMD = cachelot::cache::Cache::Create(
+        eonc::cache::cache_memory, eonc::cache::page_size,
+        eonc::cache::hash_initial, true);
+    auto pcache = eonc::cache::PotentialCache();
+    pcache.set_cache(&CACHELOT_CMD);
+    auto pot = eonc::makePotential(params);
+    pot->set_cache(&pcache);
+
+    auto mats = eonc::mat::make_matter(params, pot);
     auto job = eonc::mkJob(params);
 
-    // TODO(rg) :: This needs to know how many matter objects to create!!
-    // bool result = eonc::JobRunner(job);
-    // if (!result) {
-    //   throw std::runtime_error("Something went wrong running the job");
-    // }
+    bool result = eonc::JobRunner(job, mats[0]);
+    if (!result) {
+      throw std::runtime_error("Something went wrong running the job");
+    }
 
 #ifdef EONMPI
     if (client_standalone) {
