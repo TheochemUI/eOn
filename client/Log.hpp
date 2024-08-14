@@ -18,7 +18,25 @@
 #include <spdlog/spdlog.h>
 
 namespace eonc {
-// To be called only once
-void setup_logger_GLOBAL();
-void logger_cleanup_GLOBAL();
+
+class LogManager {
+public:
+  LogManager() { setup_logger(); }
+
+  ~LogManager() { cleanup_logger(); }
+
+  // Deleted copy constructor and assignment operator to prevent copying
+  LogManager(const LogManager &) = delete;
+  LogManager &operator=(const LogManager &) = delete;
+
+  static std::shared_ptr<LogManager> create() {
+    return std::make_shared<LogManager>();
+  }
+
+private:
+  void setup_logger();
+
+  void cleanup_logger();
+};
+
 } // namespace eonc
