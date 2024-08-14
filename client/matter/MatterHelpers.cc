@@ -10,7 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "MatterHelpers.hpp"
+#include "client/BaseStructures.h"
 #include "client/HelperFunctions.h"
+#include "client/Parser.hpp"
+#include "client/matter/MatterCreator.hpp"
 #include <set>
 
 // TODO(rg):: Cleanup, this shouldn't be required
@@ -322,5 +325,28 @@ void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode) {
     }
   }
   return;
+}
+
+std::vector<Matter> make_matter(const toml::table &config,
+                                const std::shared_ptr<PotBase> &pot) {
+  std::vector<Matter> mats;
+  config_section(config, "Main");
+  auto confile =
+      config["Main"]["ep_one"].value<std::string>().value_or("pos.con");
+  eonc::mat::ConFileParser cfp;
+  auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
+  switch (jtype) {
+  // All the single ended ones
+  case JobType::Point:
+    [[fallthrough]];
+  case JobType::Minimization: {
+    mats.emplace_back(Matter(pot));
+    cfp.parse(mats[0], confile);
+    return mats;
+  }
+  default: {
+    throw std::runtime_error("No known job could be constructed");
+  }
+  }
 }
 } // namespace eonc::mat

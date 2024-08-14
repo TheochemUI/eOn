@@ -23,7 +23,6 @@
 #include "Parser.hpp"
 #include "PointJob.h"
 #include "RelaxJob.hpp"
-#include <variant>
 // #include "PrefactorJob.h"
 // #include "ProcessSearchJob.h"
 // #include "ReplicaExchangeJob.h"

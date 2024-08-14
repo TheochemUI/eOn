@@ -28,4 +28,7 @@ bool sortedR(const Matter &m1, const Matter &m2,
 void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 
+std::vector<Matter> make_matter(const toml::table &,
+                                const std::shared_ptr<PotBase> &);
+
 } // namespace eonc::mat
