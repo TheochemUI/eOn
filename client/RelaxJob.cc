@@ -75,9 +75,9 @@ bool RelaxJob::runImpl(Matter &mat) {
   const double maxMove = 0.2;
   int iteration = 0;
   if (!quiet) {
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
-                        "[Matter]", "Iter", "Step size", "norm", "Energy");
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}", "[Matter]",
+                        "Iter", "Step size", "norm", "Energy");
+    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
                         "[Matter]", iteration, 0.0, objf.getConvergence(),
                         objf.getEnergy());
   }
