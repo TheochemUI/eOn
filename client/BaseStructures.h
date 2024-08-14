@@ -19,13 +19,6 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
-#include <spdlog/cfg/env.h> // support for loading levels from the environment variable
-#include <spdlog/fmt/ostr.h> // support for user defined types
-#include <spdlog/logger.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
-
 namespace eonc {
 using namespace std::string_literals; // For ""s
 
