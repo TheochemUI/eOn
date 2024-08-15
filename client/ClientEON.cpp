@@ -17,6 +17,7 @@
 #include "Parameters.h"
 #include "Parser.hpp"
 #include "client/matter/MatterHelpers.hpp"
+#include "potentials/PotentialCache.hpp"
 #include "version.h"
 
 #include <cstdlib>
@@ -122,13 +123,9 @@ int main(int argc, char **argv) {
     eonc::helper_functions::getTime(&beginTime, NULL, NULL);
   }
 
-  auto CACHELOT_CMD = cachelot::cache::Cache::Create(
-      eonc::cache::cache_memory, eonc::cache::page_size,
-      eonc::cache::hash_initial, true);
-  auto pcache = eonc::cache::PotentialCache();
-  pcache.set_cache(&CACHELOT_CMD);
+  auto pcache = eonc::cache::PotentialCache::getInstance();
   auto pot = eonc::makePotential(params);
-  pot->set_cache(&pcache);
+  pot->set_cache(pcache);
 
   auto mats = eonc::mat::make_matter(params, pot);
   auto job = eonc::mkJob(params);
