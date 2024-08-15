@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <string>
 
@@ -68,8 +69,10 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       cxxopts::value<double>()->default_value("0.1"))(
       "p,potential", "The potential (e.g. qsc, lj, eam_al)",
       cxxopts::value<std::string>())(
+      "q,quiet", "Pure CLI mode, no version and timing info",
+      cxxopts::value<bool>()->implicit_value("false"))(
       "conf", "Configuration file",
-      cxxopts::value<std::string>()->implicit_value("config.toml"))(
+      cxxopts::value<std::string>()->default_value("config.toml"))(
       "h,help", "Print usage");
 
   try {
@@ -86,17 +89,22 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       exit(0);
     }
 
-    if (result.count("config")) {
+    SPDLOG_LOGGER_DEBUG(log, argc);
+    if (result.count("conf") || (argc == 1)) {
       std::cout << "Loading " << result["conf"].as<std::string>()
-                << " and overwriting with commandline options";
+                << " and overwriting with commandline options" << std::endl;
       tbl = eonc::loadTOML(result["conf"].as<std::string>());
-    } else {
-      // For suppresssing version and timing information
-      tbl["Main"].as_table()->insert_or_assign("suppress", true);
+
+      // Check if 'inputs' is present in the TOML file; if not, assign a default
+      if (!tbl["Main"].as_table()->contains("inputs")) {
+        SPDLOG_LOGGER_WARN(log, "Input file key missing, assuming pos.con");
+        tbl["Main"].as_table()->insert_or_assign("inputs",
+                                                 toml::array{"pos.con"});
+      }
     }
 
     if (result.count("minimize")) {
-      tbl["Main"].as_table()->insert_or_assign("job", "minimize");
+      tbl["Main"].as_table()->insert_or_assign("job", "minimization");
     }
 
     if (result.count("compare")) {
@@ -123,6 +131,11 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       }
       tbl["Main"].as_table()->insert_or_assign("inputs",
                                                std::move(inputs_array));
+    }
+
+    if (result.count("quiet")) {
+      tbl["Main"].as_table()->insert_or_assign("quiet",
+                                               result["quiet"].as<bool>());
     }
 
     if (result.count("output")) {
@@ -221,7 +234,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
     std::cerr << options.help() << std::endl;
     exit(EXIT_FAILURE);
   }
-  // std::cout << tbl;
+  std::cout << tbl << std::endl << std::endl;
   return tbl;
 }
 } // namespace eonc
