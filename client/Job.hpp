@@ -14,6 +14,7 @@
 #include "BaseStructures.h"
 #include "Parser.hpp"
 #include "RelaxJob.hpp"
+#include "StructureComparisonJob.h"
 #include "client/PointJob.h"
 #include "thirdparty/toml.hpp"
 #include <variant>
@@ -50,37 +51,57 @@ namespace eonc {
  * \note The run method must be implemented by each derived job class.
  */
 
-using JobVariant = std::variant<PointJob, RelaxJob /*, OtherJobTypes */>;
+using JobVariant = std::variant<PointJob, RelaxJob,
+                                StructureComparisonJob /*, OtherJobTypes */>;
 
 JobVariant mkJob(const toml::table &);
 
-// Templated struct to handle job execution
-template <typename... Args> struct JobRunnerImpl {
-  std::tuple<Args &&...> args; // Store arguments as references
+struct JobRunnerImpl {
+  // Generic template that produces a compile-time error
+  template <typename JobType, typename... Args>
+  bool operator()(JobType &, Args &&...) const {
+    static_assert(
+        always_false<JobType>::value,
+        "No explicit specialization for this job type in JobRunnerImpl.");
+    return false; // This return will never be reached, but is required
+                  // syntactically.
+  }
 
-  // Perfectly forward the arguments to the tuple
-  JobRunnerImpl(Args &&...args)
-      : args(std::forward<Args>(args)...) {}
+  template <typename... Args>
+  bool operator()(StructureComparisonJob &job, Args &&...args) const {
+    if constexpr (sizeof...(Args) == 2) {
+      return job.runImpl(std::forward<Args>(args)...);
+    }
+  }
 
-  // Callable operator to handle the job type
-  template <typename JobType> bool operator()(JobType &job) const {
-    return applyImpl(job, std::index_sequence_for<Args...>{});
+  template <typename... Args>
+  bool operator()(PointJob &job, Args &&...args) const {
+    if constexpr (sizeof...(Args) == 1) {
+      return job.runImpl(std::forward<Args>(args)...);
+    }
+  }
+
+  template <typename... Args>
+  bool operator()(RelaxJob &job, Args &&...args) const {
+    if constexpr (sizeof...(Args) == 1) {
+      return job.runImpl(std::forward<Args>(args)...);
+    }
   }
 
 private:
-  // Helper function to unpack the tuple and forward arguments to the job's
-  // runImpl method
-  template <typename JobType, std::size_t... I>
-  bool applyImpl(JobType &job, std::index_sequence<I...>) const {
-    return job.runImpl(std::forward<Args>(std::get<I>(args))...);
-  }
+  // Helper template that is always false to trigger static_assert
+  template <typename T> struct always_false : std::false_type {};
 };
 
-// Wrapper function to execute the JobRunnerImpl with the variant
 template <typename... Args>
 bool JobRunner(JobVariant &jobVariant, Args &&...args) {
-  return std::visit(JobRunnerImpl<Args &&...>(std::forward<Args>(args)...),
-                    jobVariant);
+  return std::visit(
+      [&](auto &job) -> bool {
+        return JobRunnerImpl()(job, std::forward<Args>(args)...);
+      },
+      jobVariant);
 }
+
+bool runJob(JobVariant &, std::vector<Matter> &);
 
 } // namespace eonc

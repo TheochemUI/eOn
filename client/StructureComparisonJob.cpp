@@ -9,18 +9,17 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "StructureComparisonJob.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
-#include "Optimizer.h"
+#include "client/StructureComparisonJob.h"
+
 namespace eonc {
-std::vector<std::string> StructureComparisonJob::run(void) {
-  std::vector<std::string> returnFiles;
-
-  auto matter1 = std::make_unique<Matter>(pot, params);
-  matter1->con2matter("matter1.con");
-
-  return returnFiles;
+bool StructureComparisonJob::runImpl(Matter &m1, Matter &m2) {
+  bool res = m_sc.compare(m1, m2, /*indistinguishable=*/true);
+  if (res) {
+    SPDLOG_LOGGER_INFO(m_log, "Structures match");
+  } else {
+    SPDLOG_LOGGER_INFO(m_log, "Structures do not match");
+  }
+  return res;
 }
 
 } // namespace eonc
