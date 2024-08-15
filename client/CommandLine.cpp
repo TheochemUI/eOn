@@ -27,23 +27,6 @@
 namespace eonc {
 using namespace std;
 
-void minimize(Matter &matter, const string &confileout) {
-  auto tbl = toml::table{
-      {"Main", toml::table{{"job", "minimization"}, {"write", "con"}}}};
-  auto relax = mkJob(tbl);
-  bool result = JobRunner(relax, matter);
-  if (!result) {
-    throw std::runtime_error("Something went wrong running the job");
-  }
-  if (!confileout.empty()) {
-    std::cout << "Saving relaxed structure to " << confileout << std::endl;
-  } else {
-    std::cout << "No output file specified, not saving" << std::endl;
-  }
-  auto con = eonc::io::mkWriter(tbl);
-  con->write(matter, confileout);
-}
-
 toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
                         char **argv) {
   // Default configuration
@@ -161,59 +144,11 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       exit(EXIT_FAILURE);
     }
 
-    // auto unmatched = result.unmatched();
-    // if (unmatched.size() < 1) {
-    //   std::cerr << "At least one non-option argument is required: the con
-    //   file"
-    //             << std::endl;
-    //   exit(EXIT_FAILURE);
-    // } else {
-    //   tbl["Main"].as_table()->insert_or_assign("ep_one", unmatched[0]);
-    // }
-
-    // std::string confile = tbl["Main"]["ep_one"].value<std::string>().value();
-
     if (result.count("compare")) {
       // For structure comparison, we need only to ensure a potential exists..
       tbl["Potential"].as_table()->insert_or_assign("potential", "lj");
     }
 
-    // TODO(rg) Port
-    // if (!sflag) {
-    //   params->optim.method = magic_enum::enum_cast<OptType>(
-    //                              optimizer, magic_enum::case_insensitive)
-    //                              .value_or(OptType::CG);
-    //   params->optim.convergedForce = optConvergedForce;
-    // }
-
-    // auto CACHELOT_CMD = cachelot::cache::Cache::Create(
-    //     eonc::cache::cache_memory, eonc::cache::page_size,
-    //     eonc::cache::hash_initial, true);
-    // auto pcache = eonc::cache::PotentialCache();
-    // pcache.set_cache(&CACHELOT_CMD);
-
-    // auto pot = makePotential(tbl);
-    // pot->set_cache(&pcache);
-
-    // auto mat1 = Matter(pot);
-    // eonc::mat::ConFileParser cfp;
-    // cfp.parse(mat1, confile);
-
-    // string confileout;
-    // if (unmatched.size() == 2) {
-    //   tbl["Main"].as_table()->insert_or_assign("ep_two", unmatched[1]);
-    // }
-
-    // if (sflag) {
-    //   auto tbl = toml::table{{"Main", toml::table{{"job", "point"}}}};
-    //   // Run PointJob
-    //   auto spj = mkJob(tbl);
-    //   bool result = JobRunner(spj, mat1);
-    //   if (!result) {
-    //     throw std::runtime_error("Something went wrong running the job");
-    //   }
-    // } else if (mflag) {
-    //   minimize(mat1, confileout);
     // } else if (cflag) {
     //   if (unmatched.size() != 2) {
     //     throw std::runtime_error("Comparison needs two files!");
