@@ -15,10 +15,10 @@ bool PointJob::runImpl(Matter &_mat) {
   double energy = _mat.getPotentialEnergy();
   auto maxForce = _mat.getMaxForce();
 
-  // SPDLOG_LOGGER_DEBUG(log, "(free) Forces:         {:.12}",
+  // SPDLOG_LOGGER_DEBUG(m_log, "(free) Forces:         {:.12}",
   //                     fmt::streamed(_mat.getForcesFree()));
-  SPDLOG_LOGGER_DEBUG(log, "Energy:         {:.12f}", energy);
-  SPDLOG_LOGGER_DEBUG(log, "Max atom force: {:.12e}", maxForce);
+  SPDLOG_LOGGER_DEBUG(m_log, "Energy:         {:.12f}", energy);
+  SPDLOG_LOGGER_DEBUG(m_log, "Max atom force: {:.12e}", maxForce);
 
   std::shared_ptr<spdlog::logger> fileLogger;
   fileLogger = spdlog::basic_logger_mt("point", "results.dat", true);
