@@ -117,9 +117,8 @@ int main(int argc, char **argv) {
 
   double beginTime = 0.0;
 
-  if (not params["Main"]["suppress"].as<bool>()->get()) {
+  if (not params["Main"]["quiet"].as<bool>()) {
     printSystemInfo(logger);
-  } else {
     eonc::helper_functions::getTime(&beginTime, NULL, NULL);
   }
 
@@ -139,7 +138,7 @@ int main(int argc, char **argv) {
     throw std::runtime_error("Something went wrong running the job");
   }
 
-  if (not params["Main"]["suppress"].as<bool>()->get()) {
+  if (not params["Main"]["quiet"].as<bool>()) {
     // Timing Information
     double utime = 0, stime = 0, rtime = 0;
     eonc::helper_functions::getTime(&rtime, &utime, &stime);
