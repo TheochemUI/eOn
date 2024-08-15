@@ -16,6 +16,7 @@
 #include "Log.hpp"
 #include "Parameters.h"
 #include "Parser.hpp"
+#include "client/StructureComparisonJob.h"
 #include "client/matter/MatterHelpers.hpp"
 #include "potentials/PotentialCache.hpp"
 #include "version.h"
@@ -127,11 +128,14 @@ int main(int argc, char **argv) {
   auto pot = eonc::makePotential(params);
   pot->set_cache(pcache);
 
+  // std::cout << params << std::endl;
   auto mats = eonc::mat::make_matter(params, pot);
   auto job = eonc::mkJob(params);
 
-  bool result = eonc::JobRunner(job, mats[0]);
-  if (!result) {
+  bool result = eonc::runJob(job, mats);
+
+  if (!result &&
+      not std::holds_alternative<eonc::StructureComparisonJob>(job)) {
     throw std::runtime_error("Something went wrong running the job");
   }
 
