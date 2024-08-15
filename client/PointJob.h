@@ -16,12 +16,12 @@ namespace eonc {
 class PointJob {
 
 public:
-  PointJob() { log = spdlog::get("combi"); }
+  PointJob() { m_log = spdlog::get("combi"); }
   ~PointJob(void) = default;
   bool runImpl(Matter &);
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> m_log;
 };
 
 } // namespace eonc
