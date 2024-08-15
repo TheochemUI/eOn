@@ -89,7 +89,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       exit(0);
     }
 
-    SPDLOG_LOGGER_DEBUG(log, argc);
+    // SPDLOG_LOGGER_DEBUG(log, argc);
     if (result.count("conf") || (argc == 1)) {
       std::cout << "Loading " << result["conf"].as<std::string>()
                 << " and overwriting with commandline options" << std::endl;
@@ -234,7 +234,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
     std::cerr << options.help() << std::endl;
     exit(EXIT_FAILURE);
   }
-  std::cout << tbl << std::endl << std::endl;
+  // std::cout << tbl << std::endl << std::endl;
   return tbl;
 }
 } // namespace eonc

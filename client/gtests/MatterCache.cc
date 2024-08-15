@@ -26,9 +26,8 @@ TEST_CASE("Matter caching", "[Matter]") {
   const auto config =
       toml::table{{"Potential", toml::table{{"potential", "lj"}}}};
   auto pot_default = eonc::makePotential(config);
-  auto pcache = eonc::cache::PotentialCache();
-  pcache.set_cache(&CACHELOT_EONCTEST);
-  pot_default->set_cache(&pcache);
+  auto pcache = eonc::cache::PotentialCache::getInstance();
+  pot_default->set_cache(pcache);
 
   auto matter = eonc::Matter(pot_default);
   std::string confile("pos.con");
