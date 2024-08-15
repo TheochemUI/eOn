@@ -111,25 +111,17 @@ int main(int argc, char **argv) {
   pybind11::scoped_interpreter guard{};
 #endif
 
-#ifndef EONMPI
-  if (argc > 1) {
-    eonc::commandLine(argc, argv);
-    return 0;
-  }
-#endif
+  auto params = eonc::commandLine(logger, argc, argv);
 
   eonc::enableFPE(); // from ExceptionsEON.h
 
   double beginTime = 0.0;
-  eonc::helper_functions::getTime(&beginTime, NULL, NULL);
 
-  printSystemInfo(logger);
-
-  // check to see if parameters file exists before loading
-  std::string config_file =
-      eonc::helper_functions::getRelevantFile(parameters.main.inpFilename);
-  SPDLOG_LOGGER_INFO(logger, "Loading parameter file {}", config_file);
-  auto params = eonc::loadTOML(config_file);
+  if (not params["Main"]["suppress"].as<bool>()->get()) {
+    printSystemInfo(logger);
+  } else {
+    eonc::helper_functions::getTime(&beginTime, NULL, NULL);
+  }
 
   auto CACHELOT_CMD = cachelot::cache::Cache::Create(
       eonc::cache::cache_memory, eonc::cache::page_size,
@@ -147,19 +139,22 @@ int main(int argc, char **argv) {
     throw std::runtime_error("Something went wrong running the job");
   }
 
-  // Timing Information
-  double utime = 0, stime = 0, rtime = 0;
-  eonc::helper_functions::getTime(&rtime, &utime, &stime);
-  rtime = rtime - beginTime;
+  if (not params["Main"]["suppress"].as<bool>()->get()) {
+    // Timing Information
+    double utime = 0, stime = 0, rtime = 0;
+    eonc::helper_functions::getTime(&rtime, &utime, &stime);
+    rtime = rtime - beginTime;
 
-  // if (Potential::totalUserTime > 0) {
-  //     printf("\ntime not in potential: %.4f%%\n",
-  //     100*(1-Potential::totalUserTime/utime));
-  // }
+    // if (Potential::totalUserTime > 0) {
+    //     printf("\ntime not in potential: %.4f%%\n",
+    //     100*(1-Potential::totalUserTime/utime));
+    // }
 
-  printf("timing information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  "
-         "%10.3f seconds\n",
-         rtime, utime, stime);
+    printf(
+        "timing information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  "
+        "%10.3f seconds\n",
+        rtime, utime, stime);
+  }
 
   std::exit(EXIT_SUCCESS);
 }
