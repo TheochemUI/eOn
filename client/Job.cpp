@@ -48,10 +48,28 @@ JobVariant mkJob(const toml::table &config) {
   case JobType::Minimization: {
     return RelaxJob();
   }
+  case JobType::Structure_Comparison: {
+    auto sc = eonc::mat::StructComparer(config);
+    return StructureComparisonJob(sc);
+  }
   default: {
-    throw std::runtime_error("No known job could be constructed");
+    throw std::runtime_error("No known job could be constructed from mkJob");
   }
   }
+}
+
+bool runJob(JobVariant &job, std::vector<Matter> &mats) {
+  bool result = false;
+  if (std::holds_alternative<StructureComparisonJob>(job) && mats.size() >= 2) {
+    result = eonc::JobRunner(job, mats[0], mats[1]);
+  } else if (std::holds_alternative<PointJob>(job) && !mats.empty()) {
+    result = eonc::JobRunner(job, mats[0]);
+  } else if (std::holds_alternative<RelaxJob>(job) && !mats.empty()) {
+    result = eonc::JobRunner(job, mats[0]);
+  } else {
+    throw std::runtime_error("Invalid job type or arguments");
+  }
+  return result;
 }
 
 // std::unique_ptr<JobBase>

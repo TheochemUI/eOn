@@ -87,7 +87,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
     }
 
     if (result.count("compare")) {
-      tbl["Main"].as_table()->insert_or_assign("job", "structure_compare");
+      tbl["Main"].as_table()->insert_or_assign("job", "structure_comparison");
     }
 
     if (result.count("potential")) {
@@ -143,6 +143,9 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
     if (result.count("compare")) {
       // For structure comparison, we need only to ensure a potential exists..
       tbl["Potential"].as_table()->insert_or_assign("potential", "lj");
+      tbl.insert_or_assign("Structure_Comparison", toml::table{});
+      tbl["Structure_Comparison"].as_table()->insert_or_assign("checkRotation",
+                                                               true);
     }
 
     // } else if (cflag) {

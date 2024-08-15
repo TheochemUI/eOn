@@ -11,15 +11,21 @@
 */
 #pragma once
 
-#include "Job.h"
-#include "Parameters.h"
+#include "client/matter/Matter.h"
+#include "client/matter/StructComparer.hpp"
 namespace eonc {
-class StructureComparisonJob : public Job {
+class StructureComparisonJob {
 public:
-  StructureComparisonJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+  StructureComparisonJob(eonc::mat::StructComparer &sc)
+      : m_sc{sc} {
+    m_log = spdlog::get("combi");
+  }
   ~StructureComparisonJob(void) = default;
-  std::vector<std::string> run(void);
+  bool runImpl(Matter &, Matter &);
+
+private:
+  eonc::mat::StructComparer m_sc;
+  std::shared_ptr<spdlog::logger> m_log;
 };
 
 } // namespace eonc
