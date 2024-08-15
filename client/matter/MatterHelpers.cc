@@ -330,9 +330,17 @@ void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode) {
 std::vector<Matter> make_matter(const toml::table &config,
                                 const std::shared_ptr<PotBase> &pot) {
   std::vector<Matter> mats;
-  config_section(config, "Main");
-  auto confile =
-      config["Main"]["ep_one"].value<std::string>().value_or("pos.con");
+
+  std::vector<std::string> input_files;
+  if (auto inputs = config["Main"]["inputs"].as_array()) {
+    for (const auto &input : *inputs) {
+      if (input.is_string()) {
+        input_files.push_back(input.as_string()->get());
+      }
+    }
+  }
+
+  // Process each input file
   eonc::mat::ConFileParser cfp;
   auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
   switch (jtype) {
@@ -340,8 +348,10 @@ std::vector<Matter> make_matter(const toml::table &config,
   case JobType::Point:
     [[fallthrough]];
   case JobType::Minimization: {
-    mats.emplace_back(Matter(pot));
-    cfp.parse(mats[0], confile);
+    for (const auto &confile : input_files) {
+      mats.emplace_back(Matter(pot));
+      cfp.parse(mats.back(), confile);
+    }
     return mats;
   }
   default: {
