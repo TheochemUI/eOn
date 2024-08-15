@@ -10,17 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "CommandLine.h"
-#include "Job.hpp"
 #include "client/Parser.hpp"
-#include "client/io/WriteCreator.hpp"
-#include "client/matter/Matter.h"
 #include "version.h"
 
 #include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <spdlog/spdlog.h>
-#include <stdexcept>
 #include <string>
 
 #include "thirdparty/cxxopts.hpp"
@@ -41,7 +37,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       "m,minimize", "Minimization of inputConfile saves to outputConfile")(
       "s,single", "Single point energy of inputConfile")(
       "c,compare", "Compare structures of inputConfile to outputConfile")(
-      "i,input", "Input files",
+      "input", "Input files",
       cxxopts::value<std::vector<std::string>>()->implicit_value({"pos.con"}))(
       "o,output", "Output file", cxxopts::value<std::string>())(
       "opt", "Optimization method",
