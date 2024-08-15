@@ -60,10 +60,10 @@ void print_memory_usage(std::shared_ptr<spdlog::logger> log) {
 
   unsigned int rss = t_info.resident_size;
   unsigned int vs = t_info.virtual_size;
-  SPDLOG_LOGGER_INFO("\nmemory usage:\nresident size (MB): {:8.2f}\nvirtual "
-                     "size (MB):  {:8.2f}",
-                     static_cast<double>(rss / 1024 / 1024),
-                     static_cast<double>(vs / 1024 / 1024));
+  // SPDLOG_LOGGER_INFO("\nmemory usage:\nresident size (MB): {}\nvirtual "
+  //                    "size (MB):  {}",
+  //                    static_cast<double>(rss) / 1024 / 1024,
+  //                    static_cast<double>(vs) / 1024 / 1024);
 }
 #endif
 #endif
