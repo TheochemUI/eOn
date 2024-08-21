@@ -227,6 +227,7 @@ subdir('matter')
 
 # IO operations
 subdir('io')
+subdir('parsers')
 
 eonclib_sources = [
 # 'Optimizer.cpp',

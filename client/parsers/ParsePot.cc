@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ParseTOML.hpp"
+#include "client/parsers/ParsePot.hpp"
 
 namespace eonc::pot {
 

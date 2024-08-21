@@ -10,27 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/matter/StructComparer.hpp"
-#include "client/Parser.hpp"
 #include "client/matter/MatterHelpers.hpp"
 
 namespace eonc::mat {
-
-void StructComparer::fromTOML(const toml::table &tbl) {
-  config_section(tbl, "Structure_Comparison");
-  const auto &config = tbl.at_path("Structure_Comparison");
-  scparams.distanceDifference =
-      config["distance_difference"].value_or(scparams.distanceDifference);
-  scparams.neighborCutoff =
-      config["neighbor_cutoff"].value_or(scparams.neighborCutoff);
-  scparams.checkRotation =
-      config["check_rotation"].value_or(scparams.checkRotation);
-  scparams.indistinguishableAtoms = config["indistinguishable_atoms"].value_or(
-      scparams.indistinguishableAtoms);
-  scparams.energyDifference =
-      config["energy_difference"].value_or(scparams.energyDifference);
-  scparams.removeTranslation =
-      config["remove_translation"].value_or(scparams.removeTranslation);
-}
 
 void StructComparer::setupCompareFunc() {
   compareFunc = [this](const Matter &m1Ref, const Matter &m2Ref,
