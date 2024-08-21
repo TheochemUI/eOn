@@ -1,6 +1,6 @@
 potaids = library(
     'potaids',
-    sources: files('ParseTOML.cc', 'PotHelpers.cc', 'PotentialCache.cc'),
+    sources: files('PotHelpers.cc', 'PotentialCache.cc'),
     include_directories: _incdirs,
     dependencies: _deps,
     link_with: _linkto,

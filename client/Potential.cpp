@@ -14,7 +14,7 @@
 #include "client/BaseStructures.h"
 #include "client/Parser.hpp"
 #include "client/Potential.h"
-#include "client/potentials/ParseTOML.hpp"
+#include "client/parsers/ParsePot.hpp"
 
 // #ifdef WITH_CATLEARN
 // #include "potentials/CatLearnPot/CatLearnPot.h"
