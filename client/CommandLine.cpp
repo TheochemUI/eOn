@@ -46,6 +46,8 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       cxxopts::value<double>()->default_value("0.001"))(
       "t,tolerance", "Distance tolerance",
       cxxopts::value<double>()->default_value("0.1"))(
+      "check_rotation", "Check rotation for structure comparison",
+      cxxopts::value<bool>()->default_value("true"))(
       "p,potential", "The potential (e.g. qsc, lj, eam_al)",
       cxxopts::value<std::string>())(
       "q,quiet", "Pure CLI mode, no version and timing info",
@@ -122,12 +124,6 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
           "output", result["output"].as<std::string>());
     }
 
-    // TODO(rg):: Use this
-    // if (result.count("tolerance")) {
-    //   params->structcomp.distanceDifference =
-    //   result["tolerance"].as<double>();
-    // }
-
     if (result.count("point") && result.count("minimize")) {
       std::cerr << "Cannot specify both minimization and single point"
                 << std::endl;
@@ -144,25 +140,16 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       // For structure comparison, we need only to ensure a potential exists..
       tbl["Potential"].as_table()->insert_or_assign("potential", "lj");
       tbl.insert_or_assign("Structure_Comparison", toml::table{});
-      tbl["Structure_Comparison"].as_table()->insert_or_assign("checkRotation",
-                                                               true);
+      if (result.count("check_rotation")) {
+        tbl["Structure_Comparison"].as_table()->insert_or_assign(
+            "check_rotation", result["check_rotation"].as<bool>());
+      }
+      if (result.count("tolerance")) {
+        tbl["Structure_Comparison"].as_table()->insert_or_assign(
+            "distance_difference", result["tolerance"].as<double>());
+      }
     }
 
-    // } else if (cflag) {
-    //   if (unmatched.size() != 2) {
-    //     throw std::runtime_error("Comparison needs two files!");
-    //   }
-    //   auto mat2 = Matter(pot);
-    //   cfp.parse(mat2, confileout);
-    //   auto tbl = toml::table{
-    //       {"Structure_Comparison", toml::table{{"checkRotation", true}}}};
-    //   auto sc = eonc::mat::StructComparer(tbl);
-    //   if (sc.compare(mat1, mat2, true)) {
-    //     std::cout << "Structures match" << std::endl;
-    //   } else {
-    //     std::cout << "Structures do not match" << std::endl;
-    //   }
-    // }
   } catch (const cxxopts::exceptions::exception &e) {
     std::cerr << "Error parsing options: " << e.what() << std::endl;
     std::cerr << options.help() << std::endl;
