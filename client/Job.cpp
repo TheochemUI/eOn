@@ -23,6 +23,8 @@
 #include "Parser.hpp"
 #include "PointJob.h"
 #include "RelaxJob.hpp"
+#include "matter/StructComparer.hpp"
+#include "parsers/ParseJob.hpp"
 // #include "PrefactorJob.h"
 // #include "ProcessSearchJob.h"
 // #include "ReplicaExchangeJob.h"
@@ -49,7 +51,10 @@ JobVariant mkJob(const toml::table &config) {
     return RelaxJob();
   }
   case JobType::Structure_Comparison: {
-    auto sc = eonc::mat::StructComparer(config);
+    config_section(config, "Structure_Comparison");
+    auto params = mat::StructComparer::Params();
+    eonc::job::from_toml(params, config["Structure_Comparison"]);
+    auto sc = eonc::mat::StructComparer(params);
     return StructureComparisonJob(sc);
   }
   default: {
