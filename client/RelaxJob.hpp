@@ -11,45 +11,21 @@
 */
 #pragma once
 
-#include "client/ObjectiveFunction.h"
+#include "Optimizer.h"
 #include "client/matter/Matter.h"
+
 namespace eonc {
-class MatterObjectiveFunction : public ObjectiveFunction {
-public:
-  struct Params {
-    std::string optConvergenceMetric{"norm"};
-    double optConvergedForce{1e-4};
-  };
-
-  MatterObjectiveFunction(const Params &_params, const Matter &_matter)
-      : convMetric(_params.optConvergenceMetric),
-        convForce(_params.optConvergedForce),
-        matter(std::cref(_matter)) {}
-
-  ~MatterObjectiveFunction() override = default;
-
-  double getEnergy() const override;
-  VectorType getGradient(bool = false) const override;
-  void setPositions(const VectorType &) override;
-  VectorType getPositions() const override;
-  int degreesOfFreedom() const override;
-  bool isConverged() const override;
-  double getConvergence() const override;
-  VectorType difference(const VectorType &, const VectorType &) const override;
-
-private:
-  const std::string convMetric;
-  const double convForce;
-  const Matter &matter;
-};
-
 class RelaxJob {
 public:
-  RelaxJob() { m_log = spdlog::get("combi"); }
+  RelaxJob(const OptimBase::Params &_p)
+      : m_p{_p} {
+    m_log = spdlog::get("combi");
+  }
   ~RelaxJob(void) = default;
   bool runImpl(Matter &);
 
 private:
+  OptimBase::Params m_p;
   std::shared_ptr<spdlog::logger> m_log;
 };
 

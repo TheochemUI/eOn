@@ -41,7 +41,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       cxxopts::value<std::vector<std::string>>()->implicit_value({"pos.con"}))(
       "o,output", "Output file", cxxopts::value<std::string>())(
       "opt", "Optimization method",
-      cxxopts::value<std::string>()->implicit_value("cg"))(
+      cxxopts::value<std::string>()->default_value("cg"))(
       "f,force", "Convergence force",
       cxxopts::value<double>()->default_value("0.001"))(
       "t,tolerance", "Distance tolerance",
@@ -86,6 +86,12 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
 
     if (result.count("minimize")) {
       tbl["Main"].as_table()->insert_or_assign("job", "minimization");
+      // Constructs a default optimizer setup
+      tbl.insert_or_assign("Optimizer", toml::table{});
+      tbl["Optimizer"].as_table()->insert_or_assign(
+          "opt_method", result["opt"].as<std::string>());
+      tbl["Optimizer"].as_table()->insert_or_assign(
+          "converged_force", result["force"].as<double>());
     }
 
     if (result.count("compare")) {
@@ -155,7 +161,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
     std::cerr << options.help() << std::endl;
     exit(EXIT_FAILURE);
   }
-  // std::cout << tbl << std::endl << std::endl;
+  std::cout << tbl << std::endl << std::endl;
   return tbl;
 }
 } // namespace eonc
