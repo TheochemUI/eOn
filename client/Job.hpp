@@ -17,6 +17,7 @@
 #include "StructureComparisonJob.h"
 #include "client/PointJob.h"
 #include "thirdparty/toml.hpp"
+#include <stdexcept>
 #include <variant>
 
 namespace eonc {
@@ -86,6 +87,9 @@ struct JobRunnerImpl {
     if constexpr (sizeof...(Args) == 1) {
       return job.runImpl(std::forward<Args>(args)...);
     }
+    // Shouldn't reach here..
+    throw std::runtime_error("Job dispatched incorrectly");
+    return false;
   }
 
 private:
