@@ -11,11 +11,10 @@
 */
 #pragma once
 
+#include "BaseStructures.h"
 #include "Eigen.h"
 #include "ObjectiveFunction.h"
 #include "client/thirdparty/toml.hpp"
-#include <fmt/core.h>
-#include <iostream>
 #include <spdlog/spdlog.h>
 namespace eonc {
 /** @defgroup Optimizers
@@ -46,7 +45,17 @@ namespace eonc {
  * Declaration of the optimizer class
  */
 
+using namespace std::string_literals;
 class OptimBase {
+public:
+  struct Params {                                       // [Optimizer]
+    OptType optM{OptType::CG};                          // opt_method
+    ConvergenceMeasure optCM{ConvergenceMeasure::NORM}; // convergence_metric
+    ScalarType optConvergedForce{1e-3};                 // converged_force
+    size_t optMaxIter{1000L};                           // max_iterations
+    ScalarType optMaxMove{0.2};                         // max_move
+  };
+
 public:
   OptimBase(const ObjectiveFunction &objectiveFunction)
       : m_objf(std::cref(objectiveFunction)) {}
