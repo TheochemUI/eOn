@@ -225,6 +225,9 @@ subdir('matter')
 subdir('io')
 subdir('parsers')
 
+# Objective functions
+subdir('objectives')
+
 eonclib_sources = [
 # 'Optimizer.cpp',
 # 'PrefactorJob.cpp',

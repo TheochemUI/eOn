@@ -20,6 +20,7 @@
 // #include "NudgedElasticBandJob.h"
 // #include "ParallelReplicaJob.h"
 #include "BaseStructures.h"
+#include "Optimizer.h"
 #include "Parser.hpp"
 #include "PointJob.h"
 #include "RelaxJob.hpp"
@@ -48,7 +49,10 @@ JobVariant mkJob(const toml::table &config) {
     return PointJob();
   }
   case JobType::Minimization: {
-    return RelaxJob();
+    config_section(config, "Optimizer");
+    auto params = eonc::OptimBase::Params();
+    eonc::job::from_toml(params, config["Optimizer"]);
+    return RelaxJob(params);
   }
   case JobType::Structure_Comparison: {
     config_section(config, "Structure_Comparison");

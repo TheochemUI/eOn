@@ -113,6 +113,13 @@ enum class RunStatus {
   FAIL_POTENTIAL_FAILED
 };
 
+enum class ConvergenceMeasure {
+  UNKNOWN = -1, // an error case
+  NORM,
+  MAX_ATOM,
+  MAX_COMPONENT
+};
+
 namespace Prefactor {
 enum class TYPE { REACTANT, SADDLE, PRODUCT };
 enum class RATE { HTST, QQHTST };

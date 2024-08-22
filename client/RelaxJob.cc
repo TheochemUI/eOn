@@ -11,56 +11,13 @@
 */
 #include "client/RelaxJob.hpp"
 #include "client/HelperFunctions.h"
-#include "client/Optimizer.h"
+#include "client/objectives/MatterObjf.hpp"
 
 namespace eonc {
-double MatterObjectiveFunction::getEnergy() const {
-  return matter.getPotentialEnergy();
-}
-
-VectorType MatterObjectiveFunction::getGradient(bool fdstep) const {
-  return -matter.getForcesFreeV();
-}
-
-void MatterObjectiveFunction::setPositions(const VectorType &x) {
-  // Only mutable point
-  const_cast<Matter &>(matter).setPositionsFreeV(x);
-}
-
-VectorType MatterObjectiveFunction::getPositions() const {
-  return matter.getPositionsFreeV();
-}
-
-int MatterObjectiveFunction::degreesOfFreedom() const {
-  return 3 * matter.numberOfFreeAtoms();
-}
-
-bool MatterObjectiveFunction::isConverged() const {
-  return getConvergence() < convForce;
-}
-
-double MatterObjectiveFunction::getConvergence() const {
-  if (convMetric == "norm") {
-    return matter.getForcesFreeV().norm();
-  } else if (convMetric == "max_atom") {
-    return matter.getMaxForce();
-  } else if (convMetric == "max_component") {
-    return matter.getForcesFree().maxCoeff();
-  } else {
-    SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]",
-                    convMetric);
-    std::exit(1);
-  }
-}
-
-VectorType MatterObjectiveFunction::difference(const VectorType &a,
-                                               const VectorType &b) const {
-  return matter.pbcV(a - b);
-}
-
 bool RelaxJob::runImpl(Matter &mat) {
   // TODO(rg): params are from toml
-  eonc::MatterObjectiveFunction objf({"norm", 1e-3}, mat);
+  eonc::objf::MatterObjectiveFunction objf({m_p.optCM, m_p.optConvergedForce},
+                                           mat);
 
   const auto config = toml::table{{"Optimizer", toml::table{{"method", "cg"}}}};
   auto optim = helpers::create::mkOptim(objf, config);
@@ -71,8 +28,8 @@ bool RelaxJob::runImpl(Matter &mat) {
   //   matter2con(min.str(), false);
   // }
   bool quiet = false;
-  const size_t maxIter = 1000;
-  const double maxMove = 0.2;
+  const size_t maxIter = m_p.optMaxIter;
+  const double maxMove = m_p.optMaxMove;
   int iteration = 0;
   if (!quiet) {
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}", "[Matter]",
@@ -82,6 +39,7 @@ bool RelaxJob::runImpl(Matter &mat) {
                         objf.getEnergy());
   }
 
+  // TODO(rg): Refactor further
   while (!objf.isConverged() && iteration < maxIter) {
 
     VectorType pos = objf.getPositions();
@@ -120,7 +78,6 @@ bool RelaxJob::runImpl(Matter &mat) {
   //    bool converged = optimizer->run(parameters->optMaxIterations,
   //    parameters->optMaxMove);
   return objf.isConverged();
-  return true;
 }
 
 } // namespace eonc
