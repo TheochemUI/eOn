@@ -20,12 +20,13 @@
 // #include "NudgedElasticBandJob.h"
 // #include "ParallelReplicaJob.h"
 #include "BaseStructures.h"
+#include "MinimizationJob.hpp"
 #include "Optimizer.h"
 #include "Parser.hpp"
 #include "PointJob.h"
-#include "RelaxJob.hpp"
 #include "matter/StructComparer.hpp"
 #include "parsers/ParseJob.hpp"
+#include "parsers/ParseOptim.hpp"
 // #include "PrefactorJob.h"
 // #include "ProcessSearchJob.h"
 // #include "ReplicaExchangeJob.h"
@@ -51,8 +52,8 @@ JobVariant mkJob(const toml::table &config) {
   case JobType::Minimization: {
     config_section(config, "Optimizer");
     auto params = eonc::OptimBase::Params();
-    eonc::job::from_toml(params, config["Optimizer"]);
-    return RelaxJob(params);
+    eonc::opt::from_toml(params, config["Optimizer"]);
+    return MinimizationJob(params);
   }
   case JobType::Structure_Comparison: {
     config_section(config, "Structure_Comparison");
@@ -73,7 +74,7 @@ bool runJob(JobVariant &job, std::vector<Matter> &mats) {
     result = eonc::JobRunner(job, mats[0], mats[1]);
   } else if (std::holds_alternative<PointJob>(job) && !mats.empty()) {
     result = eonc::JobRunner(job, mats[0]);
-  } else if (std::holds_alternative<RelaxJob>(job) && !mats.empty()) {
+  } else if (std::holds_alternative<MinimizationJob>(job) && !mats.empty()) {
     result = eonc::JobRunner(job, mats[0]);
   } else {
     throw std::runtime_error("Invalid job type or arguments");

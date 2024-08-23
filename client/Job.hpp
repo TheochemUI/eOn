@@ -12,8 +12,8 @@
 #pragma once
 
 #include "BaseStructures.h"
+#include "MinimizationJob.hpp"
 #include "Parser.hpp"
-#include "RelaxJob.hpp"
 #include "StructureComparisonJob.h"
 #include "client/PointJob.h"
 #include "thirdparty/toml.hpp"
@@ -52,7 +52,7 @@ namespace eonc {
  * \note The run method must be implemented by each derived job class.
  */
 
-using JobVariant = std::variant<PointJob, RelaxJob,
+using JobVariant = std::variant<PointJob, MinimizationJob,
                                 StructureComparisonJob /*, OtherJobTypes */>;
 
 JobVariant mkJob(const toml::table &);
@@ -83,7 +83,7 @@ struct JobRunnerImpl {
   }
 
   template <typename... Args>
-  bool operator()(RelaxJob &job, Args &&...args) const {
+  bool operator()(MinimizationJob &job, Args &&...args) const {
     if constexpr (sizeof...(Args) == 1) {
       return job.runImpl(std::forward<Args>(args)...);
     }
