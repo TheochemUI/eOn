@@ -15,13 +15,13 @@
 #include "client/matter/Matter.h"
 
 namespace eonc {
-class RelaxJob {
+class MinimizationJob {
 public:
-  RelaxJob(const OptimBase::Params &_p)
+  MinimizationJob(const OptimBase::Params &_p)
       : m_p{_p} {
     m_log = spdlog::get("combi");
   }
-  ~RelaxJob(void) = default;
+  ~MinimizationJob(void) = default;
   bool runImpl(Matter &);
 
 private:
