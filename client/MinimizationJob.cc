@@ -9,12 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "client/RelaxJob.hpp"
+#include "client/MinimizationJob.hpp"
 #include "client/HelperFunctions.h"
 #include "client/objectives/MatterObjf.hpp"
 
 namespace eonc {
-bool RelaxJob::runImpl(Matter &mat) {
+bool MinimizationJob::runImpl(Matter &mat) {
   // TODO(rg): params are from toml
   eonc::objf::MatterObjectiveFunction objf({m_p.optCM, m_p.optConvergedForce},
                                            mat);
