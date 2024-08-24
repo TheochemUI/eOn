@@ -10,8 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/parsers/ParseJob.hpp"
-#include "client/BaseStructures.h"
-#include "magic_enum/magic_enum.hpp"
 
 namespace eonc::job {
 void from_toml(mat::StructComparer::Params &params,
@@ -29,22 +27,5 @@ void from_toml(mat::StructComparer::Params &params,
       config["energy_difference"].value_or(params.energyDifference);
   params.removeTranslation =
       config["remove_translation"].value_or(params.removeTranslation);
-}
-
-void from_toml(OptimBase::Params &params,
-               const toml::node_view<const toml::node> &tbl) {
-  const auto &config = tbl.at_path("Optimizer");
-  params.optM =
-      magic_enum::enum_cast<OptType>(config["method"].value_or("none"s),
-                                     magic_enum::case_insensitive)
-          .value_or(params.optM);
-  params.optCM = magic_enum::enum_cast<ConvergenceMeasure>(
-                     config["convergence_metric"].value_or("none"s),
-                     magic_enum::case_insensitive)
-                     .value_or(params.optCM);
-  params.optConvergedForce =
-      config["converged_force"].value_or(params.optConvergedForce);
-  params.optMaxIter = config["max_iterations"].value_or(params.optMaxIter);
-  params.optMaxMove = config["max_move"].value_or(params.optMaxMove);
 }
 } // namespace eonc::job
