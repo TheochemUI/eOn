@@ -11,8 +11,11 @@
 */
 #pragma once
 
+#include "client/ConjugateGradients.h"
 #include "client/Optimizer.h"
 
 namespace eonc::opt {
 void from_toml(OptimBase::Params &, const toml::node_view<const toml::node> &);
+void from_toml(ConjugateGradients::Params &,
+               const toml::node_view<const toml::node> &);
 } // namespace eonc::opt
