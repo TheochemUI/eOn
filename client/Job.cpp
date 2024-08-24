@@ -44,7 +44,7 @@ namespace eonc {
 
 JobVariant mkJob(const toml::table &config) {
   config_section(config, "Main");
-  auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
+  auto jtype = get_enum_toml<JobType>(config["Main"]["job"]).value();
   switch (jtype) {
   case JobType::Point: {
     return PointJob();

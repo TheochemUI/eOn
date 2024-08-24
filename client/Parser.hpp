@@ -14,7 +14,7 @@ toml::table loadTOML(const std::string &fname);
 void config_section(const toml::table &conf, const std::string_view key);
 
 template <typename T>
-T get_enum_toml(const toml::node_view<const toml::node> &conf) {
+std::optional<T> get_enum_toml(const toml::node_view<const toml::node> &conf) {
 #ifdef EON_CHECKS
   if (!conf.is_string()) {
     throw std::logic_error("Node not found in TOML");
@@ -31,6 +31,6 @@ T get_enum_toml(const toml::node_view<const toml::node> &conf) {
   }
 #endif
 
-  return enum_value.value();
+  return enum_value;
 }
 } // namespace eonc

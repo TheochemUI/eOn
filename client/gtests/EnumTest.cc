@@ -19,7 +19,7 @@ TEST_CASE("get_enum_toml valid input", "[get_enum_toml]") {
   const auto config = toml::table{{"Main", toml::table{{"job", "point"}}}};
 
   REQUIRE_NOTHROW([&]() {
-    auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
+    auto jtype = get_enum_toml<JobType>(config["Main"]["job"]).value();
     REQUIRE(jtype == JobType::Point);
   }());
 }
@@ -50,7 +50,7 @@ TEST_CASE("get_enum_toml case insensitive match", "[get_enum_toml]") {
   const auto config = toml::table{{"Main", toml::table{{"job", "pOint"}}}};
 
   REQUIRE_NOTHROW([&]() {
-    auto jtype = get_enum_toml<JobType>(config["Main"]["job"]);
+    auto jtype = get_enum_toml<JobType>(config["Main"]["job"]).value();
     REQUIRE(jtype == JobType::Point);
   }());
 }
