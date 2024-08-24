@@ -22,7 +22,7 @@ namespace helpers::create {
 std::unique_ptr<OptimBase> mkOptim(const ObjectiveFunction &a_objf,
                                    const toml::table &config) {
   config_section(config, "Optimizer");
-  auto otype = get_enum_toml<OptType>(config["Optimizer"]["method"]);
+  auto otype = get_enum_toml<OptType>(config["Optimizer"]["method"]).value();
   switch (otype) {
   // case OptType::FIRE: {
   //   return std::make_unique<FIRE>(a_objf, a_params);

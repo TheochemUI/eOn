@@ -102,7 +102,7 @@ namespace eonc {
 
 std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   config_section(config, "Potential");
-  auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]);
+  auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]).value();
   switch (ptype) {
   case PotType::EMT: {
     return (std::make_shared<EffectiveMediumTheory>(false));
