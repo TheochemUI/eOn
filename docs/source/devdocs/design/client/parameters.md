@@ -158,3 +158,15 @@ case PotType::LJ: {
   break;
 }
 ```
+
+### Example: Optimizer parameters 
+
+The current design works elegantly for potentials and has a straightforward
+extension to optimizers, which require minimally settings from `[Optimizer]`
+along with additional sub-table configurations `[Optimizer.CG]`.
+
+
+### Example: Multiple configurations
+
+In some cases, it is expected that more than a single section of the
+configuration will be of interest to the underlying job.
