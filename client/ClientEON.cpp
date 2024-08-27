@@ -136,7 +136,8 @@ int main(int argc, char **argv) {
 
   if (!result &&
       not std::holds_alternative<eonc::StructureComparisonJob>(job)) {
-    throw std::runtime_error("Something went wrong running the job");
+    SPDLOG_LOGGER_ERROR(logger, "Job execution failed");
+    // throw std::runtime_error("Something went wrong running the job");
   }
 
   if (not params["Main"]["quiet"].as<bool>()) {
