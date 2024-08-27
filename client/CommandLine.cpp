@@ -89,7 +89,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       // Constructs a default optimizer setup
       tbl.insert_or_assign("Optimizer", toml::table{});
       tbl["Optimizer"].as_table()->insert_or_assign(
-          "opt_method", result["opt"].as<std::string>());
+          "method", result["opt"].as<std::string>());
       tbl["Optimizer"].as_table()->insert_or_assign(
           "converged_force", result["force"].as<double>());
     }
@@ -106,7 +106,7 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
     if (result.count("opt")) {
       tbl.insert_or_assign("Optimizer", toml::table{});
       tbl["Optimizer"].as_table()->insert_or_assign(
-          "opt_method", result["opt"].as<std::string>());
+          "method", result["opt"].as<std::string>());
       tbl["Optimizer"].as_table()->insert_or_assign(
           "converged_force", result["force"].as<double>());
     }
