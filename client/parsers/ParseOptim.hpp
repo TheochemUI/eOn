@@ -13,9 +13,22 @@
 
 #include "client/ConjugateGradients.h"
 #include "client/Optimizer.h"
+#include "client/Parser.hpp"
 
 namespace eonc::opt {
-void from_toml(OptimBase::Params &, const toml::node_view<const toml::node> &);
+// General template for extracting parameters from TOML
+template <typename ParamsType>
+void extract_common_params(ParamsType &params,
+                           const toml::node_view<const toml::node> &tbl) {
+  params.optM = get_enum_toml<OptType>(tbl["method"]).value_or(params.optM);
+  params.optCM = get_enum_toml<ConvergenceMeasure>(tbl["convergence_metric"])
+                     .value_or(params.optCM);
+  params.optConvergedForce =
+      tbl["converged_force"].value_or(params.optConvergedForce);
+  params.optMaxIter = tbl["max_iterations"].value_or(params.optMaxIter);
+  params.optMaxMove = tbl["max_move"].value_or(params.optMaxMove);
+}
+
 void from_toml(ConjugateGradients::Params &,
                const toml::node_view<const toml::node> &);
 } // namespace eonc::opt
