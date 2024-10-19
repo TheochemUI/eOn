@@ -162,6 +162,14 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       }
     }
 
+    // Assign defaults if not present so far..
+    // Check if 'output' is present in the TOML file; if not, assign a default
+    if (!tbl["Main"].as_table()->contains("output")) {
+      SPDLOG_LOGGER_WARN(log, "Output key missing, assuming res.con");
+      tbl["Main"].as_table()->insert_or_assign("output",
+                                               toml::array{"res.con"});
+    }
+
   } catch (const cxxopts::exceptions::exception &e) {
     std::cerr << "Error parsing options: " << e.what() << std::endl;
     std::cerr << options.help() << std::endl;
