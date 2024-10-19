@@ -11,12 +11,14 @@
 */
 #pragma once
 
-#include "Optimizer.h"
+#include "client/OptParams.hpp"
 #include "client/matter/Matter.h"
 
 namespace eonc {
 class MinimizationJob {
+public:
   struct Params final {
+    OptParams oparams;
     // We don't know what comes here. It is a bad idea to have this enumerated
     // at compile time, since the idea is that the optimizers can be extended at
     // runtime, e.g. via Python, so no std::variant tricks with monostate either
@@ -55,7 +57,7 @@ class MinimizationJob {
   };
 
 public:
-  MinimizationJob(const OptimBase::Params &_p)
+  MinimizationJob(const MinimizationJob::Params &_p)
       : m_p{_p} {
     m_log = spdlog::get("combi");
   }
@@ -63,7 +65,7 @@ public:
   bool runImpl(Matter &);
 
 private:
-  OptimBase::Params m_p;
+  MinimizationJob::Params m_p;
   std::shared_ptr<spdlog::logger> m_log;
 };
 
