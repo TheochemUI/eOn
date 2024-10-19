@@ -19,6 +19,8 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
+#include "client/BaseTypes.hpp"
+
 namespace eonc {
 using namespace std::string_literals; // For ""s
 
@@ -118,6 +120,14 @@ enum class ConvergenceMeasure {
   NORM,
   MAX_ATOM,
   MAX_COMPONENT
+};
+
+struct BaseOptParams {                                // [Optimizer]
+  OptType optM{OptType::CG};                          // opt_method
+  ConvergenceMeasure optCM{ConvergenceMeasure::NORM}; // convergence_metric
+  ScalarType optConvergedForce{1e-3};                 // converged_force
+  size_t optMaxIter{1000L};                           // max_iterations
+  ScalarType optMaxMove{0.2};                         // max_move
 };
 
 namespace Prefactor {

@@ -44,6 +44,8 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
       cxxopts::value<std::string>()->default_value("cg"))(
       "f,force", "Convergence force",
       cxxopts::value<double>()->default_value("0.001"))(
+      "metric", "Convergence metric",
+      cxxopts::value<std::string>()->default_value("norm"))(
       "t,tolerance", "Distance tolerance",
       cxxopts::value<double>()->default_value("0.1"))(
       "check_rotation", "Check rotation for structure comparison",
@@ -92,6 +94,8 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
           "method", result["opt"].as<std::string>());
       tbl["Optimizer"].as_table()->insert_or_assign(
           "converged_force", result["force"].as<double>());
+      tbl["Optimizer"].as_table()->insert_or_assign(
+          "convergence_metric", result["metric"].as<std::string>());
     }
 
     if (result.count("compare")) {
@@ -109,6 +113,8 @@ toml::table commandLine(std::shared_ptr<spdlog::logger> log, int argc,
           "method", result["opt"].as<std::string>());
       tbl["Optimizer"].as_table()->insert_or_assign(
           "converged_force", result["force"].as<double>());
+      tbl["Optimizer"].as_table()->insert_or_assign(
+          "convergence_metric", result["metric"].as<std::string>());
     }
 
     if (result.count("input")) {

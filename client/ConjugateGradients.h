@@ -10,8 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Eigen.h"
-#include "Optimizer.h"
+#include "client/BaseStructures.h"
+#include "client/Log.hpp"
+#include "client/ObjectiveFunction.h"
 #include <spdlog/sinks/basic_file_sink.h>
 namespace eonc {
 /**
@@ -30,9 +31,10 @@ namespace eonc {
  * Decleration of the Conjugate Gradients optimizer
  */
 
-class ConjugateGradients : public Optimizer<ConjugateGradients> {
+class ConjugateGradients {
 public:
-  struct Params final {
+  struct Params final
+      : public BaseOptParams { // [CG] , also inheriting [Optimizer]
     size_t max_iter_before_reset{0};
     bool no_overshooting{false};
     bool knock_out_max_move{false};
@@ -52,7 +54,7 @@ public:
    */
   ConjugateGradients(const ObjectiveFunction &a_objf,
                      const ConjugateGradients::Params &p_a)
-      : Optimizer(a_objf),
+      : m_objf(a_objf),
         m_p{p_a},
         m_directionOld{(a_objf.getPositions()).setZero()},
         m_forceOld{(a_objf.getPositions()).setZero()}, // use setZero instead
@@ -72,12 +74,14 @@ public:
    * Either calls the single_step or line_search method depending on the
    * parameters \return whether or not the algorithm has converged
    */
-  bool stepImpl(ScalarType);
-  bool runOptImpl(size_t, ScalarType);
+  bool step(ScalarType);
+  bool runOpt(size_t, ScalarType);
   //! Gets the direction of the next step
   VectorType getStep();
 
 private:
+  const ObjectiveFunction &m_objf;
+  size_t iters{0};
   const ConjugateGradients::Params m_p;
   //! Current step direction of the conjugate gradient
   VectorType m_direction;

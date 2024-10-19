@@ -43,7 +43,7 @@ VectorType ConjugateGradients::getStep() {
   return m_direction;
 }
 
-bool ConjugateGradients::stepImpl(double a_maxMove) {
+bool ConjugateGradients::step(double a_maxMove) {
   bool converged;
   if (m_p.line_search) {
     converged = line_search(a_maxMove);
@@ -188,10 +188,10 @@ int ConjugateGradients::single_step(double a_maxMove) {
   return m_objf.isConverged() ? 1 : 0;
 }
 
-bool ConjugateGradients::runOptImpl(size_t maxIterations, ScalarType maxMove) {
+bool ConjugateGradients::runOpt(size_t maxIterations, ScalarType maxMove) {
   int iterations = 0;
   while (!m_objf.isConverged() && iterations <= maxIterations) {
-    stepImpl(maxMove);
+    step(maxMove);
     iterations++;
   }
   //    return objf->isConverged();

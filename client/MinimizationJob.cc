@@ -10,17 +10,28 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/MinimizationJob.hpp"
+#include "ConjugateGradients.h"
+#include "OptimCreator.hpp"
 #include "client/HelperFunctions.h"
 #include "client/objectives/MatterObjf.hpp"
+#include "parsers/ParseOptim.hpp"
 
 namespace eonc {
 bool MinimizationJob::runImpl(Matter &mat) {
   // TODO(rg): params are from toml
-  eonc::objf::MatterObjectiveFunction objf({m_p.optCM, m_p.optConvergedForce},
-                                           mat);
+  const auto optparams = std::visit(opt::OptBaseVisitor{}, m_p.oparams);
+  eonc::objf::MatterObjectiveFunction objf(
+      {optparams.optCM, optparams.optConvergedForce}, mat);
 
-  const auto config = toml::table{{"Optimizer", toml::table{{"method", "cg"}}}};
-  auto optim = helpers::create::mkOptim(objf, config);
+  auto optim = std::visit(
+      [&](const OptParams &optParam) -> decltype(auto) {
+        return eonc::mkOptim{}(objf,
+                               std::get<ConjugateGradients::Params>(optParam));
+      },
+      m_p.oparams);
+
+  // const auto config = toml::table{{"Optimizer", toml::table{{"method",
+  // "cg"}}}}; auto optim = helpers::create::mkOptim(objf, config);
 
   // std::ostringstream min;
   // min << prefixMovie;
@@ -28,12 +39,13 @@ bool MinimizationJob::runImpl(Matter &mat) {
   //   matter2con(min.str(), false);
   // }
   bool quiet = false;
-  const size_t maxIter = m_p.optMaxIter;
-  const double maxMove = m_p.optMaxMove;
+  const size_t maxIter = optparams.optMaxIter;
+  const double maxMove = optparams.optMaxMove;
   int iteration = 0;
   if (!quiet) {
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}", "[Matter]",
-                        "Iter", "Step size", "norm", "Energy");
+                        "Iter", "Step size",
+                        magic_enum::enum_name(optparams.optCM), "Energy");
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
                         "[Matter]", iteration, 0.0, objf.getConvergence(),
                         objf.getEnergy());
@@ -44,7 +56,7 @@ bool MinimizationJob::runImpl(Matter &mat) {
 
     VectorType pos = objf.getPositions();
 
-    optim->step(maxMove);
+    optim.step(maxMove);
     iteration++;
     mat.setPositionsFreeV(objf.getPositions());
 
