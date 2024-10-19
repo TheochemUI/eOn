@@ -50,16 +50,16 @@ if host_system == 'darwin'
 endif
 if is_windows
     _args += ['-DIS_WINDOWS']
-# Workaround used in INIFile.cpp
-# ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
+    # Workaround used in INIFile.cpp
+    # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
 endif
 
 _args += cppc.get_supported_arguments(
     [
-# C++ only
-# '-Wno-class-memaccess',
-# '-Wno-unused-function',
-# Common
+        # C++ only
+        # '-Wno-class-memaccess',
+        # '-Wno-unused-function',
+        # Common
         '-Wno-unused-parameter',
         '-Wno-unused-but-set-parameter',
         '-Wfatal-errors',
@@ -74,7 +74,7 @@ _args += cppc.get_supported_arguments(
 if use_fortran == true
     _fargs += fc.get_supported_arguments(
         [
-# Ported from C++
+            # Ported from C++
             '-Wno-unused-but-set-variable',
             '-Wno-unused-variable',
             # Absolutely necessary
@@ -233,11 +233,11 @@ subdir('parsers')
 subdir('objectives')
 
 eonclib_sources = [
-# 'Optimizer.cpp',
-# 'PrefactorJob.cpp',
-# 'LBFGS.cpp',
-# 'ReplicaExchangeJob.cpp',
-# 'BondBoost.cpp',
+    # 'Optimizer.cpp',
+    # 'PrefactorJob.cpp',
+    # 'LBFGS.cpp',
+    # 'ReplicaExchangeJob.cpp',
+    # 'BondBoost.cpp',
     'Parameters.cpp',  # TODO(rg) remove
     'Job.cpp',
     # 'GlobalOptimization.cpp',
@@ -246,7 +246,7 @@ eonclib_sources = [
     # 'SteepestDescent.cpp',
     # 'ImprovedDimer.cpp',
     'PointJob.cpp',
-    'Optimizer.cpp',
+    'OptimCreator.cpp',
     'MinimizationJob.cc',
     'StructureComparisonJob.cpp',
     # 'Prefactor.cpp',
@@ -337,7 +337,7 @@ ec = executable(
 
 if get_option('with_tests')
     if get_option('with_python')
-# ec1 = executable('testPot',
+        # ec1 = executable('testPot',
         #                  'testpot.cpp',
         #                  include_directories: _incdirs,
         #                  dependencies : _deps,
@@ -345,12 +345,12 @@ if get_option('with_tests')
         #                 )
     endif
 
-# ec2 = executable('testWriteR',
-#                 'testWriteR.cpp',
-#                 include_directories: _incdirs,
-#                 dependencies : _deps,
-#                 link_with : _linkto,
-#                 )
+    # ec2 = executable('testWriteR',
+    #                 'testWriteR.cpp',
+    #                 include_directories: _incdirs,
+    #                 dependencies : _deps,
+    #                 link_with : _linkto,
+    #                 )
 endif
 # ------------------------ Tests
 

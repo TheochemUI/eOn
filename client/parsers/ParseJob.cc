@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "client/parsers/ParseJob.hpp"
+#include "client/parsers/ParseOptim.hpp"
 
 namespace eonc::job {
 void from_toml(mat::StructComparer::Params &params,
@@ -27,5 +28,11 @@ void from_toml(mat::StructComparer::Params &params,
       config["energy_difference"].value_or(params.energyDifference);
   params.removeTranslation =
       config["remove_translation"].value_or(params.removeTranslation);
+}
+
+void from_toml(MinimizationJob::Params &params,
+               const toml::node_view<const toml::node> &tbl) {
+  std::cout << tbl;
+  opt::from_toml(params.oparams, tbl);
 }
 } // namespace eonc::job

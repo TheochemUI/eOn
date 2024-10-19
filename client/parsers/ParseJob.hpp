@@ -11,9 +11,12 @@
 */
 #pragma once
 
+#include "client/MinimizationJob.hpp"
 #include "client/matter/StructComparer.hpp"
 
 namespace eonc::job {
 void from_toml(mat::StructComparer::Params &,
+               const toml::node_view<const toml::node> &);
+void from_toml(MinimizationJob::Params &,
                const toml::node_view<const toml::node> &);
 } // namespace eonc::job
