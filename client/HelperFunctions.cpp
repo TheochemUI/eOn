@@ -11,7 +11,8 @@
 */
 #include "HelperFunctions.h"
 
-#include "client/BaseStructures.h"
+// Includes logging macros
+#include "client/Log.hpp" // IWYU pragma: keep
 #include <fstream>
 #include <math.h>
 #include <string.h>

@@ -1,6 +1,6 @@
 potaids = library(
     'potaids',
-    sources: files('ParseTOML.cc', 'PotHelpers.cc', 'PotentialCache.cc'),
+    sources: files('PotHelpers.cc', 'PotentialCache.cc'),
     include_directories: _incdirs,
     dependencies: _deps,
     link_with: _linkto,
@@ -19,7 +19,7 @@ subdir('Morse')
 # subdir('NewPot')
 
 potentials = [
-# eam,
+    # eam,
     emt,
     extpot,
     # imd,
@@ -140,7 +140,7 @@ if get_option('with_fortran')
 endif
 
 if get_option('with_ase_orca')
-# TODO: Cleanup, used for Catlearn too
+    # TODO: Cleanup, used for Catlearn too
     # Embedding the interpreter
     py = import('python').find_installation()
     python_dep = py.dependency(embed: true, required: true)

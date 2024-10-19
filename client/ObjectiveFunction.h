@@ -20,12 +20,13 @@ public:
   virtual ~ObjectiveFunction() {}
   virtual double getEnergy() const = 0;
   virtual VectorType getGradient(bool fdstep = false) const = 0;
-  virtual void setPositions(VectorType x) = 0;
+  virtual void setPositions(const VectorType &) = 0;
   virtual VectorType getPositions() const = 0;
   virtual int degreesOfFreedom() const = 0;
   virtual bool isConverged() const = 0;
   virtual double getConvergence() const = 0;
-  virtual VectorType difference(VectorType a, VectorType b) = 0;
+  virtual VectorType difference(const VectorType &,
+                                const VectorType &) const = 0;
 };
 
 } // namespace eonc

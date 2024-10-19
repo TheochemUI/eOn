@@ -16,7 +16,7 @@ test_array = [  #
     # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
 ]
 if get_option('buildtype') != 'release'
-# This test gives different outputs on debug
+    # This test gives different outputs on debug
     test_array += [['test_enum', 'EnumTest.cc', '']]
 endif
 foreach test : test_array

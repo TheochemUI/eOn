@@ -47,6 +47,13 @@ Methods run in parallel are broken up by the eon server into tasks which
 are run by client program. The server then compiles the information sent back
 by the clients in a way that can be used by the sampling or dynamics methods.
 
+```{toctree}
+:maxdepth: 1
+:caption: Usage options
+
+cli
+```
+
 ## Configurationa Sections
 
 ```{toctree}

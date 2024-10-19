@@ -12,10 +12,10 @@
 
 #pragma once
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
+#include "client/BaseTypes.hpp"
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 namespace eonc {
-using ScalarType = double;
 // Vectors are always column major
 using VectorType =
     Eigen::Matrix<ScalarType, Eigen::Dynamic, 1, Eigen::ColMajor>;

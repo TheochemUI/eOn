@@ -14,7 +14,7 @@
 #include "client/BaseStructures.h"
 #include "client/Parser.hpp"
 #include "client/Potential.h"
-#include "client/potentials/ParseTOML.hpp"
+#include "client/parsers/ParsePot.hpp"
 
 // #ifdef WITH_CATLEARN
 // #include "potentials/CatLearnPot/CatLearnPot.h"
@@ -102,7 +102,7 @@ namespace eonc {
 
 std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   config_section(config, "Potential");
-  auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]);
+  auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]).value();
   switch (ptype) {
   case PotType::EMT: {
     return (std::make_shared<EffectiveMediumTheory>(false));

@@ -9,9 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #pragma once
-#include "client/Log.hpp" // IWYU pragma: keep
-#include "thirdparty/toml.hpp"
+#include <cstddef>
 namespace eonc {
-toml::table commandLine(std::shared_ptr<spdlog::logger>, int, char **);
-}
+using ScalarType = double;
+using CountType = std::size_t;
+} // namespace eonc

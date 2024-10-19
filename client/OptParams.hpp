@@ -10,8 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "client/Log.hpp" // IWYU pragma: keep
-#include "thirdparty/toml.hpp"
+#include "ConjugateGradients.h"
+#include <variant>
 namespace eonc {
-toml::table commandLine(std::shared_ptr<spdlog::logger>, int, char **);
+using OptParams =
+    std::variant<std::monostate, ConjugateGradients::Params /*, OtherParam */>;
+
 }
