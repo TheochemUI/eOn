@@ -13,6 +13,7 @@
 #include "ConjugateGradients.h"
 #include "OptimCreator.hpp"
 #include "client/HelperFunctions.h"
+#include "client/io/writers/con/ConWriter.hpp"
 #include "client/objectives/MatterObjf.hpp"
 #include "parsers/ParseOptim.hpp"
 
@@ -89,6 +90,8 @@ bool MinimizationJob::runImpl(Matter &mat) {
   }
   //    bool converged = optimizer->run(parameters->optMaxIterations,
   //    parameters->optMaxMove);
+  auto conWriter = std::make_unique<eonc::io::ConWriter>();
+  conWriter->write(mat, "res.con");
   return objf.isConverged();
 }
 
