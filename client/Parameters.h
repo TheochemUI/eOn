@@ -292,6 +292,11 @@ public:
   std::string orca_nproc;
   std::string orca_sline; // Other catchall values
 
+  // [ASE_NWCHEM] //
+  std::string nwchem_path;
+  std::string nwchem_nproc;
+
+
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
                              // successive iterations

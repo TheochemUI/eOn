@@ -15,6 +15,7 @@ option('with_catlearn', type : 'boolean', value : false)
 option('with_gpr_optim', type : 'boolean', value : false)
 option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
+option('with_ase_nwchem', type : 'boolean', value : false)
 option('with_ase', type : 'boolean', value : false)
 
 # option('someoption', type : 'string', value : 'optval', description : 'An option')
