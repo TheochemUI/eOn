@@ -43,15 +43,16 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
 
   // TODO(rg): Directory should be set by the user, and created here
   // dont_verify so we always get an energy and gradient
-  this->calc = NWCHEM(
-      "label"_a = "_eonpot_engrad",
-      "command"_a = py::str(fmt::format(
-          "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
-      "memory"_a = py::str("2 gb"),
-      "scf"_a =
-          py::dict("nopen"_a = mult - 1, "thresh"_a = 1e-8, "maxiter"_a = 200),
-      "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
-      "directory"_a = ".", "set"_a = py::dict("geom:dont_verify"_a = true));
+  this->calc =
+      NWCHEM("label"_a = "_eonpot_engrad",
+             "set"_a = py::dict("geom:dont_verify"_a = true),
+             "command"_a = py::str(fmt::format(
+                 "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
+             "memory"_a = py::str("2 gb"),
+             "scf"_a = py::dict("nopen"_a = mult - 1, "thresh"_a = 1e-6,
+                                "maxiter"_a = 200),
+             "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
+             "directory"_a = ".");
 };
 
 void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
@@ -69,6 +70,7 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
   py::object atoms =
       this->ase.attr("Atoms")("symbols"_a = atmnmrs, "positions"_a = positions);
   atoms.attr("set_calculator")(this->calc);
+  // atoms.attr("center")();
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
   Eigen::MatrixXd py_force =
       py::cast<Eigen::MatrixXd>(atoms.attr("get_forces")());
