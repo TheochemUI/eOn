@@ -15,7 +15,9 @@ dependencies:
   - gfortran
   - pkg-config
   - openblas
+  - pybind11
   # Pinned
+  - "python<3.13" # For the docs
   - "eigen==3.4.0"
   - "fmt<=10"
   - "spdlog<=1.14"
@@ -23,8 +25,11 @@ dependencies:
   - boost-cpp
   - abseil-cpp
   # Python helpers
+  - pip
   - pipx # conda-lock pdm towncrier
+  - pre-commit
   # Lint, handled by pre-commit
   - cppcheck
   - cpplint
+  - clang-format
   - ruff
