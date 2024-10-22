@@ -23,7 +23,7 @@ ASEOrcaPot::ASEOrcaPot(const ASEOrcaPot::Params &a_p) {
   // https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
   fenv_t orig_feenv;
   feholdexcept(&orig_feenv);
-  ase = py::module_::import("ase");
+  _ase = py::module_::import("ase");
   fesetenv(&orig_feenv);
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
