@@ -15,9 +15,10 @@
 // TODO(rg): Clean this up.
 ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
     : Potential(PotType::ASE_NWCHEM, a_params) {
-  counter = 1;
+  counter = 0;
   py::module_ sys = py::module_::import("sys");
-  // Fix for gh-184, see https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
+  // Fix for gh-184, see
+  // https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
   fenv_t orig_feenv;
   feholdexcept(&orig_feenv);
   ase = py::module_::import("ase");
@@ -40,15 +41,17 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
     nproc = std::stoi(a_params->nwchem_nproc);
   }
 
-  this->calc =
-      NWCHEM("label"_a = "eOn",
-             "command"_a = py::str(fmt::format(
-                 "{} PREFIX.nwi > PREFIX.nwo", nproc)),
-             "memory"_a = py::str("2 gb"),
-             "scf"_a = py::dict("nopen"_a = mult - 1, "thres"_a = 1e-8,
-                                "maxiter"_a = 200),
-             "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
-             "directory"_a = ".");
+  // TODO(rg): Directory should be set by the user, and created here
+  // dont_verify so we always get an energy and gradient
+  this->calc = NWCHEM(
+      "label"_a = "_eonpot_engrad",
+      "command"_a = py::str(fmt::format(
+          "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
+      "memory"_a = py::str("2 gb"),
+      "scf"_a =
+          py::dict("nopen"_a = mult - 1, "thresh"_a = 1e-8, "maxiter"_a = 200),
+      "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
+      "directory"_a = ".", "set"_a = py::dict("geom:dont_verify"_a = true));
 };
 
 void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
@@ -61,10 +64,11 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
       Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(box), 3, 3);
   Eigen::VectorXi atmnmrs =
       Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
-  py::object atoms = this->ase.attr("Atoms")(
-      "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
+  // XXX: NWChem refuses to perform SCF for anything but a molecule, so no box
+  // or pbc can be passed
+  py::object atoms =
+      this->ase.attr("Atoms")("symbols"_a = atmnmrs, "positions"_a = positions);
   atoms.attr("set_calculator")(this->calc);
-  atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
   Eigen::MatrixXd py_force =
       py::cast<Eigen::MatrixXd>(atoms.attr("get_forces")());
