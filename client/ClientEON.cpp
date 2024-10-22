@@ -127,9 +127,8 @@ int main(int argc, char **argv) {
   //--- End logging setup
   Parameters parameters;
 
-#ifdef WITH_ASE_ORCA
+#if defined WITH_ASE_ORCA || WITH_PYTHON
   pybind11::scoped_interpreter guard{};
-
 #endif
 
 #ifdef EONMPI
