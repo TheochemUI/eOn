@@ -14,7 +14,11 @@ endif
 if get_option('with_python')
   # TODO(rg): Cleanup a bit
   # Embed is needed for surrogate, numpy by qsc
-  py = import('python').find_installation('python', modules: ['numpy'])
+  if get_option('with_ase_orca')
+    py = import('python').find_installation('python', modules: ['numpy', 'ase'])
+  else
+    py = import('python').find_installation('python', modules: ['numpy'])
+  endif
   python_dep = py.dependency(embed: true)
   _deps += python_dep
 
@@ -252,8 +256,7 @@ if get_option('with_gp_surrogate')
     if get_option('with_catlearn')
       # TODO: Cleanup, used for ase_orca too
       # Embedding the interpreter
-      pyb11f_deps = [ dependency('pybind11'),
-                      declare_dependency(link_args: '-lstdc++') ]
+      pyb11f_deps = [ dependency('pybind11') ]
       _deps += [ pyb11f_deps ]
       subdir('potentials/CatLearnPot')
       potentials += [ catlearnpot ]
@@ -365,11 +368,8 @@ endif
 if get_option('with_ase_orca')
   # TODO: Cleanup, used for Catlearn too
   # Embedding the interpreter
-  py = import('python').find_installation()
-  python_dep = py.dependency(embed: true, required: true)
   pyb11f_deps = [ python_dep,
-                  dependency('pybind11'),
-                  declare_dependency(link_args: '-lstdc++') ]
+                  dependency('pybind11') ]
   _deps += [ pyb11f_deps ]
   subdir('potentials/ASE_ORCA')
   potentials += [ aseorca ]
