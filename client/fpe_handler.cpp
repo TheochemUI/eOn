@@ -60,3 +60,17 @@ void enableFPE() {
   act.sa_flags = SA_SIGINFO;
   sigaction(SIGFPE, &act, nullptr);
 }
+
+void disableFPE(void)
+{
+    #ifdef LINUX
+  //  | FE_OVERFLOW
+        fedisableexcept(FE_DIVBYZERO | FE_INVALID);
+    #endif
+    #ifdef OSX
+        _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK()
+                               | _MM_MASK_INVALID
+                               | _MM_MASK_DIV_ZERO
+                               | _MM_MASK_OVERFLOW);
+    #endif
+}

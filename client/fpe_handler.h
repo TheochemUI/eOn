@@ -5,5 +5,6 @@
 // This causes the program to crash on divison by zero,
 // invalid operations, and overflows.
 void enableFPE(void);
+void disableFPE(void);
 
 #endif // FPE_HANDLER_H_
