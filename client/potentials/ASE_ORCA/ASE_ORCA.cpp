@@ -10,7 +10,6 @@
 
 #include "ASE_ORCA.h"
 #include "../../EnvHelpers.hpp"
-#include "Eigen/src/Core/Matrix.h"
 #include <fenv.h>
 
 // XXX: This always assumes that charge is 0, mult is 1
