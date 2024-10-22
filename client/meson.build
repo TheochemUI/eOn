@@ -9,6 +9,9 @@ if get_option('with_fortran') or get_option('with_xtb') or get_option('with_cuh2
   use_fortran = true
   add_languages('fortran', required: true)
   fc = meson.get_compiler('fortran')
+  _fargs += fc.get_supported_arguments([
+    '-fno-implicit-none',
+    ])
 endif
 
 if get_option('with_python')
