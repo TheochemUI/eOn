@@ -176,6 +176,10 @@ Parameters::Parameters() {
   orca_path = ""s;
   orca_nproc = "1"s;
 
+  // [ASE_NWCHEM] //
+  nwchem_path = ""s;
+  nwchem_nproc = "1"s;
+
   // [Lanczos] //
   lanczosTolerance = 0.01;
   lanczosMaxIterations = 20;
@@ -650,6 +654,14 @@ int Parameters::load(FILE *file) {
       orca_path = ini.GetValue("ASE_ORCA", "orca_path", "");
       orca_nproc = ini.GetValue("ASE_ORCA", "nproc");
       orca_sline = ini.GetValue("ASE_ORCA", "simpleinput", "");
+    }
+    // [ASE_NWCHEM]
+    if (ini.FindKey("ASE_NWCHEM") != -1) {
+      // Case sensitive!!
+      // TODO: This should be handled in clienteon so you can still call
+      // eonclient for single point calculations easily
+      nwchem_path = ini.GetValue("ASE_NWCHEM", "nwchem_path", "");
+      nwchem_nproc = ini.GetValue("ASE_NWCHEM", "nproc");
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",

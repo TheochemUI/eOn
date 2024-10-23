@@ -9,6 +9,9 @@ if get_option('with_fortran') or get_option('with_xtb') or get_option('with_cuh2
   use_fortran = true
   add_languages('fortran', required: true)
   fc = meson.get_compiler('fortran')
+  _fargs += fc.get_supported_arguments([
+    '-fno-implicit-none',
+    ])
 endif
 
 if get_option('with_python')
@@ -374,6 +377,20 @@ if get_option('with_ase_orca')
   subdir('potentials/ASE_ORCA')
   potentials += [ aseorca ]
   _args += ['-DWITH_ASE_ORCA']
+endif
+
+if get_option('with_ase_nwchem')
+  # TODO: Cleanup, used for Catlearn too
+  # Embedding the interpreter
+  py = import('python').find_installation()
+  python_dep = py.dependency(embed: true, required: true)
+  pyb11f_deps = [ python_dep,
+                  dependency('pybind11'),
+                  declare_dependency(link_args: '-lstdc++') ]
+  _deps += [ pyb11f_deps ]
+  subdir('potentials/ASE_NWCHEM')
+  potentials += [ asenwchem ]
+  _args += ['-DWITH_ASE_NWCHEM']
 endif
 
 _linkto += potentials

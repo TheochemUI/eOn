@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #endif
 
-#ifdef WITH_ASE_ORCA
+#ifdef WITH_ASE_ORCA || WITH_ASE_NWCHEM
 #include <pybind11/embed.h>
 #endif
 
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
   //--- End logging setup
   Parameters parameters;
 
-#if defined WITH_ASE_ORCA || WITH_PYTHON
+#if defined WITH_ASE_ORCA || WITH_PYTHON || WITH_ASE_NWCHEM
   pybind11::scoped_interpreter guard{};
 #endif
 
