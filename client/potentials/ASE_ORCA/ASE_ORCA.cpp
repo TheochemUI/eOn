@@ -18,7 +18,7 @@
 ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
     : Potential(PotType::ASE_ORCA, a_params) {
 
-  counter = 1;
+  counter = 0;
   py::module_ sys = py::module_::import("sys");
   // Fix for gh-184, see
   // https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
