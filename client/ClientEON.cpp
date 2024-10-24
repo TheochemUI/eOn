@@ -300,7 +300,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-    enableFPE();  // from ExceptionsEON.h
+    eonc::enableFPE();  // from ExceptionsEON.h
 
   double beginTime = 0.0;
   helper_functions::getTime(&beginTime, NULL, NULL);

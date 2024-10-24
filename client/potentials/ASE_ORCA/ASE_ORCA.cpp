@@ -10,7 +10,7 @@
 
 #include "ASE_ORCA.h"
 #include "../../EnvHelpers.hpp"
-#include <fenv.h>
+#include "../../fpe_handler.h"
 
 // XXX: This always assumes that charge is 0, mult is 1
 // ASE default ----------------------------^ ---------^
@@ -20,11 +20,12 @@ ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
 
   counter = 1;
   py::module_ sys = py::module_::import("sys");
-  // Fix for gh-184, see https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
-  fenv_t orig_feenv;
-  feholdexcept(&orig_feenv);
+  // Fix for gh-184, see
+  // https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
+  eonc::FPEHandler fpeh;
+  fpeh.eat_fpe();
   ase = py::module_::import("ase");
-  fesetenv(&orig_feenv);
+  fpeh.restore_fpe();
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
   std::string orcpth = helper_functions::get_value_from_env_or_param(
