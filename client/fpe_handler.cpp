@@ -13,6 +13,8 @@
 #include <xmmintrin.h>
 #endif
 
+namespace eonc {
+
 static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   int fe_code = sip->si_code;
   std::cerr << "Floating point exception: ";
@@ -61,16 +63,14 @@ void enableFPE() {
   sigaction(SIGFPE, &act, nullptr);
 }
 
-void disableFPE(void)
-{
-    #ifdef LINUX
-  //  | FE_OVERFLOW
-        fedisableexcept(FE_DIVBYZERO | FE_INVALID);
-    #endif
-    #ifdef OSX
-        _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK()
-                               | _MM_MASK_INVALID
-                               | _MM_MASK_DIV_ZERO
-                               | _MM_MASK_OVERFLOW);
-    #endif
+void FPEHandler::eat_fpe() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  feholdexcept(&orig_feenv);
 }
+
+void FPEHandler::restore_fpe() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  fesetenv(&orig_feenv);
+}
+
+} // namespace eonc

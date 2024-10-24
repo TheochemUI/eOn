@@ -10,7 +10,7 @@
 
 #include "ASE_NWCHEM.h"
 #include "../../EnvHelpers.hpp"
-#include <fenv.h>
+#include "../../fpe_handler.h"
 
 // TODO(rg): Clean this up.
 ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
@@ -19,10 +19,10 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
   py::module_ sys = py::module_::import("sys");
   // Fix for gh-184, see
   // https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
-  fenv_t orig_feenv;
-  feholdexcept(&orig_feenv);
+  eonc::FPEHandler fpeh;
+  fpeh.eat_fpe();
   ase = py::module_::import("ase");
-  fesetenv(&orig_feenv);
+  fpeh.restore_fpe();
   py::module_ ase_nwchem = py::module_::import("ase.calculators.nwchem");
   py::module_ psutil = py::module_::import("psutil");
   std::string nwchempth = helper_functions::get_value_from_env_or_param(
