@@ -11,6 +11,7 @@
 #include "ASE_NWCHEM.h"
 #include "../../EnvHelpers.hpp"
 #include "../../fpe_handler.h"
+#include <string>
 
 // TODO(rg): Clean this up.
 ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
@@ -27,12 +28,17 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
   py::module_ psutil = py::module_::import("psutil");
   std::string nwchempth = helper_functions::get_value_from_env_or_param(
       "NWCHEM_COMMAND", a_params->nwchem_path, "", "", true);
+  std::string nwc_mult = helper_functions::get_value_from_env_or_param(
+      "NWCHEM_MULTIPLICITY", a_params->nwchem_multiplicity, "1",
+      "Using 1 as a default multiplicity, i.e. an RHF calculation suitable for "
+      "closed shell molecules, set multiplicity or the "
+      "environment variable NWCHEM_MULTIPLICITY.\n");
 
   // Set up NWCHEM arguments
   // TODO(rg): Stop hardcoding these
   py::object NWCHEM = ase_nwchem.attr("NWChem");
   size_t nproc{0};
-  size_t mult = 1; // 1 for singlet, 2 for doublet
+  auto mult = std::stoi(nwc_mult); // 1 for singlet, 2 for doublet
 
   // TODO(rg): Use
   if (a_params->nwchem_nproc == "auto") {
@@ -43,16 +49,31 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
 
   // TODO(rg): Directory should be set by the user, and created here
   // dont_verify so we always get an energy and gradient
-  this->calc =
-      NWCHEM("label"_a = "_eonpot_engrad",
-             "set"_a = py::dict("geom:dont_verify"_a = true),
-             "command"_a = py::str(fmt::format(
-                 "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
-             "memory"_a = py::str("2 gb"),
-             "scf"_a = py::dict("nopen"_a = mult - 1, "thresh"_a = 1e-6,
-                                "maxiter"_a = 200),
-             "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
-             "directory"_a = ".");
+  // Common NWCHEM parameters
+  py::dict nwchem_params = py::dict(
+      "label"_a = "_eonpot_engrad",
+      "set"_a = py::dict("geom:dont_verify"_a = true),
+      "command"_a = py::str(fmt::format(
+          "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
+      "memory"_a = py::str("2 gb"),
+      "scf"_a = py::dict("nopen"_a = mult - 1,
+                         "thresh"_a = a_params->nwchem_scf_thresh,
+                         "maxiter"_a = a_params->nwchem_scf_maxiter),
+      "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
+      "directory"_a = ".");
+
+  // Set UHF flag for doublet (mult == 2)
+  if (mult == 2) {
+    nwchem_params["scf"]["uhf"] = py::none();
+  }
+
+  // Check for invalid spin multiplicity
+  if (mult != 1 && mult != 2) {
+    throw std::runtime_error("Unknown spin multiplicity, we support 1 for "
+                             "singlet and 2 for doublet ONLY.");
+  }
+
+  this->calc = NWCHEM(**nwchem_params);
 };
 
 void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
