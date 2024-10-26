@@ -1,5 +1,5 @@
-aseorca = library('aseorca',
-           'ASE_ORCA.cpp',
+asenwchem = library('asenwchem',
+           'ASE_NWCHEM.cpp',
            '../../EnvHelpers.cc',
            '../../fpe_handler.cpp',
            dependencies : _deps,
