@@ -295,6 +295,9 @@ public:
   // [ASE_NWCHEM] //
   std::string nwchem_path;
   std::string nwchem_nproc;
+  std::string nwchem_multiplicity; // 1 for singlet, 2 for doublet
+  double nwchem_scf_thresh;
+  long nwchem_scf_maxiter;
 
 
   // [Lanczos] //

@@ -179,6 +179,9 @@ Parameters::Parameters() {
   // [ASE_NWCHEM] //
   nwchem_path = ""s;
   nwchem_nproc = "1"s;
+  nwchem_multiplicity = ""s;
+  nwchem_scf_thresh = 1e-5;
+  nwchem_scf_maxiter = 200;
 
   // [Lanczos] //
   lanczosTolerance = 0.01;
@@ -662,6 +665,9 @@ int Parameters::load(FILE *file) {
       // eonclient for single point calculations easily
       nwchem_path = ini.GetValue("ASE_NWCHEM", "nwchem_path", "");
       nwchem_nproc = ini.GetValue("ASE_NWCHEM", "nproc");
+      nwchem_multiplicity = ini.GetValue("ASE_NWCHEM", "multiplicity");
+      nwchem_scf_thresh = ini.GetValueF("ASE_NWCHEM", "scf_thresh", 1e-5);
+      nwchem_scf_maxiter = ini.GetValueL("ASE_NWCHEM", "scf_maxiter", 200);
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
