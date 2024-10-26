@@ -28,6 +28,7 @@ dependencies:
   - pip
   - pipx # conda-lock pdm towncrier
   - pre-commit
+  - numpy
   # Lint, handled by pre-commit
   - cppcheck
   - cpplint
