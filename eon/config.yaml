@@ -65,6 +65,8 @@ Potential:
             values:
                 - qsc
                 - lenosky_Si
+                - ase_nwchem
+                - ase_orca
                 - sw_si
                 - lj
                 - lj_cluster
@@ -1366,3 +1368,43 @@ Optimizer:
         cg_line_converged:
             kind: float
             default: 0.1
+
+################################################################################
+
+ASE_NWCHEM:
+    options:
+        nwchem_path:
+            kind: string
+            default: "NONE"
+
+        nproc:
+            kind: string
+            default: "auto"
+
+        multiplicity:
+            kind: string
+            default: "1"
+
+        scf_thresh:
+            kind: float
+            default: 1e-5
+
+        scf_maxiter:
+            kind: int
+            default: 200
+
+################################################################################
+
+ASE_ORCA:
+    options:
+        orca_path:
+            kind: string
+            default: "NONE"
+
+        nproc:
+            kind: string
+            default: "auto"
+
+        simpleinput:
+            kind: string
+            default: "ENGRAD HF-3c"
