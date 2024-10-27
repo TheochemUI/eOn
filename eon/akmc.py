@@ -14,6 +14,7 @@ import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
 from builtins import input
+from pathlib import Path
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
@@ -386,7 +387,7 @@ def main():
         console.setFormatter(formatter)
         rootlogger.addHandler(console)
 
-    lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
+    lock = locking.LockFile(str((Path.cwd() / config.path_results / "lockfile").absolute()))
 
     # Some options are mutually exclusive. Let's check them now.
     exclusive_options = {}
