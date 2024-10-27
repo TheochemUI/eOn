@@ -596,6 +596,30 @@ GPR Dimer:
             kind: int
             default: 1
 
+        report_level:
+            kind: int
+            default: 1
+
+        debug_level:
+            kind: int
+            default: 2
+
+        use_prune:
+            kind: boolean
+            default: False
+
+        start_prune_at:
+            kind: int
+            default: 8
+
+        nprune_vals:
+            kind: int
+            default: 3
+
+        prune_threshold:
+            kind: float
+            default: 0.5
+
 ################################################################################
 
 Basin Hopping:
@@ -1056,6 +1080,7 @@ Saddle Search:
             values:
                 - dimer
                 - lanczos
+                - gprdimer
 
         displace_random_weight:
             kind: float
@@ -1408,3 +1433,17 @@ ASE_ORCA:
         simpleinput:
             kind: string
             default: "ENGRAD HF-3c"
+
+################################################################################
+
+LBFGS:
+    options:
+        lbfgs_memory:
+            kind: int
+            default: 25
+        lbfgs_inverse_curvature:
+            kind: float
+            default: 0.01
+        lbfgs_auto_scale:
+            kind: boolean
+            default: True
