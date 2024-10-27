@@ -3,7 +3,8 @@ import os
 import numpy
 from eon import atoms
 from eon import fileio as io
-from eon.config import config
+from eon.config import config as EON_CONFIG
+from eon.config import ConfigClass # Typing
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.
@@ -274,10 +275,11 @@ class Recycling:
     """
 
 
-    def __init__(self, states, suggested_ref_state, new_state, move_distance, save=False, from_sb=False):
+    def __init__(self, states, suggested_ref_state, new_state, move_distance, save=False, from_sb=False, config: ConfigClass = EON_CONFIG):
         """ Initialize the data for the recycling object.
             If there is a file containing the data for the current state,
             use this file.  Otherwise, the previous state will be the reference. """
+        self.config = config
         self.states = states
         self.ref_state = suggested_ref_state
         self.current_state = new_state
@@ -310,11 +312,11 @@ class Recycling:
             self.ref_reactant = self.ref_state.get_reactant()
 
             # GH: using the active region for all searches
-            self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r,config.recycling_active_region)
-            #if config.saddle_method == 'dynamics':
-            #    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r,config.recycling_active_region)
+            self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,self.config.comp_eps_r,self.config.recycling_active_region)
+            #if self.config.saddle_method == 'dynamics':
+            #    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,self.config.comp_eps_r,self.config.recycling_active_region)
             #else:
-            #    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r)
+            #    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,self.config.comp_eps_r)
 
             # Make a vector of distances between previous
             # current positions for each atom in the state.
