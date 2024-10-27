@@ -340,4 +340,5 @@ class ConfigClass:
 
         del parser
 
+# XXX(rg): Very leaky global state here because.........?
 config = ConfigClass()

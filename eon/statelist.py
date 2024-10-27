@@ -6,20 +6,22 @@ logger = logging.getLogger('statelist')
 import os
 
 from eon import atoms
-from eon.config import config
+from eon.config import config as EON_CONFIG
+from eon.config import ConfigClass # Typing
 
 
 class StateList:
     """ The StateList class.  Serves as an interface to State objects and StateList metadata. """
-    def __init__(self, StateClass, initial_state = None):
+    def __init__(self, StateClass, initial_state = None, config: ConfigClass = EON_CONFIG):
         ''' Check to see if state_path exists and that state zero exists.
             Initializes state zero when passed a initial_state only if state
             zero doesn't already exist. '''
 
-        self.path = config.path_states
-        self.epsilon_e = config.comp_eps_e
-        self.epsilon_r = config.comp_eps_r
-        self.use_identical = config.comp_use_identical
+        self.config = config
+        self.path = self.config.path_states
+        self.epsilon_e = self.config.comp_eps_e
+        self.epsilon_r = self.config.comp_eps_r
+        self.use_identical = self.config.comp_use_identical
         self.StateClass = StateClass
 
         # Paths
@@ -35,11 +37,14 @@ class StateList:
         if not os.path.isdir(os.path.join(self.path, "0")):
             if initial_state is None:
                 raise IOError("Missing zeroth state directory and no reactant provided")
-            self.StateClass(statepath = os.path.join(self.path, "0"),
-                        statenumber = 0,
-                        statelist = self,
-                        previous_state_num = -1,
-                        reactant_path = initial_state)
+            self.StateClass(
+                statepath=os.path.join(self.path, "0"),
+                statenumber=0,
+                statelist=self,
+                previous_state_num=-1,
+                reactant_path=initial_state,
+                config=config,
+            )
 
         # Other class variables.
         self.states = {}
@@ -52,7 +57,7 @@ class StateList:
 
     def get_product_state(self, state_number, process_id):
         ''' Returns a State object referenced by state_number and process_id. '''
-        #TODO: Compare configuration of product with existing states.
+        #TODO: Compare self.configuration of product with existing states.
 
         # If the number of states in state_table is zero
         #we need to add the zero state and energy to the state table.
@@ -71,19 +76,19 @@ class StateList:
         # Otherwise, create it, connect it to st, and return it.
         if newstnr == -1:
 
-            # Make a list of states for which we need to compare configurations.
+            # Make a list of states for which we need to compare self.configurations.
             enew = st.procs[process_id]['product_energy']
             energetically_close = []
             for id in range(self.get_num_states()):
                 if abs(self.get_state(id).get_energy() - enew) < self.epsilon_e:
                     energetically_close.append(id)
 
-            # Perform distance checks on the energetically close configurations.
+            # Perform distance checks on the energetically close self.configurations.
             if len(energetically_close) > 0:
                 pnew = st.get_process_product(process_id)
                 for id in energetically_close:
                     p = self.get_state(id).get_reactant()
-                    if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
+                    if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True):
                         if id == state_number:
                             logging.warning("State %i process %i leads back to initial state",
                                             state_number, process_id)
@@ -94,11 +99,14 @@ class StateList:
             newstnr = self.get_num_states()
 
             # Create the new state object.
-            newst = self.StateClass(statepath = self.state_path(newstnr),
-                                statenumber = newstnr,
-                                statelist = self,
-                                previous_state_num = state_number,
-                                reactant_path = st.proc_product_path(process_id))
+            newst = self.StateClass(
+                statepath=self.state_path(newstnr),
+                statenumber=newstnr,
+                statelist=self,
+                previous_state_num=state_number,
+                reactant_path=st.proc_product_path(process_id),
+                config=self.config,
+            )
             self.register_process(st.number, newstnr, process_id)
 
             # Append the new state to the state table.
@@ -115,9 +123,12 @@ class StateList:
         ''' Returns a state object. '''
         if state_number in self.states:
             return self.states[state_number]
-        st = self.StateClass(statepath = os.path.join(self.path, str(state_number)),
-                         statenumber = state_number,
-                         statelist = self)
+        st = self.StateClass(
+            statepath=os.path.join(self.path, str(state_number)),
+            statenumber=state_number,
+            statelist=self,
+            config=self.config,
+        )
         self.states[state_number] = st
         return st
 
