@@ -3,6 +3,7 @@
 #include "AtomicGPDimer.h"
 #include "GPRHelpers.h"
 #include "HelperFunctions.h"
+#include "fpe_handler.h"
 #include <cassert>
 #include <cmath>
 
@@ -70,7 +71,10 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
 
   // Potential *potential = Potential::getPotential(parameters);
   auto potential = helper_functions::makePotential(params);
+  eonc::FPEHandler fpeh;
+  fpeh.eat_fpe();
   atomic_dimer.execute(*potential.get());
+  fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();
