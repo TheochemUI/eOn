@@ -204,7 +204,6 @@ Parameters::Parameters() {
   gprDimerSep = 0.01;                // dimer_sep
   gprDimerConvStep = 0.1;            // param_trans[0]
   gprDimerMaxStep = 0.1;             // param_trans[1]
-  gprForceThreshold = 0.01;          // T_dimer
   gprDimerRatioAtLimit = 0.66667;    // ratio_at_limit
   gprDimerInitRotGP = 0;             // initrot_nogp
   gprDimerInitTransGP = 0;           // inittrans_nogp
@@ -711,8 +710,6 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("GPR Dimer", "convex_region_step_size", gprDimerConvStep);
     gprDimerMaxStep =
         ini.GetValueF("GPR Dimer", "max_step_size", gprDimerMaxStep);
-    gprForceThreshold =
-        ini.GetValueF("GPR Dimer", "force_threshold", gprForceThreshold);
     gprDimerRatioAtLimit =
         ini.GetValueF("GPR Dimer", "ratio_at_limit", gprDimerRatioAtLimit);
     gprDimerInitRotGP =
