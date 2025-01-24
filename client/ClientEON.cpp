@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #endif
 
-#ifdef WITH_ASE_ORCA || WITH_ASE_NWCHEM
+#if defined WITH_ASE_ORCA || WITH_PYTHON || WITH_ASE_NWCHEM
 #include <pybind11/embed.h>
 #endif
 
