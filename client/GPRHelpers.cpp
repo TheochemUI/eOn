@@ -14,9 +14,11 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.method_trans.value = parameters->gprDimerTransOptMethod;
   p.param_trans.value[0] = parameters->gprDimerConvStep;
   p.param_trans.value[1] = parameters->gprDimerMaxStep;
-  p.T_dimer.value = parameters->gprForceThreshold;
+  // Saddle point convergence parameter
+  p.T_dimer.value = parameters->saddleConvergedForce;
+  p.T_anglerot_init.value = parameters->dimerConvergedAngle;
+  // ---
   p.initrot_nogp.value = parameters->gprDimerInitRotGP;
-  p.T_anglerot_init.value = parameters->gprDimerConvergedAngle;
   p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
   p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
   p.T_anglerot_gp.value = parameters->gprDimerRelaxConvAngle;
