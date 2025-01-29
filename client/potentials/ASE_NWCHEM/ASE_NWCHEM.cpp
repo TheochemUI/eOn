@@ -62,7 +62,7 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
       "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
       "directory"_a = ".");
 
-  // Set UHF flag for doublet (mult == 2)
+  // Set flag for doublet (mult == 2)
   if (mult == 2) {
     nwchem_params["scf"]["uhf"] = py::none();
   }
