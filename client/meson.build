@@ -329,8 +329,8 @@ if get_option('with_python')
   _args += ['-DWITH_PYTHON']
   # subdir('potentials/PyAMFF')
   # pyamff,
-  subdir('potentials/QSC')
-  potentials += [ qsc ]
+  # subdir('potentials/QSC')
+  # potentials += [ qsc ]
   if get_option('with_ase')
     subdir('potentials/ASE')
     potentials += [ ase ]
