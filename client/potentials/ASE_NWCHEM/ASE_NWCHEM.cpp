@@ -90,7 +90,7 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
   // or pbc can be passed
   py::object atoms =
       this->ase.attr("Atoms")("symbols"_a = atmnmrs, "positions"_a = positions);
-  atoms.attr("set_calculator")(this->calc);
+  atoms.attr("calculator") = this->calc;
   // atoms.attr("center")();
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
   Eigen::MatrixXd py_force =
