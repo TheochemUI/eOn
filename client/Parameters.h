@@ -223,9 +223,6 @@ public:
                       // images {dimer_sep}
   double gprDimerConvStep;  // step length for convex regions {param_trans[0]}
   double gprDimerMaxStep;   // maximum step length {param_trans[1]}
-  double gprForceThreshold; // maximum component of the force acting on the
-                            // middle point of the dimer (stops when accurate
-                            // force components are below this value) {T_dimer}
   double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the
                                // ratio of inter-atomic distances between the
                                // image and its "nearest observed data point"

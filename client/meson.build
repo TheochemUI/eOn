@@ -14,6 +14,12 @@ if get_option('with_fortran') or get_option('with_xtb') or get_option('with_cuh2
     ])
 endif
 
+if get_option('use_mkl')
+    mkldep = dependency('mkl-dynamic-ilp64-iomp', required: true)
+    add_project_arguments('-DEIGEN_USE_MKL_ALL', language: 'cpp')
+    add_project_link_arguments('-lmkl_intel_lp64', '-lmkl_core', '-lmkl_sequential', language: 'cpp')
+endif
+
 if get_option('with_python')
   # TODO(rg): Cleanup a bit
   # Embed is needed for surrogate, numpy by qsc
@@ -244,13 +250,22 @@ eonclient_sources = [
 # ------------------- Options
 
 if get_option('with_gprd')
-  libgprd_proj = subproject('gpr_optim')
-  gprd_dep = libgprd_proj.get_variable('libgprd_dep')
+    gprd_opts = {
+        'default_library': 'static',
+        'use_mkl': get_option('use_mkl'),
+        'use_hdf5': true,
+        'do_install': true,
+        'buildtype': 'release',
+    }
+  libgprd_proj = subproject('gpr_optim',
+                            default_options: gprd_opts)
+  libgprd = libgprd_proj.get_variable('libgprd_dep')
+  gprd_deps = libgprd_proj.get_variable('gprd_deps')
   # subdir('potentials/GPRPotential')
   # potentials += [ gprpot ]
   _args += ['-DWITH_GPRD']
   eonclib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
-  _deps += [ gprd_dep ]
+  _deps += [ libgprd, gprd_deps ]
 endif
 
 if get_option('with_gp_surrogate')
@@ -329,8 +344,8 @@ if get_option('with_python')
   _args += ['-DWITH_PYTHON']
   # subdir('potentials/PyAMFF')
   # pyamff,
-  subdir('potentials/QSC')
-  potentials += [ qsc ]
+  # subdir('potentials/QSC')
+  # potentials += [ qsc ]
   if get_option('with_ase')
     subdir('potentials/ASE')
     potentials += [ ase ]

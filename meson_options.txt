@@ -17,6 +17,7 @@ option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
 option('with_ase_nwchem', type : 'boolean', value : false)
 option('with_ase', type : 'boolean', value : false)
+option('use_mkl', type: 'boolean', value: false, description: 'Enable Intel MKL support')
 
 # option('someoption', type : 'string', value : 'optval', description : 'An option')
 # option('combo_opt', type : 'combo', choices : ['one', 'two', 'three'], value : 'three')

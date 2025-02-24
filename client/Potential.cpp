@@ -245,10 +245,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-  case PotType::QSC: {
-    return (std::make_shared<QSC>());
-    break;
-  }
+  // case PotType::QSC: {
+  //   return (std::make_shared<QSC>());
+  //   break;
+  // }
 #endif
   // Unused
   // case PotType::BOPFOX: {
