@@ -348,7 +348,7 @@ class AKMCState(state.State):
             if n < 10: return 0.0
 
             # probabilities
-            ps = numpy.array(list(repeats.values()),dtype=numpy.float)
+            ps = numpy.array(list(repeats.values()),dtype=float)
             ps /= sum(ps)
 
             C = numpy.zeros(m)
