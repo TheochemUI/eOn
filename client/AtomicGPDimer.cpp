@@ -3,16 +3,13 @@
 #include "AtomicGPDimer.h"
 #include "GPRHelpers.h"
 #include "HelperFunctions.h"
+#include "fpe_handler.h"
 #include <cassert>
 #include <cmath>
 
-#include "subprojects/gprdimer/gpr/AtomicDimer.h"
-#include "subprojects/gprdimer/gpr/Enums.h"
-#include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
-#include "subprojects/gprdimer/gpr/covariance_functions/ConstantCF.h"
-#include "subprojects/gprdimer/gpr/covariance_functions/SexpatCF.h"
-#include "subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
-#include "subprojects/gprdimer/structures/Structures.h"
+#include "subprojects/gpr_optim/gpr/AtomicDimer.h"
+#include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
+#include "subprojects/gpr_optim/structures/Structures.h"
 
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
@@ -74,7 +71,10 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
 
   // Potential *potential = Potential::getPotential(parameters);
   auto potential = helper_functions::makePotential(params);
+  eonc::FPEHandler fpeh;
+  fpeh.eat_fpe();
   atomic_dimer.execute(*potential.get());
+  fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();
