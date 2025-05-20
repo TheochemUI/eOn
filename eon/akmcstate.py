@@ -9,7 +9,8 @@ logger = logging.getLogger('state')
 
 import numpy
 
-from eon.config import config
+from eon.config import config as EON_CONFIG
+from eon.config import ConfigClass # Typing
 from eon import atoms
 from eon import fileio as io
 from eon import state
@@ -23,9 +24,10 @@ class AKMCState(state.State):
     processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
 
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
-                 reactant_path = None):
+                 reactant_path = None, config: ConfigClass = EON_CONFIG):
         """ Creates a new State, with lazily loaded data. """
-        if config.akmc_server_side_process_search:
+        self.config = config
+        if self.config.akmc_server_side_process_search:
             self.search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("searchid", "type", "barrier",
                                                                                   "max-dist", "sad-fcs",
                                                                                   "mins-fcs", "pref-fcs",
@@ -37,7 +39,7 @@ class AKMCState(state.State):
                                                                                   "result")
         self.search_result_header += "-" * len(self.search_result_header) + '\n'
         state.State.__init__(self,statepath, statenumber,statelist, previous_state_num,
-                    reactant_path)
+                             reactant_path, self.config)
 
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
 
@@ -50,7 +52,7 @@ class AKMCState(state.State):
         p1 = io.loadcon(saddle_file)
         for id in list(self.procs.keys()):
             energy_b = self.procs[id]['barrier']
-            if abs(energy_a - energy_b) > config.comp_eps_e:
+            if abs(energy_a - energy_b) > self.config.comp_eps_e:
                 continue
 
             if id in self.con_cache:
@@ -59,7 +61,7 @@ class AKMCState(state.State):
                 p2 = io.loadcon(self.proc_saddle_path(id))
                 self.con_cache[id] = p2
 
-            if atoms.match(p1, p2, config.comp_eps_r, config.comp_neighbor_cutoff, False):
+            if atoms.match(p1, p2, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False):
                 return id
         return None
 
@@ -153,9 +155,9 @@ class AKMCState(state.State):
 
         # Set maximum rate, if defined
 #        forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
-#        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+#        if self.config.akmc_max_rate > 0 and cur_rate > self.config.akmc_max_rate:
 #            # print "max rate exceeded: ", cur_rate
-#            forward_rate = config.akmc_max_rate
+#            forward_rate = self.config.akmc_max_rate
 
         # Set equilibrium rate, if defined
         forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
@@ -163,15 +165,15 @@ class AKMCState(state.State):
         reverse_rate = resultdata["prefactor_product_to_reactant"] * math.exp(-reverse_barrier / self.statelist.kT)
 
         eq_rate_flag = False
-        if config.akmc_eq_rate > 0 and forward_rate > config.akmc_eq_rate and reverse_rate > config.akmc_eq_rate:
+        if self.config.akmc_eq_rate > 0 and forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
             eq_rate_flag = True
             #print "eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate
             if forward_rate < reverse_rate:
-                forward_eq_rate = config.akmc_eq_rate
-                reverse_eq_rate = config.akmc_eq_rate * (reverse_rate / forward_rate)
+                forward_eq_rate = self.config.akmc_eq_rate
+                reverse_eq_rate = self.config.akmc_eq_rate * (reverse_rate / forward_rate)
             else:
-                forward_eq_rate = config.akmc_eq_rate * (forward_rate / reverse_rate)
-                reverse_eq_rate = config.akmc_eq_rate
+                forward_eq_rate = self.config.akmc_eq_rate * (forward_rate / reverse_rate)
+                reverse_eq_rate = self.config.akmc_eq_rate
             #print "new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate
 
         # Append this barrier to the process table (in memory and on disk).
@@ -203,7 +205,7 @@ class AKMCState(state.State):
         f = open(self.search_result_path, 'a')
         resultdata = result['results']
 
-        if config.akmc_server_side_process_search:
+        if self.config.akmc_server_side_process_search:
             first_column = "search_id"
         else:
             first_column = "wuid"
@@ -281,20 +283,20 @@ class AKMCState(state.State):
         superbasin. The confidence calculation is adjusted so that
         only processes that lead out of the superbasin are
         counted. This may be disabled by the
-        config.sb_superbasin_confidence option.
+        self.config.sb_superbasin_confidence option.
 
         """
         # Possibly disable superbasin feature.
-        #if not config.sb_superbasin_confidence:
+        #if not self.config.sb_superbasin_confidence:
         try:
-            if not config.sb_superbasin_confidence:
+            if not self.config.sb_superbasin_confidence:
                 superbasin = None
         except AttributeError:
             superbasin = None
 
         # Checking to see if all recycling jobs are complete
-        if config.recycling_on and config.disp_moved_only:
-            job_table_path = os.path.join(config.path_root, "jobs.tbl")
+        if self.config.recycling_on and self.config.disp_moved_only:
+            job_table_path = os.path.join(self.config.path_root, "jobs.tbl")
             job_table = io.Table(job_table_path)
             if any([ t == 'recycling' for t in job_table.get_column('type') ]):
                 return 0.0
@@ -310,7 +312,7 @@ class AKMCState(state.State):
                        for proc, count in list(prc.items())
                        if self.procs[proc]["product"] not in superbasin.state_dict)
         alpha = 1.0
-        if config.akmc_confidence_correction:
+        if self.config.akmc_confidence_correction:
             mn = 1e300
             mx = 0
             for r in rt:
@@ -322,7 +324,7 @@ class AKMCState(state.State):
             else:
                 alpha = float(mn)/mx
 
-        if config.akmc_confidence_scheme == 'new':
+        if self.config.akmc_confidence_scheme == 'new':
             Nf = 0.0
             Ns = 0.0
             for r in rt:
@@ -335,7 +337,7 @@ class AKMCState(state.State):
                 Nf = 1.0
             return 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
 
-        elif config.akmc_confidence_scheme == 'sampling':
+        elif self.config.akmc_confidence_scheme == 'sampling':
             all_repeats = prc
             repeats = {}
             for event in rt:
@@ -357,11 +359,11 @@ class AKMCState(state.State):
 
             return sum(C)/float(m)
 
-        elif config.akmc_confidence_scheme == 'dynamics':
+        elif self.config.akmc_confidence_scheme == 'dynamics':
             #print("into dynamics confidence")
             # filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
-            if config.disp_moved_only:
+            if self.config.disp_moved_only:
                 f = open(self.search_result_path)
                 f.readline()
                 f.readline()
@@ -384,7 +386,7 @@ class AKMCState(state.State):
             conf = 0.0
             total_rate_estimator = 0.0
             total_rate_found = 0.0
-            T1 = config.main_temperature
+            T1 = self.config.main_temperature
             for T2, T2_time in list(self.get_time_by_temp().items()):
                 #print("out of get_time_by_temp")
                 if T2_time == 0.0:
@@ -562,7 +564,7 @@ class AKMCState(state.State):
             # section. We simply upgrade and try again (no recursion
             # to avoid endless recursion if the exception is raised
             # again).
-            self.increment_time(0.0, config.saddle_dynamics_temperature)
+            self.increment_time(0.0, self.config.saddle_dynamics_temperature)
             #try:
             #    print(self.info.items('SearchTime', raw=True))
             #except Exception as e:

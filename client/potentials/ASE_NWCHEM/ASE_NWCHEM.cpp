@@ -62,7 +62,7 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
       "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
       "directory"_a = ".");
 
-  // Set UHF flag for doublet (mult == 2)
+  // Set flag for doublet (mult == 2)
   if (mult == 2) {
     nwchem_params["scf"]["uhf"] = py::none();
   }
@@ -90,7 +90,7 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
   // or pbc can be passed
   py::object atoms =
       this->ase.attr("Atoms")("symbols"_a = atmnmrs, "positions"_a = positions);
-  atoms.attr("set_calculator")(this->calc);
+  atoms.attr("calc") = this->calc;
   // atoms.attr("center")();
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
   Eigen::MatrixXd py_force =

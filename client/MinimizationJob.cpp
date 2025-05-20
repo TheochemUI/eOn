@@ -4,6 +4,11 @@
 #include "Matter.h"
 #include "Optimizer.h"
 
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+
 std::vector<std::string> MinimizationJob::run(void) {
   string posInFilename("pos.con");
   string posOutFilename("min.con");
@@ -53,23 +58,36 @@ std::vector<std::string> MinimizationJob::run(void) {
     SPDLOG_LOGGER_DEBUG(log, "Final Energy: {}", pos->getPotentialEnergy());
   }
 
-  FILE *fileResults;
+  std::filesystem::path resultsFilename("results.dat");
+  returnFiles.push_back(resultsFilename.string());
 
-  std::string resultsFilename("results.dat");
-  returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
+  std::ofstream fileResults(resultsFilename, std::ios::binary);
 
-  fprintf(fileResults, "%s termination_reason\n",
-          (std::string{magic_enum::enum_name<RunStatus>(status)}).c_str());
-  fprintf(fileResults, "minimization job_type\n");
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
-  if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
-    fprintf(fileResults, "%f potential_energy\n", pos->getPotentialEnergy());
+  if (!fileResults.is_open()) {
+    std::cerr << "Error opening file " << resultsFilename << ": "
+              << std::strerror(errno) << std::endl;
+    throw std::runtime_error("Failed to open results file: " +
+                             std::string(std::strerror(errno)));
+    return returnFiles;
   }
-  fclose(fileResults);
+
+  fileResults << magic_enum::enum_name<RunStatus>(status)
+              << " termination_reason\n";
+  fileResults << "minimization job_type\n";
+  fileResults << magic_enum::enum_name<PotType>(params->potential)
+              << " potential_type\n";
+  fileResults << this->pot->forceCallCounter << " total_force_calls\n";
+
+  if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
+    fileResults << pos->getPotentialEnergy() << " potential_energy\n";
+  }
+
+  // No explicit fclose needed; RAII handles it.
+  if (!fileResults.good()) {
+    std::cerr << "Error writing to file " << resultsFilename
+              << ": May be incomplete." << std::endl;
+    // Consider throwing, depending on the severity.
+  }
 
   return returnFiles;
 }

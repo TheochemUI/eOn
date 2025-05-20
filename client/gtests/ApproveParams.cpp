@@ -210,7 +210,7 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
   os << "gprDimerSep: " << params.gprDimerSep << std::endl;
   os << "gprDimerConvStep: " << params.gprDimerConvStep << std::endl;
   os << "gprDimerMaxStep: " << params.gprDimerMaxStep << std::endl;
-  os << "gprForceThreshold: " << params.gprForceThreshold << std::endl;
+  os << "gprForceThreshold: " << params.saddleConvergedForce << std::endl;
   os << "gprDimerRatioAtLimit: " << params.gprDimerRatioAtLimit << std::endl;
   os << "gprDimerInitRotGP: " << std::boolalpha << params.gprDimerInitRotGP
      << std::endl;
