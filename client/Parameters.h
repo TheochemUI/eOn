@@ -296,6 +296,12 @@ public:
   double nwchem_scf_thresh;
   long nwchem_scf_maxiter;
 
+  // [Metatomic] //
+  std::string metatomic_model_path; // Path to the TorchScript model file.
+  std::string metatomic_device; // "cpu", "cuda", "mps", or empty to auto-detect.
+  std::string length_unit; // The unit of length used in the simulation (e.g., "angstrom").
+  std::string metatomic_extensions_directory; // Path for TorchScript extensions.
+  bool metatomic_check_consistency; // To enable model's internal checks.
 
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
