@@ -408,6 +408,19 @@ if get_option('with_ase_nwchem')
   _args += ['-DWITH_ASE_NWCHEM']
 endif
 
+if get_option('with_metatomic')
+  # Embedding the interpreter
+  py = import('python').find_installation()
+  python_dep = py.dependency(embed: true, required: true)
+  pyb11f_deps = [ python_dep,
+                  dependency('pybind11'),
+                  declare_dependency(link_args: '-lstdc++') ]
+  _deps += [ pyb11f_deps ]
+  subdir('potentials/Metatomic')
+  potentials += [ metatomic_pot ]
+  _args += ['-DWITH_METATOMIC']
+endif
+
 _linkto += potentials
 
 # --------------------- Library
