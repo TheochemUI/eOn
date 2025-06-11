@@ -39,6 +39,8 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   }
 
   // 3. Determine and set up the device (CPU/CUDA/MPS)
+  // TODO(rg):: Eventually switch to upstream selection
+  // https://github.com/metatensor/metatomic/issues/21
   auto available_devices = std::vector<torch::Device>();
   for (const auto &device_str : this->capabilities_->supported_devices) {
     if (device_str == "cpu") {
@@ -91,20 +93,7 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   m_log->info("[MetatomicPotential] Using dtype: {}",
               this->capabilities_->dtype().c_str());
 
-  // 5. Initialize atomic types tensor from parameters
-  // We assume the order and identity of atoms is fixed for the potential's
-  // lifetime.
-  if (m_params->atomicNrs.empty()) {
-    throw std::runtime_error(
-        "[MetatomicPotential] `atomicNrs` must be provided in Parameters.");
-  }
-  std::vector<int32_t> types_vec(m_params->atomicNrs.begin(),
-                                 m_params->atomicNrs.end());
-  this->atomic_types_ =
-      torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
-          .to(this->device_);
-
-  // 6. Set up evaluation options to request total energy
+  // 5. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
   evaluations_options_->set_length_unit(m_params->length_unit);
@@ -138,12 +127,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   forceCallCounter++;
   torch::autograd::GradMode grad_mode(true); // Ensure gradients are enabled
 
-  // Consistency check
-  if (static_cast<size_t>(nAtoms) != m_params->atomicNrs.size()) {
-    throw std::runtime_error(
-        "Number of atoms in force call does not match initialization.");
-  }
-
   // 1. Convert input arrays to torch::Tensors
   auto tensor_options =
       torch::TensorOptions().dtype(this->dtype_).device(this->device_);
@@ -176,6 +159,17 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   auto torch_pbc = torch::tensor({pbc_a, pbc_b, pbc_c},
                                  torch::TensorOptions().device(this->device_));
   bool periodic = torch::all(torch_pbc).item<bool>();
+
+  if (!atomicNrs) {
+    throw std::runtime_error(
+        "[MetatomicPotential] `atomicNrs` must be provided.");
+  }
+  std::vector<int32_t> types_vec(m_params->atomicNrs.begin(),
+                                 m_params->atomicNrs.end());
+  // XXX(rg): Reordering of labels might take place for non-conservative forces / per atom energies
+  this->atomic_types_ =
+      torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
+          .to(this->device_);
 
   // 2. Create the metatomic::System object
   auto system = torch::make_intrusive<metatomic_torch::SystemHolder>(
@@ -227,21 +221,13 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   // Forces are the negative gradient of the potential energy
   auto forces_tensor = -positions_grad.to(torch::kCPU).to(torch::kFloat64);
 
-  if (forces_tensor.is_contiguous()) {
-    std::memcpy(forces, forces_tensor.data_ptr<double>(),
-                nAtoms * 3 * sizeof(double));
-  } else {
-    auto forces_tensor_cont = forces_tensor.contiguous();
-    std::memcpy(forces, forces_tensor_cont.data_ptr<double>(),
-                nAtoms * 3 * sizeof(double));
-  }
+  std::memcpy(forces, forces_tensor.is_contiguous().data_ptr<double>(),
+              nAtoms * 3 * sizeof(double));
 
-  // 7. Set variance (not currently supported by this implementation)
-  // Long term this could be done using the "energy_uncertainty" output
+  // TODO(rg):: Handle the variance
+  // NOTE(luthaf):: Long term this could be done using the "energy_uncertainty"
+  // output
   // https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty-output
-  if (variance) {
-    *variance = 0.0;
-  }
 }
 
 // --- MetatomicPotential::computeNeighbors (helper) ---
@@ -270,9 +256,7 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
       periodic, vesin::VesinCPU, options, vesin_neighbor_list, &error_message);
 
   if (status != EXIT_SUCCESS) {
-    std::string err_str =
-        "vesin_neighbors failed: " + std::string(error_message);
-    vesin_free_error(error_message);
+    std::string err_str = "vesin_neighbors failed";
     delete vesin_neighbor_list;
     throw std::runtime_error(err_str);
   }
