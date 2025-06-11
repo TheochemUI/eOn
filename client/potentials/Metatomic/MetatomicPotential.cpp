@@ -237,6 +237,8 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   }
 
   // 7. Set variance (not currently supported by this implementation)
+  // Long term this could be done using the "energy_uncertainty" output
+  // https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty-output
   if (variance) {
     *variance = 0.0;
   }
@@ -275,7 +277,7 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     throw std::runtime_error(err_str);
   }
 
-  // Convert from vesin to metatensor format
+  // Convert from vesin to metatomic format
   auto n_pairs = static_cast<int64_t>(vesin_neighbor_list->length);
   auto labels_options_cpu =
       torch::TensorOptions().dtype(torch::kInt32).device(torch::kCPU);
