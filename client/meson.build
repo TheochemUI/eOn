@@ -416,6 +416,49 @@ if get_option('with_ase_nwchem')
     _args += ['-DWITH_ASE_NWCHEM']
 endif
 
+if get_option('with_metatomic')
+    # Setting up Torch..
+    LIB_TORCH_PATH = get_option('torch_path')
+    LIB_TORCH_LIB_PATH = LIB_TORCH_PATH / 'lib'
+    LIB_TORCH_INCL_PATH = LIB_TORCH_PATH / 'include'
+    LIB_TORCH_INCL_PATH_API = LIB_TORCH_INCL_PATH / 'torch' / 'csrc' / 'api' / 'include'
+    LIB_TORCH_INCL_PATH_ATEN = LIB_TORCH_INCL_PATH / 'ATen'
+    LIB_TORCH_INCL_PATH_C10 = LIB_TORCH_INCL_PATH / 'c10'
+    LIB_TORCH_INCL_PATH_C10_UTIL = LIB_TORCH_INCL_PATH / 'c10' / 'util'
+
+    LIB_TORCH_INCLUDE_LIST = [
+        LIB_TORCH_INCL_PATH,
+        LIB_TORCH_INCL_PATH_API,
+        LIB_TORCH_INCL_PATH_ATEN,
+        LIB_TORCH_INCL_PATH_C10,
+        LIB_TORCH_INCL_PATH_C10_UTIL,
+    ]
+
+
+    lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
+    tdeps = []
+    foreach lib_name : lib_torch_list
+        tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
+    endforeach
+
+    torch_deps = declare_dependency(
+        dependencies: tdeps,
+        include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
+    )
+    # Embedding the interpreter
+    py = import('python').find_installation()
+    python_dep = py.dependency(embed: true, required: true)
+    pyb11f_deps = [
+        python_dep,
+        dependency('pybind11'),
+        declare_dependency(link_args: '-lstdc++'),
+    ]
+    _deps += [pyb11f_deps]
+    subdir('potentials/Metatomic')
+    potentials += [metatomic_pot]
+    _args += ['-DWITH_METATOMIC']
+endif
+
 _linkto += potentials
 
 # --------------------- Library
