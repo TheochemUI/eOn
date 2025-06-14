@@ -1,0 +1,19 @@
+* About
+Setting this up is a major pain because of the way ~cargo~ is used within the ~cmake~ to generate all the headers. The simplest route is to actually build this into the ~CONDA_PREFIX~.
+
+#+begin_src nushell
+# For metatensor and metatensor-torch
+(cmake -G Ninja
+       -B build -DBUILD_METATENSOR_TORCH=ON
+       -DTorch_DIR="/home/rgoswami/Git/Github/Cpp/cppShit/materials/differentiation/torchTrials/libtorch/share/cmake/Torch/"
+       -DCMAKE_INSTALL_PREFIX=$"($env.CONDA_PREFIX)")
+cmake --build build
+cmake --install build
+# For metatomic
+(cmake -G Ninja
+        -B build
+        -DTorch_DIR="/home/rgoswami/Git/Github/Cpp/cppShit/materials/differentiation/torchTrials/libtorch/share/cmake/Torch/"
+        -DCMAKE_INSTALL_PREFIX=$"($env.CONDA_PREFIX)")
+ cmake --build build
+ cmake --install build
+#+end_src

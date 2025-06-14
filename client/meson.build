@@ -445,15 +445,39 @@ if get_option('with_metatomic')
         dependencies: tdeps,
         include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
     )
-    # Embedding the interpreter
-    py = import('python').find_installation()
-    python_dep = py.dependency(embed: true, required: true)
-    pyb11f_deps = [
-        python_dep,
-        dependency('pybind11'),
-        declare_dependency(link_args: '-lstdc++'),
-    ]
-    _deps += [pyb11f_deps]
+    cmake = import('cmake')
+    copts = cmake.subproject_options()
+    copts.add_cmake_defines(
+        {
+            'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+            'VESIN_TORCH': 'ON',
+            'BUILD_METATENSOR_TORCH': 'ON',
+            'Torch_DIR': LIB_TORCH_PATH / 'share' / 'cmake' / 'Torch',
+        },
+    )
+    # copts.add_cmake_defines({'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+    #                         'BUILD_METATENSOR_TORCH': 'ON',
+    #                         'Torch_DIR': LIB_TORCH_PATH / 'share' / 'cmake' / 'Torch'})
+    # mts_sub = cmake.subproject('metatensor', options: copts)
+    # mts_lib = mts_sub.dependency('metatensor-torch')
+    mts_dep = declare_dependency(
+        dependencies: cppc.find_library('metatensor'),
+        include_directories: include_directories(
+            '/home/rgoswami/.local/share/mamba/envs/eongit/include/metatensor/torch/',
+            '/home/rgoswami/.local/share/mamba/envs/eongit/include/metatensor/',
+        ),
+    )
+    # mta_sub = cmake.subproject('metatomic-torch', options: copts)
+    # mta_lib = mta_sub.dependency('metatomic-torch')
+    # # copts.append_compile_args('cpp', '-fPIC')
+    # # copts.append_compile_args('c', '-fPIC')
+    # message('CMake targets:\n - ' + '\n - '.join(mts_sub.target_list()))
+    # mts_torch_lib = mts_sub.dependency('metatensor-torch')
+    vesin_sub = cmake.subproject('vesin', options: copts)
+    message('CMake targets:\n - ' + '\n - '.join(vesin_sub.target_list()))
+    vesin_lib = vesin_sub.dependency('vesin')
+    vesin_torch_lib = vesin_sub.dependency('vesin_torch')
+    _deps += [vesin_lib, vesin_torch_lib, mts_dep, torch_deps]
     subdir('potentials/Metatomic')
     potentials += [metatomic_pot]
     _args += ['-DWITH_METATOMIC']
