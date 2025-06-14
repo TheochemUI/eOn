@@ -451,7 +451,7 @@ if get_option('with_metatomic')
         {
             'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
             'VESIN_TORCH': 'ON',
-            'BUILD_METATENSOR_TORCH': 'ON',
+            # 'BUILD_METATENSOR_TORCH': 'ON',
             'Torch_DIR': LIB_TORCH_PATH / 'share' / 'cmake' / 'Torch',
         },
     )
@@ -461,12 +461,22 @@ if get_option('with_metatomic')
     # mts_sub = cmake.subproject('metatensor', options: copts)
     # mts_lib = mts_sub.dependency('metatensor-torch')
     mts_dep = declare_dependency(
-        dependencies: cppc.find_library('metatensor'),
+        dependencies: [
+            cppc.find_library('metatensor'),
+            cppc.find_library('metatensor_torch'),
+            cppc.find_library('metatomic_torch'),
+        ],
         include_directories: include_directories(
             '/home/rgoswami/.local/share/mamba/envs/eongit/include/metatensor/torch/',
             '/home/rgoswami/.local/share/mamba/envs/eongit/include/metatensor/',
         ),
     )
+    # vesin_dep = declare_dependency(
+    #     dependencies: [
+    #         cppc.find_library('vesin_torch'),
+    #         cppc.find_library('vesin'),
+    #     ],
+    # )
     # mta_sub = cmake.subproject('metatomic-torch', options: copts)
     # mta_lib = mta_sub.dependency('metatomic-torch')
     # # copts.append_compile_args('cpp', '-fPIC')
