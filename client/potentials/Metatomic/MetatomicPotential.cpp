@@ -1,6 +1,8 @@
 #include "MetatomicPotential.h"
 #include "../../Parameters.h"
+#include "vesin.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -8,19 +10,20 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
     : Potential(PotType::METATOMIC, params),
       device_(torch::kCPU) {
 
+  m_params = params;
   m_log->info("[MetatomicPotential] Initializing...");
 
   // 1. Load the model from the path specified in parameters
   torch::optional<std::string> extensions_directory = torch::nullopt;
-  if (!m_params->metatomic_extensions_directory.empty()) {
-    extensions_directory = m_params->metatomic_extensions_directory;
+  if (!m_params->metatomic_options.extensions_directory.empty()) {
+    extensions_directory = m_params->metatomic_options.extensions_directory;
   }
 
   try {
     m_log->info("[MetatomicPotential] Loading model from '{}'",
-                m_params->metatomic_model_path);
+                m_params->metatomic_options.model_path);
     this->model_ = metatomic_torch::load_atomistic_model(
-        m_params->metatomic_model_path, extensions_directory);
+        m_params->metatomic_options.model_path, extensions_directory);
   } catch (const std::exception &e) {
     m_log->error("[MetatomicPotential] Failed to load model: {}", e.what());
     throw;
@@ -57,14 +60,14 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
         "MetatomicPotential: No supported devices are available.");
   }
 
-  if (m_params->metatomic_device.empty()) {
+  if (m_params->metatomic_options.device.empty()) {
     this->device_ = available_devices[0]; // Default to model's preferred device
   } else {
     bool found = false;
     for (const auto &device : available_devices) {
-      if ((device.is_cpu() && m_params->metatomic_device == "cpu") ||
-          (device.is_cuda() && m_params->metatomic_device == "cuda") ||
-          (device.is_mps() && m_params->metatomic_device == "mps")) {
+      if ((device.is_cpu() && m_params->metatomic_options.device == "cpu") ||
+          (device.is_cuda() && m_params->metatomic_options.device == "cuda") ||
+          (device.is_mps() && m_params->metatomic_options.device == "mps")) {
         this->device_ = device;
         found = true;
         break;
@@ -72,7 +75,7 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
     }
     if (!found) {
       throw std::runtime_error("Requested device '" +
-                               m_params->metatomic_device +
+                               m_params->metatomic_options.device +
                                "' is not supported or available.");
     }
   }
@@ -96,7 +99,7 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   // 5. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
-  evaluations_options_->set_length_unit(m_params->length_unit);
+  evaluations_options_->set_length_unit(m_params->metatomic_options.length_unit);
 
   auto outputs = this->capabilities_->outputs();
   if (!outputs.contains("energy")) {
@@ -107,14 +110,12 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
 
   auto requested_output =
       torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
-  requested_output->quantity = energy_output_info->quantity;
-  requested_output->unit = energy_output_info->unit;
   requested_output->per_atom = false; // We want a single total energy value
   requested_output->explicit_gradients = {}; // Use autograd for forces
 
   evaluations_options_->outputs.insert("energy", requested_output);
 
-  this->check_consistency_ = m_params->metatomic_check_consistency;
+  this->check_consistency_ = m_params->metatomic_options.check_consistency;
   m_log->info("[MetatomicPotential] Initialization complete.");
 }
 
@@ -125,7 +126,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                                double *energy, double *variance,
                                const double *box) {
   forceCallCounter++;
-  torch::autograd::GradMode grad_mode(true); // Ensure gradients are enabled
 
   // 1. Convert input arrays to torch::Tensors
   auto tensor_options =
@@ -164,8 +164,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
     throw std::runtime_error(
         "[MetatomicPotential] `atomicNrs` must be provided.");
   }
-  std::vector<int32_t> types_vec(m_params->atomicNrs.begin(),
-                                 m_params->atomicNrs.end());
+  std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
   // XXX(rg): Reordering of labels might take place for non-conservative forces / per atom energies
   this->atomic_types_ =
       torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
@@ -221,7 +220,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   // Forces are the negative gradient of the potential energy
   auto forces_tensor = -positions_grad.to(torch::kCPU).to(torch::kFloat64);
 
-  std::memcpy(forces, forces_tensor.is_contiguous().data_ptr<double>(),
+  std::memcpy(forces, forces_tensor.contiguous().data_ptr<double>(),
               nAtoms * 3 * sizeof(double));
 
   // TODO(rg):: Handle the variance
@@ -236,24 +235,24 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     metatomic_torch::NeighborListOptions request, long nAtoms,
     const double *positions, const double *box, bool periodic) {
 
-  auto cutoff = request->engine_cutoff(m_params->length_unit);
+  auto cutoff = request->engine_cutoff(m_params->metatomic_options.length_unit);
 
-  vesin::VesinOptions options;
+  VesinOptions options;
   options.cutoff = cutoff;
   options.full = request->full_list();
   options.return_shifts = true;
   options.return_distances = false; // we don't need distances
   options.return_vectors = true;    // metatomic uses vectors for autograd
 
-  vesin::VesinNeighborList *vesin_neighbor_list =
-      new vesin::VesinNeighborList();
-  memset(vesin_neighbor_list, 0, sizeof(vesin::VesinNeighborList));
+  VesinNeighborList *vesin_neighbor_list =
+      new VesinNeighborList();
+  memset(vesin_neighbor_list, 0, sizeof(VesinNeighborList));
 
   const char *error_message = nullptr;
   int status = vesin_neighbors(
       reinterpret_cast<const double (*)[3]>(positions),
       static_cast<size_t>(nAtoms), reinterpret_cast<const double (*)[3]>(box),
-      periodic, vesin::VesinCPU, options, vesin_neighbor_list, &error_message);
+      periodic, VesinCPU, options, vesin_neighbor_list, &error_message);
 
   if (status != EXIT_SUCCESS) {
     std::string err_str = "vesin_neighbors failed";
