@@ -20,6 +20,8 @@ cmake --install build
 
 Additionally, ensure that the libraries are up to date..
 
-#+begin_src bash
-mamba install "gcc_linux-64>=12" "gxx_linux-64>=12" "sysroot_linux-64>=2.28"
+#+begin_src nushell
+mamba install pytorch
+# Easiest to use conda torch
+meson setup --reconfigure bbdir --prefix=($env.CONDA_PREFIX) -Dwith_ase_nwchem=False -Dwith_lammps=False -Dwith_python=False --buildtype release --libdir=lib -Dwith_metatomic=True -Dtorch_path=($env.CONDA_PREFIX)
 #+end_src
