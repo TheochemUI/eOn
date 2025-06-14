@@ -82,6 +82,10 @@
 #include "potentials/ASE_NWCHEM/ASE_NWCHEM.h"
 #endif
 
+#ifdef WITH_METATOMIC
+#include "potentials/Metatomic/MetatomicPotential.h"
+#endif
+
 #ifdef WITH_WATER
 #include "potentials/Water/Water.hpp"
 #ifdef WITH_FORTRAN
@@ -302,6 +306,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef WITH_ASE_NWCHEM
   case PotType::ASE_NWCHEM: {
     return (std::make_shared<ASENwchemPot>(params));
+    break;
+  }
+#endif
+#ifdef WITH_METATOMIC
+  case PotType::METATOMIC: {
+    return (std::make_shared<MetatomicPotential>(params));
     break;
   }
 #endif
