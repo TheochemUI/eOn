@@ -25,6 +25,7 @@ if get_option('use_mkl')
     )
 endif
 
+
 if get_option('with_python')
     # TODO(rg): Cleanup a bit
     # Embed is needed for surrogate, numpy by qsc
@@ -417,34 +418,40 @@ if get_option('with_ase_nwchem')
 endif
 
 if get_option('with_metatomic')
-    # Setting up Torch..
-    LIB_TORCH_PATH = get_option('torch_path')
-    LIB_TORCH_LIB_PATH = LIB_TORCH_PATH / 'lib'
-    LIB_TORCH_INCL_PATH = LIB_TORCH_PATH / 'include'
-    LIB_TORCH_INCL_PATH_API = LIB_TORCH_INCL_PATH / 'torch' / 'csrc' / 'api' / 'include'
-    LIB_TORCH_INCL_PATH_ATEN = LIB_TORCH_INCL_PATH / 'ATen'
-    LIB_TORCH_INCL_PATH_C10 = LIB_TORCH_INCL_PATH / 'c10'
-    LIB_TORCH_INCL_PATH_C10_UTIL = LIB_TORCH_INCL_PATH / 'c10' / 'util'
+    if get_option('torch_path') != ''
+        # Setting up Torch..
+        LIB_TORCH_PATH = get_option('torch_path')
+        message('Ensure your versions are correct for metatensor and metatomic')
+        else
+        LIB_TORCH_PATH = py.get_install_dir() / 'torch'
+    endif
+        LIB_TORCH_LIB_PATH = LIB_TORCH_PATH / 'lib'
+        LIB_TORCH_INCL_PATH = LIB_TORCH_PATH / 'include'
+        LIB_TORCH_INCL_PATH_API = LIB_TORCH_INCL_PATH / 'torch' / 'csrc' / 'api' / 'include'
+        LIB_TORCH_INCL_PATH_ATEN = LIB_TORCH_INCL_PATH / 'ATen'
+        LIB_TORCH_INCL_PATH_C10 = LIB_TORCH_INCL_PATH / 'c10'
+        LIB_TORCH_INCL_PATH_C10_UTIL = LIB_TORCH_INCL_PATH / 'c10' / 'util'
 
-    LIB_TORCH_INCLUDE_LIST = [
-        LIB_TORCH_INCL_PATH,
-        LIB_TORCH_INCL_PATH_API,
-        LIB_TORCH_INCL_PATH_ATEN,
-        LIB_TORCH_INCL_PATH_C10,
-        LIB_TORCH_INCL_PATH_C10_UTIL,
-    ]
+        LIB_TORCH_INCLUDE_LIST = [
+            LIB_TORCH_INCL_PATH,
+            LIB_TORCH_INCL_PATH_API,
+            LIB_TORCH_INCL_PATH_ATEN,
+            LIB_TORCH_INCL_PATH_C10,
+            LIB_TORCH_INCL_PATH_C10_UTIL,
+        ]
 
 
-    lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
-    tdeps = []
-    foreach lib_name : lib_torch_list
-        tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
-    endforeach
+        lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
+        tdeps = []
+        foreach lib_name : lib_torch_list
+            tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
+        endforeach
 
-    torch_deps = declare_dependency(
-        dependencies: tdeps,
-        include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
-    )
+        torch_deps = declare_dependency(
+            dependencies: tdeps,
+            include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
+        )
+
     cmake = import('cmake')
     copts = cmake.subproject_options()
     copts.add_cmake_defines(
@@ -460,15 +467,30 @@ if get_option('with_metatomic')
     #                         'Torch_DIR': LIB_TORCH_PATH / 'share' / 'cmake' / 'Torch'})
     # mts_sub = cmake.subproject('metatensor', options: copts)
     # mts_lib = mts_sub.dependency('metatensor-torch')
+    torch_ver = get_option('torch_version')
     mts_dep = declare_dependency(
         dependencies: [
-            cppc.find_library('metatensor'),
-            cppc.find_library('metatensor_torch'),
-            cppc.find_library('metatomic_torch'),
+            cppc.find_library(
+                'metatensor',
+                dirs: [py.get_install_dir() / 'metatensor' / 'lib'],
+            ),
+            cppc.find_library(
+                'metatensor_torch',
+                dirs: [
+                    py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib',
+                ],
+            ),
+            cppc.find_library(
+                'metatomic_torch',
+                dirs: [
+                    py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'lib',
+                ],
+            ),
         ],
         include_directories: include_directories(
-            '/home/rgoswami/.local/share/mamba/envs/eongit/include/metatensor/torch/',
-            '/home/rgoswami/.local/share/mamba/envs/eongit/include/metatensor/',
+            py.get_install_dir() / 'metatensor' / 'include',
+            py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
+            py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
         ),
     )
     # vesin_dep = declare_dependency(
