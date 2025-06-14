@@ -493,6 +493,24 @@ if get_option('with_metatomic')
             py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
         ),
     )
+    vesin_dep = declare_dependency(
+        dependencies: [
+            cppc.find_library(
+                'vesin',
+                dirs: [py.get_install_dir() / 'vesin' / 'lib'],
+            ),
+            cppc.find_library(
+                'vesin_torch',
+                dirs: [
+                    py.get_install_dir() / 'vesin' / 'torch' / f'torch-@torch_ver@' / 'lib',
+                ],
+            ),
+        ],
+        include_directories: include_directories(
+            py.get_install_dir() / 'vesin' / 'include',
+            py.get_install_dir() / 'vesin' / 'torch' / f'torch-@torch_ver@' / 'include',
+        ),
+    )
     # vesin_dep = declare_dependency(
     #     dependencies: [
     #         cppc.find_library('vesin_torch'),
@@ -505,11 +523,11 @@ if get_option('with_metatomic')
     # # copts.append_compile_args('c', '-fPIC')
     # message('CMake targets:\n - ' + '\n - '.join(mts_sub.target_list()))
     # mts_torch_lib = mts_sub.dependency('metatensor-torch')
-    vesin_sub = cmake.subproject('vesin', options: copts)
-    message('CMake targets:\n - ' + '\n - '.join(vesin_sub.target_list()))
-    vesin_lib = vesin_sub.dependency('vesin')
-    vesin_torch_lib = vesin_sub.dependency('vesin_torch')
-    _deps += [vesin_lib, vesin_torch_lib, mts_dep, torch_deps]
+    # vesin_sub = cmake.subproject('vesin', options: copts)
+    # message('CMake targets:\n - ' + '\n - '.join(vesin_sub.target_list()))
+    # vesin_lib = vesin_sub.dependency('vesin')
+    # vesin_torch_lib = vesin_sub.dependency('vesin_torch')
+    _deps += [vesin_dep, mts_dep, torch_deps]
     subdir('potentials/Metatomic')
     potentials += [metatomic_pot]
     _args += ['-DWITH_METATOMIC']
