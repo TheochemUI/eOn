@@ -2,7 +2,6 @@
 #define METATOMIC_POTENTIAL_H
 
 #include "../../Potential.h"
-#include "vesin.h"
 
 // Metatomic and torch headers
 // These pragmas are included to suppress warnings from third-party libraries
@@ -11,9 +10,6 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
-#pragma GCC diagnostic ignored "-Wimplicit-float-conversion"
-#pragma GCC diagnostic ignored "-Wimplicit-int-conversion"
-#pragma GCC diagnostic ignored "-Wshorten-64-to-32"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
@@ -22,8 +18,8 @@
 #include <torch/cuda.h>
 #include <torch/mps.h>
 
-#include <metatensor/torch.hpp>
-#include <metatomic/torch.hpp>
+#include "metatensor/torch.hpp"
+#include "metatomic/torch.hpp"
 
 #pragma GCC diagnostic pop
 
@@ -49,6 +45,7 @@ private:
     torch::Device device_;
     torch::Tensor atomic_types_;
     bool check_consistency_;
+    std::shared_ptr<Parameters> m_params;
 
     /**
      * @brief Computes neighbor list using the vesin library.
