@@ -29,9 +29,9 @@ spdlog = ">=1.15.3,<2"
 [environments]
 # TODO(rg): Flesh out the rest of these
 metatomic = {features = ["metatomic"]}
-dev = {features = ["lint"]}
+dev = {features = ["lint", "develop"]}
 # ams is incompatible with metatomic
-dev-mta = {features = ["lint", "metatomic"]}
+dev-mta = {features = ["lint", "develop", "metatomic"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
@@ -55,3 +55,9 @@ cpplint = "*"
 clang-format = "*"
 ruff = "*"
 pre-commit = "*"
+
+[feature.develop.pypi-dependencies]
+ase = "*"
+
+[feature.develop.dependencies]
+ipython = ">=9.3.0,<10"
