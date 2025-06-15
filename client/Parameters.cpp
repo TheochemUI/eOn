@@ -183,6 +183,13 @@ Parameters::Parameters() {
   nwchem_scf_thresh = 1e-5;
   nwchem_scf_maxiter = 200;
 
+  // [Metatomic] //
+  metatomic_options.model_path = ""s;
+  metatomic_options.device = "cpu"s;
+  metatomic_options.length_unit = "angstrom"s;
+  metatomic_options.extensions_directory = ""s;
+  metatomic_options.check_consistency = false;
+
   // [Lanczos] //
   lanczosTolerance = 0.01;
   lanczosMaxIterations = 20;
@@ -667,6 +674,18 @@ int Parameters::load(FILE *file) {
       nwchem_multiplicity = ini.GetValue("ASE_NWCHEM", "multiplicity");
       nwchem_scf_thresh = ini.GetValueF("ASE_NWCHEM", "scf_thresh", 1e-5);
       nwchem_scf_maxiter = ini.GetValueL("ASE_NWCHEM", "scf_maxiter", 200);
+    }
+    // [Metatomic]
+    if (ini.FindKey("Metatomic") != -1) {
+      // Case sensitive!!
+      // TODO: This should be handled in clienteon so you can still call
+      // eonclient for single point calculations easily
+      metatomic_options.model_path = ini.GetValue("Metatomic", "model_path", "");
+      metatomic_options.device = ini.GetValue("Metatomic", "device", "cpu");
+      metatomic_options.length_unit = ini.GetValue("Metatomic", "length_unit", "angstrom");
+      metatomic_options.extensions_directory = ini.GetValue("Metatomic", "extensions_directory", "");
+      metatomic_options.check_consistency =
+          ini.GetValueB("Metatomic", "check_consistency", false);
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
