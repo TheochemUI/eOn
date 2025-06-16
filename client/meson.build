@@ -499,16 +499,9 @@ if get_option('with_metatomic')
                 'vesin',
                 dirs: [py.get_install_dir() / 'vesin' / 'lib'],
             ),
-            cppc.find_library(
-                'vesin_torch',
-                dirs: [
-                    py.get_install_dir() / 'vesin' / 'torch' / f'torch-@torch_ver@' / 'lib',
-                ],
-            ),
         ],
         include_directories: include_directories(
             py.get_install_dir() / 'vesin' / 'include',
-            py.get_install_dir() / 'vesin' / 'torch' / f'torch-@torch_ver@' / 'include',
         ),
     )
     # vesin_dep = declare_dependency(
