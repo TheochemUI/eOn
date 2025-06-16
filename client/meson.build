@@ -424,43 +424,52 @@ if get_option('with_metatomic')
         include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
     )
 
-    torch_ver = get_option('torch_version')
-    mts_dep = declare_dependency(
-        dependencies: [
-            cppc.find_library(
-                'metatensor',
-                dirs: [py.get_install_dir() / 'metatensor' / 'lib'],
+    if get_option('pip_metatomic')
+        torch_ver = get_option('torch_version')
+        mts_dep = declare_dependency(
+            dependencies: [
+                cppc.find_library(
+                    'metatensor',
+                    dirs: [py.get_install_dir() / 'metatensor' / 'lib'],
+                ),
+                cppc.find_library(
+                    'metatensor_torch',
+                    dirs: [
+                        py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib',
+                    ],
+                ),
+                cppc.find_library(
+                    'metatomic_torch',
+                    dirs: [
+                        py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'lib',
+                    ],
+                ),
+            ],
+            include_directories: include_directories(
+                py.get_install_dir() / 'metatensor' / 'include',
+                py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
+                py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
             ),
-            cppc.find_library(
-                'metatensor_torch',
-                dirs: [
-                    py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib',
-                ],
+        )
+        vesin_dep = declare_dependency(
+            dependencies: [
+                cppc.find_library(
+                    'vesin',
+                    dirs: [py.get_install_dir() / 'vesin' / 'lib'],
+                ),
+            ],
+            include_directories: include_directories(
+                py.get_install_dir() / 'vesin' / 'include',
             ),
-            cppc.find_library(
-                'metatomic_torch',
-                dirs: [
-                    py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'lib',
-                ],
-            ),
-        ],
-        include_directories: include_directories(
-            py.get_install_dir() / 'metatensor' / 'include',
-            py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
-            py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
-        ),
-    )
-    vesin_dep = declare_dependency(
-        dependencies: [
-            cppc.find_library(
-                'vesin',
-                dirs: [py.get_install_dir() / 'vesin' / 'lib'],
-            ),
-        ],
-        include_directories: include_directories(
-            py.get_install_dir() / 'vesin' / 'include',
-        ),
-    )
+        )
+        else
+          message('Looking for existing installations of metatensor, metatensor-torch, metatomic-torch and vesin')
+          message('If this is flaky, pass pip_metatomic=True with the torch version and let pip handle everything')
+          # XXX(rg): Still needs the includes, setup pkgconf and use dependency() with pkgconf instead
+          # xref: https://github.com/metatensor/metatensor/issues/930
+          vesin_dep = cppc.find_library('vesin')
+          mts_dep = [cppc.find_library('metatensor'), cppc.find_library('metatensor-torch'), cppc.find_library('metatomic-torch')]
+    endif
     _deps += [vesin_dep, mts_dep, torch_deps]
     subdir('potentials/Metatomic')
     potentials += [metatomic_pot]
