@@ -394,51 +394,36 @@ if get_option('with_metatomic')
         # Setting up Torch..
         LIB_TORCH_PATH = get_option('torch_path')
         message('Ensure your versions are correct for metatensor and metatomic')
-        else
+    else
         LIB_TORCH_PATH = py.get_install_dir() / 'torch'
     endif
-        LIB_TORCH_LIB_PATH = LIB_TORCH_PATH / 'lib'
-        LIB_TORCH_INCL_PATH = LIB_TORCH_PATH / 'include'
-        LIB_TORCH_INCL_PATH_API = LIB_TORCH_INCL_PATH / 'torch' / 'csrc' / 'api' / 'include'
-        LIB_TORCH_INCL_PATH_ATEN = LIB_TORCH_INCL_PATH / 'ATen'
-        LIB_TORCH_INCL_PATH_C10 = LIB_TORCH_INCL_PATH / 'c10'
-        LIB_TORCH_INCL_PATH_C10_UTIL = LIB_TORCH_INCL_PATH / 'c10' / 'util'
+    LIB_TORCH_LIB_PATH = LIB_TORCH_PATH / 'lib'
+    LIB_TORCH_INCL_PATH = LIB_TORCH_PATH / 'include'
+    LIB_TORCH_INCL_PATH_API = LIB_TORCH_INCL_PATH / 'torch' / 'csrc' / 'api' / 'include'
+    LIB_TORCH_INCL_PATH_ATEN = LIB_TORCH_INCL_PATH / 'ATen'
+    LIB_TORCH_INCL_PATH_C10 = LIB_TORCH_INCL_PATH / 'c10'
+    LIB_TORCH_INCL_PATH_C10_UTIL = LIB_TORCH_INCL_PATH / 'c10' / 'util'
 
-        LIB_TORCH_INCLUDE_LIST = [
-            LIB_TORCH_INCL_PATH,
-            LIB_TORCH_INCL_PATH_API,
-            LIB_TORCH_INCL_PATH_ATEN,
-            LIB_TORCH_INCL_PATH_C10,
-            LIB_TORCH_INCL_PATH_C10_UTIL,
-        ]
+    LIB_TORCH_INCLUDE_LIST = [
+        LIB_TORCH_INCL_PATH,
+        LIB_TORCH_INCL_PATH_API,
+        LIB_TORCH_INCL_PATH_ATEN,
+        LIB_TORCH_INCL_PATH_C10,
+        LIB_TORCH_INCL_PATH_C10_UTIL,
+    ]
 
 
-        lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
-        tdeps = []
-        foreach lib_name : lib_torch_list
-            tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
-        endforeach
+    lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
+    tdeps = []
+    foreach lib_name : lib_torch_list
+        tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
+    endforeach
 
-        torch_deps = declare_dependency(
-            dependencies: tdeps,
-            include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
-        )
-
-    cmake = import('cmake')
-    copts = cmake.subproject_options()
-    copts.add_cmake_defines(
-        {
-            'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
-            'VESIN_TORCH': 'ON',
-            # 'BUILD_METATENSOR_TORCH': 'ON',
-            'Torch_DIR': LIB_TORCH_PATH / 'share' / 'cmake' / 'Torch',
-        },
+    torch_deps = declare_dependency(
+        dependencies: tdeps,
+        include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
     )
-    # copts.add_cmake_defines({'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
-    #                         'BUILD_METATENSOR_TORCH': 'ON',
-    #                         'Torch_DIR': LIB_TORCH_PATH / 'share' / 'cmake' / 'Torch'})
-    # mts_sub = cmake.subproject('metatensor', options: copts)
-    # mts_lib = mts_sub.dependency('metatensor-torch')
+
     torch_ver = get_option('torch_version')
     mts_dep = declare_dependency(
         dependencies: [
@@ -476,22 +461,6 @@ if get_option('with_metatomic')
             py.get_install_dir() / 'vesin' / 'include',
         ),
     )
-    # vesin_dep = declare_dependency(
-    #     dependencies: [
-    #         cppc.find_library('vesin_torch'),
-    #         cppc.find_library('vesin'),
-    #     ],
-    # )
-    # mta_sub = cmake.subproject('metatomic-torch', options: copts)
-    # mta_lib = mta_sub.dependency('metatomic-torch')
-    # # copts.append_compile_args('cpp', '-fPIC')
-    # # copts.append_compile_args('c', '-fPIC')
-    # message('CMake targets:\n - ' + '\n - '.join(mts_sub.target_list()))
-    # mts_torch_lib = mts_sub.dependency('metatensor-torch')
-    # vesin_sub = cmake.subproject('vesin', options: copts)
-    # message('CMake targets:\n - ' + '\n - '.join(vesin_sub.target_list()))
-    # vesin_lib = vesin_sub.dependency('vesin')
-    # vesin_torch_lib = vesin_sub.dependency('vesin_torch')
     _deps += [vesin_dep, mts_dep, torch_deps]
     subdir('potentials/Metatomic')
     potentials += [metatomic_pot]
