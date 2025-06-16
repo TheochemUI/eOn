@@ -5,11 +5,10 @@ We use ~pixi~ to manage the environment and dependencies. The metaverse is not b
 pixi s -e metatomic # or dev-mta
 (meson setup --reconfigure bbdir
         --prefix=($env.CONDA_PREFIX)
-        -Dwith_ase_nwchem=False
-        -Dwith_lammps=False
-        -Dwith_python=True
         --buildtype release --libdir=lib
-        -Dwith_metatomic=True -Dtorch_version=2.7
+        -Dpip_metatomic=True
+        -Dwith_metatomic=True
+        -Dtorch_version=2.7
 )
 meson install -C bbdir
 #+end_src

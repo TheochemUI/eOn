@@ -25,33 +25,6 @@ if get_option('use_mkl')
     )
 endif
 
-
-if get_option('with_python')
-    # TODO(rg): Cleanup a bit
-    # Embed is needed for surrogate, numpy by qsc
-    if get_option('with_ase_orca')
-        py = import('python').find_installation(
-            'python',
-            modules: ['numpy', 'ase'],
-        )
-    else
-        py = import('python').find_installation('python', modules: ['numpy'])
-    endif
-    python_dep = py.dependency(embed: true)
-    _deps += python_dep
-
-    incdir_numpy = run_command(
-        py,
-        [
-            '-c',
-            'import os; os.chdir(".."); import numpy; print(numpy.get_include())',
-        ],
-        check: true,
-    ).stdout().strip()
-    inc_np = include_directories(incdir_numpy)
-    _deps += declare_dependency(include_directories: inc_np)
-endif
-
 # Platform detection
 host_system = host_machine.system()
 is_windows = host_system == 'windows'
@@ -348,8 +321,8 @@ if get_option('with_lammps')
     _args += ['-DLAMMPS_POT']
 endif
 
-if get_option('with_python')
-    _args += ['-DWITH_PYTHON']
+if py_embed
+    _args += ['-DEMBED_PYTHON']
     # subdir('potentials/PyAMFF')
     # pyamff,
     # subdir('potentials/QSC')
@@ -404,7 +377,6 @@ endif
 if get_option('with_ase_nwchem')
     # TODO: Cleanup, used for Catlearn too
     # Embedding the interpreter
-    py = import('python').find_installation()
     python_dep = py.dependency(embed: true, required: true)
     pyb11f_deps = [
         python_dep,
@@ -565,7 +537,7 @@ ec = executable(
 )
 
 if get_option('with_tests')
-    if get_option('with_python')
+    if py_embed
         # ec1 = executable('testPot',
         #                  'testpot.cpp',
         #                  include_directories: _incdirs,
