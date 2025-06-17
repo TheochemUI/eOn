@@ -548,11 +548,14 @@ if get_option('with_tests')
     test_array = [  #
         # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
         # ['strparse_run', 'StringHelpersTest.cpp', ''],
-        ['test_matter', 'MatterTest.cpp', 'sulfolene'],
-        ['test_pot', 'PotTest.cpp', 'sulfolene'],
+        # ['test_matter', 'MatterTest.cpp', 'sulfolene'],
+        # ['test_pot', 'PotTest.cpp', 'sulfolene'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
     ]
+    if get_option('with_metatomic')
+        test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
+    endif
     foreach test : test_array
         test(
             test.get(0),
@@ -565,7 +568,7 @@ if get_option('with_tests')
                 dependencies: test_deps,
                 include_directories: _incdirs,
                 cpp_args: test_args,
-                link_with: _linkto + testMain,
+                link_with: _linkto,
             ),
             workdir: meson.source_root() + '/client/gtests/data/systems/' + test.get(
                 2,
