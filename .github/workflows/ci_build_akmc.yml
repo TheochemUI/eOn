@@ -1,7 +1,7 @@
 name: Build basic eon
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 on: [push, pull_request]
 jobs:
   build_eon:
