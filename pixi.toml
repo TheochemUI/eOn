@@ -1,0 +1,63 @@
+[workspace]
+authors = ["Rohit Goswami <rog32@hi.is>"]
+channels = ["conda-forge"]
+name = "eOn"
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+eigen = ">=3.4,<3.5"
+# Pin python for torch
+python = ">=3.11.5,<3.13"
+# End manual pins
+cmake = ">=4.0.3,<5"
+highfive = ">=2.10.1,<3"
+meson = ">=1.8.2,<2"
+ninja = ">=1.12.1,<2"
+pkgconf = ">=2.4.3,<3"
+openblas = ">=0.3.29,<0.4"
+pip = ">=25.1.1,<26"
+pipx = ">=1.7.1,<2"
+numpy = ">=2.3.0,<3"
+compilers = ">=1.9.0,<2"
+gfortran = ">=13.3.0,<13.4"
+fmt = ">=11.1.4,<12"
+spdlog = ">=1.15.3,<2"
+
+[environments]
+# TODO(rg): Flesh out the rest of these
+metatomic = {features = ["metatomic"]}
+dev = {features = ["lint", "develop"]}
+# ams is incompatible with metatomic
+dev-mta = {features = ["lint", "develop", "metatomic"]}
+
+[feature.metatomic]
+# vesin torch has a wheel issue with macos x86_64
+platforms = ["linux-64", "osx-arm64"]
+
+[feature.metatomic.pypi-dependencies]
+torch = ">=2.7.1, <3"
+metatomic-torch = ">=0.1.2, <0.2"
+metatensor-torch = ">=0.7.6, <0.8"
+metatensor = ">=0.2.0, <0.3"
+vesin-torch = ">=0.3.7, <0.4"
+vesin = ">=0.3.7, <0.4"
+
+[feature.ams.dependencies]
+boost-cpp = "*"
+abseil-cpp = "*"
+
+[feature.lint.dependencies]
+cppcheck = "*"
+cpplint = "*"
+clang-format = "*"
+ruff = "*"
+pre-commit = "*"
+
+[feature.develop.pypi-dependencies]
+ase = "*"
+
+[feature.develop.dependencies]
+ipython = ">=9.3.0,<10"

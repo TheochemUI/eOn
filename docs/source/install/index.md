@@ -74,6 +74,7 @@ systems, follow the sub-parts of this document.
 
 windows
 lammps
+metatomic
 ase
 svn
 ```
