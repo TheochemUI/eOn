@@ -462,13 +462,21 @@ if get_option('with_metatomic')
                 py.get_install_dir() / 'vesin' / 'include',
             ),
         )
-        else
-          message('Looking for existing installations of metatensor, metatensor-torch, metatomic-torch and vesin')
-          message('If this is flaky, pass pip_metatomic=True with the torch version and let pip handle everything')
-          # XXX(rg): Still needs the includes, setup pkgconf and use dependency() with pkgconf instead
-          # xref: https://github.com/metatensor/metatensor/issues/930
-          vesin_dep = cppc.find_library('vesin')
-          mts_dep = [cppc.find_library('metatensor'), cppc.find_library('metatensor-torch'), cppc.find_library('metatomic-torch')]
+    else
+        message(
+            'Looking for existing installations of metatensor, metatensor-torch, metatomic-torch and vesin',
+        )
+        message(
+            'If this is flaky, pass pip_metatomic=True with the torch version and let pip handle everything',
+        )
+        # XXX(rg): Still needs the includes, setup pkgconf and use dependency() with pkgconf instead
+        # xref: https://github.com/metatensor/metatensor/issues/930
+        vesin_dep = cppc.find_library('vesin')
+        mts_dep = [
+            cppc.find_library('metatensor'),
+            cppc.find_library('metatensor-torch'),
+            cppc.find_library('metatomic-torch'),
+        ]
     endif
     _deps += [vesin_dep, mts_dep, torch_deps]
     subdir('potentials/Metatomic')
