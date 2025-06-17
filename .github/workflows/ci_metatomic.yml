@@ -11,7 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         # TODO(rg): Handle the windows-2022 later, issues linking fmt
-        os: [ubuntu-22.04, macos-14, macos-12]
+        # TODO(rg): Handle the aarch64 macos later too
+        os: [ubuntu-22.04, macos-12]
     steps:
       - uses: actions/checkout@v4
       - uses: prefix-dev/setup-pixi@v0.8.10
