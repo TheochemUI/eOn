@@ -27,6 +27,8 @@ ASE_ORCA
 : Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to ORCA {cite:p}`pot-neeseORCAQuantumChemistry2020`
 XTB
 : Extended Tight binding models via native Fortran-C interfce {cite:p}`pot-bannwarthExtendedTightbindingQuantum2021`
+Metatomic
+: Common interface to atomistic machine learning models
 ```
 
 ### Vendored
