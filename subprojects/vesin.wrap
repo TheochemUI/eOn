@@ -1,0 +1,5 @@
+[wrap-git]
+directory=vesin
+url=https://github.com/luthaf/vesin.git
+revision = head
+depth = 1
