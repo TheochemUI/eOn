@@ -91,6 +91,7 @@ eonclient
 Validated with the `metatomic` wrapper.
 
 ```{code-block} python
+import numpy as np
 import ase.io as aseio
 from metatomic.torch import load_atomistic_model
 from metatomic.torch.ase_calculator import MetatomicCalculator
@@ -98,8 +99,9 @@ atomistic_model = load_atomistic_model("lennard-jones.pt")
 mta_calculator = MetatomicCalculator(atomistic_model)
 atoms = aseio.read("pos.con")
 atoms.calc = mta_calculator
-atoms.get_potential_energy()
-atoms.get_forces()
+# NOTE(rg): Normally needs a mask to remove fixed atoms, lj13 has no fixed atoms
+print(atoms.get_potential_energy())
+print(np.max(np.linalg.norm(atoms.get_forces(), axis=1)))
 ```
 
 Which yields the expected result.
@@ -107,6 +109,6 @@ Which yields the expected result.
 ```{code-block} python
 In [2]: atoms.get_potential_energy()
 Out[2]: np.float64(98374.87753058573)
-In [6]: np.max(atoms.get_forces())
-Out[6]: np.float64(104913.1185328678)
+In [6]: np.max(np.linalg.norm(atoms.get_forces(), axis=1))
+Out[6]: np.float64(109591.90837618345)
 ```

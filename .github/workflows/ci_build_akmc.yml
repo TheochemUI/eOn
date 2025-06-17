@@ -1,7 +1,7 @@
 name: Build basic eon
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 on: [push, pull_request]
 jobs:
   build_eon:
@@ -11,7 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         # TODO(rg): Handle the windows-2022 later, issues linking fmt
-        os: [ubuntu-22.04, macos-14, macos-12]
+        # TODO(rg): Macos 12 seems to hang a lot, macos-12
+        os: [ubuntu-22.04, macos-14]
     steps:
       - uses: actions/checkout@v4
 
