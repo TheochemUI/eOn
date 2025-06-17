@@ -1,0 +1,41 @@
+name: Build and test eonclient with Metatomic
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+on: [push, pull_request]
+jobs:
+  build_eon:
+    runs-on: ${{ matrix.os }}
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(rg): Handle the windows-2022 later, issues linking fmt
+        # TODO(rg): Handle the aarch64 macos later too
+        # TODO(rg): Macos 12 seems to hang a lot, macos-12
+        os: [ubuntu-22.04]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.10
+        with:
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          activate-environment: true
+          environments: >-
+            dev-mta
+      - name: Install eon
+        shell: pixi run bash -e {0}
+        run: |
+          meson setup --reconfigure bbdir  \
+          --prefix=$CONDA_PREFIX           \
+          --buildtype release              \
+          --libdir=lib                     \
+          -Dwith_metatomic=True            \
+          -Dtorch_version=2.7              \
+          -Dwith_tests=True                \
+          -Dpip_metatomic=True
+          meson install -C bbdir
+      - name: Run tests
+        shell: bash -el {0}
+        run: |
+          meson test -C bbdir
