@@ -1,6 +1,6 @@
 * About
 ** Setup
-We use ~pixi~ to manage the environment and dependencies. The metaverse is not built, instead it is pulled from ~pip~ dependencies essentially.
+We use ~pixi~ to manage the environment and dependencies. The code for metatomic and metatensor is not built, instead it is pulled from ~pip~ dependencies essentially.
 #+begin_src nushell
 pixi s -e metatomic # or dev-mta
 (meson setup --reconfigure bbdir
