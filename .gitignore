@@ -653,3 +653,7 @@ compile_commands.json
 !/.vscode/extensions.json
 !/.vscode/*.code-snippets
 !/client/gtests
+
+# pixi environments
+.pixi
+*.egg-info
