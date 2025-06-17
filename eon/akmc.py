@@ -93,7 +93,7 @@ def akmc(config: ConfigClass = EON_CONFIG, steps=0):
         previous_state = states.get_state(previous_state_num)
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
-        superbasining = get_superbasin_scheme(states)
+        superbasining = get_superbasin_scheme(states, config)
         sb = superbasining.get_containing_superbasin(current_state)
         # If we are exploring states in a superbasin, we will always
         # explore the state with the lowest confidence.
@@ -171,7 +171,7 @@ def get_statelist(kT, config: ConfigClass = EON_CONFIG):
         config=config,
     )
 
-def get_superbasin_scheme(states):
+def get_superbasin_scheme(states, config):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.main_temperature / 11604.5, config.sb_tc_ntrans)
     elif config.sb_scheme == 'energy_level':
