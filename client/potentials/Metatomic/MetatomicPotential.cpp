@@ -99,7 +99,8 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   // 5. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
-  evaluations_options_->set_length_unit(m_params->metatomic_options.length_unit);
+  evaluations_options_->set_length_unit(
+      m_params->metatomic_options.length_unit);
 
   auto outputs = this->capabilities_->outputs();
   if (!outputs.contains("energy")) {
@@ -160,15 +161,31 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                                  torch::TensorOptions().device(this->device_));
   bool periodic = torch::all(torch_pbc).item<bool>();
 
-  if (!atomicNrs) {
-    throw std::runtime_error(
-        "[MetatomicPotential] `atomicNrs` must be provided.");
+  bool types_changed = false;
+  if (static_cast<size_t>(nAtoms) != last_atomic_nrs_.size()) {
+    types_changed = true;
+  } else if (nAtoms > 0 && std::memcmp(atomicNrs, last_atomic_nrs_.data(),
+                                       nAtoms * sizeof(int)) != 0) {
+    types_changed = true;
   }
-  std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
-  // XXX(rg): Reordering of labels might take place for non-conservative forces / per atom energies
-  this->atomic_types_ =
-      torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
-          .to(this->device_);
+
+  if (types_changed) {
+    m_log->trace("[MetatomicPotential] Atomic numbers changed, re-creating "
+                 "types tensor.");
+    if (!atomicNrs) {
+      throw std::runtime_error(
+          "[MetatomicPotential] `atomicNrs` must be provided.");
+    }
+    std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
+    // XXX(rg): Reordering of labels might take place for non-conservative
+    // forces / per atom energies
+    this->atomic_types_ =
+        torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
+            .to(this->device_);
+
+    // Update the cache
+    last_atomic_nrs_.assign(atomicNrs, atomicNrs + nAtoms);
+  }
 
   // 2. Create the metatomic::System object
   auto system = torch::make_intrusive<metatomic_torch::SystemHolder>(
@@ -244,8 +261,7 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   options.return_distances = false; // we don't need distances
   options.return_vectors = true;    // metatomic uses vectors for autograd
 
-  VesinNeighborList *vesin_neighbor_list =
-      new VesinNeighborList();
+  VesinNeighborList *vesin_neighbor_list = new VesinNeighborList();
   memset(vesin_neighbor_list, 0, sizeof(VesinNeighborList));
 
   const char *error_message = nullptr;

@@ -43,9 +43,12 @@ private:
 
     torch::ScalarType dtype_;
     torch::Device device_;
-    torch::Tensor atomic_types_;
     bool check_consistency_;
     std::shared_ptr<Parameters> m_params;
+
+    // --- Cached Tensors and Data for Performance ---
+    torch::Tensor atomic_types_;
+    std::vector<int> last_atomic_nrs_;
 
     /**
      * @brief Computes neighbor list using the vesin library.
