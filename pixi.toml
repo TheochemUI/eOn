@@ -44,6 +44,7 @@ metatensor-torch = ">=0.7.6, <0.8"
 metatensor = ">=0.2.0, <0.3"
 vesin-torch = ">=0.3.7, <0.4"
 vesin = ">=0.3.7, <0.4"
+metatrain = ">=2025.8.1, <2026"
 
 [feature.ams.dependencies]
 boost-cpp = "*"
