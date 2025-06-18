@@ -36,6 +36,8 @@ the model.
 
 ## Usage example
 
+### Lennard Jones Baseline
+
 Here is a complete workflow, from generating a simple Lennard-Jones test model
 to running a calculation with eonclient.
 
@@ -111,4 +113,13 @@ In [2]: atoms.get_potential_energy()
 Out[2]: np.float64(98374.87753058573)
 In [6]: np.max(np.linalg.norm(atoms.get_forces(), axis=1))
 Out[6]: np.float64(109591.90837618345)
+```
+
+
+### PET-MAD
+
+To use `pet-mad` we can use `metatrain` to grab the model.
+
+```{code-block} sh
+mtt export https://huggingface.co/lab-cosmo/pet-mad/resolve/main/models/pet-mad-latest.ckpt
 ```
