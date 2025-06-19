@@ -1238,6 +1238,10 @@ Saddle Search:
             kind: float
             default: 0.0
 
+        displace_atom_list_script:
+            kind: string
+            default: ''
+
         displace_under_coordinated_weight:
             kind: float
             default: 0.0
