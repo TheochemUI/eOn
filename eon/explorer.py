@@ -8,6 +8,9 @@ import os
 import sys
 import pickle as pickle
 from copy import copy
+from pathlib import Path
+import subprocess
+import tempfile
 import numpy
 
 from eon import atoms
@@ -215,6 +218,53 @@ class ClientMinModeExplorer(MinModeExplorer):
             # to switch to min_mode searches
             if self.config.saddle_method == 'dynamics' and disp_type != 'dynamics':
                 ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
+
+
+            # --- START: NEW DYNAMIC SCRIPT LOGIC (FILE-BASED) ---
+            if self.config.displace_atom_list_script and displacement:
+                script_path = Path(self.config.displace_atom_list_script)
+                if not script_path.is_absolute():
+                    script_path = Path(self.config.path_root) / script_path
+
+                if not script_path.is_file():
+                    logger.error(f"displace_atom_list_script not found: {script_path}")
+                    sys.exit(1)
+
+                # Use a secure temporary file to pass the structure to the script
+                # The file is automatically deleted when the 'with' block is exited.
+                with tempfile.NamedTemporaryFile(mode='w+', delete=True, suffix='.con', dir=self.config.path_scratch) as tmpf:
+                    # Save the displaced structure to the temporary file
+                    io.savecon(tmpf, displacement)
+                    # Ensure all data is written to disk before the script reads it
+                    tmpf.flush()
+
+                    try:
+                        # Execute the script, passing the temporary filename as an argument
+                        proc = subprocess.run(
+                            [sys.executable, str(script_path), tmpf.name],  # Pass filename
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                            cwd=self.config.path_root
+                        )
+                        atom_list_str = proc.stdout.strip()
+                        if atom_list_str:
+                            # Add the dynamically generated list to this specific job's config
+                            ini_changes.append(
+                                ('Saddle Search', 'displace_atom_list', atom_list_str)
+                            )
+                            logger.info(f"Dynamically generated displace_atom_list for job {search['id']}")
+                        else:
+                            logger.warning(f"Script '{script_path}' produced no output for job {search['id']}.")
+
+                    except subprocess.CalledProcessError as e:
+                        logger.error(f"Error running displace_atom_list_script '{script_path}':")
+                        logger.error(f"Stderr: {e.stderr.strip()}")
+                        sys.exit(1)
+                    except Exception as e:
+                        logger.error(f"An unexpected error occurred while running the displacement script: {e}")
+                        sys.exit(1)
+            # --- END: NEW DYNAMIC SCRIPT LOGIC ---
 
             search['config.ini'] = io.modify_config(self.config.config_path, ini_changes)
 
