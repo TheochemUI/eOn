@@ -652,6 +652,10 @@ class SaddleSearchConfig(BaseModel):
         default=[-1],
         description="The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.",
     )
+    displace_atom_list_script: list[int] = Field(
+        default="",
+        description="A Python script which returns a string of atoms to be displaced, run at each AKMC system configuration step",
+    )
     displace_listed_type_weight: float = Field(
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_type_list.",
