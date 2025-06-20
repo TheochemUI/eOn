@@ -386,8 +386,8 @@ void NudgedElasticBand::updateForces(void) {
     energyNext = path[i + 1]->getPotentialEnergy();
     posDiffNext = path[i]->pbc(posNext - pos); // R[i+1] - R[i]
     posDiffPrev = path[i]->pbc(pos - posPrev); // R[i] - R[i-1]
-    distNext = posDiffNext.squaredNorm();      // Distance to next image
-    distPrev = posDiffPrev.squaredNorm();      // Distance to previous image
+    distNext = posDiffNext.norm();      // Distance to next image
+    distPrev = posDiffPrev.norm();      // Distance to previous image
 
     // determine the tangent
     if (params->nebOldTangent) {
