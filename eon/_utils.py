@@ -12,10 +12,9 @@ from eon import atoms as eatm
 from eon import config as econf
 
 
-class ListedType(Enum):
-    GLOBAL = 0
-    STATE = 1
-    STEP = 2
+class ScriptType(Enum):
+    STATE = 0
+    DISP = 1
 
 @dataclass
 class ScriptConfig:
@@ -35,13 +34,13 @@ class ScriptConfig:
                 pth = self.root_path / pth
 
     @classmethod
-    def from_eon_config(cls, config: econf.ConfigClass, stype: ListedType) -> typ.Self:
+    def from_eon_config(cls, config: econf.ConfigClass, stype: ScriptType) -> typ.Self:
         """
         Factory method to create a ScriptConfig instance from the main EON config.
         """
-        if stype == ListedType.STATE:
+        if stype == ScriptType.STATE:
             script_path = Path(config.displace_atom_kmc_state_script)
-        elif stype == ListedType.STEP:
+        elif stype == ScriptType.DISP:
             script_path = Path(config.displace_atom_kmc_step_script)
 
         return cls(

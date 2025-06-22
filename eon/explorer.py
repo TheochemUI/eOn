@@ -195,19 +195,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
-
-        # --- START: NEW DYNAMIC SCRIPT LOGIC (FILE-BASED) ---
-        atom_list_str = utl.gen_ids_from_con(
-            utl.ScriptConfig.from_eon_config(self.config, utl.ScriptType.STATE),
-            self.state.get_reactant(),
-            logger
-        )
-        if atom_list_str:
-            logger.info(f"Regenerated displace_atom_list of \n{atom_list_str}\n for state {self.state.number}")
-        else:
-            logger.warning(f"Script for KMC state produced no output for state {self.state.number}.")
-        # --- END: NEW DYNAMIC SCRIPT LOGIC ---
-
+        atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list"))
         for i in range(num_to_make):
             search = {}
             # The search dictionary contains the following key-value pairs:
