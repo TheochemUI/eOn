@@ -652,9 +652,14 @@ class SaddleSearchConfig(BaseModel):
         default=[-1],
         description="The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.",
     )
-    displace_atom_list_script: list[int] = Field(
+    displace_atom_kmc_state_script: str = Field(
         default="",
-        description="A Python script which returns a string of atoms to be displaced, run at each AKMC system configuration step",
+        description="A Python script which returns a string of atoms to be displaced. This is run once for each new AKMC state.",
+    )
+
+    displace_atom_kmc_step_script: str = Field(
+        default="",
+        description="A Python script which returns a string of atoms to be displaced during AKMC. This is run for each individual displacement attempt within a state.",
     )
     displace_listed_type_weight: float = Field(
         default=0.0,
