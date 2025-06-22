@@ -196,6 +196,18 @@ class ClientMinModeExplorer(MinModeExplorer):
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
 
+        # --- START: NEW DYNAMIC SCRIPT LOGIC (FILE-BASED) ---
+        atom_list_str = utl.gen_ids_from_con(
+            utl.ScriptConfig.from_eon_config(self.config, utl.ScriptType.STATE),
+            self.state.get_reactant(),
+            logger
+        )
+        if atom_list_str:
+            logger.info(f"Regenerated displace_atom_list of \n{atom_list_str}\n for state {self.state.number}")
+        else:
+            logger.warning(f"Script for KMC state produced no output for state {self.state.number}.")
+        # --- END: NEW DYNAMIC SCRIPT LOGIC ---
+
         for i in range(num_to_make):
             search = {}
             # The search dictionary contains the following key-value pairs:
@@ -217,23 +229,8 @@ class ClientMinModeExplorer(MinModeExplorer):
             if self.config.saddle_method == 'dynamics' and disp_type != 'dynamics':
                 ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
 
-
-            # --- START: NEW DYNAMIC SCRIPT LOGIC (FILE-BASED) ---
-            # XXX(rg): This only needs to be run once per KMC step, so it shouldn't be run each time displacement is generated
-            atom_list_str = utl.gen_ids_from_con(
-                utl.ScriptConfig.from_eon_config(self.config),
-                self.state.get_reactant(),
-                logger
-            )
             if atom_list_str:
-                # Add the dynamically generated list to this specific job's config
-                ini_changes.append(
-                    ('Saddle Search', 'displace_atom_list', atom_list_str)
-                )
-                logger.info(f"Dynamically generated displace_atom_list of {atom_list_str} for job {search['id']}")
-            else:
-                logger.warning(f"Script '{script_path}' produced no output for job {search['id']}.")
-            # --- END: NEW DYNAMIC SCRIPT LOGIC ---
+                ini_changes.append(("Saddle Search", "displace_atom_list", atom_list_str))
 
             search['config.ini'] = io.modify_config(self.config.config_path, ini_changes)
 
