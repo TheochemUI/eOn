@@ -29,9 +29,9 @@ class ScriptConfig:
         Post-initialization processing to validate and resolve paths.
         This method is automatically called by the dataclass constructor.
         """
-        script_path = Path(self.script_path)
-        if not script_path.is_absolute():
-            self.script_path = self.root_path / script_path
+        for pth in (self.script_path, self.scratch_path):
+            if not pth.is_absolute():
+                pth = self.root_path / pth
 
     @classmethod
     def from_eon_config(cls, config: econf.ConfigClass, stype: ScriptType) -> typ.Self:
@@ -61,6 +61,7 @@ def gen_ids_from_con(sconf: ScriptConfig, reactant: eatm.Atoms, logger: logging.
 
     # Use a secure temporary file to pass the structure to the script
     # The file is automatically deleted when the 'with' block is exited.
+    sconf.scratch_path.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
         mode="w+", delete=True, suffix=".con", dir=sconf.scratch_path
     ) as tmpf:
