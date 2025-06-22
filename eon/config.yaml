@@ -1031,7 +1031,6 @@ Saddle Search:
             kind: int
             default: 1
 
-        # Global displacement list
         displace_atom_list:
             kind: string
             default: 0
@@ -1098,19 +1097,6 @@ Saddle Search:
 
         # This is run once for each new state
         displace_atom_kmc_state_script:
-            kind: string
-            default: ''
-
-        # This is run once during the displacement within a state
-        displace_atom_kmc_step_script:
-            kind: string
-            default: ''
-
-        displace_atom_kmc_state_script_weight:
-            kind: string
-            default: ''
-
-        displace_atom_kmc_step_script_weight:
             kind: string
             default: ''
 

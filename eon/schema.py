@@ -656,19 +656,6 @@ class SaddleSearchConfig(BaseModel):
         default="",
         description="A Python script which returns a string of atoms to be displaced. This is run once for each new AKMC state.",
     )
-
-    displace_atom_kmc_step_script: str = Field(
-        default="",
-        description="A Python script which returns a string of atoms to be displaced during AKMC. This is run for each individual displacement attempt within a state.",
-    )
-    displace_atom_kmc_state_script_weight: float = Field(
-        default=0.0,
-        description="Relative probability to displace with an epicenter listed in displace_atom_kmc_state_script.",
-    )
-    displace_atom_kmc_step_script_weight: float = Field(
-        default=0.0,
-        description="Relative probability to displace with an epicenter listed in displace_atom_kmc_step_script.",
-    )
     displace_listed_type_weight: float = Field(
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_type_list.",
