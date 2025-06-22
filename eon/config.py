@@ -243,6 +243,7 @@ class ConfigClass:
         self.saddle_dynamics_temperature = parser.getfloat('Saddle Search', 'dynamics_temperature')
         self.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight')
         self.displace_listed_atom_weight = parser.getfloat('Saddle Search', 'displace_listed_atom_weight')
+        self.displace_atom_kmc_state_script = parser.get('Saddle Search', 'displace_atom_kmc_state_script')
         self.displace_listed_type_weight = parser.getfloat('Saddle Search', 'displace_listed_type_weight')
         self.displace_all_listed = parser.getboolean('Saddle Search', 'displace_all_listed')
         self.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight')

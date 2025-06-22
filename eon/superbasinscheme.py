@@ -259,7 +259,11 @@ class EnergyLevel(SuperbasinScheme):
         end_statelist   = self.get_statelist(end_state)
 
         e_min        = min ( state.get_energy() for state in end_statelist )
-        e_global_min = min ( e_min , ( state.get_energy() for state in start_statelist ) )
+        # First, find the minimum energy in the start_statelist.
+        min_start_energy = min(state.get_energy() for state in start_statelist)
+        # Then, find the global minimum by comparing the two basin minimums.
+        # XXX(rg): This isn't really the "global" minima in any sense, for that we need a counter on the class object itself
+        e_global_min = min(e_min, min_start_energy)
 
         # determine the barrier
         # (LJ: What happens if there is more then one path between start_state and end_state???)

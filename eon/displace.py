@@ -3,6 +3,10 @@ logger = logging.getLogger('displace')
 
 import os, re
 from math import cos, sin
+import sys
+import subprocess
+import tempfile
+from pathlib import Path
 import numpy
 
 from eon import atoms
@@ -354,6 +358,7 @@ class ListedAtoms(Displace):
             #raise DisplaceError("Listed atoms are all frozen")
             raise DisplaceError("Listed atoms are all frozen")
 
+        print(self.listed_atoms)
         #print self.listed_atoms
 
     def make_displacement(self):
