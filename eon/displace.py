@@ -39,22 +39,29 @@ class DisplacementManager:
                                           use_covalent=self.config.comp_use_covalent,
                                           covalent_scale=self.config.comp_covalent_scale, config = self.config)
         if self.config.displace_listed_atom_weight > 0:
-            if self.config.displace_atom_list_script:
-                self.listed_atoms = ListedAtomsScript(self.reactant,
-                                          self.config.disp_magnitude, self.config.disp_radius,
-                                          hole_epicenters=moved_atoms,
-                                          cutoff=self.config.comp_neighbor_cutoff,
-                                          use_covalent=self.config.comp_use_covalent,
-                                          covalent_scale=self.config.comp_covalent_scale,
-                                          displace_all=self.config.displace_all_listed, config = self.config)
-            else:
-                self.listed_atoms = ListedAtoms(self.reactant,
-                                          self.config.disp_magnitude, self.config.disp_radius,
-                                          hole_epicenters=moved_atoms,
-                                          cutoff=self.config.comp_neighbor_cutoff,
-                                          use_covalent=self.config.comp_use_covalent,
-                                          covalent_scale=self.config.comp_covalent_scale,
-                                          displace_all=self.config.displace_all_listed, config = self.config)
+            self.listed_atoms = ListedAtoms(self.reactant,
+                                      self.config.disp_magnitude, self.config.disp_radius,
+                                      hole_epicenters=moved_atoms,
+                                      cutoff=self.config.comp_neighbor_cutoff,
+                                      use_covalent=self.config.comp_use_covalent,
+                                      covalent_scale=self.config.comp_covalent_scale,
+                                      displace_all=self.config.displace_all_listed, config = self.config)
+        if self.config.displace_atom_kmc_step_script_weight > 0:
+            self.kmc_step_list = ListedAtoms(self.reactant,
+                                      self.config.disp_magnitude, self.config.disp_radius,
+                                      hole_epicenters=moved_atoms,
+                                      cutoff=self.config.comp_neighbor_cutoff,
+                                      use_covalent=self.config.comp_use_covalent,
+                                      covalent_scale=self.config.comp_covalent_scale,
+                                      displace_all=self.config.displace_all_listed, config = self.config)
+        if self.config.displace_atom_kmc_state_script_weight > 0:
+            self.kmc_state_list = ListedAtoms(self.reactant,
+                                      self.config.disp_magnitude, self.config.disp_radius,
+                                      hole_epicenters=moved_atoms,
+                                      cutoff=self.config.comp_neighbor_cutoff,
+                                      use_covalent=self.config.comp_use_covalent,
+                                      covalent_scale=self.config.comp_covalent_scale,
+                                      displace_all=self.config.displace_all_listed, config = self.config)
         if self.config.displace_listed_type_weight > 0:
             self.listed_types = ListedTypes(self.reactant,
                                            self.config.disp_magnitude,
@@ -101,6 +108,8 @@ class DisplacementManager:
         total += self.config.displace_not_TCP_BCC_weight
         total += self.config.displace_not_TCP_weight
         total += self.config.displace_water_weight
+        total += self.config.displace_atom_kmc_state_script_weight
+        total += self.config.displace_atom_kmc_step_script_weight
 
         # If no fractions are defined, do 100% random displacements.
         if total == 0.0:
@@ -119,9 +128,11 @@ class DisplacementManager:
         self.plist.append(self.plist[-1] + self.config.displace_not_TCP_BCC_weight/total)
         self.plist.append(self.plist[-1] + self.config.displace_not_TCP_weight/total)
         self.plist.append(self.plist[-1] + self.config.displace_water_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_atom_kmc_state_script_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_atom_kmc_step_script_weight/total)
 
     def make_displacement(self):
-        disp_types = ["random", "listed_atoms", "listed_types", "under", "least", "not_FCC_HCP", "not_TCP_BCC", "not_TCP", "water"]
+        disp_types = ["random", "listed_atoms", "listed_types", "under", "least", "not_FCC_HCP", "not_TCP_BCC", "not_TCP", "water", "kmc_state", "kmc_step"]
         r = numpy.random.random_sample()
         i = 0
         while self.plist[i] < r:
@@ -154,6 +165,12 @@ class DisplacementManager:
         elif disp_type == "water":
             logger.debug("Made water displacement")
             return self.water.make_displacement()
+        elif disp_type == "kmc_step":
+            logger.debug("Made KMC step displacement")
+            return self.kmc_step_list.make_displacement()
+        elif disp_type == "kmc_state":
+            logger.debug("Made KMC state displacement")
+            return self.kmc_state_list.make_displacement()
         raise DisplaceError()
 
 
@@ -358,71 +375,13 @@ class ListedAtoms(Displace):
         # each item in this list is the index of a free atom
         self.listed_atoms = [ i for i in self.config.disp_listed_atoms
                 if self.reactant.free[i] ]
-        #print "self.listed_atoms:"
-        #print self.listed_atoms
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
         logger.debug("Listed atoms: %s", self.listed_atoms)
 
-        #print self.listed_atoms
         if len(self.listed_atoms) == 0:
-            #raise DisplaceError("Listed atoms are all frozen")
             raise DisplaceError("Listed atoms are all frozen")
 
-    def make_displacement(self):
-        """Select a listed atom and displace all atoms in a radius about it."""
-        # chose a random atom from the supplied list
-        if self.displace_all:
-            epicenter = self.listed_atoms
-        else:
-            epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
-        logger.debug("Listed atom displacement epicenters: %s", epicenter)
-        return self.get_displacement(epicenter)
-
-class ListedAtomsScript(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, displace_all=False, config: ConfigClass = EON_CONFIG):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
-
-        self.displace_all = displace_all
-        atom_list = []
-
-        # Check if a script is provided to dynamically generate the atom list.
-        if self.config.displace_atom_list_script:
-            script_path = Path(self.config.displace_atom_list_script)
-            if not script_path.is_absolute():
-                script_path = Path(self.config.path_root) / script_path
-
-            if not script_path.is_file():
-                logger.error(f"displace_atom_list_script not found: {script_path}")
-                self.listed_atoms = []
-            else:
-                # Use a temporary file to pass the current state's reactant to the script.
-                with tempfile.NamedTemporaryFile(mode='w+', delete=True, suffix='.con', dir=self.config.path_scratch) as tmpf:
-                    io.savecon(tmpf, self.reactant)
-                    tmpf.flush()
-                    try:
-                        # Execute the script on the reactant file.
-                        proc = subprocess.run(
-                            [sys.executable, str(script_path), tmpf.name],
-                            capture_output=True, text=True, check=True, cwd=self.config.path_root
-                        )
-                        atom_list_str = proc.stdout.strip()
-                        if atom_list_str:
-                            # Convert the script's output string to a list of integers.
-                            atom_list = [int(i.strip()) for i in atom_list_str.split(',')]
-                    except Exception as e:
-                        logger.error(f"Error running displace_atom_list_script '{script_path}': {e}")
-                        atom_list = []
-        else:
-            # Fallback to the static list from config.ini if no script is provided.
-            atom_list = self.config.disp_listed_atoms
-
-        # Filter the final list to include only atoms that are free to move.
-        self.listed_atoms = [i for i in atom_list if self.reactant.free[i]]
-
-        self.listed_atoms = self.filter_epicenters(self.listed_atoms)
-
-        if len(self.listed_atoms) == 0:
-            raise DisplaceError("ListedAtomsScript displacement method has no free atoms to displace.")
+        print(self.listed_atoms)
 
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
