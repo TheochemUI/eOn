@@ -195,7 +195,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
-        atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list"))
+        atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
         for i in range(num_to_make):
             search = {}
             # The search dictionary contains the following key-value pairs:
