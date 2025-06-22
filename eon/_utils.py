@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-
 from pathlib import Path
+from enum import Enum
 import sys
 import subprocess
 import tempfile
@@ -13,24 +12,36 @@ from eon import atoms as eatm
 from eon import config as econf
 
 
+class ScriptType(Enum):
+    STATE = 0
+    DISP = 1
+
 @dataclass
 class ScriptConfig:
     """Configuration for running an external atom list script."""
 
-    script_path: Path
-    scratch_path: Path
-    root_path: Path
+    script_path: str
+    scratch_path: str
+    root_path: str
+
+    def __post_init__(self):
+        """
+        Post-initialization processing to validate and resolve paths.
+        This method is automatically called by the dataclass constructor.
+        """
+        script_path = Path(self.script_path)
+        if not script_path.is_absolute():
+            self.script_path = self.root_path / script_path
 
     @classmethod
-    def from_eon_config(cls, config: econf.ConfigClass) -> typ.Self:
+    def from_eon_config(cls, config: econf.ConfigClass, stype: ScriptType) -> typ.Self:
         """
         Factory method to create a ScriptConfig instance from the main EON config.
         """
-        # The logic for resolving the script path now lives here,
-        # encapsulated within the class itself.
-        script_path = Path(config.displace_atom_list_script)
-        if not script_path.is_absolute():
-            script_path = Path(config.root_path) / script_path
+        if stype == ScriptType.STATE:
+            script_path = Path(config.displace_atom_kmc_state_script)
+        elif stype == ScriptType.DISP:
+            script_path = Path(config.displace_atom_kmc_step_script)
 
         return cls(
             script_path=script_path,
@@ -46,7 +57,7 @@ def gen_ids_from_con(sconf: ScriptConfig, reactant: eatm.Atoms, logger: logging.
 
     if not script_path.is_file():
         logger.error(f"displace_atom_list_script not found: {script_path}")
-        sys.exit(1)
+        return []
 
     # Use a secure temporary file to pass the structure to the script
     # The file is automatically deleted when the 'with' block is exited.
