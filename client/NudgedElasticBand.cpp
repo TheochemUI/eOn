@@ -189,6 +189,7 @@ NudgedElasticBand::NudgedElasticBand(
   movedAfterForceCall = true;
 
   // NOTE(rg): E_ref is just left uninitialized since the path isn't ready here
+  E_ref = std::numeric_limits<double>::infinity();
   climbingImage = 0;
   return;
 }
@@ -198,7 +199,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   this->status = NEBStatus::RUNNING;
 
   SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band calculation started.");
-
+  if (params->nebEnergyWeighted) {
+    E_ref = std::min(path[0]->getPotentialEnergy(),
+                     path[numImages + 1]->getPotentialEnergy());
+  }
   updateForces();
 
   auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
@@ -325,8 +329,6 @@ double NudgedElasticBand::convergenceForce(void) {
 
 // Update the forces, do the projections, and add spring forces
 void NudgedElasticBand::updateForces(void) {
-  E_ref = std::max(path[0]->getPotentialEnergy(),
-                   path[numImages + 1]->getPotentialEnergy());
   // variables for tangent
   double maxDiffEnergy, minDiffEnergy;
   double energyDiffPrev, energyDiffNext;
@@ -386,8 +388,8 @@ void NudgedElasticBand::updateForces(void) {
     energyNext = path[i + 1]->getPotentialEnergy();
     posDiffNext = path[i]->pbc(posNext - pos); // R[i+1] - R[i]
     posDiffPrev = path[i]->pbc(pos - posPrev); // R[i] - R[i-1]
-    distNext = posDiffNext.norm();      // Distance to next image
-    distPrev = posDiffPrev.norm();      // Distance to previous image
+    distNext = posDiffNext.norm();             // Distance to next image
+    distPrev = posDiffPrev.norm();             // Distance to previous image
 
     // determine the tangent
     if (params->nebOldTangent) {
@@ -430,9 +432,10 @@ void NudgedElasticBand::updateForces(void) {
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
     if (params->nebEnergyWeighted) {
-      double kspNext = springConstants[i];     // Spring for segment (i) -> (i+1)
-      double kspPrev = springConstants[i - 1]; // Spring for segment (i-1) -> (i)
-
+      // Spring for segment (i) -> (i+1)
+      double kspNext = springConstants[i];
+      // Spring for segment (i-1) -> (i)
+      double kspPrev = springConstants[i - 1];
       forceSpringPar =
           ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
     } else {
