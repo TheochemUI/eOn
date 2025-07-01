@@ -348,13 +348,12 @@ class ListedAtoms(Displace):
         #print "self.listed_atoms:"
         #print self.listed_atoms
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
+        logger.debug("Listed atoms: %s", self.listed_atoms)
 
         #print self.listed_atoms
         if len(self.listed_atoms) == 0:
             #raise DisplaceError("Listed atoms are all frozen")
             raise DisplaceError("Listed atoms are all frozen")
-
-        #print self.listed_atoms
 
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
@@ -363,6 +362,7 @@ class ListedAtoms(Displace):
             epicenter = self.listed_atoms
         else:
             epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
+        logger.debug("Listed atom displacement epicenters: %s", epicenter)
         return self.get_displacement(epicenter)
 
 class ListedTypes(Displace):
