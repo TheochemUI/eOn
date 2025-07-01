@@ -188,9 +188,7 @@ NudgedElasticBand::NudgedElasticBand(
 
   movedAfterForceCall = true;
 
-  // Make sure that the endpoints know their energy
-  E_ref = std::max(path[0]->getPotentialEnergy(),
-                   path[numImages + 1]->getPotentialEnergy());
+  // NOTE(rg): E_ref is just left uninitialized since the path isn't ready here
   climbingImage = 0;
   return;
 }
@@ -327,6 +325,8 @@ double NudgedElasticBand::convergenceForce(void) {
 
 // Update the forces, do the projections, and add spring forces
 void NudgedElasticBand::updateForces(void) {
+  E_ref = std::max(path[0]->getPotentialEnergy(),
+                   path[numImages + 1]->getPotentialEnergy());
   // variables for tangent
   double maxDiffEnergy, minDiffEnergy;
   double energyDiffPrev, energyDiffNext;
