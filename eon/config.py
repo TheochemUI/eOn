@@ -310,6 +310,8 @@ class ConfigClass:
             self.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
         elif self.sb_scheme == 'energy_level':
             self.sb_el_energy_increment = parser.getfloat('Coarse Graining', 'energy_increment')
+        elif self.sb_scheme == 'rate':
+            self.sb_rt_rate_threshold = parser.getfloat('Coarse Graining', 'rate_threshold')
         self.sb_superbasin_confidence = parser.getboolean('Coarse Graining', 'superbasin_confidence')
 
         self.askmc_on = parser.getboolean('Coarse Graining','use_askmc')
