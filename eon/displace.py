@@ -359,9 +359,6 @@ class ListedAtoms(Displace):
             #raise DisplaceError("Listed atoms are all frozen")
             raise DisplaceError("Listed atoms are all frozen")
 
-        print(self.listed_atoms)
-        #print self.listed_atoms
-
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
         # chose a random atom from the supplied list
