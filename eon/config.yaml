@@ -1275,6 +1275,10 @@ Coarse Graining:
             kind: float
             default: 1.5
 
+        rate_threshold:
+            kind: float
+            default: 1.0e9
+
         energy_increment:
             kind: float
             default: 0.01
