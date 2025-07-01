@@ -430,10 +430,9 @@ void NudgedElasticBand::updateForces(void) {
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
     if (params->nebEnergyWeighted) {
-      double kspPrev =
-          (i > 1) ? springConstants[i - 2] : springConstants.front();
-      double kspNext =
-          (i < numImages) ? springConstants[i] : springConstants.front();
+      double kspNext = springConstants[i];     // Spring for segment (i) -> (i+1)
+      double kspPrev = springConstants[i - 1]; // Spring for segment (i-1) -> (i)
+
       forceSpringPar =
           ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
     } else {
