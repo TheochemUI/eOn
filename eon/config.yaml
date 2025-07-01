@@ -1248,7 +1248,7 @@ Coarse Graining:
             default: 5
 
         askmc_high_barrier_def:
-            kind: int
+            kind: float
             default: 2
 
         use_askmc:
