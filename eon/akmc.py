@@ -187,7 +187,7 @@ def get_superbasin_scheme(states, config):
     elif config.sb_scheme == 'energy_level':
         superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.main_temperature / 11604.5, config.sb_el_energy_increment)
     elif config.sb_scheme == 'rate':
-        superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.main_temperature / 11604.5, config.sb_rt_rate_threshold)
+        superbasining = superbasinscheme.RateThreshold(config.sb_path, states, config.main_temperature / 11604.5, config.sb_rt_rate_threshold)
     return superbasining
 
 
