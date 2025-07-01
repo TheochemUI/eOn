@@ -120,9 +120,11 @@ def process_akmc_path(start_step: int, end_state: int, states_e: dict[int, float
         barriers.append(row["barrier"])
         if product_id in path_states:
             # Remove loops
+            # Keep the state being looped back,
+            # remove only the excursion
             index = path_states.index(product_id)
-            del path_states[index:]
-            del barriers[index:]
+            del path_states[index + 1:]
+            del barriers[index + 1:]
         if product_id == end_state:
             path_states.append(product_id)
             break
