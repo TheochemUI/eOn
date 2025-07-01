@@ -243,6 +243,7 @@ class ConfigClass:
         self.saddle_dynamics_temperature = parser.getfloat('Saddle Search', 'dynamics_temperature')
         self.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight')
         self.displace_listed_atom_weight = parser.getfloat('Saddle Search', 'displace_listed_atom_weight')
+        self.displace_atom_kmc_state_script = parser.get('Saddle Search', 'displace_atom_kmc_state_script')
         self.displace_listed_type_weight = parser.getfloat('Saddle Search', 'displace_listed_type_weight')
         self.displace_all_listed = parser.getboolean('Saddle Search', 'displace_all_listed')
         self.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight')
@@ -310,6 +311,8 @@ class ConfigClass:
             self.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
         elif self.sb_scheme == 'energy_level':
             self.sb_el_energy_increment = parser.getfloat('Coarse Graining', 'energy_increment')
+        elif self.sb_scheme == 'rate':
+            self.sb_rt_rate_threshold = parser.getfloat('Coarse Graining', 'rate_threshold')
         self.sb_superbasin_confidence = parser.getboolean('Coarse Graining', 'superbasin_confidence')
 
         self.askmc_on = parser.getboolean('Coarse Graining','use_askmc')

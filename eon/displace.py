@@ -3,6 +3,10 @@ logger = logging.getLogger('displace')
 
 import os, re
 from math import cos, sin
+import sys
+import subprocess
+import tempfile
+from pathlib import Path
 import numpy
 
 from eon import atoms
@@ -362,7 +366,6 @@ class ListedAtoms(Displace):
             epicenter = self.listed_atoms
         else:
             epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
-        logger.debug("Listed atom displacement epicenters: %s", epicenter)
         return self.get_displacement(epicenter)
 
 class ListedTypes(Displace):

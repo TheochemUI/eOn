@@ -652,6 +652,10 @@ class SaddleSearchConfig(BaseModel):
         default=[-1],
         description="The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.",
     )
+    displace_atom_kmc_state_script: str = Field(
+        default="",
+        description="A Python script which returns a string of atoms to be displaced. This is run once for each new AKMC state.",
+    )
     displace_listed_type_weight: float = Field(
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_type_list.",
@@ -864,14 +868,15 @@ class CoarseGrainingConfig(BaseModel):
         default="superbasin",
         description="File name for the state-specific data stored within each of the state directories.",
     )
-    superbasin_scheme: Literal["energy_level", "transition_counting"] = Field(
+    superbasin_scheme: Literal["energy_level", "transition_counting", "rate"] = Field(
         default="transition_counting",
         description="MCAMC provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin.",
     )
     """
     Options:
      - ``transition_counting``: Counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occurred, the pair of states are merged to form a superbasin.
-     - ``energy_level``: States are merged based on energy levels.
+     - ``energy_level``: States are merged based on energy levels filling up existing basins.
+     - ``rate``: States are merged based only on rate criteria.
     """
     max_size: int = Field(
         default=0,
@@ -879,8 +884,12 @@ class CoarseGrainingConfig(BaseModel):
     )
     number_of_transitions: int = Field(
         default=5,
-        description="If the transition counting scheme is being used, this is the number of transitions that must occur between two states before they are merged into a superbasin.",
+        description="This is the number of transitions that must occur between two states before they are merged into a superbasin.",
     )
+    """
+    Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
+    ``transition_counting``.
+    """
     energy_increment: float = Field(
         default=0.01,
         description="The first time each state is visited, it is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount.",
@@ -888,6 +897,14 @@ class CoarseGrainingConfig(BaseModel):
     """
     Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
     ``energy_level``.
+    """
+    rate_threshold: float = Field(
+        default=1e9,
+        description="Any state with a rate (in 1/time) greater than this is merged into a single basin",
+    )
+    """
+    Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
+    ``rate``.
     """
     superbasin_confidence: bool = Field(
         default=True,

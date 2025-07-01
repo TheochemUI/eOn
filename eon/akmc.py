@@ -30,6 +30,7 @@ from eon import atoms
 from eon import superbasinscheme
 from eon import askmc
 from eon import movie
+from eon import _utils as utl
 
 def akmc(config: ConfigClass = EON_CONFIG, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.
@@ -67,6 +68,17 @@ def akmc(config: ConfigClass = EON_CONFIG, steps=0):
     # Load metadata, the state list, and the current state.
     start_state_num, time, previous_state_num, first_run, previous_temperature = get_akmc_metadata()
 
+
+    states = get_statelist(kT)
+    current_state = states.get_state(start_state_num)
+
+    # --- START: DYNAMIC ATOM LIST SCRIPT EXECUTION ---
+    if config.displace_atom_kmc_state_script:
+        atom_list = current_state.get_displacement_atom_list(config)
+        # Overwrite the global config value with the list specific to this state.
+        config.displace_atom_list = atom_list
+    # --- END: DYNAMIC ATOM LIST SCRIPT EXECUTION ---
+
     if first_run:
         previous_temperature = config.main_temperature
 
@@ -85,8 +97,6 @@ def akmc(config: ConfigClass = EON_CONFIG, steps=0):
         # Keep the new temperature.
         previous_temperature = config.main_temperature
 
-    states = get_statelist(kT)
-    current_state = states.get_state(start_state_num)
     if previous_state_num == -1:
         previous_state = current_state
     else:
@@ -176,6 +186,8 @@ def get_superbasin_scheme(states, config):
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.main_temperature / 11604.5, config.sb_tc_ntrans)
     elif config.sb_scheme == 'energy_level':
         superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.main_temperature / 11604.5, config.sb_el_energy_increment)
+    elif config.sb_scheme == 'rate':
+        superbasining = superbasinscheme.RateThreshold(config.sb_path, states, config.main_temperature / 11604.5, config.sb_rt_rate_threshold)
     return superbasining
 
 
