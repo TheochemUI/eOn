@@ -896,7 +896,7 @@ class CoarseGrainingConfig(BaseModel):
     """
     rate_threshold: float = Field(
         default=1e9,
-        description="Any state with a rate (in 1/time) greater than this is merged into a single basin",
+        description="Any state with a rate (in 1/time) greater than this is merged into a single basin.",
     )
     """
     Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
