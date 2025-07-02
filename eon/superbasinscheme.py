@@ -368,7 +368,7 @@ class RateThreshold(SuperbasinScheme):
                         fastest_rate = rate
                 except KeyError as e:
                     logger.error(f"Process from state {start_state.number} to {end_state.number} is missing a key: {e}")
-                    return # Cannot calculate rate, so we stop.
+                    continue # Skip this process and check the next one.
 
         if not found_process:
             logger.warning(f"No direct process found from state {start_state.number} to {end_state.number}.")
