@@ -1,9 +1,9 @@
-
 import os
 import logging
 logger = logging.getLogger('superbasinscheme')
 
 import sys
+import math
 
 from eon.config import config
 from eon import superbasin
@@ -306,3 +306,95 @@ class EnergyLevel(SuperbasinScheme):
             #print("%f\n" % self.levels[i], f)
             f.write("%f\n" % self.levels[i])
             f.close()
+
+
+class RateThreshold(SuperbasinScheme):
+    ''' Implements a superbasin scheme where states are merged if the transition
+        rate between them is faster than a specified threshold. '''
+
+    def __init__(self, superbasin_path, states, kT, rate_threshold):
+        """
+        Initializes the RateThreshold scheme.
+
+        Args:
+            superbasin_path (str): The path to the superbasin directory.
+            states (States): The global states object.
+            kT (float): The thermal energy (k_B * T) in the appropriate units.
+            rate_threshold (float): The rate (in 1/time) above which states
+                                    will be merged into a superbasin.
+        """
+        self.rate_threshold = rate_threshold
+        SuperbasinScheme.__init__(self, superbasin_path, states, kT)
+        logger.info(f"Initialized RateThreshold scheme with a threshold of {self.rate_threshold:.2e}")
+
+    def register_transition(self, start_state, end_state):
+        """
+        Checks if the transition rate between start_state and end_state
+        exceeds the defined threshold. If it does, it merges them.
+        """
+        logger.debug(f'Checking rate between state {start_state.number} and {end_state.number}')
+
+        # Do not process self-transitions if configured to ignore them
+        if start_state == end_state and not config.comp_use_identical:
+            return
+
+        # Efficiently check if both states are already in the same superbasin
+        sb_start = self.get_containing_superbasin(start_state)
+        sb_end = self.get_containing_superbasin(end_state)
+        if sb_start is not None and sb_start == sb_end:
+            logger.debug(f"States {start_state.number} and {end_state.number} are already in the same superbasin.")
+            return
+
+        # Find the fastest transition rate from start_state to end_state
+        # Adapted from EnergyLevel scheme
+        fastest_rate = 0.0
+        found_process = False
+        proc_tab = start_state.get_process_table()
+
+        for key in proc_tab:
+            process = proc_tab[key]
+            # Check if this process leads to the correct product state
+            if process.get('product') == end_state.number:
+                found_process = True
+                # To calculate the rate, we need the energy barrier and the prefactor.
+                # This assumes the process table contains these keys.
+                try:
+                    barrier = process['barrier']
+                    prefactor = process['prefactor']
+                    # Calculate the rate using the Arrhenius equation: k = A * exp(-Ea / kT)
+                    rate = prefactor * math.exp(-barrier / self.kT)
+                    # In case of multiple pathways, we are interested in the fastest one.
+                    if rate > fastest_rate:
+                        fastest_rate = rate
+                except KeyError as e:
+                    logger.error(f"Process from state {start_state.number} to {end_state.number} is missing a key: {e}")
+                    continue # Skip this process and check the next one.
+
+        if not found_process:
+            logger.warning(f"No direct process found from state {start_state.number} to {end_state.number}.")
+            return
+
+        logger.debug(f"Calculated fastest rate from {start_state.number} to {end_state.number} is {fastest_rate:.2e}")
+
+        # The core logic: if the rate is above the threshold, merge the states.
+        if fastest_rate > self.rate_threshold:
+            logger.info(
+                f"Rate {fastest_rate:.2e} exceeds threshold {self.rate_threshold:.2e}. "
+                f"Merging basins containing states {start_state.number} and {end_state.number}."
+            )
+            # Use the method from the base class to perform the merge.
+            self.make_basin_from_sets(start_state, end_state)
+
+    def write_data(self):
+        """
+        This scheme is stateless, so no data needs to be written. The
+        creation of superbasins is handled by the base class and the
+        Superbasin objects, which persist their own state.
+        """
+        pass
+
+    def read_data(self):
+        """
+        This scheme is stateless, so no data needs to be read on startup.
+        """
+        pass
