@@ -88,6 +88,7 @@ py.install_sources(
         'eon/locking.py',
         'eon/server.py',
         'eon/schema.py',
+        'eon/_utils.py',
         # TODO(rg): Spin mcamc out and use as a dependency
         # This will only use the python variant for now
         'eon/mcamc/__init__.py',

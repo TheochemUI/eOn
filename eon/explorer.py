@@ -17,6 +17,7 @@ from eon import fileio as io
 #import kdb
 from eon import recycling
 from eon import eon_kdb as kdb
+from eon import _utils as utl
 
 from eon.config import config as EON_CONFIG
 from eon.config import ConfigClass # Typing
@@ -194,7 +195,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
-
+        atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
         for i in range(num_to_make):
             search = {}
             # The search dictionary contains the following key-value pairs:
@@ -215,6 +216,9 @@ class ClientMinModeExplorer(MinModeExplorer):
             # to switch to min_mode searches
             if self.config.saddle_method == 'dynamics' and disp_type != 'dynamics':
                 ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
+
+            if atom_list_str:
+                ini_changes.append(("Saddle Search", "displace_atom_list", atom_list_str))
 
             search['config.ini'] = io.modify_config(self.config.config_path, ini_changes)
 
