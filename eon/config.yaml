@@ -221,6 +221,18 @@ Nudged Elastic Band:
             kind: float
             default: 0.01
 
+        energy_weighted:
+            kind: boolean
+            default: false
+
+        ew_ksp_min:
+            kind: float
+            default: 0.5
+
+        ew_ksp_max:
+            kind: float
+            default: 5.0
+
 ################################################################################
 
 Distributed Replica:
