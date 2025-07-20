@@ -663,6 +663,62 @@ class ASE_ORCA(BaseModel):
     )
 
 
+class AMSConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    engine: Literal["", "REAXFF", "MOPAC"] = Field(
+        default="", description="Engine for AMS calculation. One of REAXFF, MOPAC."
+    )
+    forcefield: str = Field(
+        default="", description="Force field to use (e.g., 'OPt.ff')."
+    )
+    model: str = Field(default="", description="Model to use (e.g., 'PM7', 'PM3').")
+    xc: str = Field(default="", description="Exchange-correlation functional.")
+    basis: str = Field(
+        default="",
+        description="Basis set to use with the exchange-correlation functional.",
+    )
+    resources: str = Field(default="", description="Resources path for DFTB.")
+
+class AMSIOConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    engine: Literal["", "REAXFF", "MOPAC"] = Field(
+        default="", description="Engine for AMS calculation. One of REAXFF, MOPAC."
+    )
+    forcefield: str = Field(
+        default="", description="Force field to use (e.g., 'OPt.ff')."
+    )
+    model: str = Field(default="", description="Model to use (e.g., 'PM7', 'PM3').")
+    xc: str = Field(default="", description="Exchange-correlation functional.")
+
+class AMSEnvConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    amshome: str = Field(
+        default="",
+        description="Path to AMS home directory (e.g., '/some/path/to/amshome/').",
+    )
+    scm_tmpdir: str = Field(
+        default="", description="Temporary directory for SCM (e.g., '/tmp')."
+    )
+    scm_pythondir: str = Field(
+        default="", description="Python directory for SCM (e.g., '/.scm/python')."
+    )
+    amsbin: str = Field(
+        default="",
+        description="Path to AMS binary directory (will be appended to amshome).",
+    )
+    scmlicense: str = Field(
+        default="",
+        description="Path to SCM license file (will be appended to amshome).",
+    )
+    amsresources: str = Field(
+        default="",
+        description="Path to AMS atomic data resources (will be appended to amshome).",
+    )
+
+
 class SaddleSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
