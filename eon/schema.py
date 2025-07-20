@@ -634,7 +634,7 @@ class ASE_NWCHEM(BaseModel):
     nwchem_path: str = Field(
         default="NONE", description="Path to the NWChem executable."
     )
-    nproc: str = Field(
+    nproc: Union[int, Literal["auto"]] = Field(
         default="auto",
         description="Number of processors to use for NWChem. Can be 'auto' or an integer string.",
     )
@@ -653,7 +653,7 @@ class ASE_ORCA(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
     orca_path: str = Field(default="NONE", description="Path to the ORCA executable.")
-    nproc: str = Field(
+    nproc: Union[int, Literal["auto"]] = Field(
         default="auto",
         description="Number of processors to use for ORCA. Can be 'auto' or an integer string.",
     )
@@ -680,6 +680,7 @@ class AMSConfig(BaseModel):
     )
     resources: str = Field(default="", description="Resources path for DFTB.")
 
+
 class AMSIOConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -691,6 +692,7 @@ class AMSIOConfig(BaseModel):
     )
     model: str = Field(default="", description="Model to use (e.g., 'PM7', 'PM3').")
     xc: str = Field(default="", description="Exchange-correlation functional.")
+
 
 class AMSEnvConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
