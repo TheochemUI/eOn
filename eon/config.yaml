@@ -1413,6 +1413,26 @@ Optimizer:
 
 ################################################################################
 
+XTBPot:
+    options:
+        paramset:
+            kind: string
+            default: "GFNFF"
+
+        accuracy:
+            kind: float
+            default: 1.0
+
+        electronic_temperature:
+            kind: float
+            default: 0.0
+
+        max_iterations:
+            kind: int
+            default: 250
+
+################################################################################
+
 Metatomic:
     options:
         model_path:
