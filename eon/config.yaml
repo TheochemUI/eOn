@@ -1413,6 +1413,101 @@ Optimizer:
 
 ################################################################################
 
+AMS_ENV:
+    options:
+        amshome:
+            kind: string
+            default: ""
+
+        scm_tmpdir:
+            kind: string
+            default: ""
+
+        scm_pythondir:
+            kind: string
+            default: ""
+
+        amsbin:
+            kind: string
+            default: ""
+
+        scmlicense:
+            kind: string
+            default: ""
+
+        amsresources:
+            kind: string
+            default: ""
+
+################################################################################
+AMS:
+    options:
+        engine:
+            kind: string
+            default: ""
+
+        forcefield:
+            kind: string
+            default: ""
+
+        model:
+            kind: string
+            default: ""
+
+        xc:
+            kind: string
+            default: ""
+
+        basis:
+            kind: string
+            default: ""
+
+        resources:
+            kind: string
+            default: ""
+
+################################################################################
+
+AMS_IO:
+    options:
+        engine:
+            kind: string
+            default: ""
+
+        forcefield:
+            kind: string
+            default: ""
+
+        model:
+            kind: string
+            default: ""
+
+        xc:
+            kind: string
+            default: ""
+
+################################################################################
+
+XTBPot:
+    options:
+        paramset:
+            kind: string
+            default: "GFNFF"
+
+        accuracy:
+            kind: float
+            default: 1.0
+
+        electronic_temperature:
+            kind: float
+            default: 0.0
+
+        max_iterations:
+            kind: int
+            default: 250
+
+################################################################################
+
 Metatomic:
     options:
         model_path:
