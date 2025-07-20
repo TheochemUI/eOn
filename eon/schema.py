@@ -593,6 +593,134 @@ class PotentialConfig(BaseModel):
         return v
 
 
+class XTBPot(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    paramset: str = Field(
+        default="GFNFF", description="Parameter set for XTB potential."
+    )
+    accuracy: float = Field(default=1.0, description="Accuracy of the XTB calculation.")
+    electronic_temperature: float = Field(
+        default=0.0, description="Electronic temperature for XTB."
+    )
+    max_iterations: int = Field(
+        default=250, description="Maximum number of XTB iterations."
+    )
+
+
+class Metatomic(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    model_path: str = Field(default="", description="Path to the Metatomic model.")
+    device: str = Field(
+        default="auto",
+        description="Device to use for Metatomic calculations (e.g., 'cpu', 'cuda', 'auto').",
+    )
+    length_unit: str = Field(
+        default="Angstrom", description="Length unit used by the Metatomic model."
+    )
+    extensions_directory: str = Field(
+        default="", description="Directory for Metatomic extensions."
+    )
+    check_consistency: bool = Field(
+        default=False,
+        description="Whether to check consistency of the Metatomic model.",
+    )
+
+
+class ASE_NWCHEM(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    nwchem_path: str = Field(
+        default="NONE", description="Path to the NWChem executable."
+    )
+    nproc: Union[int, Literal["auto"]] = Field(
+        default="auto",
+        description="Number of processors to use for NWChem. Can be 'auto' or an integer string.",
+    )
+    multiplicity: str = Field(
+        default="1", description="Spin multiplicity for the NWChem calculation."
+    )
+    scf_thresh: float = Field(
+        default=1e-5, description="SCF convergence threshold for NWChem."
+    )
+    scf_maxiter: int = Field(
+        default=200, description="Maximum number of SCF iterations for NWChem."
+    )
+
+
+class ASE_ORCA(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    orca_path: str = Field(default="NONE", description="Path to the ORCA executable.")
+    nproc: Union[int, Literal["auto"]] = Field(
+        default="auto",
+        description="Number of processors to use for ORCA. Can be 'auto' or an integer string.",
+    )
+    simpleinput: str = Field(
+        default="ENGRAD HF-3c",
+        description="Simple input string for ORCA, specifying method and basis set.",
+    )
+
+
+class AMSConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    engine: Literal["", "REAXFF", "MOPAC"] = Field(
+        default="", description="Engine for AMS calculation. One of REAXFF, MOPAC."
+    )
+    forcefield: str = Field(
+        default="", description="Force field to use (e.g., 'OPt.ff')."
+    )
+    model: str = Field(default="", description="Model to use (e.g., 'PM7', 'PM3').")
+    xc: str = Field(default="", description="Exchange-correlation functional.")
+    basis: str = Field(
+        default="",
+        description="Basis set to use with the exchange-correlation functional.",
+    )
+    resources: str = Field(default="", description="Resources path for DFTB.")
+
+
+class AMSIOConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    engine: Literal["", "REAXFF", "MOPAC"] = Field(
+        default="", description="Engine for AMS calculation. One of REAXFF, MOPAC."
+    )
+    forcefield: str = Field(
+        default="", description="Force field to use (e.g., 'OPt.ff')."
+    )
+    model: str = Field(default="", description="Model to use (e.g., 'PM7', 'PM3').")
+    xc: str = Field(default="", description="Exchange-correlation functional.")
+
+
+class AMSEnvConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    amshome: str = Field(
+        default="",
+        description="Path to AMS home directory (e.g., '/some/path/to/amshome/').",
+    )
+    scm_tmpdir: str = Field(
+        default="", description="Temporary directory for SCM (e.g., '/tmp')."
+    )
+    scm_pythondir: str = Field(
+        default="", description="Python directory for SCM (e.g., '/.scm/python')."
+    )
+    amsbin: str = Field(
+        default="",
+        description="Path to AMS binary directory (will be appended to amshome).",
+    )
+    scmlicense: str = Field(
+        default="",
+        description="Path to SCM license file (will be appended to amshome).",
+    )
+    amsresources: str = Field(
+        default="",
+        description="Path to AMS atomic data resources (will be appended to amshome).",
+    )
+
+
 class SaddleSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
