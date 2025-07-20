@@ -593,6 +593,21 @@ class PotentialConfig(BaseModel):
         return v
 
 
+class XTBPot(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    paramset: str = Field(
+        default="GFNFF", description="Parameter set for XTB potential."
+    )
+    accuracy: float = Field(default=1.0, description="Accuracy of the XTB calculation.")
+    electronic_temperature: float = Field(
+        default=0.0, description="Electronic temperature for XTB."
+    )
+    max_iterations: int = Field(
+        default=250, description="Maximum number of XTB iterations."
+    )
+
+
 class SaddleSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
