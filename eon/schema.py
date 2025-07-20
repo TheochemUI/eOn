@@ -1259,17 +1259,17 @@ class NudgedElasticBandConfig(BaseModel):
     """
     This defaults to being the same as :any:`eon.schema.OptimizerConfig.converged_force`
     """
-    neb_energy_weighted: bool = Field(
+    energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."
     )
     """
     Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.
     """
-    neb_ksp_min: float = Field(
-        default=0.97, description="Minimum value for KSP in the energy-weighted method."
+    ew_ksp_min: float = Field(
+        default=0.5, description="Minimum value for KSP in the energy-weighted method."
     )
-    neb_ksp_max: float = Field(
-        default=9.7, description="Maximum value for KSP in the energy-weighted method."
+    ew_ksp_max: float = Field(
+        default=5.0, description="Maximum value for KSP in the energy-weighted method."
     )
 
 
