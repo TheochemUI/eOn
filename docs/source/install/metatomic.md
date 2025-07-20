@@ -121,5 +121,5 @@ Out[6]: np.float64(109591.90837618345)
 To use `pet-mad` we can use `metatrain` to grab the model.
 
 ```{code-block} sh
-mtt export https://huggingface.co/lab-cosmo/pet-mad/resolve/main/models/pet-mad-latest.ckpt
+mtt export https://huggingface.co/lab-cosmo/pet-mad/resolve/v1.1.0/models/pet-mad-v1.1.0.ckpt
 ```
