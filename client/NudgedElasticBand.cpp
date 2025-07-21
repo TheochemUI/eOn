@@ -149,6 +149,8 @@ NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Potential> potPassed)
     : params{parametersPassed},
       pot{potPassed} {
+  log = spdlog::get("combi");
+  this->status = NEBStatus::INIT;
   numImages = params->nebImages;
   atoms = initialPassed->numberOfAtoms();
   std::vector<Matter> initial_path;
@@ -169,8 +171,6 @@ NudgedElasticBand::NudgedElasticBand(
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
-  this->status = NEBStatus::INIT;
-  log = spdlog::get("combi");
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
     *path[i] = initial_path[i];
