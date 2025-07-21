@@ -1399,6 +1399,13 @@ class NudgedElasticBandConfig(BaseModel):
     ew_ksp_max: float = Field(
         default=5.0, description="Maximum value for KSP in the energy-weighted method."
     )
+    initial_path_in: str = Field(
+        default="",
+        description="File from which the initial path is read.",
+    )
+    """
+    This file must contain a list of .con files, one per image on the path.
+    """
 
 
 class LanczosConfig(BaseModel):

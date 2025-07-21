@@ -233,6 +233,10 @@ Nudged Elastic Band:
             kind: float
             default: 5.0
 
+        initial_path_in:
+            kind: string
+            default: ""
+
 ################################################################################
 
 Distributed Replica:
