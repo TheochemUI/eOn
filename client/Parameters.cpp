@@ -272,6 +272,7 @@ Parameters::Parameters() {
   nebEnergyWeighted = false;
   nebKSPMin = 0.97;
   nebKSPMax = 9.7;
+  nebIpath = ""s;
 
   // [Dynamics] //
   mdTimeStepInput = 1.0;
@@ -847,6 +848,7 @@ int Parameters::load(FILE *file) {
                                       nebEnergyWeighted);
     nebKSPMin = ini.GetValueF("Nudged Elastic Band", "ew_ksp_min", nebKSPMin);
     nebKSPMax = ini.GetValueF("Nudged Elastic Band", "ew_ksp_max", nebKSPMax);
+    nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
 
     // [Dynamics] //
 
