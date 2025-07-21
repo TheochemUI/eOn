@@ -1,4 +1,3 @@
-
 #include "BaseStructures.h"
 #include "Bundling.h"
 #include "CommandLine.h"
@@ -348,8 +347,9 @@ int main(int argc, char **argv) {
 
     printSystemInfo();
 
-    bool bundlingEnabled = true;
-    int bundleSize = getBundleSize();
+    // XXX(rg): Be more gentle here
+    bool bundlingEnabled = false;
+    int bundleSize = -1; // getBundleSize();
     if (bundleSize == 0) {
       bundleSize = 1;
     } else if (bundleSize == -1) {
