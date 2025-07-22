@@ -281,15 +281,16 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   auto labels_options_cpu =
       torch::TensorOptions().dtype(torch::kInt32).device(torch::kCPU);
 
-  auto pair_samples_values = torch::zeros({n_pairs, 5}, labels_options_cpu);
+  auto pair_samples_values = torch::empty({n_pairs, 5}, labels_options_cpu);
+  auto pair_samples_values_ptr = pair_samples_values.accessor<int32_t, 2>();
   for (int64_t i = 0; i < n_pairs; i++) {
-    pair_samples_values[i][0] =
+    pair_samples_values_ptr[i][0] =
         static_cast<int32_t>(vesin_neighbor_list->pairs[i][0]);
-    pair_samples_values[i][1] =
+    pair_samples_values_ptr[i][1] =
         static_cast<int32_t>(vesin_neighbor_list->pairs[i][1]);
-    pair_samples_values[i][2] = vesin_neighbor_list->shifts[i][0];
-    pair_samples_values[i][3] = vesin_neighbor_list->shifts[i][1];
-    pair_samples_values[i][4] = vesin_neighbor_list->shifts[i][2];
+    pair_samples_values_ptr[i][2] = vesin_neighbor_list->shifts[i][0];
+    pair_samples_values_ptr[i][3] = vesin_neighbor_list->shifts[i][1];
+    pair_samples_values_ptr[i][4] = vesin_neighbor_list->shifts[i][2];
   }
 
   // Custom deleter to free vesin's memory when the torch tensor is destroyed
