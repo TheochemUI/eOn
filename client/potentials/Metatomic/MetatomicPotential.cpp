@@ -145,20 +145,8 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
           .to(this->dtype_)
           .to(this->device_);
 
-  bool pbc_a = torch_cell.index({0, torch::indexing::Slice()})
-                   .norm()
-                   .abs()
-                   .item<double>() > 1e-9;
-  bool pbc_b = torch_cell.index({1, torch::indexing::Slice()})
-                   .norm()
-                   .abs()
-                   .item<double>() > 1e-9;
-  bool pbc_c = torch_cell.index({2, torch::indexing::Slice()})
-                   .norm()
-                   .abs()
-                   .item<double>() > 1e-9;
-  auto torch_pbc = torch::tensor({pbc_a, pbc_b, pbc_c},
-                                 torch::TensorOptions().device(this->device_));
+  auto cell_norms = torch::norm(torch_cell, 2, /*dim=*/1);
+  auto torch_pbc = cell_norms.abs() > 1e-9;
   bool periodic = torch::all(torch_pbc).item<bool>();
 
   bool types_changed = false;
@@ -176,12 +164,12 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
       throw std::runtime_error(
           "[MetatomicPotential] `atomicNrs` must be provided.");
     }
-    std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
+    auto types_tensor_cpu =
+        torch::from_blob(const_cast<int *>(atomicNrs), {nAtoms},
+                         torch::TensorOptions().dtype(torch::kInt32));
     // XXX(rg): Reordering of labels might take place for non-conservative
     // forces / per atom energies
-    this->atomic_types_ =
-        torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
-            .to(this->device_);
+    this->atomic_types_ = types_tensor_cpu.to(this->device_);
 
     // Update the cache
     last_atomic_nrs_.assign(atomicNrs, atomicNrs + nAtoms);
