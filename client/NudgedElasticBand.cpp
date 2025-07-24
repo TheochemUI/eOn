@@ -26,6 +26,43 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
   }
   return all_images_on_path;
 }
+
+std::vector<Matter> filePathInit(const std::vector<fs::path> &fsrcs,
+                                 const Matter &refImg, const size_t nimgs) {
+  std::vector<Matter> all_images_on_path;
+  if (nimgs + 2 != fsrcs.size()) {
+    throw std::runtime_error("Error in filePathInit: Expected " +
+                             std::to_string(nimgs + 2) + " files, but got " +
+                             std::to_string(fsrcs.size()) + ".");
+  }
+  all_images_on_path.reserve(nimgs + 2);
+  // For all images
+  for (const auto &filePath : fsrcs) {
+    Matter img(refImg);
+    img.con2matter(filePath.string());
+    all_images_on_path.push_back(img);
+  }
+  return all_images_on_path;
+}
+
+std::vector<fs::path> readFilePaths(const std::string &listFilePath) {
+  std::vector<fs::path> paths;
+  std::ifstream inputFile(listFilePath);
+
+  if (!inputFile.is_open()) {
+    throw std::runtime_error("Error: Could not open path list file: " + listFilePath);
+  }
+
+  std::string line;
+  while (std::getline(inputFile, line)) {
+    // Skip any empty lines in the input file
+    if (!line.empty()) {
+      paths.emplace_back(line);
+    }
+  }
+
+  return paths;
+}
 } // namespace helper_functions::neb_paths
 
 // NEBObjectiveFunction definitions
@@ -115,10 +152,22 @@ NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Potential> potPassed)
     : params{parametersPassed},
       pot{potPassed} {
+  log = spdlog::get("combi");
+  this->status = NEBStatus::INIT;
   numImages = params->nebImages;
   atoms = initialPassed->numberOfAtoms();
-  auto linear_path = helper_functions::neb_paths::linearPath(
-      *initialPassed, *finalPassed, params->nebImages);
+  std::vector<Matter> initial_path;
+  if (!params->nebIpath.empty()) {
+    SPDLOG_LOGGER_DEBUG(log, "\nNEB: reading initial path from file\n");
+    std::vector<fs::path> file_paths =
+        helper_functions::neb_paths::readFilePaths(params->nebIpath);
+    initial_path = helper_functions::neb_paths::filePathInit(
+        file_paths, *initialPassed, params->nebImages);
+  } else {
+    SPDLOG_LOGGER_DEBUG(log, "\nNEB: initializing with linear path\n");
+    initial_path = helper_functions::neb_paths::linearPath(
+        *initialPassed, *finalPassed, params->nebImages);
+  }
   path.resize(numImages + 2);
   tangent.resize(numImages + 2);
   projectedForce.resize(numImages + 2);
@@ -126,12 +175,9 @@ NudgedElasticBand::NudgedElasticBand(
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
-  this->status = NEBStatus::INIT;
-  log = spdlog::get("combi");
-  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initializing with linear path\n");
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
-    *path[i] = linear_path[i];
+    *path[i] = initial_path[i];
     tangent[i] = std::make_shared<AtomMatrix>();
     tangent[i]->resize(atoms, 3);
     projectedForce[i] = std::make_shared<AtomMatrix>();
@@ -373,7 +419,7 @@ void NudgedElasticBand::updateForces(void) {
         double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
         springConstants[idx - 1] =
             (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
-      }                                          // else always k_l
+      } // else always k_l
     }
   }
 
