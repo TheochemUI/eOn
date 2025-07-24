@@ -30,7 +30,11 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
 std::vector<Matter> filePathInit(const std::vector<fs::path> &fsrcs,
                                  const Matter &refImg, const size_t nimgs) {
   std::vector<Matter> all_images_on_path;
-  assert(nimgs + 2 == fsrcs.size());
+  if (nimgs + 2 != fsrcs.size()) {
+    throw std::runtime_error("Error in filePathInit: Expected " +
+                             std::to_string(nimgs + 2) + " files, but got " +
+                             std::to_string(fsrcs.size()) + ".");
+  }
   all_images_on_path.reserve(nimgs + 2);
   // For all images
   for (const auto &filePath : fsrcs) {
@@ -41,24 +45,25 @@ std::vector<Matter> filePathInit(const std::vector<fs::path> &fsrcs,
   return all_images_on_path;
 }
 
-std::vector<fs::path> readFilePaths(const std::string& listFilePath) {
-    std::vector<fs::path> paths;
-    std::ifstream inputFile(listFilePath);
+std::vector<fs::path> readFilePaths(const std::string &listFilePath) {
+  std::vector<fs::path> paths;
+  std::ifstream inputFile(listFilePath);
 
-    if (!inputFile.is_open()) {
-        std::cerr << "Error: Could not open path list file: " << listFilePath << std::endl;
-        return paths; // Return empty vector on failure
+  if (!inputFile.is_open()) {
+    std::cerr << "Error: Could not open path list file: " << listFilePath
+              << std::endl;
+    return paths; // Return empty vector on failure
+  }
+
+  std::string line;
+  while (std::getline(inputFile, line)) {
+    // Skip any empty lines in the input file
+    if (!line.empty()) {
+      paths.emplace_back(line);
     }
+  }
 
-    std::string line;
-    while (std::getline(inputFile, line)) {
-        // Skip any empty lines in the input file
-        if (!line.empty()) {
-            paths.emplace_back(line);
-        }
-    }
-
-    return paths;
+  return paths;
 }
 } // namespace helper_functions::neb_paths
 
@@ -156,7 +161,8 @@ NudgedElasticBand::NudgedElasticBand(
   std::vector<Matter> initial_path;
   if (!params->nebIpath.empty()) {
     SPDLOG_LOGGER_DEBUG(log, "\nNEB: reading initial path from file\n");
-    std::vector<fs::path> file_paths = helper_functions::neb_paths::readFilePaths(params->nebIpath);
+    std::vector<fs::path> file_paths =
+        helper_functions::neb_paths::readFilePaths(params->nebIpath);
     initial_path = helper_functions::neb_paths::filePathInit(
         file_paths, *initialPassed, params->nebImages);
   } else {
@@ -415,7 +421,7 @@ void NudgedElasticBand::updateForces(void) {
         double alpha_i = (maxEnergy - Ei) / (maxEnergy - E_ref);
         springConstants[idx - 1] =
             (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
-      }                                          // else always k_l
+      } // else always k_l
     }
   }
 
