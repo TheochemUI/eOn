@@ -164,12 +164,12 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
       throw std::runtime_error(
           "[MetatomicPotential] `atomicNrs` must be provided.");
     }
-    auto types_tensor_cpu =
-        torch::from_blob(const_cast<int *>(atomicNrs), {nAtoms},
-                         torch::TensorOptions().dtype(torch::kInt32));
+    std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
     // XXX(rg): Reordering of labels might take place for non-conservative
     // forces / per atom energies
-    this->atomic_types_ = types_tensor_cpu.to(this->device_);
+    this->atomic_types_ =
+        torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
+            .to(this->device_);
 
     // Update the cache
     last_atomic_nrs_.assign(atomicNrs, atomicNrs + nAtoms);
