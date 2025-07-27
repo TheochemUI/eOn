@@ -474,8 +474,8 @@ if get_option('with_metatomic')
         vesin_dep = cppc.find_library('vesin')
         mts_dep = [
             cppc.find_library('metatensor'),
-            cppc.find_library('metatensor-torch'),
-            cppc.find_library('metatomic-torch'),
+            cppc.find_library('metatensor_torch'),
+            cppc.find_library('metatomic_torch'),
         ]
     endif
     _deps += [vesin_dep, mts_dep, torch_deps]
