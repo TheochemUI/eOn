@@ -85,9 +85,6 @@ if use_fortran == true
     )
 endif
 
-# Debugging, should be offloaded from here eventually
-_args += ['-g3', '-O0']
-
 # Safer, saner default, can be turned off in release
 if get_option('buildtype') != 'release'
     _args += ['-DEON_CHECKS=TRUE']
