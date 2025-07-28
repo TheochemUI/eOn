@@ -188,6 +188,8 @@ NudgedElasticBand::NudgedElasticBand(
   movedAfterForceCall = true;
 
   // Make sure that the endpoints know their energy
+  // TODO(rg): Technically this is very redundant if we have the endpoint
+  // minimization... Personally I'd just rely on the cache in v3
   path[0]->getPotentialEnergy();
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;

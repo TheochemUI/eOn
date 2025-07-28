@@ -359,6 +359,9 @@ public:
 
   // Initial path
   string nebIpath; // file containing list of .con files for the initial path
+  // Minimize endpoints This is almost always a good idea, not the default to
+  // keep with older timings
+  bool nebMinimEP;
 
   // [Molecular Dynamics] //
   double mdTimeStepInput;
