@@ -29,6 +29,20 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   initial->con2matter(reactantFilename);
   final_state->con2matter(productFilename);
 
+  if (params->nebMinimEP) {
+    SPDLOG_LOGGER_DEBUG(m_log, "Minimizing reactant");
+    // TODO(rg): Maybe when we have even more parameters, false can be set by the user too..
+    initial->relax(false, params->writeMovies, params->checkpoint, "reactant",
+                   "react_neb");
+    // TODO(rg): How do we report the total E/F now? Currently this is just the
+    // total total, people might want "per-stage" totals (but they can also get
+    // them from the log.)
+    SPDLOG_LOGGER_DEBUG(m_log, "Minimized reactant in ");
+    SPDLOG_LOGGER_DEBUG(m_log, "Minimizing product");
+    final_state->relax(false, params->writeMovies, params->checkpoint,
+                       "product", "prod_neb");
+  }
+
   auto neb =
       std::make_unique<NudgedElasticBand>(initial, final_state, params, pot);
 
@@ -118,12 +132,12 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 }
 
 void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
-  SPDLOG_LOGGER_DEBUG(log, "Final state: ");
+  SPDLOG_LOGGER_DEBUG(m_log, "Final state: ");
   if (status == NudgedElasticBand::NEBStatus::GOOD)
-    SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band, successful.");
+    SPDLOG_LOGGER_DEBUG(m_log, "Nudged elastic band, successful.");
   else if (status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS)
-    SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band, too many iterations.");
+    SPDLOG_LOGGER_DEBUG(m_log, "Nudged elastic band, too many iterations.");
   else
-    SPDLOG_LOGGER_WARN(log, "Unknown status: {}!", static_cast<int>(status));
+    SPDLOG_LOGGER_WARN(m_log, "Unknown status: {}!", static_cast<int>(status));
   return;
 }

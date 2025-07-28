@@ -237,6 +237,10 @@ Nudged Elastic Band:
             kind: string
             default: ""
 
+        minimize_endpoints:
+            kind: boolean
+            default: true
+
 ################################################################################
 
 Distributed Replica:
