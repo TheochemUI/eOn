@@ -44,11 +44,6 @@ public:
         potentialEnergy{0.0} {
 
     m_log = spdlog::get("combi");
-    if (spdlog::get("matters")) {
-      m_log = spdlog::get("matters");
-    } else {
-      m_log = spdlog::basic_logger_mt("matters", "_matter.log", true);
-    }
   } // the number of atoms shall be set later
     // using resize()
   // TODO: This is a placeholder, it delegates to the standard constructor
