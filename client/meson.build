@@ -308,8 +308,8 @@ endif
 
 if get_option('with_xtb')
     xtb_proj = subproject('xtb')
-    xtb_dep = xtb_proj.get_variable('xtb_dep')
-    _deps += [xtb_dep]
+    xtb_dep_static = xtb_proj.get_variable('xtb_dep_static')
+    _deps += [xtb_dep_static]
     subdir('potentials/XTBPot')
     potentials += xtb_eon
     _args += ['-DWITH_XTB']
