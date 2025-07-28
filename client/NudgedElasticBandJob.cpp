@@ -34,6 +34,10 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
     // TODO(rg): Maybe when we have even more parameters, false can be set by the user too..
     initial->relax(false, params->writeMovies, params->checkpoint, "reactant",
                    "react_neb");
+    // TODO(rg): How do we report the total E/F now? Currently this is just the
+    // total total, people might want "per-stage" totals (but they can also get
+    // them from the log.)
+    SPDLOG_LOGGER_DEBUG(m_log, "Minimized reactant in ");
     SPDLOG_LOGGER_DEBUG(m_log, "Minimizing product");
     final_state->relax(false, params->writeMovies, params->checkpoint,
                        "product", "prod_neb");
