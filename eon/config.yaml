@@ -203,7 +203,7 @@ Nudged Elastic Band:
 
         max_iterations:
             kind: int
-            default: 5
+            default: 1000
 
         doubly_nudged:
             kind: boolean
@@ -227,11 +227,15 @@ Nudged Elastic Band:
 
         ew_ksp_min:
             kind: float
-            default: 0.5
+            default: 0.972
 
         ew_ksp_max:
             kind: float
-            default: 5.0
+            default: 9.72
+
+        initial_path_in:
+            kind: string
+            default: ""
 
 ################################################################################
 
