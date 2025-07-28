@@ -357,6 +357,9 @@ public:
   double nebKSPMax;
   bool nebEnergyWeighted;
 
+  // Initial path
+  string nebIpath; // file containing list of .con files for the initial path
+
   // [Molecular Dynamics] //
   double mdTimeStepInput;
   double mdTimeStep;
