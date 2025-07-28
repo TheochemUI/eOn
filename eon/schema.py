@@ -1407,7 +1407,7 @@ class NudgedElasticBandConfig(BaseModel):
     This file must contain a list of .con files, one per image on the path.
     """
     minimize_endpoints: bool = Field(
-        default=False,
+        default=True,
         description="Minimize the reactant and product before the NEB.",
     )
 

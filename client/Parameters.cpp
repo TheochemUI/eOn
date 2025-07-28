@@ -273,7 +273,7 @@ Parameters::Parameters() {
   nebKSPMin = 0.97;
   nebKSPMax = 9.7;
   nebIpath = ""s;
-  nebMinimEP = false;
+  nebMinimEP = true;
 
   // [Dynamics] //
   mdTimeStepInput = 1.0;
