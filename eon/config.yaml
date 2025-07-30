@@ -191,11 +191,15 @@ Nudged Elastic Band:
 
         climbing_image_method:
             kind: boolean
-            default: False
+            default: true
+
+        climbing_image_converged_only:
+            kind: boolean
+            default: true
 
         old_tangent:
             kind: boolean
-            default: False
+            default: false
 
         opt_method:
             kind: string
