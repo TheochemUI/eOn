@@ -562,6 +562,9 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   AtomMatrix tangentEnd = path[numImages]->pbc(
       path[numImages + 1]->getPositions() - path[numImages]->getPositions());
   AtomMatrix tang;
+  // tangent is normalized, so normalize the endpoints too
+  tangentStart.normalize();
+  tangentEnd.normalize();
 
   std::shared_ptr<spdlog::logger> fileLogger;
   if (spdlog::get("file_logger")) {
