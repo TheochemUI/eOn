@@ -29,9 +29,10 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   initial->con2matter(reactantFilename);
   final_state->con2matter(productFilename);
 
-  if (params->nebMinimEP) {
+  if (params->nebMinimEP && !(params->nebIpath == ""s)) {
     SPDLOG_LOGGER_DEBUG(m_log, "Minimizing reactant");
-    // TODO(rg): Maybe when we have even more parameters, false can be set by the user too..
+    // TODO(rg): Maybe when we have even more parameters, false can be set by
+    // the user too..
     initial->relax(false, params->writeMovies, params->checkpoint, "react_neb",
                    "react_neb");
     // TODO(rg): How do we report the total E/F now? Currently this is just the
