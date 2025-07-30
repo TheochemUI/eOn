@@ -153,8 +153,7 @@ NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Parameters> parametersPassed,
     std::shared_ptr<Potential> potPassed)
     : NudgedElasticBand(
-          // Prepare the initial_path vector first
-          [&]() {
+          [&, initialPassed]() {
             if (!parametersPassed->nebIpath.empty()) {
               std::vector<fs::path> file_paths =
                   helper_functions::neb_paths::readFilePaths(
@@ -184,7 +183,6 @@ NudgedElasticBand::NudgedElasticBand(
   path.resize(numImages + 2);
   tangent.resize(numImages + 2);
   projectedForce.resize(numImages + 2);
-  lanczos.resize(numImages + 2);
   extremumPosition.resize(2 * (numImages + 1));
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
@@ -195,7 +193,6 @@ NudgedElasticBand::NudgedElasticBand(
     *path[i] = initPath[i];
     tangent[i] = std::make_shared<AtomMatrix>(atoms, 3);
     projectedForce[i] = std::make_shared<AtomMatrix>(atoms, 3);
-    lanczos[i] = std::make_shared<Lanczos>(path[i], params, pot);
   }
 
   // Common final setup
@@ -211,6 +208,14 @@ NudgedElasticBand::NudgedElasticBand(
     ksp = k_l;
   } else {
     ksp = params->nebSpring;
+  }
+
+  // Optional debugging setup
+  if (parametersPassed->estNEBeig) {
+    lanczos.resize(numImages + 2);
+    for (long i = 0; i <= numImages + 1; i++) {
+      lanczos[i] = std::make_shared<Lanczos>(path[i], parametersPassed, pot);
+    }
   }
 }
 
@@ -568,21 +573,33 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
       distTotal += dist;
     }
 
-    // Run Lanczos to get the lowest eigenvalue for the current image
-    lanczos[i]->compute(path[i], tang);
-    double lowest_eigenvalue = lanczos[i]->getEigenvalue();
-
-    // Calculate other values for logging
+    // Calculate standard values for logging
     double relative_energy = path[i]->getPotentialEnergy() - energy_reactant;
     double parallel_force = (path[i]->getForces().array() * tang.array()).sum();
-    const std::string format_string = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
 
-    if (fileLogger) {
-      fileLogger->info(format_string, i, distTotal, relative_energy,
-                       parallel_force, lowest_eigenvalue);
-    } else {
-      SPDLOG_LOGGER_DEBUG(log, format_string, i, distTotal, relative_energy,
-                          parallel_force, lowest_eigenvalue);
+    // Conditionally run Lanczos and log the eigenvalue
+    if (params->estNEBeig) {
+      lanczos[i]->compute(path[i], tang);
+      double lowest_eigenvalue = lanczos[i]->getEigenvalue();
+      const std::string format_string =
+          "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
+
+      if (fileLogger) {
+        fileLogger->info(format_string, i, distTotal, relative_energy,
+                         parallel_force, lowest_eigenvalue);
+      } else {
+        SPDLOG_LOGGER_DEBUG(log, format_string, i, distTotal, relative_energy,
+                            parallel_force, lowest_eigenvalue);
+      }
+    } else { // Standard output without the eigenvalue
+      const std::string format_string = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}";
+      if (fileLogger) {
+        fileLogger->info(format_string, i, distTotal, relative_energy,
+                         parallel_force);
+      } else {
+        SPDLOG_LOGGER_DEBUG(log, format_string, i, distTotal, relative_energy,
+                            parallel_force);
+      }
     }
   }
 
