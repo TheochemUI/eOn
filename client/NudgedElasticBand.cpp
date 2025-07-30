@@ -566,7 +566,7 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     if (spdlog::get("file_logger")) {
       spdlog::drop("file_logger");
     }
-    auto neb_dat_fs = fmt::format("neb_{:03d}.dat", idx);
+    auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
     if (fs::exists(neb_dat_fs)) {
       fs::remove(neb_dat_fs);
     }
