@@ -2,10 +2,12 @@
 #include "BaseStructures.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
+#include "MinModeSaddleSearch.h"
 #include "Optimizer.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <filesystem>
+#include <spdlog/spdlog.h>
 
 using namespace helper_functions;
 namespace fs = std::filesystem;
@@ -278,8 +280,33 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
     VectorXd pos = objf->getPositions();
     double convForce{convergenceForce()};
-    if (iteration) { // so that we print forces before taking an optimizer
-                     // step
+    if (iteration) {
+      // so that we print forces before taking an optimizer step
+      if (climbingImage > 0 && climbingImage <= numImages,
+          convForce < 0.5) {
+
+        auto tempMinModeSearch = std::make_shared<MinModeSaddleSearch>(
+            path[climbingImage], *tangent[climbingImage],
+            path[climbingImage]->getPotentialEnergy(), params, pot);
+
+        int cPotCalls = pot->forceCallCounter;
+        int originalMaxIterations = params->saddleMaxIterations;
+        params->saddleMaxIterations = 10;
+        int minModeStatus = tempMinModeSearch->run();
+
+        if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD &&
+            minModeStatus != MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
+          SPDLOG_WARN(
+              "MinModeSaddleSearch for climbing image returned status: {}",
+              minModeStatus);
+        }
+
+        // Now, the climbing image (path[climbingImage]) has been optimized for
+        // a few steps by the MinModeSaddleSearch.
+        movedAfterForceCall = true;
+        updateForces();
+      }
+
       if (iteration >= params->nebMaxIterations) {
         status = NEBStatus::BAD_MAX_ITERATIONS;
         break;
@@ -299,7 +326,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         optim->step(params->optMaxMove);
       }
     }
-    // }
     iteration++;
 
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
