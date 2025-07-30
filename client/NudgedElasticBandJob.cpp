@@ -29,7 +29,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   initial->con2matter(reactantFilename);
   final_state->con2matter(productFilename);
 
-  if (params->nebMinimEP && !(params->nebIpath == ""s)) {
+  if (params->nebMinimEP && params->nebIpath == ""s) {
     SPDLOG_LOGGER_DEBUG(m_log, "Minimizing reactant");
     // TODO(rg): Maybe when we have even more parameters, false can be set by
     // the user too..
