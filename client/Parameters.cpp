@@ -690,10 +690,13 @@ int Parameters::load(FILE *file) {
       // Case sensitive!!
       // TODO: This should be handled in clienteon so you can still call
       // eonclient for single point calculations easily
-      metatomic_options.model_path = ini.GetValue("Metatomic", "model_path", "");
+      metatomic_options.model_path =
+          ini.GetValue("Metatomic", "model_path", "");
       metatomic_options.device = ini.GetValue("Metatomic", "device", "cpu");
-      metatomic_options.length_unit = ini.GetValue("Metatomic", "length_unit", "angstrom");
-      metatomic_options.extensions_directory = ini.GetValue("Metatomic", "extensions_directory", "");
+      metatomic_options.length_unit =
+          ini.GetValue("Metatomic", "length_unit", "angstrom");
+      metatomic_options.extensions_directory =
+          ini.GetValue("Metatomic", "extensions_directory", "");
       metatomic_options.check_consistency =
           ini.GetValueB("Metatomic", "check_consistency", false);
     }
