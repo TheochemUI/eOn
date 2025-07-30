@@ -1277,6 +1277,14 @@ class DebugConfig(BaseModel):
     keep_all_result_files: bool = Field(
         default=False, description="Stores all result files in main_directory/results."
     )
+    estimate_neb_eigenvalues: bool = Field(
+        default=False,
+        description="Write out the estimated lowest eigenvalue for each image of the NEB. This can significantly slow down the calculation!",
+    )
+    neb_mmf_estimator: Literal["dimer", "lanczos"] = Field(
+        default="dimer",
+        description="Estimator used to get the lowest eigenvalue, only used if estimate_neb_eigenvalues is true.",
+    )
     write_movies: bool = Field(
         default=False, description="Output a movie of the calculation."
     )
