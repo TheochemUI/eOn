@@ -195,6 +195,10 @@ NudgedElasticBand::NudgedElasticBand(
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
 
+  lanczos.resize(numImages + 2);
+  for (long i = 0; i <= numImages + 1; i++) {
+    lanczos[i] = std::make_shared<Lanczos>(path[i], params, pot);
+  }
   return;
 }
 
@@ -240,6 +244,10 @@ NudgedElasticBand::NudgedElasticBand(
   // NOTE(rg): E_ref is just left uninitialized since the path isn't ready here
   E_ref = std::numeric_limits<double>::infinity();
   climbingImage = 0;
+  lanczos.resize(numImages + 2);
+  for (long i = 0; i <= numImages + 1; i++) {
+    lanczos[i] = std::make_shared<Lanczos>(path[i], params, pot);
+  }
   return;
 }
 
@@ -590,21 +598,32 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     } else {
       tang = *tangent[i];
     }
+
     if (i > 0) {
       dist = path[i]->distanceTo(*path[i - 1]);
       distTotal += dist;
     }
+
+    // Run Lanczos to get the lowest eigenvalue for the current image
+    lanczos[i]->compute(path[i], tang);
+    double lowest_eigenvalue = lanczos[i]->getEigenvalue();
+
+    // Calculate other values for logging
+    double relative_energy = path[i]->getPotentialEnergy() - energy_reactant;
+    double parallel_force = (path[i]->getForces().array() * tang.array()).sum();
+    const std::string format_string = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
+
     if (fileLogger) {
-      SPDLOG_LOGGER_DEBUG(
-          fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
-          path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
-          (path[i]->getForces().array() * tang.array()).sum());
+      fileLogger->info(format_string, i, distTotal, relative_energy,
+                       parallel_force, lowest_eigenvalue);
     } else {
-      SPDLOG_LOGGER_DEBUG(
-          log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
-          path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
-          (path[i]->getForces().array() * tang.array()).sum());
+      SPDLOG_LOGGER_DEBUG(log, format_string, i, distTotal, relative_energy,
+                          parallel_force, lowest_eigenvalue);
     }
+  }
+
+  if (fileLogger) {
+    spdlog::drop("file_logger");
   }
 }
 
