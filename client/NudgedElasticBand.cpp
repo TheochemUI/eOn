@@ -558,6 +558,9 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   }
 
   const double energy_reactant = path[0]->getPotentialEnergy();
+  const std::string fmt_no_eig = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}";
+  const std::string fmt_with_eig =
+      "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
 
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
@@ -581,23 +584,19 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     if (params->estNEBeig) {
       lanczos[i]->compute(path[i], tang);
       double lowest_eigenvalue = lanczos[i]->getEigenvalue();
-      const std::string format_string =
-          "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
-
       if (fileLogger) {
-        fileLogger->info(format_string, i, distTotal, relative_energy,
+        fileLogger->info(fmt_with_eig, i, distTotal, relative_energy,
                          parallel_force, lowest_eigenvalue);
       } else {
-        SPDLOG_LOGGER_DEBUG(log, format_string, i, distTotal, relative_energy,
+        SPDLOG_LOGGER_DEBUG(log, fmt_with_eig, i, distTotal, relative_energy,
                             parallel_force, lowest_eigenvalue);
       }
     } else { // Standard output without the eigenvalue
-      const std::string format_string = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}";
       if (fileLogger) {
-        fileLogger->info(format_string, i, distTotal, relative_energy,
+        fileLogger->info(fmt_no_eig, i, distTotal, relative_energy,
                          parallel_force);
       } else {
-        SPDLOG_LOGGER_DEBUG(log, format_string, i, distTotal, relative_energy,
+        SPDLOG_LOGGER_DEBUG(log, fmt_no_eig, i, distTotal, relative_energy,
                             parallel_force);
       }
     }
