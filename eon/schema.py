@@ -1418,6 +1418,22 @@ class NudgedElasticBandConfig(BaseModel):
         default=True,
         description="Minimize the reactant and product before the NEB.",
     )
+    ci_after: float = Field(
+        default=0,
+        description="Convergence before the CI is turned on.",
+    )
+    ci_mmf: bool = Field(
+        default=False,
+        description="Use an MMF method for a few steps at the CI.",
+    )
+    ci_mmf_after: float = Field(
+        default=0.5,
+        description="Convergence before the CI is turned on.",
+    )
+    ci_mmf_nsteps: int = Field(
+        default=10,
+        description="Number of steps for which the MMF is run at the CI image.",
+    )
 
 
 class LanczosConfig(BaseModel):
