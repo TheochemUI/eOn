@@ -93,8 +93,9 @@ Parameters::Parameters() {
 
   // [Debug] //
   writeMovies = false;
-  estNEBeig = false;
   writeMoviesInterval = 1;
+  estNEBeig = false;
+  nebMMF = LowestEigenmode::MINMODE_DIMER;
 
   // [Saddle Search] //
   saddleDisplaceType = EpiCenters::DISP_LOAD;
@@ -492,9 +493,11 @@ int Parameters::load(FILE *file) {
     // [Debug] //
 
     writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
-    estNEBeig = ini.GetValueB("Debug", "estimate_neb_eigenvalues", estNEBeig);
     writeMoviesInterval =
         ini.GetValueL("Debug", "write_movies_interval", writeMoviesInterval);
+    estNEBeig = ini.GetValueB("Debug", "estimate_neb_eigenvalues", estNEBeig);
+    nebMMF = toLowerCase(
+        ini.GetValue("Debug", "neb_mmf_estimator", nebMMF));
 
     // [Structure Comparison] //
 
