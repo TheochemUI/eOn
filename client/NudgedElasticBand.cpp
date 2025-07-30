@@ -50,7 +50,8 @@ std::vector<fs::path> readFilePaths(const std::string &listFilePath) {
   std::ifstream inputFile(listFilePath);
 
   if (!inputFile.is_open()) {
-    throw std::runtime_error("Error: Could not open path list file: " + listFilePath);
+    throw std::runtime_error("Error: Could not open path list file: " +
+                             listFilePath);
   }
 
   std::string line;
