@@ -93,6 +93,7 @@ Parameters::Parameters() {
 
   // [Debug] //
   writeMovies = false;
+  estNEBeig = false;
   writeMoviesInterval = 1;
 
   // [Saddle Search] //
@@ -491,6 +492,7 @@ int Parameters::load(FILE *file) {
     // [Debug] //
 
     writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
+    estNEBeig = ini.GetValueB("Debug", "estimate_neb_eigenvalues", estNEBeig);
     writeMoviesInterval =
         ini.GetValueL("Debug", "write_movies_interval", writeMoviesInterval);
 
