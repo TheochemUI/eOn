@@ -147,68 +147,64 @@ VectorXd NEBObjectiveFunction::difference(VectorXd a, VectorXd b) {
 }
 
 // Nudged Elastic Band definitions
+// First constructor: Now delegates to the second constructor
 NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
     std::shared_ptr<Parameters> parametersPassed,
     std::shared_ptr<Potential> potPassed)
+    : NudgedElasticBand(
+          // Prepare the initial_path vector first
+          [&]() {
+            if (!parametersPassed->nebIpath.empty()) {
+              std::vector<fs::path> file_paths =
+                  helper_functions::neb_paths::readFilePaths(
+                      parametersPassed->nebIpath);
+              return helper_functions::neb_paths::filePathInit(
+                  file_paths, *initialPassed, parametersPassed->nebImages);
+            } else {
+              return helper_functions::neb_paths::linearPath(
+                  *initialPassed, *finalPassed, parametersPassed->nebImages);
+            }
+          }(),
+          parametersPassed, potPassed) {}
+
+// Second constructor: Contains all the common setup code
+NudgedElasticBand::NudgedElasticBand(
+    std::vector<Matter> initPath, std::shared_ptr<Parameters> parametersPassed,
+    std::shared_ptr<Potential> potPassed)
     : params{parametersPassed},
       pot{potPassed} {
+
   log = spdlog::get("combi");
   this->status = NEBStatus::INIT;
   numImages = params->nebImages;
-  atoms = initialPassed->numberOfAtoms();
-  std::vector<Matter> initial_path;
-  if (!params->nebIpath.empty()) {
-    SPDLOG_LOGGER_DEBUG(log, "\nNEB: reading initial path from file\n");
-    std::vector<fs::path> file_paths =
-        helper_functions::neb_paths::readFilePaths(params->nebIpath);
-    initial_path = helper_functions::neb_paths::filePathInit(
-        file_paths, *initialPassed, params->nebImages);
-  } else {
-    SPDLOG_LOGGER_DEBUG(log, "\nNEB: initializing with linear path\n");
-    initial_path = helper_functions::neb_paths::linearPath(
-        *initialPassed, *finalPassed, params->nebImages);
-  }
+  atoms = initPath.front().numberOfAtoms();
+
+  // Common initialization logic
   path.resize(numImages + 2);
   tangent.resize(numImages + 2);
   projectedForce.resize(numImages + 2);
+  lanczos.resize(numImages + 2);
   extremumPosition.resize(2 * (numImages + 1));
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
+
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
-    *path[i] = initial_path[i];
-    tangent[i] = std::make_shared<AtomMatrix>();
-    tangent[i]->resize(atoms, 3);
-    projectedForce[i] = std::make_shared<AtomMatrix>();
-    projectedForce[i]->resize(atoms, 3);
+    *path[i] = initPath[i];
+    tangent[i] = std::make_shared<AtomMatrix>(atoms, 3);
+    projectedForce[i] = std::make_shared<AtomMatrix>(atoms, 3);
+    lanczos[i] = std::make_shared<Lanczos>(path[i], params, pot);
   }
-  *path[numImages + 1] = *finalPassed; // final image
 
+  // Common final setup
   movedAfterForceCall = true;
-
-  // Make sure that the endpoints know their energy
-  // TODO(rg): Technically this is very redundant if we have the endpoint
-  // minimization... Personally I'd just rely on the cache in v3
   path[0]->getPotentialEnergy();
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
 
-  lanczos.resize(numImages + 2);
-  for (long i = 0; i <= numImages + 1; i++) {
-    lanczos[i] = std::make_shared<Lanczos>(path[i], params, pot);
-  }
-  return;
-}
-
-NudgedElasticBand::NudgedElasticBand(
-    std::vector<std::shared_ptr<Matter>> initPath,
-    std::shared_ptr<Parameters> parametersPassed,
-    std::shared_ptr<Potential> potPassed)
-    : params{parametersPassed},
-      pot{potPassed} {
-  numImages = params->nebImages;
+  // Setup springs
   k_u = params->nebKSPMax;
   k_l = params->nebKSPMin;
   if (params->nebEnergyWeighted) {
@@ -216,39 +212,6 @@ NudgedElasticBand::NudgedElasticBand(
   } else {
     ksp = params->nebSpring;
   }
-  auto initialPassed = initPath.front();
-  auto finalPassed = initPath.back();
-  atoms = initialPassed->numberOfAtoms();
-  path.resize(numImages + 2);
-  tangent.resize(numImages + 2);
-  projectedForce.resize(numImages + 2);
-  extremumPosition.resize(2 * (numImages + 1));
-  extremumEnergy.resize(2 * (numImages + 1));
-  extremumCurvature.resize(2 * (numImages + 1));
-  numExtrema = 0;
-  log = spdlog::get("combi");
-  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initialized with old path\n");
-  this->status = NEBStatus::INIT;
-  for (long i = 0; i <= numImages + 1; i++) {
-    path[i] = std::make_shared<Matter>(pot, params);
-    *path[i] = *initPath[i];
-    tangent[i] = std::make_shared<AtomMatrix>();
-    tangent[i]->resize(atoms, 3);
-    projectedForce[i] = std::make_shared<AtomMatrix>();
-    projectedForce[i]->resize(atoms, 3);
-  }
-  *path[numImages + 1] = *finalPassed; // final image
-
-  movedAfterForceCall = true;
-
-  // NOTE(rg): E_ref is just left uninitialized since the path isn't ready here
-  E_ref = std::numeric_limits<double>::infinity();
-  climbingImage = 0;
-  lanczos.resize(numImages + 2);
-  for (long i = 0; i <= numImages + 1; i++) {
-    lanczos[i] = std::make_shared<Lanczos>(path[i], params, pot);
-  }
-  return;
 }
 
 NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
