@@ -564,6 +564,7 @@ void NudgedElasticBand::updateForces(void) {
 }
 
 // Print NEB image data
+// Print NEB image data
 void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   double dist, distTotal = 0;
   AtomMatrix tangentStart =
@@ -571,25 +572,26 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   AtomMatrix tangentEnd = path[numImages]->pbc(
       path[numImages + 1]->getPositions() - path[numImages]->getPositions());
   AtomMatrix tang;
-  // tangent is normalized, so normalize the endpoints too
+
+  // Endpoint tangents must be normalized for a correct projection
   tangentStart.normalize();
   tangentEnd.normalize();
 
   std::shared_ptr<spdlog::logger> fileLogger;
-  if (spdlog::get("file_logger")) {
-    spdlog::drop("file_logger");
-  }
   if (writeToFile) {
-    // Remove existing log file if it exists
-    auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
+    if (spdlog::get("file_logger")) {
+      spdlog::drop("file_logger");
+    }
+    auto neb_dat_fs = fmt::format("neb_{:03d}.dat", idx);
     if (fs::exists(neb_dat_fs)) {
-      // SPDLOG_DEBUG(
-      //     "Removing the file since it exists, dropping existing logger");
       fs::remove(neb_dat_fs);
     }
     fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
     fileLogger->set_pattern("%v");
   }
+
+  const double energy_reactant = path[0]->getPotentialEnergy();
+
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
       tang = tangentStart;
