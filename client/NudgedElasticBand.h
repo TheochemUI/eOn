@@ -8,7 +8,7 @@
 #include "Eigen.h"
 
 #include "HelperFunctions.h"
-#include "Lanczos.h"
+#include "LowestEigenmode.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
@@ -39,7 +39,7 @@ public:
   double convergenceForce(void);
   void findExtrema(void);
   void printImageData(bool writeToFile = false, size_t idx = 0);
-  std::vector<std::shared_ptr<Lanczos>> lanczos;
+  std::vector<std::shared_ptr<LowestEigenmode>> eigenmode_solvers;
 
   int atoms;
   long numImages, climbingImage, numExtrema;

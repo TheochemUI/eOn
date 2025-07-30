@@ -1,7 +1,10 @@
 #include "NudgedElasticBand.h"
 #include "BaseStructures.h"
+#include "ImprovedDimer.h"
+#include "Lanczos.h"
 #include "Optimizer.h"
 #include "magic_enum/magic_enum.hpp"
+
 #include <filesystem>
 
 using namespace helper_functions;
@@ -211,10 +214,21 @@ NudgedElasticBand::NudgedElasticBand(
   }
 
   // Optional debugging setup
-  if (parametersPassed->estNEBeig) {
-    lanczos.resize(numImages + 2);
+  if (params->estNEBeig) {
+    eigenmode_solvers.resize(numImages + 2);
     for (long i = 0; i <= numImages + 1; i++) {
-      lanczos[i] = std::make_shared<Lanczos>(path[i], parametersPassed, pot);
+      if (params->nebMMF == LowestEigenmode::MINMODE_DIMER) {
+        eigenmode_solvers[i] =
+            std::make_shared<ImprovedDimer>(path[i], parametersPassed, pot);
+      } else if (params->nebMMF == LowestEigenmode::MINMODE_LANCZOS) {
+        eigenmode_solvers[i] =
+            std::make_shared<Lanczos>(path[i], parametersPassed, pot);
+      } else {
+        log = spdlog::get("_traceback");
+        SPDLOG_LOGGER_CRITICAL(log, "[Debug] unknown neb_mmf_estimator: {}",
+                               params->nebMMF);
+        std::exit(1);
+      }
     }
   }
 }
@@ -262,7 +276,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
     VectorXd pos = objf->getPositions();
     double convForce{convergenceForce()};
-    if (iteration) { // so that we print forces before taking an optimizer step
+    if (iteration) { // so that we print forces before taking an optimizer
+                     // step
       if (iteration >= params->nebMaxIterations) {
         status = NEBStatus::BAD_MAX_ITERATIONS;
         break;
@@ -582,8 +597,8 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
 
     // Conditionally run Lanczos and log the eigenvalue
     if (params->estNEBeig) {
-      lanczos[i]->compute(path[i], tang);
-      double lowest_eigenvalue = lanczos[i]->getEigenvalue();
+      eigenmode_solvers[i]->compute(path[i], tang);
+      double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
       if (fileLogger) {
         fileLogger->info(fmt_with_eig, i, distTotal, relative_energy,
                          parallel_force, lowest_eigenvalue);
@@ -648,8 +663,8 @@ void NudgedElasticBand::findExtrema(void) {
   // finding extrema along the MEP
 
   //    long numExtrema = 0;
-  //    double extremaEnergy[2*(numImages+1)]; // the maximum number of extrema
-  //    double extremaPosition[2*(numImages+1)];
+  //    double extremaEnergy[2*(numImages+1)]; // the maximum number of
+  //    extrema double extremaPosition[2*(numImages+1)];
   double discriminant, f;
 
   for (long i = 0; i <= numImages; i++) {
