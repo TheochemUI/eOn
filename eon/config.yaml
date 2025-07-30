@@ -241,6 +241,22 @@ Nudged Elastic Band:
             kind: boolean
             default: true
 
+        ci_after:
+            kind: float
+            default: 0
+
+        ci_mmf:
+            kind: boolean
+            default: false
+
+        ci_mmf_after:
+            kind: float
+            default: 0.5
+
+        ci_mmf_nsteps:
+            kind: int
+            default: 10
+
 ################################################################################
 
 Distributed Replica:
