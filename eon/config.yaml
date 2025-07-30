@@ -301,6 +301,10 @@ Debug:
             kind: boolean
             default: False
 
+        neb_mmf_estimator:
+            kind: string
+            default: "dimer"
+
         write_movies:
             kind: boolean
             default: False

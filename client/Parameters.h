@@ -473,6 +473,7 @@ public:
   bool writeMovies;
   long writeMoviesInterval;
   bool estNEBeig;
+  string nebMMF;
 
 private:
   string toLowerCase(string s);
