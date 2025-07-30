@@ -8,6 +8,7 @@
 #include "Eigen.h"
 
 #include "HelperFunctions.h"
+#include "LowestEigenmode.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
@@ -23,12 +24,11 @@ public:
     RUNNING,
     MAX_UNCERTAINITY
   };
-
   NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                     std::shared_ptr<Matter> finalPassed,
                     std::shared_ptr<Parameters> parametersPassed,
                     std::shared_ptr<Potential> potPassed);
-  NudgedElasticBand(std::vector<std::shared_ptr<Matter>> initPath,
+  NudgedElasticBand(std::vector<Matter> initPath,
                     std::shared_ptr<Parameters> parametersPassed,
                     std::shared_ptr<Potential> potPassed);
   ~NudgedElasticBand() = default;
@@ -39,6 +39,7 @@ public:
   double convergenceForce(void);
   void findExtrema(void);
   void printImageData(bool writeToFile = false, size_t idx = 0);
+  std::vector<std::shared_ptr<LowestEigenmode>> eigenmode_solvers;
 
   int atoms;
   long numImages, climbingImage, numExtrema;
@@ -72,7 +73,7 @@ public:
         neb{nebPassed} {}
   // This is the odd one out, doesn't take a Matter so we null it
 
-  ~NEBObjectiveFunction(void){};
+  ~NEBObjectiveFunction(void) {};
 
   VectorXd getGradient(bool fdstep = false);
   double getEnergy();
@@ -93,9 +94,9 @@ namespace helper_functions {
 namespace neb_paths {
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                                const size_t nimgs);
-std::vector<Matter> filePathInit(const std::vector<std::filesystem::path> &fsrcs,
-                                 const Matter &refImg,
-                                 const size_t nimgs);
+std::vector<Matter>
+filePathInit(const std::vector<std::filesystem::path> &fsrcs,
+             const Matter &refImg, const size_t nimgs);
 /**
  * @brief Reads a file where each line contains a path to another file.
  *
@@ -103,8 +104,9 @@ std::vector<Matter> filePathInit(const std::vector<std::filesystem::path> &fsrcs
  * @return A vector of filesystem paths. Returns an empty vector if the
  * file cannot be opened.
  */
-std::vector<std::filesystem::path> readFilePaths(const std::string& listFilePath);
-}
+std::vector<std::filesystem::path>
+readFilePaths(const std::string &listFilePath);
+} // namespace neb_paths
 } // namespace helper_functions
 
 #endif
