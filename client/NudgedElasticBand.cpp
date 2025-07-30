@@ -564,7 +564,6 @@ void NudgedElasticBand::updateForces(void) {
 }
 
 // Print NEB image data
-// Print NEB image data
 void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   double dist, distTotal = 0;
   AtomMatrix tangentStart =

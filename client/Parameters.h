@@ -472,6 +472,7 @@ public:
   // [Debug] //
   bool writeMovies;
   long writeMoviesInterval;
+  bool estNEBeig;
 
 private:
   string toLowerCase(string s);
