@@ -597,7 +597,7 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     double relative_energy = path[i]->getPotentialEnergy() - energy_reactant;
     double parallel_force = (path[i]->getForces().array() * tang.array()).sum();
 
-    // Conditionally run Lanczos and log the eigenvalue
+    // Conditionally run an MMF and log the eigenvalue
     if (params->estNEBeig) {
       eigenmode_solvers[i]->compute(path[i], tang);
       double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
