@@ -556,6 +556,16 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   AtomMatrix tangentEnd = path[numImages]->pbc(
       path[numImages + 1]->getPositions() - path[numImages]->getPositions());
   AtomMatrix tang;
+  std::string header, fmttr;
+  if (params->estNEBeig) {
+    header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s} {:>12s}", "img",
+                         "rxn_coord", "energy", "f_para", "eigval");
+    fmttr = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
+  } else {
+    header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s}", "img", "rxn_coord",
+                         "energy", "f_para");
+    fmttr = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}";
+  }
 
   // Endpoint tangents must be normalized for a correct projection
   tangentStart.normalize();
@@ -572,12 +582,9 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     }
     fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
     fileLogger->set_pattern("%v");
+    fileLogger->info(header);
   }
-
   const double energy_reactant = path[0]->getPotentialEnergy();
-  const std::string fmt_no_eig = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}";
-  const std::string fmt_with_eig =
-      "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
 
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
@@ -602,18 +609,17 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
       eigenmode_solvers[i]->compute(path[i], tang);
       double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
       if (fileLogger) {
-        fileLogger->info(fmt_with_eig, i, distTotal, relative_energy,
-                         parallel_force, lowest_eigenvalue);
+        fileLogger->info(fmttr, i, distTotal, relative_energy, parallel_force,
+                         lowest_eigenvalue);
       } else {
-        SPDLOG_LOGGER_DEBUG(log, fmt_with_eig, i, distTotal, relative_energy,
+        SPDLOG_LOGGER_DEBUG(log, fmttr, i, distTotal, relative_energy,
                             parallel_force, lowest_eigenvalue);
       }
     } else { // Standard output without the eigenvalue
       if (fileLogger) {
-        fileLogger->info(fmt_no_eig, i, distTotal, relative_energy,
-                         parallel_force);
+        fileLogger->info(fmttr, i, distTotal, relative_energy, parallel_force);
       } else {
-        SPDLOG_LOGGER_DEBUG(log, fmt_no_eig, i, distTotal, relative_energy,
+        SPDLOG_LOGGER_DEBUG(log, fmttr, i, distTotal, relative_energy,
                             parallel_force);
       }
     }
