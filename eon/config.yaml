@@ -297,6 +297,10 @@ Debug:
             kind: boolean
             default: False
 
+        estimate_neb_eigenvalues:
+            kind: boolean
+            default: False
+
         write_movies:
             kind: boolean
             default: False

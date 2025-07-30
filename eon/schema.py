@@ -1277,6 +1277,9 @@ class DebugConfig(BaseModel):
     keep_all_result_files: bool = Field(
         default=False, description="Stores all result files in main_directory/results."
     )
+    estimate_neb_eigenvalues: bool = Field(
+        default=False, description="Write out the estimated lowest eigenvalue for each image of the NEB."
+    )
     write_movies: bool = Field(
         default=False, description="Output a movie of the calculation."
     )
