@@ -194,8 +194,10 @@ NudgedElasticBand::NudgedElasticBand(
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
     *path[i] = initPath[i];
-    tangent[i] = std::make_shared<AtomMatrix>(atoms, 3);
-    projectedForce[i] = std::make_shared<AtomMatrix>(atoms, 3);
+    tangent[i] = std::make_shared<AtomMatrix>();
+    tangent[i]->resize(atoms, 3);
+    projectedForce[i] = std::make_shared<AtomMatrix>();
+    projectedForce[i]->resize(atoms, 3);
   }
 
   // Common final setup
