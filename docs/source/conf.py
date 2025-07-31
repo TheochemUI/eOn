@@ -60,7 +60,7 @@ html_title = "eOn"
 html_static_path = ["_static"]
 
 html_theme_options = {
-    "repository_url": "https://github.com/TheochemUI/EONgit",
+    "repository_url": "https://github.com/TheochemUI/eOn",
     "use_repository_button": True,
     "logo": {
         "image_light": "_static/logo/ev2_trans.png",

@@ -204,6 +204,7 @@ public:
                            the relaxation phase is continued from the
                            current dimer if the maximum iterations in the
                            relaxation phase is reached {islarge_num_iter} */
+    // GPR Params
     std::string hyperOptMethod; ///< method to optimize hyperparameters
                                 ///< {optimization_alg}
     double sigma2;              ///< GPR variance {gp_sigma2}
@@ -243,6 +244,42 @@ public:
     bool gp_linear_path_always;
     PotType potential; // ONLY: catlearn for now
   } surrogate;
+
+  struct CatLearn {
+    // [CatLearn]
+    std::string path;
+    std::string model;
+    std::string prior;
+    bool use_deriv;
+    bool use_fingerprint;
+    bool parallel;
+  } catl;
+
+  struct ASEOrca {
+    // [ASE_ORCA]
+    std::string path;
+    std::string nproc;
+    std::string sline; /** Other catchall values */
+  } ase_orca;
+
+  struct ASENWChem {
+    // [ASE_NWCHEM] //
+    std::string path;
+    std::string nproc;
+    std::string multiplicity; /** 1 for singlet, 2 for doublet */
+    double scf_thresh;
+    size_t scf_maxiter;
+  } ase_nwchem;
+
+  // [Metatomic] //
+  struct metatomic_options_t {
+    std::string model_path; /** Path to the TorchScript model file. */
+    std::string device; /** "cpu", "cuda", "mps", or empty to auto-detect. */
+    std::string length_unit; /** The unit of length used in the simulation
+                                (e.g., "angstrom"). */
+    std::string extensions_directory; /** Path for TorchScript extensions. */
+    bool check_consistency;           /** To enable model's internal checks. */
+  } metatomic_options;
 
   struct Lanczos {
     double tolerance;   /** difference between the lowest eignevalues of two
@@ -295,6 +332,12 @@ public:
     bool energyWeighted;
     double KSPMin;
     double KSPMax;
+    // Initial path
+    std::string
+        ipath; /** file containing list of .con files for the initial path */
+
+    // Minimize endpoints
+    bool minimEP;
   } neb;
 
   struct MolDynamics {
@@ -331,8 +374,8 @@ public:
     double corrTime;
   } parrep;
 
-  // [Temperature Accelerated Dynamics] //
   struct TAD {
+    // [Temperature Accelerated Dynamics] //
     double lowT;
     double minPrefactor;
     double confidence;
@@ -410,6 +453,8 @@ public:
   struct Debug {
     bool writeMovies;
     long writeMoviesInterval;
+    bool estNEBeig;
+    std::string nebMMF;
   } debug;
 
   // MPI stuff, not actually specified in config file

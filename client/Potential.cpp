@@ -84,6 +84,14 @@
 #include "client/potentials/ASE_ORCA/ASE_ORCA.h"
 #endif
 
+#ifdef WITH_ASE_NWCHEM
+#include "potentials/ASE_NWCHEM/ASE_NWCHEM.h"
+#endif
+
+#ifdef WITH_METATOMIC
+#include "potentials/Metatomic/MetatomicPotential.h"
+#endif
+
 #ifdef WITH_WATER
 #include "client/potentials/Water/Water.hpp"
 #ifdef WITH_FORTRAN
@@ -291,6 +299,18 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
     auto params = ASEOrcaPot::Params();
     eonc::pot::from_toml(params, config["Potential"]["ASE_ORCA"]);
     return (std::make_shared<ASEOrcaPot>(params));
+    break;
+  }
+#endif
+#ifdef WITH_ASE_NWCHEM
+  case PotType::ASE_NWCHEM: {
+    return (std::make_shared<ASENwchemPot>(params));
+    break;
+  }
+#endif
+#ifdef WITH_METATOMIC
+  case PotType::METATOMIC: {
+    return (std::make_shared<MetatomicPotential>(params));
     break;
   }
 #endif

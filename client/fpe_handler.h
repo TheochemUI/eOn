@@ -16,4 +16,16 @@ namespace eonc {
 // invalid operations, and overflows.
 void enableFPE(void);
 
+class FPEHandler {
+public:
+  // Fix for gh-184, see
+  // https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
+  void eat_fpe();
+  void restore_fpe();
+
+private:
+  fenv_t orig_feenv;
+  std::mutex mutex_;
+};
+
 } // namespace eonc

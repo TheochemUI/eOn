@@ -53,6 +53,8 @@ Parameters::Parameters() {
   // [Debug] //
   debug.writeMovies = false;
   debug.writeMoviesInterval = 1;
+  debug.estNEBeig = false;
+  debug.nebMMF = LowestEigenmode::MINMODE_DIMER;
 
   // [Optimizers] //
   optim.method = OptType::CG;
@@ -135,6 +137,33 @@ Parameters::Parameters() {
   dimer.rotationsMin = 1;  // old dimer
   dimer.rotationsMax = 10; // old dimer and new dimer
   dimer.removeRotation = false;
+
+  // [ASE_NWCHEM] //
+  ase_nwchem.path = ""s;
+  ase_nwchem.nproc = "1"s;
+  ase_nwchem.multiplicity = ""s;
+  ase_nwchem.scf_thresh = 1e-5;
+  ase_nwchem.scf_maxiter = 200;
+
+  // [ASE_ORCA] //
+  ase_orca.path = ""s;
+  ase_orca.nproc = "1"s;
+  ase_orca.sline = ""s;
+
+  // [CatLearn] //
+  catl.path = ""s;
+  catl.model = "gp"s;
+  catl.prior = "median"s;
+  catl.use_deriv = true;
+  catl.use_fingerprint = true;
+  catl.parallel = true;
+
+  // [Metatomic] //
+  metatomic_options.model_path = ""s;
+  metatomic_options.device = "cpu"s;
+  metatomic_options.length_unit = "angstrom"s;
+  metatomic_options.extensions_directory = ""s;
+  metatomic_options.check_consistency = false;
 
   // [Lanczos] //
   lanczos.tolerance = 0.01;
@@ -219,6 +248,8 @@ Parameters::Parameters() {
   neb.energyWeighted = false;
   neb.KSPMin = 0.97;
   neb.KSPMax = 9.7;
+  neb.ipath = ""s;
+  neb.minimEP = true;
 
   // [Dynamics] //
   md.timeStepInput = 1.0;
@@ -480,6 +511,52 @@ int Parameters::load(const std::string &filename) {
     dimer.torqueMax = config["Dimer"]["torque_max"].value_or(1.0);
     dimer.removeRotation = config["Dimer"]["remove_rotation"].value_or(false);
 
+    // Catlearn section
+    catl.path = config["CatLearn"]["path"].value_or(catl.path);
+    catl.model = config["CatLearn"]["model"].value_or(catl.model);
+    catl.prior = config["CatLearn"]["prior"].value_or(catl.prior);
+    catl.use_deriv =
+        config["CatLearn"]["use_derivatives"].value_or(catl.use_deriv);
+    catl.use_fingerprint =
+        config["CatLearn"]["use_fingerprint"].value_or(catl.use_fingerprint);
+    catl.parallel = config["CatLearn"]["parallel_hyperparameter_opt"].value_or(
+        catl.parallel);
+
+    // ASE_ORCA section
+    // TODO(rg): These should be handled in eonclient ClientEON.cpp so calls can
+    // be made to eonclient for single point calculations easily
+    ase_orca.path = config["ASE_ORCA"]["path"].value_or(ase_orca.path);
+    ase_orca.nproc = config["ASE_ORCA"]["nproc"].value_or(ase_orca.nproc);
+    ase_orca.sline = config["ASE_ORCA"]["simpleinput"].value_or(ase_orca.sline);
+
+    // ASE_NWCHEM section
+    // TODO(rg): These should be handled in eonclient ClientEON.cpp so calls can
+    // be made to eonclient for single point calculations easily
+    ase_nwchem.path = config["ASE_NWCHEM"]["path"].value_or(ase_nwchem.path);
+    ase_nwchem.nproc = config["ASE_NWCHEM"]["nproc"].value_or(ase_nwchem.nproc);
+    ase_nwchem.multiplicity =
+        config["ASE_NWCHEM"]["multiplicity"].value_or(ase_nwchem.multiplicity);
+    ase_nwchem.scf_thresh =
+        config["ASE_NWCHEM"]["scf_thresh"].value_or(ase_nwchem.scf_thresh);
+    ase_nwchem.scf_maxiter =
+        config["ASE_NWCHEM"]["scf_maxiter"].value_or(ase_nwchem.scf_maxiter);
+
+    // Metatomic section
+    // TODO(rg): These should be handled in eonclient ClientEON.cpp so calls can
+    // be made to eonclient for single point calculations easily
+    metatomic_options.model_path = config["Metatomic"]["model_path"].value_or(
+        metatomic_options.model_path);
+    metatomic_options.device =
+        config["Metatomic"]["device"].value_or(metatomic_options.device);
+    metatomic_options.length_unit = config["Metatomic"]["length_unit"].value_or(
+        metatomic_options.length_unit);
+    metatomic_options.extensions_directory =
+        config["Metatomic"]["extensions_directory"].value_or(
+            metatomic_options.extensions_directory);
+    metatomic_options.check_consistency =
+        config["Metatomic"]["check_consistency"].value_or(
+            metatomic_options.check_consistency);
+
     // GPR Dimer section
     gprd.rotationAngle = config["GPR_Dimer"]["finite_angle"].value_or(0.005);
     gprd.convergedAngle = config["GPR_Dimer"]["converged_angle"].value_or(0.08);
@@ -606,6 +683,8 @@ int Parameters::load(const std::string &filename) {
     neb.KSPMin = config["NEB"]["ew_ksp_min"].value_or(0.97);
     neb.KSPMax = config["NEB"]["ew_ksp_max"].value_or(9.7);
     neb.energyWeighted = config["NEB"]["energy_weighted"].value_or(false);
+    neb.ipath = config["NEB"]["initial_path_in"].value_or(neb.ipath);
+    neb.minimEP = config["NEB"]["minimize_endpoints"].value_or(neb.minimEP);
 
     // Dynamics section
     md.timeStepInput = config["Dynamics"]["time_step"].value_or(1.0);
@@ -623,6 +702,10 @@ int Parameters::load(const std::string &filename) {
     thermostat.langevinFrictionInput =
         config["Dynamics"]["langevin_friction"].value_or(0.01);
     thermostat.langevinFriction = thermostat.langevinFrictionInput * timeUnit;
+    // XXX(rg): Figure out what this was
+    // thermoAtoms =
+    // helper_functions::split_string_int(ini.GetValue("Dynamics",
+    // "thermo_atoms", ""), ",");
 
     // Parallel Replica section
     parrep.autoStop =
@@ -766,9 +849,14 @@ int Parameters::load(const std::string &filename) {
         config["BGSD"]["grad2forceconvergence"].value_or(0.0001);
 
     // Debug section
-    debug.writeMovies = config["Debug"]["write_movies"].value_or(false);
+    debug.writeMovies =
+        config["Debug"]["write_movies"].value_or(debug.writeMovies);
     debug.writeMoviesInterval =
-        config["Debug"]["write_movies_interval"].value_or(1L);
+        config["Debug"]["write_movies_interval"].value_or(
+            debug.writeMoviesInterval);
+    debug.estNEBeig =
+        config["Debug"]["estimate_neb_eigenvalues"].value_or(debug.estNEBeig);
+    debug.nebMMF = config["Debug"]["neb_mmf_estimator"].value_or(debug.nebMMF);
 
     // Sanity Checks
     if (parrep.stateCheckInterval > md.time &&

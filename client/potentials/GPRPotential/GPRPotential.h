@@ -14,6 +14,7 @@
 #include "../../Potential.h"
 #include "../../subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
 namespace eonc {
+#include "../../subprojects/gpr_optim/gpr/ml/GaussianProcessRegression.h"
 /** Template to use if user want to provide potential. */
 class GPRPotential : public Potential {
 

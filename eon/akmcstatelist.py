@@ -10,12 +10,23 @@ from eon import atoms
 from eon import akmcstate
 from eon import statelist
 
+from eon.config import config as EON_CONFIG
+from eon.config import ConfigClass # Typing
+
 
 class AKMCStateList(statelist.StateList):
     """ The StateList class.  Serves as an interface to State objects and StateList metadata. """
-    def __init__(self, kT, thermal_window, max_thermal_window,
-                  initial_state = None, filter_hole = False):
-        statelist.StateList.__init__(self, akmcstate.AKMCState, initial_state)
+    def __init__(
+        self,
+        kT,
+        thermal_window,
+        max_thermal_window,
+        initial_state=None,
+        filter_hole=False,
+        config: ConfigClass = EON_CONFIG,
+    ):
+        self.config = config
+        statelist.StateList.__init__(self, akmcstate.AKMCState, initial_state, self.config)
         # aKMC data.
         self.kT = kT
         self.thermal_window = thermal_window
@@ -64,16 +75,16 @@ class AKMCStateList(statelist.StateList):
                     conf = product.get_process_product(id)
 
                     # The process is known but has not been accepted yet.
-                    if atoms.match(reactant_conf, conf, config.comp_eps_r, config.comp_neighbor_cutoff, False):
+                    if atoms.match(reactant_conf, conf, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False):
 
                         # Reverse process table should be updated to ensure that the two processes (reac->prod & proc->reac) are symmetric.
                         reactant.load_process_table()
 
                         # Set maximum rate, if defined
 #                        cur_rate = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
-#                        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+#                        if self.config.akmc_max_rate > 0 and cur_rate > self.config.akmc_max_rate:
 #                            # print "max rate exceeded: ", cur_rate
-#                            cur_rate = config.akmc_max_rate
+#                            cur_rate = self.config.akmc_max_rate
 
                         # Set equilibrium rate, if defined
                         print("register_process: into eq rate test")
@@ -82,15 +93,15 @@ class AKMCStateList(statelist.StateList):
                         forward_rate = reactant.procs[process_id]['prefactor'] * math.exp(-forward_barrier / self.kT)
 
                         eq_rate_flag = False
-                        if config.akmc_eq_rate > 0 and forward_rate > config.akmc_eq_rate and reverse_rate > config.akmc_eq_rate:
+                        if self.config.akmc_eq_rate > 0 and forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
                             eq_rate_flag = True
                             print("eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate)
                             if forward_rate < reverse_rate:
-                                forward_eq_rate = config.akmc_eq_rate
-                                reverse_eq_rate = config.akmc_eq_rate * (reverse_rate / forward_rate)
+                                forward_eq_rate = self.config.akmc_eq_rate
+                                reverse_eq_rate = self.config.akmc_eq_rate * (reverse_rate / forward_rate)
                             else:
-                                forward_eq_rate = config.akmc_eq_rate * (forward_rate / reverse_rate)
-                                reverse_eq_rate = config.akmc_eq_rate
+                                forward_eq_rate = self.config.akmc_eq_rate * (forward_rate / reverse_rate)
+                                reverse_eq_rate = self.config.akmc_eq_rate
                             print("new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate)
 
                         # Remember we are now looking at the reverse processes
@@ -137,9 +148,9 @@ class AKMCStateList(statelist.StateList):
         # Set maximum rate, if defined
         # print "max rate code"
 #        cur_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT)
-#        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+#        if self.config.akmc_max_rate > 0 and cur_rate > self.config.akmc_max_rate:
 #            # print "max rate exceeded: ", cur_rate
-#            cur_rate = config.akmc_max_rate
+#            cur_rate = self.config.akmc_max_rate
 
         product.append_process_table(id = reverse_process_id,
                                      saddle_energy = saddle_energy,
@@ -159,15 +170,15 @@ class AKMCStateList(statelist.StateList):
         reverse_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-(saddle_energy - product.get_energy()) / self.kT)
 
         eq_rate_flag = False
-        if config.akmc_eq_rate > 0 and forward_rate > config.akmc_eq_rate and reverse_rate > config.akmc_eq_rate:
+        if self.config.akmc_eq_rate > 0 and forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
             eq_rate_flag = True
             print("eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate)
             if forward_rate < reverse_rate:
-                forward_eq_rate = config.akmc_eq_rate
-                reverse_eq_rate = config.akmc_eq_rate * (reverse_rate / forward_rate)
+                forward_eq_rate = self.config.akmc_eq_rate
+                reverse_eq_rate = self.config.akmc_eq_rate * (reverse_rate / forward_rate)
             else:
-                forward_eq_rate = config.akmc_eq_rate * (forward_rate / reverse_rate)
-                reverse_eq_rate = config.akmc_eq_rate
+                forward_eq_rate = self.config.akmc_eq_rate * (forward_rate / reverse_rate)
+                reverse_eq_rate = self.config.akmc_eq_rate
             print("new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate)
             reactant.procs[process_id]['rate'] = forward_eq_rate
             product.procs[reverse_process_id]['rate'] = reverse_eq_rate
@@ -189,7 +200,7 @@ class AKMCStateList(statelist.StateList):
                        'force_calls_saddle' : 0,
                        'force_calls_minimization' : 0,
                        'force_calls_prefactors' : 0}
-        if config.akmc_server_side_process_search:
+        if self.config.akmc_server_side_process_search:
             first_column = "search_id"
         else:
             first_column = "wuid"
@@ -224,7 +235,7 @@ class AKMCStateList(statelist.StateList):
                     for state in energetically_close:
                         p = state.get_reactant()
                         # print "atoms.match between state, process, state: ",i," ",j," ",state
-                        if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
+                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True):
                             # Update the reactant state to point at the new state id.
                             # print "structures match"
                             self.register_process(i.number, state.number, j)
@@ -254,7 +265,7 @@ class AKMCStateList(statelist.StateList):
                     for state in energetically_close:
                         p = state.get_reactant()
                         # print "atoms.match between state, process, state: ",i," ",j," ",state
-                        if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
+                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True):
                             # Update the reactant state to point at the new state id.
                             # print "structures match"
                             self.register_process(i.number, state.number, j)
@@ -271,14 +282,14 @@ class AKMCStateList(statelist.StateList):
                     if abs(state.get_energy() - enew) < self.epsilon_e:
                         energetically_close.append(state)
 
-                # Perform distance checks on the energetically close configurations.
+                # Perform distance checks on the energetically close self.configurations.
                 if len(energetically_close) > 0:
                     # print "energetically close: ",energetically_close
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
                         # print "atoms.match between state, process, state: ",i," ",j," ",state
-                        if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
+                        if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True):
                             # Update the reactant state to point at the new state id.
                             # print "structures match"
                             self.register_process(i.number, state.number, j)

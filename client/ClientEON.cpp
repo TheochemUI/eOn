@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #endif
 
-#ifdef WITH_ASE_ORCA
+#if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
 #include <pybind11/embed.h>
 #endif
 
@@ -140,9 +140,8 @@ int main(int argc, char **argv) {
   //--- End logging setup
   eonc::Parameters parameters;
 
-#ifdef WITH_ASE_ORCA
+#if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
   pybind11::scoped_interpreter guard{};
-
 #endif
 
 #ifdef EONMPI
@@ -314,7 +313,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-  eonc::enableFPE(); // from ExceptionsEON.h
+  eonc::enableFPE();  // from ExceptionsEON.h
 
   double beginTime = 0.0;
   eonc::helper_functions::getTime(&beginTime, NULL, NULL);
@@ -362,8 +361,9 @@ int main(int argc, char **argv) {
 
     printSystemInfo();
 
-    bool bundlingEnabled = true;
-    int bundleSize = eonc::getBundleSize();
+    // XXX(rg): Be more gentle here
+    bool bundlingEnabled = false;
+    int bundleSize = -1; // getBundleSize();
     if (bundleSize == 0) {
       bundleSize = 1;
     } else if (bundleSize == -1) {

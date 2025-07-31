@@ -9,12 +9,16 @@ import tarfile
 
 from eon import fileio as io
 
+from eon.config import config as EON_CONFIG
+from eon.config import ConfigClass # Typing
+
 class State:
     """ The state super class. """
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
-                 reactant_path = None):
+                 reactant_path = None, config: ConfigClass = EON_CONFIG):
         """ Creates a new state, with lazily loaded data. """
 
+        self.config = config
         # The parent statelist.
         self.statelist = statelist
 

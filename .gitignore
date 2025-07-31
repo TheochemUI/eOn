@@ -655,3 +655,7 @@ compile_commands.json
 !/.vscode/*.code-snippets
 !/client/gtests
 !/client/gtests/approval_tests
+
+# pixi environments
+.pixi
+*.egg-info

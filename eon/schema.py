@@ -662,6 +662,132 @@ class ASEOrcaConfig(BaseModel):
             "ORCA_NPROC", PDef("1", "auto"), False
         ),
         description="Number of processors for ORCA.",
+
+class XTBPot(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    paramset: str = Field(
+        default="GFNFF", description="Parameter set for XTB potential."
+    )
+    accuracy: float = Field(default=1.0, description="Accuracy of the XTB calculation.")
+    electronic_temperature: float = Field(
+        default=0.0, description="Electronic temperature for XTB."
+    )
+    max_iterations: int = Field(
+        default=250, description="Maximum number of XTB iterations."
+    )
+
+
+class Metatomic(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    model_path: str = Field(default="", description="Path to the Metatomic model.")
+    device: str = Field(
+        default="auto",
+        description="Device to use for Metatomic calculations (e.g., 'cpu', 'cuda', 'auto').",
+    )
+    length_unit: str = Field(
+        default="Angstrom", description="Length unit used by the Metatomic model."
+    )
+    extensions_directory: str = Field(
+        default="", description="Directory for Metatomic extensions."
+    )
+    check_consistency: bool = Field(
+        default=False,
+        description="Whether to check consistency of the Metatomic model.",
+    )
+
+
+class ASE_NWCHEM(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    nwchem_path: str = Field(
+        default="NONE", description="Path to the NWChem executable."
+    )
+    nproc: Union[int, Literal["auto"]] = Field(
+        default="auto",
+        description="Number of processors to use for NWChem. Can be 'auto' or an integer string.",
+    )
+    multiplicity: str = Field(
+        default="1", description="Spin multiplicity for the NWChem calculation."
+    )
+    scf_thresh: float = Field(
+        default=1e-5, description="SCF convergence threshold for NWChem."
+    )
+    scf_maxiter: int = Field(
+        default=200, description="Maximum number of SCF iterations for NWChem."
+    )
+
+
+class ASE_ORCA(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    orca_path: str = Field(default="NONE", description="Path to the ORCA executable.")
+    nproc: Union[int, Literal["auto"]] = Field(
+        default="auto",
+        description="Number of processors to use for ORCA. Can be 'auto' or an integer string.",
+    )
+    simpleinput: str = Field(
+        default="ENGRAD HF-3c",
+        description="Simple input string for ORCA, specifying method and basis set.",
+    )
+
+
+class AMSConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    engine: Literal["", "REAXFF", "MOPAC"] = Field(
+        default="", description="Engine for AMS calculation. One of REAXFF, MOPAC."
+    )
+    forcefield: str = Field(
+        default="", description="Force field to use (e.g., 'OPt.ff')."
+    )
+    model: str = Field(default="", description="Model to use (e.g., 'PM7', 'PM3').")
+    xc: str = Field(default="", description="Exchange-correlation functional.")
+    basis: str = Field(
+        default="",
+        description="Basis set to use with the exchange-correlation functional.",
+    )
+    resources: str = Field(default="", description="Resources path for DFTB.")
+
+
+class AMSIOConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    engine: Literal["", "REAXFF", "MOPAC"] = Field(
+        default="", description="Engine for AMS calculation. One of REAXFF, MOPAC."
+    )
+    forcefield: str = Field(
+        default="", description="Force field to use (e.g., 'OPt.ff')."
+    )
+    model: str = Field(default="", description="Model to use (e.g., 'PM7', 'PM3').")
+    xc: str = Field(default="", description="Exchange-correlation functional.")
+
+
+class AMSEnvConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    amshome: str = Field(
+        default="",
+        description="Path to AMS home directory (e.g., '/some/path/to/amshome/').",
+    )
+    scm_tmpdir: str = Field(
+        default="", description="Temporary directory for SCM (e.g., '/tmp')."
+    )
+    scm_pythondir: str = Field(
+        default="", description="Python directory for SCM (e.g., '/.scm/python')."
+    )
+    amsbin: str = Field(
+        default="",
+        description="Path to AMS binary directory (will be appended to amshome).",
+    )
+    scmlicense: str = Field(
+        default="",
+        description="Path to SCM license file (will be appended to amshome).",
+    )
+    amsresources: str = Field(
+        default="",
+        description="Path to AMS atomic data resources (will be appended to amshome).",
     )
 
 
@@ -932,14 +1058,15 @@ class CoarseGrainingConfig(BaseModel):
         default="superbasin",
         description="File name for the state-specific data stored within each of the state directories.",
     )
-    superbasin_scheme: Literal["energy_level", "transition_counting"] = Field(
+    superbasin_scheme: Literal["energy_level", "transition_counting", "rate"] = Field(
         default="transition_counting",
         description="MCAMC provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin.",
     )
     """
     Options:
      - ``transition_counting``: Counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occurred, the pair of states are merged to form a superbasin.
-     - ``energy_level``: States are merged based on energy levels.
+     - ``energy_level``: States are merged based on energy levels filling up existing basins.
+     - ``rate``: States are merged based only on rate criteria.
     """
     max_size: int = Field(
         default=0,
@@ -947,8 +1074,12 @@ class CoarseGrainingConfig(BaseModel):
     )
     number_of_transitions: int = Field(
         default=5,
-        description="If the transition counting scheme is being used, this is the number of transitions that must occur between two states before they are merged into a superbasin.",
+        description="This is the number of transitions that must occur between two states before they are merged into a superbasin.",
     )
+    """
+    Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
+    ``transition_counting``.
+    """
     energy_increment: float = Field(
         default=0.01,
         description="The first time each state is visited, it is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount.",
@@ -956,6 +1087,14 @@ class CoarseGrainingConfig(BaseModel):
     """
     Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
     ``energy_level``.
+    """
+    rate_threshold: float = Field(
+        default=1e9,
+        description="Any state with a rate (in 1/time) greater than this is merged into a single basin.",
+    )
+    """
+    Only used if :any:`eon.schema.CoarseGrainingConfig.superbasin_scheme` is
+    ``rate``.
     """
     superbasin_confidence: bool = Field(
         default=True,
@@ -1201,6 +1340,14 @@ class DebugConfig(BaseModel):
     keep_all_result_files: bool = Field(
         default=False, description="Stores all result files in main_directory/results."
     )
+    estimate_neb_eigenvalues: bool = Field(
+        default=False,
+        description="Write out the estimated lowest eigenvalue for each image of the NEB. This can significantly slow down the calculation!",
+    )
+    neb_mmf_estimator: Literal["dimer", "lanczos"] = Field(
+        default="dimer",
+        description="Estimator used to get the lowest eigenvalue, only used if estimate_neb_eigenvalues is true.",
+    )
     write_movies: bool = Field(
         default=False, description="Output a movie of the calculation."
     )
@@ -1311,17 +1458,28 @@ class NudgedElasticBandConfig(BaseModel):
     """
     This defaults to being the same as :any:`eon.schema.OptimizerConfig.converged_force`
     """
-    neb_energy_weighted: bool = Field(
+    energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."
     )
     """
     Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.
     """
-    neb_ksp_min: float = Field(
-        default=0.97, description="Minimum value for KSP in the energy-weighted method."
+    ew_ksp_min: float = Field(
+        default=0.5, description="Minimum value for KSP in the energy-weighted method."
     )
-    neb_ksp_max: float = Field(
-        default=9.7, description="Maximum value for KSP in the energy-weighted method."
+    ew_ksp_max: float = Field(
+        default=5.0, description="Maximum value for KSP in the energy-weighted method."
+    )
+    initial_path_in: str = Field(
+        default="",
+        description="File from which the initial path is read.",
+    )
+    """
+    This file must contain a list of .con files, one per image on the path.
+    """
+    minimize_endpoints: bool = Field(
+        default=True,
+        description="Minimize the reactant and product before the NEB.",
     )
 
 
