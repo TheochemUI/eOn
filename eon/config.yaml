@@ -247,7 +247,7 @@ Nudged Elastic Band:
 
         ci_after:
             kind: float
-            default: 0
+            default: 100000000 # infinity actually
 
         ci_mmf:
             kind: boolean

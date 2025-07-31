@@ -7,6 +7,7 @@ from pydantic import (
 )
 from typing import Optional, Any, Union
 from typing_extensions import Literal
+import math
 import random
 
 
@@ -1419,7 +1420,7 @@ class NudgedElasticBandConfig(BaseModel):
         description="Minimize the reactant and product before the NEB.",
     )
     ci_after: float = Field(
-        default=0,
+        default=math.inf,
         description="Convergence before the CI is turned on.",
     )
     ci_mmf: bool = Field(
