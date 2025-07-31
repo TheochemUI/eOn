@@ -54,7 +54,7 @@ Parameters::Parameters() {
   debug.writeMovies = false;
   debug.writeMoviesInterval = 1;
   debug.estNEBeig = false;
-  debug.nebMMF = LowestEigenmode::MINMODE_DIMER;
+  debug.nebMMF = "dimer"s; //LowestEigenmode::MINMODE_DIMER;
 
   // [Optimizers] //
   optim.method = OptType::CG;
@@ -734,6 +734,8 @@ int Parameters::load(const std::string &filename) {
     tad.lowT = config["TAD"]["low_temperature"].value_or(300.0);
     tad.minPrefactor = config["TAD"]["min_prefactor"].value_or(0.001);
     tad.confidence = config["TAD"]["confidence"].value_or(0.001);
+
+    // Potential section
 
     // GP Surrogate Parameters
     surrogate.use = config["Surrogate"]["use"].value_or(false);

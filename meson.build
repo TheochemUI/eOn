@@ -80,8 +80,6 @@ py.install_sources(
         'eon/atoms.py',
         'eon/basinhopping.py',
         'eon/communicator.py',
-        'eon/config.py',
-        'eon/config.yaml',
         'eon/displace.py',
         'eon/eon_kdb.py',
         'eon/escaperate.py',

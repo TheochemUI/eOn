@@ -160,40 +160,6 @@ spdlog_dep = dependency('spdlog', required: true)
 _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
-eoncbase_sources = ['INIFile.cpp']
-
-eoncbase = library(
-    'eoncbase',
-    sources: eoncbase_sources,
-    dependencies: _deps,
-    cpp_args: _args,
-    include_directories: _incdirs,
-    install: true,
-)
-
-_linkto += eoncbase
-
-# Potentials
-subdir('potentials/EAM')
-subdir('potentials/EMT')
-subdir('potentials/ExtPot')
-subdir('potentials/IMD')
-subdir('potentials/LJ')
-subdir('potentials/LJCluster')
-subdir('potentials/Morse')
-subdir('potentials/NewPot')
-
-potentials = [
-    eam,
-    emt,
-    extpot,
-    imd,
-    lennard_jones,
-    lennard_jones_cluster,
-    morse,
-    newpot,
-]
-
 eonclib_sources = [
     'Parameters.cpp',
     'Optimizer.cpp',
@@ -267,246 +233,6 @@ if get_option('with_gprd')
     _deps += [libgprd, gprd_deps]
 endif
 
-if get_option('with_gp_surrogate')
-    _args += ['-DWITH_GP_SURROGATE']
-    eonclib_sources += ['GPSurrogateJob.cpp']
-    if get_option('with_catlearn')
-        # TODO: Cleanup, used for ase_orca too
-        # Embedding the interpreter
-        pyb11f_deps = [dependency('pybind11')]
-        _deps += [pyb11f_deps]
-        subdir('potentials/CatLearnPot')
-        potentials += [catlearnpot]
-        _args += ['-DWITH_CATLEARN']
-    endif
-endif
-
-if get_option('with_vasp')
-    if host_system != 'windows'
-        subdir('potentials/VASP')
-        potentials += [vasp]
-        _args += ['-DWITH_VASP']
-    endif
-endif
-
-if get_option('with_water')
-    subdir('potentials/Water')
-    subdir('potentials/Water_Pt')
-    potentials += [water, water_pt]
-    _args += ['-DWITH_WATER']
-endif
-
-if get_option('with_ams')
-    # Optional, only for AMS
-    absl_dep = dependency(
-        'absl',
-        method: 'cmake',
-        modules: [
-            'absl::base',
-            'absl::strings',
-            'absl::numeric',
-            'absl::utility',
-        ],
-        required: true,
-    )
-    boost_ams_dep = dependency(
-        'boost',
-        modules: ['headers', 'asio', 'iostreams'],
-        required: true,
-    )
-    ams_dep = [boost_ams_dep, absl_dep, fmt_dep]
-    _deps += ams_dep
-    # End AMS
-    subdir('potentials/AMS')
-    subdir('potentials/AMS_IO')
-    potentials += [ams, ams_io]
-    _args += ['-DWITH_AMS']
-endif
-
-if get_option('with_xtb')
-    xtb_proj = subproject('xtb')
-    xtb_dep_static = xtb_proj.get_variable('xtb_dep_static')
-    _deps += [xtb_dep_static]
-    subdir('potentials/XTBPot')
-    potentials += xtb_eon
-    _args += ['-DWITH_XTB']
-endif
-
-if get_option('with_lammps')
-    subdir('potentials/LAMMPS')
-    potentials += [lammps_pot]
-    _args += ['-DLAMMPS_POT']
-endif
-
-if py_embed
-    _args += ['-DEMBED_PYTHON']
-    # subdir('potentials/PyAMFF')
-    # pyamff,
-    # subdir('potentials/QSC')
-    # potentials += [ qsc ]
-    if get_option('with_ase')
-        subdir('potentials/ASE')
-        potentials += [ase]
-        # TODO(rg): Annoying, use WITH_ style
-        _args += ['-DASE_POT']
-    endif
-endif
-
-if get_option('with_mpi')
-    subdir('potentials/MPIPot')
-    potentials += [mpipot]
-    _args += ['-DEONMPI']
-    mpi_dep = dependency('mpi')
-    _deps += [mpi_dep]
-endif
-
-if get_option('with_fortran')
-    subdir('potentials/Aluminum')
-    subdir('potentials/EDIP')
-    subdir('potentials/FeHe')
-    subdir('potentials/Lenosky')
-    subdir('potentials/SW')
-    subdir('potentials/Tersoff')
-    if get_option('with_water')
-        subdir('potentials/Water_H')
-        potentials += [water_h]
-    endif
-    potentials += [aluminum, edip, fehe, lenosky, sw, tersoff]
-    _args += ['-DWITH_FORTRAN']
-endif
-
-if get_option('with_cuh2')
-    subdir('potentials/CuH2')
-    potentials += [cuh2]
-    _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
-endif
-
-if get_option('with_ase_orca')
-    # TODO: Cleanup, used for Catlearn too
-    # Embedding the interpreter
-    pyb11f_deps = [python_dep, dependency('pybind11')]
-    _deps += [pyb11f_deps]
-    subdir('potentials/ASE_ORCA')
-    potentials += [aseorca]
-    _args += ['-DWITH_ASE_ORCA']
-endif
-
-if get_option('with_ase_nwchem')
-    # TODO: Cleanup, used for Catlearn too
-    # Embedding the interpreter
-    python_dep = py.dependency(embed: true, required: true)
-    pyb11f_deps = [
-        python_dep,
-        dependency('pybind11'),
-        declare_dependency(link_args: '-lstdc++'),
-    ]
-    _deps += [pyb11f_deps]
-    subdir('potentials/ASE_NWCHEM')
-    potentials += [asenwchem]
-    _args += ['-DWITH_ASE_NWCHEM']
-endif
-
-if get_option('with_metatomic')
-    if get_option('torch_path') != ''
-        # Setting up Torch..
-        LIB_TORCH_PATH = get_option('torch_path')
-        message('Ensure your versions are correct for metatensor and metatomic')
-    else
-        LIB_TORCH_PATH = py.get_install_dir() / 'torch'
-    endif
-    LIB_TORCH_LIB_PATH = LIB_TORCH_PATH / 'lib'
-    LIB_TORCH_INCL_PATH = LIB_TORCH_PATH / 'include'
-    LIB_TORCH_INCL_PATH_API = LIB_TORCH_INCL_PATH / 'torch' / 'csrc' / 'api' / 'include'
-    LIB_TORCH_INCL_PATH_ATEN = LIB_TORCH_INCL_PATH / 'ATen'
-    LIB_TORCH_INCL_PATH_C10 = LIB_TORCH_INCL_PATH / 'c10'
-    LIB_TORCH_INCL_PATH_C10_UTIL = LIB_TORCH_INCL_PATH / 'c10' / 'util'
-
-    LIB_TORCH_INCLUDE_LIST = [
-        LIB_TORCH_INCL_PATH,
-        LIB_TORCH_INCL_PATH_API,
-        LIB_TORCH_INCL_PATH_ATEN,
-        LIB_TORCH_INCL_PATH_C10,
-        LIB_TORCH_INCL_PATH_C10_UTIL,
-    ]
-
-
-    lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
-    tdeps = []
-    foreach lib_name : lib_torch_list
-        tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
-    endforeach
-
-    torch_deps = declare_dependency(
-        dependencies: tdeps,
-        include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
-    )
-
-    if get_option('pip_metatomic')
-        torch_ver = get_option('torch_version')
-        mts_dep = declare_dependency(
-            dependencies: [
-                cppc.find_library(
-                    'metatensor',
-                    dirs: [py.get_install_dir() / 'metatensor' / 'lib'],
-                ),
-                cppc.find_library(
-                    'metatensor_torch',
-                    dirs: [
-                        py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib',
-                    ],
-                ),
-                cppc.find_library(
-                    'metatomic_torch',
-                    dirs: [
-                        py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'lib',
-                    ],
-                ),
-            ],
-            include_directories: include_directories(
-                py.get_install_dir() / 'metatensor' / 'include',
-                py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
-                py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
-            ),
-        )
-        vesin_dep = declare_dependency(
-            dependencies: [
-                cppc.find_library(
-                    'vesin',
-                    dirs: [py.get_install_dir() / 'vesin' / 'lib'],
-                ),
-            ],
-            include_directories: include_directories(
-                py.get_install_dir() / 'vesin' / 'include',
-            ),
-        )
-    else
-        message(
-            'Looking for existing installations of metatensor, metatensor-torch, metatomic-torch and vesin',
-        )
-        message(
-            'If this is flaky, pass pip_metatomic=True with the torch version and let pip handle everything',
-        )
-        # XXX(rg): Still needs the includes, setup pkgconf and use dependency() with pkgconf instead
-        # xref: https://github.com/metatensor/metatensor/issues/930
-        vesin_dep = cppc.find_library('vesin')
-        mts_dep = [
-            cppc.find_library('metatensor'),
-            cppc.find_library('metatensor_torch'),
-            cppc.find_library('metatomic_torch'),
-        ]
-    endif
-    _deps += [vesin_dep, mts_dep, torch_deps]
-    subdir('potentials/Metatomic')
-    potentials += [metatomic_pot]
-    _args += ['-DWITH_METATOMIC']
-endif
-
-if get_option('with_vasp')
-    if host_system != 'windows'
-        _args += ['-DWITH_VASP']
-    endif
-endif
-
 # Subprojects
 cmake = import('cmake')
 optv_cachelot = cmake.subproject_options()
@@ -518,10 +244,11 @@ optv_cachelot.add_cmake_defines(
         'CMAKE_POSITION_INDEPENDENT_CODE': true,
         'CMAKE_CXX_FLAGS': '-w',
         'CMAKE_C_FLAGS': '-w',
+        'CMAKE_POLICY_VERSION_MINIMUM': '3.5',
     },
 )
 cmcachelot = cmake.subproject('cachelot', options: optv_cachelot)
-_deps += cmcachelot.dependency('cachelot')
+_deps += [cmcachelot.dependency('cachelot'), dependency('boost')]
 
 # Wrap installed
 _deps += subproject('xxhash').get_variable('xxhash_dep')
@@ -682,7 +409,7 @@ if get_option('with_tests')
     test_deps = _deps
     testMain = library(
         'TestMain',
-        ['gtests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
+        ['thirdparty/catch2/catch_amalgamated.cpp'],
         dependencies: test_deps,
         include_directories: _incdirs,
         cpp_args: test_args,

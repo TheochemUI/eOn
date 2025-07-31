@@ -14,6 +14,7 @@
 #include "client/Element.hpp"
 #include "client/io/IOHelpers.hpp"
 #include <iostream>
+#include <fmt/ranges.h>
 
 namespace eonc::io {
 bool ConBaseWriter::writeBase(const Matter &mat, std::ofstream &fout,

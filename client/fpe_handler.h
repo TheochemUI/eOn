@@ -10,6 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include <cfenv>
+#include <mutex>
 namespace eonc {
 // Floating Point Trapping. It is platform specific!
 // This causes the program to crash on divison by zero,

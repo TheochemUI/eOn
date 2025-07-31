@@ -29,7 +29,7 @@
 // #endif
 
 // #include "potentials/EAM/EAM.h"
-#include "client/potentials/EMT/EffectiveMediumTheory.h"
+// #include "client/potentials/EMT/EffectiveMediumTheory.h"
 #include "client/potentials/ExtPot/ExtPot.h"
 #include "client/potentials/LJ/LJ.h"
 // #include "potentials/LJCluster/LJCluster.h"
@@ -112,14 +112,14 @@ std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   config_section(config, "Potential");
   auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]);
   switch (ptype) {
-  case PotType::EMT: {
-    return (std::make_shared<EffectiveMediumTheory>(false));
-    break;
-  }
-  case PotType::EMT_RAS: {
-    return (std::make_shared<EffectiveMediumTheory>(true));
-    break;
-  }
+  // case PotType::EMT: {
+  //   return (std::make_shared<EffectiveMediumTheory>(false));
+  //   break;
+  // }
+  // case PotType::EMT_RAS: {
+  //   return (std::make_shared<EffectiveMediumTheory>(true));
+  //   break;
+  // }
   case PotType::EXT: {
     return (std::make_shared<ExtPot>(
         config["Potential"]["ext_pot_path"].value_or("ext_pot")));

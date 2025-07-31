@@ -662,6 +662,8 @@ class ASEOrcaConfig(BaseModel):
             "ORCA_NPROC", PDef("1", "auto"), False
         ),
         description="Number of processors for ORCA.",
+    )
+
 
 class XTBPot(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)

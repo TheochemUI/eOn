@@ -11,7 +11,6 @@
 */
 #include "fpe_handler.h"
 
-#include <cfenv>
 #include <cmath>
 #include <csignal>
 #include <iostream>

@@ -1,5 +1,5 @@
 #include "../MatrixHelpers.hpp"
-#include "Matter.h"
+#include "matter/Matter.h"
 #include "catch2/catch_amalgamated.hpp"
 
 using namespace std::placeholders;
@@ -10,7 +10,7 @@ namespace tests {
 class PotTest {
 public:
   PotTest()
-      : params{std::make_shared<Parameters>()},
+      : params{std::make_shared<eonc::Parameters>()},
         m1{nullptr},
         pot_default{nullptr},
         threshold{1e-2} {}
@@ -27,9 +27,9 @@ public:
   void TearDown() {}
 
 protected:
-  std::shared_ptr<Parameters> params;
-  std::shared_ptr<Matter> m1;
-  std::shared_ptr<Potential> pot_default;
+  std::shared_ptr<eonc::Parameters> params;
+  std::shared_ptr<eonc::Matter> m1;
+  std::shared_ptr<eonc::Potential> pot_default;
   double threshold;
 };
 
