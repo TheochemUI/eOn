@@ -294,9 +294,13 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
             path[climbingImage], *tangent[climbingImage],
             path[climbingImage]->getPotentialEnergy(), params, pot);
 
+        // Save the original value of saddleMaxIterations
+        auto originalSaddleMaxIterations = params->saddleMaxIterations;
         params->saddleMaxIterations = params->nebciMMFnSteps;
         int minModeStatus = tempMinModeSearch->run();
 
+        // Restore the original value of saddleMaxIterations
+        params->saddleMaxIterations = originalSaddleMaxIterations;
         if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD &&
             minModeStatus != MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
           SPDLOG_WARN(
