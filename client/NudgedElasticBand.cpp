@@ -280,18 +280,21 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
     VectorXd pos = objf->getPositions();
     double convForce{convergenceForce()};
+    bool originalCIflag = params->nebClimbingImageMethod;
+    if (convForce >= params->nebciAfter) {
+      params->nebClimbingImageMethod = false;
+    }
     if (iteration) {
       // so that we print forces before taking an optimizer step
-      if (climbingImage > 0 && climbingImage <= numImages,
-          convForce < 0.5) {
+      if (climbingImage > 0 && climbingImage <= numImages &&
+          params->nebciWithMMF && params->nebClimbingImageMethod &&
+          convForce < params->nebciMMFAfter && iteration > 1) {
 
         auto tempMinModeSearch = std::make_shared<MinModeSaddleSearch>(
             path[climbingImage], *tangent[climbingImage],
             path[climbingImage]->getPotentialEnergy(), params, pot);
 
-        int cPotCalls = pot->forceCallCounter;
-        int originalMaxIterations = params->saddleMaxIterations;
-        params->saddleMaxIterations = 10;
+        params->saddleMaxIterations = params->nebciMMFnSteps;
         int minModeStatus = tempMinModeSearch->run();
 
         if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD &&
@@ -327,6 +330,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       }
     }
     iteration++;
+    params->nebClimbingImageMethod = originalCIflag;
 
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
                 path[0]->getPotentialEnergy();
