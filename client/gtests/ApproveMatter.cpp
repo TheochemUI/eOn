@@ -42,7 +42,7 @@ double getPotentialEnergyConst(const eonc::Matter &matter) {
 }
 
 double maxForceConst(const eonc::Matter &matter) {
-  return const_cast<eonc::Matter &>(matter).maxForce();
+  return const_cast<eonc::Matter &>(matter).getMaxForce();
 }
 
 auto getForcesConst(const eonc::Matter &matter) {

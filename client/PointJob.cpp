@@ -11,17 +11,14 @@
 */
 #include "PointJob.h"
 namespace eonc {
-std::vector<std::string> PointJob::run(void) {
-  std::vector<std::string> returnFiles;
-  std::string resultsFilename("results.dat");
-  returnFiles.push_back(resultsFilename);
+bool PointJob::runImpl(Matter &_mat) {
   double energy = _mat.getPotentialEnergy();
-  auto maxForce = _mat.maxForce();
+  auto maxForce = _mat.getMaxForce();
 
-  // SPDLOG_LOGGER_DEBUG(log, "(free) Forces:         {:.12}",
+  // SPDLOG_LOGGER_DEBUG(m_log, "(free) Forces:         {:.12}",
   //                     fmt::streamed(_mat.getForcesFree()));
-  SPDLOG_LOGGER_DEBUG(log, "Energy:         {:.12f}", energy);
-  SPDLOG_LOGGER_DEBUG(log, "Max atom force: {:.12e}", maxForce);
+  SPDLOG_LOGGER_DEBUG(m_log, "Energy:         {:.12f}", energy);
+  SPDLOG_LOGGER_DEBUG(m_log, "Max atom force: {:.12e}", maxForce);
 
   std::shared_ptr<spdlog::logger> fileLogger;
   fileLogger = spdlog::basic_logger_mt("point", "results.dat", true);
@@ -32,7 +29,7 @@ std::vector<std::string> PointJob::run(void) {
 
   spdlog::drop("point");
   fileLogger.reset();
-  return returnFiles;
+  return true;
 }
 
 } // namespace eonc

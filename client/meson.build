@@ -64,10 +64,10 @@ endif
 
 _args += cppc.get_supported_arguments(
     [
-# C++ only
-# '-Wno-class-memaccess',
-# '-Wno-unused-function',
-# Common
+        # C++ only
+        # '-Wno-class-memaccess',
+        # '-Wno-unused-function',
+        # Common
         '-Wno-unused-parameter',
         '-Wno-unused-but-set-parameter',
         '-Wfatal-errors',
@@ -82,6 +82,11 @@ _args += cppc.get_supported_arguments(
 if use_fortran == true
     _fargs += fc.get_supported_arguments(
         [
+            # Ported from C++
+            '-Wno-unused-but-set-variable',
+            '-Wno-unused-variable',
+            # Absolutely necessary
+            '-fno-implicit-none',
             # Fortran only, these are important!
             '-Wno-compare-reals',
             '-Wno-conversion',
@@ -107,6 +112,9 @@ endif
 if get_option('buildtype') != 'release'
     _args += ['-DEON_CHECKS=TRUE']
 endif
+
+loglvl = get_option('log_level').to_upper()
+_args += [f'-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_@loglvl@']
 
 
 # Get the version and build date
@@ -160,77 +168,26 @@ spdlog_dep = dependency('spdlog', required: true)
 _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
-eonclib_sources = [
-    'Parameters.cpp',
-    'Optimizer.cpp',
-    'PrefactorJob.cpp',
-    'LBFGS.cpp',
-    'ReplicaExchangeJob.cpp',
-    'BondBoost.cpp',
-    'Job.cpp',
-    'GlobalOptimization.cpp',
-    'LowestEigenmode.cpp',
-    'MinModeSaddleSearch.cpp',
-    'StructureComparisonJob.cpp',
-    'SteepestDescent.cpp',
-    'ImprovedDimer.cpp',
-    'PointJob.cpp',
-    'Prefactor.cpp',
-    'ConjugateGradients.cpp',
-    'Matter.cpp',
-    'FiniteDifferenceJob.cpp',
-    'Lanczos.cpp',
-    'HessianJob.cpp',
-    'TADJob.cpp',
-    'ProcessSearchJob.cpp',
-    'Bundling.cpp',
-    'NudgedElasticBand.cpp',
-    'MonteCarloJob.cpp',
-    'DynamicsJob.cpp',
-    'MonteCarlo.cpp',
-    'Hessian.cpp',
-    'NudgedElasticBandJob.cpp',
-    'DynamicsSaddleSearch.cpp',
-    'HelperFunctions.cpp',
-    # 'StringHelpers.cc', # Template
-    'MatrixHelpers.hpp',  # Template
-    'Dimer.cpp',
-    'Dynamics.cpp',
-    'GlobalOptimizationJob.cpp',
-    'BiasedGradientSquaredDescent.cpp',
-    'SafeHyperJob.cpp',
-    'MinimizationJob.cpp',
-    'Quickmin.cpp',
-    'ParallelReplicaJob.cpp',
-    'Potential.cpp',
-    'SurrogatePotential.cpp',  # Part of the interface
-    'BasinHoppingJob.cpp',
-    'FIRE.cpp',
-    'EpiCenters.cpp',
-    'SaddleSearchJob.cpp',
-    'BasinHoppingSaddleSearch.cpp',
-]
+# Handle client flags
+if get_option('with_lammps')
+    _args += ['-DLAMMPS_POT']
+endif
 
-eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
+if get_option('with_fortran')
+    _args += ['-DWITH_FORTRAN']
+    if get_option('with_water')
+        _args += ['-DWITH_WATER']
+    endif
+endif
 
-# ------------------- Options
+if get_option('with_ase_orca')
+    _args += ['-DWITH_ASE_ORCA']
+endif
 
-if get_option('with_gprd')
-    gprd_opts = {
-        'default_library': 'static',
-        'use_mkl': get_option('use_mkl'),
-        'use_hdf5': true,
-        'do_install': true,
-        'buildtype': 'release',
-    }
-    libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
-    libgprd = libgprd_proj.get_variable('libgprd_dep')
-    gprd_deps = libgprd_proj.get_variable('gprd_deps')
-    # subdir('potentials/GPRPotential')
-    # potentials += [ gprpot ]
-    _args += ['-DWITH_GPRD']
-    eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
-    _deps += [libgprd, gprd_deps]
+if get_option('with_vasp')
+    if host_system != 'windows'
+        _args += ['-DWITH_VASP']
+    endif
 endif
 
 # Subprojects
@@ -248,7 +205,7 @@ optv_cachelot.add_cmake_defines(
     },
 )
 cmcachelot = cmake.subproject('cachelot', options: optv_cachelot)
-_deps += [cmcachelot.dependency('cachelot'), dependency('boost')]
+_deps += cmcachelot.dependency('cachelot')
 
 # Wrap installed
 _deps += subproject('xxhash').get_variable('xxhash_dep')
@@ -287,30 +244,35 @@ subdir('matter')
 
 # IO operations
 subdir('io')
+subdir('parsers')
+
+# Objective functions
+subdir('objectives')
 
 eonclib_sources = [
-# 'Optimizer.cpp',
-# 'PrefactorJob.cpp',
-# 'LBFGS.cpp',
-# 'ReplicaExchangeJob.cpp',
-# 'BondBoost.cpp',
+    # 'Optimizer.cpp',
+    # 'PrefactorJob.cpp',
+    # 'LBFGS.cpp',
+    # 'ReplicaExchangeJob.cpp',
+    # 'BondBoost.cpp',
     'Parameters.cpp',  # TODO(rg) remove
     'Job.cpp',
     # 'GlobalOptimization.cpp',
     # 'LowestEigenmode.cpp',
     # 'MinModeSaddleSearch.cpp',
-    # 'StructureComparisonJob.cpp',
     # 'SteepestDescent.cpp',
     # 'ImprovedDimer.cpp',
     'PointJob.cpp',
+    'OptimCreator.cpp',
+    'MinimizationJob.cc',
+    'StructureComparisonJob.cpp',
     # 'Prefactor.cpp',
-    # 'ConjugateGradients.cpp',
+    'ConjugateGradients.cpp',
     # 'FiniteDifferenceJob.cpp',
     # 'Lanczos.cpp',
     # 'HessianJob.cpp',
     # 'TADJob.cpp',
     # 'ProcessSearchJob.cpp',
-    'Bundling.cpp',
     # 'NudgedElasticBand.cpp',
     # 'MonteCarloJob.cpp',
     # 'DynamicsJob.cpp',
@@ -325,7 +287,6 @@ eonclib_sources = [
     # 'GlobalOptimizationJob.cpp',
     # 'BiasedGradientSquaredDescent.cpp',
     # 'SafeHyperJob.cpp',
-    # 'MinimizationJob.cpp',
     # 'Quickmin.cpp',
     # 'ParallelReplicaJob.cpp',
     'Potential.cpp',
@@ -337,10 +298,15 @@ eonclib_sources = [
     # 'BasinHoppingSaddleSearch.cpp',
 ]
 
-eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
+# Should Log.cc not be in its own thing for other libraries?
+eonclient_sources = [
+    'fpe_handler.cpp',
+    'ClientEON.cpp',
+    'CommandLine.cpp',
+    'Log.cc',
+]
 
 # ------------------- Options
-
 # if get_option('with_gprd')
 #   libgprd_proj = subproject('gpr_optim')
 #   gprd_dep = libgprd_proj.get_variable('libgprd_dep')
@@ -395,54 +361,16 @@ if get_option('with_tests')
         #                 )
     endif
 
-# ec2 = executable('testWriteR',
-#                 'testWriteR.cpp',
-#                 include_directories: _incdirs,
-#                 dependencies : _deps,
-#                 link_with : _linkto,
-#                 )
+    # ec2 = executable('testWriteR',
+    #                 'testWriteR.cpp',
+    #                 include_directories: _incdirs,
+    #                 dependencies : _deps,
+    #                 link_with : _linkto,
+    #                 )
 endif
 # ------------------------ Tests
 
 if get_option('with_tests')
-    test_args = _args
-    test_deps = _deps
-    testMain = library(
-        'TestMain',
-        ['thirdparty/catch2/catch_amalgamated.cpp'],
-        dependencies: test_deps,
-        include_directories: _incdirs,
-        cpp_args: test_args,
-        link_with: _linkto,
-    )
-    test_array = [  #
-        # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
-        # ['strparse_run', 'StringHelpersTest.cpp', ''],
-        # ['test_matter', 'MatterTest.cpp', 'sulfolene'],
-        # ['test_pot', 'PotTest.cpp', 'sulfolene'],
-        # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
-        # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
-    ]
-    if get_option('with_metatomic')
-        test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
-    endif
-    foreach test : test_array
-        test(
-            test.get(0),
-            executable(
-                test.get(0),
-                sources: [
-                    'gtests/' + test.get(1),
-                    'thirdparty/catch2/catch_amalgamated.cpp',
-                ],
-                dependencies: test_deps,
-                include_directories: _incdirs,
-                cpp_args: test_args,
-                link_with: _linkto,
-            ),
-            workdir: meson.source_root() + '/client/gtests/data/systems/' + test.get(
-                2,
-            ),
-        )
-    endforeach
+    catch_cpp = files('thirdparty/catch2/catch_amalgamated.cpp')
+    subdir('gtests')
 endif

@@ -11,6 +11,7 @@
 */
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
+#include "ObjectiveFunction.h"
 namespace eonc {
 VectorType ConjugateGradients::getStep() {
   double a = 0, b = 0, gamma = 0;
@@ -29,13 +30,12 @@ VectorType ConjugateGradients::getStep() {
   m_forceOld = m_force;
 
   // Only if value for max nr of iteration before reset
-  if ((m_params->optim.CGMaxIterBeforeReset > 0) and
-      (m_params->optim.CGMaxIterBeforeReset <= m_cg_i))
+  if ((m_p.max_iter_before_reset > 0) and (m_p.max_iter_before_reset <= m_cg_i))
   // or gamma == 0))
   {
     m_cg_i = 0;
-    m_forceOld = m_objf->getPositions() * 0.0; // setZero
-    m_directionOld = m_objf->getPositions() * 0.0;
+    m_forceOld = m_objf.getPositions() * 0.0; // setZero
+    m_directionOld = m_objf.getPositions() * 0.0;
     //        std::cout<<"reset\n";
   }
   m_cg_i += 1;
@@ -43,9 +43,9 @@ VectorType ConjugateGradients::getStep() {
   return m_direction;
 }
 
-int ConjugateGradients::step(double a_maxMove) {
+bool ConjugateGradients::step(double a_maxMove) {
   bool converged;
-  if (m_params->optim.CGLineSearch) {
+  if (m_p.line_search) {
     converged = line_search(a_maxMove);
   } else {
     converged = single_step(a_maxMove);
@@ -64,19 +64,19 @@ int ConjugateGradients::line_search(double a_maxMove) {
   double projectedForceBeforeStep;
   double curvature;
 
-  forceBeforeStep = -m_objf->getGradient();
+  forceBeforeStep = -m_objf.getGradient();
   m_force = forceBeforeStep;
   getStep();
-  pos = m_objf->getPositions();
+  pos = m_objf.getPositions();
   projectedForceBeforeStep = m_force.dot(m_directionNorm);
 
   // move system an infinitesimal step to determine the optimal step size along
   // the search line
-  posStep = pos + m_directionNorm * m_params->main.finiteDifference;
-  m_objf->setPositions(posStep);
-  m_force = -m_objf->getGradient(true);
+  posStep = pos + m_directionNorm * m_p.finite_diff;
+  const_cast<ObjectiveFunction &>(m_objf).setPositions(posStep);
+  m_force = -m_objf.getGradient(true);
   projectedForce = m_force.dot(m_directionNorm);
-  stepSize = m_params->main.finiteDifference;
+  stepSize = m_p.finite_diff;
 
   int line_i = 0;
   do {
@@ -94,21 +94,20 @@ int ConjugateGradients::line_search(double a_maxMove) {
     projectedForceBeforeStep = projectedForce;
 
     pos += stepSize * m_directionNorm;
-    m_objf->setPositions(pos);
-    m_force = -m_objf->getGradient();
+    const_cast<ObjectiveFunction &>(m_objf).setPositions(pos);
+    m_force = -m_objf.getGradient();
     projectedForce = m_force.dot(m_directionNorm);
 
     line_i += 1;
 
     // Line search considered converged based in the ratio between the projected
     // force and the norm of the true force
-  } while (
-      m_params->optim.CGLineConverged <
-          fabs(projectedForce) /
-              (sqrt(m_force.dot(m_force) + m_params->optim.CGLineConverged)) and
-      (line_i < m_params->optim.CGLineSearchMaxIter));
-  //    return objf->isConverged();
-  if (m_objf->isConverged())
+  } while (m_p.line_convergence <
+               fabs(projectedForce) /
+                   (sqrt(m_force.dot(m_force) + m_p.line_convergence)) and
+           (line_i < m_p.max_line_serach_iter));
+  //    return objf.isConverged();
+  if (m_objf.isConverged())
     return 1;
   return 0;
 }
@@ -118,21 +117,20 @@ int ConjugateGradients::single_step(double a_maxMove) {
   VectorType posStep;
   VectorType forceAfterStep;
 
-  m_force = -m_objf->getGradient();
-  pos = m_objf->getPositions();
+  m_force = -m_objf.getGradient();
+  pos = m_objf.getPositions();
   getStep();
 
   // move system an infinitesimal step to determine the optimal step size along
   // the search line
-  posStep = pos + m_directionNorm * m_params->main.finiteDifference;
-  m_objf->setPositions(posStep);
-  forceAfterStep = -m_objf->getGradient(true);
+  posStep = pos + m_directionNorm * m_p.finite_diff;
+  const_cast<ObjectiveFunction &>(m_objf).setPositions(posStep);
+  forceAfterStep = -m_objf.getGradient(true);
 
   // Determine curvature
   double projectedForce1 = m_force.dot(m_directionNorm);
   double projectedForce2 = forceAfterStep.dot(m_directionNorm);
-  double curvature =
-      (projectedForce1 - projectedForce2) / m_params->main.finiteDifference;
+  double curvature = (projectedForce1 - projectedForce2) / m_p.finite_diff;
 
   double stepSize = a_maxMove;
 
@@ -140,13 +138,13 @@ int ConjugateGradients::single_step(double a_maxMove) {
     stepSize = projectedForce1 / curvature;
   }
 
-  if (m_params->saddle.bowlBreakout and a_maxMove < 0.0) {
+  if (m_p.saddle_bowl_breakout and a_maxMove < 0.0) {
     stepSize = -a_maxMove;
     a_maxMove = -a_maxMove;
   }
 
-  if (!m_params->optim.CGNoOvershooting) {
-    if (m_params->saddle.bowlBreakout) {
+  if (!m_p.no_overshooting) {
+    if (m_p.saddle_bowl_breakout) {
       // max displacement is based on system not single atom
       pos += helper_functions::maxMotionAppliedV(stepSize * m_directionNorm,
                                                  a_maxMove);
@@ -154,7 +152,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
       pos += helper_functions::maxAtomMotionAppliedV(stepSize * m_directionNorm,
                                                      a_maxMove);
     }
-    m_objf->setPositions(pos);
+    const_cast<ObjectiveFunction &>(m_objf).setPositions(pos);
   } else {
     // negative if product of the projected forces before and after the step are
     // in opposite directions
@@ -164,8 +162,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
            (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
       posStep = pos + helper_functions::maxAtomMotionAppliedV(
                           stepSize * m_directionNorm, a_maxMove);
-      m_objf->setPositions(posStep);
-      forceAfterStep = -m_objf->getGradient(true);
+      const_cast<ObjectiveFunction &>(m_objf).setPositions(posStep);
+      forceAfterStep = -m_objf.getGradient(true);
       projectedForce2 = forceAfterStep.dot(m_directionNorm);
 
       passedMinimum = projectedForce1 * projectedForce2;
@@ -178,25 +176,28 @@ int ConjugateGradients::single_step(double a_maxMove) {
       }
     }
   }
-  if (m_params->optim.CGKnockOutMaxMove) {
+  if (m_p.knock_out_max_move) {
     if (stepSize >= a_maxMove) {
       // knockout old search direction
-      m_directionOld = m_objf->getPositions() * 0.0;
-      m_forceOld = m_objf->getPositions() * 0.0;
+      m_directionOld = m_objf.getPositions() * 0.0;
+      m_forceOld = m_objf.getPositions() * 0.0;
       SPDLOG_LOGGER_DEBUG(m_log, "Resetting the old search direction");
     }
   }
 
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf.isConverged() ? 1 : 0;
 }
 
-int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
-  size_t iterations = 0;
-  while (!m_objf->isConverged() && iterations <= a_maxIterations) {
-    step(a_maxMove);
+bool ConjugateGradients::runOpt(size_t maxIterations, ScalarType maxMove) {
+  int iterations = 0;
+  while (!m_objf.isConverged() && iterations <= maxIterations) {
+    step(maxMove);
     iterations++;
   }
-  return m_objf->isConverged() ? 1 : 0;
+  //    return objf->isConverged();
+  if (m_objf.isConverged())
+    return 1;
+  return 0;
 }
 
 } // namespace eonc

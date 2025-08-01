@@ -13,6 +13,7 @@
 #include "BaseStructures.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
+#include "HelperFunctions.h"
 #include "Optimizer.h"
 #include "magic_enum/magic_enum.hpp"
 
@@ -187,7 +188,6 @@ NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Potential> potPassed)
     : params{parametersPassed},
       pot{potPassed} {
-
   log = spdlog::get("combi");
   this->status = NEBStatus::INIT;
   numImages = params->nebImages;
@@ -217,7 +217,6 @@ NudgedElasticBand::NudgedElasticBand(
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
 
-  // Setup springs
   k_u = params->neb.KSPMax;
   k_l = params->neb.KSPMin;
   if (params->neb.energyWeighted) {

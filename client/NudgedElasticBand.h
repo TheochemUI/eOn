@@ -13,6 +13,7 @@
 
 #include "Eigen.h"
 
+#include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 namespace eonc {

@@ -9,9 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+// Includes logging macros
 #include "Parameters.h"
 #include "BaseStructures.h"
 #include "HelperFunctions.h"
+#include "client/Log.hpp" // IWYU pragma: keep
 #include "magic_enum/magic_enum.hpp"
 #include "thirdparty/toml.hpp"
 #include <float.h>
@@ -54,7 +56,7 @@ Parameters::Parameters() {
   debug.writeMovies = false;
   debug.writeMoviesInterval = 1;
   debug.estNEBeig = false;
-  debug.nebMMF = "dimer"s; //LowestEigenmode::MINMODE_DIMER;
+  debug.nebMMF = "dimer"s; // LowestEigenmode::MINMODE_DIMER;
 
   // [Optimizers] //
   optim.method = OptType::CG;
@@ -702,6 +704,7 @@ int Parameters::load(const std::string &filename) {
     thermostat.langevinFrictionInput =
         config["Dynamics"]["langevin_friction"].value_or(0.01);
     thermostat.langevinFriction = thermostat.langevinFrictionInput * timeUnit;
+
     // XXX(rg): Figure out what this was
     // thermoAtoms =
     // helper_functions::split_string_int(ini.GetValue("Dynamics",
@@ -734,8 +737,6 @@ int Parameters::load(const std::string &filename) {
     tad.lowT = config["TAD"]["low_temperature"].value_or(300.0);
     tad.minPrefactor = config["TAD"]["min_prefactor"].value_or(0.001);
     tad.confidence = config["TAD"]["confidence"].value_or(0.001);
-
-    // Potential section
 
     // GP Surrogate Parameters
     surrogate.use = config["Surrogate"]["use"].value_or(false);

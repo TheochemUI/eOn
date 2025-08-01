@@ -21,6 +21,8 @@ def PDef(first, second):
 
 class MainConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
+    inputs: List[str] = Field(default=["pos.con"], description="List of matter sources")
+    output: str = Field(default="res.con", description="Output structure")
     job: Literal[
         "akmc",
         "basin_hopping",
@@ -791,7 +793,6 @@ class AMSEnvConfig(BaseModel):
         default="",
         description="Path to AMS atomic data resources (will be appended to amshome).",
     )
-
 
 class SaddleSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)

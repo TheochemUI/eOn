@@ -23,6 +23,8 @@
 
 namespace eonc {
 
+namespace eonc {
+
 // dimer method to find the lowest curvature mode
 class AtomicGPDimer : public LowestEigenmode {
 

@@ -1,6 +1,6 @@
 potaids = library(
     'potaids',
-    sources: files('ParseTOML.cc', 'PotHelpers.cc', 'PotentialCache.cc'),
+    sources: files('PotHelpers.cc', 'PotentialCache.cc'),
     include_directories: _incdirs,
     dependencies: _deps,
     link_with: _linkto,
@@ -10,7 +10,7 @@ potaids = library(
 _linkto += potaids
 
 # subdir('EAM')
-# subdir('EMT')
+subdir('EMT')
 subdir('ExtPot')
 # subdir('IMD')
 subdir('LJ')
@@ -20,7 +20,7 @@ subdir('Morse')
 
 potentials = [
     # eam,
-    # emt,
+    emt,
     extpot,
     # imd,
     lennard_jones,
@@ -267,6 +267,4 @@ if get_option('with_vasp')
         _args += ['-DWITH_VASP']
     endif
 endif
-
-
 _linkto += potentials

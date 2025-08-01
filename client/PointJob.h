@@ -11,22 +11,17 @@
 */
 #pragma once
 
-#include "client/Job.h"
 #include "client/matter/Matter.h"
 namespace eonc {
-class PointJob : public Job<PointJob> {
-  Matter &_mat;
+class PointJob {
 
 public:
-  PointJob(Matter &mat_a)
-      : _mat{mat_a} {
-    log = spdlog::get("combi");
-  }
+  PointJob() { m_log = spdlog::get("combi"); }
   ~PointJob(void) = default;
-  std::vector<std::string> run(void) override;
+  bool runImpl(Matter &);
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  std::shared_ptr<spdlog::logger> m_log;
 };
 
 } // namespace eonc

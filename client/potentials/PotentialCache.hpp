@@ -43,12 +43,27 @@ struct KeyHash {
 
 // Helper which doesn't compute the hashes, since those are obtained based on
 // the Potential<T>
+// TODO(rg) :: Consider reworking as a singleton like the logger
 class PotentialCache {
 private:
-  cachelot::cache::Cache *potCache = nullptr;
+  cachelot::cache::Cache potCache;
+  static std::atomic<PotentialCache *> instance;
+  static std::mutex pcMutex;
+
+  PotentialCache()
+      : potCache(cachelot::cache::Cache::Create(
+            eonc::cache::cache_memory, eonc::cache::page_size,
+            eonc::cache::hash_initial, true)) {}
+
+  ~PotentialCache() = default;
+
+  PotentialCache(const PotentialCache &) = delete;
+  PotentialCache &operator=(const PotentialCache &) = delete;
+
+  void setup_cache();
 
 public:
-  void set_cache(cachelot::cache::Cache *);
+  static PotentialCache *getInstance();
   void deserialize_hit(cachelot::cache::ConstItemPtr &, ForceOut &,
                        AtomMatrix &);
   void add_serialized(const KeyHash &, const ForceOut &, const AtomMatrix &);

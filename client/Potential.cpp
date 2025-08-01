@@ -14,7 +14,7 @@
 #include "client/BaseStructures.h"
 #include "client/Parser.hpp"
 #include "client/Potential.h"
-#include "client/potentials/ParseTOML.hpp"
+#include "client/parsers/ParsePot.hpp"
 
 // #ifdef WITH_CATLEARN
 // #include "potentials/CatLearnPot/CatLearnPot.h"
@@ -29,7 +29,7 @@
 // #endif
 
 // #include "potentials/EAM/EAM.h"
-// #include "client/potentials/EMT/EffectiveMediumTheory.h"
+#include "client/potentials/EMT/EffectiveMediumTheory.h"
 #include "client/potentials/ExtPot/ExtPot.h"
 #include "client/potentials/LJ/LJ.h"
 // #include "potentials/LJCluster/LJCluster.h"
@@ -110,16 +110,16 @@ namespace eonc {
 
 std::shared_ptr<PotBase> makePotential(const toml::table &config) {
   config_section(config, "Potential");
-  auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]);
+  auto ptype = get_enum_toml<PotType>(config["Potential"]["potential"]).value();
   switch (ptype) {
-  // case PotType::EMT: {
-  //   return (std::make_shared<EffectiveMediumTheory>(false));
-  //   break;
-  // }
-  // case PotType::EMT_RAS: {
-  //   return (std::make_shared<EffectiveMediumTheory>(true));
-  //   break;
-  // }
+  case PotType::EMT: {
+    return (std::make_shared<EffectiveMediumTheory>(false));
+    break;
+  }
+  case PotType::EMT_RAS: {
+    return (std::make_shared<EffectiveMediumTheory>(true));
+    break;
+  }
   case PotType::EXT: {
     return (std::make_shared<ExtPot>(
         config["Potential"]["ext_pot_path"].value_or("ext_pot")));

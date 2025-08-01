@@ -5,12 +5,13 @@ project(
     'cpp',
     version: '3.1',
     default_options: [
-        'warning_level=0',
+        'warning_level=3',
         'cpp_std=c++17',
+        # 'buildtype=debugoptimize', # debug=true, optimize=2
+        'debug=true',
+        'optimization=3',
     ],
 )
-# IMPORTANT!! warning_level=3 passes -fimplicit-none
-# eonclient needs implicit typing!!
 
 
 host_system = host_machine.system()
@@ -71,6 +72,7 @@ endif
 subdir('client')
 
 # eon main package
+py = import('python').find_installation(pure: false)
 py.install_sources(
     [
         'eon/akmc.py',

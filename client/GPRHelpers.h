@@ -15,7 +15,6 @@
 
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gpr_optim/structures/Structures.h"
-
 namespace eonc {
 namespace helper_functions {
 /**

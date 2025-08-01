@@ -9,7 +9,7 @@
 namespace eonc::io {
 std::unique_ptr<WriteBase> mkWriter(const toml::table &config) {
   config_section(config, "Main");
-  auto wtype = get_enum_toml<WriteType>(config["Main"]["write"]);
+  auto wtype = get_enum_toml<WriteType>(config["Main"]["write"]).value();
   switch (wtype) {
   case WriteType::CON: {
     return (std::make_unique<ConWriter>());

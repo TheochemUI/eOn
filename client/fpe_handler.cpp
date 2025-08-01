@@ -23,7 +23,6 @@
 #include <xmmintrin.h>
 #endif
 namespace eonc {
-
 static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   int fe_code = sip->si_code;
   std::cerr << "Floating point exception: ";
