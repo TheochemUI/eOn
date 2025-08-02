@@ -541,7 +541,8 @@ class ServerMinModeExplorer(MinModeExplorer):
 
 
 class ProcessSearch:
-    def __init__ (self, reactant, displacement, mode, disp_type, search_id, state_number):
+    def __init__ (self, reactant, displacement, mode, disp_type, search_id, state_number, config: ConfigClass = EON_CONFIG):
+        self.config = config
         self.reactant = reactant
         self.displacement = displacement
         self.mode = mode
