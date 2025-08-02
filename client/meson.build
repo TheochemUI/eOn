@@ -205,7 +205,7 @@ optv_cachelot.add_cmake_defines(
     },
 )
 cmcachelot = cmake.subproject('cachelot', options: optv_cachelot)
-_deps += cmcachelot.dependency('cachelot')
+_deps += [cmcachelot.dependency('cachelot'), dependency('boost')]
 
 # Wrap installed
 _deps += subproject('xxhash').get_variable('xxhash_dep')
