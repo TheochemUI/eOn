@@ -14,7 +14,7 @@ if get_option('with_fortran') or get_option('with_xtb') or get_option(
 endif
 
 if get_option('with_python')
-# TODO(rg): Cleanup a bit
+    # TODO(rg): Cleanup a bit
     # Embed is needed for surrogate, numpy by qsc
     py = import('python').find_installation('python', modules: ['numpy'])
     python_dep = py.dependency(embed: true)

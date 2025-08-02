@@ -13,8 +13,8 @@
 #include "client/io/writers/con/ConBase.hpp"
 #include "client/Element.hpp"
 #include "client/io/IOHelpers.hpp"
-#include <iostream>
 #include <fmt/ranges.h>
+#include <iostream>
 
 namespace eonc::io {
 bool ConBaseWriter::writeBase(const Matter &mat, std::ofstream &fout,

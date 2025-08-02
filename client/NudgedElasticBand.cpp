@@ -11,9 +11,9 @@
 */
 #include "NudgedElasticBand.h"
 #include "BaseStructures.h"
+#include "HelperFunctions.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
-#include "HelperFunctions.h"
 #include "Optimizer.h"
 #include "magic_enum/magic_enum.hpp"
 
