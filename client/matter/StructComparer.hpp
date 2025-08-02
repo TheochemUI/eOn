@@ -26,21 +26,18 @@ public:
     bool indistinguishableAtoms{true};
     double energyDifference{0.01};
     bool removeTranslation{true};
-  } scparams;
+  };
 
   // TODO(rg):: Indistinguishable conflicts with default Param
   bool compare(const Matter &m1, const Matter &m2,
                const bool indistinguishable = false);
-  StructComparer(Params scp_a)
+  StructComparer(const StructComparer::Params &scp_a)
       : scparams{scp_a} {
-    setupCompareFunc();
-  }
-  StructComparer(const toml::table &tbl) {
-    fromTOML(tbl);
     setupCompareFunc();
   }
 
 private:
+  Params scparams;
   std::function<bool(const Matter &, const Matter &, double)> compareFunc;
   void fromTOML(const toml::table &tbl);
   void setupCompareFunc(); // Setup cutoff

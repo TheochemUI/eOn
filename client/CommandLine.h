@@ -10,7 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include <thirdparty/cxxopts.hpp>
+#include "client/Log.hpp" // IWYU pragma: keep
+#include "thirdparty/toml.hpp"
 namespace eonc {
-void commandLine(int argc, char **argv);
+toml::table commandLine(std::shared_ptr<spdlog::logger>, int, char **);
 }

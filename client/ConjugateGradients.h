@@ -10,9 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Eigen.h"
-#include "Optimizer.h"
-#include "Parameters.h"
+#include "client/BaseStructures.h"
+#include "client/Log.hpp"
+#include "client/ObjectiveFunction.h"
+#include <spdlog/sinks/basic_file_sink.h>
 namespace eonc {
 /**
  * @file
@@ -30,7 +31,20 @@ namespace eonc {
  * Decleration of the Conjugate Gradients optimizer
  */
 
-class ConjugateGradients : public Optimizer {
+class ConjugateGradients {
+public:
+  struct Params final
+      : public BaseOptParams { // [CG] , also inheriting [Optimizer]
+    size_t max_iter_before_reset{0};
+    bool no_overshooting{false};
+    bool knock_out_max_move{false};
+    ScalarType line_convergence{0.1};
+    bool line_search{false};
+    size_t max_line_serach_iter{10};
+    ScalarType finite_diff{0.01};
+    bool saddle_bowl_breakout{false};
+  };
+
 public:
   //! Conjugate Gradients optimizer constructor
   /*!
@@ -38,11 +52,12 @@ public:
    * how to run \param std::shared_ptr<Parameters> m_params defined by the
    * config.init file
    */
-  ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
-                     std::shared_ptr<Parameters> a_params)
-      : Optimizer(a_objf, OptType::CG, a_params),
-        m_directionOld{(a_objf->getPositions()).setZero()},
-        m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
+  ConjugateGradients(const ObjectiveFunction &a_objf,
+                     const ConjugateGradients::Params &p_a)
+      : m_objf(a_objf),
+        m_p{p_a},
+        m_directionOld{(a_objf.getPositions()).setZero()},
+        m_forceOld{(a_objf.getPositions()).setZero()}, // use setZero instead
         m_cg_i{0} {
     if (spdlog::get("cg")) {
       m_log = spdlog::get("cg");
@@ -59,17 +74,15 @@ public:
    * Either calls the single_step or line_search method depending on the
    * parameters \return whether or not the algorithm has converged
    */
-  int step(double a_maxMove) override;
-  //! Runs the conjugate gradient
-  /**
-   * \todo method should also return an error code and message if the algorithm
-   * errors out \return algorithm convergence
-   */
-  int run(size_t a_maxIterations, double a_maxMove) override;
+  bool step(ScalarType);
+  bool runOpt(size_t, ScalarType);
   //! Gets the direction of the next step
   VectorType getStep();
 
 private:
+  const ObjectiveFunction &m_objf;
+  size_t iters{0};
+  const ConjugateGradients::Params m_p;
   //! Current step direction of the conjugate gradient
   VectorType m_direction;
   //! Algorithms previous step direction

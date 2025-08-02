@@ -5,6 +5,24 @@ does most of the computation (e.g. saddle searches, minimizations, and molecular
 dynamics) while the server creates the input for the client and processes its
 results.
 
+## Getting started
+
+The simplest way to hit the ground running is with the `conda` package:
+
+```{code-block} bash
+micromamba install -c "https://prefix.dev/channels/rg-forge" eon
+```
+
+At this point any of the many examples should be good to go.
+
+The server is accessed through `python -m eon.server`, and the `eonclient`
+binary is automatically made available in the activated environment..
+
+```{versionchanged} 2.0
+While reading older documentation, calls to `eon` must now be `python -m
+eon.server`.
+```
+
 # Obtaining sources
 
 ```{versionadded} 2.0
@@ -26,36 +44,30 @@ cd eOn
 ```
 ````
 
-## Setup
+## Building from source
 
-We provide a `conda` environment, with dependencies handled by `conda-lock`.
+We provide a `conda` environment and `pixi` setup, with dependencies handled by `conda-lock`.
 
 ```{code-block} bash
 micromamba create -n eongit -f conda-lock.yml
 micromamba activate eongit
+# Or
+pixi shell
 ```
 
 This leads to the most robust installation approach:
 
 ```{code-block} bash
 # conda-compilers may try to install to $CONDA_PREFIX/lib/x86_64-linux-gnu without --libdir
-meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib
+meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release
 meson install -C bbdir
 ```
 
 Some additional performance can be gained with `ccache` and `mold`, which can be
 passed with `--native-file`:
 
-- With ccache, add `--native-file nativeFiles/ccache_gnu.ini`
-- With mold, add `--native-file nativeFiles/mold.ini`
-
-The server is accessed through `python -m eon.server`, and the `eonclient`
-binary is automatically made available in the activated environment..
-
-```{versionchanged} 2.0
-While reading older documentation, calls to `eon` must now be `python -m
-eon.server`. 
-```
+- With `ccache` installed, add `--native-file nativeFiles/ccache_gnu.ini`
+- With `mold` installed, add `--native-file nativeFiles/mold.ini`
 
 ### Optional packages
 
@@ -74,6 +86,7 @@ systems, follow the sub-parts of this document.
 
 windows
 lammps
+metatomic
 ase
 svn
 ```

@@ -16,8 +16,11 @@ test_array = [  #
     # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
 ]
 if get_option('buildtype') != 'release'
-# This test gives different outputs on debug
+    # This test gives different outputs on debug
     test_array += [['test_enum', 'EnumTest.cc', '']]
+endif
+if get_option('with_metatomic')
+    test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
 endif
 foreach test : test_array
     test(

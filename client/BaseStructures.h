@@ -19,13 +19,7 @@
 #include <fmt/ostream.h>
 #include <fmt/printf.h>
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-#include <spdlog/cfg/env.h> // support for loading levels from the environment variable
-#include <spdlog/fmt/ostr.h> // support for user defined types
-#include <spdlog/logger.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
+#include "client/BaseTypes.hpp"
 
 namespace eonc {
 using namespace std::string_literals; // For ""s
@@ -77,6 +71,8 @@ enum class PotType {
   XTB,
   ASE_ORCA,
   ASE_POT,
+  ASE_NWCHEM,
+  METATOMIC
 };
 
 enum class JobType {
@@ -119,6 +115,21 @@ enum class RunStatus {
   GOOD,
   FAIL_MAX_ITERATIONS,
   FAIL_POTENTIAL_FAILED
+};
+
+enum class ConvergenceMeasure {
+  UNKNOWN = -1, // an error case
+  NORM,
+  MAX_ATOM,
+  MAX_COMPONENT
+};
+
+struct BaseOptParams {                                // [Optimizer]
+  OptType optM{OptType::CG};                          // opt_method
+  ConvergenceMeasure optCM{ConvergenceMeasure::NORM}; // convergence_metric
+  ScalarType optConvergedForce{1e-3};                 // converged_force
+  size_t optMaxIter{1000L};                           // max_iterations
+  ScalarType optMaxMove{0.2};                         // max_move
 };
 
 namespace Prefactor {

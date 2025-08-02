@@ -12,8 +12,11 @@
 #include "NudgedElasticBand.h"
 #include "BaseStructures.h"
 #include "HelperFunctions.h"
+#include "ImprovedDimer.h"
+#include "Lanczos.h"
 #include "Optimizer.h"
 #include "magic_enum/magic_enum.hpp"
+
 #include <filesystem>
 namespace eonc {
 using namespace helper_functions;
@@ -37,6 +40,44 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                            int(std::distance(all_images_on_path.begin(), it)));
   }
   return all_images_on_path;
+}
+
+std::vector<Matter> filePathInit(const std::vector<fs::path> &fsrcs,
+                                 const Matter &refImg, const size_t nimgs) {
+  std::vector<Matter> all_images_on_path;
+  if (nimgs + 2 != fsrcs.size()) {
+    throw std::runtime_error("Error in filePathInit: Expected " +
+                             std::to_string(nimgs + 2) + " files, but got " +
+                             std::to_string(fsrcs.size()) + ".");
+  }
+  all_images_on_path.reserve(nimgs + 2);
+  // For all images
+  for (const auto &filePath : fsrcs) {
+    Matter img(refImg);
+    img.con2matter(filePath.string());
+    all_images_on_path.push_back(img);
+  }
+  return all_images_on_path;
+}
+
+std::vector<fs::path> readFilePaths(const std::string &listFilePath) {
+  std::vector<fs::path> paths;
+  std::ifstream inputFile(listFilePath);
+
+  if (!inputFile.is_open()) {
+    throw std::runtime_error("Error: Could not open path list file: " +
+                             listFilePath);
+  }
+
+  std::string line;
+  while (std::getline(inputFile, line)) {
+    // Skip any empty lines in the input file
+    if (!line.empty()) {
+      paths.emplace_back(line);
+    }
+  }
+
+  return paths;
 }
 } // namespace helper_functions::neb_paths
 
@@ -121,16 +162,38 @@ VectorType NEBObjectiveFunction::difference(VectorType a, VectorType b) {
 }
 
 // Nudged Elastic Band definitions
+// First constructor: Now delegates to the second constructor
 NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
     std::shared_ptr<Parameters> parametersPassed,
     std::shared_ptr<Potential> potPassed)
+    : NudgedElasticBand(
+          [&, initialPassed]() {
+            if (!parametersPassed->nebIpath.empty()) {
+              std::vector<fs::path> file_paths =
+                  helper_functions::neb_paths::readFilePaths(
+                      parametersPassed->nebIpath);
+              return helper_functions::neb_paths::filePathInit(
+                  file_paths, *initialPassed, parametersPassed->nebImages);
+            } else {
+              return helper_functions::neb_paths::linearPath(
+                  *initialPassed, *finalPassed, parametersPassed->nebImages);
+            }
+          }(),
+          parametersPassed, potPassed) {}
+
+// Second constructor: Contains all the common setup code
+NudgedElasticBand::NudgedElasticBand(
+    std::vector<Matter> initPath, std::shared_ptr<Parameters> parametersPassed,
+    std::shared_ptr<Potential> potPassed)
     : params{parametersPassed},
       pot{potPassed} {
-  numImages = params->neb.images;
-  atoms = initialPassed->numberOfAtoms();
-  auto linear_path = helper_functions::neb_paths::linearPath(
-      *initialPassed, *finalPassed, params->neb.images);
+  log = spdlog::get("combi");
+  this->status = NEBStatus::INIT;
+  numImages = params->nebImages;
+  atoms = initPath.front().numberOfAtoms();
+
+  // Common initialization logic
   path.resize(numImages + 2);
   tangent.resize(numImages + 2);
   projectedForce.resize(numImages + 2);
@@ -138,36 +201,22 @@ NudgedElasticBand::NudgedElasticBand(
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
-  this->status = NEBStatus::INIT;
-  log = spdlog::get("combi");
-  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initializing with linear path\n");
+
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
-    *path[i] = linear_path[i];
+    *path[i] = initPath[i];
     tangent[i] = std::make_shared<AtomMatrix>();
     tangent[i]->resize(atoms, 3);
     projectedForce[i] = std::make_shared<AtomMatrix>();
     projectedForce[i]->resize(atoms, 3);
   }
-  *path[numImages + 1] = *finalPassed; // final image
 
+  // Common final setup
   movedAfterForceCall = true;
-
-  // Make sure that the endpoints know their energy
   path[0]->getPotentialEnergy();
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
 
-  return;
-}
-
-NudgedElasticBand::NudgedElasticBand(
-    std::vector<std::shared_ptr<Matter>> initPath,
-    std::shared_ptr<Parameters> parametersPassed,
-    std::shared_ptr<Potential> potPassed)
-    : params{parametersPassed},
-      pot{potPassed} {
-  numImages = params->neb.images;
   k_u = params->neb.KSPMax;
   k_l = params->neb.KSPMin;
   if (params->neb.energyWeighted) {
@@ -175,36 +224,25 @@ NudgedElasticBand::NudgedElasticBand(
   } else {
     ksp = params->neb.spring;
   }
-  auto initialPassed = initPath.front();
-  auto finalPassed = initPath.back();
-  atoms = initialPassed->numberOfAtoms();
-  path.resize(numImages + 2);
-  tangent.resize(numImages + 2);
-  projectedForce.resize(numImages + 2);
-  extremumPosition.resize(2 * (numImages + 1));
-  extremumEnergy.resize(2 * (numImages + 1));
-  extremumCurvature.resize(2 * (numImages + 1));
-  numExtrema = 0;
-  log = spdlog::get("combi");
-  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initialized with old path\n");
-  this->status = NEBStatus::INIT;
-  for (long i = 0; i <= numImages + 1; i++) {
-    path[i] = std::make_shared<Matter>(pot, params);
-    *path[i] = *initPath[i];
-    tangent[i] = std::make_shared<AtomMatrix>();
-    tangent[i]->resize(atoms, 3);
-    projectedForce[i] = std::make_shared<AtomMatrix>();
-    projectedForce[i]->resize(atoms, 3);
+
+  // Optional debugging setup
+  if (params->estNEBeig) {
+    eigenmode_solvers.resize(numImages + 2);
+    for (long i = 0; i <= numImages + 1; i++) {
+      if (params->nebMMF == LowestEigenmode::MINMODE_DIMER) {
+        eigenmode_solvers[i] =
+            std::make_shared<ImprovedDimer>(path[i], parametersPassed, pot);
+      } else if (params->nebMMF == LowestEigenmode::MINMODE_LANCZOS) {
+        eigenmode_solvers[i] =
+            std::make_shared<Lanczos>(path[i], parametersPassed, pot);
+      } else {
+        log = spdlog::get("_traceback");
+        SPDLOG_LOGGER_CRITICAL(log, "[Debug] unknown neb_mmf_estimator: {}",
+                               params->nebMMF);
+        std::exit(1);
+      }
+    }
   }
-  *path[numImages + 1] = *finalPassed; // final image
-
-  movedAfterForceCall = true;
-
-  // Make sure that the endpoints know their energy
-  E_ref = std::max(path[0]->getPotentialEnergy(),
-                   path[numImages + 1]->getPotentialEnergy());
-  climbingImage = 0;
-  return;
 }
 
 NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
@@ -212,7 +250,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   this->status = NEBStatus::RUNNING;
 
   SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band calculation started.");
-
+  if (params->nebEnergyWeighted) {
+    E_ref = std::min(path[0]->getPotentialEnergy(),
+                     path[numImages + 1]->getPotentialEnergy());
+  }
   updateForces();
 
   auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
@@ -247,7 +288,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
     VectorType pos = objf->getPositions();
     double convForce{convergenceForce()};
-    if (iteration) { // so that we print forces before taking an optimizer step
+    if (iteration) { // so that we print forces before taking an optimizer
+                     // step
       if (iteration >= params->neb.maxIterations) {
         status = NEBStatus::BAD_MAX_ITERATIONS;
         break;
@@ -398,8 +440,8 @@ void NudgedElasticBand::updateForces(void) {
     energyNext = path[i + 1]->getPotentialEnergy();
     posDiffNext = path[i]->pbc(posNext - pos); // R[i+1] - R[i]
     posDiffPrev = path[i]->pbc(pos - posPrev); // R[i] - R[i-1]
-    distNext = posDiffNext.squaredNorm();      // Distance to next image
-    distPrev = posDiffPrev.squaredNorm();      // Distance to previous image
+    distNext = posDiffNext.norm();             // Distance to next image
+    distPrev = posDiffPrev.norm();             // Distance to previous image
 
     // determine the tangent
     if (params->neb.oldTangent) {
@@ -442,10 +484,10 @@ void NudgedElasticBand::updateForces(void) {
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
     if (params->neb.energyWeighted) {
-      double kspPrev =
-          (i > 1) ? springConstants[i - 2] : springConstants.front();
-      double kspNext =
-          (i < numImages) ? springConstants[i] : springConstants.front();
+      // Spring for segment (i) -> (i+1)
+      double kspNext = springConstants[i];
+      // Spring for segment (i-1) -> (i)
+      double kspPrev = springConstants[i - 1];
       forceSpringPar =
           ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
     } else {
@@ -524,22 +566,36 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   AtomMatrix tangentEnd = path[numImages]->pbc(
       path[numImages + 1]->getPositions() - path[numImages]->getPositions());
   AtomMatrix tang;
+  std::string header, fmttr;
+  if (params->estNEBeig) {
+    header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s} {:>12s}", "img",
+                         "rxn_coord", "energy", "f_para", "eigval");
+    fmttr = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
+  } else {
+    header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s}", "img", "rxn_coord",
+                         "energy", "f_para");
+    fmttr = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}";
+  }
+
+  // Endpoint tangents must be normalized for a correct projection
+  tangentStart.normalize();
+  tangentEnd.normalize();
 
   std::shared_ptr<spdlog::logger> fileLogger;
-  if (spdlog::get("file_logger")) {
-    spdlog::drop("file_logger");
-  }
   if (writeToFile) {
-    // Remove existing log file if it exists
+    if (spdlog::get("file_logger")) {
+      spdlog::drop("file_logger");
+    }
     auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
     if (fs::exists(neb_dat_fs)) {
-      // SPDLOG_DEBUG(
-      //     "Removing the file since it exists, dropping existing logger");
       fs::remove(neb_dat_fs);
     }
     fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
     fileLogger->set_pattern("%v");
+    fileLogger->info(header);
   }
+  const double energy_reactant = path[0]->getPotentialEnergy();
+
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
       tang = tangentStart;
@@ -548,21 +604,39 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     } else {
       tang = *tangent[i];
     }
+
     if (i > 0) {
       dist = path[i]->distanceTo(*path[i - 1]);
       distTotal += dist;
     }
-    if (fileLogger) {
-      SPDLOG_LOGGER_DEBUG(
-          fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
-          path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
-          (path[i]->getForces().array() * tang.array()).sum());
-    } else {
-      SPDLOG_LOGGER_DEBUG(
-          log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
-          path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
-          (path[i]->getForces().array() * tang.array()).sum());
+
+    // Calculate standard values for logging
+    double relative_energy = path[i]->getPotentialEnergy() - energy_reactant;
+    double parallel_force = (path[i]->getForces().array() * tang.array()).sum();
+
+    // Conditionally run an MMF and log the eigenvalue
+    if (params->estNEBeig) {
+      eigenmode_solvers[i]->compute(path[i], tang);
+      double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
+      if (fileLogger) {
+        fileLogger->info(fmttr, i, distTotal, relative_energy, parallel_force,
+                         lowest_eigenvalue);
+      } else {
+        SPDLOG_LOGGER_DEBUG(log, fmttr, i, distTotal, relative_energy,
+                            parallel_force, lowest_eigenvalue);
+      }
+    } else { // Standard output without the eigenvalue
+      if (fileLogger) {
+        fileLogger->info(fmttr, i, distTotal, relative_energy, parallel_force);
+      } else {
+        SPDLOG_LOGGER_DEBUG(log, fmttr, i, distTotal, relative_energy,
+                            parallel_force);
+      }
     }
+  }
+
+  if (fileLogger) {
+    spdlog::drop("file_logger");
   }
 }
 
@@ -607,8 +681,8 @@ void NudgedElasticBand::findExtrema(void) {
   // finding extrema along the MEP
 
   //    long numExtrema = 0;
-  //    double extremaEnergy[2*(numImages+1)]; // the maximum number of extrema
-  //    double extremaPosition[2*(numImages+1)];
+  //    double extremaEnergy[2*(numImages+1)]; // the maximum number of
+  //    extrema double extremaPosition[2*(numImages+1)];
   double discriminant, f;
 
   for (long i = 0; i <= numImages; i++) {

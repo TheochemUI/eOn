@@ -1,4 +1,4 @@
-_incdirs += [include_directories('thirdparty')]
+_incdirs += [include_directories('thirdparty'), include_directories('.')]
 
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
@@ -10,10 +10,11 @@ if get_option('with_fortran') or get_option('with_xtb') or get_option(
     use_fortran = true
     add_languages('fortran', required: true)
     fc = meson.get_compiler('fortran')
+    _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
 endif
 
 if get_option('with_python')
-# TODO(rg): Cleanup a bit
+    # TODO(rg): Cleanup a bit
     # Embed is needed for surrogate, numpy by qsc
     py = import('python').find_installation('python', modules: ['numpy'])
     python_dep = py.dependency(embed: true)
@@ -31,6 +32,17 @@ if get_option('with_python')
     _deps += declare_dependency(include_directories: inc_np)
 endif
 
+if get_option('use_mkl')
+    mkldep = dependency('mkl-dynamic-ilp64-iomp', required: true)
+    add_project_arguments('-DEIGEN_USE_MKL_ALL', language: 'cpp')
+    add_project_link_arguments(
+        '-lmkl_intel_lp64',
+        '-lmkl_core',
+        '-lmkl_sequential',
+        language: 'cpp',
+    )
+endif
+
 # Platform detection
 host_system = host_machine.system()
 is_windows = host_system == 'windows'
@@ -46,16 +58,16 @@ if host_system == 'darwin'
 endif
 if is_windows
     _args += ['-DIS_WINDOWS']
-# Workaround used in INIFile.cpp
-# ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
+    # Workaround used in INIFile.cpp
+    # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
 endif
 
 _args += cppc.get_supported_arguments(
     [
-# C++ only
-# '-Wno-class-memaccess',
-# '-Wno-unused-function',
-# Common
+        # C++ only
+        # '-Wno-class-memaccess',
+        # '-Wno-unused-function',
+        # Common
         '-Wno-unused-parameter',
         '-Wno-unused-but-set-parameter',
         '-Wfatal-errors',
@@ -70,7 +82,7 @@ _args += cppc.get_supported_arguments(
 if use_fortran == true
     _fargs += fc.get_supported_arguments(
         [
-# Ported from C++
+            # Ported from C++
             '-Wno-unused-but-set-variable',
             '-Wno-unused-variable',
             # Absolutely necessary
@@ -101,6 +113,9 @@ if get_option('buildtype') != 'release'
     _args += ['-DEON_CHECKS=TRUE']
 endif
 
+loglvl = get_option('log_level').to_upper()
+_args += [f'-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_@loglvl@']
+
 
 # Get the version and build date
 version_script = find_program('get_version.py')
@@ -127,6 +142,14 @@ configure_file(
 # Dependencies
 # Needed for spdlog
 # See https://github.com/gabime/spdlog/issues/58
+if not is_windows
+    # libm for Unix systems
+    m_dep = cppc.find_library('m', required: false)
+    _deps += m_dep
+    # For building with clang
+    _deps += [declare_dependency(link_args: '-lstdc++')]
+endif
+
 threads_dep = dependency('threads', required: true)
 _deps += threads_dep
 
@@ -178,10 +201,11 @@ optv_cachelot.add_cmake_defines(
         'CMAKE_POSITION_INDEPENDENT_CODE': true,
         'CMAKE_CXX_FLAGS': '-w',
         'CMAKE_C_FLAGS': '-w',
+        'CMAKE_POLICY_VERSION_MINIMUM': '3.5',
     },
 )
 cmcachelot = cmake.subproject('cachelot', options: optv_cachelot)
-_deps += cmcachelot.dependency('cachelot')
+_deps += [cmcachelot.dependency('cachelot'), dependency('boost')]
 
 # Wrap installed
 _deps += subproject('xxhash').get_variable('xxhash_dep')
@@ -220,30 +244,35 @@ subdir('matter')
 
 # IO operations
 subdir('io')
+subdir('parsers')
+
+# Objective functions
+subdir('objectives')
 
 eonclib_sources = [
-# 'Optimizer.cpp',
-# 'PrefactorJob.cpp',
-# 'LBFGS.cpp',
-# 'ReplicaExchangeJob.cpp',
-# 'BondBoost.cpp',
+    # 'Optimizer.cpp',
+    # 'PrefactorJob.cpp',
+    # 'LBFGS.cpp',
+    # 'ReplicaExchangeJob.cpp',
+    # 'BondBoost.cpp',
     'Parameters.cpp',  # TODO(rg) remove
     'Job.cpp',
     # 'GlobalOptimization.cpp',
     # 'LowestEigenmode.cpp',
     # 'MinModeSaddleSearch.cpp',
-    # 'StructureComparisonJob.cpp',
     # 'SteepestDescent.cpp',
     # 'ImprovedDimer.cpp',
     'PointJob.cpp',
+    'OptimCreator.cpp',
+    'MinimizationJob.cc',
+    'StructureComparisonJob.cpp',
     # 'Prefactor.cpp',
-    # 'ConjugateGradients.cpp',
+    'ConjugateGradients.cpp',
     # 'FiniteDifferenceJob.cpp',
     # 'Lanczos.cpp',
     # 'HessianJob.cpp',
     # 'TADJob.cpp',
     # 'ProcessSearchJob.cpp',
-    'Bundling.cpp',
     # 'NudgedElasticBand.cpp',
     # 'MonteCarloJob.cpp',
     # 'DynamicsJob.cpp',
@@ -258,7 +287,6 @@ eonclib_sources = [
     # 'GlobalOptimizationJob.cpp',
     # 'BiasedGradientSquaredDescent.cpp',
     # 'SafeHyperJob.cpp',
-    # 'MinimizationJob.cpp',
     # 'Quickmin.cpp',
     # 'ParallelReplicaJob.cpp',
     'Potential.cpp',
@@ -270,17 +298,37 @@ eonclib_sources = [
     # 'BasinHoppingSaddleSearch.cpp',
 ]
 
-eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
+# Should Log.cc not be in its own thing for other libraries?
+eonclient_sources = [
+    'fpe_handler.cpp',
+    'ClientEON.cpp',
+    'CommandLine.cpp',
+    'Log.cc',
+]
 
 # ------------------- Options
+if get_option('with_gprd')
+    gprd_opts = {
+        'default_library': 'static',
+        'use_mkl': get_option('use_mkl'),
+        'use_hdf5': true,
+        'do_install': true,
+        'buildtype': 'release',
+    }
+    libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
+    libgprd = libgprd_proj.get_variable('libgprd_dep')
+    gprd_deps = libgprd_proj.get_variable('gprd_deps')
+    # subdir('potentials/GPRPotential')
+    # potentials += [ gprpot ]
+    _args += ['-DWITH_GPRD']
+    eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
+    _deps += [libgprd, gprd_deps]
+endif
 
-# if get_option('with_gprd')
-#   libgprd_proj = subproject('gpr_optim')
-#   gprd_dep = libgprd_proj.get_variable('libgprd_dep')
-#   _args += ['-DWITH_GPRD']
-#   eonclib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
-#   _deps += [ gprd_dep ]
-# endif
+if get_option('with_gp_surrogate')
+    _args += ['-DWITH_GP_SURROGATE']
+    eonclib_sources += ['GPSurrogateJob.cpp']
+endif
 
 # --------------------- Library
 
@@ -319,8 +367,8 @@ ec = executable(
 )
 
 if get_option('with_tests')
-    if get_option('with_python')
-# ec1 = executable('testPot',
+    if py_embed
+        # ec1 = executable('testPot',
         #                  'testpot.cpp',
         #                  include_directories: _incdirs,
         #                  dependencies : _deps,
@@ -328,12 +376,12 @@ if get_option('with_tests')
         #                 )
     endif
 
-# ec2 = executable('testWriteR',
-#                 'testWriteR.cpp',
-#                 include_directories: _incdirs,
-#                 dependencies : _deps,
-#                 link_with : _linkto,
-#                 )
+    # ec2 = executable('testWriteR',
+    #                 'testWriteR.cpp',
+    #                 include_directories: _incdirs,
+    #                 dependencies : _deps,
+    #                 link_with : _linkto,
+    #                 )
 endif
 # ------------------------ Tests
 

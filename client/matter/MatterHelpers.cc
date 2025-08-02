@@ -10,7 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "MatterHelpers.hpp"
+#include "client/BaseStructures.h"
 #include "client/HelperFunctions.h"
+#include "client/Parser.hpp"
+#include "client/matter/MatterCreator.hpp"
 #include <set>
 
 // TODO(rg):: Cleanup, this shouldn't be required
@@ -205,7 +208,6 @@ bool sortedR(const Matter &m1, const Matter &m2,
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
   double tolerance = distanceDifference;
-  int matches = 0;
   if (r1.rows() != r2.rows()) {
     return false;
   }
@@ -214,8 +216,8 @@ bool sortedR(const Matter &m1, const Matter &m2,
   std::vector<std::set<tmp::atom, tmp::by_atom>> rdf1(r1.rows());
   std::vector<std::set<tmp::atom, tmp::by_atom>> rdf2(r2.rows());
 
+  // Fill rdf2 for Matter m2
   for (int i2 = 0; i2 < r2.rows(); i2++) {
-    rdf2[i2].clear();
     for (int j2 = 0; j2 < r2.rows(); j2++) {
       if (j2 == i2)
         continue;
@@ -223,13 +225,11 @@ bool sortedR(const Matter &m1, const Matter &m2,
       a2.r = m2.distance(i2, j2);
       a2.z = m2.getAtomicNr(j2);
       rdf2[i2].insert(a2);
-      rdf2[j2].insert(a2);
     }
   }
+
+  // Fill rdf1 for Matter m1 and compare with rdf2
   for (int i1 = 0; i1 < r1.rows(); i1++) {
-    if (matches == i1 - 2) {
-      return false;
-    }
     for (int j1 = 0; j1 < r1.rows(); j1++) {
       if (j1 == i1)
         continue;
@@ -237,36 +237,46 @@ bool sortedR(const Matter &m1, const Matter &m2,
       a.r = m1.distance(i1, j1);
       a.z = m1.getAtomicNr(j1);
       rdf1[i1].insert(a);
-      rdf1[j1].insert(a);
     }
+
+    // Check if rdf1[i1] matches any rdf2[x]
+    bool match_found = false;
     for (int x = 0; x < r2.rows(); x++) {
+      if (rdf1[i1].size() != rdf2[x].size()) {
+        continue; // Skip if sizes don't match
+      }
+
+      auto it1 = rdf1[i1].begin();
       auto it2 = rdf2[x].begin();
-      auto it = rdf1[i1].begin();
-      int c = 0;
-      int counter = 0;
-      for (; c < r1.rows(); c++) {
-        if (it == rdf1[i1].end() || it2 == rdf2[x].end())
-          break;
-        tmp::atom k1 = *it;
+      bool match = true;
+
+      while (it1 != rdf1[i1].end() && it2 != rdf2[x].end()) {
+        tmp::atom k1 = *it1;
         tmp::atom k2 = *it2;
-        if (fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
-          counter++;
-        } else {
-          SPDLOG_INFO("No match");
+        if (fabs(k1.r - k2.r) >= tolerance || k1.z != k2.z) {
+          match = false;
+          // SPDLOG_INFO("No match between atom sets at i1={}, x={}", i1, x);
           break;
         }
-        ++it;
+        ++it1;
         ++it2;
       }
-      if (counter == r1.rows()) {
-        matches++;
-      } else {
-        SPDLOG_INFO("No match");
+
+      if (match) {
+        match_found = true;
+        // SPDLOG_INFO("Match found between atom sets at i1={}, x={}", i1, x);
+        break;
       }
+    }
+
+    if (!match_found) {
+      // SPDLOG_INFO("No match found for atom {}", i1);
+      return false;
     }
   }
 
-  return matches >= r1.rows();
+  // If all atoms in rdf1 have a match in rdf2, return true
+  return true;
 }
 
 void pushApart(std::shared_ptr<Matter> m1, double minDistance) {
@@ -322,5 +332,28 @@ void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode) {
     }
   }
   return;
+}
+
+std::vector<Matter> make_matter(const toml::table &config,
+                                const std::shared_ptr<PotBase> &pot) {
+  std::vector<Matter> mats;
+
+  std::vector<std::string> input_files;
+  if (auto inputs = config["Main"]["inputs"].as_array()) {
+    for (const auto &input : *inputs) {
+      if (input.is_string()) {
+        input_files.push_back(input.as_string()->get());
+      }
+    }
+  }
+
+  eonc::mat::ConFileParser cfp;
+
+  for (const auto &confile : input_files) {
+    mats.emplace_back(Matter(pot));
+    cfp.parse(mats.back(), confile);
+  }
+
+  return mats;
 }
 } // namespace eonc::mat

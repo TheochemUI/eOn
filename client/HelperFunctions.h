@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "Eigen.h"
+#include "client/Eigen.h"
 #include <string>
 #include <vector>
 

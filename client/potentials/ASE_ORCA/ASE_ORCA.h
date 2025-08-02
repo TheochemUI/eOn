@@ -45,6 +45,7 @@ private:
 
 public:
   ASEOrcaPot(const ASEOrcaPot::Params &);
+  void setParameters(const ASEOrcaPot::Params &);
 
   // Functions
   void forceImpl(const ForceInput &, ForceOut *) override final;

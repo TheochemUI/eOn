@@ -13,8 +13,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
-#include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
-#include "subprojects/gprdimer/structures/Structures.h"
+#include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
+#include "subprojects/gpr_optim/structures/Structures.h"
 namespace eonc {
 namespace helper_functions {
 /**

@@ -1,0 +1,110 @@
+* About
+** Setup
+We use ~pixi~ to manage the environment and dependencies. The code for metatomic and metatensor is not built, instead it is pulled from ~pip~ dependencies essentially.
+#+begin_src nushell
+pixi s -e metatomic # or dev-mta
+(meson setup --reconfigure bbdir
+        --prefix=($env.CONDA_PREFIX)
+        --buildtype release --libdir=lib
+        -Dpip_metatomic=True
+        -Dwith_metatomic=True
+        -Dtorch_version=2.7
+)
+meson install -C bbdir
+#+end_src
+*** Manual installation (deprecated)
+Setting this up is a major pain because of the way ~cargo~ is used within the ~cmake~ to generate all the headers. The simplest route is to actually build this into the ~CONDA_PREFIX~.
+
+#+begin_src nushell
+# For metatensor and metatensor-torch
+(cmake -G Ninja
+       -B build -DBUILD_METATENSOR_TORCH=ON
+       -DTorch_DIR="/home/rgoswami/Git/Github/Cpp/cppShit/materials/differentiation/torchTrials/libtorch/share/cmake/Torch/"
+       -DCMAKE_INSTALL_PREFIX=$"($env.CONDA_PREFIX)")
+cmake --build build
+cmake --install build
+# For metatomic
+(cmake -G Ninja
+        -B build
+        -DTorch_DIR="/home/rgoswami/Git/Github/Cpp/cppShit/materials/differentiation/torchTrials/libtorch/share/cmake/Torch/"
+        -DCMAKE_INSTALL_PREFIX=$"($env.CONDA_PREFIX)")
+ cmake --build build
+ cmake --install build
+#+end_src
+
+Additionally, ensure that the libraries are up to date..
+
+#+begin_src nushell
+mamba install pytorch
+# Easiest to use conda torch
+meson setup --reconfigure bbdir --prefix=($env.CONDA_PREFIX) -Dwith_ase_nwchem=False -Dwith_lammps=False -Dwith_python=False --buildtype release --libdir=lib -Dwith_metatomic=True -Dtorch_path=($env.CONDA_PREFIX)
+#+end_src
+** Verification
+
+To check that the model is working we can check the energy on an LJ 13 surface using the [[https://github.com/metatensor/lj-test][lj-test]] sample.
+
+#+begin_src python
+# pip install --extra-index-url=https://download.pytorch.org/whl/cpu git+https://github.com/metatensor/lj-test
+import metatomic_lj_test
+
+model = metatomic_lj_test.lennard_jones_model(
+    atomic_type=1,
+    cutoff=3.4,
+    sigma=1.5,
+    epsilon=23.0,
+    length_unit="Angstrom",
+    energy_unit="eV",
+    with_extension=False,
+)
+
+model.save("lennard-jones.pt", collect_extensions="extensions/")
+#+end_src
+
+This can be loaded checked with a configuration file for EON:
+
+#+begin_src ini
+[Main]
+job = point
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = metatomic
+
+[Metatomic]
+model_path = lennard-jones.pt
+#+end_src
+
+With coordinates from the ~lj13.con~ file:
+
+#+begin_src bash
+cp docs/lj13.con pos.con
+eonclient
+# Energy:         98374.877530582715
+# Max atom force: 109591.908376179999
+#+end_src
+
+Validated with the ~metatomic~ wrapper.
+
+#+begin_src python
+import ase.io as aseio
+import numpy as np
+from metatomic.torch import load_atomistic_model
+from metatomic.torch.ase_calculator import MetatomicCalculator
+atomistic_model = load_atomistic_model("lennard-jones.pt")
+mta_calculator = MetatomicCalculator(atomistic_model)
+atoms = aseio.read("pos.con")
+atoms.calc = mta_calculator
+# NOTE(rg): Normally needs a mask to remove fixed atoms, lj13 has no fixed atoms
+print(atoms.get_potential_energy())
+print(np.max(np.linalg.norm(atoms.get_forces(), axis=1)))
+#+end_src
+
+Which yields the expected result.
+
+#+begin_src python
+In [2]: atoms.get_potential_energy()
+Out[2]: np.float64(98374.87753058573)
+In [6]: np.max(np.linalg.norm(atoms.get_forces(), axis=1))
+Out[6]: np.float64(109591.90837618345)
+#+end_src

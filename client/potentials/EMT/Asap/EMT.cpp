@@ -226,9 +226,9 @@ const Vec *EMT::GetCartesianForces() {
     CalculateIDs();
     CalculateSigmas(0);              /* Skip sigma2 */
     CalculateEnergiesAfterSigmas(0); /* Skip actual energy calculation */
-    double(*str)[6] = 0;
+    double (*str)[6] = 0;
     if (stress.size())
-      str = (double(*)[6]) & (stress[0]);
+      str = (double (*)[6]) & (stress[0]);
     if (nelements > 1)
       CalculateForcesAfterEnergies(&(force[0]), str);
     else
@@ -248,7 +248,7 @@ const symTensor *EMT::GetStresses(const Vec *momenta) {
   VERB(" Stresses[");
 
   // Workaround for lack of vector<double[6]>
-  double(*stress)[6];
+  double (*stress)[6];
 
   if (counters.stresses != atoms->GetChangeCounter()) {
     DEBUGPRINT;
@@ -259,13 +259,13 @@ const symTensor *EMT::GetStresses(const Vec *momenta) {
     CalculateSigmas(0);              /* Skip sigma2 */
     CalculateEnergiesAfterSigmas(0); /* Skip actual energy calculation */
 
-    stress = (double(*)[6]) & (this->stress[0]);
+    stress = (double (*)[6]) & (this->stress[0]);
     if (nelements > 1)
       CalculateForcesAfterEnergies(&(force[0]), stress);
     else
       CalculateForcesAfterEnergiesSingle(&(force[0]), stress);
   }
-  stress = (double(*)[6]) & (this->stress[0]);
+  stress = (double (*)[6]) & (this->stress[0]);
   if (counters.fullstresses != atoms->GetChangeCounter()) {
     VERB("S");
     DEBUGPRINT;
@@ -307,7 +307,7 @@ const symTensor *EMT::GetStresses(const Vec *momenta) {
 void EMT::GetStress(double totalstress[6], const Vec *momenta) {
   int i;
   // USETIMER("EMT::GetStress");
-  const double(*s)[6];
+  const double (*s)[6];
   double vol;
   DEBUGPRINT;
   VERB(" Stress[");

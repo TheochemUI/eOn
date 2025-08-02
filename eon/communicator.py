@@ -1,6 +1,5 @@
 
 from array import array
-from eon.migrator.config import config
 import os
 import shutil
 import logging
@@ -15,6 +14,9 @@ import glob
 import re
 import numpy
 import sys
+
+from eon.migrator.config import config as EON_CONFIG
+from eon.migrator.config import ConfigClass # Typing
 
 def tryint(s):
     try:
@@ -34,7 +36,7 @@ def sort_nicely(l):
     l.sort(key=alphanum_key)
 
 
-def get_communicator():
+def get_communicator(config: ConfigClass = EON_CONFIG):
     # This is an ugly hack to "remember" a communicator as it isn't possible to construct
     # the MPI communicator multiple times and it needs to remember its object level variables.
     if hasattr(get_communicator, 'comm'):
@@ -73,7 +75,8 @@ class EONClientError(Exception):
 
 
 class Communicator:
-    def __init__(self, scratchpath, bundle_size=1):
+    def __init__(self, scratchpath, bundle_size=1, config: ConfigClass = EON_CONFIG):
+        self.config = config
         if not os.path.isdir(scratchpath):
             # should probably log this event
             os.makedirs(scratchpath)
@@ -236,13 +239,13 @@ class Communicator:
 
 
 class MPI(Communicator):
-    def __init__(self, scratchpath, bundle_size):
-        Communicator.__init__(self, scratchpath, bundle_size)
+    def __init__(self, scratchpath, bundle_size, config: ConfigClass = EON_CONFIG):
+        Communicator.__init__(self, scratchpath, bundle_size, config = config)
         from mpi4py.MPI import COMM_WORLD
         self.comm = COMM_WORLD
 
         self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
-        config.comm_job_buffer_size = len(self.client_ranks)
+        self.config.comm_job_buffer_size = len(self.client_ranks)
 
         self.resume_jobs = []
         if os.path.isdir(self.scratchpath):
@@ -320,9 +323,9 @@ class MPI(Communicator):
             jobdir = os.path.split(jobdir)[1].decode()
             #print("jobdir: ",jobdir)
 
-            if config.debug_keep_all_results:
+            if self.config.debug_keep_all_results:
                 shutil.copytree(os.path.join(self.scratchpath,jobdir),
-                                os.path.join(config.path_root, config.debug_results_path, jobdir))
+                                os.path.join(self.config.path_root, self.config.debug_results_path, jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
         for bundle in self.unbundle(resultspath, keep_result):
@@ -339,8 +342,8 @@ class MPI(Communicator):
 
 
 class Local(Communicator):
-    def __init__(self, scratchpath, client, ncpus, bundle_size):
-        Communicator.__init__(self, scratchpath, bundle_size)
+    def __init__(self, scratchpath, client, ncpus, bundle_size, config: ConfigClass = EON_CONFIG):
+        Communicator.__init__(self, scratchpath, bundle_size, config = config)
 
         # number of cpus to use
         self.ncpus = ncpus
@@ -385,8 +388,8 @@ class Local(Communicator):
                     if os.path.isdir(os.path.join(self.scratchpath,d)) ]
 
         for jobdir in jobdirs:
-            if config.debug_keep_all_results:
-                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(config.path_root, config.debug_results_path,jobdir))
+            if self.config.debug_keep_all_results:
+                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(self.config.path_root, self.config.debug_results_path,jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
         for bundle in self.unbundle(resultspath, keep_result):
@@ -454,8 +457,8 @@ class Local(Communicator):
 class Script(Communicator):
 
     def __init__(self, scratch_path, bundle_size, name_prefix, scripts_path,
-                 queued_jobs_cmd, cancel_job_cmd, submit_job_cmd):
-        Communicator.__init__(self, scratch_path, bundle_size)
+                 queued_jobs_cmd, cancel_job_cmd, submit_job_cmd, config: ConfigClass = EON_CONFIG):
+        Communicator.__init__(self, scratch_path, bundle_size, config=config)
 
         self.queued_jobs_cmd = os.path.join(scripts_path, queued_jobs_cmd)
         self.cancel_job_cmd = os.path.join(scripts_path, cancel_job_cmd)
@@ -501,8 +504,8 @@ class Script(Communicator):
         sort_nicely(jobdirs)
 
         for jobdir in jobdirs:
-            if config.debug_keep_all_results:
-                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(config.path_root, config.debug_results_path,jobdir))
+            if self.config.debug_keep_all_results:
+                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(self.config.path_root, self.config.debug_results_path,jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
 
@@ -559,8 +562,8 @@ class Script(Communicator):
                 logger.warn("Job cancel failed with error: %s" % output)
         self.jobids = {}
         self.save_jobids()
-        shutil.rmtree(config.path_scratch)
-        os.makedirs(config.path_scratch)
+        shutil.rmtree(self.config.path_scratch)
+        os.makedirs(self.config.path_scratch)
         return len(list(self.jobids.keys()))
 
     def get_queued_jobs(self):

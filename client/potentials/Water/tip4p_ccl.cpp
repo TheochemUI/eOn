@@ -103,13 +103,13 @@ compute(). True when atom is fixed, false otherwise.
 void Tip4p::computeHH_O_(const int nAtoms, const double R[], double F[],
                          double &U, const double b[], const bool fixed[]) {
   int const nMolecules = nAtoms / 3;
-  const double(*const rh1)[6] = reinterpret_cast<const double(*)[6]>(R);
-  const double(*const rh2)[6] = reinterpret_cast<const double(*)[6]>(&R[3]);
-  const double(*const ro)[3] =
-      reinterpret_cast<const double(*)[3]>(&R[nMolecules * 6]);
-  double(*const fh1)[6] = reinterpret_cast<double(*)[6]>(F);
-  double(*const fh2)[6] = reinterpret_cast<double(*)[6]>(&F[3]);
-  double(*const fo)[3] = reinterpret_cast<double(*)[3]>(&F[nMolecules * 6]);
+  const double (*const rh1)[6] = reinterpret_cast<const double (*)[6]>(R);
+  const double (*const rh2)[6] = reinterpret_cast<const double (*)[6]>(&R[3]);
+  const double (*const ro)[3] =
+      reinterpret_cast<const double (*)[3]>(&R[nMolecules * 6]);
+  double (*const fh1)[6] = reinterpret_cast<double (*)[6]>(F);
+  double (*const fh2)[6] = reinterpret_cast<double (*)[6]>(&F[3]);
+  double (*const fo)[3] = reinterpret_cast<double (*)[3]>(&F[nMolecules * 6]);
   bool const(*const xh1)[2] = reinterpret_cast<bool const(*)[2]>(fixed);
   bool const(*const xh2)[2] = reinterpret_cast<bool const(*)[2]>(&fixed[1]);
   bool const(*const xo)[1] =
