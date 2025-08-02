@@ -307,13 +307,28 @@ eonclient_sources = [
 ]
 
 # ------------------- Options
-# if get_option('with_gprd')
-#   libgprd_proj = subproject('gpr_optim')
-#   gprd_dep = libgprd_proj.get_variable('libgprd_dep')
-#   _args += ['-DWITH_GPRD']
-#   eonclib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
-#   _deps += [ gprd_dep ]
-# endif
+if get_option('with_gprd')
+    gprd_opts = {
+        'default_library': 'static',
+        'use_mkl': get_option('use_mkl'),
+        'use_hdf5': true,
+        'do_install': true,
+        'buildtype': 'release',
+    }
+    libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
+    libgprd = libgprd_proj.get_variable('libgprd_dep')
+    gprd_deps = libgprd_proj.get_variable('gprd_deps')
+    # subdir('potentials/GPRPotential')
+    # potentials += [ gprpot ]
+    _args += ['-DWITH_GPRD']
+    eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
+    _deps += [libgprd, gprd_deps]
+endif
+
+if get_option('with_gp_surrogate')
+    _args += ['-DWITH_GP_SURROGATE']
+    eonclib_sources += ['GPSurrogateJob.cpp']
+endif
 
 # --------------------- Library
 

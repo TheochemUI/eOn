@@ -29,30 +29,30 @@ potentials = [
     # newpot
 ]
 
-# if get_option('with_gprd')
-#   # subdir('GPRPotential')
-#   # potentials += [ gprpot ]
-# endif
+if get_option('with_gprd')
+  # subdir('GPRPotential')
+  # potentials += [ gprpot ]
+endif
 
-# if get_option('with_gp_surrogate')
-#   _args += ['-DWITH_GP_SURROGATE']
-#   eonclib_sources += ['GPSurrogateJob.cpp']
-#     if get_option('with_catlearn')
-#       # TODO: Cleanup, used for ase_orca too
-#       # Embedding the interpreter
-#       pyb11f_deps = [ dependency('pybind11'),
-#                       declare_dependency(link_args: '-lstdc++') ]
-#       _deps += [ pyb11f_deps ]
-#       subdir('CatLearnPot')
-#       potentials += [ catlearnpot ]
-#       _args += ['-DWITH_CATLEARN']
-#     endif
-# endif
+
+if get_option('with_gp_surrogate')
+    if get_option('with_catlearn')
+      # TODO: Cleanup, used for ase_orca too
+      # Embedding the interpreter
+      pyb11f_deps = [ dependency('pybind11'),
+                      declare_dependency(link_args: '-lstdc++') ]
+      _deps += [ pyb11f_deps ]
+      subdir('CatLearnPot')
+      potentials += [ catlearnpot ]
+      _args += ['-DWITH_CATLEARN']
+    endif
+endif
 
 if get_option('with_vasp')
     if host_system != 'windows'
         subdir('VASP')
         potentials += [vasp]
+        _args += ['-DWITH_VASP']
     endif
 endif
 
@@ -84,28 +84,29 @@ endif
 #   _args += ['-DWITH_AMS']
 # endif
 
-# if get_option('with_xtb')
-#   xtb_proj = subproject('xtb')
-#   xtb_dep = xtb_proj.get_variable('xtb_dep')
-#   _deps += [xtb_dep]
-#   subdir('XTBPot')
-#   potentials += xtb_eon
-#   _args += ['-DWITH_XTB']
-# endif
+if get_option('with_xtb')
+  xtb_proj = subproject('xtb')
+  xtb_dep_static = xtb_proj.get_variable('xtb_dep_static')
+  _deps += [xtb_dep_static]
+  subdir('XTBPot')
+  potentials += xtb_eon
+  _args += ['-DWITH_XTB']
+endif
 
 if get_option('with_lammps')
     subdir('LAMMPS')
     potentials += [lammps_pot]
+    _args += ['-DLAMMPS_POT']
 endif
 
 if py_embed
     _args += ['-DEMBED_PYTHON']
-    # subdir('potentials/PyAMFF')
+    # subdir('PyAMFF')
     # pyamff,
-    # subdir('potentials/QSC')
+    # subdir('QSC')
     # potentials += [ qsc ]
     if get_option('with_ase')
-        subdir('potentials/ASE')
+        subdir('ASE')
         potentials += [ase]
         # TODO(rg): Annoying, use WITH_ style
         _args += ['-DASE_POT']
@@ -119,6 +120,19 @@ if get_option('with_mpi')
     mpi_dep = dependency('mpi')
     _deps += [mpi_dep]
 endif
+
+# if get_option('with_water')
+#     subdir('potentials/Water')
+#     subdir('potentials/Water_Pt')
+#     potentials += [water, water_pt]
+#     _args += ['-DWITH_WATER']
+# endif
+
+# if get_option('with_cuh2')
+#     subdir('potentials/CuH2')
+#     potentials += [cuh2]
+#     _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
+# endif
 
 if get_option('with_fortran')
     subdir('Aluminum')
@@ -227,17 +241,25 @@ if get_option('with_metatomic')
                 py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
             ),
         )
-        vesin_dep = declare_dependency(
-            dependencies: [
-                cppc.find_library(
-                    'vesin',
-                    dirs: [py.get_install_dir() / 'vesin' / 'lib'],
-                ),
-            ],
-            include_directories: include_directories(
-                py.get_install_dir() / 'vesin' / 'include',
-            ),
+        vesin_dep = cppc.find_library(
+            'vesin',
+            dirs: [py.get_install_dir() / 'vesin' / 'lib'],
+            required: false,
         )
+        if vesin_dep.found()
+            vesin_dep = declare_dependency(
+                dependencies: [
+                    cppc.find_library(
+                        'vesin',
+                        dirs: [py.get_install_dir() / 'vesin' / 'lib'],
+                        required: false,
+                    ),
+                ],
+                include_directories: include_directories(
+                    py.get_install_dir() / 'vesin' / 'include',
+                ),
+            )
+        endif
     else
         message(
             'Looking for existing installations of metatensor, metatensor-torch, metatomic-torch and vesin',
@@ -247,24 +269,26 @@ if get_option('with_metatomic')
         )
         # XXX(rg): Still needs the includes, setup pkgconf and use dependency() with pkgconf instead
         # xref: https://github.com/metatensor/metatensor/issues/930
-        vesin_dep = cppc.find_library('vesin')
+        vesin_dep = cppc.find_library('vesin', required: false)
         mts_dep = [
             cppc.find_library('metatensor'),
             cppc.find_library('metatensor_torch'),
             cppc.find_library('metatomic_torch'),
         ]
     endif
+    if not vesin_dep.found()
+        vesin_dep = declare_dependency(
+            link_with: library(
+                'vesin_internal',
+                ['thirdparty/vesin/vesin-single-build.cpp'],
+            ),
+            include_directories: include_directories('thirdparty/vesin'),
+        )
+    endif
     _deps += [vesin_dep, mts_dep, torch_deps]
-    subdir('Metatomic')
+    subdir('potentials/Metatomic')
     potentials += [metatomic_pot]
     _args += ['-DWITH_METATOMIC']
 endif
 
-if get_option('with_vasp')
-    if host_system != 'windows'
-        subdir('VASP')
-        potentials += [vasp]
-        _args += ['-DWITH_VASP']
-    endif
-endif
 _linkto += potentials
