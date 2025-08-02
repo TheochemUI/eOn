@@ -1,4 +1,4 @@
-_incdirs += [include_directories('thirdparty')]
+_incdirs += [include_directories('thirdparty'), include_directories('.')]
 
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
