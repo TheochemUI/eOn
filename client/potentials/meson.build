@@ -30,21 +30,23 @@ potentials = [
 ]
 
 if get_option('with_gprd')
-  # subdir('GPRPotential')
-  # potentials += [ gprpot ]
+    # subdir('GPRPotential')
+    # potentials += [ gprpot ]
 endif
 
 
 if get_option('with_gp_surrogate')
     if get_option('with_catlearn')
-      # TODO: Cleanup, used for ase_orca too
-      # Embedding the interpreter
-      pyb11f_deps = [ dependency('pybind11'),
-                      declare_dependency(link_args: '-lstdc++') ]
-      _deps += [ pyb11f_deps ]
-      subdir('CatLearnPot')
-      potentials += [ catlearnpot ]
-      _args += ['-DWITH_CATLEARN']
+        # TODO: Cleanup, used for ase_orca too
+        # Embedding the interpreter
+        pyb11f_deps = [
+            dependency('pybind11'),
+            declare_dependency(link_args: '-lstdc++'),
+        ]
+        _deps += [pyb11f_deps]
+        subdir('CatLearnPot')
+        potentials += [catlearnpot]
+        _args += ['-DWITH_CATLEARN']
     endif
 endif
 
@@ -85,12 +87,12 @@ endif
 # endif
 
 if get_option('with_xtb')
-  xtb_proj = subproject('xtb')
-  xtb_dep_static = xtb_proj.get_variable('xtb_dep_static')
-  _deps += [xtb_dep_static]
-  subdir('XTBPot')
-  potentials += xtb_eon
-  _args += ['-DWITH_XTB']
+    xtb_proj = subproject('xtb')
+    xtb_dep_static = xtb_proj.get_variable('xtb_dep_static')
+    _deps += [xtb_dep_static]
+    subdir('XTBPot')
+    potentials += xtb_eon
+    _args += ['-DWITH_XTB']
 endif
 
 if get_option('with_lammps')

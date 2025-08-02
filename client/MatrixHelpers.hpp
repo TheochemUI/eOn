@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "matter/Matter.h"
 #include "Parameters.h"
+#include "matter/Matter.h"
 
 namespace helper_functions {
 
