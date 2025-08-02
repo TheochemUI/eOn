@@ -282,13 +282,13 @@ if get_option('with_metatomic')
         vesin_dep = declare_dependency(
             link_with: library(
                 'vesin_internal',
-                ['thirdparty/vesin/vesin-single-build.cpp'],
+                ['../thirdparty/vesin/vesin-single-build.cpp'],
             ),
-            include_directories: include_directories('thirdparty/vesin'),
+            include_directories: include_directories('../thirdparty/vesin'),
         )
     endif
     _deps += [vesin_dep, mts_dep, torch_deps]
-    subdir('potentials/Metatomic')
+    subdir('Metatomic')
     potentials += [metatomic_pot]
     _args += ['-DWITH_METATOMIC']
 endif
