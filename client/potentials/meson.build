@@ -279,12 +279,14 @@ if get_option('with_metatomic')
         ]
     endif
     if not vesin_dep.found()
+        vesin_int = library(
+            'vesin_internal',
+            ['thirdparty/vesin/vesin-single-build.cpp'],
+            install: true,
+        )
         vesin_dep = declare_dependency(
-            link_with: library(
-                'vesin_internal',
-                ['../thirdparty/vesin/vesin-single-build.cpp'],
-            ),
-            include_directories: include_directories('../thirdparty/vesin'),
+            link_with: vesin_int,
+            include_directories: include_directories('thirdparty/vesin'),
         )
     endif
     _deps += [vesin_dep, mts_dep, torch_deps]
