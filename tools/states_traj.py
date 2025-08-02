@@ -134,7 +134,6 @@ def process_akmc_path(start_step: int, end_state: int, states_e: dict[int, float
     # Write energy profile
     energy_profile_filename = f"energy_profile_{start_step}_{end_state}.dat"
     logging.info(f"Writing energy profile to '{energy_profile_filename}'")
-    breakpoint()
     with open(energy_profile_filename, "w") as f:
         f.write("# State_ID    Energy(eV)    Barrier_Energy(eV)\n")
         for i, state_n in enumerate(path_states):
