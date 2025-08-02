@@ -15,7 +15,7 @@ jobs:
       - name: Install Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: conda-lock.yml
+          environment-file: lockfiles/dev-mta.conda-lock.yml
           environment-name: eongit
       - name: Run precommit
         shell: bash -l {0}

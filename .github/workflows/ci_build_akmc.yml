@@ -19,7 +19,7 @@ jobs:
       - uses: mamba-org/setup-micromamba@v1
         if: matrix.os != 'windows-2022'
         with:
-          environment-file: conda-lock.yml
+          environment-file: lockfiles/dev-mta.conda-lock.yml
           environment-name: eongit
           init-shell: >-
             bash
@@ -36,7 +36,7 @@ jobs:
       - uses: mamba-org/setup-micromamba@v1
         if: matrix.os == 'windows-2022'
         with:
-          environment-file: conda-lock.yml
+          environment-file: lockfiles/dev-mta.conda-lock.yml
           environment-name: eongit
           init-shell: >-
             powershell
