@@ -28,12 +28,20 @@ jobs:
           cache-environment-key: environment-${{ matrix.os }}
           post-cleanup: 'all'
       - name: Compile and install
-        if: matrix.os != 'windows-2022'
+        if: matrix.os == 'ubuntu-22.04'
+        shell: bash -el {0}
+        run: |
+          meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
+          meson install -C bbdir
+
+      - name: Compile and install
+        if: matrix.os == 'macos-14'
         shell: bash -el {0}
         run: |
           brew install boost
           meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
           meson install -C bbdir
+
 
       - uses: mamba-org/setup-micromamba@v1
         if: matrix.os == 'windows-2022'
@@ -47,6 +55,7 @@ jobs:
           cache-environment-key: environment-${{ matrix.os }}
           cache-downloads-key: downloads-${{ matrix.os }}
           post-cleanup: 'all'
+
       - name: Compile and install [windows]
         if: matrix.os == 'windows-2022'
         shell: pwsh
