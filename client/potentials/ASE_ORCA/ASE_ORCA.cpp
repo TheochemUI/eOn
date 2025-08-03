@@ -11,27 +11,47 @@
 */
 
 #include "ASE_ORCA.h"
+#include "../../EnvHelpers.hpp"
+#include "../../fpe_handler.h"
 
 namespace eonc {
 
-ASEOrcaPot::ASEOrcaPot(const ASEOrcaPot::Params &a_p) {
-  _ase = py::module_::import("ase");
-  py::module_ sys = py::module_::import("sys");
+void ASEOrcaPot::setupCalculator(const ASEOrcaPot::Params &p_a) {
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
 
-  // Set up ORCA profile and calculator
   py::object OrcaProfile = ase_orca.attr("OrcaProfile");
   py::object ORCA = ase_orca.attr("ORCA");
-  size_t nproc = (a_p.orca_nproc == "auto")
+  size_t nproc = (p_a.orca_nproc == "auto")
                      ? py::cast<int>(psutil.attr("cpu_count")(false))
-                     : std::stoi(a_p.orca_nproc);
+                     : std::stoi(p_a.orca_nproc);
 
   this->_calc =
-      ORCA("profile"_a = OrcaProfile(py::str(a_p.orca_path)),
-           "orcasimpleinput"_a = a_p.simpleinput,
+      ORCA("profile"_a = OrcaProfile(py::str(p_a.orca_path)),
+           "orcasimpleinput"_a = p_a.simpleinput,
            "orcablocks"_a = py::str(fmt::format("%pal nprocs {} end", nproc)),
            "directory"_a = ".");
+}
+
+// XXX: This always assumes that charge is 0, mult is 1
+// ASE default ----------------------------^ ---------^
+// See also: https://gitlab.com/ase/ase/-/issues/1357
+ASEOrcaPot::ASEOrcaPot(const ASEOrcaPot::Params &p_a) {
+  // Use FPEHandler to manage floating point exceptions during Python import
+  eonc::FPEHandler fpeh;
+  // Fix for gh-184, see
+  // https://github.com/numpy/numpy/issues/20504#issuecomment-985542508
+  fpeh.eat_fpe();
+  _ase = py::module_::import("ase");
+  fpeh.restore_fpe();
+  py::module_::import("sys");
+
+  // Configure the calculator using the new helper function
+  setupCalculator(p_a);
+}
+
+void ASEOrcaPot::setParameters(const ASEOrcaPot::Params &p_a) {
+  setupCalculator(p_a);
 }
 
 void ASEOrcaPot::forceImpl(const ForceInput &fip, ForceOut *efvd) {

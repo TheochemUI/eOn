@@ -17,14 +17,11 @@
 #include "Parameters.h"
 #include <vector>
 
-// Defined in the gprdimer target
-#include "subprojects/gprdimer/gpr/AtomicDimer.h"
-#include "subprojects/gprdimer/gpr/Enums.h"
-#include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
-#include "subprojects/gprdimer/gpr/covariance_functions/ConstantCF.h"
-#include "subprojects/gprdimer/gpr/covariance_functions/SexpatCF.h"
-#include "subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
-#include "subprojects/gprdimer/managers/io/FileManager.h"
+// Defined in the gpr_optim target
+#include "subprojects/gpr_optim/gpr/AtomicDimer.h"
+#include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
+
+namespace eonc {
 
 namespace eonc {
 

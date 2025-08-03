@@ -7,103 +7,104 @@ import numpy
 
 from eon import atoms
 from eon import fileio as io
-from eon.migrator.config import config
+from eon.migrator.config import config as EON_CONFIG
+from eon.migrator.config import ConfigClass # Typing
 
 class DisplacementManager:
-    def __init__(self, reactant, moved_atoms):
+    def __init__(self, reactant, moved_atoms, config: ConfigClass = EON_CONFIG):
+        self.config = config
         self.reactant = reactant
-        # TODO: Remove all the pointless config.* crap
-        if config.displace_random_weight > 0:
+        if self.config.displace_random_weight > 0:
             self.random = Random(self.reactant,
-                                 config.disp_magnitude, config.disp_radius,
-                                 hole_epicenters=moved_atoms)
-        if config.displace_under_coordinated_weight > 0:
+                                 self.config.disp_magnitude, self.config.disp_radius,
+                                 hole_epicenters=moved_atoms, config = self.config)
+        if self.config.displace_under_coordinated_weight > 0:
             self.under = Undercoordinated(self.reactant,
-                                          config.disp_max_coord,
-                                          config.disp_magnitude, config.disp_radius,
+                                          self.config.disp_max_coord,
+                                          self.config.disp_magnitude, self.config.disp_radius,
                                           hole_epicenters=moved_atoms,
-                                          cutoff=config.comp_neighbor_cutoff,
-                                          use_covalent=config.comp_use_covalent,
-                                          covalent_scale=config.comp_covalent_scale)
-        if config.displace_least_coordinated_weight > 0:
+                                          cutoff=self.config.comp_neighbor_cutoff,
+                                          use_covalent=self.config.comp_use_covalent,
+                                          covalent_scale=self.config.comp_covalent_scale, config = self.config)
+        if self.config.displace_least_coordinated_weight > 0:
             self.least = Leastcoordinated(self.reactant,
-                                          config.disp_magnitude, config.disp_radius,
+                                          self.config.disp_magnitude, self.config.disp_radius,
                                           hole_epicenters=moved_atoms,
-                                          cutoff=config.comp_neighbor_cutoff,
-                                          use_covalent=config.comp_use_covalent,
-                                          covalent_scale=config.comp_covalent_scale)
-        if config.displace_listed_atom_weight > 0:
+                                          cutoff=self.config.comp_neighbor_cutoff,
+                                          use_covalent=self.config.comp_use_covalent,
+                                          covalent_scale=self.config.comp_covalent_scale, config = self.config)
+        if self.config.displace_listed_atom_weight > 0:
             self.listed_atoms = ListedAtoms(self.reactant,
-                                      config.disp_magnitude, config.disp_radius,
+                                      self.config.disp_magnitude, self.config.disp_radius,
                                       hole_epicenters=moved_atoms,
-                                      cutoff=config.comp_neighbor_cutoff,
-                                      use_covalent=config.comp_use_covalent,
-                                      covalent_scale=config.comp_covalent_scale,
-                                      displace_all=config.displace_all_listed)
-        if config.displace_listed_type_weight > 0:
+                                      cutoff=self.config.comp_neighbor_cutoff,
+                                      use_covalent=self.config.comp_use_covalent,
+                                      covalent_scale=self.config.comp_covalent_scale,
+                                      displace_all=self.config.displace_all_listed, config = self.config)
+        if self.config.displace_listed_type_weight > 0:
             self.listed_types = ListedTypes(self.reactant,
-                                           config.disp_magnitude,
-                                           config.disp_radius,
+                                           self.config.disp_magnitude,
+                                           self.config.disp_radius,
                                            hole_epicenters=moved_atoms,
-                                           cutoff=config.comp_neighbor_cutoff,
-                                           use_covalent=config.comp_use_covalent,
-                                           covalent_scale=config.comp_covalent_scale)
-        if config.displace_not_FCC_HCP_weight > 0:
+                                           cutoff=self.config.comp_neighbor_cutoff,
+                                           use_covalent=self.config.comp_use_covalent,
+                                           covalent_scale=self.config.comp_covalent_scale, config = self.config)
+        if self.config.displace_not_FCC_HCP_weight > 0:
             self.not_FCC_HCP = NotFCCorHCP(self.reactant,
-                                           config.disp_magnitude,
-                                           config.disp_radius,
+                                           self.config.disp_magnitude,
+                                           self.config.disp_radius,
                                            hole_epicenters=moved_atoms,
-                                           cutoff=config.comp_neighbor_cutoff,
-                                           use_covalent=config.comp_use_covalent,
-                                           covalent_scale=config.comp_covalent_scale)
-        if config.displace_not_TCP_BCC_weight > 0:
+                                           cutoff=self.config.comp_neighbor_cutoff,
+                                           use_covalent=self.config.comp_use_covalent,
+                                           covalent_scale=self.config.comp_covalent_scale, config = self.config)
+        if self.config.displace_not_TCP_BCC_weight > 0:
             self.not_TCP_BCC = NotTCPorBCC(self.reactant,
-                                           config.disp_magnitude,
-                                           config.disp_radius,
+                                           self.config.disp_magnitude,
+                                           self.config.disp_radius,
                                            hole_epicenters=moved_atoms,
-                                           cutoff=config.comp_neighbor_cutoff,
-                                           use_covalent=config.comp_use_covalent,
-                                           covalent_scale=config.comp_covalent_scale)
-        if config.displace_not_TCP_weight > 0:
+                                           cutoff=self.config.comp_neighbor_cutoff,
+                                           use_covalent=self.config.comp_use_covalent,
+                                           covalent_scale=self.config.comp_covalent_scale, config = self.config)
+        if self.config.displace_not_TCP_weight > 0:
             self.not_TCP = NotTCP(self.reactant,
-                                           config.disp_magnitude,
-                                           config.disp_radius,
+                                           self.config.disp_magnitude,
+                                           self.config.disp_radius,
                                            hole_epicenters=moved_atoms,
-                                           cutoff=config.comp_neighbor_cutoff,
-                                           use_covalent=config.comp_use_covalent,
-                                           covalent_scale=config.comp_covalent_scale)
-        if config.displace_water_weight > 0:
+                                           cutoff=self.config.comp_neighbor_cutoff,
+                                           use_covalent=self.config.comp_use_covalent,
+                                           covalent_scale=self.config.comp_covalent_scale, config = self.config)
+        if self.config.displace_water_weight > 0:
             self.water = Water(self.reactant,
-                               config.stdev_translation, config.stdev_rotation,
-                               config.molecule_list, config.disp_at_random)
+                               self.config.stdev_translation, self.config.stdev_rotation,
+                               self.config.molecule_list, self.config.disp_at_random)
         total = 0.0
-        total += config.displace_random_weight
-        total += config.displace_listed_atom_weight
-        total += config.displace_listed_type_weight
-        total += config.displace_under_coordinated_weight
-        total += config.displace_least_coordinated_weight
-        total += config.displace_not_FCC_HCP_weight
-        total += config.displace_not_TCP_BCC_weight
-        total += config.displace_not_TCP_weight
-        total += config.displace_water_weight
+        total += self.config.displace_random_weight
+        total += self.config.displace_listed_atom_weight
+        total += self.config.displace_listed_type_weight
+        total += self.config.displace_under_coordinated_weight
+        total += self.config.displace_least_coordinated_weight
+        total += self.config.displace_not_FCC_HCP_weight
+        total += self.config.displace_not_TCP_BCC_weight
+        total += self.config.displace_not_TCP_weight
+        total += self.config.displace_water_weight
 
         # If no fractions are defined, do 100% random displacements.
         if total == 0.0:
             total = 1.0
             self.plist = [1.0/total]
             self.random = Random(self.reactant,
-                                 config.disp_magnitude, config.disp_radius,
-                                 hole_epicenters=moved_atoms)
+                                 self.config.disp_magnitude, self.config.disp_radius,
+                                 hole_epicenters=moved_atoms, config = self.config)
         else:
-            self.plist = [config.displace_random_weight/total]
-        self.plist.append(self.plist[-1] + config.displace_listed_atom_weight/total)
-        self.plist.append(self.plist[-1] + config.displace_listed_type_weight/total)
-        self.plist.append(self.plist[-1] + config.displace_under_coordinated_weight/total)
-        self.plist.append(self.plist[-1] + config.displace_least_coordinated_weight/total)
-        self.plist.append(self.plist[-1] + config.displace_not_FCC_HCP_weight/total)
-        self.plist.append(self.plist[-1] + config.displace_not_TCP_BCC_weight/total)
-        self.plist.append(self.plist[-1] + config.displace_not_TCP_weight/total)
-        self.plist.append(self.plist[-1] + config.displace_water_weight/total)
+            self.plist = [self.config.displace_random_weight/total]
+        self.plist.append(self.plist[-1] + self.config.displace_listed_atom_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_listed_type_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_under_coordinated_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_least_coordinated_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_not_FCC_HCP_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_not_TCP_BCC_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_not_TCP_weight/total)
+        self.plist.append(self.plist[-1] + self.config.displace_water_weight/total)
 
     def make_displacement(self):
         disp_types = ["random", "listed_atoms", "listed_types", "under", "least", "not_FCC_HCP", "not_TCP_BCC", "not_TCP", "water"]
@@ -149,18 +150,19 @@ class DisplaceError(Exception):
     pass
 
 class Displace:
-    def __init__(self, reactant, std_dev, radius, hole_epicenters):
+    def __init__(self, reactant, std_dev, radius, hole_epicenters, config: ConfigClass = EON_CONFIG):
         '''Reactant is an Atoms object. std_dev is the standard deviation
            of the normal distribution used to create the random displacements.
            radius is the distance to neighbors that will also be displaced.
         '''
+        self.config = config
         self.reactant = reactant
         self.std_dev = std_dev
         self.radius = radius
         self.hole_epicenters = hole_epicenters
 
-        ## mike w.
-        self.void_bias_fraction = config.void_bias_fraction
+        # ## mike w.
+        self.void_bias_fraction = 0.2 # self.config.void_bias_fraction
 
         # temporary numpy array of same size as self.reactant.r
         self.temp_array = numpy.zeros(self.reactant.r.shape)
@@ -174,7 +176,7 @@ class Displace:
     def get_displacement(self, atom_index):
         '''Returns a displacement to be added to self.reactant.r'''
         if self.neighbors_list is None:
-            self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.comp_brute_neighbors)
+            self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, self.config.comp_brute_neighbors)
         displacement_norm = 0.0
         displacement = numpy.zeros(self.reactant.r.shape)
         if hasattr(atom_index, '__getitem__'):
@@ -190,7 +192,7 @@ class Displace:
             displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
 
         # ensures that the total displacement vector exceeds a given length, but the current default is zero
-        while (displacement_norm <= config.disp_min_norm):
+        while (displacement_norm <= self.config.disp_min_norm):
             displacement = numpy.zeros(self.reactant.r.shape)
             for i in range(len(displaced_atoms)):
                 # don't displace frozen atoms
@@ -199,7 +201,7 @@ class Displace:
                 # Displace one of the free atoms by a gaussian distributed
                 # random number with a standard deviation of self.std_dev.
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
-                if config.displace_1d:
+                if self.config.displace_1d:
                     displacement[displaced_atoms[i]] = displacement[displaced_atoms[i]] * [1,0,0]
             displacement_norm = numpy.linalg.norm(displacement)
 
@@ -211,7 +213,7 @@ class Displace:
 
 
             self.neighbor_list_vectors = atoms.neighbor_list_vectors(self.reactant,
-                   self.radius, config.comp_brute_neighbors)
+                   self.radius, self.config.comp_brute_neighbors)
 
 #            print config.random_mode
 #            print sorted(displaced_atoms)
@@ -244,13 +246,13 @@ class Displace:
         displacement_atoms = self.reactant.copy()
         displacement_atoms.r += displacement
 
-        if config.random_mode:
+        if self.config.random_mode:
             displacement *= 0.0
             for i in range(len(displaced_atoms)):
                 if not self.reactant.free[displaced_atoms[i]]:
                     continue
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
-                if config.displace_1d:
+                if self.config.displace_1d:
                     displacement[displaced_atoms[i]] = displacement[displaced_atoms[i]] * [1,0,0]
 
         displacement /= numpy.linalg.norm(displacement)
@@ -275,8 +277,8 @@ class Displace:
         return new_epicenters
 
 class Undercoordinated(Displace):
-    def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.max_coordination = max_coordination
         self.undercoordinated_atoms = []
@@ -311,8 +313,8 @@ class Undercoordinated(Displace):
         return self.get_displacement(epicenter)
 
 class Leastcoordinated(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.leastcoordinated_atoms = []
 
@@ -335,23 +337,22 @@ class Leastcoordinated(Displace):
         return self.get_displacement(epicenter)
 
 class ListedAtoms(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, displace_all=False):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, displace_all=False, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.displace_all = displace_all
         # each item in this list is the index of a free atom
-        self.listed_atoms = [ i for i in config.disp_listed_atoms
+        self.listed_atoms = [ i for i in self.config.disp_listed_atoms
                 if self.reactant.free[i] ]
         #print "self.listed_atoms:"
         #print self.listed_atoms
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
+        logger.debug("Listed atoms: %s", self.listed_atoms)
 
         #print self.listed_atoms
         if len(self.listed_atoms) == 0:
             #raise DisplaceError("Listed atoms are all frozen")
             raise DisplaceError("Listed atoms are all frozen")
-
-        #print self.listed_atoms
 
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
@@ -360,18 +361,19 @@ class ListedAtoms(Displace):
             epicenter = self.listed_atoms
         else:
             epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
+        logger.debug("Listed atom displacement epicenters: %s", epicenter)
         return self.get_displacement(epicenter)
 
 class ListedTypes(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, displace_all=False):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, displace_all=False, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
-#        print config.disp_listed_types
+#        print self.config.disp_listed_types
 
         self.displace_all = displace_all
         # each item in this list is the index of a free atom
         self.listed_atoms = [ i for i in range(len(self.reactant.free))
-                if (self.reactant.free[i] == 1) and (self.reactant.names[i] in config.disp_listed_types) ]
+                if (self.reactant.free[i] == 1) and (self.reactant.names[i] in self.config.disp_listed_types) ]
 
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
 
@@ -391,8 +393,8 @@ class ListedTypes(Displace):
 
 
 class Random(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         # each item in this list is the index of a free atom
         self.free_atoms = [ i for i in range(len(self.reactant.free))
@@ -410,8 +412,8 @@ class Random(Displace):
         return self.get_displacement(epicenter)
 
 class NotFCCorHCP(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.not_HCP_or_FCC_atoms = []
 
@@ -435,8 +437,8 @@ class NotFCCorHCP(Displace):
         return self.get_displacement(epicenter)
 
 class NotTCPorBCC(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.not_TCP_or_BCC_atoms = []
 
@@ -460,8 +462,8 @@ class NotTCPorBCC(Displace):
         return self.get_displacement(epicenter)
 
 class NotTCP(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
-        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, config: ConfigClass = EON_CONFIG):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.not_TCP_atoms = []
 
@@ -484,6 +486,7 @@ class NotTCP(Displace):
         epicenter = self.not_TCP_atoms[numpy.random.randint(len(self.not_TCP_atoms))]
         return self.get_displacement(epicenter)
 
+# XXX(rg): Why doesn't this actually form a child class of Displace? No initialization..
 class Water(Displace):
     '''Displace molecules of water without streatching them.'''
     def __init__(self, reactant, stdev_translation, stdev_rotation, molecule_list=[], random=0):
@@ -578,6 +581,7 @@ if __name__ == '__main__':
     t0 = time.time()
     ntimes = 1000
     for i in range(ntimes):
-        d.make_displacement(sys.argv[2])
+        d.make_displacement()
     dt = time.time()-t0
+    outf = io.savecon(sys.argv[2], reactant)
     print("%.2f displacements per second" % (float(ntimes)/dt))

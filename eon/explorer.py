@@ -10,7 +10,6 @@ import pickle as pickle
 from copy import copy
 import numpy
 
-from eon.migrator.config import config
 from eon import atoms
 from eon import communicator
 from eon import displace
@@ -19,15 +18,19 @@ from eon import fileio as io
 from eon import recycling
 from eon import eon_kdb as kdb
 
-def get_minmodexplorer():
+from eon.migrator.config import config as EON_CONFIG
+from eon.migrator.config import ConfigClass # Typing
+
+def get_minmodexplorer(config: ConfigClass = EON_CONFIG):
     if config.akmc_server_side_process_search:
         return ServerMinModeExplorer
     else:
         return ClientMinModeExplorer
 
 class Explorer:
-    def __init__(self, superbasin=None):
-        self.wuid_path = os.path.join(config.path_scratch, "wuid")
+    def __init__(self, superbasin=None, config: ConfigClass = EON_CONFIG):
+        self.config = config
+        self.wuid_path = os.path.join(self.config.path_scratch, "wuid")
         self.superbasin = superbasin
         self.load_wuid()
 
@@ -53,7 +56,7 @@ class Explorer:
 
 
 class MinModeExplorer(Explorer):
-    def __init__(self, states, previous_state, state, superbasin=None):
+    def __init__(self, states, previous_state, state, superbasin=None, config: ConfigClass = EON_CONFIG):
         """Init MinModeExplorer.
 
         If superbasin is passed, all states in the superbasin will be
@@ -62,74 +65,77 @@ class MinModeExplorer(Explorer):
         used, which takes only processes exiting the SB into account.
 
         """
-        Explorer.__init__(self, superbasin)
+        Explorer.__init__(self, superbasin, config = config)
         self.states = states
         self.state = state
         self.previous_state = previous_state
-        self.comm = communicator.get_communicator()
+        self.comm = communicator.get_communicator(self.config)
 
-        if config.recycling_on:
+        if self.config.recycling_on:
             self.nrecycled = 0
-            self.recycler = recycling.Recycling(self.states,
-                                           self.previous_state,
-                                           self.state,
-                                           config.recycling_move_distance,
-                                           config.recycling_save_sugg)
+            self.recycler = recycling.Recycling(
+                self.states,
+                self.previous_state,
+                self.state,
+                self.config.recycling_move_distance,
+                self.config.recycling_save_sugg,
+                config=self.config,
+            )
 
         # If we plan to only displace atoms that moved getting to the current state.
-        if config.disp_moved_only and self.state.number != 0:
+        if self.config.disp_moved_only and self.state.number != 0:
             moved_atoms = self.recycler.process_atoms
         else:
             moved_atoms = None
 
-        if config.kdb_on:
-            if not os.path.isdir(config.kdb_scratch_path):
-                os.makedirs(config.kdb_scratch_path)
+        if self.config.kdb_on:
+            if not os.path.isdir(self.config.kdb_scratch_path):
+                os.makedirs(self.config.kdb_scratch_path)
             try:
-                queried = [int(q) for q in open(os.path.join(config.kdb_scratch_path, "queried"), 'r').readlines()]
+                queried = [int(q) for q in open(os.path.join(self.config.kdb_scratch_path, "queried"), 'r').readlines()]
             except:
                 queried = []
             if self.state.number not in queried:
                 queried.append(self.state.number)
-                f = open(os.path.join(config.kdb_scratch_path, "queried"), 'w')
+                f = open(os.path.join(self.config.kdb_scratch_path, "queried"), 'w')
                 for q in queried:
                     f.write("%d\n" % q)
                 f.close()
                 kdb.query(self.state)
 
         self.reactant = self.state.get_reactant()
-        self.displace = displace.DisplacementManager(self.reactant, moved_atoms)
+        self.displace = displace.DisplacementManager(self.reactant, moved_atoms, config = self.config)
 
     def explore(self):
         self.register_results()
-        if self.state.get_confidence(self.superbasin) < config.akmc_confidence:
+        if self.state.get_confidence(self.superbasin) < self.config.akmc_confidence:
             self.make_jobs()
         else:
             num_cancelled = self.comm.cancel_state(self.state.number)
             logger.info("Cancelled %i workunits from state %i",
                         num_cancelled, self.state.number)
             #XXX: Do we ever call explore on a completed state twice?
-            if config.kdb_on:
+            if self.config.kdb_on:
                 logger.info("Adding relevant processes to kinetic database")
                 for process_id in self.state.get_process_ids():
                     output = kdb.insert(self.state, process_id)
                     logger.debug("kdb insert: %s", output)
 
     def generate_displacement(self):
-        if config.recycling_on and self.state.number != 0:
+        if self.config.recycling_on and self.state.number != 0:
             displacement, mode = self.recycler.make_suggestion()
             if displacement:
                 self.nrecycled += 1
                 return displacement, mode, 'recycling'
 
-        if config.kdb_on:
+        if self.config.kdb_on:
             displacement, mode = kdb.make_suggestion()
             if displacement:
                 displacement.mass = self.reactant.mass
                 logger.info('Made a KDB suggestion')
                 return displacement, mode, 'kdb'
 
-        if config.saddle_method == 'dynamics':
+        if self.config.saddle_method == 'dynamics':
             return None, None, 'dynamics'
 
         displacement, mode = self.displace.make_displacement()
@@ -139,7 +145,7 @@ class MinModeExplorer(Explorer):
 class ClientMinModeExplorer(MinModeExplorer):
     def __init__(self, states, previous_state, state, superbasin=None):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin)
-        job_table_path = os.path.join(config.path_root, "jobs.tbl")
+        job_table_path = os.path.join(self.config.path_root, "jobs.tbl")
         job_table_columns = [ 'state', 'wuid', 'type']
         self.job_table = io.Table(job_table_path, job_table_columns)
 
@@ -150,9 +156,9 @@ class ClientMinModeExplorer(MinModeExplorer):
 
     def make_jobs(self):
         #XXX:what if the user changes the bundle size?
-        num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size
+        num_in_buffer = self.comm.get_queue_size()*self.config.comm_job_bundle_size
         logger.info("Queue contains %i searches" % num_in_buffer)
-        num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
+        num_to_make = max(self.config.comm_job_buffer_size - num_in_buffer, 0)
         logger.info("Making %i process searches" % num_to_make)
 
         if num_to_make == 0:
@@ -168,14 +174,14 @@ class ClientMinModeExplorer(MinModeExplorer):
         invariants['pos.con'] = (reactIO, file_permission)
 
         t1 = time()
-        if config.saddle_method == 'dynamics' and \
-                config.recycling_on and \
-                config.disp_moved_only and \
+        if self.config.saddle_method == 'dynamics' and \
+                self.config.recycling_on and \
+                self.config.disp_moved_only and \
                 self.state.number != 0:
 
             moved_atoms = self.recycler.process_atoms
             mass_weights = self.reactant.mass.copy()
-            mass_weights *= config.recycling_mass_weight_factor
+            mass_weights *= self.config.recycling_mass_weight_factor
 
             for i in range(len(self.reactant)):
                 if i in moved_atoms:
@@ -187,7 +193,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             invariants['masses.dat'] = (weightsIO, file_permission)
 
         # Merge potential files into invariants
-        invariants = dict(invariants, **io.load_potfiles(config.path_pot))
+        invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
 
         for i in range(num_to_make):
             search = {}
@@ -207,10 +213,10 @@ class ClientMinModeExplorer(MinModeExplorer):
                           ]
             # if we are recycling a saddle, but using "dynamics saddle search" we need
             # to switch to min_mode searches
-            if config.saddle_method == 'dynamics' and disp_type != 'dynamics':
+            if self.config.saddle_method == 'dynamics' and disp_type != 'dynamics':
                 ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
 
-            search['config.ini'] = io.modify_config(config.config_path, ini_changes)
+            search['config.ini'] = io.modify_config(self.config.config_path, ini_changes)
 
             if displacement:
                 dispIO = io.StringIO()
@@ -225,7 +231,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             # eager write
             self.save_wuid()
 
-        if config.recycling_on and self.nrecycled > 0:
+        if self.config.recycling_on and self.nrecycled > 0:
             logger.info("Recycled %i saddles" % self.nrecycled)
 
         try:
@@ -241,13 +247,13 @@ class ClientMinModeExplorer(MinModeExplorer):
     def register_results(self):
         logger.info("Registering results")
         t1 = time()
-        if os.path.isdir(config.path_jobs_in):
+        if os.path.isdir(self.config.path_jobs_in):
             try:
-                shutil.rmtree(config.path_jobs_in)
+                shutil.rmtree(self.config.path_jobs_in)
             except (OSError, IOError):
                 pass
-        if not os.path.isdir(config.path_jobs_in):
-            os.makedirs(config.path_jobs_in)
+        if not os.path.isdir(self.config.path_jobs_in):
+            os.makedirs(self.config.path_jobs_in)
 
         # Function used by communicator to determine whether to discard a result
         def keep_result(name):
@@ -255,13 +261,13 @@ class ClientMinModeExplorer(MinModeExplorer):
             state_num = int(name.split("_")[0])
             if self.superbasin:
                 return (state_num in self.superbasin.state_dict and
-                        self.superbasin.get_confidence() < config.akmc_confidence)
+                        self.superbasin.get_confidence() < self.config.akmc_confidence)
             else:
                 return (state_num == self.state.number and
-                        self.state.get_confidence() < config.akmc_confidence)
+                        self.state.get_confidence() < self.config.akmc_confidence)
 
         num_registered = 0
-        for result in self.comm.get_results(config.path_jobs_in, keep_result):
+        for result in self.comm.get_results(self.config.path_jobs_in, keep_result):
             # The result dictionary contains the following key-value pairs:
             # reactant - an array of strings containing the reactant
             # saddle - an atoms object containing the saddle
@@ -272,10 +278,10 @@ class ClientMinModeExplorer(MinModeExplorer):
             #
             # The reactant, product, and mode are passed as lines of the files because
             # the information contained in them is not needed for registering results
-            if config.debug_keep_all_results:
+            if self.config.debug_keep_all_results:
                 #XXX: We should only do these checks once to speed things up,
                 #     but at the same time debug options don't have to be fast
-                # save_path = os.path.join(config.path_root, "old_searches")
+                # save_path = os.path.join(self.config.path_root, "old_searches")
                 # if not os.path.isdir(save_path):
                 #    os.mkdir(save_path)
                 # shutil.copytree(result_path, os.path.join(save_path, i))
@@ -319,16 +325,16 @@ class ClientMinModeExplorer(MinModeExplorer):
             if result['results']['termination_reason'] == 0:
                 state.add_process(result, self.superbasin)
             else:
-                state.register_bad_saddle(result, config.debug_keep_bad_saddles, superbasin=self.superbasin)
+                state.register_bad_saddle(result, self.config.debug_keep_bad_saddles, superbasin=self.superbasin)
             num_registered += 1
 
-            if ((self.superbasin and self.superbasin.get_confidence() >= config.akmc_confidence) or
-                (not self.superbasin and self.state.get_confidence() >= config.akmc_confidence)):
-                if not config.debug_register_extra_results:
+            if ((self.superbasin and self.superbasin.get_confidence() >= self.config.akmc_confidence) or
+                (not self.superbasin and self.state.get_confidence() >= self.config.akmc_confidence)):
+                if not self.config.debug_register_extra_results:
                     break
 
         # Approximate number of searches received
-        tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
+        tot_searches = len(os.listdir(self.config.path_jobs_in)) * self.config.comm_job_bundle_size
 
         t2 = time()
         logger.info("Processed %i results", num_registered)
@@ -389,9 +395,9 @@ class ServerMinModeExplorer(MinModeExplorer):
         f.close()
 
     def explore(self):
-        if not os.path.isdir(config.path_jobs_in): #XXX: does this condition ever happen?
-            os.makedirs(config.path_jobs_in)
-            if self.state.get_confidence(self.superbasin) >= config.akmc_confidence:
+        if not os.path.isdir(self.config.path_jobs_in): #XXX: does this condition ever happen?
+            os.makedirs(self.config.path_jobs_in)
+            if self.state.get_confidence(self.superbasin) >= self.config.akmc_confidence:
                 self.process_searches = {}
                 self.save()
 
@@ -400,26 +406,26 @@ class ServerMinModeExplorer(MinModeExplorer):
     def register_results(self):
         logger.info("Registering results")
         t1 = time()
-        if os.path.isdir(config.path_jobs_in):
+        if os.path.isdir(self.config.path_jobs_in):
             try:
-                shutil.rmtree(config.path_jobs_in)
+                shutil.rmtree(self.config.path_jobs_in)
             except OSError as msg:
-                logger.error("Error cleaning up %s: %s", config.path_jobs_in, msg)
+                logger.error("Error cleaning up %s: %s", self.config.path_jobs_in, msg)
             else:
-                os.makedirs(config.path_jobs_in)
+                os.makedirs(self.config.path_jobs_in)
 
-        if not os.path.isdir(config.path_incomplete):
-            os.makedirs(config.path_incomplete)
+        if not os.path.isdir(self.config.path_incomplete):
+            os.makedirs(self.config.path_incomplete)
 
         # Function used by communicator to determine whether to keep a result
         def keep_result(name):
             # note that all processes are assigned to the current state
             state_num = int(name.split("_")[0])
             return (state_num == self.state.number and \
-                    self.state.get_confidence(self.superbasin) < config.akmc_confidence)
+                    self.state.get_confidence(self.superbasin) < self.config.akmc_confidence)
 
         num_registered = 0
-        for result in self.comm.get_results(config.path_jobs_in, keep_result):
+        for result in self.comm.get_results(self.config.path_jobs_in, keep_result):
             state_num = int(result['name'].split("_")[0])
             # XXX: doesn't this doesn't give the correct id wrt bundling
             id = int(result['name'].split("_")[1]) + result['number']
@@ -438,7 +444,7 @@ class ServerMinModeExplorer(MinModeExplorer):
                     self.state.add_process(final_result)
                 else:
                     final_result['wuid'] = id
-                    self.state.register_bad_saddle(final_result, config.debug_keep_bad_saddles)
+                    self.state.register_bad_saddle(final_result, self.config.debug_keep_bad_saddles)
             else:
                 ps = self.process_searches[search_id]
                 saddle = ps.get_saddle()
@@ -448,12 +454,12 @@ class ServerMinModeExplorer(MinModeExplorer):
                         self.state.add_process(ps.build_result())
                         del self.process_searches[search_id]
             num_registered += 1
-            if self.state.get_confidence(self.superbasin) >= config.akmc_confidence:
-                if not config.debug_register_extra_results:
+            if self.state.get_confidence(self.superbasin) >= self.config.akmc_confidence:
+                if not self.config.debug_register_extra_results:
                     break
 
         # Approximate number of searches received
-        tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
+        tot_searches = len(os.listdir(self.config.path_jobs_in)) * self.config.comm_job_bundle_size
 
         t2 = time()
         logger.info("Processed %i results", num_registered)
@@ -465,15 +471,15 @@ class ServerMinModeExplorer(MinModeExplorer):
         return num_registered
 
     def make_jobs(self):
-        num_unsent = self.comm.get_queue_size()*config.comm_job_bundle_size
+        num_unsent = self.comm.get_queue_size()*self.config.comm_job_bundle_size
         logger.info("Queued %i jobs" % num_unsent)
-        num_in_progress = self.comm.get_number_in_progress()*config.comm_job_bundle_size
+        num_in_progress = self.comm.get_number_in_progress()*self.config.comm_job_bundle_size
         logger.info("Running %i jobs" % num_in_progress)
         num_total = num_unsent + num_in_progress
-        num_to_make = max(config.comm_job_buffer_size - num_unsent, 0)
-        if config.comm_job_max_size != 0:
-            if num_total + num_to_make>= config.comm_job_max_size:
-                num_to_make = max(0, config.comm_job_max_size - num_total)
+        num_to_make = max(self.config.comm_job_buffer_size - num_unsent, 0)
+        if self.config.comm_job_max_size != 0:
+            if num_total + num_to_make>= self.config.comm_job_max_size:
+                num_to_make = max(0, self.config.comm_job_max_size - num_total)
                 logger.info("Reached max_jobs")
         logger.info("Making %i jobs" % num_to_make)
 
@@ -485,7 +491,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         invariants = {}
 
         # Merge potential files into invariants
-        invariants = dict(invariants, **io.load_potfiles(config.path_pot))
+        invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
 
         t1 = time()
 
@@ -522,7 +528,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             jobs.append(job)
 
         self.save()
-        if config.recycling_on and self.nrecycled > 0:
+        if self.config.recycling_on and self.nrecycled > 0:
             logger.info("Recycled %i saddles" % self.nrecycled)
 
         try:
@@ -535,7 +541,8 @@ class ServerMinModeExplorer(MinModeExplorer):
 
 
 class ProcessSearch:
-    def __init__ (self, reactant, displacement, mode, disp_type, search_id, state_number):
+    def __init__ (self, reactant, displacement, mode, disp_type, search_id, state_number, config: ConfigClass = EON_CONFIG):
+        self.config = config
         self.reactant = reactant
         self.displacement = displacement
         self.mode = mode
@@ -574,8 +581,8 @@ class ProcessSearch:
                       'potential_energy_product':None,
                       'barrier_reactant_to_product':None,
                       'barrier_product_to_reactant':None,
-                      'prefactor_reactant_to_product':config.process_search_default_prefactor,
-                      'prefactor_product_to_reactant':config.process_search_default_prefactor,
+                      'prefactor_reactant_to_product':self.config.process_search_default_prefactor,
+                      'prefactor_product_to_reactant':self.config.process_search_default_prefactor,
                       'displacement_saddle_distance':0.0,
                       'force_calls_saddle':0,
                       'force_calls_minimization':0,
@@ -689,7 +696,7 @@ class ProcessSearch:
     def start_minimization(self, which_min):
         job = {}
 
-        saddle_path = os.path.join(config.path_incomplete, self.finished_saddle_name)
+        saddle_path = os.path.join(self.config.path_incomplete, self.finished_saddle_name)
 
         mode_file = open(os.path.join(saddle_path, "mode.dat"))
         mode = io.load_mode(mode_file)
@@ -702,14 +709,14 @@ class ProcessSearch:
         if which_min == "min2":
             mode = -mode
 
-        reactant.r += config.process_search_minimization_offset*mode
+        reactant.r += self.config.process_search_minimization_offset*mode
 
         reactIO = io.StringIO()
         io.savecon(reactIO, reactant)
         job['pos.con'] = reactIO
 
         ini_changes = [ ('Main', 'job', 'minimization') ]
-        job['config.ini'] = io.modify_config(config.config_path, ini_changes)
+        job['config.ini'] = io.modify_config(self.config.config_path, ini_changes)
 
         return job
 
@@ -726,8 +733,8 @@ class ProcessSearch:
         self.data['force_calls_minimization'] += results_dat2['total_force_calls']
 
         is_reactant = lambda a: atoms.match(a, self.reactant,
-                                            config.comp_eps_r,
-                                            config.comp_neighbor_cutoff, False)
+                                            self.config.comp_eps_r,
+                                            self.config.comp_neighbor_cutoff, False)
 
         tc1 = io.parse_results(result1['results.dat'])['termination_reason']
         tc2 = io.parse_results(result2['results.dat'])['termination_reason']
@@ -789,7 +796,7 @@ class ProcessSearch:
         job['pos.con'] = reactIO
 
         ini_changes = [ ('Main', 'job', 'saddle_search') ]
-        job['config.ini'] = io.modify_config(config.config_path, ini_changes)
+        job['config.ini'] = io.modify_config(self.config.config_path, ini_changes)
 
         return job
 
@@ -802,7 +809,7 @@ class ProcessSearch:
         self.data['barrier_reactant_to_product'] = barrier
 
     def save_result(self, result):
-        dir_path = os.path.join(config.path_incomplete, result['name'])
+        dir_path = os.path.join(self.config.path_incomplete, result['name'])
         os.makedirs(dir_path)
         for k in result:
             if hasattr(result[k], 'getvalue'):
@@ -812,7 +819,7 @@ class ProcessSearch:
                 f.close()
 
     def load_result(self, result_name):
-        dir_path = os.path.join(config.path_incomplete, result_name)
+        dir_path = os.path.join(self.config.path_incomplete, result_name)
         result = {}
         for file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, file)

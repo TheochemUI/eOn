@@ -662,7 +662,7 @@ void PotentialBase::computePt(int const nAtoms, double positions[],
     forces[i] = 0.0;
   energy = 0.0;
   double const(*r)[3] = reinterpret_cast<double const(*)[3]>(positions);
-  double(*f)[3] = reinterpret_cast<double(*)[3]>(forces);
+  double (*f)[3] = reinterpret_cast<double (*)[3]>(forces);
   setPeriodicity(periods); // Set Periodic boundaries. Essential in order for
                            // some functions to work.
   for (int i = nAtoms - 1; i > 0; --i) {

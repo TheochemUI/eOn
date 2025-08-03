@@ -14,11 +14,13 @@ import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
 from builtins import input
+from pathlib import Path
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
 from eon.version import version
-from eon.migrator.config import config
+from eon.migrator.config import config as EON_CONFIG # NOTE: Since it is a global object..
+from eon.migrator.config import ConfigClass
 from eon import communicator
 from eon import locking
 from eon import akmcstatelist
@@ -29,7 +31,7 @@ from eon import superbasinscheme
 from eon import askmc
 from eon import movie
 
-def akmc(config, steps=0):
+def akmc(config: ConfigClass = EON_CONFIG, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.
 
     Returns the number of KMC steps in the current run at the end of
@@ -91,7 +93,7 @@ def akmc(config, steps=0):
         previous_state = states.get_state(previous_state_num)
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
-        superbasining = get_superbasin_scheme(states)
+        superbasining = get_superbasin_scheme(states, config)
         sb = superbasining.get_containing_superbasin(current_state)
         # If we are exploring states in a superbasin, we will always
         # explore the state with the lowest confidence.
@@ -127,7 +129,7 @@ def akmc(config, steps=0):
 
     return steps
 
-def get_akmc_metadata():
+def get_akmc_metadata(config: ConfigClass = EON_CONFIG):
     if not os.path.isdir(config.path_results):
         os.makedirs(config.path_results)
     # read in metadata
@@ -158,23 +160,28 @@ def write_akmc_metadata(parser, current_state_num, time, previous_state_num, pre
     parser.set('Simulation Information', 'first_run', str(False))
     parser.set('Simulation Information', 'previous_temperature', str(previous_temperature))
 
-def get_statelist(kT):
-    initial_state_path = os.path.join(config.path_root, 'pos.con')
-    return akmcstatelist.AKMCStateList(kT,
-                               config.akmc_thermal_window,
-                               config.akmc_max_thermal_window,
-                               initial_state_path,
-                               filter_hole = config.disp_moved_only)
+def get_statelist(kT, config: ConfigClass = EON_CONFIG):
+    initial_state_path = os.path.join(config.path_root, "pos.con")
+    return akmcstatelist.AKMCStateList(
+        kT,
+        config.akmc_thermal_window,
+        config.akmc_max_thermal_window,
+        initial_state_path,
+        filter_hole=config.disp_moved_only,
+        config=config,
+    )
 
-def get_superbasin_scheme(states):
+def get_superbasin_scheme(states, config):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.main_temperature / 11604.5, config.sb_tc_ntrans)
     elif config.sb_scheme == 'energy_level':
         superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.main_temperature / 11604.5, config.sb_el_energy_increment)
+    elif config.sb_scheme == 'rate':
+        superbasining = superbasinscheme.RateThreshold(config.sb_path, states, config.main_temperature / 11604.5, config.sb_rt_rate_threshold)
     return superbasining
 
 
-def kmc_step(current_state, states, time, kT, superbasining, steps=0):
+def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: ConfigClass = EON_CONFIG):
     t1 = unix_time.time()
     previous_state = current_state
     # If the Chatterjee & Voter superbasin acceleration method is being used
@@ -336,7 +343,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
     return current_state, previous_state, time, steps
 
 
-def main():
+def main(config: ConfigClass = EON_CONFIG):
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
     optpar.add_option("-C", "--continuous", action="store_true", dest="continuous", default=False, help="don't quit")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
@@ -386,7 +393,7 @@ def main():
         console.setFormatter(formatter)
         rootlogger.addHandler(console)
 
-    lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
+    lock = locking.LockFile(str((Path.cwd() / config.path_results / "lockfile").absolute()))
 
     # Some options are mutually exclusive. Let's check them now.
     exclusive_options = {}

@@ -65,6 +65,8 @@ Potential:
             values:
                 - qsc
                 - lenosky_Si
+                - ase_nwchem
+                - ase_orca
                 - sw_si
                 - lj
                 - lj_cluster
@@ -88,6 +90,7 @@ Potential:
                 - new_pot
                 - pyamff
                 - ase
+                - metatomic
 
         mpi_poll_period:
             kind: float
@@ -200,7 +203,7 @@ Nudged Elastic Band:
 
         max_iterations:
             kind: int
-            default: 5
+            default: 1000
 
         doubly_nudged:
             kind: boolean
@@ -217,6 +220,26 @@ Nudged Elastic Band:
         converged_force:
             kind: float
             default: 0.01
+
+        energy_weighted:
+            kind: boolean
+            default: false
+
+        ew_ksp_min:
+            kind: float
+            default: 0.972
+
+        ew_ksp_max:
+            kind: float
+            default: 9.72
+
+        initial_path_in:
+            kind: string
+            default: ""
+
+        minimize_endpoints:
+            kind: boolean
+            default: true
 
 ################################################################################
 
@@ -273,6 +296,14 @@ Debug:
         keep_all_result_files:
             kind: boolean
             default: False
+
+        estimate_neb_eigenvalues:
+            kind: boolean
+            default: False
+
+        neb_mmf_estimator:
+            kind: string
+            default: "dimer"
 
         write_movies:
             kind: boolean
@@ -593,6 +624,30 @@ GPR Dimer:
         rotations_min:
             kind: int
             default: 1
+
+        report_level:
+            kind: int
+            default: 1
+
+        debug_level:
+            kind: int
+            default: 2
+
+        use_prune:
+            kind: boolean
+            default: False
+
+        start_prune_at:
+            kind: int
+            default: 8
+
+        nprune_vals:
+            kind: int
+            default: 3
+
+        prune_threshold:
+            kind: float
+            default: 0.5
 
 ################################################################################
 
@@ -1054,6 +1109,7 @@ Saddle Search:
             values:
                 - dimer
                 - lanczos
+                - gprdimer
 
         displace_random_weight:
             kind: float
@@ -1220,7 +1276,7 @@ Coarse Graining:
             default: 5
 
         askmc_high_barrier_def:
-            kind: int
+            kind: float
             default: 2
 
         use_askmc:
@@ -1246,6 +1302,10 @@ Coarse Graining:
         askmc_barrier_raise_param:
             kind: float
             default: 1.5
+
+        rate_threshold:
+            kind: float
+            default: 1.0e9
 
         energy_increment:
             kind: float
@@ -1366,3 +1426,176 @@ Optimizer:
         cg_line_converged:
             kind: float
             default: 0.1
+
+################################################################################
+
+AMS_ENV:
+    options:
+        amshome:
+            kind: string
+            default: ""
+
+        scm_tmpdir:
+            kind: string
+            default: ""
+
+        scm_pythondir:
+            kind: string
+            default: ""
+
+        amsbin:
+            kind: string
+            default: ""
+
+        scmlicense:
+            kind: string
+            default: ""
+
+        amsresources:
+            kind: string
+            default: ""
+
+################################################################################
+AMS:
+    options:
+        engine:
+            kind: string
+            default: ""
+
+        forcefield:
+            kind: string
+            default: ""
+
+        model:
+            kind: string
+            default: ""
+
+        xc:
+            kind: string
+            default: ""
+
+        basis:
+            kind: string
+            default: ""
+
+        resources:
+            kind: string
+            default: ""
+
+################################################################################
+
+AMS_IO:
+    options:
+        engine:
+            kind: string
+            default: ""
+
+        forcefield:
+            kind: string
+            default: ""
+
+        model:
+            kind: string
+            default: ""
+
+        xc:
+            kind: string
+            default: ""
+
+################################################################################
+
+XTBPot:
+    options:
+        paramset:
+            kind: string
+            default: "GFNFF"
+
+        accuracy:
+            kind: float
+            default: 1.0
+
+        electronic_temperature:
+            kind: float
+            default: 0.0
+
+        max_iterations:
+            kind: int
+            default: 250
+
+################################################################################
+
+Metatomic:
+    options:
+        model_path:
+            kind: string
+            default: ""
+
+        device:
+            kind: string
+            default: "auto"
+
+        length_unit:
+            kind: string
+            default: "Angstrom"
+
+        extensions_directory:
+            kind: string
+            default: ""
+
+        check_consistency:
+            kind: boolean
+            default: false
+
+################################################################################
+
+ASE_NWCHEM:
+    options:
+        nwchem_path:
+            kind: string
+            default: "NONE"
+
+        nproc:
+            kind: string
+            default: "auto"
+
+        multiplicity:
+            kind: string
+            default: "1"
+
+        scf_thresh:
+            kind: float
+            default: 1e-5
+
+        scf_maxiter:
+            kind: int
+            default: 200
+
+################################################################################
+
+ASE_ORCA:
+    options:
+        orca_path:
+            kind: string
+            default: "NONE"
+
+        nproc:
+            kind: string
+            default: "auto"
+
+        simpleinput:
+            kind: string
+            default: "ENGRAD HF-3c"
+
+################################################################################
+
+LBFGS:
+    options:
+        lbfgs_memory:
+            kind: int
+            default: 25
+        lbfgs_inverse_curvature:
+            kind: float
+            default: 0.01
+        lbfgs_auto_scale:
+            kind: boolean
+            default: True
