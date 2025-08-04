@@ -448,17 +448,25 @@ if get_option('with_metatomic')
                 py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
             ),
         )
-        vesin_dep = declare_dependency(
-            dependencies: [
-                cppc.find_library(
-                    'vesin',
-                    dirs: [py.get_install_dir() / 'vesin' / 'lib'],
-                ),
-            ],
-            include_directories: include_directories(
-                py.get_install_dir() / 'vesin' / 'include',
-            ),
+        vesin_dep = cppc.find_library(
+            'vesin',
+            dirs: [py.get_install_dir() / 'vesin' / 'lib'],
+            required: false,
         )
+        if vesin_dep.found()
+            vesin_dep = declare_dependency(
+                dependencies: [
+                    cppc.find_library(
+                        'vesin',
+                        dirs: [py.get_install_dir() / 'vesin' / 'lib'],
+                        required: false,
+                    ),
+                ],
+                include_directories: include_directories(
+                    py.get_install_dir() / 'vesin' / 'include',
+                ),
+            )
+        endif
     else
         message(
             'Looking for existing installations of metatensor, metatensor-torch, metatomic-torch and vesin',
@@ -468,12 +476,23 @@ if get_option('with_metatomic')
         )
         # XXX(rg): Still needs the includes, setup pkgconf and use dependency() with pkgconf instead
         # xref: https://github.com/metatensor/metatensor/issues/930
-        vesin_dep = cppc.find_library('vesin')
+        vesin_dep = cppc.find_library('vesin', required: false)
         mts_dep = [
             cppc.find_library('metatensor'),
             cppc.find_library('metatensor_torch'),
             cppc.find_library('metatomic_torch'),
         ]
+    endif
+    if not vesin_dep.found()
+        vesin_int = library(
+            'vesin_internal',
+            ['thirdparty/vesin/vesin-single-build.cpp'],
+            install: true,
+        )
+        vesin_dep = declare_dependency(
+            link_with: vesin_int,
+            include_directories: include_directories('thirdparty/vesin'),
+        )
     endif
     _deps += [vesin_dep, mts_dep, torch_deps]
     subdir('potentials/Metatomic')
@@ -557,7 +576,7 @@ if get_option('with_tests')
         # ['test_pot', 'PotTest.cpp', 'sulfolene'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
-    ]
+]
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
     endif
