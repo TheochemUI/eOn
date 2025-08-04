@@ -12,8 +12,9 @@ It can generate trajectories in three ways:
 # requires-python = ">=3.9"
 # dependencies = [
 #   "ase==3.23.0",
-#   "pandas==2.2.2",
+#   "pandas",
 #   "rich==13.7.1",
+#   "click",
 # ]
 # ///
 
