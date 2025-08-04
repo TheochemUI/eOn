@@ -2,10 +2,12 @@
 #include "BaseStructures.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
+#include "MinModeSaddleSearch.h"
 #include "Optimizer.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <filesystem>
+#include <spdlog/spdlog.h>
 
 using namespace helper_functions;
 namespace fs = std::filesystem;
@@ -278,8 +280,40 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
     VectorXd pos = objf->getPositions();
     double convForce{convergenceForce()};
-    if (iteration) { // so that we print forces before taking an optimizer
-                     // step
+    bool originalCIflag = params->nebClimbingImageMethod;
+    if (convForce >= params->nebciAfter) {
+      params->nebClimbingImageMethod = false;
+    }
+    if (iteration) {
+      // so that we print forces before taking an optimizer step
+      if (climbingImage > 0 && climbingImage <= numImages &&
+          params->nebciWithMMF && params->nebClimbingImageMethod &&
+          convForce < params->nebciMMFAfter && iteration > 1) {
+
+        auto tempMinModeSearch = std::make_shared<MinModeSaddleSearch>(
+            path[climbingImage], *tangent[climbingImage],
+            path[climbingImage]->getPotentialEnergy(), params, pot);
+
+        // Save the original value of saddleMaxIterations
+        auto originalSaddleMaxIterations = params->saddleMaxIterations;
+        params->saddleMaxIterations = params->nebciMMFnSteps;
+        int minModeStatus = tempMinModeSearch->run();
+
+        // Restore the original value of saddleMaxIterations
+        params->saddleMaxIterations = originalSaddleMaxIterations;
+        if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD &&
+            minModeStatus != MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
+          SPDLOG_WARN(
+              "MinModeSaddleSearch for climbing image returned status: {}",
+              minModeStatus);
+        }
+
+        // Now, the climbing image (path[climbingImage]) has been optimized for
+        // a few steps by the MinModeSaddleSearch.
+        movedAfterForceCall = true;
+        updateForces();
+      }
+
       if (iteration >= params->nebMaxIterations) {
         status = NEBStatus::BAD_MAX_ITERATIONS;
         break;
@@ -299,8 +333,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         optim->step(params->optMaxMove);
       }
     }
-    // }
     iteration++;
+    params->nebClimbingImageMethod = originalCIflag;
 
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
                 path[0]->getPotentialEnergy();
