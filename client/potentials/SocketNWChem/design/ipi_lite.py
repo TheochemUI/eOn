@@ -146,8 +146,8 @@ if __name__ == "__main__":
                     raise RuntimeError(f"Server not ready! Status: {reply}")
 
                 # 2. Convert units from Angstrom to Bohr.
-                cell_bohr = geo["cell"] / units.Bohr
-                invcell_bohr = np.linalg.inv(cell_bohr)
+                cell_bohr = np.eye(3)
+                invcell_bohr = np.eye(3)
                 positions_bohr = geo["positions"] / units.Bohr
                 nat = geo["nat"]
 
