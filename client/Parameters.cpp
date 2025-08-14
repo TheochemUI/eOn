@@ -518,7 +518,7 @@ int Parameters::load(FILE *file) {
       socket_nwchem_options.host =
           ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
       socket_nwchem_options.port =
-          ini.GetValueF("SocketNWChemPot", "port", socket_nwchem_options.port);
+          ini.GetValueL("SocketNWChemPot", "port", socket_nwchem_options.port);
     }
 
     // [Debug] //
