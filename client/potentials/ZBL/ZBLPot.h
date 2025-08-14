@@ -6,50 +6,29 @@
 #include <memory>
 #include <vector>
 
-// This is modified from the GNU GPL licensed LAMMPS codebase
-// LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-// https://www.lammps.org/, Sandia National Laboratories
-// LAMMPS development team: developers@lammps.org
-
-// From J.F. Zeigler, J. P. Biersack and U. Littmark,
-// "The Stopping and Range of Ions in Matter" volume 1, Pergamon, 1985.
-
+/**
+ * @brief LAMMPS-style ZBL Potential
+ *        Based on: J.F. Ziegler, J.P. Biersack, U. Littmark,
+ *        "Stopping and Range of Ions in Matter", Pergamon (1985).
+ *
+ * Directly adapted from the GNU GPL licensed LAMMPS codebase.
+ */
 class ZBLPot : public Potential {
 public:
-  /**
-   * @brief Constructor for the LAMMPS-style ZBL Potential.
-   * @param p A shared pointer to the eOn Parameters object
-   */
   ZBLPot(std::shared_ptr<Parameters> p);
 
-  /**
-   * @brief Default virtual destructor.
-   */
   ~ZBLPot() override = default;
 
-  /**
-   * @brief Calculates the total potential energy and forces for all atoms in
-   * the system. This is the main computational method called repeatedly during
-   * a simulation.
-   */
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 
 private:
   // --- Private Methods ---
 
-  /**
-   * @brief Performs just-in-time initialization on the first force call.
-   * Extracts unique elements from the system's atomic numbers and calculates
-   * all pair coefficients needed for the simulation.
-   */
+  /// Just-in-time initialization for the current system
   void initialize_for_system(long N, const int *atomicNrs);
 
-  /**
-   * @brief Calculates and stores the coefficients for a single pair of atom
-   * types (i, j). This is a direct port of the logic from the LAMMPS
-   * `set_coeff` function.
-   */
+  /// Set coefficients for a pair of atom types
   void set_pair_coeffs(int i, int j, double zi, double zj);
 
   // --- Direct ports of LAMMPS ZBL calculation functions ---
