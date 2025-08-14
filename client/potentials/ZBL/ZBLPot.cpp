@@ -5,7 +5,8 @@
 #include <stdexcept>
 
 ZBLPot::ZBLPot(std::shared_ptr<Parameters> p)
-    : Potential(p) {
+    : Potential(p),
+      is_initialized(false) {
   cut_inner = p->cut_inner;
   cut_global = p->cut_global;
 
