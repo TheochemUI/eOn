@@ -243,10 +243,10 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
   }
 
   // --- 6. Populate output arrays with unit conversions. ---
-  // The main code likely expects eV and eV/Angstrom.
+  // EON expects eV and eV/Angstrom.
   *U = energy_ha * HARTREE_IN_EV;
   for (int i = 0; i < N * 3; ++i) {
-    F[i] = -1 * forces_ha_bohr[i] * (HARTREE_IN_EV / BOHR_IN_ANGSTROM);
+    F[i] = forces_ha_bohr[i] * (HARTREE_IN_EV / BOHR_IN_ANGSTROM);
   }
   // Variance is not calculated by NWChem.
   *variance = 0.0;
