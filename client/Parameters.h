@@ -83,6 +83,10 @@ public:
   size_t xtb_maxiter;
   double xtb_acc;
 
+  // [ZBLPot] //
+  double cut_inner;
+  double cut_global;
+
   // [Structure Comparison] //
   double distanceDifference; // The distance criterion for comparing geometries
   double neighborCutoff; // radius used in the local atomic structure analysis

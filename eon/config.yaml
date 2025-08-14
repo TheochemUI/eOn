@@ -91,6 +91,7 @@ Potential:
                 - pyamff
                 - ase
                 - metatomic
+                - zbl
 
         mpi_poll_period:
             kind: float
@@ -1541,6 +1542,18 @@ XTBPot:
         max_iterations:
             kind: int
             default: 250
+
+################################################################################
+
+ZBLPot:
+    options:
+        cut_inner:
+            kind: float
+            default: 2.0
+
+        cut_global:
+            kind: float
+            default: 2.5
 
 ################################################################################
 

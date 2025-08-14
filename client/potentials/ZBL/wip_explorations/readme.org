@@ -1,0 +1,11 @@
+* About
+This is analogous to the LAMMPS implementation and thus tested against it.
+
+#+begin_src bash
+uv run generate_structures.py
+eonclient
+eonclient -s pos.con -p zbl
+lmp -in in.lammps
+cat forces.dat
+rm -rf data.lammps *.log log* forces.dat client* results.dat pos.con
+#+end_src
