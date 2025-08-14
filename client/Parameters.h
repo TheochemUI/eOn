@@ -91,8 +91,8 @@ public:
 
   // [SocketNWChemPot] //
   struct socket_nwchem_options_t {
-    string host;
-    double port;
+    std::string host;
+    int port;
   } socket_nwchem_options;
 
   // [Structure Comparison] //
