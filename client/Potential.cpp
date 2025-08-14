@@ -24,6 +24,7 @@
 #include "potentials/LJ/LJ.h"
 #include "potentials/LJCluster/LJCluster.h"
 #include "potentials/Morse/Morse.h"
+#include "potentials/ZBL/ZBLPot.h"
 
 #ifdef WITH_FORTRAN
 #include "potentials/Aluminum/Aluminum.h"
@@ -315,6 +316,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
+  case PotType::ZBL: {
+    return (std::make_shared<ZBLPot>(params));
+    break;
+  }
   default:
     SPDLOG_ERROR("No known potential could be constructed from {}",
                  magic_enum::enum_name(ptype));
