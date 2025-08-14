@@ -540,6 +540,7 @@ class PotentialConfig(BaseModel):
         "unknown",
         "vasp",
         "xtb",
+        "zbl",
     ] = Field(
         default="lj",
         description="Type of potential to execute.",
@@ -608,6 +609,11 @@ class XTBPot(BaseModel):
         default=250, description="Maximum number of XTB iterations."
     )
 
+class ZBLPot(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    cut_inner: float = Field(default=2.0, description="Distance where switching function begins.")
+    cut_global: float = Field(default=2.5, description="Global cutoff for the ZBL interaction.")
 
 class Metatomic(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
