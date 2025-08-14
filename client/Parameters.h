@@ -352,15 +352,20 @@ public:
   bool nebElasticBand;
   double nebConvergedForce; // force convergence criterion required for an
                             // optimization
+  double nebciAfter; // force convergence before ci-neb is used
   // For energy weighted
   double nebKSPMin;
   double nebKSPMax;
   bool nebEnergyWeighted;
 
+  // For hybrid dimer-NEB
+  bool nebciWithMMF;
+  double nebciMMFAfter;
+  long nebciMMFnSteps;
+
   // Initial path
   string nebIpath; // file containing list of .con files for the initial path
-  // Minimize endpoints This is almost always a good idea, not the default to
-  // keep with older timings
+  // Minimize endpoints
   bool nebMinimEP;
 
   // [Molecular Dynamics] //
