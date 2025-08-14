@@ -191,11 +191,15 @@ Nudged Elastic Band:
 
         climbing_image_method:
             kind: boolean
-            default: False
+            default: true
+
+        climbing_image_converged_only:
+            kind: boolean
+            default: true
 
         old_tangent:
             kind: boolean
-            default: False
+            default: false
 
         opt_method:
             kind: string
@@ -240,6 +244,22 @@ Nudged Elastic Band:
         minimize_endpoints:
             kind: boolean
             default: true
+
+        ci_after:
+            kind: float
+            default: 100000000 # infinity actually
+
+        ci_mmf:
+            kind: boolean
+            default: false
+
+        ci_mmf_after:
+            kind: float
+            default: 0.5
+
+        ci_mmf_nsteps:
+            kind: int
+            default: 10
 
 ################################################################################
 

@@ -276,6 +276,10 @@ Parameters::Parameters() {
   nebKSPMax = 9.7;
   nebIpath = ""s;
   nebMinimEP = true;
+  nebciAfter = std::numeric_limits<double>::infinity();
+  nebciWithMMF = false;
+  nebciMMFAfter = 0.5;
+  nebciMMFnSteps = 10;
 
   // [Dynamics] //
   mdTimeStepInput = 1.0;
@@ -496,8 +500,7 @@ int Parameters::load(FILE *file) {
     writeMoviesInterval =
         ini.GetValueL("Debug", "write_movies_interval", writeMoviesInterval);
     estNEBeig = ini.GetValueB("Debug", "estimate_neb_eigenvalues", estNEBeig);
-    nebMMF = toLowerCase(
-        ini.GetValue("Debug", "neb_mmf_estimator", nebMMF));
+    nebMMF = toLowerCase(ini.GetValue("Debug", "neb_mmf_estimator", nebMMF));
 
     // [Structure Comparison] //
 
@@ -687,10 +690,13 @@ int Parameters::load(FILE *file) {
       // Case sensitive!!
       // TODO: This should be handled in clienteon so you can still call
       // eonclient for single point calculations easily
-      metatomic_options.model_path = ini.GetValue("Metatomic", "model_path", "");
+      metatomic_options.model_path =
+          ini.GetValue("Metatomic", "model_path", "");
       metatomic_options.device = ini.GetValue("Metatomic", "device", "cpu");
-      metatomic_options.length_unit = ini.GetValue("Metatomic", "length_unit", "angstrom");
-      metatomic_options.extensions_directory = ini.GetValue("Metatomic", "extensions_directory", "");
+      metatomic_options.length_unit =
+          ini.GetValue("Metatomic", "length_unit", "angstrom");
+      metatomic_options.extensions_directory =
+          ini.GetValue("Metatomic", "extensions_directory", "");
       metatomic_options.check_consistency =
           ini.GetValueB("Metatomic", "check_consistency", false);
     }
@@ -855,7 +861,14 @@ int Parameters::load(FILE *file) {
     nebKSPMin = ini.GetValueF("Nudged Elastic Band", "ew_ksp_min", nebKSPMin);
     nebKSPMax = ini.GetValueF("Nudged Elastic Band", "ew_ksp_max", nebKSPMax);
     nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
-    nebMinimEP = ini.GetValueB("Nudged Elastic Band", "minimize_endpoints", nebMinimEP);
+    nebMinimEP =
+        ini.GetValueB("Nudged Elastic Band", "minimize_endpoints", nebMinimEP);
+    nebciAfter = ini.GetValueF("Nudged Elastic Band", "ci_after", nebciAfter);
+    nebciWithMMF = ini.GetValueB("Nudged Elastic Band", "ci_mmf", nebciWithMMF);
+    nebciMMFAfter =
+        ini.GetValueF("Nudged Elastic Band", "ci_mmf_after", nebciMMFAfter);
+    nebciMMFnSteps =
+        ini.GetValueL("Nudged Elastic Band", "ci_mmf_nsteps", nebciMMFnSteps);
 
     // [Dynamics] //
 
