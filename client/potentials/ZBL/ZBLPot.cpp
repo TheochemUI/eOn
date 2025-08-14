@@ -7,8 +7,8 @@
 ZBLPot::ZBLPot(std::shared_ptr<Parameters> p)
     : Potential(p),
       is_initialized(false) {
-  cut_inner = p->cut_inner;
-  cut_global = p->cut_global;
+  cut_inner = p->zbl_options.cut_inner;
+  cut_global = p->zbl_options.cut_global;
 
   if (cut_inner <= 0.0 || cut_inner >= cut_global) {
     throw std::runtime_error(

@@ -85,8 +85,8 @@ Parameters::Parameters() {
 
   // [ZBLPot] //
   // NOTE(rg): No good defaults TBH
-  cut_inner = 2.0;
-  cut_global = 2.5;
+  zbl_options.cut_inner = 2.0;
+  zbl_options.cut_global = 2.5;
 
   // [SocketNWChemPot] //
   socket_nwchem_options.host = "127.0.0.1";
@@ -504,10 +504,13 @@ int Parameters::load(FILE *file) {
     }
     // [ZBLPot]
     if (potential == PotType::ZBL) {
-      cut_inner = ini.GetValueF("ZBLPot", "cut_inner", cut_inner);
-      cut_global = ini.GetValueF("ZBLPot", "cut_global", cut_global);
-      if (cut_inner > cut_global) {
-        throw std::runtime_error("Switching function must begin before the global cutoff!");
+      zbl_options.cut_inner =
+          ini.GetValueF("ZBLPot", "cut_inner", zbl_options.cut_inner);
+      zbl_options.cut_global =
+          ini.GetValueF("ZBLPot", "cut_global", zbl_options.cut_global);
+      if (zbl_options.cut_inner > zbl_options.cut_global) {
+        throw std::runtime_error(
+            "Switching function must begin before the global cutoff!");
       }
     }
     // [SocketNWChemPot]
