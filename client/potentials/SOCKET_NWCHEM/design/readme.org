@@ -1,0 +1,7 @@
+* Design
+This time around, the idea is to directly interact with ~nwchem~ without the
+intermediate ~python~ layer.
+
+Several notes are relevant about the networking protocol (specific to the implementation in ~nwchem~):
+- *Must* be little endian
+- *Initial* atom types and the number of atoms is used to allocate memory and cannot be changed later.
