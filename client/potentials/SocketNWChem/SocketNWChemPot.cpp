@@ -14,25 +14,17 @@
 
 // Constructor: Read parameters, connect, and perform initial handshake.
 SocketNWChemPot::SocketNWChemPot(std::shared_ptr<Parameters> p)
-    : Potential(p),
+    : Potential(PotType::SocketNWChem, p),
+      listen_fd(-1),
+      conn_fd(-1),
+      is_listening(false),
       is_connected(false) {
   // Read connection parameters from the params file.
   host = p->socket_nwchem_options.host;
   port = p->socket_nwchem_options.port;
 
   std::cout << "Initializing SocketNWChemPot..." << std::endl;
-  connect_to_server();
-
-  // Perform the first handshake to ensure the server is ready.
-  char status_buffer[MSG_LEN + 1] = {0};
-  send_header("STATUS");
-  recv_header(status_buffer);
-  if (std::string(status_buffer) != "READY") {
-    throw std::runtime_error(
-        "NWChem server is not in READY state on connect. Status: " +
-        std::string(status_buffer));
-  }
-  std::cout << "NWChem server is connected and READY." << std::endl;
+  setup_server();
 }
 
 // Destructor: Send EXIT and close the socket.
@@ -41,10 +33,13 @@ SocketNWChemPot::~SocketNWChemPot() {
     std::cout << "Closing connection to NWChem server..." << std::endl;
     try {
       send_header("EXIT");
-    } catch (const std::exception &e) {
-      // Ignore errors on close, as the server might already be gone.
+    } catch (...) {
     }
-    close(sock_fd);
+    close(conn_fd);
+  }
+  if (is_listening) {
+    std::cout << "Closing connection to whatever is listening..." << std::endl;
+    close(listen_fd);
   }
 }
 
@@ -52,6 +47,21 @@ SocketNWChemPot::~SocketNWChemPot() {
 void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
                             double *F, double *U, double *variance,
                             const double *box) {
+  // On the very first force call, block and wait for NWChem to connect.
+  if (!is_connected) {
+    accept_connection();
+
+    // Perform the first handshake to ensure the server is ready.
+    char status_buffer[MSG_LEN + 1] = {0};
+    send_header("STATUS");
+    recv_header(status_buffer);
+    if (std::string(status_buffer) != "READY") {
+      throw std::runtime_error(
+          "NWChem server is not in READY state on connect. Status: " +
+          std::string(status_buffer));
+    }
+    std::cout << "NWChem server is connected and READY." << std::endl;
+  }
   // --- 1. Check server status and handle NEEDINIT if necessary. ---
   char status_buffer[MSG_LEN + 1] = {0};
   send_header("STATUS");
@@ -76,16 +86,42 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
   }
 
   // --- 2. Convert units and prepare data for sending. ---
+  // 1. Create vectors to hold data in atomic units (Bohr).
   std::vector<double> pos_bohr(N * 3);
-  // The cell is not really used, so it doesn't matter
-  std::array<double, 9> cell_bohr;
-  std::fill(cell_bohr.begin(), cell_bohr.end(), 0);
+  std::vector<double> cell_bohr(9);
+
+  // 2. Copy data from input pointers and convert from Angstrom to Bohr.
+  for (int i = 0; i < N * 3; ++i) {
+    pos_bohr[i] = R[i] / BOHR_IN_ANGSTROM;
+  }
+  for (int i = 0; i < 9; ++i) {
+    cell_bohr[i] = box[i] / BOHR_IN_ANGSTROM;
+  }
+
+  // 3. Calculate the inverse cell. A proper 3x3 inverse is needed for
+  // non-orthogonal cells.
+  std::vector<double> invcell_bohr(9, 0.0);
+  if (cell_bohr[0] != 0)
+    invcell_bohr[0] = 1.0 / cell_bohr[0];
+  if (cell_bohr[4] != 0)
+    invcell_bohr[4] = 1.0 / cell_bohr[4];
+  if (cell_bohr[8] != 0)
+    invcell_bohr[8] = 1.0 / cell_bohr[8];
+
+  // 4. Transpose matrices to Fortran memory order for sending.
+  double cell_T[9], invcell_T[9];
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j) {
+      cell_T[j * 3 + i] = cell_bohr[i * 3 + j];
+      invcell_T[j * 3 + i] = invcell_bohr[i * 3 + j];
+    }
+
   // --- 3. Send POSDATA message ---
   // Even empty things like cell and inverse cell MUST be present
   send_header("POSDATA");
   int32_t nat = N;
-  send_exact(cell_bohr.data(), sizeof(cell_bohr));
-  send_exact(/*inverse now*/ cell_bohr.data(), sizeof(cell_bohr));
+  send_exact(cell_T, sizeof(cell_T));
+  send_exact(invcell_T, sizeof(invcell_T));
   send_exact(&nat, sizeof(nat));
   send_exact(pos_bohr.data(), pos_bohr.size() * sizeof(double));
 
@@ -131,7 +167,7 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
   // The main code likely expects eV and eV/Angstrom.
   *U = energy_ha * HARTREE_IN_EV;
   for (int i = 0; i < N * 3; ++i) {
-    F[i] = forces_ha_bohr[i] * (HARTREE_IN_EV / BOHR_IN_ANGSTROM);
+    F[i] = -1 * forces_ha_bohr[i] * (HARTREE_IN_EV / BOHR_IN_ANGSTROM);
   }
   // Variance is not calculated by NWChem.
   *variance = 0.0;
@@ -141,25 +177,49 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
 // Private Helper Methods for Socket Communication
 // ===================================================================
 
-void SocketNWChemPot::connect_to_server() {
-  sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock_fd < 0) {
-    throw std::runtime_error("Failed to create socket.");
-  }
+// New private method to set up the listening socket.
+void SocketNWChemPot::setup_server() {
+  listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (listen_fd < 0)
+    throw std::runtime_error("Failed to create server socket.");
+
+  // Allow address reuse to prevent "address already in use" errors on restart.
+  int opt = 1;
+  setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
   sockaddr_in serv_addr;
   serv_addr.sin_family = AF_INET;
+  serv_addr.sin_addr.s_addr = inet_addr(host.c_str());
   serv_addr.sin_port = htons(port);
 
-  if (inet_pton(AF_INET, host.c_str(), &serv_addr.sin_addr) <= 0) {
-    throw std::runtime_error("Invalid address or address not supported.");
+  if (bind(listen_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    throw std::runtime_error("Failed to bind server socket to port " +
+                             std::to_string(port));
   }
 
-  if (connect(sock_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-    throw std::runtime_error("Connection to NWChem server failed.");
+  if (listen(listen_fd, 1) < 0) {
+    throw std::runtime_error("Failed to listen on server socket.");
   }
+  is_listening = true;
+  std::cout << "SocketNWChemPot is listening for NWChem on " << host << ":"
+            << port << std::endl;
+}
 
+// New private method to block and wait for a connection.
+void SocketNWChemPot::accept_connection() {
+  std::cout << "Waiting for NWChem client to connect..." << std::endl;
+  sockaddr_in client_addr;
+  socklen_t client_len = sizeof(client_addr);
+  conn_fd = accept(listen_fd, (struct sockaddr *)&client_addr, &client_len);
+
+  if (conn_fd < 0) {
+    throw std::runtime_error("Failed to accept client connection.");
+  }
   is_connected = true;
+  char client_ip[INET_ADDRSTRLEN];
+  inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
+  std::cout << "Accepted connection from NWChem client: " << client_ip
+            << std::endl;
 }
 
 void SocketNWChemPot::send_header(const char *msg) {
@@ -170,27 +230,30 @@ void SocketNWChemPot::send_header(const char *msg) {
 
 void SocketNWChemPot::recv_header(char *buffer) {
   recv_exact(buffer, MSG_LEN);
-  buffer[MSG_LEN] = '\0'; // Null-terminate
-  // Trim trailing whitespace
-  for (int i = MSG_LEN - 1; i >= 0 && isspace(buffer[i]); --i) {
+  buffer[MSG_LEN] = '\0';
+  for (int i = MSG_LEN - 1; i >= 0 && isspace(buffer[i]); --i)
     buffer[i] = '\0';
-  }
 }
 
 void SocketNWChemPot::send_exact(const void *buffer, size_t n_bytes) {
-  if (send(sock_fd, buffer, n_bytes, 0) != (ssize_t)n_bytes) {
-    throw std::runtime_error("Failed to send all bytes to socket.");
+  size_t sent = 0;
+  while (sent < n_bytes) {
+    ssize_t n = send(conn_fd, (const char *)buffer + sent, n_bytes - sent, 0);
+    if (n <= 0) {
+      // An error or a closed connection occurred.
+      throw std::runtime_error(
+          "Failed to send bytes to socket or connection closed.");
+    }
+    sent += n;
   }
 }
 
 void SocketNWChemPot::recv_exact(void *buffer, size_t n_bytes) {
   size_t received = 0;
   while (received < n_bytes) {
-    ssize_t n = recv(sock_fd, (char *)buffer + received, n_bytes - received, 0);
-    if (n <= 0) {
-      throw std::runtime_error(
-          "Failed to receive bytes from socket or connection closed.");
-    }
+    ssize_t n = recv(conn_fd, (char *)buffer + received, n_bytes - received, 0);
+    if (n <= 0)
+      throw std::runtime_error("Failed to receive bytes or connection closed.");
     received += n;
   }
 }
