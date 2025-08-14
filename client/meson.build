@@ -578,6 +578,7 @@ if get_option('with_tests')
         # ['test_pot', 'PotTest.cpp', 'sulfolene'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
+        ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
 ]
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
