@@ -10,9 +10,9 @@
  * socket.
  *
  * Implements the i-PI socket protocol to communicate with an NWChem executable
- * that has been launched in server mode (e.g., using `task scf optimize`
- * and the `driver socket` directive). This class manages a persistent
- * connection to the NWChem server.
+ * that has been launched in server mode (e.g., using `task scf optimize` and
+ * the `driver socket` directive). This class manages a persistent connection to
+ * NWChem. Supports both TCP/IP and UNIX domain sockets.
  */
 class SocketNWChemPot : public Potential {
 public:
@@ -22,7 +22,7 @@ public:
   /**
    * @brief Generates an NWChem input file (.nwi) configured to connect to this
    * server.
-   * @param filename The path to the output file (e.g., "water_server.nwi").
+   * @param filename The path to the output file (e.g., "nwchem_socket.nwi").
    * @param N The number of atoms.
    * @param atom_symbols A vector of atom symbols (e.g., {"O", "H", "H"}).
    */
@@ -52,7 +52,6 @@ public:
 private:
   // --- Private Methods ---
   void setup_server();
-  // Blocks until a client connects.
   void accept_connection();
   void send_header(const char *msg);
   void recv_header(char *buffer);
@@ -60,17 +59,22 @@ private:
   void recv_exact(void *buffer, size_t n_bytes);
 
   // --- Member Variables ---
-  // Connection details
-  std::string host;
+  // Socket configuration
+  bool unix_socket_mode;
+  // For TCP, the host; for UNIX, the full socket path.
+  std::string server_address;
+  // The original name for the .nwi file.
+  std::string unix_socket_basename;
   int port;
+
+  // Socket state
   int listen_fd; // Socket for listening
   int conn_fd;   // Socket for the active connection
-  bool is_listening;
   bool is_connected;
 
   // --- Constants for i-PI protocol and unit conversions ---
   static constexpr int MSG_LEN = 12;
-  // ASE units library values for eV and Angstrom
+  // From ASE units, values for eV and Angstrom
   static constexpr double BOHR_IN_ANGSTROM = 0.529177210903;
   static constexpr double HARTREE_IN_EV = 27.211386245988;
 };
