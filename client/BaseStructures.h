@@ -65,7 +65,8 @@ enum class PotType {
   ASE_ORCA,
   ASE_POT,
   ASE_NWCHEM,
-  METATOMIC
+  METATOMIC,
+  ZBL
 };
 
 enum class JobType {

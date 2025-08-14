@@ -83,6 +83,11 @@ Parameters::Parameters() {
   xtb_elec_temperature = 0.0;
   xtb_maxiter = 250;
 
+  // [ZBLPot] //
+  // NOTE(rg): No good defaults TBH
+  cut_inner = 2.0;
+  cut_global = 2.5;
+
   // [Structure Comparison] //
   distanceDifference = 0.1;
   neighborCutoff = 3.3;
@@ -492,6 +497,14 @@ int Parameters::load(FILE *file) {
       xtb_elec_temperature = ini.GetValueF("XTBPot", "electronic_temperature",
                                            xtb_elec_temperature);
       xtb_maxiter = ini.GetValueL("XTBPot", "max_iterations", xtb_maxiter);
+    }
+    // [ZBLPot]
+    if (potential == PotType::ZBL) {
+      cut_inner = ini.GetValueF("ZBLPot", "cut_inner", cut_inner);
+      cut_global = ini.GetValueF("ZBLPot", "cut_global", cut_global);
+      if (cut_inner > cut_global) {
+        throw std::runtime_error("Switching function must begin before the global cutoff!");
+      }
     }
 
     // [Debug] //
