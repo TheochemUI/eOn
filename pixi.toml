@@ -32,6 +32,8 @@ metatomic = {features = ["metatomic"]}
 dev = {features = ["lint", "develop"]}
 # ams is incompatible with metatomic
 dev-mta = {features = ["lint", "develop", "metatomic"]}
+lammps = {features = ["lammps"]}
+ams = {features = ["ams"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
@@ -62,3 +64,6 @@ ase = "*"
 
 [feature.develop.dependencies]
 ipython = ">=9.3.0,<10"
+
+[feature.lammps.dependencies]
+lammps = ">=2024.8.29,<2025"
