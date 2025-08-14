@@ -161,6 +161,7 @@ subdir('potentials/IMD')
 subdir('potentials/LJ')
 subdir('potentials/LJCluster')
 subdir('potentials/Morse')
+subdir('potentials/ZBL')
 subdir('potentials/NewPot')
 
 potentials = [
@@ -172,6 +173,7 @@ potentials = [
     lennard_jones_cluster,
     morse,
     newpot,
+    zbl,
 ]
 
 eonclib_sources = [
