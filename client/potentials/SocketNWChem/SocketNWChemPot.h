@@ -41,7 +41,9 @@ public:
 
 private:
   // --- Private Methods ---
-  void connect_to_server();
+  void setup_server();
+  // Blocks until a client connects.
+  void accept_connection();
   void send_header(const char *msg);
   void recv_header(char *buffer);
   void send_exact(const void *buffer, size_t n_bytes);
@@ -51,7 +53,9 @@ private:
   // Connection details
   std::string host;
   int port;
-  int sock_fd; // Socket file descriptor
+  int listen_fd; // Socket for listening
+  int conn_fd;   // Socket for the active connection
+  bool is_listening;
   bool is_connected;
 
   // --- Constants for i-PI protocol and unit conversions ---
