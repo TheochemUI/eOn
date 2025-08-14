@@ -21,7 +21,7 @@ python ipi_lite.py
 nwchem serv_test.nwi
 #+end_src
 
-** NWChem Server Setup (The .nwi file)
+** NWChem Server Setup (The ~.nwi~ file)
 The NWChem process must be launched as a server with a specific input file. The
 task scf optimize directive is correct, which then has its behavior modified by
 the driver block.
