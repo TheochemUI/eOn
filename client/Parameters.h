@@ -84,13 +84,15 @@ public:
   double xtb_acc;
 
   // [ZBLPot] //
-  double cut_inner;
-  double cut_global;
+  struct zbl_options_t {
+    double cut_inner;
+    double cut_global;
+  } zbl_options;
 
   // [SocketNWChemPot] //
   struct socket_nwchem_options_t {
-  string host;
-  double port;
+    string host;
+    double port;
   } socket_nwchem_options;
 
   // [Structure Comparison] //
