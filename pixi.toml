@@ -33,6 +33,7 @@ dev = {features = ["lint", "develop"]}
 # ams is incompatible with metatomic
 dev-mta = {features = ["lint", "develop", "metatomic"]}
 lammps = {features = ["lammps"]}
+ams = {features = ["ams"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
