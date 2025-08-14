@@ -87,6 +87,12 @@ public:
   double cut_inner;
   double cut_global;
 
+  // [SocketNWChemPot] //
+  struct socket_nwchem_options_t {
+  string host;
+  double port;
+  } socket_nwchem_options;
+
   // [Structure Comparison] //
   double distanceDifference; // The distance criterion for comparing geometries
   double neighborCutoff; // radius used in the local atomic structure analysis
