@@ -502,6 +502,9 @@ int Parameters::load(FILE *file) {
     if (potential == PotType::ZBL) {
       cut_inner = ini.GetValueF("ZBLPot", "cut_inner", cut_inner);
       cut_global = ini.GetValueF("ZBLPot", "cut_global", cut_global);
+      if (cut_inner > cut_global) {
+        throw std::runtime_error("Switching function must begin before the global cutoff!");
+      }
     }
 
     // [Debug] //
