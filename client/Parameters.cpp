@@ -88,6 +88,10 @@ Parameters::Parameters() {
   cut_inner = 2.0;
   cut_global = 2.5;
 
+  // [SocketNWChemPot] //
+  socket_nwchem_options.host = "127.0.0.1";
+  socket_nwchem_options.port = 9999;
+
   // [Structure Comparison] //
   distanceDifference = 0.1;
   neighborCutoff = 3.3;
@@ -505,6 +509,13 @@ int Parameters::load(FILE *file) {
       if (cut_inner > cut_global) {
         throw std::runtime_error("Switching function must begin before the global cutoff!");
       }
+    }
+    // [SocketNWChemPot]
+    if (potential == PotType::SocketNWChem) {
+      socket_nwchem_options.host =
+          ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
+      socket_nwchem_options.port =
+          ini.GetValueF("SocketNWChemPot", "port", socket_nwchem_options.port);
     }
 
     // [Debug] //
