@@ -20,6 +20,16 @@ public:
   ~SocketNWChemPot() override;
 
   /**
+   * @brief Generates an NWChem input file (.nwi) configured to connect to this
+   * server.
+   * @param filename The path to the output file (e.g., "water_server.nwi").
+   * @param N The number of atoms.
+   * @param atom_symbols A vector of atom symbols (e.g., {"O", "H", "H"}).
+   */
+  void write_nwchem_template(const std::string &filename, long N,
+                             const std::vector<std::string> &atom_symbols);
+
+  /**
    * @brief The method called to compute forces and energy.
    *
    * This method implements the full i-PI handshake for a single geometry:

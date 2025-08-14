@@ -12,6 +12,77 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+namespace {
+
+const char *elementArray[] = {
+    "Unknown", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na",
+    "Mg",      "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",
+    "Cr",      "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
+    "Kr",      "Rb", "Sr", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag",
+    "Cd",      "In", "Sn", "Sb", "Te", "I",  "Xe", "Cs", "Ba", "La", "Ce", "Pr",
+    "Nd",      "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+    "Hf",      "Ta", "W",  "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi",
+    "Po",      "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U",  NULL};
+
+// guess the atom type from the atomic mass,
+std::string mass2atom(double atomicmass) {
+  return elementArray[int(atomicmass + .5)];
+}
+
+int symbol2atomicNumber(char const *symbol) {
+  int i = 0;
+
+  while (elementArray[i] != NULL) {
+    if (strcmp(symbol, elementArray[i]) == 0) {
+      return i;
+    }
+    i++;
+  }
+  // invalid symbol
+  return -1;
+}
+
+char const *atomicNumber2symbol(int n) { return elementArray[n]; }
+} // namespace
+
+void SocketNWChemPot::write_nwchem_template(
+    const std::string &filename, long N,
+    const std::vector<std::string> &atom_symbols) {
+  if (atom_symbols.size() != static_cast<size_t>(N)) {
+    throw std::invalid_argument(
+        "Number of atoms (N) does not match size of atom_symbols vector.");
+  }
+
+  std::cout << "Generating NWChem input template: " << filename << std::endl;
+  std::ofstream outfile(filename);
+
+  outfile << "start nwchem_socket_job\n";
+  outfile << "title \"NWChem Server for EON\"\n\n";
+  outfile << "memory 2 gb\n\n";
+  outfile << "geometry units angstroms noautosym nocenter noautoz\n";
+  // This geometry block is only a template for memory allocation.
+  // The atom types and count are what matter.
+  for (long i = 0; i < N; ++i) {
+    outfile << "  " << atom_symbols[i] << "  0.0 0.0 " << static_cast<double>(i)
+            << "\n";
+  }
+  outfile << "end\n\n";
+  outfile << "basis noprint\n";
+  outfile << "  * library 3-21G\n";
+  outfile << "end\n\n";
+  outfile << "scf\n";
+  outfile << "  nopen 0\n";
+  outfile << "  thresh 1e-8\n";
+  outfile << "  maxiter 2000\n";
+  outfile << "end\n\n";
+  outfile << "driver\n";
+  outfile << "  socket ipi_client " << this->host << ":" << this->port << "\n";
+  outfile << "end\n\n";
+  outfile << "task scf optimize\n";
+
+  outfile.close();
+}
+
 // Constructor: Read parameters, connect, and perform initial handshake.
 SocketNWChemPot::SocketNWChemPot(std::shared_ptr<Parameters> p)
     : Potential(PotType::SocketNWChem, p),
@@ -49,6 +120,14 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
                             const double *box) {
   // On the very first force call, block and wait for NWChem to connect.
   if (!is_connected) {
+    std::vector<std::string> symbols;
+    symbols.reserve(N);
+    for (long i = 0; i < N; ++i) {
+      symbols.emplace_back(atomicNumber2symbol(atomicNrs[i]));
+    }
+
+    // Write the NWChem input template to disk
+    write_nwchem_template("nwchem_socket.nwi", N, symbols);
     accept_connection();
 
     // Perform the first handshake to ensure the server is ready.
