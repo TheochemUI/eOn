@@ -154,12 +154,12 @@ void ZBLPot::force(long N, const double *R, const int *atomicNrs, double *F,
         double fy = dy * f_div_r;
         double fz = dz * f_div_r;
 
-        F[3 * i] += fx;
-        F[3 * i + 1] += fy;
-        F[3 * i + 2] += fz;
-        F[3 * j] -= fx;
-        F[3 * j + 1] -= fy;
-        F[3 * j + 2] -= fz;
+        F[3 * i] -= fx;
+        F[3 * i + 1] -= fy;
+        F[3 * i + 2] -= fz;
+        F[3 * j] += fx;
+        F[3 * j + 1] += fy;
+        F[3 * j + 2] += fz;
       }
     }
   }
@@ -168,41 +168,53 @@ void ZBLPot::force(long N, const double *R, const int *atomicNrs, double *F,
 // The following three functions are direct ports of the LAMMPS calculations
 double ZBLPot::e_zbl(double r, int i, int j) const {
   double r_inv = 1.0 / r;
-  double sum = C1 * exp(-d1a[i][j] * r) + C2 * exp(-d2a[i][j] * r) +
-               C3 * exp(-d3a[i][j] * r) + C4 * exp(-d4a[i][j] * r);
+
+  // The correct pairing is: C4-d1a, C3-d2a, C2-d3a, C1-d4a
+  double sum = C4 * exp(-d1a[i][j] * r) + C3 * exp(-d2a[i][j] * r) +
+               C2 * exp(-d3a[i][j] * r) + C1 * exp(-d4a[i][j] * r);
+
   return zze[i][j] * sum * r_inv;
 }
 
 double ZBLPot::dzbldr(double r, int i, int j) const {
   double r_inv = 1.0 / r;
-  double e1 = exp(-d1a[i][j] * r);
-  double e2 = exp(-d2a[i][j] * r);
-  double e3 = exp(-d3a[i][j] * r);
-  double e4 = exp(-d4a[i][j] * r);
 
-  double sum = C1 * e1 + C2 * e2 + C3 * e3 + C4 * e4;
-  double sum_p = -C1 * d1a[i][j] * e1 - C2 * d2a[i][j] * e2 -
-                 C3 * d3a[i][j] * e3 - C4 * d4a[i][j] * e4;
+  // Pre-calculate exponentials for clarity
+  double e1 = exp(-d1a[i][j] * r); // Term with D1
+  double e2 = exp(-d2a[i][j] * r); // Term with D2
+  double e3 = exp(-d3a[i][j] * r); // Term with D3
+  double e4 = exp(-d4a[i][j] * r); // Term with D4
+
+  // Correct pairing for the sum
+  double sum = C4 * e1 + C3 * e2 + C2 * e3 + C1 * e4;
+
+  // Correct pairing for the derivative of the sum
+  double sum_p = -C4 * d1a[i][j] * e1 - C3 * d2a[i][j] * e2 -
+                 C2 * d3a[i][j] * e3 - C1 * d4a[i][j] * e4;
 
   return zze[i][j] * (sum_p - sum * r_inv) * r_inv;
 }
 
 double ZBLPot::d2zbldr2(double r, int i, int j) const {
   double r_inv = 1.0 / r;
+
+  // Use local variables for dXa coefficients for readability
   double d1 = d1a[i][j];
   double d2 = d2a[i][j];
   double d3 = d3a[i][j];
   double d4 = d4a[i][j];
 
+  // Pre-calculate exponentials
   double e1 = exp(-d1 * r);
   double e2 = exp(-d2 * r);
   double e3 = exp(-d3 * r);
   double e4 = exp(-d4 * r);
 
-  double sum = C1 * e1 + C2 * e2 + C3 * e3 + C4 * e4;
-  double sum_p = C1 * e1 * d1 + C2 * e2 * d2 + C3 * e3 * d3 + C4 * e4 * d4;
-  double sum_pp = C1 * e1 * d1 * d1 + C2 * e2 * d2 * d2 + C3 * e3 * d3 * d3 +
-                  C4 * e4 * d4 * d4;
+  // Correct pairing for sum, first derivative term, and second derivative term
+  double sum = C4 * e1 + C3 * e2 + C2 * e3 + C1 * e4;
+  double sum_p = C4 * e1 * d1 + C3 * e2 * d2 + C2 * e3 * d3 + C1 * e4 * d4;
+  double sum_pp = C4 * e1 * d1 * d1 + C3 * e2 * d2 * d2 + C2 * e3 * d3 * d3 +
+                  C1 * e4 * d4 * d4;
 
   return zze[i][j] *
          (sum_pp + 2.0 * sum_p * r_inv + 2.0 * sum * r_inv * r_inv) * r_inv;
