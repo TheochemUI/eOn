@@ -130,11 +130,13 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
     accept_connection();
     std::cout << "NWChem client connected." << std::endl;
 
-    // 1. The server ALWAYS sends "STATUS" first after connection.
+    // 1. EON acts as the server: after accepting the NWChem client connection,
+    // EON sends "STATUS" to the client to query its status.
     char status_buffer[MSG_LEN + 1] = {0};
     send_header("STATUS");
 
-    // 2. The server then waits for the client's "READY" response.
+    // 2. EON (acting as server) then waits for NWChem (the client) to respond
+    // with "READY".
     recv_header(status_buffer);
     if (std::string(status_buffer) != "READY") {
       throw std::runtime_error(
@@ -151,11 +153,12 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
 
   if (std::string(status_buffer) == "NEEDINIT") {
     send_header("INIT");
-    // Send dummy INIT payload (bead index, 1 extra byte, a zero byte)
-    int32_t init_payload[] = {0, 1}; // natoms=0, has_cell=true
+    // Send dummy INIT payload (bead index, number of bytes in extra string)
+    int32_t init_payload[] = {0, 1}; // bead_index=0, nbytes=1
     char dummy_byte = 0;
     send_exact(&init_payload, sizeof(init_payload));
-    send_exact(&dummy_byte, sizeof(dummy_byte)); // No extra string
+    send_exact(&dummy_byte,
+               sizeof(dummy_byte)); // No extra string (just a null terminator)
     send_header("STATUS");
     recv_header(status_buffer);
   }
@@ -164,13 +167,15 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
     throw std::runtime_error("NWChem server not ready for new positions!");
   }
 
-  // Convert positions and cell to Bohr
+  // Convert positions to Bohr
   std::vector<double> pos_bohr(N * 3);
   for (size_t i = 0; i < pos_bohr.size(); ++i) {
     pos_bohr[i] = R[i] / BOHR_IN_ANGSTROM;
   }
-  // Per i-PI spec, cell and inverse cell is also sent. NWChem doesn't use it,
-  // but we send a placeholder to conform to the protocol.
+
+  // Per i-PI spec, cell and inverse cell must be sent. NWChem does not use
+  // this information for non-periodic calculations, so we send an identity
+  // matrix as a safe, non-transforming placeholder to conform to the protocol.
   double invcell_T[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
   double cell_T[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
@@ -259,7 +264,8 @@ void SocketNWChemPot::setup_server() {
     sock_addr.sin_addr.s_addr = inet_addr(server_address.c_str());
     sock_addr.sin_port = htons(port);
 
-    if (::bind(listen_fd, (struct sockaddr *)&sock_addr, sizeof(sock_addr)) < 0) {
+    if (::bind(listen_fd, (struct sockaddr *)&sock_addr, sizeof(sock_addr)) <
+        0) {
       perror("TCP bind failed");
       throw std::runtime_error("Failed to bind TCP socket.");
     }
