@@ -91,7 +91,8 @@ Parameters::Parameters() {
   // [SocketNWChemPot] //
   socket_nwchem_options.host = "127.0.0.1";
   socket_nwchem_options.port = 9999;
-  socket_nwchem_options.unix_socket_path = "/tmp/eon_socket_nwchem";
+  // expands to /tmp/ipi_eon_nwchem as per spec
+  socket_nwchem_options.unix_socket_path = "eon_nwchem";
   socket_nwchem_options.unix_socket_mode = false;
 
   // [Structure Comparison] //
