@@ -4,6 +4,9 @@ subprojects
 # /
 /*.tmp
 /*.pyc
+*.cfock
+*.db
+*.movecs
 
 # /client/
 /client/client

@@ -85,8 +85,15 @@ Parameters::Parameters() {
 
   // [ZBLPot] //
   // NOTE(rg): No good defaults TBH
-  cut_inner = 2.0;
-  cut_global = 2.5;
+  zbl_options.cut_inner = 2.0;
+  zbl_options.cut_global = 2.5;
+
+  // [SocketNWChemPot] //
+  socket_nwchem_options.host = "127.0.0.1";
+  socket_nwchem_options.port = 9999;
+  // expands to /tmp/ipi_eon_nwchem as per spec
+  socket_nwchem_options.unix_socket_path = "eon_nwchem";
+  socket_nwchem_options.unix_socket_mode = false;
 
   // [Structure Comparison] //
   distanceDifference = 0.1;
@@ -500,11 +507,25 @@ int Parameters::load(FILE *file) {
     }
     // [ZBLPot]
     if (potential == PotType::ZBL) {
-      cut_inner = ini.GetValueF("ZBLPot", "cut_inner", cut_inner);
-      cut_global = ini.GetValueF("ZBLPot", "cut_global", cut_global);
-      if (cut_inner > cut_global) {
-        throw std::runtime_error("Switching function must begin before the global cutoff!");
+      zbl_options.cut_inner =
+          ini.GetValueF("ZBLPot", "cut_inner", zbl_options.cut_inner);
+      zbl_options.cut_global =
+          ini.GetValueF("ZBLPot", "cut_global", zbl_options.cut_global);
+      if (zbl_options.cut_inner > zbl_options.cut_global) {
+        throw std::runtime_error(
+            "Switching function must begin before the global cutoff!");
       }
+    }
+    // [SocketNWChemPot]
+    if (potential == PotType::SocketNWChem) {
+      socket_nwchem_options.host =
+          ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
+      socket_nwchem_options.port =
+          ini.GetValueL("SocketNWChemPot", "port", socket_nwchem_options.port);
+      socket_nwchem_options.unix_socket_path =
+          ini.GetValue("SocketNWChemPot", "unix_socket_path", socket_nwchem_options.unix_socket_path);
+      socket_nwchem_options.unix_socket_mode =
+          ini.GetValueB("SocketNWChemPot", "unix_socket_mode", socket_nwchem_options.unix_socket_mode);
     }
 
     // [Debug] //

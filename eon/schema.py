@@ -541,6 +541,7 @@ class PotentialConfig(BaseModel):
         "vasp",
         "xtb",
         "zbl",
+        "socket_nwchem",
     ] = Field(
         default="lj",
         description="Type of potential to execute.",
@@ -612,8 +613,22 @@ class XTBPot(BaseModel):
 class ZBLPot(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    cut_inner: float = Field(default=2.0, description="Distance where switching function begins.")
-    cut_global: float = Field(default=2.5, description="Global cutoff for the ZBL interaction.")
+    cut_inner: float = Field(
+        default=2.0, description="Distance where switching function begins."
+    )
+    cut_global: float = Field(
+        default=2.5, description="Global cutoff for the ZBL interaction."
+    )
+
+class SocketNWChemPot(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    host: str = Field(
+        default="127.0.0.1", description="Host where the NWChem client will connect."
+    )
+    port: int = Field(
+        default=9999, description="Port for the NWChem client to send data to EON."
+    )
 
 class Metatomic(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
