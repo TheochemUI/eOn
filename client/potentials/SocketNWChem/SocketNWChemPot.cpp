@@ -247,7 +247,7 @@ void SocketNWChemPot::setup_server() {
 
     socklen_t addr_len =
         sizeof(sock_addr.sun_family) + strlen(sock_addr.sun_path);
-    if (bind(listen_fd, (struct sockaddr *)&sock_addr, addr_len) < 0) {
+    if (::bind(listen_fd, (struct sockaddr *)&sock_addr, addr_len) < 0) {
       perror("UNIX bind failed");
       throw std::runtime_error("Failed to bind UNIX socket.");
     }
@@ -259,7 +259,7 @@ void SocketNWChemPot::setup_server() {
     sock_addr.sin_addr.s_addr = inet_addr(server_address.c_str());
     sock_addr.sin_port = htons(port);
 
-    if (bind(listen_fd, (struct sockaddr *)&sock_addr, sizeof(sock_addr)) < 0) {
+    if (::bind(listen_fd, (struct sockaddr *)&sock_addr, sizeof(sock_addr)) < 0) {
       perror("TCP bind failed");
       throw std::runtime_error("Failed to bind TCP socket.");
     }
