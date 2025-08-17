@@ -67,7 +67,7 @@ private:
   std::string unix_socket_basename;
   // File containing actual calculation parameters
   std::string nwchem_settings;
-  int port;
+  int port, mem_in_gb;
 
   // Socket state
   int listen_fd; // Socket for listening
