@@ -35,6 +35,7 @@ SocketNWChemPot::SocketNWChemPot(std::shared_ptr<Parameters> p)
   unix_socket_mode = p->socket_nwchem_options.unix_socket_mode;
   nwchem_settings = p->socket_nwchem_options.nwchem_settings;
   mem_in_gb = p->socket_nwchem_options.mem_in_gb;
+  make_template_input = p->socket_nwchem_options.make_template_input;
 
   if (unix_socket_mode) {
     unix_socket_basename = p->socket_nwchem_options.unix_socket_path;
@@ -119,7 +120,9 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
     for (long i = 0; i < N; ++i) {
       symbols.emplace_back(atomicNumber2symbol(atomicNrs[i]));
     }
-    write_nwchem_template("nwchem_socket.nwi", N, symbols);
+    if (make_template_input) {
+      write_nwchem_template("nwchem_socket.nwi", N, symbols);
+    }
 
     std::cout << "Waiting for NWChem client connection..." << std::endl;
     accept_connection();

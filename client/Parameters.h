@@ -97,6 +97,7 @@ public:
     std::string nwchem_settings;
     std::string unix_socket_path;
     bool unix_socket_mode;
+    bool make_template_input;
   } socket_nwchem_options;
 
   // [Structure Comparison] //
