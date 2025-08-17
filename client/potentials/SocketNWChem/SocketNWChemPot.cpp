@@ -12,6 +12,8 @@
 #include <unistd.h>
 
 // Helper to get element symbols from atomic numbers
+using std::this_thread::sleep_for;
+
 namespace {
 const char *elementArray[] = {
     "Unknown", "H",  "He", "Li", "Be", "B",    "C",  "N",  "O",  "F",  "Ne",
@@ -192,7 +194,7 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
       break;
     }
     // A small sleep to prevent busy-waiting that consumes 100% CPU.
-    usleep(10000); // 10ms
+    sleep_for(10ms);
   }
 
   // Request and receive results ---
