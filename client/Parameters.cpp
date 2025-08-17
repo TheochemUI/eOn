@@ -85,8 +85,18 @@ Parameters::Parameters() {
 
   // [ZBLPot] //
   // NOTE(rg): No good defaults TBH
-  cut_inner = 2.0;
-  cut_global = 2.5;
+  zbl_options.cut_inner = 2.0;
+  zbl_options.cut_global = 2.5;
+
+  // [SocketNWChemPot] //
+  socket_nwchem_options.host = "127.0.0.1";
+  socket_nwchem_options.port = 9999;
+  socket_nwchem_options.mem_in_gb = 2;
+  socket_nwchem_options.nwchem_settings = "nwchem_settings.nwi";
+  // expands to /tmp/ipi_eon_nwchem as per spec
+  socket_nwchem_options.unix_socket_path = "eon_nwchem";
+  socket_nwchem_options.unix_socket_mode = false;
+  socket_nwchem_options.make_template_input = true;
 
   // [Structure Comparison] //
   distanceDifference = 0.1;
@@ -500,11 +510,31 @@ int Parameters::load(FILE *file) {
     }
     // [ZBLPot]
     if (potential == PotType::ZBL) {
-      cut_inner = ini.GetValueF("ZBLPot", "cut_inner", cut_inner);
-      cut_global = ini.GetValueF("ZBLPot", "cut_global", cut_global);
-      if (cut_inner > cut_global) {
-        throw std::runtime_error("Switching function must begin before the global cutoff!");
+      zbl_options.cut_inner =
+          ini.GetValueF("ZBLPot", "cut_inner", zbl_options.cut_inner);
+      zbl_options.cut_global =
+          ini.GetValueF("ZBLPot", "cut_global", zbl_options.cut_global);
+      if (zbl_options.cut_inner > zbl_options.cut_global) {
+        throw std::runtime_error(
+            "Switching function must begin before the global cutoff!");
       }
+    }
+    // [SocketNWChemPot]
+    if (potential == PotType::SocketNWChem) {
+      socket_nwchem_options.host =
+          ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
+      socket_nwchem_options.port =
+          ini.GetValueL("SocketNWChemPot", "port", socket_nwchem_options.port);
+      socket_nwchem_options.mem_in_gb =
+          ini.GetValueL("SocketNWChemPot", "mem_in_gb", socket_nwchem_options.mem_in_gb);
+      socket_nwchem_options.nwchem_settings =
+          ini.GetValue("SocketNWChemPot", "nwchem_settings", socket_nwchem_options.nwchem_settings);
+      socket_nwchem_options.unix_socket_path =
+          ini.GetValue("SocketNWChemPot", "unix_socket_path", socket_nwchem_options.unix_socket_path);
+      socket_nwchem_options.unix_socket_mode =
+          ini.GetValueB("SocketNWChemPot", "unix_socket_mode", socket_nwchem_options.unix_socket_mode);
+      socket_nwchem_options.make_template_input =
+          ini.GetValueB("SocketNWChemPot", "make_template_input", socket_nwchem_options.make_template_input);
     }
 
     // [Debug] //

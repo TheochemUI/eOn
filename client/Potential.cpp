@@ -25,6 +25,7 @@
 #include "potentials/LJCluster/LJCluster.h"
 #include "potentials/Morse/Morse.h"
 #include "potentials/ZBL/ZBLPot.h"
+#include "potentials/SocketNWChem/SocketNWChemPot.h"
 
 #ifdef WITH_FORTRAN
 #include "potentials/Aluminum/Aluminum.h"
@@ -318,6 +319,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #endif
   case PotType::ZBL: {
     return (std::make_shared<ZBLPot>(params));
+    break;
+  }
+  case PotType::SocketNWChem: {
+    return (std::make_shared<SocketNWChemPot>(params));
     break;
   }
   default:
