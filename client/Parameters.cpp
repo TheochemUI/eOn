@@ -91,6 +91,7 @@ Parameters::Parameters() {
   // [SocketNWChemPot] //
   socket_nwchem_options.host = "127.0.0.1";
   socket_nwchem_options.port = 9999;
+  socket_nwchem_options.nwchem_settings = "nwchem_settings.nwi";
   // expands to /tmp/ipi_eon_nwchem as per spec
   socket_nwchem_options.unix_socket_path = "eon_nwchem";
   socket_nwchem_options.unix_socket_mode = false;
@@ -522,6 +523,8 @@ int Parameters::load(FILE *file) {
           ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
       socket_nwchem_options.port =
           ini.GetValueL("SocketNWChemPot", "port", socket_nwchem_options.port);
+      socket_nwchem_options.nwchem_settings =
+          ini.GetValue("SocketNWChemPot", "nwchem_settings", socket_nwchem_options.nwchem_settings);
       socket_nwchem_options.unix_socket_path =
           ini.GetValue("SocketNWChemPot", "unix_socket_path", socket_nwchem_options.unix_socket_path);
       socket_nwchem_options.unix_socket_mode =

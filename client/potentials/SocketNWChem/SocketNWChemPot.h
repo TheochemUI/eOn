@@ -65,6 +65,8 @@ private:
   std::string server_address;
   // The original name for the .nwi file.
   std::string unix_socket_basename;
+  // File containing actual calculation parameters
+  std::string nwchem_settings;
   int port;
 
   // Socket state

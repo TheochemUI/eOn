@@ -93,6 +93,7 @@ public:
   struct socket_nwchem_options_t {
     std::string host;
     int port;
+    std::string nwchem_settings;
     std::string unix_socket_path;
     bool unix_socket_mode;
   } socket_nwchem_options;

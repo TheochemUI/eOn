@@ -33,6 +33,7 @@ SocketNWChemPot::SocketNWChemPot(std::shared_ptr<Parameters> p)
       is_connected(false) {
 
   unix_socket_mode = p->socket_nwchem_options.unix_socket_mode;
+  nwchem_settings  = p->socket_nwchem_options.nwchem_settings;
 
   if (unix_socket_mode) {
     unix_socket_basename = p->socket_nwchem_options.unix_socket_path;
@@ -84,7 +85,6 @@ void SocketNWChemPot::write_nwchem_template(
 
   outfile << "start nwchem_socket_job\n";
   outfile << "title \"NWChem Server for EON\"\n\n";
-  outfile << "memory 2 gb\n\n";
   outfile << "geometry units bohr noautosym nocenter noautoz\n";
   // This geometry block is only a template for memory allocation.
   // The atom types and count are what matter.
@@ -93,14 +93,7 @@ void SocketNWChemPot::write_nwchem_template(
             << "\n";
   }
   outfile << "end\n\n";
-  outfile << "basis noprint\n";
-  outfile << "  * library 3-21G\n";
-  outfile << "end\n\n";
-  outfile << "scf\n";
-  outfile << "  nopen 0\n";
-  outfile << "  thresh 1e-8\n";
-  outfile << "  maxiter 2000\n";
-  outfile << "end\n\n";
+  outfile << "include "<< nwchem_settings<< "\n\n";
   outfile << "driver\n";
   if (unix_socket_mode) {
     // For the NWChem input, we provide only the basename. NWChem adds the
