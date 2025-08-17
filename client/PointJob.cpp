@@ -12,6 +12,9 @@ std::vector<std::string> PointJob::run(void) {
 
   SPDLOG_LOGGER_DEBUG(log, "Energy:         {:.12f}",
                       pos->getPotentialEnergy());
+  std::stringstream freeForcesStream;
+  freeForcesStream << pos->getForcesFree();
+  SPDLOG_LOGGER_DEBUG(log, "(free) Forces:\n{}", freeForcesStream.str());
   SPDLOG_LOGGER_DEBUG(log, "Max atom force: {:.12f}", pos->maxForce());
 
   std::shared_ptr<spdlog::logger> fileLogger;

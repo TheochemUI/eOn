@@ -14,11 +14,11 @@ The method of {cite:t}`dm-melanderRemovingExternalDegrees2015` is also
 implemented for use with gas phase systems.
 
 ```{note}
-There is no point removing rotations for an extended system.
+There is no point removing rotations for an extended system. Rotation removal may be more detrimental as noted in {cite:t}`goswamiBayesianHierarchicalModels2025a`.
 ```
 
 ```{versionadded} 2.5_TBA
-The Gaussian Process Regression accelerated dimer in C++, rewritten and extended from {cite:t}`dm-koistinenMinimumModeSaddle2020`.
+The Gaussian Process Regression accelerated dimer in C++ from {cite:t}`goswamiEfficientImplementationGaussian2025a`.
 ```
 
 ## Configuration

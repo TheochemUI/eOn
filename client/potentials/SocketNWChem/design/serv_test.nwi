@@ -1,0 +1,28 @@
+start nwchem_server
+
+
+set geom:dont_verify .true.
+
+geometry units angstrom nocenter noautosym noautoz
+  O  0 0 1
+  C  0 1 0
+  C  1 0 0
+end
+
+memory 2 gb
+
+basis noprint
+   * library 3-21G
+end
+
+scf
+  nopen 0
+  thresh 1e-08
+  maxiter 200
+end
+
+driver
+  socket ipi_client 127.0.0.1:9999
+end
+
+task scf optimize

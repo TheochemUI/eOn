@@ -15,11 +15,11 @@ public:
       : params{std::make_shared<Parameters>()},
         matter{nullptr},
         pot_zbl{nullptr},
-        threshold{1e-6} // Tight tolerance for direct comparison
+        threshold{1e-6}
   {
     params->potential = PotType::ZBL;
-    params->cut_inner = 2.0;
-    params->cut_global = 2.5;
+    params->zbl_options.cut_inner = 2.0;
+    params->zbl_options.cut_global = 2.5;
 
     pot_zbl = helper_functions::makePotential(params->potential, params);
     matter = std::make_shared<Matter>(pot_zbl, params);
