@@ -25,10 +25,14 @@ AMS(-IO)
 : Amsterdam modeling suite {cite:p}`pot-teveldeChemistryADF2001`, both I/O and library
 ASE_ORCA
 : Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to ORCA {cite:p}`pot-neeseORCAQuantumChemistry2020`
+ASE_NWChem
+: Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to NWChem {cite:p}`pot-apraNWChemPresentFuture2020`
 XTB
 : Extended Tight binding models via native Fortran-C interfce {cite:p}`pot-bannwarthExtendedTightbindingQuantum2021`
 Metatomic
 : Common interface to atomistic machine learning models
+SocketNWChem
+: Socket oriented communicator for efficient integration with NWChem {cite:p}`pot-apraNWChemPresentFuture2020`
 ```
 
 ### Vendored
