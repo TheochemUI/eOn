@@ -13,7 +13,7 @@ Several notes are relevant about the networking protocol (specific to the implem
 ** Exploration
 The commands below show how to run the system. The Python server should be
 started first in one terminal, followed by the NWChem client in a second
-terminal.
+terminal. This is all for ~oxad~.
 #+begin_src bash
 pixi s -e nwchem
 python ipi_lite.py
