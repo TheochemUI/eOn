@@ -1,0 +1,32 @@
+start nwchem_socket_job
+title "NWChem Server for EON"
+
+memory 2 gb
+
+geometry units bohr noautosym nocenter noautoz
+  N  0.0 0.0 0
+  N  0.0 0.0 1
+  O  0.0 0.0 2
+  C  0.0 0.0 3
+  C  0.0 0.0 4
+  H  0.0 0.0 5
+  H  0.0 0.0 6
+  H  0.0 0.0 7
+  H  0.0 0.0 8
+end
+
+basis noprint
+  * library 3-21G
+end
+
+scf
+  nopen 0
+  thresh 1e-8
+  maxiter 2000
+end
+
+driver
+  socket ipi_client 127.0.0.1:9999
+end
+
+task scf optimize
