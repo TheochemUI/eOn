@@ -29,11 +29,12 @@ spdlog = ">=1.15.3,<2"
 [environments]
 # TODO(rg): Flesh out the rest of these
 metatomic = {features = ["metatomic"]}
-dev = {features = ["lint", "develop"]}
+dev = {features = ["lint", "develop", "nwchem", "metatomic"]}
 # ams is incompatible with metatomic
 dev-mta = {features = ["lint", "develop", "metatomic"]}
 lammps = {features = ["lammps"]}
 ams = {features = ["ams"]}
+nwchem = {features = ["nwchem"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
@@ -67,3 +68,11 @@ ipython = ">=9.3.0,<10"
 
 [feature.lammps.dependencies]
 lammps = ">=2024.8.29,<2025"
+
+[feature.nwchem.dependencies]
+nwchem = ">=7.2.3,<8"
+i-pi = ">=3.1.5.1,<4"
+pybind11 = ">=3.0.0,<4"
+
+[feature.nwchem.pypi-dependencies]
+psutil = ">=7.0.0, <8"

@@ -1,0 +1,114 @@
+* Design
+This time around, the idea is to directly interact with ~nwchem~ without the
+intermediate ~python~ layer.
+
+- The NWChem process must be launched as a server with a specific input file.
+  The ~optimize~ directive is correct, which then has its behavior modified by
+  the ~driver~ block.
+
+Several notes are relevant about the networking protocol (specific to the implementation in ~nwchem~):
+- *Must* be little endian
+- *Initial* atom types and the number of atoms is used to allocate memory and cannot be changed later
+
+** Exploration
+The commands below show how to run the system. The Python server should be
+started first in one terminal, followed by the NWChem client in a second
+terminal. This is all for ~oxad~.
+#+begin_src bash
+pixi s -e nwchem
+python ipi_lite.py
+# other terminal
+nwchem serv_test.nwi
+#+end_src
+
+** NWChem Server Setup (The ~.nwi~ file)
+The NWChem process must be launched as a server with a specific input file. The
+task scf optimize directive is correct, which then has its behavior modified by
+the driver block.
+
+#+begin_src nwchem :tangle serv_test.nwi
+start water_socket_server
+title "Water molecule server for i-PI"
+
+set geom:dont_verify .true.
+
+geometry units angstrom nocenter noautosym noautoz
+  O  0 0 1
+  H  0 1 0
+  H  1 0 0
+end
+
+memory 2 gb
+
+basis noprint
+   \* library 3-21G
+end
+
+scf
+  nopen 0
+  thresh 1e-08
+  maxiter 200
+end
+
+driver
+  socket ipi_client 127.0.0.1:9999
+end
+
+task scf optimize
+#+end_src
+
+This geometry block is CRITICAL.  It is used ONLY at startup to determine the
+number and type of atoms, which dictates memory allocation. The exact
+coordinates do not matter (with ~set geom:dont_verify .true.~ which must be
+before the ~geometry~), but the atom count MUST match the data sent from Python.
+** The i-PI Socket Protocol
+*** State Machine
+The NWChem socket driver operates as a simple state machine. The client must
+query and respect the server's state to ensure synchronization.
+
+- ~READY~ :: The server is idle and waiting for a new geometry via a POSDATA
+  command.
+- ~HAVEDATA~ :: The server has finished a calculation and is holding the
+  results. It is waiting for a ~GETFORCE~ command.
+- ~NEEDINIT~ :: The server has just sent results back and must be reset with an
+  INIT command before it can accept a new geometry.
+
+The state transitions are:
+- ~POSDATA~ command triggers the ~READY → HAVEDATA~ transition (after
+  calculation).
+- ~GETFORCE~ command triggers the ~HAVEDATA → NEEDINIT~ transition.
+- ~INIT~ command triggers the ~NEEDINIT → READY~ transition.
+
+*** Message Sequence
+A complete cycle for a single geometry calculation that allows for looping is as
+follows:
+1. Client sends ~STATUS~.
+2. Server replies ~READY~ (for the first step) or ~NEEDINIT~ (for subsequent steps).
+3. If reply is ~NEEDINIT~, Client must send ~INIT~ (with a dummy payload) to reset
+   the server. The client then re-sends ~STATUS~ to confirm the server is now
+   ~READY~.
+4. Client sends ~POSDATA~ with the new geometry data.
+5. Client polls by repeatedly sending ~STATUS~ until the Server replies ~HAVEDATA~.
+6. Client sends ~GETFORCE~.
+7. Server replies ~FORCEREADY~ followed by the binary data payload (energy, forces, etc.).
+8. The cycle can now repeat from step 1 for the next geometry.
+
+After all calculations are finished, the Client sends ~EXIT~ to terminate the
+NWChem server.
+
+*** Data Serialization
+Correctly formatting the binary data stream is essential.
+
+- Endianness :: All binary numerical data (doubles, integers) must be serialized
+  in little-endian format. In Python's struct module, this is specified with the
+  ~<~ character. This was diagnosed when the integer 1 was being read as
+  16777216 (junk).
+
+- Array Order :: All multi-dimensional arrays (cell matrices, positions) must be
+  flattened in Fortran ~'F'~ order using ~.flatten(order='F')~ in NumPy. This
+  matches Fortran's column-major memory layout and prevents data corruption.
+
+- Units :: The i-PI protocol mandates the use of atomic units. All lengths
+  (positions, cell vectors) must be converted to Bohr before being sent.
+  Energies and forces are received in Hartree and Hartree/Bohr, respectively,
+  and so need to be converted again into Angstrom and eV for EON.

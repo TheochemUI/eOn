@@ -84,8 +84,21 @@ public:
   double xtb_acc;
 
   // [ZBLPot] //
-  double cut_inner;
-  double cut_global;
+  struct zbl_options_t {
+    double cut_inner;
+    double cut_global;
+  } zbl_options;
+
+  // [SocketNWChemPot] //
+  struct socket_nwchem_options_t {
+    std::string host;
+    int port;
+    int mem_in_gb;
+    std::string nwchem_settings;
+    std::string unix_socket_path;
+    bool unix_socket_mode;
+    bool make_template_input;
+  } socket_nwchem_options;
 
   // [Structure Comparison] //
   double distanceDifference; // The distance criterion for comparing geometries
