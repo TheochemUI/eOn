@@ -604,4 +604,39 @@ if get_option('with_tests')
             ),
         )
     endforeach
+    # Special handling for the nwchem test (due to the client server bit)
+    nwchem_exe = find_program('nwchem', required: false)
+    bash_exe = find_program('bash', required: false)
+    # --- Special handling for the SocketNWChem integration test ---
+    if nwchem_exe.found()
+        test_socket_nwchem_exe = executable(
+            'test_socket_nwchem',
+            sources: [
+                'gtests/SocketNWChemPotTest.cpp',
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            dependencies: test_deps,
+            include_directories: _incdirs,
+            cpp_args: test_args,
+            link_with: _linkto,
+        )
+
+        test_workdir = meson.source_root() + '/client/gtests/data/systems/nwchem_test'
+
+        test(
+            'test_socket_nwchem',
+            bash_exe,
+            args: [
+                meson.source_root() + '/client/gtests/run_nwchem_test.sh',
+                'eonclient',
+                nwchem_exe,
+                'nwchem_socket.nwi',  # The input file for the client
+                test_workdir,
+            ],
+            # Note: The workdir is now an argument to the script, not a meson property for the test
+            timeout: 120,
+        )
+    else
+        message('NWChem executable not found, skipping SocketNWChemPotTest.')
+    endif
 endif
