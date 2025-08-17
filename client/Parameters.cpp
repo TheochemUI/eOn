@@ -96,6 +96,7 @@ Parameters::Parameters() {
   // expands to /tmp/ipi_eon_nwchem as per spec
   socket_nwchem_options.unix_socket_path = "eon_nwchem";
   socket_nwchem_options.unix_socket_mode = false;
+  socket_nwchem_options.make_template_input = true;
 
   // [Structure Comparison] //
   distanceDifference = 0.1;
@@ -532,6 +533,8 @@ int Parameters::load(FILE *file) {
           ini.GetValue("SocketNWChemPot", "unix_socket_path", socket_nwchem_options.unix_socket_path);
       socket_nwchem_options.unix_socket_mode =
           ini.GetValueB("SocketNWChemPot", "unix_socket_mode", socket_nwchem_options.unix_socket_mode);
+      socket_nwchem_options.make_template_input =
+          ini.GetValueB("SocketNWChemPot", "make_template_input", socket_nwchem_options.make_template_input);
     }
 
     // [Debug] //

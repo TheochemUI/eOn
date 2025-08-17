@@ -1583,6 +1583,10 @@ SocketNWChemPot:
             kind: string
             default: "eon_nwchem"
 
+        make_template_input:
+            kind: bool
+            default: True
+
 ################################################################################
 
 Metatomic:
