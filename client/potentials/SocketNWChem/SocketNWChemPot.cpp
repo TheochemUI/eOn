@@ -85,6 +85,7 @@ void SocketNWChemPot::write_nwchem_template(
 
   outfile << "start nwchem_socket_job\n";
   outfile << "title \"NWChem Server for EON\"\n\n";
+  outfile << "memory 2 gb\n\n";
   outfile << "geometry units bohr noautosym nocenter noautoz\n";
   // This geometry block is only a template for memory allocation.
   // The atom types and count are what matter.
