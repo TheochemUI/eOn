@@ -68,6 +68,8 @@ private:
   // File containing actual calculation parameters
   std::string nwchem_settings;
   int port, mem_in_gb;
+  // Generate a template input
+  bool make_template_input;
 
   // Socket state
   int listen_fd; // Socket for listening
