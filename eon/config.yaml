@@ -1567,6 +1567,22 @@ SocketNWChemPot:
             kind: int
             default: 9999
 
+        mem_in_gb:
+            kind: int
+            default: 2
+
+        nwchem_settings:
+            kind: string
+            default: "nwchem_settings.nwi"
+
+        unix_socket_mode:
+            kind: bool
+            default: False
+
+        unix_socket_path:
+            kind: string
+            default: "eon_nwchem"
+
 ################################################################################
 
 Metatomic:

@@ -629,6 +629,22 @@ class SocketNWChemPot(BaseModel):
     port: int = Field(
         default=9999, description="Port for the NWChem client to send data to EON."
     )
+    nwchem_settings: str = Field(
+        default="nwchem_settings.nwi",
+        description="Path to the user-provided file containing NWChem scientific settings (basis, theory, task, etc.)."
+    )
+    unix_socket_path: str = Field(
+        default="eon_nwchem",
+        description="The basename for the UNIX socket file. The full path will be /tmp/ipi_<basename>."
+    )
+    unix_socket_mode: bool = Field(
+        default=False,
+        description="If true, use a UNIX domain socket for communication instead of TCP/IP."
+    )
+    mem_in_gb: int = Field(
+        default=2,
+        description="Memory (in GB) to be allocated for the NWChem calculation."
+    )
 
 class Metatomic(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
