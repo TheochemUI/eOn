@@ -15,8 +15,8 @@ const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
 AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
-                 std::shared_ptr<Parameters> params,
-                 std::shared_ptr<Potential> pot)
+                             std::shared_ptr<Parameters> params,
+                             std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
@@ -69,9 +69,17 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
+  // TODO(rg): Make this parameter driven
+  auto addlParams{params};
+  addlParams->potential = PotType::ZBL;
+  addlParams->zbl_options.cut_inner = 2.0;
+  addlParams->zbl_options.cut_global = 2.5;
+  // addlParams->potential = PotType::METATOMIC;
+  // params->metatomic_options.model_path = "pet-mad-v1.1.0.pt";
+  auto pot_addl = helper_functions::makePotential(addlParams->potential, addlParams);
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
-  atomic_dimer.execute(*pot);
+  atomic_dimer.execute(*pot, *pot_addl);
   fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
