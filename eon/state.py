@@ -123,3 +123,36 @@ class State:
     def get_process_table(self):
         self.load_process_table()
         return self.procs
+
+    def get_displacement_atom_list(self, config: ConfigClass) -> list[int]:
+         """
+         Gets the list of atoms for displacement.
+
+         If the list has already been generated and stored in this state's
+         info file, it is read from there. Otherwise, the displacement
+         script is run, and the result is saved to the info file for future use.
+
+         Returns:
+             A list of integer atom indices for displacement.
+         """
+         # Try to get the list from the state's own info file first.
+         # We use a try/except block in case the section or option doesn't exist yet.
+         try:
+             # The list is stored as a string, so we need to parse it.
+             atom_list_str = self.info.get("Saddle Search", "displace_atom_list")
+             return atom_list_str
+         except Exception:
+             pass
+
+         # If we are here, the list was not in the info file. Run the script.
+         from eon import _utils as utl
+         logger.info(f"State {self.number}: Generating displacement atom list for the first time.")
+         script_config = utl.ScriptConfig.from_eon_config(config, utl.ScriptType.STATE)
+         atom_list_str = utl.gen_ids_from_con(script_config, self.get_reactant(), logger)
+         if atom_list_str:
+             self.info.set("Saddle Search", "displace_atom_list", atom_list_str)
+             return atom_list_str
+         else:
+             logger.warning(f"Script for state {self.number} produced no output.")
+             self.info.set("Saddle Search", "displace_atom_list", "")
+             return []

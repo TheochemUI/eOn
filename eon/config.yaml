@@ -1144,6 +1144,11 @@ Saddle Search:
             kind: float
             default: 0.0
 
+        # This is run once for each new state
+        displace_atom_kmc_state_script:
+            kind: string
+            default: ''
+
         displace_under_coordinated_weight:
             kind: float
             default: 0.0
