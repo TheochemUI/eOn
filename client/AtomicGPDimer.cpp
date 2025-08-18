@@ -69,11 +69,9 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
-  // Potential *potential = Potential::getPotential(parameters);
-  auto potential = helper_functions::makePotential(params);
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
-  atomic_dimer.execute(*potential.get());
+  atomic_dimer.execute(*pot);
   fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
