@@ -92,6 +92,7 @@ Potential:
                 - ase
                 - metatomic
                 - zbl
+                - SocketNWChem
 
         mpi_poll_period:
             kind: float
