@@ -1,5 +1,6 @@
 # Custom, other things are auto-ignored
 subprojects
+!subprojects/gpr_optim
 /docs/source/apidocs/
 # /
 /*.tmp
