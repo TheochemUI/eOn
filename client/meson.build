@@ -179,6 +179,7 @@ potentials = [
 ]
 
 eonclib_sources = [
+    'fpe_handler.cpp',
     'Parameters.cpp',
     'Optimizer.cpp',
     'PrefactorJob.cpp',
@@ -229,7 +230,7 @@ eonclib_sources = [
     'BasinHoppingSaddleSearch.cpp',
 ]
 
-eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
+eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
 
 # ------------------- Options
 
