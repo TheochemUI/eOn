@@ -72,8 +72,8 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   // TODO(rg): Make this parameter driven
   auto addlParams{params};
   addlParams->potential = PotType::ZBL;
-  addlParams->zbl_options.cut_inner = 2.0;
-  addlParams->zbl_options.cut_global = 2.5;
+  addlParams->zbl_options.cut_inner = 0.5;
+  addlParams->zbl_options.cut_global = 1.0;
   // addlParams->potential = PotType::METATOMIC;
   // params->metatomic_options.model_path = "pet-mad-v1.1.0.pt";
   auto pot_addl = helper_functions::makePotential(addlParams->potential, addlParams);
