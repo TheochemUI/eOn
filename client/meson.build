@@ -245,11 +245,14 @@ if get_option('with_gprd')
     libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
     libgprd = libgprd_proj.get_variable('libgprd_dep')
     gprd_deps = libgprd_proj.get_variable('gprd_deps')
-    # subdir('potentials/GPRPotential')
-    # potentials += [ gprpot ]
+    gprd_incdirs = libgprd_proj.get_variable('gprd_incdirs')
+    _incdirs += gprd_incdirs
     _args += ['-DWITH_GPRD']
     eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
     _deps += [libgprd, gprd_deps]
+    # Order matters, uses _deps
+    subdir('potentials/GPRPotential')
+    potentials += [ gprpot ]
 endif
 
 if get_option('with_gp_surrogate')
@@ -585,6 +588,9 @@ if get_option('with_tests')
     ]
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
+    endif
+    if get_option('with_gprd')
+        test_array += [['test_gprpot', 'GPRPotTest.cpp', 'au_si']]
     endif
     foreach test : test_array
         test(
