@@ -7,6 +7,8 @@ GPRPotential::GPRPotential(std::shared_ptr<Parameters> p)
   gpr_model = std::make_unique<GPRModelWrapper>();
   gpr::GPRSetup gpr_parameters;
   gpr_model->setParameters(gpr_parameters);
+  // Actually
+  // gpr_model->initialize(parameters, atoms_config);
 }
 
 void GPRPotential::registerTargetPotential(std::shared_ptr<Potential> _tpot) {

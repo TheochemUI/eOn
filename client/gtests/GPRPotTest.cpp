@@ -39,6 +39,8 @@ public:
     REQUIRE(file_read_ok);
     pot_gprd->atom_conf = std::make_unique<gpr::AtomsConfiguration>(
         helper_functions::eon_matter_to_atmconf(ref_mat.get()));
+    gpr::InputParameters p = helper_functions::eon_parameters_to_gpr(params.get());
+    pot_gprd->gpr_model->initialize(p, *pot_gprd->atom_conf);
   }
 
   ~GPRPotTest() = default;

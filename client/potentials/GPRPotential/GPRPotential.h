@@ -41,7 +41,6 @@ class GPRPotential : public Potential {
 
 private:
   // True or target potential
-  std::shared_ptr<Potential> tpot;
   bool is_initialized;
 
 public:
@@ -57,6 +56,7 @@ public:
   std::unique_ptr<gpr::AtomsConfiguration> atom_conf;
   std::unique_ptr<GPRModelWrapper> gpr_model;
   gpr::Observation all_obs;
+  std::shared_ptr<Potential> tpot;
   // void setAtomsConfig(std::shared_ptr<Matter> _mat);
 };
 #endif
