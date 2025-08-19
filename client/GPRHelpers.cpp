@@ -217,6 +217,7 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   // given index EMPTY.
   atoms_config.pairtype.resize(n_at, n_at);
   atoms_config.pairtype.set(EMPTY);
+  atoms_config.n_pt = 0;
 
   // Set pairtype indices for moving+moving atom pairs (and update number of
   // active pairtypes)
@@ -233,11 +234,23 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
 gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
-  o.R.resize(matter->getPositions().rows(), matter->getPositions().cols());
-  o.G.resize(matter->getForces().rows(), matter->getForces().cols());
-  o.E.resize(1);
+
+  const long num_atoms = matter->numberOfAtoms();
+  const long num_dims = 3;
+
+  // The GPR library expects a single "image" or configuration per row.
+  // Positions and Forces for an N-atom system should be flattened
+  // into a 1-row, (N*3)-column matrix.
+  o.R.resize(1, num_atoms * num_dims);
+  o.G.resize(1, num_atoms * num_dims);
+  // The old behavior was
+  //  o.R.resize(matter->getPositions().rows(), matter->getPositions().cols());
+  //  o.G.resize(matter->getForces().rows(), matter->getForces().cols());
+  // The Energy is a single value (1x1) for the whole configuration.
+  o.E.resize(1, 1);
+
+  o.R.assignFromEigenMatrix(matter->getPositionsV());
+  o.G.assignFromEigenMatrix(matter->getForcesV());
   o.E.set(matter->getPotentialEnergy());
-  o.R.assignFromEigenMatrix(matter->getPositions());
-  o.G.assignFromEigenMatrix(matter->getForces());
   return o;
 }
