@@ -1,60 +1,35 @@
-//-----------------------------------------------------------------------------------
-// eOn is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// A copy of the GNU General Public License is available at
-// http://www.gnu.org/licenses/
-//-----------------------------------------------------------------------------------
-
 #include "GPRPotential.h"
-#include "../../subprojects/gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
-#include "../../subprojects/gprdimer/structures/Structures.h"
+#include "subprojects/gpr_optim/structures/Structures.h"
 
-namespace {
-
-const char *elementArray[] = {
-    "Unknown", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na",
-    "Mg",      "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",
-    "Cr",      "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
-    "Kr",      "Rb", "Sr", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag",
-    "Cd",      "In", "Sn", "Sb", "Te", "I",  "Xe", "Cs", "Ba", "La", "Ce", "Pr",
-    "Nd",      "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
-    "Hf",      "Ta", "W",  "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi",
-    "Po",      "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U",  NULL};
-
-// guess the atom type from the atomic mass,
-std::string mass2atom(double atomicmass) {
-  return elementArray[int(atomicmass + .5)];
+GPRPotential::GPRPotential(std::shared_ptr<Parameters> p)
+    : Potential(p),
+      is_initialized(false) {
+  gpr_model = std::make_unique<GPRModelWrapper>();
+  gpr::GPRSetup gpr_parameters;
+  gpr_model->setParameters(gpr_parameters);
 }
 
-int symbol2atomicNumber(char const *symbol) {
-  int i = 0;
-
-  while (elementArray[i] != NULL) {
-    if (strcmp(symbol, elementArray[i]) == 0) {
-      return i;
-    }
-    i++;
+void GPRPotential::registerTargetPotential(std::shared_ptr<Potential> _tpot) {
+  this->tpot = _tpot;
+  if (atom_conf) {
+    is_initialized = true;
   }
-  // invalid symbol
-  return -1;
 }
 
-char const *atomicNumber2symbol(int n) { return elementArray[n]; }
-} // namespace
+// void GPRPotential::setAtomsConfig(std::shared_ptr<Matter> _mat) {
+//   atom_conf = std::make_unique<gpr::AtomsConfiguration>(
+//       helper_functions::eon_matter_to_atmconf(_mat.get()));
+//   all_obs = helper_functions::eon_matter_to_init_obs(_mat.get());
+//   if (tpot) {
+//     is_initialized = true;
+//   }
+// }
 
-GPRPotential::GPRPotential(Parameters *p) { gpr_model = nullptr; }
-
-void GPRPotential::registerGPRObject(
-    gpr::GaussianProcessRegression *_gpr_model) {
-  gpr_model = _gpr_model;
+void GPRPotential::train_optimize() {
+  gpr_model->getSexpAtCovarianceFunction()->setConfInfo(*atom_conf);
+  gpr_model->setHyperparameters(all_obs, *atom_conf);
+  gpr_model->optimize(all_obs);
 }
-
-void GPRPotential::initialize(void) {}
-
-void GPRPotential::cleanMemory(void) {}
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
@@ -76,6 +51,7 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
   // ind) - takes covariance matrix and vector of repetitive indices
   // gpr_model->calculateMeanPrediction() - takes a vector of combined energy
   // and force gpr_model->calculatePosteriorMeanPrediction() - no arguments
+  gpr_model->getSexpAtCovarianceFunction()->setConfInfo(*atom_conf);
   gpr_model->calculatePotential(observation);
 
   for (int i = 0; i < N; i++) {

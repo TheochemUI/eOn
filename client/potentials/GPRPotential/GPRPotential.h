@@ -1,37 +1,62 @@
-//-----------------------------------------------------------------------------------
-// eOn is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// A copy of the GNU General Public License is available at
-// http://www.gnu.org/licenses/
-//-----------------------------------------------------------------------------------
-
 #ifndef GPRPOT_INTERFACE
 #define GPRPOT_INTERFACE
 
-#include "../../Potential.h"
-#include "../../subprojects/gpr_optim/gpr/ml/GaussianProcessRegression.h"
+#include "client/Matter.h"
+#include "client/Potential.h"
+#include "structures/Structures.h"
+#include "subprojects/gpr_optim/gpr/ml/GaussianProcessRegression.h"
+#include <memory>
 
-/** Template to use if user want to provide potential. */
+// A wrapper class to expose the protected conditioning methods from the base
+// class. This is necessary because the public API does not provide a standalone
+// "condition" method.
+class GPRModelWrapper : public gpr::GaussianProcessRegression {
+public:
+  // This function performs the sequence of protected calls required to
+  // condition the model. This logic is copied directly from the library's own
+  // reference tests.
+  bool condition_model(const gpr::Observation &training_data) {
+    aux::AuxiliaryFunctionality aux_func;
+
+    // 1. Convert the training data into the internal matrix format.
+    aux_func.assembleMatrixOfRepetitiveCoordinates(
+        training_data.R, this->R_matrix, this->R_indices);
+    aux_func.assembleVectorFromEnergyAndGradient(training_data,
+                                                 this->energy_and_gradient);
+
+    // 2. Build and decompose the covariance matrix.
+    if (!this->decomposeCovarianceMatrix(this->R_matrix, this->R_indices)) {
+      return false; // Return false if decomposition fails.
+    }
+
+    // 3. Solve for the internal model weights.
+    this->calculateMeanPrediction(this->energy_and_gradient);
+    this->calculatePosteriorMeanPrediction();
+
+    return true;
+  }
+};
+
 class GPRPotential : public Potential {
 
 private:
-  gpr::GaussianProcessRegression *gpr_model;
+  // True or target potential
+  std::shared_ptr<Potential> tpot;
+  bool is_initialized;
 
 public:
-  // Functions
-  // constructor and destructor
-  GPRPotential(Parameters *p);
+  explicit GPRPotential(std::shared_ptr<Parameters> p);
+  ~GPRPotential() = default;
 
-  void registerGPRObject(gpr::GaussianProcessRegression *_gpr_model);
-
-  // To satisfy interface
-  void initialize(void);
-  void cleanMemory(void);
+  void registerTargetPotential(std::shared_ptr<Potential> _tpot);
+  void train_optimize();
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+             double *U, double *variance, const double *box) override;
+  // TODO(rg): These must move
+  std::unique_ptr<gpr::AtomsConfiguration> atom_conf;
+  std::unique_ptr<GPRModelWrapper> gpr_model;
+  gpr::Observation all_obs;
+  // void setAtomsConfig(std::shared_ptr<Matter> _mat);
 };
 #endif
