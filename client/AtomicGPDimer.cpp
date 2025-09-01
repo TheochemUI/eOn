@@ -79,7 +79,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   auto pot_addl = helper_functions::makePotential(addlParams->potential, addlParams);
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
-  atomic_dimer.execute(*pot, *pot_addl);
+  atomic_dimer.execute(*pot);
   fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
