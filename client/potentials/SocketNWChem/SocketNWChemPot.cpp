@@ -229,7 +229,9 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
   for (int i = 0; i < N * 3; ++i) {
     F[i] = forces_ha_bohr[i] * (HARTREE_IN_EV / BOHR_IN_ANGSTROM);
   }
-  *variance = 0.0;
+  if (variance != nullptr) {
+    *variance = 0.0;
+  }
 }
 
 // =================================================
