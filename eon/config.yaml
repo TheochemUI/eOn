@@ -621,8 +621,8 @@ GPR Dimer:
           kind: string
           default: scg_opt
           values:
-              - scg_opt
-              - adam_opt
+              - SCG_opt
+              - ADAM_opt
 
         check_derivatives:
           kind: boolean
