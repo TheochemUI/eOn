@@ -238,8 +238,8 @@ public:
                           // matrix {actdist_fro}
   double gprDimerSep; // distance from the middle point of the dimer to the two
                       // images {dimer_sep}
-  double gprDimerConvStep;  // step length for convex regions {param_trans[0]}
-  double gprDimerMaxStep;   // maximum step length {param_trans[1]}
+  double gprDimerConvStep; // step length for convex regions {param_trans[0]}
+  double gprDimerMaxStep;  // maximum step length {param_trans[1]}
   double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the
                                // ratio of inter-atomic distances between the
                                // image and its "nearest observed data point"
@@ -254,25 +254,41 @@ public:
                                // current dimer if the maximum iterations in the
                                // relaxation phase is reached {islarge_num_iter}
   // GPR Params
-  string gprDimerHyperOptMethod; // method to optimize hyperparameters
-                                 // {optimization_alg}
-  double gprDimerSigma2;         // GPR variance {gp_sigma2}
-  double gprDimerJitterSigma2;   // GPR jitter variance {jitter_sigma2}
-  double gprDimerNoiseSigma2;    // noise Variance {sigma2}
-  double gprDimerPriorMu;        // prior mean {prior_mu}
-  double gprDimerPriorSigma2;    // prior variance {prior_s2}
-  long gprDimerPriorNu;          // prior degrees of freedom {prior_nu}
+  double gprDimerSigma2;       // GPR variance {gp_sigma2}
+  double gprDimerJitterSigma2; // GPR jitter variance {jitter_sigma2}
+  double gprDimerNoiseSigma2;  // noise Variance {sigma2}
+  double gprDimerPriorMu;      // prior mean {prior_mu}
+  double gprDimerPriorSigma2;  // prior variance {prior_s2}
+  long gprDimerPriorNu;        // prior degrees of freedom {prior_nu}
   // GPR Optimization Parameters
-  bool gprOptCheckDerivatives; // {check_derivative}
-  int gprOptMaxIterations;     // {max_iter}
-  double gprOptTolFunc;        // {tolerance_func}
-  double gprOptTolSol;         // {tolerance_sol}
-  long gprOptLambdaLimit;      // {lambda_limit}
-  long gprOptLambdaInit;       // {lambda}
-  bool gprUsePrune;            // {use_prune}
-  int gprPruneBegin;           // {start_prune_at}
-  int gprPruneNVals;           // {nprune_vals}
-  double gprPruneThreshold;    // {prune_threshold}
+  bool gprUsePrune;         // {use_prune}
+  int gprPruneBegin;        // {start_prune_at}
+  int gprPruneNVals;        // {nprune_vals}
+  double gprPruneThreshold; // {prune_threshold}
+  struct gpr_hypopt_t {
+    std::string hopt_method;
+    bool check_derivative;
+    double tol_func;
+    double tol_sol;
+    int max_iter;
+
+    // SCG
+    struct scg_t {
+      double lambda_limit;
+      double lambda;
+    } scg;
+
+    // ADAM
+    struct adam_t {
+      double lr;
+      double lrd;
+      double b1;
+      double b2;
+      double eps;
+      double weight_decay;
+      bool amsgrad;
+    } adam;
+  } gpr_hypopt_options;
 
   // GPR Debugging Parameters
   int gprReportLevel;            // {report_level}
@@ -315,11 +331,12 @@ public:
 
   // [Metatomic] //
   struct metatomic_options_t {
-    std::string model_path; // Path to the TorchScript model file.
-    std::string device; // "cpu", "cuda", "mps", or empty to auto-detect.
-    std::string length_unit; // The unit of length used in the simulation (e.g., "angstrom").
+    std::string model_path;  // Path to the TorchScript model file.
+    std::string device;      // "cpu", "cuda", "mps", or empty to auto-detect.
+    std::string length_unit; // The unit of length used in the simulation (e.g.,
+                             // "angstrom").
     std::string extensions_directory; // Path for TorchScript extensions.
-    bool check_consistency; // To enable model's internal checks.
+    bool check_consistency;           // To enable model's internal checks.
   } metatomic_options;
 
   // [Lanczos] //
@@ -369,7 +386,7 @@ public:
   bool nebElasticBand;
   double nebConvergedForce; // force convergence criterion required for an
                             // optimization
-  double nebciAfter; // force convergence before ci-neb is used
+  double nebciAfter;        // force convergence before ci-neb is used
   // For energy weighted
   double nebKSPMin;
   double nebKSPMax;

@@ -589,12 +589,6 @@ GPR Dimer:
           kind: boolean
           default: True
 
-        hyperparameter_opt_method:
-          kind: string
-          default: scg
-          values:
-              - scg
-
         gpr_variance:
           kind: float
           default: 1e-8
@@ -619,13 +613,16 @@ GPR Dimer:
           kind: int
           default: 20
 
+        hyperparameter_opt_method:
+          kind: string
+          default: scg_opt
+          values:
+              - scg_opt
+              - adam_opt
+
         check_derivatives:
           kind: boolean
           default: False
-
-        opt_max_iterations:
-          kind: float
-          default: 400
 
         opt_tol_func:
           kind: float
@@ -635,13 +632,45 @@ GPR Dimer:
           kind: float
           default: 1e-4
 
-        opt_lambda_limit:
+        opt_max_iterations:
+          kind: float
+          default: 400
+
+        scg_lambda_init:
+          kind: float
+          default: 10.0
+
+        scg_lambda_limit:
           kind: float
           default: 1e20
 
-        opt_lambda_init:
+        adam_learning_rate:
           kind: float
-          default: 10.0
+          default: 1e-3
+
+        adam_learning_rate_decay:
+          kind: float
+          default: 0.999
+
+        adam_beta1:
+          kind: float
+          default: 0.9
+
+        adam_beta2:
+          kind: float
+          default: 0.99
+
+        adam_epsilon:
+          kind: float
+          default: 1e-8
+
+        adam_weight_decay:
+          kind: float
+          default: 0.0
+
+        adam_amsgrad:
+          kind: bool
+          default: true
 
         rotations_min:
             kind: int

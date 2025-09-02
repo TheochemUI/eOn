@@ -233,20 +233,27 @@ Parameters::Parameters() {
   gprDimerInitTransGP = 0;           // inittrans_nogp
   gprDimerManyIterations = true;     // islarge_num_iter
   // GPR Params
-  gprDimerHyperOptMethod = "scg"; // optimization_alg
-  gprDimerSigma2 = 1e-8;          // gp_sigma2
-  gprDimerJitterSigma2 = 0;       // jitter_sigma2
-  gprDimerNoiseSigma2 = 1e-8;     // sigma2
-  gprDimerPriorMu = 0;            // prior_mu
-  gprDimerPriorSigma2 = 1;        // prior_s2
-  gprDimerPriorNu = 20;           // prior_nu
+  gprDimerSigma2 = 1e-8;      // gp_sigma2
+  gprDimerJitterSigma2 = 0;   // jitter_sigma2
+  gprDimerNoiseSigma2 = 1e-8; // sigma2
+  gprDimerPriorMu = 0;        // prior_mu
+  gprDimerPriorSigma2 = 1;    // prior_s2
+  gprDimerPriorNu = 20;       // prior_nu
   // GPR Optimization Parameters
-  gprOptCheckDerivatives = false; // check_derivative
-  gprOptMaxIterations = 400;      // max_iter
-  gprOptTolFunc = 1e-4;           // tolerance_func
-  gprOptTolSol = 1e-4;            // tolerance_sol
-  gprOptLambdaLimit = 1e17;       // lambda_limit
-  gprOptLambdaInit = 10.0;        // lambda
+  gpr_hypopt_options.hopt_method = "SCG_opt"s; // optimization_alg
+  gpr_hypopt_options.check_derivative = false; // check_derivative
+  gpr_hypopt_options.tol_func = 1e-4;
+  gpr_hypopt_options.tol_sol = 1e-4;
+  gpr_hypopt_options.max_iter = 400;
+  gpr_hypopt_options.scg.lambda_limit = 1e17;
+  gpr_hypopt_options.scg.lambda = 10.0;
+  gpr_hypopt_options.adam.lr = 1e-3;
+  gpr_hypopt_options.adam.lrd = 0.999;
+  gpr_hypopt_options.adam.b1 = 0.9;
+  gpr_hypopt_options.adam.b2 = 0.99;
+  gpr_hypopt_options.adam.eps = 1.0e-8;
+  gpr_hypopt_options.adam.weight_decay = 0.0;
+  gpr_hypopt_options.adam.amsgrad = true;
   // GPR Prune Parameters
   gprUsePrune = false;     // use_prune
   gprPruneBegin = 8;       // start_prune_at
@@ -525,16 +532,20 @@ int Parameters::load(FILE *file) {
           ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
       socket_nwchem_options.port =
           ini.GetValueL("SocketNWChemPot", "port", socket_nwchem_options.port);
-      socket_nwchem_options.mem_in_gb =
-          ini.GetValueL("SocketNWChemPot", "mem_in_gb", socket_nwchem_options.mem_in_gb);
+      socket_nwchem_options.mem_in_gb = ini.GetValueL(
+          "SocketNWChemPot", "mem_in_gb", socket_nwchem_options.mem_in_gb);
       socket_nwchem_options.nwchem_settings =
-          ini.GetValue("SocketNWChemPot", "nwchem_settings", socket_nwchem_options.nwchem_settings);
+          ini.GetValue("SocketNWChemPot", "nwchem_settings",
+                       socket_nwchem_options.nwchem_settings);
       socket_nwchem_options.unix_socket_path =
-          ini.GetValue("SocketNWChemPot", "unix_socket_path", socket_nwchem_options.unix_socket_path);
+          ini.GetValue("SocketNWChemPot", "unix_socket_path",
+                       socket_nwchem_options.unix_socket_path);
       socket_nwchem_options.unix_socket_mode =
-          ini.GetValueB("SocketNWChemPot", "unix_socket_mode", socket_nwchem_options.unix_socket_mode);
+          ini.GetValueB("SocketNWChemPot", "unix_socket_mode",
+                        socket_nwchem_options.unix_socket_mode);
       socket_nwchem_options.make_template_input =
-          ini.GetValueB("SocketNWChemPot", "make_template_input", socket_nwchem_options.make_template_input);
+          ini.GetValueB("SocketNWChemPot", "make_template_input",
+                        socket_nwchem_options.make_template_input);
     }
 
     // [Debug] //
@@ -794,8 +805,6 @@ int Parameters::load(FILE *file) {
     gprDimerManyIterations = ini.GetValueB("GPR Dimer", "has_many_iterations",
                                            gprDimerManyIterations);
     // GPR Params
-    gprDimerHyperOptMethod = ini.GetValue(
-        "GPR Dimer", "hyperparameter_opt_method", gprDimerHyperOptMethod);
     gprDimerSigma2 = ini.GetValueF("GPR Dimer", "gpr_variance", gprDimerSigma2);
     gprDimerJitterSigma2 =
         ini.GetValueF("GPR Dimer", "gpr_jitter_variance", gprDimerJitterSigma2);
@@ -807,16 +816,35 @@ int Parameters::load(FILE *file) {
     gprDimerPriorNu =
         ini.GetValueF("GPR Dimer", "prior_degrees_of_freedom", gprDimerPriorNu);
     // GPR Optimization Parameters
-    gprOptCheckDerivatives =
-        ini.GetValueB("GPR Dimer", "check_derivatives", gprOptCheckDerivatives);
-    gprOptMaxIterations = (int)ini.GetValueL("GPR Dimer", "opt_max_iterations",
-                                             gprOptMaxIterations);
-    gprOptTolFunc = ini.GetValueF("GPR Dimer", "opt_tol_func", gprOptTolFunc);
-    gprOptTolSol = ini.GetValueF("GPR Dimer", "opt_tol_sol", gprOptTolSol);
-    gprOptLambdaLimit =
-        ini.GetValueF("GPR Dimer", "opt_lambda_limit", gprOptLambdaLimit);
-    gprOptLambdaInit =
-        ini.GetValueF("GPR Dimer", "opt_lambda_init", gprOptLambdaInit);
+    gpr_hypopt_options.hopt_method =
+        ini.GetValue("GPR Dimer", "hyperparameter_opt_method",
+                     gpr_hypopt_options.hopt_method);
+    gpr_hypopt_options.check_derivative = ini.GetValueB(
+        "GPR Dimer", "check_derivatives", gpr_hypopt_options.check_derivative);
+    gpr_hypopt_options.tol_func =
+        ini.GetValueF("GPR Dimer", "opt_tol_func", gpr_hypopt_options.tol_func);
+    gpr_hypopt_options.tol_sol =
+        ini.GetValueF("GPR Dimer", "opt_tol_sol", gpr_hypopt_options.tol_sol);
+    gpr_hypopt_options.max_iter =
+        ini.GetValueI("GPR Dimer", "opt_max_iterations", gpr_hypopt_options.max_iter);
+    gpr_hypopt_options.scg.lambda_limit = ini.GetValueF(
+        "GPR Dimer", "scg_lambda_limit", gpr_hypopt_options.scg.lambda_limit);
+    gpr_hypopt_options.scg.lambda =
+        ini.GetValueF("GPR Dimer", "scg_lambda_init", gpr_hypopt_options.scg.lambda);
+    gpr_hypopt_options.adam.lr = ini.GetValueF(
+        "GPR Dimer", "adam_learning_rate", gpr_hypopt_options.adam.lr);
+    gpr_hypopt_options.adam.lrd = ini.GetValueF(
+        "GPR Dimer", "adam_learning_rate_decay", gpr_hypopt_options.adam.lrd);
+    gpr_hypopt_options.adam.b1 =
+        ini.GetValueF("GPR Dimer", "adam_beta1", gpr_hypopt_options.adam.b1);
+    gpr_hypopt_options.adam.b2 =
+        ini.GetValueF("GPR Dimer", "adam_beta2", gpr_hypopt_options.adam.b2);
+    gpr_hypopt_options.adam.eps =
+        ini.GetValueF("GPR Dimer", "adam_epsilon", gpr_hypopt_options.adam.eps);
+    gpr_hypopt_options.adam.weight_decay = ini.GetValueF(
+        "GPR Dimer", "adam_weight_decay", gpr_hypopt_options.adam.weight_decay);
+    gpr_hypopt_options.adam.amsgrad = ini.GetValueB(
+        "GPR Dimer", "adam_amsgrad", gpr_hypopt_options.adam.amsgrad);
     // GPR Debugging Parameters
     gprReportLevel =
         (int)ini.GetValueL("GPR Dimer", "report_level", gprReportLevel);

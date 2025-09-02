@@ -5,6 +5,8 @@
 #include "client/Potential.h"
 #include "structures/Structures.h"
 #include "subprojects/gpr_optim/gpr/ml/GaussianProcessRegression.h"
+#include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
+#include "subprojects/gpr_optim/gpr/auxiliary/AdditionalFunctionality.h"
 #include <memory>
 
 // A wrapper class to expose the protected conditioning methods from the base

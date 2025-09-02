@@ -36,12 +36,24 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.prior_mu.value = parameters->gprDimerPriorMu;
   p.prior_nu.value = parameters->gprDimerPriorNu;
   p.prior_s2.value = parameters->gprDimerPriorSigma2;
-  p.check_derivative.value = parameters->gprOptCheckDerivatives;
-  p.max_iter.value = parameters->gprOptMaxIterations;
-  p.tolerance_func.value = parameters->gprOptTolFunc;
-  p.tolerance_sol.value = parameters->gprOptTolSol;
-  p.lambda_limit.value = parameters->gprOptLambdaLimit;
-  p.lambda.value = parameters->gprOptLambdaInit;
+  // Hyperparameter optimization
+  // Common
+  p.optimization_alg.value = parameters->gpr_hypopt_options.hopt_method;
+  p.check_derivative.value = parameters->gpr_hypopt_options.check_derivative;
+  p.max_iter.value = parameters->gpr_hypopt_options.max_iter;
+  p.tolerance_func.value = parameters->gpr_hypopt_options.tol_func;
+  p.tolerance_sol.value = parameters->gpr_hypopt_options.tol_sol;
+  // SCG
+  p.lambda_limit.value = parameters->gpr_hypopt_options.scg.lambda_limit;
+  p.lambda.value = parameters->gpr_hypopt_options.scg.lambda;
+  // ADAM parameters
+  p.learning_rate.value = parameters->gpr_hypopt_options.adam.lr;
+  p.learning_rate_decay.value = parameters->gpr_hypopt_options.adam.lrd;
+  p.beta1.value = parameters->gpr_hypopt_options.adam.b1;
+  p.beta2.value = parameters->gpr_hypopt_options.adam.b2;
+  p.epsilon.value = parameters->gpr_hypopt_options.adam.eps;
+  p.weight_decay.value = parameters->gpr_hypopt_options.adam.weight_decay;
+  p.amsgrad.value = parameters->gpr_hypopt_options.adam.amsgrad;
   // Prune
   p.use_prune.value = parameters->gprUsePrune;
   p.start_prune_at.value = parameters->gprPruneBegin;
