@@ -1745,76 +1745,79 @@ class GPRDimerConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
     # Dimer Core Parameters
-    dimer_rotation_angle: float = Field(
+    finite_angle: float = Field(
         default=0.005, description="Finite angle for dimer rotation."
     )
-    dimer_converged_angle: float = Field(
+    converged_angle: float = Field(
         default=0.08,
         description="The dimer is considered converged if it rotates fewer degrees than this angle.",
     )
-    dimer_relax_conv_angle: float = Field(
+    relaxation_converged_angle: float = Field(
         default=0.001, description="Convergence angle for relaxation (T_anglerot_gp)."
     )
-    dimer_init_rotations_max: int = Field(
+    max_initial_rotation_iterations: int = Field(
         default=6,
         description="Maximum number of initial rotation iterations (should be DoF).",
     )
-    dimer_relax_rotations_max: int = Field(
+    max_relaxation_rotation_iterations: int = Field(
         default=10,
         description="Maximum number of relaxation rotation iterations (num_iter_rot_gp).",
     )
-    dimer_divisor_tdimer_gp: int = Field(
+    divisor_t_dimer: int = Field(
         default=10, description="Divisor for T_dimer_gp."
     )
-    dimer_max_outer_iterations: int = Field(
+    max_outer_iterations: int = Field(
         default=300, description="Maximum number of outer iterations (num_bigiter)."
     )
-    dimer_max_inner_iterations: int = Field(
+    max_inner_iterations: int = Field(
         default=1000, description="Maximum number of inner iterations (num_iter)."
     )
-    dimer_midpoint_max_disp: float = Field(
+    max_midpoint_displacement: float = Field(
         default=0.5, description="Maximum midpoint displacement (disp_max)."
     )
-    dimer_rot_opt_method: str = Field(
+    rotation_opt_method: str = Field(
         default="lbfgs", description="Optimization method for rotation (method_rot)."
     )
-    dimer_trans_opt_method: str = Field(
+    translation_opt_method: str = Field(
         default="lbfgs",
         description="Optimization method for translation (method_trans).",
     )
     active_radius: float = Field(
         default=5.0, description="Active radius for atom selection (actidst_fro)."
     )
-    dimer_sep: float = Field(default=0.01, description="Dimer separation.")
-    dimer_conv_step: float = Field(default=0.1, description="Convex region step size.")
-    dimer_max_step: float = Field(default=0.1, description="Maximum step size.")
-    dimer_ratio_at_limit: float = Field(default=0.66667, description="Ratio at limit.")
-    dimer_init_rot_gp: bool = Field(
+    dimer_separation: float = Field(default=0.01, description="Dimer separation.")
+    convex_region_step_size: float = Field(default=0.1, description="Convex region step size.")
+    max_step_size: float = Field(default=0.1, description="Maximum step size.")
+    rotation_removal_projection_threshold: float = Field(
+        default=0.1, description="Threshold below which torques are removed."
+    )
+    ratio_at_limit: float = Field(default=0.66667, description="Ratio at limit.")
+    nogp_initial_rotations: bool = Field(
         default=False,
         description="Flag to indicate whether GP is used for initial rotations.",
     )
-    dimer_init_trans_gp: bool = Field(
+    nogp_init_translations: bool = Field(
         default=False,
         description="Flag to indicate whether GP is used for initial translations.",
     )
-    dimer_many_iterations: bool = Field(
+    has_many_iterations: bool = Field(
         default=True,
         description="Flag to indicate if many iterations are used (islarge_num_iter).",
     )
 
     # GPR Parameters
-    dimer_sigma2: float = Field(default=1e-8, description="GPR variance (gp_sigma2).")
-    dimer_jitter_sigma2: float = Field(
+    gpr_variance: float = Field(default=1e-8, description="GPR variance (gp_sigma2).")
+    gpr_jitter_variance: float = Field(
         default=0.0, description="GPR jitter variance (jitter_sigma2)."
     )
-    dimer_noise_sigma2: float = Field(
+    gpr_noise_variance: float = Field(
         default=1e-8, description="GPR noise variance (sigma2)."
     )
-    dimer_prior_mu: float = Field(default=0.0, description="Prior mean.")
-    dimer_prior_sigma2: float = Field(
+    prior_mean: float = Field(default=0.0, description="Prior mean.")
+    prior_variance: float = Field(
         default=1.0, description="Prior variance (prior_s2)."
     )
-    dimer_prior_nu: float = Field(
+    prior_degrees_of_freedom: float = Field(
         default=20.0, description="Prior degrees of freedom (prior_nu)."
     )
 
@@ -1828,35 +1831,35 @@ class GPRDimerConfig(BaseModel):
     use_prune: bool = Field(
         default=False, description="Flag to indicate if pruning should be used."
     )
-    prune_begin: int = Field(
+    start_prune_at: int = Field(
         default=8, description="The iteration at which to start pruning."
     )
-    prune_n_vals: int = Field(default=3, description="The number of values to prune.")
+    nprune_vals: int = Field(default=3, description="The number of values to prune.")
     prune_threshold: float = Field(default=0.5, description="The pruning threshold.")
 
     # Debugging Parameters
     report_level: int = Field(default=1, description="The reporting level.")
     debug_level: int = Field(default=2, description="The debugging level.")
-    debug_out_dir: str = Field(
+    debug_output_directory: str = Field(
         default="output", description="The debug output directory."
     )
-    debug_pos_file: str = Field(
+    debug_position_basename: str = Field(
         default="position", description="The debug position file basename."
     )
-    debug_energy_file: str = Field(
+    debug_energy_basename: str = Field(
         default="energy", description="The debug energy file basename."
     )
-    debug_grad_file: str = Field(
+    debug_gradient_basename: str = Field(
         default="gradient", description="The debug gradient file basename."
     )
     debug_out_ext: str = Field(
         default="dat", description="The debug output file extension."
     )
-    debug_offset_mid_point: float = Field(
+    debug_midpoint_offset: float = Field(
         default=3.0, description="The debug offset from the midpoint."
     )
-    debug_dy: float = Field(default=0.1, description="The debug y step.")
-    debug_dz: float = Field(default=0.1, description="The debug z step.")
+    debug_y_step: float = Field(default=0.1, description="The debug y step.")
+    debug_z_step: float = Field(default=0.1, description="The debug z step.")
 
 
 class Config(BaseModel):

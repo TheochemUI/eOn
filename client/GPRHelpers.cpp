@@ -1,6 +1,5 @@
 #include "GPRHelpers.h"
 
-#include <map>
 #include <set>
 #include <unordered_map>
 
@@ -12,8 +11,10 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.dimer_sep.value = parameters->gprDimerSep;
   p.method_rot.value = parameters->gprDimerRotOptMethod;
   p.method_trans.value = parameters->gprDimerTransOptMethod;
-  p.param_trans.value[0] = parameters->gprDimerConvStep;
-  p.param_trans.value[1] = parameters->gprDimerMaxStep;
+  p.param_trans.value[0] = parameters->gprd_trans_options.step_length;
+  p.param_trans.value[1] = parameters->gprd_trans_options.max_step_length;
+  p.rotation_removal_projection_threshold.value =
+      parameters->gprd_trans_options.rotrem_thresh;
   // Saddle point convergence parameter
   p.T_dimer.value = parameters->saddleConvergedForce;
   p.T_anglerot_init.value = parameters->gprDimerConvergedAngle;

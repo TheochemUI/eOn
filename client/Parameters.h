@@ -238,8 +238,11 @@ public:
                           // matrix {actdist_fro}
   double gprDimerSep; // distance from the middle point of the dimer to the two
                       // images {dimer_sep}
-  double gprDimerConvStep; // step length for convex regions {param_trans[0]}
-  double gprDimerMaxStep;  // maximum step length {param_trans[1]}
+  struct gprd_translation_t {
+    double step_length;     // step length for convex regions {param_trans[0]}
+    double max_step_length; // maximum step length {param_trans[1]}
+    double rotrem_thresh;   // {rotation_removal_projection_threshold}
+  } gprd_trans_options;
   double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the
                                // ratio of inter-atomic distances between the
                                // image and its "nearest observed data point"

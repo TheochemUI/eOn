@@ -569,6 +569,10 @@ GPR Dimer:
           kind: float
           default: 0.1
 
+        rotation_removal_projection_threshold:
+          kind: float
+          default: 0.1
+
         force_threshold:
           kind: float
           default: 0.01

@@ -4,15 +4,10 @@
 #include "Dynamics.h"
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
-#include "Hessian.h"
 #include "INIFile.h"
 #include "ImprovedDimer.h"
-#include "Job.h"
-#include "NudgedElasticBand.h"
-#include "Potential.h"
 #include "Prefactor.h"
 #include "PrefactorJob.h"
-#include "ReplicaExchangeJob.h"
 #include "magic_enum/magic_enum.hpp"
 #include <errno.h>
 #include <float.h>
@@ -214,24 +209,26 @@ Parameters::Parameters() {
 
   // [GPR Dimer] //
   gprDimerRotationAngle = 0.005;
-  gprDimerConvergedAngle = 0.08;     // T_anglerot_init
-  gprDimerRelaxConvAngle = 0.001;    // T_anglerot_gp
-  gprDimerInitRotationsMax = 6;      // num_iter_initrot; should be DoF
-  gprDimerRelaxRotationsMax = 10;    // num_iter_rot_gp
-  gprDimerDivisorTdimerGP = 10;      // divisor_T_dimer_gp
-  gprDimerMaxOuterIterations = 300;  // num_bigiter
-  gprDimerMaxInnerIterations = 1000; // num_iter
-  gprDimerMidpointMaxDisp = 0.5;     // disp_max
-  gprDimerRotOptMethod = "lbfgs";    // method_rot
-  gprDimerTransOptMethod = "lbfgs";  // method_trans
-  gprActiveRadius = 5.0;             // actidst_fro
-  gprDimerSep = 0.01;                // dimer_sep
-  gprDimerConvStep = 0.1;            // param_trans[0]
-  gprDimerMaxStep = 0.1;             // param_trans[1]
-  gprDimerRatioAtLimit = 0.66667;    // ratio_at_limit
-  gprDimerInitRotGP = 0;             // initrot_nogp
-  gprDimerInitTransGP = 0;           // inittrans_nogp
-  gprDimerManyIterations = true;     // islarge_num_iter
+  gprDimerConvergedAngle = 0.08;            // T_anglerot_init
+  gprDimerRelaxConvAngle = 0.001;           // T_anglerot_gp
+  gprDimerInitRotationsMax = 6;             // num_iter_initrot; should be DoF
+  gprDimerRelaxRotationsMax = 10;           // num_iter_rot_gp
+  gprDimerDivisorTdimerGP = 10;             // divisor_T_dimer_gp
+  gprDimerMaxOuterIterations = 300;         // num_bigiter
+  gprDimerMaxInnerIterations = 1000;        // num_iter
+  gprDimerMidpointMaxDisp = 0.5;            // disp_max
+  gprDimerRotOptMethod = "lbfgs";           // method_rot
+  gprDimerTransOptMethod = "lbfgs";         // method_trans
+  gprActiveRadius = 5.0;                    // actidst_fro
+  gprDimerSep = 0.01;                       // dimer_sep
+  gprd_trans_options.step_length = 0.1;     // param_trans[0]
+  gprd_trans_options.max_step_length = 0.1; // param_trans[1]
+  gprd_trans_options.rotrem_thresh =
+      0.1;                        // rotation_removal_projection_threshold
+  gprDimerRatioAtLimit = 0.66667; // ratio_at_limit
+  gprDimerInitRotGP = 0;          // initrot_nogp
+  gprDimerInitTransGP = 0;        // inittrans_nogp
+  gprDimerManyIterations = true;  // islarge_num_iter
   // GPR Params
   gprDimerSigma2 = 1e-8;      // gp_sigma2
   gprDimerJitterSigma2 = 0;   // jitter_sigma2
@@ -792,10 +789,12 @@ int Parameters::load(FILE *file) {
     gprActiveRadius =
         ini.GetValueF("GPR Dimer", "active_radius", gprActiveRadius);
     gprDimerSep = ini.GetValueF("GPR Dimer", "dimer_separation", gprDimerSep);
-    gprDimerConvStep =
-        ini.GetValueF("GPR Dimer", "convex_region_step_size", gprDimerConvStep);
-    gprDimerMaxStep =
-        ini.GetValueF("GPR Dimer", "max_step_size", gprDimerMaxStep);
+    gprd_trans_options.step_length =
+        ini.GetValueF("GPR Dimer", "convex_region_step_size", gprd_trans_options.step_length);
+    gprd_trans_options.max_step_length =
+        ini.GetValueF("GPR Dimer", "max_step_size", gprd_trans_options.max_step_length);
+    gprd_trans_options.rotrem_thresh =
+        ini.GetValueF("GPR Dimer", "rotation_removal_projection_threshold", gprd_trans_options.rotrem_thresh);
     gprDimerRatioAtLimit =
         ini.GetValueF("GPR Dimer", "ratio_at_limit", gprDimerRatioAtLimit);
     gprDimerInitRotGP =
@@ -825,12 +824,12 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("GPR Dimer", "opt_tol_func", gpr_hypopt_options.tol_func);
     gpr_hypopt_options.tol_sol =
         ini.GetValueF("GPR Dimer", "opt_tol_sol", gpr_hypopt_options.tol_sol);
-    gpr_hypopt_options.max_iter =
-        ini.GetValueI("GPR Dimer", "opt_max_iterations", gpr_hypopt_options.max_iter);
+    gpr_hypopt_options.max_iter = ini.GetValueI(
+        "GPR Dimer", "opt_max_iterations", gpr_hypopt_options.max_iter);
     gpr_hypopt_options.scg.lambda_limit = ini.GetValueF(
         "GPR Dimer", "scg_lambda_limit", gpr_hypopt_options.scg.lambda_limit);
-    gpr_hypopt_options.scg.lambda =
-        ini.GetValueF("GPR Dimer", "scg_lambda_init", gpr_hypopt_options.scg.lambda);
+    gpr_hypopt_options.scg.lambda = ini.GetValueF(
+        "GPR Dimer", "scg_lambda_init", gpr_hypopt_options.scg.lambda);
     gpr_hypopt_options.adam.lr = ini.GetValueF(
         "GPR Dimer", "adam_learning_rate", gpr_hypopt_options.adam.lr);
     gpr_hypopt_options.adam.lrd = ini.GetValueF(
@@ -861,6 +860,9 @@ int Parameters::load(FILE *file) {
     ;
     gprDebugGradFile =
         ini.GetValue("GPR Dimer", "debug_gradient_basename", gprDebugGradFile);
+    ;
+    gprDebugOutExt =
+        ini.GetValue("GPR Dimer", "debug_out_ext", gprDebugOutExt);
     ;
     gprDebugOffsetMidPoint = ini.GetValueF("GPR Dimer", "debug_midpoint_offset",
                                            gprDebugOffsetMidPoint);
