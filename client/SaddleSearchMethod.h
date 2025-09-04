@@ -22,8 +22,9 @@ protected:
 public:
   SaddleSearchMethod(std::shared_ptr<Potential> potPassed,
                      std::shared_ptr<Parameters> paramsPassed)
-      : pot{potPassed}, params{paramsPassed} {};
-  virtual ~SaddleSearchMethod(){};
+      : pot{potPassed},
+        params{paramsPassed} {};
+  virtual ~SaddleSearchMethod() {};
   virtual int run() = 0;
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;

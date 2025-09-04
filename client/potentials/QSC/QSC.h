@@ -42,7 +42,7 @@ public:
       : QSC(std::make_shared<Parameters>()) {}
   ~QSC(void);
 
-  void initialize(){};
+  void initialize() {};
   void initialize(long N, const double *R, const int *atomicNrs,
                   const double *box);
   void cleanMemory();

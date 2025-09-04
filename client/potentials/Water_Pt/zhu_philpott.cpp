@@ -63,7 +63,9 @@ adds the values, otherwise it is simply marked as output.
 using namespace std;
 using namespace forcefields;
 
-template <class P> ZhuPhilpott<P>::ZhuPhilpott() : SpceCcl() {
+template <class P>
+ZhuPhilpott<P>::ZhuPhilpott()
+    : SpceCcl() {
   nPlatinum_ = 0;
   positions_ = 0;
   forces_ = 0;
@@ -114,17 +116,17 @@ void ZhuPhilpott<P>::computeHH_O_Pt_(const int nWater, const int nPt,
                                      const double r[], double f[],
                                      double &energy, double const b[],
                                      bool const fixed[]) {
-  const double(*const rh1)[6] = reinterpret_cast<const double(*)[6]>(r);
-  const double(*const rh2)[6] = reinterpret_cast<const double(*)[6]>(&r[3]);
-  const double(*const ro)[3] =
-      reinterpret_cast<const double(*)[3]>(&r[nWater * 6]);
-  const double(*const rPt)[3] =
-      reinterpret_cast<const double(*)[3]>(&r[nWater * 9]);
+  const double (*const rh1)[6] = reinterpret_cast<const double (*)[6]>(r);
+  const double (*const rh2)[6] = reinterpret_cast<const double (*)[6]>(&r[3]);
+  const double (*const ro)[3] =
+      reinterpret_cast<const double (*)[3]>(&r[nWater * 6]);
+  const double (*const rPt)[3] =
+      reinterpret_cast<const double (*)[3]>(&r[nWater * 9]);
 
-  double(*const fh1)[6] = reinterpret_cast<double(*)[6]>(f);
-  double(*const fh2)[6] = reinterpret_cast<double(*)[6]>(&f[3]);
-  double(*const fo)[3] = reinterpret_cast<double(*)[3]>(&f[nWater * 6]);
-  double(*const fPt)[3] = reinterpret_cast<double(*)[3]>(&f[nWater * 9]);
+  double (*const fh1)[6] = reinterpret_cast<double (*)[6]>(f);
+  double (*const fh2)[6] = reinterpret_cast<double (*)[6]>(&f[3]);
+  double (*const fo)[3] = reinterpret_cast<double (*)[3]>(&f[nWater * 6]);
+  double (*const fPt)[3] = reinterpret_cast<double (*)[3]>(&f[nWater * 9]);
 
   if (fixed) {
     bool const(*const xh1)[2] = reinterpret_cast<bool const(*)[2]>(fixed);
@@ -163,17 +165,17 @@ template <class P>
 void ZhuPhilpott<P>::computeHH_O_(const int nWater, const double r[],
                                   double f[], double &energy, double const b[],
                                   bool const fixed[]) {
-  const double(*const rh1)[6] = reinterpret_cast<const double(*)[6]>(r);
-  const double(*const rh2)[6] = reinterpret_cast<const double(*)[6]>(&r[3]);
-  const double(*const ro)[3] =
-      reinterpret_cast<const double(*)[3]>(&r[nWater * 6]);
-  const double(*const rPt)[3] =
-      reinterpret_cast<const double(*)[3]>(positions_);
+  const double (*const rh1)[6] = reinterpret_cast<const double (*)[6]>(r);
+  const double (*const rh2)[6] = reinterpret_cast<const double (*)[6]>(&r[3]);
+  const double (*const ro)[3] =
+      reinterpret_cast<const double (*)[3]>(&r[nWater * 6]);
+  const double (*const rPt)[3] =
+      reinterpret_cast<const double (*)[3]>(positions_);
 
-  double(*const fh1)[6] = reinterpret_cast<double(*)[6]>(f);
-  double(*const fh2)[6] = reinterpret_cast<double(*)[6]>(&f[3]);
-  double(*const fo)[3] = reinterpret_cast<double(*)[3]>(&f[nWater * 6]);
-  double(*const fPt)[3] = reinterpret_cast<double(*)[3]>(forces_);
+  double (*const fh1)[6] = reinterpret_cast<double (*)[6]>(f);
+  double (*const fh2)[6] = reinterpret_cast<double (*)[6]>(&f[3]);
+  double (*const fo)[3] = reinterpret_cast<double (*)[3]>(&f[nWater * 6]);
+  double (*const fPt)[3] = reinterpret_cast<double (*)[3]>(forces_);
 
   if (fixed) {
     bool const(*const xh1)[2] = reinterpret_cast<bool const(*)[2]>(fixed);

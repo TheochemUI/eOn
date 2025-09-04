@@ -33,7 +33,8 @@ class Tersoff : public Potential {
 public:
   // Functions
   // constructor
-  Tersoff(std::shared_ptr<Parameters> p) : Potential(p) {}
+  Tersoff(std::shared_ptr<Parameters> p)
+      : Potential(p) {}
 
   // To satisfy interface
   void initialize(void);

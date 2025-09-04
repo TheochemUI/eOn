@@ -44,7 +44,7 @@ This will take much longer, since `fetch`, unlike `checkout` downloads all
 changes. Cross-reference with the "fuller" variant from here:
 
 ```{code-block} bash
-svn log | awk -F '|' '/^r/ {sub("^ ", "", $2); 
+svn log | awk -F '|' '/^r/ {sub("^ ", "", $2);
 sub(" $", "", $2); print $2" = "$2" <"$2">"}' | sort -u > authors-transform.txt
 # Includes things like
 (no author) = (no author) <na@NODATA>

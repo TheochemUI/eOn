@@ -9,7 +9,7 @@ In order, we require:
 - LAMMPS as a shared library, [documented here](https://docs.lammps.org/Build_link.html)
   + Without MPI
   + Linked to the same QUIP
-  
+
 The rest of the document walks through a concrete example of this use-case.
 
 ## Sample run
@@ -18,7 +18,7 @@ This needs to be in conjunction with the LAMMPS [pair style
 quip](https://docs.lammps.org/pair_quip.html).
 
 ## Example Build
-  
+
 ## Base environment
 
 ```{code-block} bash
@@ -35,15 +35,15 @@ git clone https://github.com/HaoZeke/quip-nix.git
 cd quip-nix
 git clone --recursive https://github.com/libAtoms/QUIP.git QUIP
 cd QUIP/src
-git clone --recursive https://github.com/mcaroba/turbogap.git 
+git clone --recursive https://github.com/mcaroba/turbogap.git
 source ./../setEnvVars.sh
-mkdir -p build/$QUIP_ARCH 
+mkdir -p build/$QUIP_ARCH
 mkdir -p "$QUIP_STRUCTS_DIR"
-cp ../files/$QUIP_ARCH-Makefile.inc build/$QUIP_ARCH/Makefile.inc 
+cp ../files/$QUIP_ARCH-Makefile.inc build/$QUIP_ARCH/Makefile.inc
 export EXTRA_LINKOPTS="$(pkg-config --libs openblas)"
 make -j1
 make libquip
-make install 
+make install
 ```
 
 We need to also keep track of the build system outputs as well (though it is
@@ -81,7 +81,7 @@ export LMP_BLD_DIR=$(pwd)
 Assuming we are starting from scratch..
 
 ```{code-block} bash
-gh repo clone theochemui/eon 
+gh repo clone theochemui/eon
 cd eOn
 ln -sf $LMP_BLD_DIR/liblammps* "./client/potentials/LAMMPS/"
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib -Dwith_lammps=True --buildtype=release
@@ -89,4 +89,3 @@ meson install -C bbdir
 ```
 
 At this point both `eonclient` examples and `eon` (e.g. AKMC) examples will run.
-

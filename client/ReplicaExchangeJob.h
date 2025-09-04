@@ -18,7 +18,8 @@
 class ReplicaExchangeJob : public Job {
 public:
   ReplicaExchangeJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), forceCalls{0} {
+      : Job(std::move(parameters)),
+        forceCalls{0} {
     log = spdlog::get("combi");
   }
   ~ReplicaExchangeJob(void) = default;

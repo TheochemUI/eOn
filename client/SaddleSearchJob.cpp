@@ -11,8 +11,8 @@
 */
 #include "SaddleSearchJob.h"
 #include "EpiCenters.h"
-#include "Potential.h"
 #include "HelperFunctions.h"
+#include "Potential.h"
 
 #include <stdio.h>
 #include <string>

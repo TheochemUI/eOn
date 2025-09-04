@@ -33,7 +33,7 @@ public:
   // Functions
   // constructor
   EDIP(std::shared_ptr<Parameters> params)
-      : Potential(PotType::EDIP, params){};
+      : Potential(PotType::EDIP, params) {};
 
   // To satisfy interface
   void cleanMemory(void);

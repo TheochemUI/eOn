@@ -38,7 +38,7 @@ public:
       : Potential(PotType::EAM_AL, params) {
     potinit_();
   };
-  ~Aluminum(void){};
+  ~Aluminum(void) {};
   // To satisfy interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;

@@ -17,16 +17,21 @@
 class GlobalOptimizationJob : public Job {
 public:
   GlobalOptimizationJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), nlmin{0}, ediff{1.E-1}, ekin{5.E-2},
+      : Job(std::move(parameters)),
+        nlmin{0},
+        ediff{1.E-1},
+        ekin{5.E-2},
         beta1{params->globalOptimizationBeta},
         beta2{params->globalOptimizationBeta},
         beta3{1. / params->globalOptimizationBeta},
         alpha1{1. / params->globalOptimizationAlpha},
         alpha2{params->globalOptimizationAlpha},
-        mdmin{params->globalOptimizationMdmin}, fcallsMove{0}, firstStep{true},
-        fcallsRelax{0}, monfile{fopen("monitoring.dat", "w")}, earrfile{fopen(
-                                                                   "earr.dat",
-                                                                   "w")} {
+        mdmin{params->globalOptimizationMdmin},
+        fcallsMove{0},
+        firstStep{true},
+        fcallsRelax{0},
+        monfile{fopen("monitoring.dat", "w")},
+        earrfile{fopen("earr.dat", "w")} {
 
     log = spdlog::get("combi");
   }
