@@ -28,7 +28,7 @@ Snapshots of Carboxyl group on an Au(111). (a) Hydrogen of carboxyl transfers to
 ## Dependencies
 
 The kinetic database is contained in a library separate from `eOn`. It is part
-of the `tsase` python module [located here](http://theory.cm.utexas.edu/tsase). 
+of the `tsase` python module [located here](http://theory.cm.utexas.edu/tsase).
 
 ## Configuration
 

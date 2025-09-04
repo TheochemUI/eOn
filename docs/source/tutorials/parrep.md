@@ -24,7 +24,7 @@ The `config.ini` file will run a parallel replica job with 2 replicas on one loc
 Now we can run the trajectory by executing the command `python -m eon.server`
 
 ```{code-block} bash
-EONgit/examples/parallel-replica via 🅒 eongit 
+EONgit/examples/parallel-replica via 🅒 eongit
 ➜ python -m eon.server
 Eon version: 1321976b
 Simulation time: 0.000000e+00 s
@@ -43,7 +43,7 @@ Created: 2 searches
 Then use the `-n` flag to register the result::
 
 ```{code-block} bash
-EONgit/examples/parallel-replica via 🅒 eongit 
+EONgit/examples/parallel-replica via 🅒 eongit
 ➜ python -m eon.server -n
 Eon version: 1321976b
 Simulation time: 0.000000e+00 s
@@ -61,7 +61,7 @@ Making: 0 searches
 Information from the trajectory is written in the `dynamics.txt` file:
 
 ```{code-block} bash
-➜ cat dynamics.txt             
+➜ cat dynamics.txt
  step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate        energy
 -----------------------------------------------------------------------------------------------------------------------------
            0             0             0             1  5.000000e-12  5.000000e-12      0.000000  0.000000e+00   -472.909569
@@ -108,7 +108,7 @@ Time in current state: 0.000000e+00 s
 Simulation time: 1.000000e-11 s
 Queue contains: 0 searches
 Making: 0 searches
-➜ cat dynamics.txt             
+➜ cat dynamics.txt
  step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate        energy
 -----------------------------------------------------------------------------------------------------------------------------
            0             0             0             1  5.000000e-12  5.000000e-12      0.000000  0.000000e+00   -472.909569

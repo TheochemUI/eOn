@@ -29,7 +29,8 @@ protected:
 public:
   ObjectiveFunction(std::shared_ptr<Matter> matterPassed,
                     std::shared_ptr<Parameters> paramsPassed)
-      : matter{matterPassed}, params{paramsPassed} {}
+      : matter{matterPassed},
+        params{paramsPassed} {}
   virtual ~ObjectiveFunction() {}
   virtual double getEnergy() = 0;
   virtual VectorXd getGradient(bool fdstep = false) = 0;

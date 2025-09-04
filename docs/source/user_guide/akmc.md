@@ -47,7 +47,7 @@ method dynamically builds a rate table based on local atomic movements and
 energy barriers. This allows for more accurate modeling of complex systems where
 atomic positions are not fixed to a grid. The confidence scheme and thermal
 accessibility settings in AKMC ensure that transitions between states are based
-on well-defined criteria, enhancing the precision of simulations. 
+on well-defined criteria, enhancing the precision of simulations.
 
 The server is reponsible for the time evolution of the system by the KMC
 algorithm. Each process leading to a new state is tabulated in a rate table and

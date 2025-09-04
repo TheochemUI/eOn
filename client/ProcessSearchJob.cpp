@@ -12,9 +12,9 @@
 #include "ProcessSearchJob.h"
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
-#include "HelperFunctions.h"
 #include "DynamicsSaddleSearch.h"
 #include "EpiCenters.h"
+#include "HelperFunctions.h"
 #include "MinModeSaddleSearch.h"
 #include "Optimizer.h"
 #include "Prefactor.h"
@@ -245,7 +245,8 @@ void ProcessSearchJob::saveData(int status) {
   fprintf(
       fileResults, "%s potential_type\n",
       std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
-  fprintf(fileResults, "%ld total_force_calls\n", fCallsMin+fCallsSaddle+fCallsPrefactors);
+  fprintf(fileResults, "%ld total_force_calls\n",
+          fCallsMin + fCallsSaddle + fCallsPrefactors);
   fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
   //    fprintf(fileResults, "%ld force_calls_minimization\n",
   //    SaddleSearch->forceCallsMinimization + fCallsMin);

@@ -62,9 +62,9 @@ void Dynamics::oneStep(int stepNumber) {
     kinT = (2.0 * kinE / nFreeCoords / kB);
 
     if (stepNumber % parameters->writeMoviesInterval == 0) {
-      SPDLOG_LOGGER_DEBUG(
-          log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n", "[Dynamics]",
-          stepNumber, kinE, potE, kinE + potE, kinT);
+      SPDLOG_LOGGER_DEBUG(log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n",
+                          "[Dynamics]", stepNumber, kinE, potE, kinE + potE,
+                          kinT);
     }
   }
 }

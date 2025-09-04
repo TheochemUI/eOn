@@ -35,7 +35,7 @@ class AMS : public Potential {
 public:
   AMS(std::shared_ptr<Parameters> p);
   ~AMS();
-  void initialize(){};
+  void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);

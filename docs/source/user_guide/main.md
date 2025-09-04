@@ -81,7 +81,7 @@ with acceleration provided by Gaussian Process Regression or neural networks.
 
 ## Miscellaneous
 
-Finally we note the following overview of some other sections 
+Finally we note the following overview of some other sections
 
 Main
 : which has options not specific to a single job type.
@@ -116,4 +116,3 @@ Debug
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.MainConfig
 ```
-

@@ -238,7 +238,7 @@ def neighbor_list_vectors(p, cutoff, brute=False):
     '''Points from center to neighbor'''
     nl = neighbor_list(p, cutoff, brute=brute)
     nl_vec = []
-    
+
     ibox = numpy.linalg.inv(p.box)
     for center_index in range(len(p)):
         nl_vec.append([])

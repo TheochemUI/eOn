@@ -248,8 +248,8 @@ public:
                           // matrix {actdist_fro}
   double gprDimerSep; // distance from the middle point of the dimer to the two
                       // images {dimer_sep}
-  double gprDimerConvStep;  // step length for convex regions {param_trans[0]}
-  double gprDimerMaxStep;   // maximum step length {param_trans[1]}
+  double gprDimerConvStep; // step length for convex regions {param_trans[0]}
+  double gprDimerMaxStep;  // maximum step length {param_trans[1]}
   double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the
                                // ratio of inter-atomic distances between the
                                // image and its "nearest observed data point"
@@ -325,11 +325,12 @@ public:
 
   // [Metatomic] //
   struct metatomic_options_t {
-    std::string model_path; // Path to the TorchScript model file.
-    std::string device; // "cpu", "cuda", "mps", or empty to auto-detect.
-    std::string length_unit; // The unit of length used in the simulation (e.g., "angstrom").
+    std::string model_path;  // Path to the TorchScript model file.
+    std::string device;      // "cpu", "cuda", "mps", or empty to auto-detect.
+    std::string length_unit; // The unit of length used in the simulation (e.g.,
+                             // "angstrom").
     std::string extensions_directory; // Path for TorchScript extensions.
-    bool check_consistency; // To enable model's internal checks.
+    bool check_consistency;           // To enable model's internal checks.
   } metatomic_options;
 
   // [Lanczos] //
@@ -379,7 +380,7 @@ public:
   bool nebElasticBand;
   double nebConvergedForce; // force convergence criterion required for an
                             // optimization
-  double nebciAfter; // force convergence before ci-neb is used
+  double nebciAfter;        // force convergence before ci-neb is used
   // For energy weighted
   double nebKSPMin;
   double nebKSPMax;
