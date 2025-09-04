@@ -14,7 +14,8 @@ and installation process.
 * **Advanced Transition State Finding with RO-NEB-CI**: A powerful new tool for
   accurately locating complex transition states.
 * **Machine-Learned Potentials with `metatomic`**: Full support for `metatomic`
-  potentials via the metatensor ecosystem.
+  potentials via the [metatensor
+    ecosystem](https://docs.metatensor.org/latest/index.html).
 * **Expanded Potential Interfaces**: Drastically increased interoperability with
   direct interfaces for **NWChem**, **ORCA**, **AMS**, **XTB**, and **ASE**.
 * **Input Validation and Schema**: A comprehensive Pydantic schema for all

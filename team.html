@@ -433,8 +433,18 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributors">Contributors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#license-history">License history</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#primary-contributors">Primary Contributors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jonsson-group-university-of-iceland">Jónsson Group (University of Iceland)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#henkelman-group-ut-austin">Henkelman Group (UT Austin)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#li-lei-group">Li Lei Group</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-contributions">Other contributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#related-software-and-collaborators">Related software and collaborators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#license-history">License history</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -450,17 +460,20 @@ document.write(`
 <h1>eOn Team<a class="headerlink" href="#eon-team" title="Link to this heading">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">eOn</span></code> software is primarily a collaboration between the Henkelman and
 Jónsson research groups.</p>
-<section id="contributors">
-<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading">#</a></h2>
+<section id="primary-contributors">
+<h2>Primary Contributors<a class="headerlink" href="#primary-contributors" title="Link to this heading">#</a></h2>
 <p>In no particular order. Refer to the log for more details.</p>
-<p><a class="reference external" href="https://hj.hi.is/researchgroup.html">Jónsson Group</a> (University of Iceland)</p>
+<section id="jonsson-group-university-of-iceland">
+<h3><a class="reference external" href="https://hj.hi.is/researchgroup.html">Jónsson Group</a> (University of Iceland)<a class="headerlink" href="#jonsson-group-university-of-iceland" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><a class="reference external" href="https://rgoswami.me">Rohit Goswami</a></p></li>
+<li><p><a class="reference external" href="https://rgoswami.me">Rohit Goswami</a>, <strong>release manager</strong></p></li>
 <li><p>Andreas Pederson</p></li>
 <li><p>Alejandro Pena Torres</p></li>
 <li><p>Vilhjálmur Ásgeirsson</p></li>
 </ul>
-<p><a class="reference external" href="https://theory.cm.utexas.edu/henkelman/">Henkelman Group</a> (UT Austin)</p>
+</section>
+<section id="henkelman-group-ut-austin">
+<h3><a class="reference external" href="https://theory.cm.utexas.edu/henkelman/">Henkelman Group</a> (UT Austin)<a class="headerlink" href="#henkelman-group-ut-austin" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Samuel Chill</p></li>
 <li><p>Rye Terrell</p></li>
@@ -473,10 +486,15 @@ Jónsson research groups.</p>
 <li><p>Sung Hoon Jung</p></li>
 </ul>
 <!-- TODO(rg) update!! -->
-<p><a class="reference external" href="https://faculty.sustech.edu.cn/lil33/en/">Li Lei Group</a></p>
+</section>
+<section id="li-lei-group">
+<h3><a class="reference external" href="https://faculty.sustech.edu.cn/lil33/en/">Li Lei Group</a><a class="headerlink" href="#li-lei-group" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>SONG Zichen</p></li>
 </ul>
+</section>
+<section id="other-contributions">
+<h3>Other contributions<a class="headerlink" href="#other-contributions" title="Link to this heading">#</a></h3>
 <p>With contributions from a number of other developers:</p>
 <ul class="simple">
 <li><p>Tobias Brink (TU Darmstadt)</p></li>
@@ -488,14 +506,65 @@ Jónsson research groups.</p>
 <li><p>Jutta Rogal (Bochum)</p></li>
 </ul>
 </section>
+<section id="related-software-and-collaborators">
+<h3>Related software and collaborators<a class="headerlink" href="#related-software-and-collaborators" title="Link to this heading">#</a></h3>
+<p>The development of eOn has been influenced and supported by the following key
+collaborators and groups, many of which came together for the
+<a class="reference external" href="https://github.com/CECAM-LTS-MAP">CECAM-LTS-MAP</a> workshop:</p>
+<ul class="simple">
+<li><p>The <a class="reference external" href="https://mammasmias.gitlab.io/">MAMASMIAS consortium</a>, represented by <a class="reference external" href="https://github.com/mgoonde">Dr.
+Miha Gunde</a>, has had a major impact on recent
+versions of the code, particularly in improving its interoperability.<a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
+</ul>
+<p>Discussions on the software’s architecture have been advanced by our
+collaborators in Canada:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.laurentkarimbeland.com/">Prof. Laurent Béland</a> (Queen’s
+University, Kingston) led strategic discussions on the design of KMC
+algorithms and provided direct support for the project by funding Rohit
+Goswami’s development work for a quarter in 2025 towards combining
+disparate KMC codes<a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> .</p>
+<ul>
+<li><p>The k-ART<a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>  group of <a class="reference external" href="https://phys.umontreal.ca/repertoire-departement/professeurs/professeur/in/in14441/sg/Normand%20Mousseau/">Prof. Normand
+Mousseau</a>
+(University of Montreal) contributed to discussions on project’s
+high-level design.</p></li>
+</ul>
+</li>
+</ul>
+<p>Rohit also acknowledges funding support from
+<a class="reference external" href="https://www.epfl.ch/labs/cosmo/">lab-COSMO</a>, for supporting
+<a class="reference external" href="https://docs.metatensor.org/metatomic/latest/overview.html">metatomic</a> models
+in EON, in particular <a class="reference external" href="https://guillaume.fraux.fr/">Dr. Guillaume Fraux</a> and
+<a class="reference external" href="https://people.epfl.ch/michele.ceriotti?lang=en">Prof. Michele Ceriotti</a>.</p>
+</section>
+</section>
 <section id="license-history">
 <h2>License history<a class="headerlink" href="#license-history" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">eOn</span></code> was originally licensed under the GNU GPL v3 until 2017.  In 2017, the
 license was changed to GNU GPL v2.  Since 2020, eOn is licensed under the BSD
 3-Clause License. Some more context is at
 <a class="reference external" href="https://github.com/TheochemUI/eOn/issues/140">gh-140</a>.</p>
+<section id="footnotes">
+<h3>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading">#</a></h3>
 </section>
 </section>
+</section>
+<hr class="footnotes docutils" />
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://mammasmias.github.io/IterativeRotationsAssignments/intro.html">IRA</a> has also been used in tandem with EON for research in 2024-2025</p>
+</aside>
+<aside class="footnote brackets" id="id5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>The work-in-progress (2025) pyKMC code blends concepts from EON and k-ART</p>
+</aside>
+<aside class="footnote brackets" id="id6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://kart-doc.readthedocs.io/en/latest/download.html">k-ART</a> is an off-lattice KMC code primarily used for metals but with overlapping concepts</p>
+</aside>
+</aside>
 
 
                 </article>
@@ -542,8 +611,18 @@ license was changed to GNU GPL v2.  Since 2020, eOn is licensed under the BSD
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributors">Contributors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#license-history">License history</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#primary-contributors">Primary Contributors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jonsson-group-university-of-iceland">Jónsson Group (University of Iceland)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#henkelman-group-ut-austin">Henkelman Group (UT Austin)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#li-lei-group">Li Lei Group</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-contributions">Other contributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#related-software-and-collaborators">Related software and collaborators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#license-history">License history</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -568,7 +647,7 @@ By Rohit Goswami
 
   <p class="copyright">
     
-      © Copyright 2024, Henkelmann Group, Jonsson Group, Rohit Goswami.
+      © Copyright 2024, Henkelmann Group, Jónsson Group, Rohit Goswami.
       <br/>
     
   </p>
@@ -595,7 +674,169 @@ By Rohit Goswami
   <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
 <script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
   <footer class="bd-footer">
   </footer>
+<!------>
+
   </body>
 </html>
