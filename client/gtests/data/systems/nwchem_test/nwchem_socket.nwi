@@ -15,18 +15,10 @@ geometry units bohr noautosym nocenter noautoz
   H  0.0 0.0 8
 end
 
-basis noprint
-  * library 3-21G
-end
-
-scf
-  nopen 0
-  thresh 1e-8
-  maxiter 2000
-end
+include nwchem_settings.nwi
 
 driver
-  socket ipi_client 127.0.0.1:9999
+  socket unix eon_nwchem
 end
 
 task scf optimize
