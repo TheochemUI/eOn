@@ -26,6 +26,9 @@ gfortran = ">=13.3.0,<13.4"
 fmt = ">=11.1.4,<12"
 spdlog = ">=1.15.3,<2"
 
+[pypi-dependencies]
+towncrier = ">=25.8.0, <26"
+
 [environments]
 # TODO(rg): Flesh out the rest of these
 metatomic = {features = ["metatomic"]}
@@ -35,6 +38,7 @@ dev-mta = {features = ["lint", "develop", "metatomic"]}
 lammps = {features = ["lammps"]}
 ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
+docs = {features = ["docs"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
@@ -77,5 +81,31 @@ pybind11 = ">=3.0.0,<4"
 [feature.nwchem.pypi-dependencies]
 psutil = ">=7.0.0, <8"
 
-[pypi-dependencies]
-towncrier = ">=25.8.0, <26"
+[feature.docs.dependencies]
+myst-parser = "*"
+sphinx = "*"
+sphinx-copybutton = "*"
+sphinx-design = "*"
+sphinx-autobuild = "*"
+sphinxcontrib-spelling = "*"
+sphinx-autodoc2 = "*"
+sphinx-book-theme = "*"
+sphinx-togglebutton = "*"
+sphinx-favicon = "*"
+mdit-py-plugins = "*"
+sphinxcontrib-bibtex = "*"
+autodoc-pydantic = "*"
+
+[feature.docs.pypi-dependencies]
+sphinx-contributors = "*"
+
+[feature.docs.tasks]
+makedocs = "sphinx-build -b html docs/source html"
+
+[feature.docs.tasks.srvdocs]
+depends-on = [
+  { task = "makedocs", environment = "docs" },
+]
+cmd = """
+python -m http.server -d html
+"""
