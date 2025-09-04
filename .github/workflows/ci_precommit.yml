@@ -8,12 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install Conda environment
-      uses: mamba-org/setup-micromamba@v1
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+    - uses: prefix-dev/setup-pixi@v0.8.10
       with:
-        environment-file: conda-lock.yml
-        environment-name: eongit
+      cache: true
+      cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      activate-environment: true
+      environments: >-
+        dev
     - name: Run precommit
-      shell: bash -l {0}
+      shell: pixi run bash -e {0}
       run: |
-        pipx run pre-commit run -a
+        uvx pre-commit run -a -vvv
