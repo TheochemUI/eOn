@@ -1,7 +1,15 @@
-#ifndef DIMER_H
-#define DIMER_H
-
-#include "HelperFunctions.h"
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 #include "LowestEigenmode.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -43,5 +51,3 @@ private:
       AtomMatrix &forceDiffOrthogonalToDimer); // determine the rotational force
                                                // on the dimer
 };
-
-#endif

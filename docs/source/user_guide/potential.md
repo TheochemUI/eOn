@@ -1,6 +1,6 @@
 # Potential
 
-`eON` supports a large number of potentials, some vendored within the executable
+`eOn` supports a large number of potentials, some vendored within the executable
 and libraries and others via interfaces.
 
 ```{note}

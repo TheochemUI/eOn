@@ -1,5 +1,15 @@
-#ifndef SteepestDescent_H
-#define SteepestDescent_H
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 
 #include "Eigen.h"
 #include "HelperFunctions.h"
@@ -33,5 +43,3 @@ private:
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
 };
-
-#endif

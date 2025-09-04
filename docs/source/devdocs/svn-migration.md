@@ -63,7 +63,7 @@ Since the SVN source has no tags or branches, there are no cleanup tasks
 required.
 
 ```{note}
-`eON` used to use CVS for managing history, which was not imported when the switch to SVN took place, so rememeber to rebase a dummy commit co-authored by contributors before 2010!
+`eOn` used to use CVS for managing history, which was not imported when the switch to SVN took place, so rememeber to rebase a dummy commit co-authored by contributors before 2010!
 ```
 
 Since we already have `svn` as a branch and even tags, it is a bit of a pain to

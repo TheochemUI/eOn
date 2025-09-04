@@ -1,7 +1,15 @@
-#ifndef FIRE_H
-#define FIRE_H
-
-#include "Matter.h"
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 #include "Optimizer.h"
 #include "Parameters.h"
 
@@ -47,5 +55,3 @@ private:
   size_t m_iteration;
   shared_ptr<spdlog::logger> m_log;
 };
-
-#endif

@@ -14,7 +14,7 @@ At each basin hopping step the client will print out:
 
 ## Notes
 
-- `eON` defaults to letting displacements occur from minimized structures as per
+- `eOn` defaults to letting displacements occur from minimized structures as per
   the method of {cite:t}`bh-whiteInvestigationTwoApproaches1998`, which is
   controlled by {any}`siginificant_structure
   <eon.schema.BasinHoppingConfig.significant_structure>`

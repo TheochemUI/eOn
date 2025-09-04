@@ -1,3 +1,13 @@
+C This file is part of eOn.
+C
+C SPDX-License-Identifier: BSD-3-Clause
+C
+C Copyright (c) 2010--present, eOn Development Team
+C All rights reserved.
+C
+C Repo:
+C https://github.com/TheochemUI/eOn
+C
 !force
       subroutine FEFORCE(nm,x0,y0,z0,ispec,fx,fy,fz,pe,ax,ay,az)
           implicit  real*8 ( a-h,o-z )

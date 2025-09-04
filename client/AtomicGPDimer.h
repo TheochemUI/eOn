@@ -1,6 +1,15 @@
-#ifndef ATOMICGPDIMER_H
-#define ATOMICGPDIMER_H
-
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 #include "Eigen.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
@@ -40,5 +49,3 @@ private:
   gpr::Observation init_observations, init_middle_point;
   gpr::Coord orient_init, R_init;
 };
-
-#endif

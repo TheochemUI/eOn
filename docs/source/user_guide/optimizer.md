@@ -1,10 +1,10 @@
 # Optimizer
 
 ```{note}
-All the optimizers in `eON` **do not** use a line search to determine steepest descent!!
+All the optimizers in `eOn` **do not** use a line search to determine steepest descent!!
 ```
 
-There are several other ways in which the `eON` implementations differ from a
+There are several other ways in which the `eOn` implementations differ from a
 standard optimizer software suite[^1] . Some prominent reasons are:
 - They are meant to be used with the <project:neb.md> which does not
   have well defined closed form energy surface
