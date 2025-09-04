@@ -17,7 +17,8 @@ and installation process.
     ([\#239](https://github.com/theochemui/eongit/issues/239))
   * **Machine-Learned Potentials with `metatomic`**: Integrated full support for
     `metatomic` potentials, enabling high-performance simulations with
-    state-of-the-art models from the metatensor ecosystem.
+    state-of-the-art models from the [metatensor
+    ecosystem](https://docs.metatensor.org/latest/index.html).
     ([\#201](https://github.com/theochemui/eongit/issues/201))
   * **Expanded Potential Interfaces**: Drastically increased interoperability by
     adding direct interfaces for a wide range of popular computational chemistry
