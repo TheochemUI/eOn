@@ -9,9 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 
-#ifndef MORSE
-#define MORSE
 /** @file
       @brief Morse potential for platinum
       @author Anonymous (possibly A. Pedersen or G. Henkelman), revision: Jean
@@ -46,4 +45,3 @@ private:
   double cutoff_;
   double energyCutoff_;
 };
-#endif

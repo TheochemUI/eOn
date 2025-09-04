@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 /** @file
 Parameters for potential ZhuPhilpott.
 @author Jean-Claude C. Berthet
@@ -16,9 +17,6 @@ Parameters for potential ZhuPhilpott.
 University of Iceland
 @see zhu_philpott.hpp
 */
-#pragma once
-#ifndef FORCEFIELDS_ZHU_PHILPOTT_PARAMETERS_HPP
-#define FORCEFIELDS_ZHU_PHILPOTT_PARAMETERS_HPP
 
 namespace forcefields {
 /// Parameters for ZhuPhilpott.
@@ -62,4 +60,3 @@ struct Iceland {
 };
 } // namespace zhu_philpott_parameters
 } // namespace forcefields
-#endif

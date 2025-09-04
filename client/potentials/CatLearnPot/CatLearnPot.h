@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef CATLEARNPOT_INTERFACE
-#define CATLEARNPOT_INTERFACE
+#pragma once
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
@@ -40,4 +38,3 @@ public:
   Eigen::MatrixXd
       variance; // XXX: This is a hacky way to populate and use this variable
 };
-#endif

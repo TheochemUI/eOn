@@ -9,8 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#ifndef SteepestDescent_H
-#define SteepestDescent_H
+#pragma once
 
 #include "Eigen.h"
 #include "HelperFunctions.h"
@@ -44,5 +43,3 @@ private:
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
 };
-
-#endif

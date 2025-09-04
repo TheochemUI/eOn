@@ -10,8 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#ifndef FORCEFIELDS_TIP4P_CCL_HPP
-#define FORCEFIELDS_TIP4P_CCL_HPP
 #include "ccl.hpp"
 
 /** @file
@@ -49,4 +47,3 @@ private:
   void lennardJonesWithCutoff(Water &w1, Water &w2, double &U);
 };
 } // namespace forcefields
-#endif

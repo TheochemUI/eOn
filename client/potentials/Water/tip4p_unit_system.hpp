@@ -10,8 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#ifndef FORCEFIELDS_UNIT_SYSTEM_HPP
-#define FORCEFIELDS_UNIT_SYSTEM_HPP
 
 /** @file
 Physical constants, unit conversion.
@@ -282,5 +280,3 @@ const double ONE_OVER_4_PI_EPSILON0 =
     one_over_4_pi_epsilon0 * METRE * JOULE / COULOMB / COULOMB;
 } // namespace unit_system
 } // namespace forcefields
-
-#endif

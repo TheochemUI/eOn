@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef ASE_POTENTIAL
-#define ASE_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 #include <pybind11/embed.h>
@@ -37,4 +35,3 @@ public:
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif

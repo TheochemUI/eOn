@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef GPRPOT_INTERFACE
-#define GPRPOT_INTERFACE
+#pragma once
 
 #include "../../Potential.h"
 #include "../../subprojects/gpr_optim/gpr/ml/GaussianProcessRegression.h"
@@ -36,4 +34,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
 };
-#endif

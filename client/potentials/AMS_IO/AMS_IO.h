@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef AMS_IO_POT
-#define AMS_IO_POT
+#pragma once
 
 #include "../../Matter.h"
 #include "../../Potential.h"
@@ -35,5 +33,3 @@ private:
   const char *forcefield;
   const char *xc;
 };
-
-#endif

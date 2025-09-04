@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef LENNARD_JONES_CLUSTER_H
-#define LENNARD_JONES_CLUSTER_H
+#pragma once
 
 #include <iostream>
 #include <math.h>
@@ -46,4 +44,3 @@ public:
              double *U, double *variance, const double *box) override;
   void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
-#endif

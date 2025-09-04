@@ -10,8 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#ifndef FORCEFIELDS_SPCE_CCL_HPP
-#define FORCEFIELDS_SPCE_CCL_HPP
 #include "ccl.hpp"
 /** @file
 SPC/E potential for water.
@@ -202,4 +200,3 @@ private:
                        bool const (*const xo)[O] = 0);
 };
 } // namespace forcefields
-#endif

@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 #include <vector>
 
 #ifndef QSC_STANDALONE

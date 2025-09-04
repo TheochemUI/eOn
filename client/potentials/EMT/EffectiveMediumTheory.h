@@ -9,12 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 
 // serves as an interface between emt potentials provided by CamposASE and
 // dynamics provided by EON
-
-#ifndef EFFECTIVE_MEDIUM_THEORY
-#define EFFECTIVE_MEDIUM_THEORY
 
 #include "Asap/Atoms.h"
 #include "Asap/EMT.h"
@@ -62,5 +60,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
 };
-
-#endif

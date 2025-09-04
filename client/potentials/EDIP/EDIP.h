@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef EDIP_POTENTIAL
-#define EDIP_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 
@@ -42,4 +40,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif

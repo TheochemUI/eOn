@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef EXT_POT
-#define EXT_POT
+#pragma once
 
 #include "../../Potential.h"
 
@@ -32,4 +30,3 @@ private:
   const char *eon_extpot_path;
 };
 
-#endif

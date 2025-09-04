@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 const QSC::qsc_parameters QSC::qsc_default_params[] = {
   //{ Z,    n,   m,   epsilon,       c,      a}
     {28, 10.0, 5.0, 7.3767e-3,  84.745, 3.5157}, // Ni

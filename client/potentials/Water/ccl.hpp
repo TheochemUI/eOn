@@ -10,8 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#ifndef FORCEFIELDS_CCL_HPP
-#define FORCEFIELDS_CCL_HPP
 #include "potential_base.hpp"
 
 /** @file
@@ -106,4 +104,3 @@ private:
   void theta_4(Dtheta const &s3, double &energy, double &d3);
 };
 } // namespace forcefields
-#endif
