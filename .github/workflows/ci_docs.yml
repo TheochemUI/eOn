@@ -1,53 +1,65 @@
-name: Build documentation
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+name: Build and Deploy Documentation
+
 concurrency:
   group: "pages"
   cancel-in-progress: true
-on: [push, pull_request]
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
 jobs:
   build_docs:
     name: Build documentation
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
     permissions:
       contents: read
-      pages: write
-      id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: mamba-org/setup-micromamba@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: prefix-dev/setup-pixi@v0.8.10
         with:
-          environment-file: environment.yml
-          init-shell: >-
-            bash
-          cache-environment: true
-          post-cleanup: 'all'
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          activate-environment: true
+          environments: >-
+            docs
+
       - name: Generate Docs
-        shell: bash -el {0}
+        shell: pixi run bash -e {0}
         run: |
-          # Will also install the package
-          pipx run pdm sync -v
-          pipx run pdm run sphinx-build -b html docs/source html
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+          pixi r makedocs
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: 'html'
+          name: docs-html
+          path: html
+
   deploy:
+    name: Deploy to gh-pages
     needs: build_docs
     runs-on: ubuntu-latest
-    if: (github.event.pull_request.merged == true || github.event_name == 'push') && github.repository == 'TheochemUI/eOn'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'TheochemUI/eOn' && !contains(github.event.head_commit.message, 'ImgBot')
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      contents: write
     steps:
+      - name: Download documentation artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-html
+          path: ./html
+
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_branch: gh-pages
+          publish_dir: ./html
+          keep_files: true
+          enable_jekyll: false
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
