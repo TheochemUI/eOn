@@ -1,8 +1,15 @@
-
-#ifndef BONDBOOST_H
-#define BONDBOOST_H
-
-#include "HelperFunctions.h"
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -55,5 +62,3 @@ public:
   static const char NONE[];
   static const char BOND_BOOST[];
 };
-
-#endif

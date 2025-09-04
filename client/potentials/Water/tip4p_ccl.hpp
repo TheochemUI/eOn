@@ -1,6 +1,15 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
 #pragma once
-#ifndef FORCEFIELDS_TIP4P_CCL_HPP
-#define FORCEFIELDS_TIP4P_CCL_HPP
 #include "ccl.hpp"
 
 /** @file
@@ -38,4 +47,3 @@ private:
   void lennardJonesWithCutoff(Water &w1, Water &w2, double &U);
 };
 } // namespace forcefields
-#endif

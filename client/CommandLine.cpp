@@ -1,3 +1,14 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
 #include "CommandLine.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -39,7 +50,7 @@ void commandLine(int argc, char **argv) {
 
   auto params = std::make_shared<Parameters>();
 
-  cxxopts::Options options("eonclient", "The eON client");
+  cxxopts::Options options("eonclient", "The eOn client");
   options.add_options()("v,version", "Print version information")(
       "m,minimize", "Minimization of inputConfile saves to outputConfile")(
       "s,single", "Single point energy of inputConfile")(

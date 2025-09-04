@@ -1,7 +1,16 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 // all information for the EMT potential
-
-#ifndef EMT_PARMS_H
-#define EMT_PARMS_H
 
 // the number of different spicies that will be used in simulation
 // int const EMT_NumType = 1;
@@ -21,5 +30,3 @@ int const EMT_NumAtomPerType[] = {900, 1};
 // eventually will be deposited!
 // int const EMT_AtomType[] = {29};
 int const EMT_AtomType[] = {13, 1};
-
-#endif

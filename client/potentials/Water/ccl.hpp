@@ -1,6 +1,15 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
 #pragma once
-#ifndef FORCEFIELDS_CCL_HPP
-#define FORCEFIELDS_CCL_HPP
 #include "potential_base.hpp"
 
 /** @file
@@ -95,4 +104,3 @@ private:
   void theta_4(Dtheta const &s3, double &energy, double &d3);
 };
 } // namespace forcefields
-#endif
