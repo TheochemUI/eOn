@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "eOn"
-copyright = "2024, Henkelmann Group, Jonsson Group, Rohit Goswami"
+copyright = "2024, Henkelmann Group, Jónsson Group, Rohit Goswami"
 author = "Rohit Goswami"
 try:
     with open("../../CHANGELOG.md", "r") as f:
