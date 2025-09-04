@@ -1,1 +1,0 @@
-CI runs for Linux, Windows MacOS (Intel, ARM)
