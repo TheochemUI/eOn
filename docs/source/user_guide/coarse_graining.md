@@ -64,7 +64,7 @@ exit direction and time compared to normal KMC simulation
 [Coarse Graining]
 ```
 
-```{versionchanged} 2.1_TBA
+```{versionchanged} 3.1_TBA
 In TOML, this will be `[Coarse_Graining]`
 ```
 

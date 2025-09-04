@@ -599,7 +599,7 @@ if get_option('with_tests')
                 cpp_args: test_args,
                 link_with: _linkto,
             ),
-            workdir: meson.source_root() + '/client/gtests/data/systems/' + test.get(
+            workdir: meson.project_source_root() + '/client/gtests/data/systems/' + test.get(
                 2,
             ),
         )
@@ -621,13 +621,13 @@ if get_option('with_tests')
             link_with: _linkto,
         )
 
-        test_workdir = meson.source_root() + '/client/gtests/data/systems/nwchem_test'
+        test_workdir = meson.project_source_root() + '/client/gtests/data/systems/nwchem_test'
 
         test(
             'test_socket_nwchem',
             bash_exe,
             args: [
-                meson.source_root() + '/client/gtests/run_nwchem_test.sh',
+                meson.project_source_root() + '/client/gtests/run_nwchem_test.sh',
                 'eonclient',
                 nwchem_exe,
                 'nwchem_socket.nwi',  # The input file for the client
