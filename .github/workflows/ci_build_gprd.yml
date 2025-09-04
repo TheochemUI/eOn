@@ -7,8 +7,8 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
+    types:
+      - closed
 jobs:
   build_eon:
     runs-on: ubuntu-latest
