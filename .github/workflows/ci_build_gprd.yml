@@ -1,5 +1,4 @@
-name: "Build EON with GPRD"
-# TODO: Include master once merged
+name: Build EON with GPRD
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -9,17 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Get private submodules
-      env:
-        SSHK: ${{ secrets.SUBMODULE_PRIVATE }}
+    - name: Setup SSH for private submodule
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SUBMODULE_PRIVATE }}
+    - name: Pull GPRD submodule
       run: |
-        rm -rf client/subprojects/gprdimer && mkdir -p $HOME/.ssh
-        printf "%s\n" "$SSHK" > $HOME/.ssh/ssh.key
-        chmod 600 $HOME/.ssh/ssh.key
-        export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
-        git clone git@github.com:TheochemUI/gpr_optim subprojects/gpr_optim
-    - name: Fix GPRD branch
-      run: |
+        git clone git@github.com:TheochemUI/gpr_optim.git subprojects/gpr_optim
         cd subprojects/gpr_optim
         git checkout e25fd6736f6a521ca114f991ca488d57273025e4
     - uses: prefix-dev/setup-pixi@v0.8.10
