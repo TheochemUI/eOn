@@ -12,4 +12,3 @@ and calculate prefactors all within the context of this job.
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.ProcessSearchConfig
 ```
-

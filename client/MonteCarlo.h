@@ -21,7 +21,8 @@ class MonteCarlo {
 public:
   MonteCarlo(std::shared_ptr<Matter> const matterIn,
              std::shared_ptr<Parameters> paramsIn)
-      : matter{matterIn}, params{paramsIn} {
+      : matter{matterIn},
+        params{paramsIn} {
     log = spdlog::get("combi");
   }
   ~MonteCarlo() = default;

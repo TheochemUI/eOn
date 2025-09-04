@@ -17,7 +17,7 @@ The Pt heptamer island on a Pt(111) surface.
 After following the [installation instructions](project:../install/index.md):
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit 
+EONgit/examples/akmc-pt on main via 🅒 eongit
 ➜ python -m eon.server
 Eon version 1d9860cf
 State list path does not exist; Creating: .//states/
@@ -38,7 +38,7 @@ next execution of EON. You can see this by looking at the `search_results.txt`
 file in your states directory.
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit 
+EONgit/examples/akmc-pt on main via 🅒 eongit
 ➜ cat states/0/search_results.txt
     wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
 -------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ It's empty. We can register the results of the first execution of EON by running
 the server again
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit 
+EONgit/examples/akmc-pt on main via 🅒 eongit
 ➜ python -m eon.server
 Eon version 1d9860cf
 Registering results
@@ -67,7 +67,7 @@ Currently in state 0 with confidence 0.000000
 Now some results should be present in the table (these will vary):
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit took 10s 
+EONgit/examples/akmc-pt on main via 🅒 eongit took 10s
 ➜ cat states/0/search_results.txt
     wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
 -------------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ directory:
 
 ```{code-block} bash
 
-EONgit/examples/akmc-pt on main via 🅒 eongit 
-➜ cat states/0/processtable 
+EONgit/examples/akmc-pt on main via 🅒 eongit
+➜ cat states/0/processtable
  proc #    saddle energy   prefactor   product   product energy product prefactor  barrier         rate repeats
       0      -1774.80409 7.32913e+12        -1      -1775.00608       2.64735e+12  0.98707  1.91855e-04       0
       1      -1774.59469 1.48200e+13        -1      -1775.09375       4.55267e+12  1.19647  1.17764e-07       0
@@ -92,8 +92,8 @@ You can find the files relevant to a process in the `procdata` directory of a
 given state:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit 
-➜ ls states/0/procdata 
+EONgit/examples/akmc-pt on main via 🅒 eongit
+➜ ls states/0/procdata
 mode_0.dat  product_0.con  reactant_0.con  results_0.dat  saddle_0.con  stdout_0.dat
 mode_1.dat  product_1.con  reactant_1.con  results_1.dat  saddle_1.con  stdout_1.dat
 ```
@@ -125,7 +125,7 @@ We need to explore a larger part of the phase space until a KMC step can be
 taken. To iterate over states quickly, consider a `for` loop in `bash`:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit took 7s 
+EONgit/examples/akmc-pt on main via 🅒 eongit took 7s
 ➜ for i in {0..60}; do python -m eon.server; done
 ```
 
@@ -133,7 +133,7 @@ Eventually, the simulation will reach the required confidence and take a KMC
 step to the next state:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit 
+EONgit/examples/akmc-pt on main via 🅒 eongit
 ➜ python -m eon.server
 Registering results
 Processed 4 results
@@ -141,14 +141,14 @@ Cancelled 0 workunits from state 0
 register_process: new product state
 register_process: into eq rate test
 Meantime for Step 1:  0.0003931769704500849
-KMC step from state 0 through process 2 to state 1 
+KMC step from state 0 through process 2 to state 1
 currently in state 1 with confidence 0.000000
 ```
 
 This will then be reflected in the `dynamics.txt` file of the simulation directory:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit 
+EONgit/examples/akmc-pt on main via 🅒 eongit
 ➜ cat dynamics.txt
  step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate        energy
 -----------------------------------------------------------------------------------------------------------------------------

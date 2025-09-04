@@ -35,8 +35,8 @@
 #include "potentials/LJ/LJ.h"
 #include "potentials/LJCluster/LJCluster.h"
 #include "potentials/Morse/Morse.h"
-#include "potentials/ZBL/ZBLPot.h"
 #include "potentials/SocketNWChem/SocketNWChemPot.h"
+#include "potentials/ZBL/ZBLPot.h"
 
 #ifdef WITH_FORTRAN
 #include "potentials/Aluminum/Aluminum.h"

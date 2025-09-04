@@ -38,8 +38,8 @@ void CatLearnPot::force(long nAtoms, const double *positions,
                         double *variance, const double *box) {
   Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(
       const_cast<double *>(positions), 1, nAtoms * 3);
-  py::tuple ef_and_unc =
-      (this->m_gpmod.attr("predict")(features, "get_variance"_a = true, "get_derivatives"_a = true));
+  py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(
+      features, "get_variance"_a = true, "get_derivatives"_a = true));
   auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
   auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
   auto gradients = ef_dat.block(0, 1, 1, nAtoms * 3);
