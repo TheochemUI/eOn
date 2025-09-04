@@ -1,5 +1,5 @@
 * About
-- A modern, elegant approach to working with [[https://theochemui.github.io/eOn/][eOn]]
+- A modern, elegant approach to working with [[https://eondocs.org][eOn]]
 ** Build
 *** Conda
 We provide a ~conda~ environment, which is only partially supported for reproducible usage, since it depends on local compilers.
