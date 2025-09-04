@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef VASP_POTENTIAL
-#define VASP_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 
@@ -55,4 +53,3 @@ private:
   static pid_t vaspPID;
 };
 
-#endif

@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef TIP4_H_POTENTIAL
-#define TIP4_H_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 #include "../Water/Water.hpp"
@@ -51,4 +49,3 @@ public:
 private:
   std::shared_ptr<Tip4p> tip4p_pot;
 };
-#endif

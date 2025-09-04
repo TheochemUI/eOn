@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef SW_POTENTIAL
-#define SW_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 
@@ -45,4 +43,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
 };
-#endif

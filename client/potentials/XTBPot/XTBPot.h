@@ -9,7 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
 #pragma once
 
 #include "../../Potential.h"

@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 /** @file
 Wrapper for Eon
 @author Jean-Claude C. Berthet
@@ -16,8 +17,6 @@ Wrapper for Eon
 University of Iceland
 */
 
-#ifndef TIP4P_PT
-#define TIP4P_PT
 #include "../../Potential.h"
 #include "zhu_philpott.hpp"
 
@@ -34,5 +33,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
 };
-
-#endif

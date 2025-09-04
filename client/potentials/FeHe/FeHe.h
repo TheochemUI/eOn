@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-//-----------------------------------------------------------------------------------
-#ifndef FEHE_POTENTIAL
-#define FEHE_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 
@@ -52,4 +50,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif

@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef PYAMFF_POTENTIAL
-#define PYAMFF_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 
@@ -32,4 +30,3 @@ public:
              double *U, double *variance, const double *box);
   bool new_pyamff;
 };
-#endif

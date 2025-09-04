@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef LENOSKY_POTENTIAL
-#define LENOSKY_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 
@@ -41,4 +39,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif

@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef AMS_POT
-#define AMS_POT
+#pragma once
 
 #include "../../Matter.h"
 #include "../../Potential.h"
@@ -78,5 +76,3 @@ private:
   std::string readFile(std::filesystem::path path);
   void recieveFromSystem(long N, double *F, double *U);
 };
-
-#endif

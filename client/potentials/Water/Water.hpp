@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 /** @file
 Wrapper for Eon
 @author Jean-Claude C. Berthet
@@ -16,8 +17,6 @@ Wrapper for Eon
 University of Iceland
 */
 
-#ifndef WATER_FOR_EON_HPP
-#define WATER_FOR_EON_HPP
 #include "../../Potential.h"
 #include "spce_ccl.hpp"
 #include "tip4p_ccl.hpp"
@@ -47,5 +46,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-
-#endif

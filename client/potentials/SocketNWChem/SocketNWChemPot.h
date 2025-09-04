@@ -1,5 +1,15 @@
-#ifndef SOCKET_NWCHEM_POT_H
-#define SOCKET_NWCHEM_POT_H
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 
 #include "../../Potential.h"
 #include <memory>
@@ -82,5 +92,3 @@ private:
   static constexpr double BOHR_IN_ANGSTROM = 0.529177210903;
   static constexpr double HARTREE_IN_EV = 27.211386245988;
 };
-
-#endif // SOCKET_NWCHEM_POT_H

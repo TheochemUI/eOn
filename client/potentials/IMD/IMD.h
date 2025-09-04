@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef IMD_POTENTIAL
-#define IMD_POTENTIAL
+#pragma once
 
 #include "../../Potential.h"
 
@@ -35,4 +33,3 @@ private:
   //        static pid_t vaspPID;
 };
 
-#endif
