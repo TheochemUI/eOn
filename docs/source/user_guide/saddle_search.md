@@ -15,7 +15,7 @@ started in the right part of configuration space.
 ```
 
 
-```{versionchanged} 2.1_TBA
+```{versionchanged} 3.1_TBA
 In TOML, this will be `[Saddle_Search]`
 ```
 

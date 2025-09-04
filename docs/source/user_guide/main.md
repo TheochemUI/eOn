@@ -75,7 +75,7 @@ or the
 Lanczos
 : method to find the lowest curvature mode.
 
-```{versionadded} 2.1_TBA
+```{versionadded} 2.8
 with acceleration provided by Gaussian Process Regression or neural networks.
 ```
 
