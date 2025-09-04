@@ -24,7 +24,8 @@
 /* We follow the behavior of regular LAMMPS compilation and assume
  * -DLAMMPS_SMALLBIG when no define is set. */
 
-#if !defined(LAMMPS_BIGBIG) && !defined(LAMMPS_SMALLBIG) && !defined(LAMMPS_SMALLSMALL)
+#if !defined(LAMMPS_BIGBIG) && !defined(LAMMPS_SMALLBIG) &&                    \
+    !defined(LAMMPS_SMALLSMALL)
 #define LAMMPS_SMALLBIG
 #endif
 
@@ -40,7 +41,8 @@
 
 /** Data type constants for extracting data from atoms, computes and fixes
  *
- * Must be kept in sync with the equivalent constants in ``python/lammps/constants.py``,
+ * Must be kept in sync with the equivalent constants in
+ *``python/lammps/constants.py``,
  * ``fortran/lammps.f90``, ``tools/swig/lammps.i``, ``src/lmptype.h``, and
  *``examples/COUPLE/plugin/liblammpsplugin.h`` */
 
@@ -57,7 +59,8 @@ enum _LMP_DATATYPE_CONST {
 
 /** Style constants for extracting data from computes and fixes.
  *
- * Must be kept in sync with the equivalent constants in ``python/lammps/constants.py``,
+ * Must be kept in sync with the equivalent constants in
+ * ``python/lammps/constants.py``,
  * ``fortran/lammps.f90``, ``tools/swig/lammps.i``, and
  * ``examples/COUPLE/plugin/liblammpsplugin.h`` */
 
@@ -69,7 +72,8 @@ enum _LMP_STYLE_CONST {
 
 /** Type and size constants for extracting data from computes and fixes.
  *
- * Must be kept in sync with the equivalent constants in ``python/lammps/constants.py``,
+ * Must be kept in sync with the equivalent constants in
+ * ``python/lammps/constants.py``,
  * ``fortran/lammps.f90``, ``tools/swig/lammps.i``, and
  * ``examples/COUPLE/plugin/liblammpsplugin.h`` */
 
@@ -84,7 +88,8 @@ enum _LMP_TYPE_CONST {
 
 /** Error codes to select the suitable function in the Error class
  *
- * Must be kept in sync with the equivalent constants in ``python/lammps/constants.py``,
+ * Must be kept in sync with the equivalent constants in
+ * ``python/lammps/constants.py``,
  * ``fortran/lammps.f90``, ``tools/swig/lammps.i``, and
  * ``examples/COUPLE/plugin/liblammpsplugin.h`` */
 
@@ -98,7 +103,8 @@ enum _LMP_ERROR_CONST {
 
 /** Variable style constants for extracting data from variables.
  *
- * Must be kept in sync with the equivalent constants in ``python/lammps/constants.py``,
+ * Must be kept in sync with the equivalent constants in
+ * ``python/lammps/constants.py``,
  * ``fortran/lammps.f90``, ``tools/swig/lammps.i``, and
  * ``examples/COUPLE/plugin/liblammpsplugin.h`` */
 
@@ -151,9 +157,10 @@ double lammps_get_natoms(void *handle);
 double lammps_get_thermo(void *handle, const char *keyword);
 void *lammps_last_thermo(void *handle, const char *what, int index);
 
-void lammps_extract_box(void *handle, double *boxlo, double *boxhi, double *xy, double *yz,
-                        double *xz, int *pflags, int *boxflag);
-void lammps_reset_box(void *handle, double *boxlo, double *boxhi, double xy, double yz, double xz);
+void lammps_extract_box(void *handle, double *boxlo, double *boxhi, double *xy,
+                        double *yz, double *xz, int *pflags, int *boxflag);
+void lammps_reset_box(void *handle, double *boxlo, double *boxhi, double xy,
+                      double yz, double xz);
 
 void lammps_memory_usage(void *handle, double *meminfo);
 int lammps_get_mpi_comm(void *handle);
@@ -176,8 +183,10 @@ void *lammps_extract_atom(void *handle, const char *name);
  * ---------------------------------------------------------------------- */
 
 void *lammps_extract_compute(void *handle, const char *id, int style, int type);
-void *lammps_extract_fix(void *handle, const char *id, int style, int type, int nrow, int ncol);
-void *lammps_extract_variable(void *handle, const char *name, const char *group);
+void *lammps_extract_fix(void *handle, const char *id, int style, int type,
+                         int nrow, int ncol);
+void *lammps_extract_variable(void *handle, const char *name,
+                              const char *group);
 int lammps_extract_variable_datatype(void *handle, const char *name);
 int lammps_set_variable(void *handle, const char *name, const char *str);
 int lammps_set_string_variable(void *handle, const char *name, const char *str);
@@ -188,45 +197,55 @@ int lammps_variable_info(void *handle, int idx, char *buf, int bufsize);
  * Library functions for scatter/gather operations of data
  * ---------------------------------------------------------------------- */
 
-void lammps_gather_atoms(void *handle, const char *name, int type, int count, void *data);
-void lammps_gather_atoms_concat(void *handle, const char *name, int type, int count, void *data);
-void lammps_gather_atoms_subset(void *handle, const char *name, int type, int count, int ndata,
-                                int *ids, void *data);
-void lammps_scatter_atoms(void *handle, const char *name, int type, int count, void *data);
-void lammps_scatter_atoms_subset(void *handle, const char *name, int type, int count, int ndata,
-                                 int *ids, void *data);
+void lammps_gather_atoms(void *handle, const char *name, int type, int count,
+                         void *data);
+void lammps_gather_atoms_concat(void *handle, const char *name, int type,
+                                int count, void *data);
+void lammps_gather_atoms_subset(void *handle, const char *name, int type,
+                                int count, int ndata, int *ids, void *data);
+void lammps_scatter_atoms(void *handle, const char *name, int type, int count,
+                          void *data);
+void lammps_scatter_atoms_subset(void *handle, const char *name, int type,
+                                 int count, int ndata, int *ids, void *data);
 
 void lammps_gather_bonds(void *handle, void *data);
 void lammps_gather_angles(void *handle, void *data);
 void lammps_gather_dihedrals(void *handle, void *data);
 void lammps_gather_impropers(void *handle, void *data);
 
-void lammps_gather(void *handle, const char *name, int type, int count, void *data);
-void lammps_gather_concat(void *handle, const char *name, int type, int count, void *data);
-void lammps_gather_subset(void *handle, const char *name, int type, int count, int ndata, int *ids,
+void lammps_gather(void *handle, const char *name, int type, int count,
+                   void *data);
+void lammps_gather_concat(void *handle, const char *name, int type, int count,
                           void *data);
-void lammps_scatter(void *handle, const char *name, int type, int count, void *data);
-void lammps_scatter_subset(void *handle, const char *name, int type, int count, int ndata, int *ids,
-                           void *data);
+void lammps_gather_subset(void *handle, const char *name, int type, int count,
+                          int ndata, int *ids, void *data);
+void lammps_scatter(void *handle, const char *name, int type, int count,
+                    void *data);
+void lammps_scatter_subset(void *handle, const char *name, int type, int count,
+                           int ndata, int *ids, void *data);
 
 #if !defined(LAMMPS_BIGBIG)
-int lammps_create_atoms(void *handle, int n, const int *id, const int *type, const double *x,
-                        const double *v, const int *image, int bexpand);
+int lammps_create_atoms(void *handle, int n, const int *id, const int *type,
+                        const double *x, const double *v, const int *image,
+                        int bexpand);
 #else
-int lammps_create_atoms(void *handle, int n, const int64_t *id, const int *type, const double *x,
-                        const double *v, const int64_t *image, int bexpand);
+int lammps_create_atoms(void *handle, int n, const int64_t *id, const int *type,
+                        const double *x, const double *v, const int64_t *image,
+                        int bexpand);
 #endif
 
 /* ----------------------------------------------------------------------
  * Library functions for accessing neighbor lists
  * ---------------------------------------------------------------------- */
 
-int lammps_find_pair_neighlist(void *handle, const char *style, int exact, int nsub, int request);
+int lammps_find_pair_neighlist(void *handle, const char *style, int exact,
+                               int nsub, int request);
 int lammps_find_fix_neighlist(void *handle, const char *id, int request);
 int lammps_find_compute_neighlist(void *handle, const char *id, int request);
 int lammps_neighlist_num_elements(void *handle, int idx);
-void lammps_neighlist_element_neighbors(void *handle, int idx, int element, int *iatom,
-                                        int *numneigh, int **neighbors);
+void lammps_neighlist_element_neighbors(void *handle, int idx, int element,
+                                        int *iatom, int *numneigh,
+                                        int **neighbors);
 
 /* ----------------------------------------------------------------------
  * Library functions for retrieving configuration information
@@ -274,22 +293,30 @@ void lammps_decode_image_flags(int64_t image, int *flags);
 #endif
 
 #if defined(LAMMPS_BIGBIG)
-typedef void (*FixExternalFnPtr)(void *, int64_t, int, int64_t *, double **, double **);
+typedef void (*FixExternalFnPtr)(void *, int64_t, int, int64_t *, double **,
+                                 double **);
 #elif defined(LAMMPS_SMALLBIG)
-typedef void (*FixExternalFnPtr)(void *, int64_t, int, int *, double **, double **);
+typedef void (*FixExternalFnPtr)(void *, int64_t, int, int *, double **,
+                                 double **);
 #else
 typedef void (*FixExternalFnPtr)(void *, int, int, int *, double **, double **);
 #endif
 
-void lammps_set_fix_external_callback(void *handle, const char *id, FixExternalFnPtr funcptr,
-                                      void *ptr);
+void lammps_set_fix_external_callback(void *handle, const char *id,
+                                      FixExternalFnPtr funcptr, void *ptr);
 double **lammps_fix_external_get_force(void *handle, const char *id);
-void lammps_fix_external_set_energy_global(void *handle, const char *id, double eng);
-void lammps_fix_external_set_energy_peratom(void *handle, const char *id, double *eng);
-void lammps_fix_external_set_virial_global(void *handle, const char *id, double *virial);
-void lammps_fix_external_set_virial_peratom(void *handle, const char *id, double **virial);
-void lammps_fix_external_set_vector_length(void *handle, const char *id, int len);
-void lammps_fix_external_set_vector(void *handle, const char *id, int idx, double val);
+void lammps_fix_external_set_energy_global(void *handle, const char *id,
+                                           double eng);
+void lammps_fix_external_set_energy_peratom(void *handle, const char *id,
+                                            double *eng);
+void lammps_fix_external_set_virial_global(void *handle, const char *id,
+                                           double *virial);
+void lammps_fix_external_set_virial_peratom(void *handle, const char *id,
+                                            double **virial);
+void lammps_fix_external_set_vector_length(void *handle, const char *id,
+                                           int len);
+void lammps_fix_external_set_vector(void *handle, const char *id, int idx,
+                                    double val);
 
 void lammps_flush_buffers(void *ptr);
 

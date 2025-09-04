@@ -6,9 +6,11 @@
 /// seen through the periodic boundary conditions.
 struct Image {
   /// Dummy constructor needed by some STL containers.
-  Image(){};
+  Image() {};
   /// Construct an image of atom n translated by translation number nTrans.
-  Image(int num, int nTrans) : number(num), nTranslation(nTrans) {}
+  Image(int num, int nTrans)
+      : number(num),
+        nTranslation(nTrans) {}
 
   /// The number of the real atom.
   int number;

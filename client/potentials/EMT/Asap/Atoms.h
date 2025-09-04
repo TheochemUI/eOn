@@ -40,7 +40,7 @@ public:
   Atoms(const Vec *p, int n, SuperCell *s);
 
   /// Deletes the atoms.  Does not delete Potential or SuperCell.
-  virtual ~Atoms(){};
+  virtual ~Atoms() {};
 
   /// Return a pointer to the SuperCell object.
   virtual SuperCell *GetSuperCell() const { return superCell; }

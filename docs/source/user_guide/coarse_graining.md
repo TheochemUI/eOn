@@ -3,7 +3,7 @@
 In aKMC simulations where there are vastly different rates, the simulation can
 get stuck in a group of states connected by relatively fast rates. In order to
 explore slower transitions, a prohibitively large number of KMC steps may be
-needed. In order to circumvent this problem, `eOn` implements two methods. 
+needed. In order to circumvent this problem, `eOn` implements two methods.
 
 ```{note}
 AS-KMC and MCAMC cannot be used simultaneously.
@@ -15,14 +15,14 @@ The first method, projective dynamics, described in
 {cite:t}`cg-novotnyTutorialAdvancedDynamic2001`, groups states that are joined
 by fast rates into "superbasins". Information about transitions between states
 in a superbasin is lost, but the rates for transitions across a superbasin are
-correct. 
+correct.
 
 ## Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)
 
 The second method, accelerated superbasin kinetic Monte Carlo (AS-KMC) of
 {cite:t}`cg-voterHyperdynamicsAcceleratedMolecular1997`, artificially raises low
 barriers. The dynamics between states connected by fast rates are simulated, but
-an error is introduced in the dynamics direction and time. 
+an error is introduced in the dynamics direction and time.
 
 
 The basic process of AS-KMC involves gradually raising process barriers found to

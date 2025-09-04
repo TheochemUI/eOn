@@ -54,12 +54,14 @@ protected:
 
 public:
   Job(std::unique_ptr<Parameters> parameters)
-      : jtype{parameters->job}, params{std::make_shared<Parameters>(
-                                    *std::move(parameters))},
+      : jtype{parameters->job},
+        params{std::make_shared<Parameters>(*std::move(parameters))},
         pot{helper_functions::makePotential(params->potential, params)} {}
   Job(std::shared_ptr<Potential> potPassed,
       std::shared_ptr<Parameters> parameters)
-      : jtype{parameters->job}, params{parameters}, pot{potPassed} {}
+      : jtype{parameters->job},
+        params{parameters},
+        pot{potPassed} {}
   virtual ~Job() = default;
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;

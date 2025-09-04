@@ -15,8 +15,7 @@ public:
       : params{std::make_shared<Parameters>()},
         matter{nullptr},
         pot_socket{nullptr},
-        threshold{1e-5}
-  {
+        threshold{1e-5} {
     params->potential = PotType::SocketNWChem;
     params->socket_nwchem_options.unix_socket_mode = true;
     params->socket_nwchem_options.unix_socket_path = "eon_nwchem_test_socket";

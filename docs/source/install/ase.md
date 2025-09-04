@@ -2,7 +2,7 @@
 
 In order to build eOn client with the ability to use ASE calculators as a
 potential, the appropriate option must be setup when using `meson` which is
-`-Dwith_python=True -Dwith_ase=True`. 
+`-Dwith_python=True -Dwith_ase=True`.
 
 Some notes about this implementation:
 

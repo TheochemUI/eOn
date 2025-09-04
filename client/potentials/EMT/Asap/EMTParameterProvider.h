@@ -38,7 +38,7 @@ static const double Beta = 1.809; // Preserve same rounding as in ARTwork.
 // are determined corresponds to changing the EMT potential.
 class EMTParameterProvider {
 public:
-  virtual ~EMTParameterProvider(){};
+  virtual ~EMTParameterProvider() {};
   virtual const emt_parameters *GetParameters(int element) = 0;
   virtual void CalcGammaEtc() = 0;
   virtual double GetCutoffDistance() = 0; // Can it be made element-dependent?

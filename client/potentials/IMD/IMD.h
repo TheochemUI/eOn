@@ -16,7 +16,8 @@
 class IMD : public Potential {
 
 public:
-  IMD(std::shared_ptr<Parameters> params) : Potential(params){};
+  IMD(std::shared_ptr<Parameters> params)
+      : Potential(params) {};
   ~IMD();
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -32,4 +33,3 @@ private:
   //        static long vaspRunCount;
   //        static pid_t vaspPID;
 };
-

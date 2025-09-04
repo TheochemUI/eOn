@@ -1,37 +1,39 @@
-name: "Build EON with GPRD"
-# TODO: Include master once merged
+name: Build EON with GPRD
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-on:
-  push:
-    branches: [docs, atomicGPR]
-  pull_request:
-    branches: [docs, atomicGPR]
+on: [push, pull_request]
 jobs:
   build_eon:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.4
-    - name: Get private submodules
-      env:
-        SSHK: ${{ secrets.SUBMODULE_PRIVATE }}
-      run: |
-        rm -rf client/subprojects/gprdimer && mkdir -p $HOME/.ssh
-        echo "$SSHK" > $HOME/.ssh/ssh.key
-        chmod 600 $HOME/.ssh/ssh.key
-        export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
-        git submodule update --init --recursive
-    - name: Fix GPRD branch
-      run: |
-        cd client/subprojects/gprdimer
-        git checkout bd388ee8c2c47418b9722c9442a5d44ff2d39118
-    - uses: cachix/install-nix-action@v12
+    - uses: actions/checkout@v4
+    - name: Setup SSH for private submodule
+      uses: webfactory/ssh-agent@v0.9.0
       with:
-        nix_path: nixpkgs=channel:nixos-unstable
-    - name: Build Client
-      run: nix-env -if . # debug with nix-build -K to keep temp directory
+        ssh-private-key: ${{ secrets.SUBMODULE_PRIVATE }}
+    - name: Pull GPRD submodule
+      run: |
+        git clone git@github.com:TheochemUI/gpr_optim.git subprojects/gpr_optim
+        cd subprojects/gpr_optim
+        git checkout e25fd6736f6a521ca114f991ca488d57273025e4
+    - uses: prefix-dev/setup-pixi@v0.8.10
+      with:
+        cache: true
+        cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+        activate-environment: true
+        environments: >-
+          dev
+    - name: Install eon
+      shell: pixi run bash -e {0}
+      run: |
+        meson setup --reconfigure bbdir  \
+        --prefix=$CONDA_PREFIX           \
+        --buildtype release              \
+        --libdir=lib
+        meson install -C bbdir
     - name: Integration Tests
+      shell: pixi run bash -e {0}
       run: |
         cd client/gtests/data/saddle_search/
         eonclient
