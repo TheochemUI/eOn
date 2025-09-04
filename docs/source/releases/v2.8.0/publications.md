@@ -13,7 +13,7 @@
    + [Kudos summary](https://link.growkudos.com/1pkkt7osy68)
    + [Materials Archive](https://archive.materialscloud.org/records/xv40k-1j355)
    + [Github reproduction](https://github.com/HaoZeke/brms_idrot_repro)
-  
+
 ## [Lab-COSMO](https://www.epfl.ch/labs/cosmo/)
 
 -  Demonstration of RO-NEB-CI in {cite:t}`2.8.0-bigiMetatensorMetatomicFoundational2025`.
