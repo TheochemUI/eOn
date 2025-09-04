@@ -1,3 +1,13 @@
+C This file is part of eOn.
+C
+C SPDX-License-Identifier: BSD-3-Clause
+C
+C Copyright (c) 2010--present, eOn Development Team
+C All rights reserved.
+C
+C Repo:
+C https://github.com/TheochemUI/eOn
+
 c  the case of exactly two components is hardwired into this routine(!!!)
 C  This subroutine calculate the total embedding energy of the system and the
 c  contribution of the embedding energy to the virial.

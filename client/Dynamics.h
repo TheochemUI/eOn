@@ -1,5 +1,15 @@
-#ifndef DYNAMICS_H
-#define DYNAMICS_H
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 
 #include "HelperFunctions.h"
 #include "Matter.h"
@@ -42,5 +52,3 @@ private:
   double vxi1, vxi2, xi1, xi2;
   std::shared_ptr<spdlog::logger> log;
 };
-
-#endif

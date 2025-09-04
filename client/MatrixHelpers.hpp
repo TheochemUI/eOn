@@ -1,6 +1,15 @@
-#ifndef MATRIXHELPERS_H
-#define MATRIXHELPERS_H
-
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -18,4 +27,3 @@ bool eigenEquality(const Eigen::MatrixBase<T> &lhs,
   return lhs.isApprox(rhs, threshold);
 }
 } // namespace helper_functions
-#endif /* MATRIXHELPERS_H */

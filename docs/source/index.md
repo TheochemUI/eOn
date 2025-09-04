@@ -1,4 +1,4 @@
-# eON: Long Timescale Dynamics Software
+# eOn: Long Timescale Dynamics Software
 
 The EON software package contains a set of algorithms used primarily to model
 the evolution of atomic scale systems over long time scales. Standard molecular
@@ -14,7 +14,7 @@ hyperdyamics, adaptive kinetic Monte Carlo, and basin hopping.
 
 ## Supported systems
 
-eON can handle both molecular systems (e.g. gas-phase reactions) and extended
+eOn can handle both molecular systems (e.g. gas-phase reactions) and extended
 (surface) systems, with robust periodic image boundary support.
 
 ```{figure} fig/esys_trans.png
@@ -23,7 +23,7 @@ alt: Collection of systems which can be modeled
 class: full-width
 align: center
 ---
-An overview of some systems modelled with eON
+An overview of some systems modelled with eOn
 ```
 
 However, the systems which are best modelled using EON are those in which the
@@ -47,12 +47,12 @@ island forms after `65720` transitions in a time scale of a `ms` at `300K`.
 
 # Interatomic Interactions
 
-There are a variety of empirical potentials included with `eON`. You can also
-use the potentials built into the LAMMPS library. `eON` also provides an
+There are a variety of empirical potentials included with `eOn`. You can also
+use the potentials built into the LAMMPS library. `eOn` also provides an
 interace to the VASP and GPAW density functional theory codes.
 
 ```{versionadded} 2.0
-`eON` now supports additional potentials
+`eOn` now supports additional potentials
 * via an embeded Python interpreter, all the potentials accessible from the atomic simulation environment, ASE.
 * via native Fortran-C interface, different forms of the tight binding `XTB` potentials
 * via an I/O and server-client interface, potentials from the Amsterdam Modeling Suite (AMS)
