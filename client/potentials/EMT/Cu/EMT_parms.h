@@ -9,10 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 // all information for the EMT potential
-
-#ifndef EMT_PARMS_H
-#define EMT_PARMS_H
 
 // the number of different spicies that will be used in simulation
 int const EMT_NumType = 1;
@@ -32,5 +30,3 @@ int const EMT_NumAtomPerType[] = {1300};
 // eventually will be deposited!
 int const EMT_AtomType[] = {29};
 // int const EMT_AtomType[] = {12,1};
-
-#endif

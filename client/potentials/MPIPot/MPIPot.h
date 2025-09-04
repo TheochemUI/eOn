@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef __MPI_POTENTIAL__
-#define __MPI_POTENTIAL__
+#pragma once
 
 #include "../../Parameters.h"
 #include "../../Potential.h"
@@ -31,4 +29,3 @@ private:
   double poll_period;
 };
 
-#endif

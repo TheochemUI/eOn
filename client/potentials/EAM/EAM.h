@@ -9,6 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
+
 #include <iostream>
 #include <math.h>
 

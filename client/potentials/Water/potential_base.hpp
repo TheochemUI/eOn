@@ -10,8 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#ifndef FORCEFIELDS_POTENTIAL_BASE_HPP
-#define FORCEFIELDS_POTENTIAL_BASE_HPP
 
 #include <cassert>
 #include <cmath>
@@ -247,5 +245,3 @@ void forcefields::PotentialBase::normalise(double v[]) {
   double const n = norm(v);
   divide(v, n);
 }
-
-#endif

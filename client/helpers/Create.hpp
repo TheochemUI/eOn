@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 #include "../SurrogatePotential.h"
 
 #ifdef WITH_CATLEARN

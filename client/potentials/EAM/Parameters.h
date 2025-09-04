@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 #define NPARAMS 3
 
 const EAM::element_parameters EAM::el_params[NPARAMS] = {

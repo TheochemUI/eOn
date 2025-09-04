@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#ifndef ATOMICGPDIMER_H
-#define ATOMICGPDIMER_H
-
+#pragma once
 #include "Eigen.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
@@ -51,5 +49,3 @@ private:
   gpr::Observation init_observations, init_middle_point;
   gpr::Coord orient_init, R_init;
 };
-
-#endif

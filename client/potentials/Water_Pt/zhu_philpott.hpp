@@ -9,15 +9,13 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#pragma once
 /** @file
 Potential for water and Platinum
 @author Jean-Claude C. Berthet
 @date 2007
 University of Iceland
 */
-#pragma once
-#ifndef FORCEFIELDS_ZHU_PHILPOTT_HPP
-#define FORCEFIELDS_ZHU_PHILPOTT_HPP
 #include "../Water/spce_ccl.hpp"
 #include "zhu_philpott_parameters.hpp"
 
@@ -72,5 +70,3 @@ private:
 template class ZhuPhilpott<zhu_philpott_parameters::Standard>;
 template class ZhuPhilpott<zhu_philpott_parameters::Iceland>;
 } // namespace forcefields
-
-#endif

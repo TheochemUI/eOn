@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef NEWPOT_INTERFACE
-#define NEWPOT_INTERFACE
+#pragma once
 
 #include "../../Potential.h"
 
@@ -34,4 +32,3 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };
-#endif

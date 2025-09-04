@@ -9,9 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-
-#ifndef LENNARD_JONES
-#define LENNARD_JONES
+#pragma once
 
 #include <iostream>
 #include <math.h>
@@ -44,4 +42,3 @@ public:
 
   void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
-#endif
