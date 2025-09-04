@@ -31,7 +31,7 @@ set as per the <project:optimizer.md> document.
 `eOn`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
 ```
 
-```{versionadded} 3.0_TBA
+```{versionadded} 2.8
 Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in {cite:t}`neb-koistinenNudgedElasticBand2017` and {cite:t}`neb-koistinenNudgedElasticBand2019`.
 ```
 
@@ -42,7 +42,7 @@ Via the surrogate potential interface, a native C++ implementation of the Gaussi
 ```
 
 
-```{versionchanged} 2.1_TBA
+```{versionchanged} 3.1_TBA
 In TOML, this will be `[NEB]`
 ```
 

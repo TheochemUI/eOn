@@ -27,7 +27,7 @@ foreach test : test_array
           link_with : eclib,
           cpp_args : eon_extra_args
                  ),
-        workdir : meson.source_root() + test.get(3)
+        workdir : meson.project_source_root() + test.get(3)
       )
 endforeach
 endif

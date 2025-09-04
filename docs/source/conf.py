@@ -9,7 +9,16 @@
 project = "eOn"
 copyright = "2024, Henkelmann Group, Jonsson Group, Rohit Goswami"
 author = "Rohit Goswami"
-release = "2.0.0"
+try:
+    with open("../../CHANGELOG.md", "r") as f:
+        # The first non-empty line should be like: ## [2.8.0] - 2025-09-04
+        for line in f:
+            if line.strip():
+                # Extract version from "## [2.8.0]" -> "2.8.0"
+                release = line.split("[")[1].split("]")[0]
+                break
+except FileNotFoundError:
+    release = "0.0.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -32,7 +41,7 @@ extensions = [
     "autodoc2",
 ]
 
-bibtex_bibfiles = ['bibtex/eonDocs.bib']
+bibtex_bibfiles = ["bibtex/eonDocs.bib"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
