@@ -661,3 +661,4 @@ compile_commands.json
 # pixi environments
 .pixi
 *.egg-info
+html/
