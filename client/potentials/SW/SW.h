@@ -35,7 +35,9 @@ private:
 public:
   // Functions
   // constructor
-  SW(std::shared_ptr<Parameters> p) : Potential(p), parameters{p} {}
+  SW(std::shared_ptr<Parameters> p)
+      : Potential(p),
+        parameters{p} {}
 
   // To satisfy interface
   void initialize(void);

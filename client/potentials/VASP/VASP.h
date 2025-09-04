@@ -16,7 +16,8 @@
 class VASP : public Potential {
 
 public:
-  VASP(shared_ptr<Parameters> p) : Potential(p) {
+  VASP(shared_ptr<Parameters> p)
+      : Potential(p) {
     vaspRunCount++;
     // deleting leftovers from previous run
     system("rm -f TMPCAR");
@@ -37,7 +38,7 @@ public:
     system("rm -f XDATCAR");
   }
   ~VASP() { cleanMemory(); }
-  void initialize(){};
+  void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
@@ -52,4 +53,3 @@ private:
   static long vaspRunCount;
   static pid_t vaspPID;
 };
-

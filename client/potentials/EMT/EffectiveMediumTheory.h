@@ -40,7 +40,8 @@ private:
 public:
   // Functions
   // constructor and destructor
-  EffectiveMediumTheory(std::shared_ptr<Parameters> p) : Potential(p) {
+  EffectiveMediumTheory(std::shared_ptr<Parameters> p)
+      : Potential(p) {
     // dummy variables
     AtomsObj = 0;
     EMTObj = 0;
@@ -53,7 +54,7 @@ public:
     periodicity[1] = true;
     periodicity[2] = true;
   };
-  ~EffectiveMediumTheory(void){};
+  ~EffectiveMediumTheory(void) {};
   void cleanMemory(void);
 
   // To satify interface

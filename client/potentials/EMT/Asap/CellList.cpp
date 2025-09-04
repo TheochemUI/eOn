@@ -11,7 +11,9 @@ using std::map;
 using std::cerr;
 using std::endl;
 
-CellList::CellList(Atoms *atoms, double r) : rMax(r), rMax2(r * r) {
+CellList::CellList(Atoms *atoms, double r)
+    : rMax(r),
+      rMax2(r * r) {
   nAtoms = atoms->GetNumberOfRealAtoms();
   nAllAtoms = nAtoms;
   int i;
