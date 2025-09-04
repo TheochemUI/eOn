@@ -3,8 +3,13 @@
 project(
     'eon',
     'cpp',
-    version: '3.0',
-    default_options: ['warning_level=0', 'cpp_std=c++17'],
+    version: run_command(['tools/gitversion.py'], check: true).stdout().strip(),
+    meson_version: '>= 1.6.0',
+    default_options: [  #
+        'buildtype=debugoptimized',
+        'warning_level=0',
+        'cpp_std=c++17',
+    ],
 )
 # IMPORTANT!! warning_level=3 passes -fimplicit-none
 # eonclient needs implicit typing!!
