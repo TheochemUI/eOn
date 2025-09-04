@@ -16,9 +16,7 @@
 :align: left
 
 * - {py:obj}`AKMCState <eon.akmcstate.AKMCState>`
-  - ```{autodoc2-docstring} eon.akmcstate.AKMCState
-    :summary:
-    ```
+  -
 ````
 
 ### Functions
@@ -61,15 +59,6 @@
 :canonical: eon.akmcstate.AKMCState
 
 Bases: {py:obj}`eon.state.State`
-
-```{autodoc2-docstring} eon.akmcstate.AKMCState
-```
-
-```{rubric} Initialization
-```
-
-```{autodoc2-docstring} eon.akmcstate.AKMCState.__init__
-```
 
 ````{py:attribute} processtable_head_fmt
 :canonical: eon.akmcstate.AKMCState.processtable_head_fmt
