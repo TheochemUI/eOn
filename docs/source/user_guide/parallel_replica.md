@@ -46,7 +46,7 @@ of thermostat can be set in the **[Dynamics]** section.
 [Parallel Replica]
 ```
 
-```{versionchanged} 2.1_TBA
+```{versionchanged} 3.1_TBA
 In TOML, this will be `[Parallel_Replica]`
 ```
 

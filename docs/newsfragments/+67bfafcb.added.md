@@ -1,1 +1,0 @@
-AMS Potential interface

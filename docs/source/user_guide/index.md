@@ -21,7 +21,7 @@ configuration file would include the lines:
 job_type = "process_search"
 ```
 
-```{versionchanged} 2.1_TBA
+```{versionchanged} 3.1_TBA
 The format for the configuration files were changed from INI [to TOML](https://toml.io/en/), where this causes relevant user changes it will be highlighted.
 - The default file is now `config.toml` instead of `config.ini`
 ```

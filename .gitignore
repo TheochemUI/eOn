@@ -1,5 +1,6 @@
 # Custom, other things are auto-ignored
 subprojects
+eon/version.py
 /docs/source/apidocs/
 # /
 /*.tmp
@@ -660,3 +661,4 @@ compile_commands.json
 # pixi environments
 .pixi
 *.egg-info
+html/
