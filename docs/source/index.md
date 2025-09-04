@@ -79,6 +79,7 @@ tutorials/index
 user_guide/index
 devdocs/index
 apidocs/index
+releases/index
 ```
 
 ## Indices and tables
