@@ -24,7 +24,10 @@ private:
 public:
   // Functions
   // constructor and destructor
-  NewPot(std::shared_ptr<Parameters> p) : Potential(p), fake1{0}, fake2{0} {};
+  NewPot(std::shared_ptr<Parameters> p)
+      : Potential(p),
+        fake1{0},
+        fake2{0} {};
 
   // To satisfy interface
   void cleanMemory(void);

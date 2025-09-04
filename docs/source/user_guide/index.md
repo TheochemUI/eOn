@@ -41,7 +41,7 @@ EON is designed to run in serial on one computer or in parallel using a
 communicator to send jobs from a server to clients and receive the results back.
 Several parallelization schemes have been implemented, including local
 communication through files, cluster communication via a queuing system or via
-mpi. 
+mpi.
 
 Methods run in parallel are broken up by the eon server into tasks which
 are run by client program. The server then compiles the information sent back

@@ -19,7 +19,7 @@
 class ObjectiveTest {
 
 public:
-  virtual ~ObjectiveTest(){};
+  virtual ~ObjectiveTest() {};
   virtual int test() = 0;
 
   std::vector<std::string> testResults;

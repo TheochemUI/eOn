@@ -14,8 +14,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "QSC.h"
 #include "Parameters.h"
+#include "QSC.h"
 
 /*
  * This is an implementation of the Quantum Sutton-Chen Potential,

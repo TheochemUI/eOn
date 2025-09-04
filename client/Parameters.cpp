@@ -536,16 +536,20 @@ int Parameters::load(FILE *file) {
           ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
       socket_nwchem_options.port =
           ini.GetValueL("SocketNWChemPot", "port", socket_nwchem_options.port);
-      socket_nwchem_options.mem_in_gb =
-          ini.GetValueL("SocketNWChemPot", "mem_in_gb", socket_nwchem_options.mem_in_gb);
+      socket_nwchem_options.mem_in_gb = ini.GetValueL(
+          "SocketNWChemPot", "mem_in_gb", socket_nwchem_options.mem_in_gb);
       socket_nwchem_options.nwchem_settings =
-          ini.GetValue("SocketNWChemPot", "nwchem_settings", socket_nwchem_options.nwchem_settings);
+          ini.GetValue("SocketNWChemPot", "nwchem_settings",
+                       socket_nwchem_options.nwchem_settings);
       socket_nwchem_options.unix_socket_path =
-          ini.GetValue("SocketNWChemPot", "unix_socket_path", socket_nwchem_options.unix_socket_path);
+          ini.GetValue("SocketNWChemPot", "unix_socket_path",
+                       socket_nwchem_options.unix_socket_path);
       socket_nwchem_options.unix_socket_mode =
-          ini.GetValueB("SocketNWChemPot", "unix_socket_mode", socket_nwchem_options.unix_socket_mode);
+          ini.GetValueB("SocketNWChemPot", "unix_socket_mode",
+                        socket_nwchem_options.unix_socket_mode);
       socket_nwchem_options.make_template_input =
-          ini.GetValueB("SocketNWChemPot", "make_template_input", socket_nwchem_options.make_template_input);
+          ini.GetValueB("SocketNWChemPot", "make_template_input",
+                        socket_nwchem_options.make_template_input);
     }
 
     // [Debug] //

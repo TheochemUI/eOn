@@ -21,11 +21,11 @@
 
 #include <chrono>
 #include <errno.h>
+#include <filesystem>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <string.h>
 #include <time.h>
-#include <filesystem>
 
 #ifdef EONMPI
 #include <Python.h>
@@ -43,11 +43,11 @@
 #include <libgen.h>
 #endif
 
-//Includes for FPE trapping
+// Includes for FPE trapping
 #include "fpe_handler.h"
 
 #ifdef WIN32
-    #include <float.h>
+#include <float.h>
 #endif
 
 #ifndef WIN32
@@ -58,26 +58,27 @@
 #endif
 
 #ifdef __APPLE__
-  #ifndef __aarch64__
-  #include <mach/mach.h>
-  #include <mach/task_info.h>
+#ifndef __aarch64__
+#include <mach/mach.h>
+#include <mach/task_info.h>
 
-  void print_memory_usage() {
-      struct task_basic_info t_info;
-      mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+void print_memory_usage() {
+  struct task_basic_info t_info;
+  mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
-      if (KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count)) {
-          printf("Failed to get task info\n");
-          return;
-      }
-
-      unsigned int rss = t_info.resident_size;
-      unsigned int vs = t_info.virtual_size;
-      printf(
-          "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
-          (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+  if (KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO,
+                                (task_info_t)&t_info, &t_info_count)) {
+    printf("Failed to get task info\n");
+    return;
   }
-  #endif
+
+  unsigned int rss = t_info.resident_size;
+  unsigned int vs = t_info.virtual_size;
+  printf(
+      "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
+      (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+}
+#endif
 #endif
 
 void printSystemInfo() {
@@ -310,7 +311,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
-    eonc::enableFPE();  // from ExceptionsEON.h
+  eonc::enableFPE(); // from ExceptionsEON.h
 
   double beginTime = 0.0;
   helper_functions::getTime(&beginTime, NULL, NULL);
@@ -446,9 +447,9 @@ int main(int argc, char **argv) {
          rtime, utime, stime);
 
 #ifdef OSX
-  #ifndef __aarch64__
+#ifndef __aarch64__
   print_memory_usage();
-  #endif
+#endif
 #endif
 
 #ifdef EONMPI
