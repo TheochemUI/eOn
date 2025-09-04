@@ -12,15 +12,15 @@ import os
 import shutil
 import sys
 
+from eon import version
 from eon.config import config
-from eon.version import version
 from eon import communicator
 from eon import fileio as io
 from eon import locking
 from eon import prstatelist
 
 def parallelreplica():
-    logger.info('Eon version: %s', version())
+    logger.info('Eon version: %s', version)
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
         logger.critical("Root directory does not exist")

@@ -12,6 +12,7 @@ import shutil
 import sys
 import random
 
+from eon import version
 from eon import atoms
 from eon import communicator
 from eon.config import config
@@ -136,7 +137,7 @@ class BHStates:
         return added
 
 def basinhopping():
-    logger.info('Eon version %s', version())
+    logger.info('Eon version: %s', version)
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
         logger.critical("Root directory does not exist")

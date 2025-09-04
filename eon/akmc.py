@@ -40,7 +40,7 @@ def akmc(config: ConfigClass = EON_CONFIG, steps=0):
 
     """
     #log version information
-    logger.info('Eon version %s', version())
+    logger.info('Eon version %s', version)
     # Here's what this does:
     # 1) Read in the state of our calculation from last time
     # 2) Initialize necessary data structures (statelist, communicator, displace)
