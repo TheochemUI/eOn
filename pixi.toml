@@ -76,3 +76,6 @@ pybind11 = ">=3.0.0,<4"
 
 [feature.nwchem.pypi-dependencies]
 psutil = ">=7.0.0, <8"
+
+[pypi-dependencies]
+towncrier = ">=25.8.0, <26"
