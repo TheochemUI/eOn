@@ -15,22 +15,22 @@ is handled via the `python` ecosystem. Namely:
 - [PDM](https://pdm-project.org/en/latest/) is used to track versions, and provide [development groups](https://pdm-project.org/latest/usage/dependency/#add-development-only-dependencies)
 
 To facilitate interactions with `pdm`,
-[pipx](https://pipx.pypa.io/latest/installation/) is recommended.
+[uvx](https://docs.astral.sh/uv/getting-started/installation//) is recommended.
 
 ## Building locally
 
 ````{margin}
 ```{note}
-`pipx` simplifies running Python commands, and `pdm` handles version updates better, syncing nicely with the `pyproject.toml` so no Python dependencies not needed by the client should be in the `environment.yml`
+`uvx` simplifies running Python commands, and `pdm` handles version updates better, syncing nicely with the `pyproject.toml` so no Python dependencies not needed by the client should be in the `environment.yml`
 ```
 ````
 
 ```{code-block} bash
 # Setup dependencies
-pipx run pdm sync
+uvx run pdm sync
 # Need to install for autodoc-pydantic
-pipx run pdm run pip install . -vvv
-pipx run pdm run sphinx-build -b html docs/source docs/build/html
+uvx run pdm run pip install . -vvv
+uvx run pdm run sphinx-build -b html docs/source docs/build/html
 ```
 
 This can be viewed locally with an HTTP server.
@@ -57,7 +57,7 @@ The following sections detail methods to add functionality to the documentation.
 Additions to the build process are handled by the `pdm` development group `docs`, so additions are done via:
 
 ```{code-block} bash
-pipx run pdm add -dG docs "sphinxcontrib-bibtex"
+uvx run pdm add -dG docs "sphinxcontrib-bibtex"
 ```
 
 ## Adding citations
