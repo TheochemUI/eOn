@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Developer documentation for the EON software project, including guidelines for contributing, testing, and building the documentation."
+    "keywords": "EON developer guide, contributing, testing, documentation build, development"
+---
+
 # Development Documentation
 
 For all changes to `eOn`, the best way to get in touch with the developers is to
@@ -11,6 +18,7 @@ Pull requests and documentation contributions are all highly appreciated.
 
 testing
 docbuild
+svn
 svn-migration
 tracking-changes
 release

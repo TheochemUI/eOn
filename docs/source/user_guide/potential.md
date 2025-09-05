@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "A list and description of interatomic potentials supported by EON, including vendored potentials and interfaces to external codes like VASP, LAMMPS, and ASE."
+    "keywords": "EON potential, interatomic potential, VASP, LAMMPS, ASE, EMT, EAM"
+---
+
 # Potential
 
 `eOn` supports a large number of potentials, some vendored within the executable

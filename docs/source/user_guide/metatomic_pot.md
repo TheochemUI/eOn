@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Learn how to set up and use the Metatomic interface in EON for machine learning potentials with metatensor and PyTorch."
+    "keywords": "EON metatomic, machine learning potential, metatensor, PyTorch, MLIP"
+---
+
 # Metatomic Interface
 
 ```{versionadded} 2.0

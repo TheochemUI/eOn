@@ -95,6 +95,7 @@ sphinx-favicon = "*"
 mdit-py-plugins = "*"
 sphinxcontrib-bibtex = "*"
 autodoc-pydantic = "*"
+sphinx-sitemap = ">=2.8.0,<3"
 
 [feature.docs.pypi-dependencies]
 sphinx-contributors = "*"

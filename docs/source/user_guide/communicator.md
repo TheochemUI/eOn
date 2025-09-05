@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Guide to EON's server-client architecture and communication options for running parallel calculations locally, via MPI, or on a cluster."
+    "keywords": "EON communicator, parallel, MPI, cluster, server-client"
+---
+
 # Communicator
 
 `eOn` has a server client architecture for running its calculations. The

@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Guide to the Basin Hopping global optimization method in EON for exploring potential energy surfaces."
+    "keywords": "EON Basin Hopping, global optimization, Monte Carlo, potential energy surface"
+---
+
 # Basin Hopping
 
 Basin hopping is a Monte Carlo method in which the energy of each configuration
