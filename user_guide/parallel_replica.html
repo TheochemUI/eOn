@@ -7,6 +7,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Guide to Parallel Replica Dynamics (PRD) in EON, a method to accelerate molecular dynamics simulations by running multiple independent replicas." name="description" />
+<meta content="EON Parallel Replica, PRD, accelerated MD, replica dynamics" name="keywords" />
     <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
@@ -61,6 +63,7 @@
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/parallel_replica';</script>
+    <link rel="canonical" href="https://eondocs.org/user_guide/parallel_replica.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Hyperdynamics" href="hyperdynamics.html" />
@@ -180,7 +183,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
 
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
@@ -191,6 +193,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">User Guide</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">General Simulation Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="potential.html">Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structure_comparison.html">Structure Comparison</a></li>
@@ -213,14 +219,13 @@
 <li class="toctree-l2"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="paths.html">Paths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/release.html">Checklist</a></li>
@@ -571,7 +576,7 @@ run is set in the <strong>[Main]</strong> section.</p></li>
   <div class="footer-item">
     
 <p class="component-author">
-By Rohit Goswami
+By the eOn developers
 </p>
 
   </div>
@@ -581,7 +586,7 @@ By Rohit Goswami
 
   <p class="copyright">
     
-      © Copyright 2024, Henkelmann Group, Jónsson Group, Rohit Goswami.
+      © Copyright 2025, the eOn developers.
       <br/>
     
   </p>

@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Documentation for the Dimer method in EON, used for finding transition states and lowest eigenmodes using only first derivatives."
+    "keywords": "EON Dimer method, transition state search, saddle point, eigenmode"
+---
+
 # Dimer method
 
 The dimer method of {cite:t}`dm-henkelmanDimerMethodFinding1999` with

@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Configuration for running classical molecular dynamics (MD) simulations in EON based on Newton's equations of motion."
+    "keywords": "EON molecular dynamics, MD, simulation, thermostat, dynamics"
+---
+
 # Dynamics
 
 Molecular dynamics based upon Newton's classical equations of motion.

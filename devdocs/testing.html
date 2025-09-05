@@ -7,6 +7,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Guide for developers on the testing suite in EON, including unit tests, approval tests, and integration tests, and how to add new tests." name="description" />
+<meta content="EON testing, unit tests, integration tests, meson tests, gtest" name="keywords" />
     <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
@@ -60,6 +62,7 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'devdocs/testing';</script>
+    <link rel="canonical" href="https://eondocs.org/devdocs/testing.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Working with the documentation" href="docbuild.html" />
@@ -179,7 +182,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
 
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
@@ -190,6 +192,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/main.html">General Simulation Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure Comparison</a></li>
@@ -212,14 +218,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/kdb.html">Kinetic Database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI Potential</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Development Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="svn.html">Subversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release.html">Checklist</a></li>
@@ -448,7 +453,7 @@ document.write(`
   <section id="tests">
 <h1>Tests<a class="headerlink" href="#tests" title="Link to this heading">#</a></h1>
 <div class="versionadded">
-<p><span class="versionmodified added">Added in version 2.0.</span></p>
+<p><span class="versionmodified added">Added in version 2.5.</span></p>
 </div>
 <p>We have a robust testsuite, consisting of unit tests, approval tests, and a few
 integration tests.</p>
@@ -547,7 +552,7 @@ language<a class="footnote-reference brackets" href="#id2" id="id1" role="doc-no
   <div class="footer-item">
     
 <p class="component-author">
-By Rohit Goswami
+By the eOn developers
 </p>
 
   </div>
@@ -557,7 +562,7 @@ By Rohit Goswami
 
   <p class="copyright">
     
-      © Copyright 2024, Henkelmann Group, Jónsson Group, Rohit Goswami.
+      © Copyright 2025, the eOn developers.
       <br/>
     
   </p>

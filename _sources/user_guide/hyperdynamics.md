@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Documentation for the Hyperdynamics method in EON, which uses a bias potential to accelerate the rate of transitions in MD simulations."
+    "keywords": "EON Hyperdynamics, accelerated molecular dynamics, bias potential, bond-boost"
+---
+
 # Hyperdynamics
 
 The hyperdynamics method uses a bias potential which should be zero at

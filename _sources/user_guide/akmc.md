@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "User guide for the Adaptive Kinetic Monte Carlo (aKMC) method in EON. Learn how to coarse-grain molecular dynamics for rare event systems."
+    "keywords": "aKMC, adaptive kinetic monte carlo, EON, rare event systems, transition state theory"
+---
+
 # Adaptive Kinetic Monte Carlo
 
 The adaptive kinetic Monte Carlo (aKMC) method is a method to coarse grain

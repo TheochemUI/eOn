@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Developer guide on how to track changes and contribute to the changelog using towncrier news fragments."
+    "keywords": "EON changelog, towncrier, tracking changes, news fragments, pull request"
+---
+
 # Tracking changes
 
 `towncrier` is used to automate the generation and maintenance of the
