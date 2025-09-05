@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Configuration guide for the Lanczos method in EON, used for determining the lowest eigenmode of a system."
+    "keywords": "EON Lanczos, lowest eigenmode, saddle point search, dynamics"
+---
+
 # Lanczos
 
 The Lanczos method for determining the lowest eigenmode along the lines of {cite:t}`lcz-malekDynamicsLennardJonesClusters2000`.

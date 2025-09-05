@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "A tutorial on running a Parallel Replica Dynamics (PRD) job with EON, including how to add hyperdynamics for accelerated simulations."
+    "keywords": "EON Parallel Replica tutorial, PRD, hyperdynamics, accelerated dynamics, Al(100)"
+---
+
 # Running a Parallel Replica Job
 
 A sample parallel replica simulation can be found in the directory:

@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Guide to using the Atomic Simulation Environment (ASE) interface in EON, allowing the use of any ASE calculator as a potential."
+    "keywords": "EON ASE, Atomic Simulation Environment, ASE calculator, Python potential"
+---
+
 # ASE Interface
 
 In order to build eOn client with the ability to use ASE calculators as a

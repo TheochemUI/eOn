@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Instructions for running a local energy minimization calculation in EON to find the nearest stable structure."
+    "keywords": "EON minimization, geometry optimization, energy minimization, optimizer"
+---
+
 # Minimization
 
 Local minimization of the energy of a structure given the specified optimizer.
