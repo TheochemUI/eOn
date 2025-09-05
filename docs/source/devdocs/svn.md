@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Information on obtaining older versions of EON from the Subversion (SVN) repository."
+    "keywords": "EON SVN, Subversion, legacy code, version control"
+---
+
 # Subversion
 
 ```{deprecated} 2.0

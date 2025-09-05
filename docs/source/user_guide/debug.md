@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Information on debug options in EON for aiding in method development and bug reporting."
+    "keywords": "EON debug, debugging, developer options, troubleshooting"
+---
+
 # Debug
 
 Many of these are meant to aid in method development, or for bug reports. They

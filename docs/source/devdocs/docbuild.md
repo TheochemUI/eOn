@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Instructions for building and working with the EON documentation, including setup with PDM, local building, and adding citations and extensions."
+    "keywords": "EON docs, build documentation, Sphinx, MyST, PDM, autodoc-pydantic"
+---
+
 # Working with the documentation
 
 `eOn` is a relatively complex project, with both `C++` and `Python` sources,

@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Overview of the EON v2.8.0 release, highlighting major features like RO-NEB-CI, metatomic potential support, and a modernized build system."
+    "keywords": "EON v2.8.0, release, RO-NEB-CI, metatomic, GPR-Dimer, Meson build"
+---
+
 ## [v2.8.0] - 2025-09-04
 
 First release in a decade.

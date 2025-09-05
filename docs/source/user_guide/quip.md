@@ -1,6 +1,13 @@
+---
+myst:
+  html_meta:
+    "description": "Guide on how to use QUIP (QUantum mechanics and Interatomic Potentials) with LAMMPS as a potential within EON."
+    "keywords": "EON QUIP, QUIP potential, LAMMPS, machine learning potential, GAP"
+---
+
 # QUIP with LAMMPS
 
-```{versionadded} 2.0
+```{versionadded} 2.5
 ```
 
 In order, we require:
