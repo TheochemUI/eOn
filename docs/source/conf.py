@@ -6,9 +6,10 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+from datetime import datetime
 project = "eOn"
-copyright = "2024, Henkelmann Group, Jónsson Group, Rohit Goswami"
-author = "Rohit Goswami"
+author = "the eOn developers"
+copyright = f"{datetime.now().date().year}, {author}"
 try:
     with open("../../CHANGELOG.md", "r") as f:
         # The first non-empty line should be like: ## [2.8.0] - 2025-09-04
@@ -38,8 +39,11 @@ extensions = [
     "sphinxcontrib.spelling",
     "sphinxcontrib.autodoc_pydantic",
     "sphinxcontrib.bibtex",
+    "sphinx_sitemap",
     "autodoc2",
 ]
+
+sitemap_show_lastmod = True
 
 bibtex_bibfiles = ["bibtex/eonDocs.bib"]
 
@@ -65,6 +69,7 @@ exclude_patterns = []
 html_theme = "sphinx_book_theme"
 html_title = "eOn"
 html_static_path = ["_static"]
+html_baseurl = 'https://eondocs.org/'
 
 html_theme_options = {
     "repository_url": "https://github.com/TheochemUI/eOn",
