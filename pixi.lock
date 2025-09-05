@@ -1515,6 +1515,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-copybutton-0.5.2-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-design-0.6.1-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-favicon-1.0.1-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-last-updated-by-git-0.3.8-pyhe01879c_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-sitemap-2.8.0-pyhe01879c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-togglebutton-0.3.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-applehelp-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-bibtex-2.6.5-pyhd8ed1ab_0.conda
@@ -1702,6 +1704,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-copybutton-0.5.2-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-design-0.6.1-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-favicon-1.0.1-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-last-updated-by-git-0.3.8-pyhe01879c_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-sitemap-2.8.0-pyhe01879c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-togglebutton-0.3.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-applehelp-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-bibtex-2.6.5-pyhd8ed1ab_0.conda
@@ -1890,6 +1894,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-copybutton-0.5.2-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-design-0.6.1-pyhd8ed1ab_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-favicon-1.0.1-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-last-updated-by-git-0.3.8-pyhe01879c_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-sitemap-2.8.0-pyhe01879c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-togglebutton-0.3.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-applehelp-2.0.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/sphinxcontrib-bibtex-2.6.5-pyhd8ed1ab_0.conda
@@ -13210,6 +13216,32 @@ packages:
   - pkg:pypi/sphinx-favicon?source=hash-mapping
   size: 12679
   timestamp: 1735638732546
+- conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-last-updated-by-git-0.3.8-pyhe01879c_0.conda
+  sha256: f761670b793dcc10a4a2d855de163d9dfd4016636ef093fb3e3d83ac25ed6e97
+  md5: 405a232fb900fc631d2f1b5cdf01dea9
+  depends:
+  - python >=3.9
+  - sphinx >=1.8
+  - python
+  license: BSD-2-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/sphinx-last-updated-by-git?source=hash-mapping
+  size: 17546
+  timestamp: 1750694360605
+- conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-sitemap-2.8.0-pyhe01879c_0.conda
+  sha256: 979b9982d5f66c69f26ce4f557e0324b5dcea08462d105ccf409f3cbd53dda77
+  md5: ffdf390385676670c32f6ebea6cced7d
+  depends:
+  - python >=3.9
+  - sphinx-last-updated-by-git
+  - python
+  license: MIT
+  license_family: MIT
+  purls:
+  - pkg:pypi/sphinx-sitemap?source=hash-mapping
+  size: 13376
+  timestamp: 1755006843794
 - conda: https://conda.anaconda.org/conda-forge/noarch/sphinx-togglebutton-0.3.2-pyhd8ed1ab_0.tar.bz2
   sha256: 0dcee238aae6337fae5eaf1f9a29b0c51ed9834ae501fccb2cde0fed8dae1a88
   md5: 382738101934261ea7931d1460e64868

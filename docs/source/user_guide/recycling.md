@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Documentation for the saddle point recycling method in EON, which significantly reduces the computational cost of aKMC simulations."
+    "keywords": "EON recycling, saddle point recycling, aKMC optimization, computational efficiency"
+---
+
 # Recycling
 
 As reported in {cite:t}`recyc-xuAdaptiveKineticMonte2008`, `eOn` implements a
