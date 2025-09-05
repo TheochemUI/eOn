@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Detailed release notes for EON v2.8.0, covering new features, enhancements, build system improvements, and documentation updates."
+    "keywords": "EON v2.8.0 release notes, new features, enhancements, bug fixes"
+---
+
 # Release notes
 
 ## [2.8.0] - 2025-09-04

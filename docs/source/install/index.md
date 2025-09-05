@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Installation guide for the EON software package. Learn how to install EON using conda or build it from source using meson."
+    "keywords": "install EON, build EON, conda, meson, compilation"
+---
+
 # Installation
 
 eOn is divided up into two separate programs: a server and a client. The client
@@ -74,22 +81,6 @@ passed with `--native-file`:
 The full listing of options is found in the `meson_options.txt` file. These can
 all be turned on and off at the command line. As an example see the [LAMMPS
 integration instructions](project:../user_guide/lammps_pot.md).
-
-# Additional topics
-
-This page lists generally applicable installation instructions, for specific
-systems, follow the sub-parts of this document.
-
-```{toctree}
-:maxdepth: 2
-:caption: Special topics
-
-windows
-lammps
-metatomic
-ase
-svn
-```
 
 # Licenses
 

@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Configuration for initiating saddle searches in EON by displacing atoms from a minimum energy state."
+    "keywords": "EON saddle search, transition state, displacement, potential energy surface"
+---
+
 # Saddle Search
 
 A saddle search is initiated by making a local displacement of atoms from their
