@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Instructions for using a modified version of VASP with EON via the MPI Potential interface for parallel calculations."
+    "keywords": "EON MPI potential, VASP interface, parallel VASP, ab-initio"
+---
+
 # MPI Potential
 
 ```{note}

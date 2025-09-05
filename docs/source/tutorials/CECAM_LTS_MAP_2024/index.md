@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Tutorial materials from the CECAM Workshop 2024 on 'Long time multi-scale simulations of activated events: from theory to practice'."
+    "keywords": "EON CECAM, workshop, tutorial, long time dynamics, multi-scale simulation"
+---
+
 # CECAM Workshop 2024
 
 For the CECAM event at SISSA, titled ["Long time multi-scale simulations of

@@ -1,10 +1,18 @@
+---
+myst:
+  html_meta:
+    "description": "Comprehensive user guide for the EON software, detailing all algorithms, configuration settings, and job types."
+    "keywords": "EON user guide, documentation, configuration, algorithms, tutorials"
+---
+
 # User Guide
 
 Here we collect a brief introduction to each algorithm, with curated references
 for more information along with the  configuration settings as implemented
 within `eOn`.
 
-Each of the sections and methods may be included in the configuration file with the appropriate section header.
+Each of the sections and methods may be included in the configuration file with
+the appropriate section header.
 
 ## Overview
 
@@ -47,7 +55,22 @@ Methods run in parallel are broken up by the eon server into tasks which
 are run by client program. The server then compiles the information sent back
 by the clients in a way that can be used by the sampling or dynamics methods.
 
-## Configurationa Sections
+## Potentials
+
+Some of the potentials require additional installation and setup, which are
+described in the subsequent sections.
+
+```{toctree}
+:maxdepth: 1
+:caption: Potentials
+
+lammps_pot
+ase_pot
+metatomic_pot
+mpi_potential
+```
+
+## Configuration Sections
 
 ```{toctree}
 :maxdepth: 1
@@ -102,12 +125,16 @@ debug
 paths
 ```
 
+## Miscellaneous
+
+Some of the potentials require additional installation and setup, which are
+described in the subsequent sections.
+
 ```{toctree}
 :maxdepth: 1
 :caption: External linkage
 
-lammps_pot
 kdb
-mpi_potential
 ```
+
 <!-- TODO(rg) Maybe add the whole config as well -->
