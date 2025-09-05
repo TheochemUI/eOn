@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "A list of scientific publications related to the new methods and features implemented in the EON v2.8.0 release."
+    "keywords": "EON publications, citations, research papers, scientific articles"
+---
+
 # Related Publications
 
 ## [Jónsson Group](https://hj.hi.is/indexE.html)

@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    "description": "Details of the eOn software development team, a collaboration between the Henkelman and Jónsson research groups, and other key contributors."
+    "keywords": "eOn team, developers, contributors"
+---
 # eOn Team
 
 The `eOn` software is primarily a collaboration between the Henkelman and
@@ -70,7 +76,7 @@ collaborators in Canada:
 Rohit also acknowledges funding support from
 [lab-COSMO](https://www.epfl.ch/labs/cosmo/), for supporting
 [metatomic](https://docs.metatensor.org/metatomic/latest/overview.html) models
-in EON, in particular [Dr. Guillaume Fraux](https://guillaume.fraux.fr/) and
+in eOn, in particular [Dr. Guillaume Fraux](https://guillaume.fraux.fr/) and
 [Prof. Michele Ceriotti](https://people.epfl.ch/michele.ceriotti?lang=en).
 
 ## License history
@@ -82,8 +88,8 @@ license was changed to GNU GPL v2.  Since 2020, eOn is licensed under the BSD
 
 #### Footnotes
 
-[^1]: [IRA](https://mammasmias.github.io/IterativeRotationsAssignments/intro.html) has also been used in tandem with EON for research in 2024-2025
+[^1]: [IRA](https://mammasmias.github.io/IterativeRotationsAssignments/intro.html) has also been used in tandem with eOn for research in 2024-2025
 
-[^2]: The work-in-progress (2025) pyKMC code blends concepts from EON and k-ART
+[^2]: The work-in-progress (2025) pyKMC code blends concepts from eOn and k-ART
 
 [^3]: [k-ART](https://kart-doc.readthedocs.io/en/latest/download.html) is an off-lattice KMC code primarily used for metals but with overlapping concepts

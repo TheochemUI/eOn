@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Configuration options for calculating the Hessian matrix in EON, used for evaluating prefactors in harmonic transition state theory."
+    "keywords": "EON Hessian, vibrational analysis, prefactor, harmonic transition state theory, hTST"
+---
+
 # Hessian
 
 The Hessian matrix, in mass-weighted coordinates, is used to evaluate prefactors

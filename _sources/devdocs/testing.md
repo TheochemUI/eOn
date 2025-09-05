@@ -1,6 +1,13 @@
+---
+myst:
+  html_meta:
+    "description": "Guide for developers on the testing suite in EON, including unit tests, approval tests, and integration tests, and how to add new tests."
+    "keywords": "EON testing, unit tests, integration tests, meson tests, gtest"
+---
+
 # Tests
 
-```{versionadded} 2.0
+```{versionadded} 2.5
 ```
 
 We have a robust testsuite, consisting of unit tests, approval tests, and a few

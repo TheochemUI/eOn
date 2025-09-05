@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Guide to the general simulation parameters in EON's main configuration section, covering job types, temperature, and other shared settings."
+    "keywords": "EON main config, general parameters, job type, temperature, settings"
+---
+
 # General Simulation Parameters
 
 The following contains general options which specify the calculation to be done

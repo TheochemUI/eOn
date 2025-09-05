@@ -7,6 +7,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Guide to using the Atomic Simulation Environment (ASE) interface in EON, allowing the use of any ASE calculator as a potential." name="description" />
+<meta content="EON ASE, Atomic Simulation Environment, ASE calculator, Python potential" name="keywords" />
     <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
@@ -14,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <title>Metatomic Interface &#8212; eOn</title>
+    <title>ASE Interface &#8212; eOn</title>
   
   
   
@@ -59,11 +61,12 @@
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'install/metatomic';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/ase_pot';</script>
+    <link rel="canonical" href="https://eondocs.org/user_guide/ase_pot.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ASE Interface" href="ase.html" />
-    <link rel="prev" title="LAMMPS" href="lammps.html" />
+    <link rel="next" title="Metatomic Interface" href="metatomic_pot.html" />
+    <link rel="prev" title="LAMMPS Potential" href="lammps_pot.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -176,8 +179,7 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../team.html">eOn Team</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Installation</a></li>
-
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
 
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -189,37 +191,40 @@
 </details></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/main.html">General Simulation Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure Comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/optimizer.html">Optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/minimization.html">Minimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/neb.html">Nudged Elastic Band</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/dimer.html">Dimer method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/lanczos.html">Lanczos</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/saddle_search.html">Saddle Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/basin_hopping.html">Basin Hopping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/process_search.html">Process Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/recycling.html">Recycling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/coarse_graining.html">Coarse Graining</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/dynamics.html">Dynamics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/parallel_replica.html">Parallel Replica</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/communicator.html">Communicator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/kdb.html">Kinetic Database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">User Guide</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/release.html">Checklist</a></li>
@@ -339,7 +344,7 @@
       
       
       
-      <li><a href="../_sources/install/metatomic.md" target="_blank"
+      <li><a href="../_sources/user_guide/ase_pot.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -423,7 +428,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Metatomic Interface</h1>
+    <h1>ASE Interface</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -433,11 +438,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-and-compilation">Setup and Compilation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage-example">Usage example</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lennard-jones-baseline">Lennard Jones Baseline</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet-mad">PET-MAD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scripting-ase">Scripting <code class="docutils literal notranslate"><span class="pre">ASE</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -451,112 +453,74 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="metatomic-interface">
-<h1>Metatomic Interface<a class="headerlink" href="#metatomic-interface" title="Link to this heading">#</a></h1>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 2.0.</span></p>
-</div>
-<p>The Metatomic interface allows EON to use machine learning potentials developed
-with the <code class="docutils literal notranslate"><span class="pre">metatensor</span></code> and <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> libraries.</p>
-<section id="setup-and-compilation">
-<h2>Setup and Compilation<a class="headerlink" href="#setup-and-compilation" title="Link to this heading">#</a></h2>
-<p>The most robust way to handle the dependencies is to use <code class="docutils literal notranslate"><span class="pre">-Dwith_metatomic=True</span> <span class="pre">-Dpip_metatomic=True</span> <span class="pre">-Dtorch_version=2.7</span></code> inside the <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">s</span> <span class="pre">-e</span> <span class="pre">meta-dev</span></code>
-environment.</p>
-<p>Some notes about this implemetnation:</p>
+  <section id="ase-interface">
+<h1>ASE Interface<a class="headerlink" href="#ase-interface" title="Link to this heading">#</a></h1>
+<p>In order to build eOn client with the ability to use ASE calculators as a
+potential, the appropriate option must be setup when using <code class="docutils literal notranslate"><span class="pre">meson</span></code> which is
+<code class="docutils literal notranslate"><span class="pre">-Dwith_python=True</span> <span class="pre">-Dwith_ase=True</span></code>.</p>
+<p>Some notes about this implementation:</p>
 <ul class="simple">
-<li><p>Unlike the <code class="docutils literal notranslate"><span class="pre">python</span></code> potentials, using <code class="docutils literal notranslate"><span class="pre">pip_metatomic</span></code> does not share a <code class="docutils literal notranslate"><span class="pre">guard</span></code>
-across the client</p></li>
-<li><p>These models are typically stored in <code class="docutils literal notranslate"><span class="pre">.pt</span></code> files.</p></li>
+<li><p>It is registered as an external potential</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment must have <code class="docutils literal notranslate"><span class="pre">ase</span></code> present</p></li>
+<li><p>Like other <code class="docutils literal notranslate"><span class="pre">python</span></code> potentials, it shares the <code class="docutils literal notranslate"><span class="pre">guard</span></code> across the client</p></li>
 </ul>
-<p>For more details including building from source, refer to the <a class="reference external" href="https://docs.metatensor.org/latest/index.html">upstream documentation</a>.</p>
-</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Potential]</span>
-<span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">metatomic</span>
+<span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ase</span>
+<span class="na">ext_pot_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/full/path/to/the/ase_script.py</span>
+</pre></div>
+</div>
+<p>The last line (<code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code>) is required, and it may be the relative or the
+absolute path to the Python script containing the desired ASE calculator (see
+next section).</p>
+<p>When running EON (e.g. AKMC jobs), which calls <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> in the back, <strong>it is
+highly recommended to write the full absolute path to the script</strong>.</p>
+<section id="scripting-ase">
+<h3>Scripting <code class="docutils literal notranslate"><span class="pre">ASE</span></code><a class="headerlink" href="#scripting-ase" title="Link to this heading">#</a></h3>
+<p>EON client imports this Python script to get the energy and forces.
+The script should look like this (e.g. using ASE’s Lennard Jones calculator)::</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ase</span><span class="w"> </span><span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ase.calculators.lj</span><span class="w"> </span><span class="kn">import</span> <span class="n">LennardJones</span>
 
-<span class="k">[Metatomic]</span>
-<span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lennard-jones.pt</span>
-</pre></div>
-</div>
-<p>The model_path is the path to the PyTorch model file (<code class="docutils literal notranslate"><span class="pre">.pt</span></code>). As with other
-external files, it is highly recommended to provide the full absolute path to
-the model.</p>
-</section>
-<section id="usage-example">
-<h2>Usage example<a class="headerlink" href="#usage-example" title="Link to this heading">#</a></h2>
-<section id="lennard-jones-baseline">
-<h3>Lennard Jones Baseline<a class="headerlink" href="#lennard-jones-baseline" title="Link to this heading">#</a></h3>
-<p>Here is a complete workflow, from generating a simple Lennard-Jones test model
-to running a calculation with eonclient.</p>
-<p>The metatomic-lj-test package provides a simple way to create a sample model
-file. Run this Python script:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">metatomic_lj_test</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ase_calc</span><span class="p">():</span>
+    <span class="c1"># MODIFY THIS SECTION</span>
+    <span class="n">calc</span> <span class="o">=</span> <span class="n">LennardJones</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.0103</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">3.40</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">calc</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">metatomic_lj_test</span><span class="o">.</span><span class="n">lennard_jones_model</span><span class="p">(</span>
-    <span class="n">atomic_type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">cutoff</span><span class="o">=</span><span class="mf">3.4</span><span class="p">,</span>
-    <span class="n">sigma</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
-    <span class="n">epsilon</span><span class="o">=</span><span class="mf">23.0</span><span class="p">,</span>
-    <span class="n">length_unit</span><span class="o">=</span><span class="s2">&quot;Angstrom&quot;</span><span class="p">,</span>
-    <span class="n">energy_unit</span><span class="o">=</span><span class="s2">&quot;eV&quot;</span><span class="p">,</span>
-    <span class="n">with_extension</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c1">#=======================================================================</span>
+<span class="c1"># DO NOT EDIT</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_calculate</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">atomicNrs</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">calc</span><span class="p">):</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="n">symbols</span><span class="o">=</span><span class="n">atomicNrs</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="n">R</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">box</span><span class="p">)</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
+    <span class="n">forces</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">get_forces</span><span class="p">()</span>
+    <span class="n">energy</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">energy</span><span class="p">,</span> <span class="n">forces</span>
+<span class="c1">#=======================================================================</span>
 
-<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;lennard-jones.pt&quot;</span><span class="p">,</span> <span class="n">collect_extensions</span><span class="o">=</span><span class="s2">&quot;extensions/&quot;</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved model to lennard-jones.pt&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># This is just to verify that the script runs properly with `python3 &lt;this_script&gt;`</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ase.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># structure file name</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">positions</span>  <span class="c1"># array of positions (n x 3)</span>
+    <span class="n">atomicNrs</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_atomic_numbers</span><span class="p">()</span>  <span class="c1"># array of atomic numbers (n)</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span>  <span class="c1"># cell array (3 x 3)</span>
+    <span class="n">calc</span> <span class="o">=</span> <span class="n">ase_calc</span><span class="p">()</span>
+    <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">_calculate</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">atomicNrs</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">calc</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;E = </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F =&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create the lennard-jones.pt file in your current directory.</p>
-<p>This can be loaded checked with a configuration file for EON:</p>
-<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Main]</span>
-<span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">point</span>
-<span class="na">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">300</span>
-<span class="na">random_seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">706253457</span>
-
-<span class="k">[Potential]</span>
-<span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">metatomic</span>
-
-<span class="k">[Metatomic]</span>
-<span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lennard-jones.pt</span>
-</pre></div>
-</div>
-<p>With coordinates from the <code class="docutils literal notranslate"><span class="pre">lj13.con</span></code> file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>docs/lj13.con<span class="w"> </span>pos.con
-eonclient
-<span class="c1"># Energy:         98374.877530582715</span>
-<span class="c1"># Max atom force: 109591.908376179999</span>
-</pre></div>
-</div>
-<p>Validated with the <code class="docutils literal notranslate"><span class="pre">metatomic</span></code> wrapper.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">ase.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">aseio</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">metatomic.torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_atomistic_model</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">metatomic.torch.ase_calculator</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetatomicCalculator</span>
-<span class="n">atomistic_model</span> <span class="o">=</span> <span class="n">load_atomistic_model</span><span class="p">(</span><span class="s2">&quot;lennard-jones.pt&quot;</span><span class="p">)</span>
-<span class="n">mta_calculator</span> <span class="o">=</span> <span class="n">MetatomicCalculator</span><span class="p">(</span><span class="n">atomistic_model</span><span class="p">)</span>
-<span class="n">atoms</span> <span class="o">=</span> <span class="n">aseio</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pos.con&quot;</span><span class="p">)</span>
-<span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">mta_calculator</span>
-<span class="c1"># NOTE(rg): Normally needs a mask to remove fixed atoms, lj13 has no fixed atoms</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_forces</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
-</pre></div>
-</div>
-<p>Which yields the expected result.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="mf">98374.87753058573</span><span class="p">)</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_forces</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="mf">109591.90837618345</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="pet-mad">
-<h3>PET-MAD<a class="headerlink" href="#pet-mad" title="Link to this heading">#</a></h3>
-<p>To use <code class="docutils literal notranslate"><span class="pre">pet-mad</span></code> we can use <code class="docutils literal notranslate"><span class="pre">metatrain</span></code> to grab the model.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mtt<span class="w"> </span><span class="nb">export</span><span class="w"> </span>https://huggingface.co/lab-cosmo/pet-mad/resolve/v1.1.0/models/pet-mad-v1.1.0.ckpt
-</pre></div>
-</div>
+<p>The user should customize the content of the function <code class="docutils literal notranslate"><span class="pre">ase_calc()</span></code> to use the
+desired ASE calculator, <strong>but not that of <code class="docutils literal notranslate"><span class="pre">_calculate()</span></code> nor the function
+names</strong>.</p>
+<p>Often, the ASE calculator may require an external potential file. When running
+EON (e.g. AKMC jobs) and an external file name is used in this script, <strong>it is
+highly recommended to write the full absolute path to the external file</strong>.</p>
+<p>Before using it, make sure that this script contains no errors on the Python
+side.</p>
 </section>
 </section>
 </section>
@@ -573,20 +537,20 @@ eonclient
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="lammps.html"
+       href="lammps_pot.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">LAMMPS</p>
+        <p class="prev-next-title">LAMMPS Potential</p>
       </div>
     </a>
     <a class="right-next"
-       href="ase.html"
+       href="metatomic_pot.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">ASE Interface</p>
+        <p class="prev-next-title">Metatomic Interface</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -606,11 +570,8 @@ eonclient
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-and-compilation">Setup and Compilation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage-example">Usage example</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lennard-jones-baseline">Lennard Jones Baseline</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet-mad">PET-MAD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scripting-ase">Scripting <code class="docutils literal notranslate"><span class="pre">ASE</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -627,7 +588,7 @@ eonclient
   <div class="footer-item">
     
 <p class="component-author">
-By Rohit Goswami
+By the eOn developers
 </p>
 
   </div>
@@ -637,7 +598,7 @@ By Rohit Goswami
 
   <p class="copyright">
     
-      © Copyright 2024, Henkelmann Group, Jónsson Group, Rohit Goswami.
+      © Copyright 2025, the eOn developers.
       <br/>
     
   </p>

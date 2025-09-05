@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Documentation for the structure comparison settings in EON, used to configure similarity measures and equivalence thresholds."
+    "keywords": "EON structure comparison, point group, bond order, configuration comparison"
+---
+
 # Structure Comparison
 
 ## Configuration
