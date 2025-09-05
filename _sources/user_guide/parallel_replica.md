@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Guide to Parallel Replica Dynamics (PRD) in EON, a method to accelerate molecular dynamics simulations by running multiple independent replicas."
+    "keywords": "EON Parallel Replica, PRD, accelerated MD, replica dynamics"
+---
+
 # Parallel Replica
 
 Parallel Replica dynamics (PRD) is the simplest and the accurate way to

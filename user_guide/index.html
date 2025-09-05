@@ -7,6 +7,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Comprehensive user guide for the EON software, detailing all algorithms, configuration settings, and job types." name="description" />
+<meta content="EON user guide, documentation, configuration, algorithms, tutorials" name="keywords" />
     <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
@@ -60,9 +62,10 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/index';</script>
+    <link rel="canonical" href="https://eondocs.org/user_guide/index.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="General Simulation Parameters" href="main.html" />
+    <link rel="next" title="LAMMPS Potential" href="lammps_pot.html" />
     <link rel="prev" title="Virtualbox Troublshooting" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -179,7 +182,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
 
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
@@ -190,6 +192,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">User Guide</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">General Simulation Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="potential.html">Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structure_comparison.html">Structure Comparison</a></li>
@@ -212,14 +218,13 @@
 <li class="toctree-l2"><a class="reference internal" href="communicator.html">Communicator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="paths.html">Paths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../devdocs/release.html">Checklist</a></li>
@@ -434,9 +439,11 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurationa-sections">Configurationa Sections</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#potentials">Potentials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-sections">Configuration Sections</a><ul class="nav section-nav flex-column">
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#miscellaneous">Miscellaneous</a></li>
 </ul>
             </nav>
         </div>
@@ -453,7 +460,8 @@ document.write(`
 <p>Here we collect a brief introduction to each algorithm, with curated references
 for more information along with the  configuration settings as implemented
 within <code class="docutils literal notranslate"><span class="pre">eOn</span></code>.</p>
-<p>Each of the sections and methods may be included in the configuration file with the appropriate section header.</p>
+<p>Each of the sections and methods may be included in the configuration file with
+the appropriate section header.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">eOn</span></code> program can run the following methods or tasks to explore the
@@ -493,8 +501,22 @@ mpi.</p>
 are run by client program. The server then compiles the information sent back
 by the clients in a way that can be used by the sampling or dynamics methods.</p>
 </section>
-<section id="configurationa-sections">
-<h2>Configurationa Sections<a class="headerlink" href="#configurationa-sections" title="Link to this heading">#</a></h2>
+<section id="potentials">
+<h2>Potentials<a class="headerlink" href="#potentials" title="Link to this heading">#</a></h2>
+<p>Some of the potentials require additional installation and setup, which are
+described in the subsequent sections.</p>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Potentials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
+</ul>
+</div>
+</section>
+<section id="configuration-sections">
+<h2>Configuration Sections<a class="headerlink" href="#configuration-sections" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Common</span></p>
 <ul>
@@ -542,12 +564,15 @@ by the clients in a way that can be used by the sampling or dynamics methods.</p
 <li class="toctree-l1"><a class="reference internal" href="paths.html">Paths</a></li>
 </ul>
 </div>
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading">#</a></h2>
+<p>Some of the potentials require additional installation and setup, which are
+described in the subsequent sections.</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">External linkage</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
 </ul>
 </div>
 <!-- TODO(rg) Maybe add the whole config as well -->
@@ -575,11 +600,11 @@ by the clients in a way that can be used by the sampling or dynamics methods.</p
       </div>
     </a>
     <a class="right-next"
-       href="main.html"
+       href="lammps_pot.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">General Simulation Parameters</p>
+        <p class="prev-next-title">LAMMPS Potential</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -600,9 +625,11 @@ by the clients in a way that can be used by the sampling or dynamics methods.</p
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurationa-sections">Configurationa Sections</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#potentials">Potentials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-sections">Configuration Sections</a><ul class="nav section-nav flex-column">
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#miscellaneous">Miscellaneous</a></li>
 </ul>
   </nav></div>
 
@@ -617,7 +644,7 @@ by the clients in a way that can be used by the sampling or dynamics methods.</p
   <div class="footer-item">
     
 <p class="component-author">
-By Rohit Goswami
+By the eOn developers
 </p>
 
   </div>
@@ -627,7 +654,7 @@ By Rohit Goswami
 
   <p class="copyright">
     
-      © Copyright 2024, Henkelmann Group, Jónsson Group, Rohit Goswami.
+      © Copyright 2025, the eOn developers.
       <br/>
     
   </p>

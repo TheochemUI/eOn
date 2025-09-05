@@ -1,3 +1,10 @@
+---
+myst:
+  html_meta:
+    "description": "Configuration options for the various geometry optimizers in EON, including LBFGS, QuickMin, FIRE, CG, and SD."
+    "keywords": "EON optimizer, LBFGS, QuickMin, FIRE, CG, SD, geometry optimization"
+---
+
 # Optimizer
 
 ```{note}

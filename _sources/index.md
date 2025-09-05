@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    "description": "Official documentation for the EON software package, a tool for modeling long-timescale dynamics in atomic systems with methods like aKMC, NEB, and Parallel Replica Dynamics."
+    "keywords": "EON, long-timescale dynamics, aKMC, NEB, Parallel Replica Dynamics"
+---
 # eOn: Long Timescale Dynamics Software
 
 The EON software package contains a set of algorithms used primarily to model
