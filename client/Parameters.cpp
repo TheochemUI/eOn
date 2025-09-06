@@ -223,8 +223,8 @@ Parameters::Parameters() {
   gprDimerSep = 0.01;                       // dimer_sep
   gprd_trans_options.step_length = 0.1;     // param_trans[0]
   gprd_trans_options.max_step_length = 0.1; // param_trans[1]
-  gprd_trans_options.rotrem_thresh =
-      0.1;                        // rotation_removal_projection_threshold
+  gprd_trans_options.rotrem_thresh = std::numeric_limits<
+      double>::infinity();        // rotation_removal_projection_threshold
   gprDimerRatioAtLimit = 0.66667; // ratio_at_limit
   gprDimerInitRotGP = 0;          // initrot_nogp
   gprDimerInitTransGP = 0;        // inittrans_nogp
@@ -789,12 +789,13 @@ int Parameters::load(FILE *file) {
     gprActiveRadius =
         ini.GetValueF("GPR Dimer", "active_radius", gprActiveRadius);
     gprDimerSep = ini.GetValueF("GPR Dimer", "dimer_separation", gprDimerSep);
-    gprd_trans_options.step_length =
-        ini.GetValueF("GPR Dimer", "convex_region_step_size", gprd_trans_options.step_length);
-    gprd_trans_options.max_step_length =
-        ini.GetValueF("GPR Dimer", "max_step_size", gprd_trans_options.max_step_length);
+    gprd_trans_options.step_length = ini.GetValueF(
+        "GPR Dimer", "convex_region_step_size", gprd_trans_options.step_length);
+    gprd_trans_options.max_step_length = ini.GetValueF(
+        "GPR Dimer", "max_step_size", gprd_trans_options.max_step_length);
     gprd_trans_options.rotrem_thresh =
-        ini.GetValueF("GPR Dimer", "rotation_removal_projection_threshold", gprd_trans_options.rotrem_thresh);
+        ini.GetValueF("GPR Dimer", "rotation_removal_projection_threshold",
+                      gprd_trans_options.rotrem_thresh);
     gprDimerRatioAtLimit =
         ini.GetValueF("GPR Dimer", "ratio_at_limit", gprDimerRatioAtLimit);
     gprDimerInitRotGP =
@@ -861,8 +862,7 @@ int Parameters::load(FILE *file) {
     gprDebugGradFile =
         ini.GetValue("GPR Dimer", "debug_gradient_basename", gprDebugGradFile);
     ;
-    gprDebugOutExt =
-        ini.GetValue("GPR Dimer", "debug_out_ext", gprDebugOutExt);
+    gprDebugOutExt = ini.GetValue("GPR Dimer", "debug_out_ext", gprDebugOutExt);
     ;
     gprDebugOffsetMidPoint = ini.GetValueF("GPR Dimer", "debug_midpoint_offset",
                                            gprDebugOffsetMidPoint);
