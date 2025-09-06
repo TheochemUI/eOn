@@ -227,7 +227,6 @@ Parameters::Parameters() {
       double>::infinity();        // rotation_removal_projection_threshold
   gprDimerRatioAtLimit = 0.66667; // ratio_at_limit
   gprDimerInitRotGP = 0;          // initrot_nogp
-  gprDimerInitTransGP = 0;        // inittrans_nogp
   gprDimerManyIterations = true;  // islarge_num_iter
   // GPR Params
   gprDimerSigma2 = 1e-8;      // gp_sigma2

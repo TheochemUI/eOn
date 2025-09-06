@@ -248,8 +248,6 @@ public:
                                // image and its "nearest observed data point"
   bool gprDimerInitRotGP;   // initial rotations without GP (1) or with GP (0)
                             // {initrot_nogp}
-  bool gprDimerInitTransGP; // initial translations without GP (1) or with GP
-                            // (0) {inittrans_nogp}
   bool gprDimerManyIterations; // indicates of the number of iterations is
                                // larger than required for dimer convergence on
                                // the accurate energy surface (1), otherwise (0)
