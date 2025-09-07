@@ -799,8 +799,6 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("GPR Dimer", "ratio_at_limit", gprDimerRatioAtLimit);
     gprDimerInitRotGP =
         ini.GetValueB("GPR Dimer", "nogp_initial_rotations", gprDimerInitRotGP);
-    gprDimerInitTransGP = ini.GetValueB("GPR Dimer", "nogp_init_translations",
-                                        gprDimerInitTransGP);
     gprDimerManyIterations = ini.GetValueB("GPR Dimer", "has_many_iterations",
                                            gprDimerManyIterations);
     // GPR Params
