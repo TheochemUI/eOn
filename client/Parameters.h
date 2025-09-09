@@ -243,6 +243,10 @@ public:
     double max_step_length; // maximum step length {param_trans[1]}
     double rotrem_thresh;   // {rotation_removal_projection_threshold}
   } gprd_trans_options;
+  struct early_stopping_t {
+    std::string dist_metrics;
+    double threshold;
+  } early_stopping_options;
   double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the
                                // ratio of inter-atomic distances between the
                                // image and its "nearest observed data point"

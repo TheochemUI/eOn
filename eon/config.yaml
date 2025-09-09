@@ -704,6 +704,18 @@ GPR Dimer:
             kind: float
             default: 0.5
 
+        es_threshold:
+            kind: float
+            default: 1.2
+
+        es_dist_metric:
+            kind: string
+            default: emd
+            values:
+                - emd
+                - rmsd
+                - max1DLog
+
 ################################################################################
 
 Basin Hopping:

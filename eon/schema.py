@@ -1763,9 +1763,7 @@ class GPRDimerConfig(BaseModel):
         default=10,
         description="Maximum number of relaxation rotation iterations (num_iter_rot_gp).",
     )
-    divisor_t_dimer: int = Field(
-        default=10, description="Divisor for T_dimer_gp."
-    )
+    divisor_t_dimer: int = Field(default=10, description="Divisor for T_dimer_gp.")
     max_outer_iterations: int = Field(
         default=300, description="Maximum number of outer iterations (num_bigiter)."
     )
@@ -1786,7 +1784,9 @@ class GPRDimerConfig(BaseModel):
         default=5.0, description="Active radius for atom selection (actidst_fro)."
     )
     dimer_separation: float = Field(default=0.01, description="Dimer separation.")
-    convex_region_step_size: float = Field(default=0.1, description="Convex region step size.")
+    convex_region_step_size: float = Field(
+        default=0.1, description="Convex region step size."
+    )
     max_step_size: float = Field(default=0.1, description="Maximum step size.")
     rotation_removal_projection_threshold: float = Field(
         default=0.1, description="Threshold below which torques are removed."
@@ -1814,9 +1814,7 @@ class GPRDimerConfig(BaseModel):
         default=1e-8, description="GPR noise variance (sigma2)."
     )
     prior_mean: float = Field(default=0.0, description="Prior mean.")
-    prior_variance: float = Field(
-        default=1.0, description="Prior variance (prior_s2)."
-    )
+    prior_variance: float = Field(default=1.0, description="Prior variance (prior_s2).")
     prior_degrees_of_freedom: float = Field(
         default=20.0, description="Prior degrees of freedom (prior_nu)."
     )
@@ -1836,6 +1834,10 @@ class GPRDimerConfig(BaseModel):
     )
     nprune_vals: int = Field(default=3, description="The number of values to prune.")
     prune_threshold: float = Field(default=0.5, description="The pruning threshold.")
+    es_threshold: float = Field(default=1.2, description="Early stopping threshold.")
+    es_dist_metric: Literal["emd", "rmsd", "max1DLog"] = Field(
+        default="emd", description="The distance for early stopping."
+    )
 
     # Debugging Parameters
     report_level: int = Field(default=1, description="The reporting level.")

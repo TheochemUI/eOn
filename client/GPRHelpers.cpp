@@ -54,6 +54,15 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.epsilon.value = parameters->gpr_hypopt_options.adam.eps;
   p.weight_decay.value = parameters->gpr_hypopt_options.adam.weight_decay;
   p.amsgrad.value = parameters->gpr_hypopt_options.adam.amsgrad;
+  // Early stopping
+  if (parameters->early_stopping_options.dist_metrics == "emd") {
+    p.es_dist_metric.value = DistanceMetricType::EMD;
+  } else if (parameters->early_stopping_options.dist_metrics == "rmsd") {
+    p.es_dist_metric.value = DistanceMetricType::RMSD;
+  } else if (parameters->early_stopping_options.dist_metrics == "max1DLog") {
+    p.es_dist_metric.value = DistanceMetricType::MAX_1D_LOG;
+  }
+  p.es_threshold.value = parameters->early_stopping_options.threshold;
   // Prune
   p.use_prune.value = parameters->gprUsePrune;
   p.start_prune_at.value = parameters->gprPruneBegin;

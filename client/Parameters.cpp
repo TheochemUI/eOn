@@ -250,6 +250,8 @@ Parameters::Parameters() {
   gpr_hypopt_options.adam.eps = 1.0e-8;
   gpr_hypopt_options.adam.weight_decay = 0.0;
   gpr_hypopt_options.adam.amsgrad = true;
+  early_stopping_options.dist_metrics = "EMD"s;
+  early_stopping_options.threshold = 1.2;
   // GPR Prune Parameters
   gprUsePrune = false;     // use_prune
   gprPruneBegin = 8;       // start_prune_at
@@ -842,6 +844,10 @@ int Parameters::load(FILE *file) {
         "GPR Dimer", "adam_weight_decay", gpr_hypopt_options.adam.weight_decay);
     gpr_hypopt_options.adam.amsgrad = ini.GetValueB(
         "GPR Dimer", "adam_amsgrad", gpr_hypopt_options.adam.amsgrad);
+    early_stopping_options.dist_metrics = ini.GetValue(
+        "GPR Dimer", "es_dist_metric", early_stopping_options.dist_metrics);
+    early_stopping_options.threshold = ini.GetValueF(
+        "GPR Dimer", "es_threshold", early_stopping_options.threshold);
     // GPR Debugging Parameters
     gprReportLevel =
         (int)ini.GetValueL("GPR Dimer", "report_level", gprReportLevel);
