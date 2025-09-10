@@ -74,8 +74,7 @@ int SaddleSearchJob::doSaddleSearch() {
   }
 
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this
-    // works
+    fCallsSaddle = saddleSearch->forcecalls;
   } else {
     fCallsSaddle += this->pot->forceCallCounter - f1;
   }
@@ -99,7 +98,9 @@ void SaddleSearchJob::saveData(int status) {
   fprintf(
       fileResults, "%s potential_type\n",
       std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
-  fprintf(fileResults, "%li total_force_calls\n", this->pot->forceCallCounter);
+  // XXX(rg): Adding one because the "total" number of calls should include the
+  // a call to getPotentialEnergy() for the saddle
+  fprintf(fileResults, "%li total_force_calls\n", this->pot->forceCallCounter + 1);
   fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
   fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
   if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {

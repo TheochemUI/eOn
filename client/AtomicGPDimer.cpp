@@ -69,15 +69,16 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
+  int old_pot_count = pot->forceCallCounter;
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
   atomic_dimer.execute(*pot);
   fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
+  pot->forceCallCounter = old_pot_count + atomic_dimer.getTotalForceCalls();
   this->totalIterations = atomic_dimer.getIterations();
   this->totalForceCalls = atomic_dimer.getTotalForceCalls();
-  pot->forceCallCounter = atomic_dimer.getTotalForceCalls();
   return;
 }
 
