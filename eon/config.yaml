@@ -716,6 +716,18 @@ GPR Dimer:
                 - rmsd
                 - max1DLog
 
+        fps_history:
+            kind: int
+            default: 5
+
+        fps_metric:
+            kind: string
+            default: emd
+            values:
+                - emd
+                - rmsd
+                - max1DLog
+
 ################################################################################
 
 Basin Hopping:

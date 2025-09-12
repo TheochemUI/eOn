@@ -270,6 +270,10 @@ public:
   int gprPruneBegin;        // {start_prune_at}
   int gprPruneNVals;        // {nprune_vals}
   double gprPruneThreshold; // {prune_threshold}
+  struct gpr_fps_t {
+    std::string metric;
+    int history;
+  } fps_options;
   struct gpr_hypopt_t {
     std::string hopt_method;
     bool check_derivative;

@@ -63,6 +63,14 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
     p.es_dist_metric.value = DistanceMetricType::MAX_1D_LOG;
   }
   p.es_threshold.value = parameters->early_stopping_options.threshold;
+  if (parameters->fps_options.metric == "emd") {
+    p.fps_metric.value = DistanceMetricType::EMD;
+  } else if (parameters->fps_options.metric == "rmsd") {
+    p.fps_metric.value = DistanceMetricType::RMSD;
+  } else if (parameters->fps_options.metric == "max1DLog") {
+    p.fps_metric.value = DistanceMetricType::MAX_1D_LOG;
+  }
+  p.fps_history.value = parameters->fps_options.history;
   // Prune
   p.use_prune.value = parameters->gprUsePrune;
   p.start_prune_at.value = parameters->gprPruneBegin;
