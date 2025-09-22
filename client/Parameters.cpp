@@ -236,7 +236,7 @@ Parameters::Parameters() {
   gprDimerPriorSigma2 = 1;    // prior_s2
   gprDimerPriorNu = 20;       // prior_nu
   // GPR Optimization Parameters
-  gpr_hypopt_options.hopt_method = "SCG_opt"s; // optimization_alg
+  gpr_hypopt_options.hopt_method = "Ceres_opt"s; // optimization_alg
   gpr_hypopt_options.check_derivative = false; // check_derivative
   gpr_hypopt_options.tol_func = 1e-4;
   gpr_hypopt_options.tol_sol = 1e-4;

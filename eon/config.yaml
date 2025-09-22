@@ -619,10 +619,11 @@ GPR Dimer:
 
         hyperparameter_opt_method:
           kind: string
-          default: scg_opt
+          default: SCG_opt
           values:
               - SCG_opt
               - ADAM_opt
+              - Ceres_opt
 
         check_derivatives:
           kind: boolean
