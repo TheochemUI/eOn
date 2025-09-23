@@ -1,22 +1,25 @@
 import logging
-
-logger = logging.getLogger("displace")
-
 import re
 from math import cos, sin
+
+import ase
 import numpy
+from ase.vibrations import Vibrations
+from xtb.ase.calculator import XTB
 
 from eon import atoms
 from eon import fileio as io
-
-from eon.config import config as EON_CONFIG
 from eon.config import ConfigClass  # Typing
+from eon.config import config as EON_CONFIG
 
+logger = logging.getLogger("displace")
 
 class DisplacementManager:
     def __init__(self, reactant, moved_atoms, config: ConfigClass = EON_CONFIG):
         self.config = config
         self.reactant = reactant
+
+        # Initialize all possible displacement objects if their weight is > 0
         if self.config.displace_random_weight > 0:
             self.random = Random(
                 self.reactant,
@@ -112,21 +115,32 @@ class DisplacementManager:
                 self.config.molecule_list,
                 self.config.disp_at_random,
             )
-        total = 0.0
-        total += self.config.displace_random_weight
-        total += self.config.displace_listed_atom_weight
-        total += self.config.displace_listed_type_weight
-        total += self.config.displace_under_coordinated_weight
-        total += self.config.displace_least_coordinated_weight
-        total += self.config.displace_not_FCC_HCP_weight
-        total += self.config.displace_not_TCP_BCC_weight
-        total += self.config.displace_not_TCP_weight
-        total += self.config.displace_water_weight
+        if self.config.displace_softest_mode_weight > 0:
+            self.softest = SoftestMode(
+                self.reactant,
+                self.config.disp_magnitude,
+                self.config.disp_radius,
+                hole_epicenters=moved_atoms,
+                config=self.config,
+            )
 
-        # If no fractions are defined, do 100% random displacements.
+        # Calculate total weight from all possible displacement types
+        total = (
+            self.config.displace_random_weight
+            + self.config.displace_listed_atom_weight
+            + self.config.displace_listed_type_weight
+            + self.config.displace_under_coordinated_weight
+            + self.config.displace_least_coordinated_weight
+            + self.config.displace_not_FCC_HCP_weight
+            + self.config.displace_not_TCP_BCC_weight
+            + self.config.displace_not_TCP_weight
+            + self.config.displace_water_weight
+            + self.config.displace_softest_mode_weight
+        )
+
+        # Build the cumulative probability list
         if total == 0.0:
-            total = 1.0
-            self.plist = [1.0 / total]
+            # If no fractions are defined, do 100% random displacements.
             self.random = Random(
                 self.reactant,
                 self.config.disp_magnitude,
@@ -134,28 +148,30 @@ class DisplacementManager:
                 hole_epicenters=moved_atoms,
                 config=self.config,
             )
+            self.plist = [1.0]
         else:
-            self.plist = [self.config.displace_random_weight / total]
-        self.plist.append(
-            self.plist[-1] + self.config.displace_listed_atom_weight / total
-        )
-        self.plist.append(
-            self.plist[-1] + self.config.displace_listed_type_weight / total
-        )
-        self.plist.append(
-            self.plist[-1] + self.config.displace_under_coordinated_weight / total
-        )
-        self.plist.append(
-            self.plist[-1] + self.config.displace_least_coordinated_weight / total
-        )
-        self.plist.append(
-            self.plist[-1] + self.config.displace_not_FCC_HCP_weight / total
-        )
-        self.plist.append(
-            self.plist[-1] + self.config.displace_not_TCP_BCC_weight / total
-        )
-        self.plist.append(self.plist[-1] + self.config.displace_not_TCP_weight / total)
-        self.plist.append(self.plist[-1] + self.config.displace_water_weight / total)
+            self.plist = []
+            cumulative_prob = 0.0
+            cumulative_prob += self.config.displace_random_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_listed_atom_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_listed_type_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_under_coordinated_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_least_coordinated_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_not_FCC_HCP_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_not_TCP_BCC_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_not_TCP_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_water_weight / total
+            self.plist.append(cumulative_prob)
+            cumulative_prob += self.config.displace_softest_mode_weight / total
+            self.plist.append(cumulative_prob)
 
     def make_displacement(self):
         disp_types = [
@@ -168,12 +184,20 @@ class DisplacementManager:
             "not_TCP_BCC",
             "not_TCP",
             "water",
+            "softest_mode",
         ]
+
+        # Add a special case for the 100% random fallback
+        if len(self.plist) == 1:
+            logger.debug("Made random displacement (fallback)")
+            return self.random.make_displacement()
+
         r = numpy.random.random_sample()
         i = 0
-        while self.plist[i] < r:
+        while i < len(self.plist) - 1 and self.plist[i] < r:
             i += 1
         disp_type = disp_types[i]
+
         if disp_type == "random":
             logger.debug("Made random displacement")
             return self.random.make_displacement()
@@ -201,7 +225,11 @@ class DisplacementManager:
         elif disp_type == "water":
             logger.debug("Made water displacement")
             return self.water.make_displacement()
-        raise DisplaceError()
+        elif disp_type == "softest_mode":
+            logger.debug("Made softest mode displacement")
+            return self.softest.make_displacement()
+
+        raise DisplaceError("Failed to select a valid displacement method.")
 
 
 class NotImplementedError(Exception):
@@ -820,3 +848,108 @@ if __name__ == "__main__":
     dt = time.time() - t0
     outf = io.savecon(sys.argv[2], reactant)
     print("%.2f displacements per second" % (float(ntimes) / dt))
+
+
+class SoftestMode(Displace):
+    """
+    Displaces atoms along the softest vibrational mode, typically corresponding
+    to the imaginary frequency of a transition state.
+    """
+
+    def __init__(
+        self,
+        reactant,
+        magnitude,
+        radius,
+        hole_epicenters=None,
+        config: ConfigClass = EON_CONFIG,
+    ):
+        super().__init__(reactant, magnitude, radius, hole_epicenters, config)
+        self.softest_mode_vector = None
+        self._calculate_softest_mode()
+
+    def _calculate_softest_mode(self):
+        """
+        Performs a robust vibrational analysis using XTB to find the softest mode,
+        correctly handling electronic structure and boundary conditions.
+        """
+        logger.info(
+            "Calculating vibrational modes with XTB to find the softest mode..."
+        )
+
+        atoms_for_vib = ase.Atoms(
+            symbols=self.reactant.names,
+            positions=self.reactant.r,
+            cell=self.reactant.box,
+            pbc=False,
+        )
+
+        charge = getattr(self.config, "charge", 0)
+        multiplicity = getattr(self.config, "multiplicity", None)
+
+        if multiplicity is None:
+            total_electrons = atoms_for_vib.get_atomic_numbers().sum() - charge
+            if total_electrons % 2 == 1:
+                multiplicity = 2
+                logger.info(
+                    "Guessed multiplicity=2 (doublet) from odd number of electrons."
+                )
+            else:
+                multiplicity = 1
+                logger.info(
+                    "Guessed multiplicity=1 (singlet) from even number of electrons."
+                )
+
+        uhf_electrons = multiplicity - 1
+        atoms_for_vib.calc = XTB(method="GFN2-xTB", charge=charge, uhf=uhf_electrons)
+
+        try:
+            vib = Vibrations(atoms_for_vib, name="vib_temp_softest_mode")
+            vib.run()
+
+            all_frequencies = vib.get_frequencies()
+            freq = all_frequencies[0]
+            mode_vector = vib.get_mode(0)
+
+            logger.info(f"Found softest mode with frequency: {freq.real:.4f} cm^-1")
+
+            if freq.real > 0:
+                logger.warning(
+                    "The softest mode has a real frequency. "
+                    "This structure may be a minimum, not a saddle point."
+                )
+
+            self.softest_mode_vector = mode_vector / numpy.linalg.norm(mode_vector)
+            vib.clean()
+
+        except Exception as e:
+            logger.error(f"XTB vibrational analysis failed: {e}")
+            raise DisplaceError(
+                "Could not calculate the softest mode for displacement."
+            )
+
+    def make_displacement(self):
+        """
+        Generates the displaced Atoms object and the normalized displacement vector.
+        """
+        if self.softest_mode_vector is None:
+            raise DisplaceError("Softest mode vector has not been calculated.")
+
+        displacement = self.std_dev * self.softest_mode_vector
+
+        for i, is_free in enumerate(self.reactant.free):
+            if not is_free:
+                displacement[i] = [0.0, 0.0, 0.0]
+
+        current_norm = numpy.linalg.norm(displacement)
+        if current_norm > 1e-9:
+            displacement *= self.std_dev / current_norm
+
+        displaced_atoms = self.reactant.copy()
+        displaced_atoms.r += displacement
+
+        norm = numpy.linalg.norm(displacement)
+        if norm < 1e-9:
+            return displaced_atoms, displacement
+        final_normalized_displacement = displacement / norm
+        return displaced_atoms, final_normalized_displacement

@@ -250,6 +250,7 @@ class ConfigClass:
         self.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight')
         self.displace_not_TCP_BCC_weight = parser.getfloat('Saddle Search', 'displace_not_TCP_BCC_weight')
         self.displace_not_TCP_weight = parser.getfloat('Saddle Search', 'displace_not_TCP_weight')
+        self.displace_softest_mode_weight = parser.getfloat('Saddle Search', 'displace_softest_mode_weight')
         self.displace_water_weight = parser.getfloat('Saddle Search', 'displace_water_weight') # undocumented
         self.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
         self.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented

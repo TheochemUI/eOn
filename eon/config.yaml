@@ -1227,6 +1227,10 @@ Saddle Search:
             kind: float
             default: 0.0
 
+        displace_softest_mode_weight:
+            kind: float
+            default: 0.0
+
         client_displace_type:
             kind: string
             default: random
@@ -1240,6 +1244,7 @@ Saddle Search:
                 - not_TCP_BCC
                 - not_TCP
                 - water
+                - softest_mode
 
         displace_1d:
             kind: boolean

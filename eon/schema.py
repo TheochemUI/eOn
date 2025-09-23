@@ -817,6 +817,10 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.",
     )
+    displace_softest_mode_weight: float = Field(
+        default=0.0,
+        description="Relative probability to displace the system along the softest vibrational mode.",
+    )
     displace_listed_atom_weight: float = Field(
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_atom_list.",
@@ -862,7 +866,12 @@ class SaddleSearchConfig(BaseModel):
         description="If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.",
     )
     client_displace_type: Literal[
-        "load", "random", "last_atom", "min_coordinated", "not_fcc_or_hcp"
+        "load",
+        "random",
+        "last_atom",
+        "min_coordinated",
+        "not_fcc_or_hcp",
+        "softest_mode",
     ] = Field(default="load", description="Type of displacement method used.")
     zero_mode_abort_curvature: float = Field(
         default=0.0,
