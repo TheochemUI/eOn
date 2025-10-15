@@ -102,6 +102,11 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
   fileResults = fopen(resultsFilename.c_str(), "wb");
+  if (!fileResults) {
+    SPDLOG_LOGGER_ERROR(m_log, "Failed to open {} for writing",
+                        resultsFilename);
+    return;
+  }
 
   fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
   fprintf(
@@ -119,6 +124,11 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
             i);
     fprintf(fileResults, "%f image%li_force\n",
             neb->path[i]->getForces().norm(), i);
+    // Only interior images have a meaningful projected force
+    double proj_norm = 0.0;
+    if (i >= 1 && i <= neb->numImages) {
+      proj_norm = neb->projectedForce[i]->norm();
+    }
     fprintf(fileResults, "%f image%li_projected_force\n",
             neb->projectedForce[i]->norm(), i);
   }
