@@ -209,8 +209,10 @@ NudgedElasticBand::NudgedElasticBand(
     *path[i] = initPath[i];
     tangent[i] = std::make_shared<AtomMatrix>();
     tangent[i]->resize(atoms, 3);
+    tangent[i]->setZero();
     projectedForce[i] = std::make_shared<AtomMatrix>();
     projectedForce[i]->resize(atoms, 3);
+    projectedForce[i]->setZero();
   }
 
   // Common final setup
