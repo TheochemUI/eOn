@@ -441,16 +441,20 @@ void NudgedElasticBand::updateForces(void) {
       posDiffNext(atoms, 3), posDiffPrev(atoms, 3);
   double distNext, distPrev;
 
-  // update the forces on the numImages and find the highest energy image
-  maxEnergy = path[0]->getPotentialEnergy();
-  maxEnergyImage = 0;
-  for (long i = 1; i <= numImages + 1; i++) {
+  // Update forces for all intermediate images
+  for (long i = 1; i <= numImages; i++) {
     path[i]->getForces();
-    if (path[i]->getPotentialEnergy() > maxEnergy) {
-      maxEnergy = path[i]->getPotentialEnergy();
-      maxEnergyImage = i;
-    }
   }
+  // Find the highest energy non-endpoint image
+  auto first = path.begin() + 1;
+  auto last = path.begin() + numImages + 1;
+  auto it = std::max_element(
+      first, last,
+      [](const std::shared_ptr<Matter> &a, const std::shared_ptr<Matter> &b) {
+        return a->getPotentialEnergy() < b->getPotentialEnergy();
+      });
+  maxEnergyImage = std::distance(path.begin(), it);
+  maxEnergy = (*it)->getPotentialEnergy();
 
   // Energy weighted springs, calculated here since all the springs are used
   // internally
