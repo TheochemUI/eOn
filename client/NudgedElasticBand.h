@@ -58,7 +58,7 @@ public:
   std::vector<double> extremumPosition;
   std::vector<double> extremumCurvature;
 
-  long maxEnergyImage;
+  std::size_t maxEnergyImage;
   bool movedAfterForceCall;
   double ksp;
   double k_u;   // Upper-bound value for the spring constant
