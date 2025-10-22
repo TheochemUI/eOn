@@ -31,7 +31,8 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   // ---
   p.initrot_nogp.value = parameters->gprDimerInitRotGP;
   p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
-  p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
+  // unused except in the capnp for now
+  // p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
   p.T_anglerot_gp.value = parameters->gprDimerRelaxConvAngle;
   p.num_iter_rot_gp.value = parameters->gprDimerRelaxRotationsMax;
   p.divisor_T_dimer_gp.value = parameters->gprDimerDivisorTdimerGP;
