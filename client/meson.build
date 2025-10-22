@@ -140,7 +140,7 @@ spdlog_dep = dependency('spdlog', required: true)
 _deps += spdlog_dep
 _args += ['-DSPDLOG_FMT_EXTERNAL']
 
-eoncbase_sources = ['INIFile.cpp']
+eoncbase_sources = ['INIFile.cpp', 'fpe_handler.cpp']
 
 eoncbase = library(
     'eoncbase',
@@ -229,7 +229,7 @@ eonclib_sources = [
     'BasinHoppingSaddleSearch.cpp',
 ]
 
-eonclient_sources = ['fpe_handler.cpp', 'ClientEON.cpp', 'CommandLine.cpp']
+eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
 
 # ------------------- Options
 
