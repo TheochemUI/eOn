@@ -633,7 +633,7 @@ bool helper_functions::identical(const Matter &m1, const Matter &m2,
   }
   int N = r1.rows();
 
-  for (int i = 0; i <= N; i++) {
+  for (int i = 0; i < N; i++) {
     if (fabs((m1.pbc(r1.row(i) - r2.row(i))).norm()) < tolerance &&
         m1.getAtomicNr(i) == m2.getAtomicNr(i)) {
       matched.insert(i);
