@@ -29,8 +29,12 @@ spdlog = ">=1.15.3,<2"
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
 
-[pypi-options]
-extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
+# [pypi-options]
+# TODO(rg): only if the CPU version is needed
+# set these on the command line instead
+# export UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
+# export PIP_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
+# extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
 
 [environments]
 # TODO(rg): Flesh out the rest of these
