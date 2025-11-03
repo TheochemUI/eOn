@@ -1,3 +1,6 @@
+// automatically generated 
+// vesin version: 0.4.0
+
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
@@ -16,6 +19,9 @@
 
 #ifndef VESIN_TYPES_HPP
 #define VESIN_TYPES_HPP
+
+#include <array>
+#include <string>
 
 #ifndef VESIN_MATH_HPP
 #define VESIN_MATH_HPP
@@ -137,34 +143,59 @@ namespace vesin {
 
 class BoundingBox {
 public:
-    BoundingBox(Matrix matrix, bool periodic):
+    BoundingBox(Matrix matrix, bool periodic[3]):
         matrix_(matrix),
-        periodic_(periodic) {
-        if (periodic) {
-            auto det = matrix_.determinant();
-            if (std::abs(det) < 1e-30) {
-                throw std::runtime_error("the box matrix is not invertible");
+        periodic_({periodic[0], periodic[1], periodic[2]}) {
+        if (!periodic_[0]) {
+            matrix_[0] = Vector{1, 0, 0};
+            if (std::abs(matrix_[1][0]) > 1e-6 || std::abs(matrix_[2][0]) > 1e-6) {
+                throw std::runtime_error(
+                    "periodicity is disabled along the A lattice vector, but the "
+                    "box is not defined in the yz plane: B.x = " +
+                    std::to_string(matrix_[1][0]) +
+                    ", C.x = " + std::to_string(matrix_[2][0])
+                );
             }
-
-            this->inverse_ = matrix_.inverse();
-        } else {
-            // clang-format off
-            this->matrix_ = Matrix{{{
-                {{1, 0, 0}},
-                {{0, 1, 0}},
-                {{0, 0, 1}}
-            }}};
-            // clang-format on
-            this->inverse_ = matrix_;
         }
+
+        if (!periodic_[1]) {
+            matrix_[1] = Vector{0, 1, 0};
+            if (std::abs(matrix_[0][1]) > 1e-6 || std::abs(matrix_[2][1]) > 1e-6) {
+                throw std::runtime_error(
+                    "periodicity is disabled along the B lattice vector, but the "
+                    "box is not defined in the xz plane: A.y = " +
+                    std::to_string(matrix_[0][1]) +
+                    ", C.y = " + std::to_string(matrix_[2][1])
+                );
+            }
+        }
+
+        if (!periodic_[2]) {
+            matrix_[2] = Vector{0, 0, 1};
+            if (std::abs(matrix_[0][2]) > 1e-6 || std::abs(matrix_[1][2]) > 1e-6) {
+                throw std::runtime_error(
+                    "periodicity is disabled along the C lattice vector, but the "
+                    "box is not defined in the xy plane: A.z = " +
+                    std::to_string(matrix_[0][2]) +
+                    ", B.z = " + std::to_string(matrix_[1][2])
+                );
+            }
+        }
+
+        auto det = matrix_.determinant();
+        if (std::abs(det) < 1e-30) {
+            throw std::runtime_error("the box matrix is not invertible");
+        }
+
+        this->inverse_ = matrix_.inverse();
     }
 
     const Matrix& matrix() const {
         return this->matrix_;
     }
 
-    bool periodic() const {
-        return this->periodic_;
+    bool periodic(size_t spatial) const {
+        return this->periodic_[spatial];
     }
 
     /// Convert a vector from cartesian coordinates to fractional coordinates
@@ -198,7 +229,7 @@ public:
 private:
     Matrix matrix_;
     Matrix inverse_;
-    bool periodic_;
+    std::array<bool, 3> periodic_;
 };
 
 /// A cell shift represents the displacement along cell axis between the actual
@@ -499,7 +530,7 @@ CellList::CellList(BoundingBox box, double cutoff):
 
         // don't look for neighboring cells if we have only one cell and no
         // periodic boundary condition
-        if (n_cells[spatial] == 1 && !box.periodic()) {
+        if (n_cells[spatial] == 1 && !box.periodic(spatial)) {
             n_search_[spatial] = 0;
         }
     }
@@ -517,21 +548,17 @@ void CellList::add_point(size_t index, Vector position) {
         static_cast<int32_t>(std::floor(fractional[2] * static_cast<double>(cells_shape_[2]))),
     };
 
-    // deal with pbc by wrapping the atom inside if it was outside of the
-    // cell
+    // deal with pbc by wrapping the atom inside if it was outside of the cell
     CellShift shift;
-    // auto (shift, cell_index) =
-    if (box_.periodic()) {
-        auto result = divmod(cell_index, cells_shape_);
-        shift = CellShift{std::get<0>(result)};
-        cell_index = std::get<1>(result);
-    } else {
-        shift = CellShift({0, 0, 0});
-        cell_index = std::array<int32_t, 3>{
-            std::clamp(cell_index[0], 0, static_cast<int32_t>(cells_shape_[0] - 1)),
-            std::clamp(cell_index[1], 0, static_cast<int32_t>(cells_shape_[1] - 1)),
-            std::clamp(cell_index[2], 0, static_cast<int32_t>(cells_shape_[2] - 1)),
-        };
+    for (size_t spatial = 0; spatial < 3; spatial++) {
+        if (box_.periodic(spatial)) {
+            auto result = divmod(cell_index[spatial], cells_shape_[spatial]);
+            shift[spatial] = std::get<0>(result);
+            cell_index[spatial] = std::get<1>(result);
+        } else {
+            shift[spatial] = 0;
+            cell_index[spatial] = std::clamp(cell_index[spatial], 0, static_cast<int32_t>(cells_shape_[spatial] - 1));
+        }
     }
 
     this->get_cell(cell_index).emplace_back(Point{index, shift});
@@ -563,7 +590,10 @@ void CellList::foreach_pair(Function callback) {
                     auto shift = CellShift{cell_shift} + atom_i.shift - atom_j.shift;
                     auto shift_is_zero = shift[0] == 0 && shift[1] == 0 && shift[2] == 0;
 
-                    if (!box_.periodic() && !shift_is_zero) {
+                    if ((shift[0] != 0 && !box_.periodic(0)) ||
+                        (shift[1] != 0 && !box_.periodic(1)) ||
+                        (shift[2] != 0 && !box_.periodic(2)))
+                    {
                         // do not create pairs crossing the periodic
                         // boundaries in a non-periodic box
                         continue;
@@ -842,25 +872,115 @@ void GrowableNeighborList::sort() {
 }
 
 void vesin::cpu::free_neighbors(VesinNeighborList& neighbors) {
-    assert(neighbors.device == VesinCPU);
+    assert(neighbors.device.type == VesinCPU);
 
     std::free(neighbors.pairs);
     std::free(neighbors.shifts);
     std::free(neighbors.vectors);
     std::free(neighbors.distances);
 }
+#include <cassert>
+#include <stdexcept>
+
+#ifndef VESIN_CUDA_HPP
+#define VESIN_CUDA_HPP
+
+
+namespace vesin {
+namespace cuda {
+
+#ifndef VESIN_CUDA_MAX_PAIRS_PER_POINT
+/// @brief Default maximum number of pairs per point on the GPU (can be
+/// overridden).
+#define VESIN_CUDA_MAX_PAIRS_PER_POINT 512
+#endif
+
+struct CudaNeighborListExtras {
+    unsigned long* length_ptr = nullptr; // GPU-side counter
+    unsigned long capacity = 0;          // Current capacity per device
+    int* box_check_ptr = nullptr;        // GPU-side status code for checking box
+    int allocated_device = -1;           // which device are we currently allocated on
+
+    ~CudaNeighborListExtras();
+};
+
+/// @brief Frees GPU memory associated with a VesinNeighborList.
+///
+/// This function should be called to release all CUDA-allocated memory
+/// tied to the given neighbor list. It does not delete the structure itself,
+/// only the device-side memory buffers.
+///
+/// @param neighbors Reference to the VesinNeighborList to clean up.
+void free_neighbors(VesinNeighborList& neighbors);
+
+/// @brief Computes the neighbor list on the GPU.
+///
+/// This function only works under Minimum Image Convention for now.
+///
+/// This function generates a neighbor list for a set of points within a
+/// periodic simulation box using GPU acceleration. The output is stored in a
+/// `VesinNeighborList` structure, which must be initialized for GPU usage.
+///
+/// @param points Pointer to an array of 3D points (shape: [n_points][3]).
+/// @param n_points Number of points (atoms, particles, etc.).
+/// @param box 3×3 matrix defining the bounding box of the system.
+/// @param periodic Array of three booleans indicating periodicity in each dimension.
+/// @param options Struct holding parameters such as cutoff, symmetry, etc.
+/// @param neighbors Output neighbor list (device memory will be allocated as
+/// needed).
+void neighbors(
+    const double (*points)[3],
+    size_t n_points,
+    const double box[3][3],
+    const bool periodic[3],
+    VesinOptions options,
+    VesinNeighborList& neighbors
+);
+
+/// Get the `CudaNeighborListExtras` stored inside `VesinNeighborList`'s opaque pointer
+CudaNeighborListExtras* get_cuda_extras(VesinNeighborList* neighbors);
+
+} // namespace cuda
+} // namespace vesin
+
+#endif // VESIN_CUDA_HPP
+
+using namespace vesin::cuda;
+
+void vesin::cuda::free_neighbors(VesinNeighborList& neighbors) {
+    assert(neighbors.device.type == VesinCUDA);
+    // nothing to do, no data was allocated
+}
+
+void vesin::cuda::neighbors(
+    const double (*points)[3],
+    size_t n_points,
+    const double box[3][3],
+    const bool periodic[3],
+    VesinOptions options,
+    VesinNeighborList& neighbors
+) {
+    throw std::runtime_error("vesin was not compiled with CUDA support");
+}
+
+CudaNeighborListExtras*
+vesin::cuda::get_cuda_extras(VesinNeighborList* neighbors) {
+    return nullptr;
+}
 #include <cstring>
+#include <iostream>
 #include <string>
 
 
-
+// used to store dynamically allocated error messages before giving a pointer
+// to them back to the user
 thread_local std::string LAST_ERROR;
 
 extern "C" int vesin_neighbors(
     const double (*points)[3],
     size_t n_points,
     const double box[3][3],
-    bool periodic,
+    bool periodic[3],
     VesinDevice device,
     VesinOptions options,
     VesinNeighborList* neighbors,
@@ -895,26 +1015,26 @@ extern "C" int vesin_neighbors(
         return EXIT_FAILURE;
     }
 
-    if (neighbors->device != VesinUnknownDevice && neighbors->device != device) {
+    if (neighbors->device.type != VesinUnknownDevice && neighbors->device.type != device.type) {
         *error_message = "`neighbors` device and data `device` do not match, free the neighbors first";
         return EXIT_FAILURE;
     }
 
-    if (device == VesinUnknownDevice) {
-        *error_message = "got an unknown device to use when running simulation";
+    if (device.type == VesinUnknownDevice) {
+        *error_message = "got an unknown device type";
         return EXIT_FAILURE;
     }
 
-    if (neighbors->device == VesinUnknownDevice) {
+    if (neighbors->device.type == VesinUnknownDevice) {
         // initialize the device
         neighbors->device = device;
-    } else if (neighbors->device != device) {
+    } else if (neighbors->device.type != device.type) {
         *error_message = "`neighbors.device` and `device` do not match, free the neighbors first";
         return EXIT_FAILURE;
     }
 
     try {
-        if (device == VesinCPU) {
+        if (device.type == VesinCPU) {
             auto matrix = vesin::Matrix{{{
                 {{box[0][0], box[0][1], box[0][2]}},
                 {{box[1][0], box[1][1], box[1][2]}},
@@ -928,8 +1048,17 @@ extern "C" int vesin_neighbors(
                 options,
                 *neighbors
             );
+        } else if (device.type == VesinCUDA) {
+            vesin::cuda::neighbors(
+                points,
+                n_points,
+                box,
+                periodic,
+                options,
+                *neighbors
+            );
         } else {
-            throw std::runtime_error("unknown device " + std::to_string(device));
+            throw std::runtime_error("unknown device " + std::to_string(device.type));
         }
     } catch (const std::bad_alloc&) {
         LAST_ERROR = "failed to allocate memory";
@@ -952,10 +1081,22 @@ extern "C" void vesin_free(VesinNeighborList* neighbors) {
         return;
     }
 
-    if (neighbors->device == VesinUnknownDevice) {
-        // nothing to do
-    } else if (neighbors->device == VesinCPU) {
-        vesin::cpu::free_neighbors(*neighbors);
+    try {
+        if (neighbors->device.type == VesinUnknownDevice) {
+            // nothing to do
+        } else if (neighbors->device.type == VesinCPU) {
+            vesin::cpu::free_neighbors(*neighbors);
+        } else if (neighbors->device.type == VesinCUDA) {
+            vesin::cuda::free_neighbors(*neighbors);
+        } else {
+            throw std::runtime_error("unknown device " + std::to_string(neighbors->device.type) + " when freeing memory");
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "error in vesin_free: " << e.what() << std::endl;
+        return;
+    } catch (...) {
+        std::cerr << "fatal error in vesin_free, unknown type thrown as exception" << std::endl;
+        return;
     }
 
     std::memset(neighbors, 0, sizeof(VesinNeighborList));
