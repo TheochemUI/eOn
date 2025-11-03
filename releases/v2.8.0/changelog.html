@@ -49,7 +49,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=452cf2f0"></script>
+    <script src="../../_static/documentation_options.js?v=8bc63d40"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -273,6 +273,12 @@
 <li class="toctree-l3"><a class="reference internal" href="publications.html">Related Publications</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../v2.8.1/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
@@ -438,8 +444,14 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">2.8.0 - 2025-09-04</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-8-1-2025-11-03">v2.8.1 - 2025-11-03</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">2.8.0 - 2025-09-04</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developer">Developer</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#build-tooling">Build &amp; Tooling</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#code-quality-refactoring">Code Quality &amp; Refactoring</a></li>
@@ -461,10 +473,31 @@ document.write(`
                   
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h1>
-<section id="id1">
-<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.8.0">2.8.0</a> - 2025-09-04<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="v2-8-1-2025-11-03">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/v2.8.1">v2.8.1</a> - 2025-11-03<a class="headerlink" href="#v2-8-1-2025-11-03" title="Link to this heading">#</a></h2>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Enable minimization for given initial paths</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Reworked metatomic to use torch 2.8</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Generate neb.dat correctly without clobbering neb_000.dat</p></li>
+</ul>
+</section>
+</section>
+<section id="id1">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.8.0">2.8.0</a> - 2025-09-04<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h3>Added<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Potentials &amp; Interfaces</strong></p>
 <ul>
@@ -633,8 +666,14 @@ module, covering theory, keywords, and practical examples.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">2.8.0 - 2025-09-04</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-8-1-2025-11-03">v2.8.1 - 2025-11-03</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">2.8.0 - 2025-09-04</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developer">Developer</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#build-tooling">Build &amp; Tooling</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#code-quality-refactoring">Code Quality &amp; Refactoring</a></li>

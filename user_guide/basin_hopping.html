@@ -49,7 +49,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=452cf2f0"></script>
+    <script src="../_static/documentation_options.js?v=8bc63d40"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -273,6 +273,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
@@ -456,7 +462,7 @@ document.write(`
 <h1>Basin Hopping<a class="headerlink" href="#basin-hopping" title="Link to this heading">#</a></h1>
 <p>Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimum
-<span id="id1">[<a class="reference internal" href="#id85" title="David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. The Journal of Physical Chemistry A, 101(28):5111–5116, July 1997. doi:10.1021/jp970984n.">BH_WD97</a>]</span>.</p>
+<span id="id1">[<a class="reference internal" href="#id87" title="David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. The Journal of Physical Chemistry A, 101(28):5111–5116, July 1997. doi:10.1021/jp970984n.">BH_WD97</a>]</span>.</p>
 <p>At each basin hopping step the client will print out:</p>
 <ul class="simple">
 <li><p>the current energy (<code class="docutils literal notranslate"><span class="pre">current</span></code>),</p></li>
@@ -470,9 +476,9 @@ is taken to be the energy of a local minimum
 <h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">eOn</span></code> defaults to letting displacements occur from minimized structures as per
-the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id86" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>, which is
+the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id88" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>, which is
 controlled by <code class="xref any docutils literal notranslate"><span class="pre">siginificant_structure</span></code></p></li>
-<li><p>The occasional jumping variant of <span id="id3">Iwamatsu and Okabe [<a class="reference internal" href="#id34" title="Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. Chemical Physics Letters, 399(4):396–400, December 2004. doi:10.1016/j.cplett.2004.10.032.">BH_IO04</a>]</span>
+<li><p>The occasional jumping variant of <span id="id3">Iwamatsu and Okabe [<a class="reference internal" href="#id36" title="Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. Chemical Physics Letters, 399(4):396–400, December 2004. doi:10.1016/j.cplett.2004.10.032.">BH_IO04</a>]</span>
 is also implemented, and is controlled by
 <code class="xref any docutils literal notranslate"><span class="pre">jump_max</span></code>.</p></li>
 </ul>
@@ -490,15 +496,15 @@ is also implemented, and is controlled by
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id4">
 <div role="list" class="citation-list">
-<div class="citation" id="id34" role="doc-biblioentry">
+<div class="citation" id="id36" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">BH_IO04</a><span class="fn-bracket">]</span></span>
 <p>Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. <em>Chemical Physics Letters</em>, 399(4):396–400, December 2004. <a class="reference external" href="https://doi.org/10.1016/j.cplett.2004.10.032">doi:10.1016/j.cplett.2004.10.032</a>.</p>
 </div>
-<div class="citation" id="id85" role="doc-biblioentry">
+<div class="citation" id="id87" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">BH_WD97</a><span class="fn-bracket">]</span></span>
 <p>David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. <em>The Journal of Physical Chemistry A</em>, 101(28):5111–5116, July 1997. <a class="reference external" href="https://doi.org/10.1021/jp970984n">doi:10.1021/jp970984n</a>.</p>
 </div>
-<div class="citation" id="id86" role="doc-biblioentry">
+<div class="citation" id="id88" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">BH_WM98</a><span class="fn-bracket">]</span></span>
 <p>Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. <em>Chemical Physics Letters</em>, 289(5-6):463–468, June 1998. <a class="reference external" href="https://doi.org/10.1016/S0009-2614(98)00431-X">doi:10.1016/S0009-2614(98)00431-X</a>.</p>
 </div>

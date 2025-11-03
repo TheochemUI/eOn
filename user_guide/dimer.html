@@ -49,7 +49,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=452cf2f0"></script>
+    <script src="../_static/documentation_options.js?v=8bc63d40"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -273,6 +273,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
@@ -453,21 +459,21 @@ document.write(`
                   
   <section id="dimer-method">
 <h1>Dimer method<a class="headerlink" href="#dimer-method" title="Link to this heading">#</a></h1>
-<p>The dimer method of <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id32" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">DM_HJonsson99</a>]</span> with
-improvements by <span id="id2">Heyden <em>et al.</em> [<a class="reference internal" href="#id36" title="Andreas Heyden, Alexis T. Bell, and Frerich J. Keil. Efficient methods for finding transition states in chemical reactions: Comparison of improved dimer method and partitioned rational function optimization method. The Journal of Chemical Physics, 123(22):224101, December 2005. doi:10.1063/1.2104507.">DM_HBK05</a>]</span> and
-<span id="id3">Kästner and Sherwood [<a class="reference internal" href="#id44" title="Johannes Kästner and Paul Sherwood. Superlinearly converging dimer method for transition state search. The Journal of Chemical Physics, 128(1):014106, January 2008. doi:10.1063/1.2815812.">DM_KastnerS08</a>]</span> for estimating the lowest
+<p>The dimer method of <span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id34" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">DM_HJonsson99</a>]</span> with
+improvements by <span id="id2">Heyden <em>et al.</em> [<a class="reference internal" href="#id38" title="Andreas Heyden, Alexis T. Bell, and Frerich J. Keil. Efficient methods for finding transition states in chemical reactions: Comparison of improved dimer method and partitioned rational function optimization method. The Journal of Chemical Physics, 123(22):224101, December 2005. doi:10.1063/1.2104507.">DM_HBK05</a>]</span> and
+<span id="id3">Kästner and Sherwood [<a class="reference internal" href="#id46" title="Johannes Kästner and Paul Sherwood. Superlinearly converging dimer method for transition state search. The Journal of Chemical Physics, 128(1):014106, January 2008. doi:10.1063/1.2815812.">DM_KastnerS08</a>]</span> for estimating the lowest
 Eigenmode using only first derivatives.</p>
-<p>An overview may be found in <span id="id4">Olsen <em>et al.</em> [<a class="reference internal" href="#id66" title="R. A. Olsen, G. J. Kroes, G. Henkelman, A. Arnaldsson, and H. Jónsson. Comparison of methods for finding saddle points without knowledge of the final states. The Journal of Chemical Physics, 121(20):9776–9792, November 2004. doi:10.1063/1.1809574.">DM_OKH+04</a>]</span>.</p>
+<p>An overview may be found in <span id="id4">Olsen <em>et al.</em> [<a class="reference internal" href="#id68" title="R. A. Olsen, G. J. Kroes, G. Henkelman, A. Arnaldsson, and H. Jónsson. Comparison of methods for finding saddle points without knowledge of the final states. The Journal of Chemical Physics, 121(20):9776–9792, November 2004. doi:10.1063/1.1809574.">DM_OKH+04</a>]</span>.</p>
 <p>The dimer separation is set in the <strong>[Main]</strong> section with the
 <code class="docutils literal notranslate"><span class="pre">finiteDifference</span></code> parameter.</p>
-<p>The method of <span id="id5">Melander <em>et al.</em> [<a class="reference internal" href="#id60" title="Marko Melander, Kari Laasonen, and Hannes Jónsson. Removing External Degrees of Freedom from Transition-State Search Methods using Quaternions. Journal of Chemical Theory and Computation, 11(3):1055–1062, March 2015. doi:10.1021/ct501155k.">DM_MLJonsson15</a>]</span> is also
+<p>The method of <span id="id5">Melander <em>et al.</em> [<a class="reference internal" href="#id62" title="Marko Melander, Kari Laasonen, and Hannes Jónsson. Removing External Degrees of Freedom from Transition-State Search Methods using Quaternions. Journal of Chemical Theory and Computation, 11(3):1055–1062, March 2015. doi:10.1021/ct501155k.">DM_MLJonsson15</a>]</span> is also
 implemented for use with gas phase systems.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>There is no point removing rotations for an extended system. Rotation removal may be more detrimental as noted in <span id="id6">Goswami [<a class="reference internal" href="#id27" title="Rohit Goswami. Bayesian hierarchical models for quantitative estimates for performance metrics applied to saddle search algorithms. AIP Advances, 15(8):85210, August 2025. doi:10.1063/5.0283639.">DM_Gos25</a>]</span>.</p>
+<p>There is no point removing rotations for an extended system. Rotation removal may be more detrimental as noted in <span id="id6">Goswami [<a class="reference internal" href="#id28" title="Rohit Goswami. Bayesian hierarchical models for quantitative estimates for performance metrics applied to saddle search algorithms. AIP Advances, 15(8):85210, August 2025. doi:10.1063/5.0283639.">DM_Gos25</a>]</span>.</p>
 </div>
 <div class="versionadded">
-<p><span class="versionmodified added">Added in version 2.5: </span>The Gaussian Process Regression accelerated dimer in C++ from <span id="id7">Goswami <em>et al.</em> [<a class="reference internal" href="#id28" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, July 2025. doi:10.1021/acs.jctc.5c00866.">DM_GMK+25</a>]</span>.</p>
+<p><span class="versionmodified added">Added in version 2.5: </span>The Gaussian Process Regression accelerated dimer in C++ from <span id="id7">Goswami <em>et al.</em> [<a class="reference internal" href="#id30" title="Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. Journal of Chemical Theory and Computation, July 2025. doi:10.1021/acs.jctc.5c00866.">DM_GMK+25</a>]</span>.</p>
 </div>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
@@ -479,31 +485,31 @@ implemented for use with gas phase systems.</p>
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id8">
 <div role="list" class="citation-list">
-<div class="citation" id="id27" role="doc-biblioentry">
+<div class="citation" id="id28" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">DM_Gos25</a><span class="fn-bracket">]</span></span>
 <p>Rohit Goswami. Bayesian hierarchical models for quantitative estimates for performance metrics applied to saddle search algorithms. <em>AIP Advances</em>, 15(8):85210, August 2025. <a class="reference external" href="https://doi.org/10.1063/5.0283639">doi:10.1063/5.0283639</a>.</p>
 </div>
-<div class="citation" id="id28" role="doc-biblioentry">
+<div class="citation" id="id30" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">DM_GMK+25</a><span class="fn-bracket">]</span></span>
 <p>Rohit Goswami, Maxim Masterov, Satish Kamath, Alejandro Pena-Torres, and Hannes Jónsson. Efficient Implementation of Gaussian Process Regression Accelerated Saddle Point Searches with Application to Molecular Reactions. <em>Journal of Chemical Theory and Computation</em>, July 2025. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.5c00866">doi:10.1021/acs.jctc.5c00866</a>.</p>
 </div>
-<div class="citation" id="id32" role="doc-biblioentry">
+<div class="citation" id="id34" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">DM_HJonsson99</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. <em>The Journal of Chemical Physics</em>, 111(15):7010–7022, October 1999. <a class="reference external" href="https://doi.org/10.1063/1.480097">doi:10.1063/1.480097</a>.</p>
 </div>
-<div class="citation" id="id36" role="doc-biblioentry">
+<div class="citation" id="id38" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">DM_HBK05</a><span class="fn-bracket">]</span></span>
 <p>Andreas Heyden, Alexis T. Bell, and Frerich J. Keil. Efficient methods for finding transition states in chemical reactions: Comparison of improved dimer method and partitioned rational function optimization method. <em>The Journal of Chemical Physics</em>, 123(22):224101, December 2005. <a class="reference external" href="https://doi.org/10.1063/1.2104507">doi:10.1063/1.2104507</a>.</p>
 </div>
-<div class="citation" id="id44" role="doc-biblioentry">
+<div class="citation" id="id46" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">DM_KastnerS08</a><span class="fn-bracket">]</span></span>
 <p>Johannes Kästner and Paul Sherwood. Superlinearly converging dimer method for transition state search. <em>The Journal of Chemical Physics</em>, 128(1):014106, January 2008. <a class="reference external" href="https://doi.org/10.1063/1.2815812">doi:10.1063/1.2815812</a>.</p>
 </div>
-<div class="citation" id="id60" role="doc-biblioentry">
+<div class="citation" id="id62" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">DM_MLJonsson15</a><span class="fn-bracket">]</span></span>
 <p>Marko Melander, Kari Laasonen, and Hannes Jónsson. Removing External Degrees of Freedom from Transition-State Search Methods using Quaternions. <em>Journal of Chemical Theory and Computation</em>, 11(3):1055–1062, March 2015. <a class="reference external" href="https://doi.org/10.1021/ct501155k">doi:10.1021/ct501155k</a>.</p>
 </div>
-<div class="citation" id="id66" role="doc-biblioentry">
+<div class="citation" id="id68" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">DM_OKH+04</a><span class="fn-bracket">]</span></span>
 <p>R. A. Olsen, G. J. Kroes, G. Henkelman, A. Arnaldsson, and H. Jónsson. Comparison of methods for finding saddle points without knowledge of the final states. <em>The Journal of Chemical Physics</em>, 121(20):9776–9792, November 2004. <a class="reference external" href="https://doi.org/10.1063/1.1809574">doi:10.1063/1.1809574</a>.</p>
 </div>
