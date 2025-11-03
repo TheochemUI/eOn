@@ -49,7 +49,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=452cf2f0"></script>
+    <script src="../_static/documentation_options.js?v=8bc63d40"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -274,6 +274,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
@@ -467,7 +473,7 @@ needed. In order to circumvent this problem, <code class="docutils literal notra
 <section id="monte-carlo-with-absorbing-markov-chains-mcamc">
 <h2>Monte Carlo with Absorbing Markov Chains (MCAMC)<a class="headerlink" href="#monte-carlo-with-absorbing-markov-chains-mcamc" title="Link to this heading">#</a></h2>
 <p>The first method, projective dynamics, described in
-<span id="id1">Novotny [<a class="reference internal" href="#id60" title="M. A. Novotny. A Tutorial on Advanced Dynamic Monte Carlo Methods for Systems with Discrete State Spaces, pages 153–210. WORLD SCIENTIFIC, April 2001. doi:10.1142/9789812811578_0003.">CG_Nov01</a>]</span>, groups states that are joined
+<span id="id1">Novotny [<a class="reference internal" href="#id62" title="M. A. Novotny. A Tutorial on Advanced Dynamic Monte Carlo Methods for Systems with Discrete State Spaces, pages 153–210. WORLD SCIENTIFIC, April 2001. doi:10.1142/9789812811578_0003.">CG_Nov01</a>]</span>, groups states that are joined
 by fast rates into “superbasins”. Information about transitions between states
 in a superbasin is lost, but the rates for transitions across a superbasin are
 correct.</p>
@@ -475,7 +481,7 @@ correct.</p>
 <section id="accelerated-superbasin-kinetic-monte-carlo-as-kmc">
 <h2>Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)<a class="headerlink" href="#accelerated-superbasin-kinetic-monte-carlo-as-kmc" title="Link to this heading">#</a></h2>
 <p>The second method, accelerated superbasin kinetic Monte Carlo (AS-KMC) of
-<span id="id2">Voter [<a class="reference internal" href="#id82" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">CG_Vot97</a>]</span>, artificially raises low
+<span id="id2">Voter [<a class="reference internal" href="#id84" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">CG_Vot97</a>]</span>, artificially raises low
 barriers. The dynamics between states connected by fast rates are simulated, but
 an error is introduced in the dynamics direction and time.</p>
 <p>The basic process of AS-KMC involves gradually raising process barriers found to
@@ -521,11 +527,11 @@ exit direction and time compared to normal KMC simulation
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id3">
 <div role="list" class="citation-list">
-<div class="citation" id="id60" role="doc-biblioentry">
+<div class="citation" id="id62" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CG_Nov01</a><span class="fn-bracket">]</span></span>
 <p>M. A. Novotny. <em>A Tutorial on Advanced Dynamic Monte Carlo Methods for Systems with Discrete State Spaces</em>, pages 153–210. WORLD SCIENTIFIC, April 2001. <a class="reference external" href="https://doi.org/10.1142/9789812811578_0003">doi:10.1142/9789812811578_0003</a>.</p>
 </div>
-<div class="citation" id="id82" role="doc-biblioentry">
+<div class="citation" id="id84" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">CG_Vot97</a><span class="fn-bracket">]</span></span>
 <p>Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. <em>Physical Review Letters</em>, 78(20):3908–3911, May 1997. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.78.3908">doi:10.1103/PhysRevLett.78.3908</a>.</p>
 </div>

@@ -49,7 +49,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=452cf2f0"></script>
+    <script src="../_static/documentation_options.js?v=8bc63d40"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -273,6 +273,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
@@ -462,8 +468,8 @@ finds the lowest energy possible while maintaining equal spacing to neighboring
 images. This constrained optimization is done by adding spring forces along the
 band between images and by projecting out the component of the force due to the
 potential perpendicular to the band.</p>
-<p>Details may be found in <span id="id1">Jonsson <em>et al.</em> [<a class="reference internal" href="#id45" title="Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In Classical and Quantum Dynamics in Condensed Phase Simulations, pages 385–404. World Scientific, June 1998. doi:10.1142/9789812839664_0016.">NEB_JMJ98</a>]</span>,
-<span id="id2">Sheppard and Henkelman [<a class="reference internal" href="#id82" title="Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. Journal of Computational Chemistry, 32(8):1769–1771, 2011. doi:10.1002/jcc.21748.">NEB_SH11</a>]</span>, and
+<p>Details may be found in <span id="id1">Jonsson <em>et al.</em> [<a class="reference internal" href="#id47" title="Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In Classical and Quantum Dynamics in Condensed Phase Simulations, pages 385–404. World Scientific, June 1998. doi:10.1142/9789812839664_0016.">NEB_JMJ98</a>]</span>,
+<span id="id2">Sheppard and Henkelman [<a class="reference internal" href="#id84" title="Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. Journal of Computational Chemistry, 32(8):1769–1771, 2011. doi:10.1002/jcc.21748.">NEB_SH11</a>]</span>, and
 <span id="id3">Ásgeirsson and Jónsson [<a class="reference internal" href="#id16" title="Vilhjálmur Ásgeirsson and Hannes Jónsson. Exploring Potential Energy Surfaces with Saddle Point Searches. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling, pages 1–26. Springer International Publishing, Cham, 2018. doi:10.1007/978-3-319-42913-7_28-1.">NEB_AsgeirssonJonsson18</a>]</span>.</p>
 <p>In order to run a nudged elastic band calculation, set <strong>job</strong> to
 <em>nudged_elastic_band</em> in the <strong>[Main]</strong> section. Details of the optimizer can be
@@ -471,10 +477,10 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 <section id="variants">
 <h2>Variants<a class="headerlink" href="#variants" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Classic nudged elastic band of <span id="id4">Mills and Jónsson [<a class="reference internal" href="#id66" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span> and <span id="id5">Schenter <em>et al.</em> [<a class="reference internal" href="#id78" title="Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. The Journal of Chemical Physics, 101(10):8964–8971, November 1994. doi:10.1063/1.468447.">NEB_SMJonsson94</a>]</span>.</p></li>
-<li><p>Improved tangent method of <span id="id6">Henkelman and Jónsson [<a class="reference internal" href="#id38" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p></li>
-<li><p>Climbing image NEB of <span id="id7">Henkelman <em>et al.</em> [<a class="reference internal" href="#id36" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p></li>
-<li><p>Doubly nudged method of <span id="id8">Trygubenko and Wales [<a class="reference internal" href="#id91" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p></li>
+<li><p>Classic nudged elastic band of <span id="id4">Mills and Jónsson [<a class="reference internal" href="#id68" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span> and <span id="id5">Schenter <em>et al.</em> [<a class="reference internal" href="#id80" title="Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. The Journal of Chemical Physics, 101(10):8964–8971, November 1994. doi:10.1063/1.468447.">NEB_SMJonsson94</a>]</span>.</p></li>
+<li><p>Improved tangent method of <span id="id6">Henkelman and Jónsson [<a class="reference internal" href="#id40" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p></li>
+<li><p>Climbing image NEB of <span id="id7">Henkelman <em>et al.</em> [<a class="reference internal" href="#id38" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p></li>
+<li><p>Doubly nudged method of <span id="id8">Trygubenko and Wales [<a class="reference internal" href="#id93" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p></li>
 </ul>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.0: </span></p>
@@ -484,10 +490,10 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">eOn</span></code>, like many other codes after <span id="id10">Sheppard <em>et al.</em> [<a class="reference internal" href="#id81" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">NEB_STH08</a>]</span> uses one optimizer instance for moving the whole band of images.</p>
+<p><code class="docutils literal notranslate"><span class="pre">eOn</span></code>, like many other codes after <span id="id10">Sheppard <em>et al.</em> [<a class="reference internal" href="#id83" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">NEB_STH08</a>]</span> uses one optimizer instance for moving the whole band of images.</p>
 </div>
 <div class="versionadded">
-<p><span class="versionmodified added">Added in version 2.8: </span>Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in <span id="id11">Koistinen <em>et al.</em> [<a class="reference internal" href="#id53" title="Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. The Journal of Chemical Physics, 147(15):152720, September 2017. doi:10.1063/1.4986787.">NEB_KDagbjartsdottirAsgeirsson+17</a>]</span> and <span id="id12">Koistinen <em>et al.</em> [<a class="reference internal" href="#id54" title="Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. Journal of Chemical Theory and Computation, 15(12):6738–6751, December 2019. doi:10.1021/acs.jctc.9b00692.">NEB_KAsgeirssonVJonsson19</a>]</span>.</p>
+<p><span class="versionmodified added">Added in version 2.8: </span>Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in <span id="id11">Koistinen <em>et al.</em> [<a class="reference internal" href="#id55" title="Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. The Journal of Chemical Physics, 147(15):152720, September 2017. doi:10.1063/1.4986787.">NEB_KDagbjartsdottirAsgeirsson+17</a>]</span> and <span id="id12">Koistinen <em>et al.</em> [<a class="reference internal" href="#id56" title="Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. Journal of Chemical Theory and Computation, 15(12):6738–6751, December 2019. doi:10.1021/acs.jctc.9b00692.">NEB_KAsgeirssonVJonsson19</a>]</span>.</p>
 </div>
 </section>
 <section id="configuration">
@@ -514,43 +520,43 @@ later. To facilitate this, the <code class="docutils literal notranslate"><span 
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id13">
 <div role="list" class="citation-list">
-<div class="citation" id="id38" role="doc-biblioentry">
+<div class="citation" id="id40" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">NEB_HJonsson00</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. <em>The Journal of Chemical Physics</em>, 113(22):9978–9985, December 2000. <a class="reference external" href="https://doi.org/10.1063/1.1323224">doi:10.1063/1.1323224</a>.</p>
 </div>
-<div class="citation" id="id36" role="doc-biblioentry">
+<div class="citation" id="id38" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">NEB_HUJonsson00</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. <em>The Journal of Chemical Physics</em>, 113(22):9901–9904, November 2000. <a class="reference external" href="https://doi.org/10.1063/1.1329672">doi:10.1063/1.1329672</a>.</p>
 </div>
-<div class="citation" id="id45" role="doc-biblioentry">
+<div class="citation" id="id47" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">NEB_JMJ98</a><span class="fn-bracket">]</span></span>
 <p>Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In <em>Classical and Quantum Dynamics in Condensed Phase Simulations</em>, pages 385–404. World Scientific, June 1998. <a class="reference external" href="https://doi.org/10.1142/9789812839664_0016">doi:10.1142/9789812839664_0016</a>.</p>
 </div>
-<div class="citation" id="id53" role="doc-biblioentry">
+<div class="citation" id="id55" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">NEB_KDagbjartsdottirAsgeirsson+17</a><span class="fn-bracket">]</span></span>
 <p>Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. <em>The Journal of Chemical Physics</em>, 147(15):152720, September 2017. <a class="reference external" href="https://doi.org/10.1063/1.4986787">doi:10.1063/1.4986787</a>.</p>
 </div>
-<div class="citation" id="id54" role="doc-biblioentry">
+<div class="citation" id="id56" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">NEB_KAsgeirssonVJonsson19</a><span class="fn-bracket">]</span></span>
 <p>Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. <em>Journal of Chemical Theory and Computation</em>, 15(12):6738–6751, December 2019. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.9b00692">doi:10.1021/acs.jctc.9b00692</a>.</p>
 </div>
-<div class="citation" id="id66" role="doc-biblioentry">
+<div class="citation" id="id68" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">NEB_MJonsson94</a><span class="fn-bracket">]</span></span>
 <p>Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. <em>Physical Review Letters</em>, 72(7):1124–1127, February 1994. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.72.1124">doi:10.1103/PhysRevLett.72.1124</a>.</p>
 </div>
-<div class="citation" id="id78" role="doc-biblioentry">
+<div class="citation" id="id80" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">NEB_SMJonsson94</a><span class="fn-bracket">]</span></span>
 <p>Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. <em>The Journal of Chemical Physics</em>, 101(10):8964–8971, November 1994. <a class="reference external" href="https://doi.org/10.1063/1.468447">doi:10.1063/1.468447</a>.</p>
 </div>
-<div class="citation" id="id82" role="doc-biblioentry">
+<div class="citation" id="id84" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">NEB_SH11</a><span class="fn-bracket">]</span></span>
 <p>Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. <em>Journal of Computational Chemistry</em>, 32(8):1769–1771, 2011. <a class="reference external" href="https://doi.org/10.1002/jcc.21748">doi:10.1002/jcc.21748</a>.</p>
 </div>
-<div class="citation" id="id81" role="doc-biblioentry">
+<div class="citation" id="id83" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">NEB_STH08</a><span class="fn-bracket">]</span></span>
 <p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
 </div>
-<div class="citation" id="id91" role="doc-biblioentry">
+<div class="citation" id="id93" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">NEB_TW04</a><span class="fn-bracket">]</span></span>
 <p>Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. <em>The Journal of Chemical Physics</em>, 120(5):2082–2094, February 2004. <a class="reference external" href="https://doi.org/10.1063/1.1636455">doi:10.1063/1.1636455</a>.</p>
 </div>
