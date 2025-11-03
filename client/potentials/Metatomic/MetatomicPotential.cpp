@@ -6,9 +6,10 @@
 #include <memory>
 #include <string>
 
+using namespace std::string_literals;
 MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
     : Potential(PotType::METATOMIC, params),
-      device_(torch::kCPU) {
+      device_("cpu"s) {
 
   m_params = params;
   m_log->info("[MetatomicPotential] Initializing...");
@@ -44,43 +45,14 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   // 3. Determine and set up the device (CPU/CUDA/MPS)
   // TODO(rg):: Eventually switch to upstream selection
   // https://github.com/metatensor/metatomic/issues/21
-  auto available_devices = std::vector<torch::Device>();
-  for (const auto &device_str : this->capabilities_->supported_devices) {
-    if (device_str == "cpu") {
-      available_devices.push_back(torch::kCPU);
-    } else if (device_str == "cuda" && torch::cuda::is_available()) {
-      available_devices.push_back(torch::kCUDA);
-    } else if (device_str == "mps" && torch::mps::is_available()) {
-      available_devices.push_back(torch::kMPS);
-    }
+  torch::optional<std::string> desired = torch::nullopt;
+  if (!m_params->metatomic_options.device.empty()) {
+    desired = m_params->metatomic_options.device;
   }
+  device_ = metatomic_torch::pick_device(this->capabilities_->supported_devices,
+                                         desired);
 
-  if (available_devices.empty()) {
-    throw std::runtime_error(
-        "MetatomicPotential: No supported devices are available.");
-  }
-
-  if (m_params->metatomic_options.device.empty()) {
-    this->device_ = available_devices[0]; // Default to model's preferred device
-  } else {
-    bool found = false;
-    for (const auto &device : available_devices) {
-      if ((device.is_cpu() && m_params->metatomic_options.device == "cpu") ||
-          (device.is_cuda() && m_params->metatomic_options.device == "cuda") ||
-          (device.is_mps() && m_params->metatomic_options.device == "mps")) {
-        this->device_ = device;
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      throw std::runtime_error("Requested device '" +
-                               m_params->metatomic_options.device +
-                               "' is not supported or available.");
-    }
-  }
-  m_log->info("[MetatomicPotential] Using device: {}",
-              this->device_.str().c_str());
+  m_log->info("[MetatomicPotential] Using device: {}", this->device_.c_str());
 
   this->model_.to(this->device_);
 
