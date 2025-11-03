@@ -395,6 +395,7 @@ public:
   string nebIpath; // file containing list of .con files for the initial path
   // Minimize endpoints
   bool nebMinimEP;
+  bool nebMinimEPIpath;
 
   // [Molecular Dynamics] //
   double mdTimeStepInput;

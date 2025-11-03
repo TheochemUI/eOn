@@ -246,6 +246,10 @@ Nudged Elastic Band:
             kind: boolean
             default: true
 
+        minimize_endpoints_for_ipath:
+            kind: boolean
+            default: false
+
         ci_after:
             kind: float
             default: 100000000 # infinity actually
