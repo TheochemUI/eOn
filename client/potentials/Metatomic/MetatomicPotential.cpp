@@ -252,11 +252,12 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   VesinNeighborList *vesin_neighbor_list = new VesinNeighborList();
   memset(vesin_neighbor_list, 0, sizeof(VesinNeighborList));
 
+  VesinDevice cpu{VesinCPU, 0};
   const char *error_message = nullptr;
   int status = vesin_neighbors(
       reinterpret_cast<const double (*)[3]>(positions),
       static_cast<size_t>(nAtoms), reinterpret_cast<const double (*)[3]>(box),
-      periodic, VesinCPU, options, vesin_neighbor_list, &error_message);
+      &periodic, cpu, options, vesin_neighbor_list, &error_message);
 
   if (status != EXIT_SUCCESS) {
     std::string err_str = "vesin_neighbors failed";
