@@ -40,7 +40,41 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   initial->con2matter(reactantFilename);
   final_state->con2matter(productFilename);
 
-  if (params->nebMinimEP && params->nebIpath == ""s) {
+  // Endpoint minimization logic:
+  // - If params->nebMinimEP is false: never minimize endpoints.
+  // - If params->nebMinimEP is true and params->nebIpath is empty: minimize
+  // endpoints.
+  // - If params->nebMinimEP is true and params->nebIpath is NOT empty:
+  //     -> minimize endpoints only if params->nebMinimEPIpath is true.
+  // Log what decision was made so users can see behavior.
+  bool shouldMinimizeEndpoints = false;
+  if (!params->nebMinimEP) {
+    SPDLOG_LOGGER_DEBUG(m_log,
+                        "nebMinimEP == false: not minimizing endpoints.");
+    shouldMinimizeEndpoints = false;
+  } else {
+    if (params->nebIpath.empty()) {
+      SPDLOG_LOGGER_DEBUG(
+          m_log,
+          "nebMinimEP == true and nebIpath empty: minimizing endpoints.");
+      shouldMinimizeEndpoints = true;
+    } else {
+      // nebIpath provided: only minimize if nebMinimEPIpath explicitly allowed.
+      if (params->nebMinimEPIpath) {
+        SPDLOG_LOGGER_DEBUG(m_log,
+                            "nebMinimEP == true and nebIpath provided, but "
+                            "nebMinimEPIpath == true: minimizing endpoints.");
+        shouldMinimizeEndpoints = true;
+      } else {
+        SPDLOG_LOGGER_DEBUG(
+            m_log, "nebMinimEP == true but nebIpath provided and "
+                   "nebMinimEPIpath == false: not minimizing endpoints.");
+        shouldMinimizeEndpoints = false;
+      }
+    }
+  }
+
+  if (shouldMinimizeEndpoints) {
     SPDLOG_LOGGER_DEBUG(m_log, "Minimizing reactant");
     // TODO(rg): Maybe when we have even more parameters, false can be set by
     // the user too..
