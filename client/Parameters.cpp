@@ -302,6 +302,7 @@ Parameters::Parameters() {
   nebKSPMax = 9.7;
   nebIpath = ""s;
   nebMinimEP = true;
+  nebMinimEPIpath = false;
   nebciAfter = std::numeric_limits<double>::infinity();
   nebciWithMMF = false;
   nebciMMFAfter = 0.5;
@@ -921,6 +922,8 @@ int Parameters::load(FILE *file) {
     nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
     nebMinimEP =
         ini.GetValueB("Nudged Elastic Band", "minimize_endpoints", nebMinimEP);
+    nebMinimEPIpath =
+        ini.GetValueB("Nudged Elastic Band", "minimize_endpoints_for_ipath", nebMinimEPIpath);
     nebciAfter = ini.GetValueF("Nudged Elastic Band", "ci_after", nebciAfter);
     nebciWithMMF = ini.GetValueB("Nudged Elastic Band", "ci_mmf", nebciWithMMF);
     nebciMMFAfter =
