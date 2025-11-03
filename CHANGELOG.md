@@ -1,3 +1,18 @@
+## [v2.8.1](https://github.com/theochemui/eongit/tree/v2.8.1) - 2025-11-03
+
+### Added
+
+- Enable minimization for given initial paths
+
+### Changed
+
+- Reworked metatomic to use torch 2.8
+
+### Fixed
+
+- Generate neb.dat correctly without clobbering neb_000.dat
+
+
 ## [2.8.0](https://github.com/theochemui/eongit/tree/2.8.0) - 2025-09-04
 
 ### Added
