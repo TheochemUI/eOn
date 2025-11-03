@@ -49,7 +49,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=452cf2f0"></script>
+    <script src="../_static/documentation_options.js?v=8bc63d40"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -274,6 +274,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
@@ -456,12 +462,12 @@ document.write(`
 <h1>Hyperdynamics<a class="headerlink" href="#hyperdynamics" title="Link to this heading">#</a></h1>
 <p>The hyperdynamics method uses a bias potential which should be zero at
 transition states and positive in minima in order to accelerate the rate of
-transitions as noted by <span id="id1">Voter [<a class="reference internal" href="#id82" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">HD_Vot97</a>]</span>.</p>
+transitions as noted by <span id="id1">Voter [<a class="reference internal" href="#id84" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">HD_Vot97</a>]</span>.</p>
 <p>The hyperdynamics time step <span class="math notranslate nohighlight">\(\delta t\)</span> can be obtained from the molecular
 dynamics simulation time step <span class="math notranslate nohighlight">\(\delta t^b\)</span> multiplied by a boost factor
 <span class="math notranslate nohighlight">\(e^{\beta \Delta V}\)</span>, where <span class="math notranslate nohighlight">\({\Delta V}\)</span> is the bias potential.</p>
 <p>There are several possible forms of bias potential. In EON, we have implemented
-the bond-boost method of <span id="id2">Miron and Fichthorn [<a class="reference internal" href="#id58" title="Radu A. Miron and Kristen A. Fichthorn. Accelerated molecular dynamics with the bond-boost method. The Journal of Chemical Physics, 119(12):6210–6216, September 2003. doi:10.1063/1.1603722.">HD_MF03</a>]</span>
+the bond-boost method of <span id="id2">Miron and Fichthorn [<a class="reference internal" href="#id60" title="Radu A. Miron and Kristen A. Fichthorn. Accelerated molecular dynamics with the bond-boost method. The Journal of Chemical Physics, 119(12):6210–6216, September 2003. doi:10.1063/1.1603722.">HD_MF03</a>]</span>
 where the bias potential is controlled by the maximal (fractional) change in any
 bond length in the system. This is a good bias potential for systems in which
 the dynamics is governed by bond breaking and forming events.</p>
@@ -480,11 +486,11 @@ the dynamics is governed by bond breaking and forming events.</p>
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id3">
 <div role="list" class="citation-list">
-<div class="citation" id="id58" role="doc-biblioentry">
+<div class="citation" id="id60" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">HD_MF03</a><span class="fn-bracket">]</span></span>
 <p>Radu A. Miron and Kristen A. Fichthorn. Accelerated molecular dynamics with the bond-boost method. <em>The Journal of Chemical Physics</em>, 119(12):6210–6216, September 2003. <a class="reference external" href="https://doi.org/10.1063/1.1603722">doi:10.1063/1.1603722</a>.</p>
 </div>
-<div class="citation" id="id82" role="doc-biblioentry">
+<div class="citation" id="id84" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">HD_Vot97</a><span class="fn-bracket">]</span></span>
 <p>Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. <em>Physical Review Letters</em>, 78(20):3908–3911, May 1997. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.78.3908">doi:10.1103/PhysRevLett.78.3908</a>.</p>
 </div>

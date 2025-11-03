@@ -41,7 +41,7 @@ here, pull requests are welcome.
   {cite:t}`2.8.0-bigiMetatensorMetatomicFoundational2025` which covers the
   [metatensor ecosystem](https://docs.metatensor.org/latest/index.html).
   + [ArXiV preprint](https://arxiv.org/abs/2508.15704)
-  + [Github reproduction](https://github.com/metatensor/metatensor_ecosystem_paper)
+  + [Github reproduction](https://github.com/metatensor/ecosystem-article)
 
 ## Henkelman Group
 
