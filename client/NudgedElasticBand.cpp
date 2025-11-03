@@ -205,8 +205,7 @@ NudgedElasticBand::NudgedElasticBand(
   numExtrema = 0;
 
   for (long i = 0; i <= numImages + 1; i++) {
-    path[i] = std::make_shared<Matter>(pot, params);
-    *path[i] = initPath[i];
+    path[i] = std::make_shared<Matter>(std::move(initPath[i]));
     tangent[i] = std::make_shared<AtomMatrix>();
     tangent[i]->resize(atoms, 3);
     tangent[i]->setZero();
