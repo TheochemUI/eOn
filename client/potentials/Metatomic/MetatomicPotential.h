@@ -53,7 +53,7 @@ private:
   metatomic_torch::ModelEvaluationOptions evaluations_options_;
 
   torch::ScalarType dtype_;
-  torch::Device device_;
+  std::string device_;
   bool check_consistency_;
   std::shared_ptr<Parameters> m_params;
 
