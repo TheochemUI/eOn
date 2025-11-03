@@ -16,4 +16,5 @@ be added as well.
 :caption: Versions
 
 v2.8.0/index
+v2.8.1/index
 ```
