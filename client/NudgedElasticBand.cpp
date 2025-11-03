@@ -623,7 +623,15 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     if (spdlog::get("file_logger")) {
       spdlog::drop("file_logger");
     }
-    auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
+    // If idx is SIZE_MAX, treat this as the dedicated final output file
+    // "neb.dat". This avoids overwriting iteration files named neb_000.dat,
+    // neb_001.dat, ...
+    std::string neb_dat_fs;
+    if (idx == std::numeric_limits<size_t>::max()) {
+      neb_dat_fs = "neb.dat";
+    } else {
+      neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
+    }
     if (fs::exists(neb_dat_fs)) {
       fs::remove(neb_dat_fs);
     }
