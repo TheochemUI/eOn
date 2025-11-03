@@ -150,7 +150,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   fclose(fileNEB);
 
   returnFiles.push_back("neb.dat");
-  neb->printImageData(true);
+  neb->printImageData(true, std::numeric_limits<size_t>::max());
 }
 
 void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
