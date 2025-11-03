@@ -16,7 +16,7 @@ with the `metatensor` and `pytorch` libraries.
 ## Setup and Compilation
 
 The most robust way to handle the dependencies is to use `-Dwith_metatomic=True
--Dpip_metatomic=True -Dtorch_version=2.7` inside the `pixi s -e meta-dev`
+-Dpip_metatomic=True -Dtorch_version=2.8` inside the `pixi s -e meta-dev`
 environment.
 
 Some notes about this implemetnation:
