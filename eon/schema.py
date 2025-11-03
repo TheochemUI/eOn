@@ -1460,6 +1460,10 @@ class NudgedElasticBandConfig(BaseModel):
         default=True,
         description="Minimize the reactant and product before the NEB.",
     )
+    minimize_endpoints_for_ipath: bool = Field(
+        default=False,
+        description="Minimize the reactant and product before the NEB, even if an initial path is provided.",
+    )
     ci_after: float = Field(
         default=math.inf,
         description="Convergence before the CI is turned on.",
