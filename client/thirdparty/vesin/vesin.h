@@ -52,12 +52,29 @@ struct VesinOptions {
 };
 
 /// Device on which the data can be
-enum VesinDevice {
+enum VesinDeviceKind {
     /// Unknown device, used for default initialization and to indicate no
     /// allocated data.
     VesinUnknownDevice = 0,
     /// CPU device
     VesinCPU = 1,
+    // CUDA device
+    VesinCUDA = 2,
+};
+
+/// Represents a device on which data can be allocated.
+///
+/// This structure combines the device type (CPU or CUDA) with an optional
+/// device index. For CPU allocations, `device_id` is always 0. For CUDA
+/// allocations, `device_id` specifies which GPU to use (e.g., 0, 1, 2).
+///
+/// Example usage:
+///   VesinDevice cpu { VesinCPU, 0 };
+///   VesinDevice gpu0 { VesinCUDA, 0 };
+///   VesinDevice gpu1 { VesinCUDA, 1 };
+struct VesinDevice {
+    VesinDeviceKind type;
+    int device_id = 0;
 };
 
 /// The actual neighbor list
@@ -83,7 +100,7 @@ struct VESIN_API VesinNeighborList {
 #ifdef __cplusplus
     VesinNeighborList():
         length(0),
-        device(VesinUnknownDevice),
+        device({VesinUnknownDevice, 0}),
         pairs(nullptr),
         shifts(nullptr),
         distances(nullptr),
@@ -109,6 +126,9 @@ struct VESIN_API VesinNeighborList {
     /// during the calculation.
     double (*vectors)[3];
 
+    // private pointer used to hold additional internal data
+    void* opaque = nullptr;
+
     // TODO: custom memory allocators?
 };
 
@@ -129,7 +149,8 @@ void VESIN_API vesin_free(struct VesinNeighborList* neighbors);
 /// @param box bounding box for the system. If the system is non-periodic,
 ///     this is ignored. This should contain the three vectors of the bounding
 ///     box, one vector per row of the matrix.
-/// @param periodic is the system using periodic boundary conditions?
+/// @param periodic is the system using periodic boundary conditions? This
+//      should be an array of three booleans, one for each dimension.
 /// @param device device where the `points` and `box` data is allocated.
 /// @param options options for the calculation
 /// @param neighbors non-NULL pointer to `VesinNeighborList` that will be used
@@ -141,7 +162,7 @@ int VESIN_API vesin_neighbors(
     const double (*points)[3],
     size_t n_points,
     const double box[3][3],
-    bool periodic,
+    bool periodic[3],
     VesinDevice device,
     struct VesinOptions options,
     struct VesinNeighborList* neighbors,
