@@ -6,9 +6,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types:
-      - closed
 jobs:
   build_eon:
     runs-on: ubuntu-latest
