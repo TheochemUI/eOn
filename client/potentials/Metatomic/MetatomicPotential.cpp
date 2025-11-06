@@ -101,8 +101,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   forceCallCounter++;
 
   // 1. Convert input arrays to torch::Tensors
-  auto tensor_options =
-      torch::TensorOptions().dtype(this->dtype_).device(this->device_);
   auto f64_options =
       torch::TensorOptions().dtype(torch::kFloat64).device(torch::kCPU);
 
@@ -222,7 +220,6 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   options.return_vectors = true;    // metatomic uses vectors for autograd
 
   VesinNeighborList *vesin_neighbor_list = new VesinNeighborList();
-  memset(vesin_neighbor_list, 0, sizeof(VesinNeighborList));
 
   VesinDevice cpu{VesinCPU, 0};
   const char *error_message = nullptr;
