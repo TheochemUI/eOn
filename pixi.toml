@@ -2,7 +2,7 @@
 authors = ["Rohit Goswami <rog32@hi.is>"]
 channels = ["conda-forge"]
 name = "eOn"
-platforms = ["linux-64", "osx-64", "osx-arm64"]
+platforms = ["linux-64", "osx-64"] # , "osx-arm64" needs to be built for EON release
 version = "2.8.1"
 
 [tasks]
@@ -29,12 +29,12 @@ spdlog = ">=1.15.3,<2"
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
 
-# [pypi-options]
+[pypi-options]
 # TODO(rg): only if the CPU version is needed
 # set these on the command line instead
 # export UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
 # export PIP_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
-# extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
+extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
 
 [environments]
 # TODO(rg): Flesh out the rest of these
@@ -46,6 +46,7 @@ lammps = {features = ["lammps"]}
 ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
 docs = {features = ["docs"]}
+rel = {features = ["metatomic", "release"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
@@ -117,3 +118,46 @@ depends-on = [
 cmd = """
 python -m http.server -d html
 """
+
+[feature.release.dependencies]
+eon = "*"
+
+[feature.eon.tasks.mkeon]
+cwd = "subrepos/eOn"
+args = ["buildtype"]
+depends-on = [
+  { task = "setupeon", environment = "eon", "args" = ["{{buildtype}}"] },
+]
+cmd = """
+meson compile -C bbdir && \
+meson install -C bbdir
+"""
+
+[feature.eon.tasks.setupeon]
+cwd = "subrepos/eOn"
+# Remember that the mold stuff assumes that the user has a UNIX machine However
+# dropping mold does nothing but leads to slightly longer build times so it
+# isn't an issue
+# For exact reproducibility -Dwith_ase_nwchem should be used but it shouldn't matter
+# For debugging set
+# --buildtype debug -Db_sanitize=address
+# To prevent the subproject from leaking into the EON history, it is easier to
+# simply rsync in since it is ignored at that path anyway
+#
+# -Dwith_metatomic=True -Dpip_metatomic=True \
+# -Dtorch_version=2.7 \
+cmd = """
+rsync -vaz ../gpr_optim subprojects && \
+meson setup bbdir --reconfigure \
+      --prefix=$CONDA_PREFIX \
+      --libdir=lib --buildtype {{ buildtype }} \
+      --native-file nativeFiles/mold.ini \
+      --native-file nativeFiles/ccache_gnu.ini \
+      -Dwith_xtb=False \
+      -Dwith_metatomic=True \
+      -Dpip_metatomic=True \
+      -Dtorch_version=2.7 \
+      -Dwith_tests=True \
+      -Dwith_gprd=True
+"""
+args = ["buildtype"]
