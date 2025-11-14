@@ -333,7 +333,7 @@ public:
     bool check_consistency;           // To enable model's internal checks.
     double uncertainty_threshold;     // Threshold for uncertainty reporting.
                                       // also used to populate the variance
-                                      // -1 to disable
+                                      // -1 to disable, 100meV/atom default
   } metatomic_options;
 
   // [Lanczos] //

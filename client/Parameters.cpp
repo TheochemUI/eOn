@@ -217,7 +217,7 @@ Parameters::Parameters() {
   metatomic_options.length_unit = "angstrom"s;
   metatomic_options.extensions_directory = ""s;
   metatomic_options.check_consistency = false;
-  metatomic_options.uncertainty_threshold = -1;
+  metatomic_options.uncertainty_threshold = 0.1;
 
   // [Lanczos] //
   lanczosTolerance = 0.01;
@@ -760,7 +760,7 @@ int Parameters::load(FILE *file) {
       metatomic_options.check_consistency =
           ini.GetValueB("Metatomic", "check_consistency", false);
       metatomic_options.uncertainty_threshold =
-          ini.GetValueF("Metatomic", "uncertainty_threshold", -1);
+          ini.GetValueF("Metatomic", "uncertainty_threshold", 0.1);
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
