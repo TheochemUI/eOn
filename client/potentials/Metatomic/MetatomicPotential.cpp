@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <sstream>
+#include <limits>
 
 using namespace std::string_literals;
 MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
@@ -88,6 +90,57 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
 
   evaluations_options_->outputs.insert("energy", requested_output);
 
+  // 5b. Optionally request energy uncertainty (per-atom) if the model offers it
+  // and the user didn't disable it. We read a threshold from parameters to know
+  // whether to warn (non-positive threshold disables checking).
+  // Default: if user provided a positive threshold, use it; otherwise keep it
+  // disabled (-1).
+  if (m_params->metatomic_options.uncertainty_threshold > 0) {
+    this->uncertainty_threshold_ = m_params->metatomic_options.uncertainty_threshold;
+  } else {
+    this->uncertainty_threshold_ = -1.0; // disabled
+  }
+
+  auto uncertainty_it = outputs.find("energy_uncertainty");
+  if (uncertainty_it != outputs.end() && this->uncertainty_threshold_ > 0) {
+    // If the model has per-atom uncertainty output, request it for evaluation.
+    // Prefer only per-atom uncertainties for per-atom checking.
+    try {
+      // The capabilities entry may provide whether the output is per-atom.
+      // We attempt to detect that; if not per-atom, we do not request it here.
+      auto uncertainty_info = uncertainty_it->second;
+      bool per_atom = false;
+      // Some capability representations expose a 'per_atom' method/field.
+      // Try both accessor styles to remain robust.
+      try {
+        per_atom = uncertainty_info->per_atom;
+      } catch (...) {
+        try {
+          per_atom = uncertainty_info.per_atom;
+        } catch (...) {
+          per_atom = false;
+        }
+      }
+
+      if (per_atom) {
+        auto requested_uncertainty =
+            torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
+        requested_uncertainty->per_atom = true;
+        requested_uncertainty->explicit_gradients = {};
+        requested_uncertainty->set_quantity("energy");
+        // leave unit unset or let metatomic handle unit conversion if available
+        evaluations_options_->outputs.insert("energy_uncertainty", requested_uncertainty);
+        m_log->info("[MetatomicPotential] Requested per-atom 'energy_uncertainty' from model (threshold = {})",
+                    this->uncertainty_threshold_);
+      } else {
+        m_log->debug("[MetatomicPotential] Model provides 'energy_uncertainty' but not per-atom; skipping per-atom uncertainty checks.");
+      }
+    } catch (...) {
+      // If introspection fails, we skip requesting uncertainty
+      m_log->debug("[MetatomicPotential] Could not determine 'energy_uncertainty' per-atom capability; skipping.");
+    }
+  }
+
   this->check_consistency_ = m_params->metatomic_options.check_consistency;
   m_log->info("[MetatomicPotential] Initialization complete.");
 }
@@ -169,6 +222,63 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
     auto dict_output = ivalue_output.toGenericDict();
     output_map = dict_output.at("energy")
                      .toCustomClass<metatensor_torch::TensorMapHolder>();
+
+    // If we requested per-atom uncertainty and provided a positive threshold,
+    // check the returned uncertainty values and log/warn if any atoms exceed
+    // the threshold.
+    if (this->uncertainty_threshold_ > 0) {
+      try {
+        // Check if the dict contains an uncertainty entry
+        if (dict_output.contains("energy_uncertainty")) {
+          auto uncertainty_map =
+              dict_output.at("energy_uncertainty")
+                  .toCustomClass<metatensor_torch::TensorMapHolder>();
+          auto uncertainty_block =
+              metatensor_torch::TensorMapHolder::block_by_id(uncertainty_map, 0);
+
+          // Expecting a per-atom tensor shaped [n_atoms, 1] (or similar)
+          auto uncertainty_values = uncertainty_block->values();
+          // Flatten to 1D of per-atom uncertainties
+          auto flat_uncertainty = uncertainty_values.reshape({-1}).to(torch::kCPU);
+
+          // Compare with threshold
+          auto atoms_above_threshold = flat_uncertainty > this->uncertainty_threshold_;
+          if (torch::any(atoms_above_threshold).item<bool>()) {
+            // Get the sample "atom" column and index it by the boolean mask
+            // Samples holder utilities may vary; follow the typical metatensor API
+            auto samples = uncertainty_block->samples();
+            // samples->column("atom") should return a tensor with atom indices
+            auto atom_indices_all = samples->column("atom").to(torch::kCPU);
+            auto atom_indices_above = atom_indices_all.index({atoms_above_threshold});
+
+            // Build a short human-readable list of offending atom indices
+            std::ostringstream ss;
+            ss << "atoms at index [";
+            auto n_report = std::min<int64_t>(10, atom_indices_above.size(0));
+            for (int64_t i = 0; i < n_report; ++i) {
+              if (i > 0) ss << ", ";
+              ss << atom_indices_above[i].item<int32_t>();
+            }
+            ss << "]";
+            if (atom_indices_above.size(0) > n_report) {
+              ss << " and " << (atom_indices_above.size(0) - n_report) << " more";
+            }
+
+            m_log->warn(
+                "[MetatomicPotential] The uncertainty on atomic energies for {} "
+                "are larger than the threshold of {}. Be careful when analyzing "
+                "the results, and consider retraining the model to better "
+                "describe these configurations.",
+                ss.str(), this->uncertainty_threshold_);
+          }
+        }
+      } catch (const std::exception &e) {
+        // Don't fail the run for uncertainty-check failures; log and continue.
+        m_log->warn("[MetatomicPotential] Failed to check energy_uncertainty: {}",
+                    e.what());
+      }
+    }
+
   } catch (const std::exception &e) {
     m_log->error("[MetatomicPotential] Model evaluation failed: {}", e.what());
     throw;
