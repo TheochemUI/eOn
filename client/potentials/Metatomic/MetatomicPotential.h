@@ -61,6 +61,10 @@ private:
   torch::Tensor atomic_types_;
   std::vector<int> last_atomic_nrs_;
 
+  // --- Uncertainty handling ---
+  // If non-positive, uncertainty checks are effectively disabled.
+  double uncertainty_threshold_{-1.0};
+
   /**
    * @brief Computes neighbor list using the vesin library.
    *
