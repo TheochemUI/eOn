@@ -29,6 +29,7 @@
 #include <torch/version.h>
 
 #include "metatensor/torch.hpp"
+#include "metatensor/torch/module.hpp"
 #include "metatomic/torch.hpp"
 
 #pragma GCC diagnostic pop
@@ -47,7 +48,7 @@
 class MetatomicPotential : public Potential {
 private:
   // --- Metatomic and Torch members ---
-  torch::jit::Module model_;
+  metatensor_torch::Module model_;
   metatomic_torch::ModelCapabilities capabilities_;
   std::vector<metatomic_torch::NeighborListOptions> nl_requests_;
   metatomic_torch::ModelEvaluationOptions evaluations_options_;
