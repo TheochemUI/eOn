@@ -331,7 +331,7 @@ public:
                              // "angstrom").
     std::string extensions_directory; // Path for TorchScript extensions.
     bool check_consistency;           // To enable model's internal checks.
-    double uncertainty_threshold;    // Threshold for uncertainty reporting.
+    double uncertainty_threshold;     // Threshold for uncertainty reporting.
                                       // also used to populate the variance
                                       // -1 to disable
   } metatomic_options;
