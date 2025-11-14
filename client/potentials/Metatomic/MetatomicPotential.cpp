@@ -240,6 +240,17 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
           auto uncertainty_values = uncertainty_block->values();
           // Flatten to 1D of per-atom uncertainties
           auto flat_uncertainty = uncertainty_values.reshape({-1}).to(torch::kCPU);
+          // If variance pointer provided, set it to the mean of per-atom uncertainties
+          if (variance != nullptr && flat_uncertainty.numel() > 0) {
+            try {
+              // TODO(rg): maybe allow the user to set the variance computation
+              auto mean_unc = flat_uncertainty.to(torch::kFloat64).mean();
+              *variance = mean_unc.item<double>();
+            } catch (...) {
+              // If mean computation fails, leave variance untouched.
+              m_log->debug("[MetatomicPotential] Failed to compute mean uncertainty for variance.");
+            }
+          }
 
           // Compare with threshold
           auto atoms_above_threshold = flat_uncertainty > this->uncertainty_threshold_;
@@ -307,11 +318,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
 
   std::memcpy(forces, forces_tensor.contiguous().data_ptr<double>(),
               nAtoms * 3 * sizeof(double));
-
-  // TODO(rg):: Handle the variance
-  // NOTE(luthaf):: Long term this could be done using the "energy_uncertainty"
-  // output
-  // https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty-output
 }
 
 // --- MetatomicPotential::computeNeighbors (helper) ---
