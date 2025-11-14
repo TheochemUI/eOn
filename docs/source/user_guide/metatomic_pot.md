@@ -70,7 +70,9 @@ print("Saved model to lennard-jones.pt")
 
 ```
 
-This will create the lennard-jones.pt file in your current directory.
+This will create the `lennard-jones.pt` file in your current directory.
+
+<!-- This needs to be re-exported every time the Torch version changes. -->
 
 
 This can be loaded checked with a configuration file for EON:
