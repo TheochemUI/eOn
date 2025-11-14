@@ -3,10 +3,13 @@
 #include "vesin.h"
 
 #include <cstdint>
-#include <memory>
-#include <string>
-#include <sstream>
 #include <limits>
+#include <memory>
+#include <sstream>
+#include <string>
+
+// TODO(rg): handle variants
+// https://docs.metatensor.org/metatomic/latest/outputs/variants.html#output-variants
 
 using namespace std::string_literals;
 MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
@@ -96,7 +99,8 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   // Default: if user provided a positive threshold, use it; otherwise keep it
   // disabled (-1).
   if (m_params->metatomic_options.uncertainty_threshold > 0) {
-    this->uncertainty_threshold_ = m_params->metatomic_options.uncertainty_threshold;
+    this->uncertainty_threshold_ =
+        m_params->metatomic_options.uncertainty_threshold;
   } else {
     this->uncertainty_threshold_ = -1.0; // disabled
   }
@@ -108,18 +112,12 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
     try {
       // The capabilities entry may provide whether the output is per-atom.
       // We attempt to detect that; if not per-atom, we do not request it here.
-      auto uncertainty_info = uncertainty_it->second;
+      auto uncertainty_info = uncertainty_it->value();
       bool per_atom = false;
-      // Some capability representations expose a 'per_atom' method/field.
-      // Try both accessor styles to remain robust.
       try {
         per_atom = uncertainty_info->per_atom;
       } catch (...) {
-        try {
-          per_atom = uncertainty_info.per_atom;
-        } catch (...) {
-          per_atom = false;
-        }
+        per_atom = false;
       }
 
       if (per_atom) {
@@ -129,15 +127,19 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
         requested_uncertainty->explicit_gradients = {};
         requested_uncertainty->set_quantity("energy");
         // leave unit unset or let metatomic handle unit conversion if available
-        evaluations_options_->outputs.insert("energy_uncertainty", requested_uncertainty);
-        m_log->info("[MetatomicPotential] Requested per-atom 'energy_uncertainty' from model (threshold = {})",
+        evaluations_options_->outputs.insert("energy_uncertainty",
+                                             requested_uncertainty);
+        m_log->info("[MetatomicPotential] Requested per-atom "
+                    "'energy_uncertainty' from model (threshold = {})",
                     this->uncertainty_threshold_);
       } else {
-        m_log->debug("[MetatomicPotential] Model provides 'energy_uncertainty' but not per-atom; skipping per-atom uncertainty checks.");
+        m_log->debug("[MetatomicPotential] Model provides 'energy_uncertainty' "
+                     "but not per-atom; skipping per-atom uncertainty checks.");
       }
     } catch (...) {
       // If introspection fails, we skip requesting uncertainty
-      m_log->debug("[MetatomicPotential] Could not determine 'energy_uncertainty' per-atom capability; skipping.");
+      m_log->debug("[MetatomicPotential] Could not determine "
+                   "'energy_uncertainty' per-atom capability; skipping.");
     }
   }
 
@@ -234,13 +236,16 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
               dict_output.at("energy_uncertainty")
                   .toCustomClass<metatensor_torch::TensorMapHolder>();
           auto uncertainty_block =
-              metatensor_torch::TensorMapHolder::block_by_id(uncertainty_map, 0);
+              metatensor_torch::TensorMapHolder::block_by_id(uncertainty_map,
+                                                             0);
 
           // Expecting a per-atom tensor shaped [n_atoms, 1] (or similar)
           auto uncertainty_values = uncertainty_block->values();
           // Flatten to 1D of per-atom uncertainties
-          auto flat_uncertainty = uncertainty_values.reshape({-1}).to(torch::kCPU);
-          // If variance pointer provided, set it to the mean of per-atom uncertainties
+          auto flat_uncertainty =
+              uncertainty_values.reshape({-1}).to(torch::kCPU);
+          // If variance pointer provided, set it to the mean of per-atom
+          // uncertainties
           if (variance != nullptr && flat_uncertainty.numel() > 0) {
             try {
               // TODO(rg): maybe allow the user to set the variance computation
@@ -248,36 +253,44 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
               *variance = mean_unc.item<double>();
             } catch (...) {
               // If mean computation fails, leave variance untouched.
-              m_log->debug("[MetatomicPotential] Failed to compute mean uncertainty for variance.");
+              m_log->debug("[MetatomicPotential] Failed to compute mean "
+                           "uncertainty for variance.");
             }
           }
 
           // Compare with threshold
-          auto atoms_above_threshold = flat_uncertainty > this->uncertainty_threshold_;
+          auto atoms_above_threshold =
+              flat_uncertainty > this->uncertainty_threshold_;
           if (torch::any(atoms_above_threshold).item<bool>()) {
             // Get the sample "atom" column and index it by the boolean mask
-            // Samples holder utilities may vary; follow the typical metatensor API
+            // Samples holder utilities may vary; follow the typical metatensor
+            // API
             auto samples = uncertainty_block->samples();
             // samples->column("atom") should return a tensor with atom indices
             auto atom_indices_all = samples->column("atom").to(torch::kCPU);
-            auto atom_indices_above = atom_indices_all.index({atoms_above_threshold});
+            auto atom_indices_above =
+                atom_indices_all.index({atoms_above_threshold});
 
             // Build a short human-readable list of offending atom indices
             std::ostringstream ss;
             ss << "atoms at index [";
             auto n_report = std::min<int64_t>(10, atom_indices_above.size(0));
             for (int64_t i = 0; i < n_report; ++i) {
-              if (i > 0) ss << ", ";
+              if (i > 0)
+                ss << ", ";
               ss << atom_indices_above[i].item<int32_t>();
             }
             ss << "]";
             if (atom_indices_above.size(0) > n_report) {
-              ss << " and " << (atom_indices_above.size(0) - n_report) << " more";
+              ss << " and " << (atom_indices_above.size(0) - n_report)
+                 << " more";
             }
 
             m_log->warn(
-                "[MetatomicPotential] The uncertainty on atomic energies for {} "
-                "are larger than the threshold of {}. Be careful when analyzing "
+                "[MetatomicPotential] The uncertainty on atomic energies for "
+                "{} "
+                "are larger than the threshold of {}. Be careful when "
+                "analyzing "
                 "the results, and consider retraining the model to better "
                 "describe these configurations.",
                 ss.str(), this->uncertainty_threshold_);
@@ -285,8 +298,9 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
         }
       } catch (const std::exception &e) {
         // Don't fail the run for uncertainty-check failures; log and continue.
-        m_log->warn("[MetatomicPotential] Failed to check energy_uncertainty: {}",
-                    e.what());
+        m_log->warn(
+            "[MetatomicPotential] Failed to check energy_uncertainty: {}",
+            e.what());
       }
     }
 
