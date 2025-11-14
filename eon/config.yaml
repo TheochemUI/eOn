@@ -1617,7 +1617,7 @@ Metatomic:
 
         uncertainty_threshold:
           kind: float
-          default: -1
+          default: 0.1
 
 ################################################################################
 
