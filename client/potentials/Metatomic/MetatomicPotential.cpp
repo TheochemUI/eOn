@@ -3,7 +3,6 @@
 #include "vesin.h"
 
 #include <cstdint>
-#include <limits>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -14,6 +13,7 @@
 using namespace std::string_literals;
 MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
     : Potential(PotType::METATOMIC, params),
+      model_(torch::jit::Module()),
       device_("cpu"s) {
 
   m_params = params;
