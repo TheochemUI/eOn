@@ -451,6 +451,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet-mad">PET-MAD</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance">Variance</a></li>
 </ul>
             </nav>
         </div>
@@ -519,7 +520,8 @@ file. Run this Python script:</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved model to lennard-jones.pt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create the lennard-jones.pt file in your current directory.</p>
+<p>This will create the <code class="docutils literal notranslate"><span class="pre">lennard-jones.pt</span></code> file in your current directory.</p>
+<!-- This needs to be re-exported every time the Torch version changes. -->
 <p>This can be loaded checked with a configuration file for EON:</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Main]</span>
 <span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">point</span>
@@ -569,6 +571,26 @@ eonclient
 </pre></div>
 </div>
 </section>
+</section>
+<section id="variance">
+<h2>Variance<a class="headerlink" href="#variance" title="Link to this heading">#</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.2.</span></p>
+</div>
+<p>To enable per-atom energy uncertainity checks set the <code class="docutils literal notranslate"><span class="pre">uncertainty_threshold</span></code>
+parameter to a positive value, which will also act as the threshold. This will
+work for models which expose an <code class="docutils literal notranslate"><span class="pre">energy_uncertainity</span></code> <a class="reference external" href="https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty">output
+key</a>
+like PET-MAD, which reports LLPR energy uncertainities.</p>
+<aside class="margin sidebar">
+<p class="sidebar-title"></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>These are <strong>not</strong> force uncertainities and <strong>may not</strong> be correlated to accuracy.</p></li>
+</ul>
+</div>
+</aside>
 </section>
 </section>
 
@@ -624,6 +646,7 @@ eonclient
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet-mad">PET-MAD</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance">Variance</a></li>
 </ul>
   </nav></div>
 
