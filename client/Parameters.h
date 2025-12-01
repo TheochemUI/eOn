@@ -331,10 +331,13 @@ public:
                              // "angstrom").
     std::string extensions_directory; // Path for TorchScript extensions.
     bool check_consistency;           // To enable model's internal checks.
+    double uncertainty_threshold;     // Threshold for uncertainty reporting.
+                                      // also used to populate the variance
+                                      // -1 to disable, 100meV/atom default
   } metatomic_options;
 
   // [Lanczos] //
-  double lanczosTolerance;   // difference between the lowest eignevalues of two
+  double lanczosTolerance;   // difference between the lowest eigenvalues of two
                              // successive iterations
   long lanczosMaxIterations; // maximum number of iterations
   bool lanczosQuitEarly;
