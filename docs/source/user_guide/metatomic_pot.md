@@ -70,7 +70,9 @@ print("Saved model to lennard-jones.pt")
 
 ```
 
-This will create the lennard-jones.pt file in your current directory.
+This will create the `lennard-jones.pt` file in your current directory.
+
+<!-- This needs to be re-exported every time the Torch version changes. -->
 
 
 This can be loaded checked with a configuration file for EON:
@@ -130,3 +132,22 @@ To use `pet-mad` we can use `metatrain` to grab the model.
 ```{code-block} sh
 mtt export https://huggingface.co/lab-cosmo/pet-mad/resolve/v1.1.0/models/pet-mad-v1.1.0.ckpt
 ```
+
+## Variance
+
+```{versionadded} 2.2
+```
+
+To enable per-atom energy uncertainity checks set the `uncertainty_threshold`
+parameter to a positive value, which will also act as the threshold. This will
+work for models which expose an `energy_uncertainity` [output
+key](https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty)
+like PET-MAD, which reports LLPR energy uncertainities.
+
+````{margin}
+```{note}
+
+* These are **not** force uncertainities and **may not** be correlated to accuracy.
+
+```
+````

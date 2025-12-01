@@ -1615,6 +1615,10 @@ Metatomic:
             kind: boolean
             default: false
 
+        uncertainty_threshold:
+          kind: float
+          default: 0.1
+
 ################################################################################
 
 ASE_NWCHEM:
