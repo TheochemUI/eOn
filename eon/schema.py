@@ -671,6 +671,10 @@ class Metatomic(BaseModel):
         default=False,
         description="Whether to check consistency of the Metatomic model.",
     )
+    uncertainty_threshold: float = Field(
+        default=0.1, # 100meV/atom
+        description="Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.",
+    )
 
 
 class ASE_NWCHEM(BaseModel):

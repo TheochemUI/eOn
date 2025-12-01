@@ -29,6 +29,7 @@
 #include <torch/version.h>
 
 #include "metatensor/torch.hpp"
+#include "metatensor/torch/module.hpp"
 #include "metatomic/torch.hpp"
 
 #pragma GCC diagnostic pop
@@ -47,19 +48,24 @@
 class MetatomicPotential : public Potential {
 private:
   // --- Metatomic and Torch members ---
-  torch::jit::Module model_;
+  metatensor_torch::Module model_;
   metatomic_torch::ModelCapabilities capabilities_;
   std::vector<metatomic_torch::NeighborListOptions> nl_requests_;
   metatomic_torch::ModelEvaluationOptions evaluations_options_;
 
   torch::ScalarType dtype_;
-  std::string device_;
+  c10::DeviceType device_type_;
+  torch::Device device_;
   bool check_consistency_;
   std::shared_ptr<Parameters> m_params;
 
   // --- Cached Tensors and Data for Performance ---
   torch::Tensor atomic_types_;
   std::vector<int> last_atomic_nrs_;
+
+  // --- Uncertainty handling ---
+  // If non-positive, uncertainty checks are effectively disabled.
+  double uncertainty_threshold_{-1.0};
 
   /**
    * @brief Computes neighbor list using the vesin library.

@@ -63,4 +63,38 @@ TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
   TearDown();
 }
 
+TEST_CASE_METHOD(PotTest,
+                 "Metatomic uncertainty populates variance (if available)",
+                 "[PotTest][uncertainty]") {
+  SetUp();
+
+  // Request uncertainty checking by setting a positive threshold.
+  // If the model does not provide per-atom energy_uncertainty, the variance
+  // should remain untouched (we initialize it to a sentinel and only assert
+  // when it changes).
+  params->potential = PotType::METATOMIC;
+  params->metatomic_options.model_path = "lennard-jones.pt";
+  // request uncertainty checks
+  params->metatomic_options.uncertainty_threshold = 0.1;
+
+  auto pot = helper_functions::makePotential(params->potential, params);
+
+  double e_mta{0};
+  AtomMatrix f_mta = Eigen::MatrixXd::Zero(m1->numberOfAtoms(), 3);
+  double variance = -12345.6789; // sentinel
+
+  pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
+             m1->getAtomicNrs().data(), f_mta.data(), &e_mta, &variance,
+             m1->getCell().data());
+
+  // If the model returned per-atom uncertainties, we expect variance to be
+  // set to their mean (>= 0 and finite). If not, variance remains the sentinel.
+  if (variance != -12345.6789) {
+    REQUIRE(std::isfinite(variance));
+    REQUIRE(variance >= 0.0);
+  }
+
+  TearDown();
+}
+
 } /* namespace tests */
