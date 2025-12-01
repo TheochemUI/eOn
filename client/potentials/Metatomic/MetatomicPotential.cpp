@@ -15,7 +15,7 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
     : Potential(PotType::METATOMIC, params),
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
-      device_(torch::Device(device_type_)){
+      device_(torch::Device(device_type_)) {
 
   m_params = params;
   m_log->info("[MetatomicPotential] Initializing...");
