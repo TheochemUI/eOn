@@ -1,3 +1,16 @@
+## [v2.8.2](https://github.com/theochemui/eongit/tree/v2.8.2) - 2025-12-01
+
+### Added
+
+- Metatomic is now uncertainity aware
+- Metatomic variance reports per-atom uncertainity mean
+
+### Developer
+
+- Update to use `metatensor_torch::Module`
+- Use `metatomic::pick_device` correctly
+
+
 ## [v2.8.1](https://github.com/theochemui/eongit/tree/v2.8.1) - 2025-11-03
 
 ### Added
