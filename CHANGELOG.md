@@ -5,6 +5,10 @@
 - Metatomic is now uncertainity aware
 - Metatomic variance reports per-atom uncertainity mean
 
+### Changed
+
+- Reworked metatomic to use torch 2.9
+
 ### Developer
 
 - Update to use `metatensor_torch::Module`

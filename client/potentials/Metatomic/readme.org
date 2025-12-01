@@ -8,7 +8,7 @@ pixi s -e metatomic # or dev-mta
         --buildtype release --libdir=lib
         -Dpip_metatomic=True
         -Dwith_metatomic=True
-        -Dtorch_version=2.8
+        -Dtorch_version=2.9
 )
 meson install -C bbdir
 #+end_src
