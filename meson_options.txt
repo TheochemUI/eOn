@@ -21,7 +21,7 @@ option('with_qsc', type : 'boolean', value : false)
 option('use_mkl', type: 'boolean', value: false, description: 'Enable Intel MKL support')
 option('with_metatomic', type : 'boolean', value : false)
 option('torch_path', type : 'string', value : '', description: 'path to Torch, either provide this or torch_version for pip')
-option('torch_version', type : 'string', value : '2.8', description: 'path to Torch')
+option('torch_version', type : 'string', value : '2.9', description: 'path to Torch')
 option('pip_metatomic', type : 'boolean', value : false, description: 'use pip versions of torch, metatensor, torch, and metatomic')
 
 # option('someoption', type : 'string', value : 'optval', description : 'An option')

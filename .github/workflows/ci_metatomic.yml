@@ -31,7 +31,7 @@ jobs:
           --buildtype release              \
           --libdir=lib                     \
           -Dwith_metatomic=True            \
-          -Dtorch_version=2.8              \
+          -Dtorch_version=2.9              \
           -Dwith_tests=True                \
           -Dpip_metatomic=True
           meson install -C bbdir
