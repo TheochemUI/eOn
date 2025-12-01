@@ -14,7 +14,8 @@ using namespace std::string_literals;
 MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
     : Potential(PotType::METATOMIC, params),
       model_(torch::jit::Module()),
-      device_("cpu"s) {
+      device_type_(c10::DeviceType::CPU),
+      device_(torch::Device(device_type_)){
 
   m_params = params;
   m_log->info("[MetatomicPotential] Initializing...");
@@ -54,10 +55,11 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   if (!m_params->metatomic_options.device.empty()) {
     desired = m_params->metatomic_options.device;
   }
-  device_ = metatomic_torch::pick_device(this->capabilities_->supported_devices,
-                                         desired);
+  device_type_ = metatomic_torch::pick_device(
+      this->capabilities_->supported_devices, desired);
 
-  m_log->info("[MetatomicPotential] Using device: {}", this->device_.c_str());
+  device_ = torch::Device(device_type_);
+  m_log->info("[MetatomicPotential] Using device: {}", device_.str());
 
   this->model_.to(this->device_);
 
