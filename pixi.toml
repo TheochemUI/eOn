@@ -54,7 +54,7 @@ platforms = ["linux-64", "osx-arm64"]
 
 [feature.metatomic.pypi-dependencies]
 torch = ">=2.8, <2.9"
-metatomic-torch = ">=0.1, <0.2"
+metatomic-torch = ">=0.1.7, <0.2"
 metatensor-torch = ">=0.8.1, <0.9"
 metatensor = ">=0.2, <0.3"
 vesin-torch = ">=0.4, <0.5"
