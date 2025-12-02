@@ -133,12 +133,8 @@ eigen_dep = dependency(
 )
 _deps += [eigen_dep]
 
-fmt_dep = dependency('fmt', required: true)
-_deps += fmt_dep
-
 spdlog_dep = dependency('spdlog', required: true)
 _deps += spdlog_dep
-_args += ['-DSPDLOG_FMT_EXTERNAL']
 
 eoncbase_sources = ['INIFile.cpp', 'fpe_handler.cpp']
 
@@ -401,16 +397,10 @@ if get_option('with_metatomic')
     LIB_TORCH_LIB_PATH = LIB_TORCH_PATH / 'lib'
     LIB_TORCH_INCL_PATH = LIB_TORCH_PATH / 'include'
     LIB_TORCH_INCL_PATH_API = LIB_TORCH_INCL_PATH / 'torch' / 'csrc' / 'api' / 'include'
-    LIB_TORCH_INCL_PATH_ATEN = LIB_TORCH_INCL_PATH / 'ATen'
-    LIB_TORCH_INCL_PATH_C10 = LIB_TORCH_INCL_PATH / 'c10'
-    LIB_TORCH_INCL_PATH_C10_UTIL = LIB_TORCH_INCL_PATH / 'c10' / 'util'
 
     LIB_TORCH_INCLUDE_LIST = [
         LIB_TORCH_INCL_PATH,
         LIB_TORCH_INCL_PATH_API,
-        LIB_TORCH_INCL_PATH_ATEN,
-        LIB_TORCH_INCL_PATH_C10,
-        LIB_TORCH_INCL_PATH_C10_UTIL,
     ]
 
 
@@ -420,9 +410,16 @@ if get_option('with_metatomic')
         tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
     endforeach
 
+    torch_inc_args = []
+    foreach d : LIB_TORCH_INCLUDE_LIST
+      # Reduce the priority of each
+       torch_inc_args += ['-isystem', d]
+    endforeach
+
     torch_deps = declare_dependency(
         dependencies: tdeps,
-        include_directories: include_directories(LIB_TORCH_INCLUDE_LIST),
+        # Use compile arguments for -isystem
+        compile_args: torch_inc_args,
     )
 
     if get_option('pip_metatomic')
