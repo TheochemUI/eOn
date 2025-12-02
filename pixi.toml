@@ -23,8 +23,8 @@ pipx = ">=1.7.1,<2"
 numpy = ">=2.3.0,<3"
 compilers = ">=1.9.0,<2"
 gfortran = ">=13.3.0,<13.4"
-fmt = ">=11.1.4,<12"
-spdlog = ">=1.15.3,<2"
+fmt = ">=12,<13"
+spdlog = ">=1.16,<2"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
@@ -119,7 +119,7 @@ python -m http.server -d html
 """
 
 [feature.release.dependencies]
-eon = "*"
+# eon = "*"
 
 [feature.metatomic.tasks.mkeon]
 args = ["buildtype"]
