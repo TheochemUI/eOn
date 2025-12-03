@@ -17,7 +17,6 @@ and updating to newer `metatomic` and `vesin` APIs.
 :maxdepth: 2
 :caption: Contents
 
-changelog
 release-notes
 publications
 ```

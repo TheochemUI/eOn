@@ -86,7 +86,7 @@ license was changed to GNU GPL v2.  Since 2020, eOn is licensed under the BSD
 3-Clause License. Some more context is at
 [gh-140](https://github.com/TheochemUI/eOn/issues/140).
 
-#### Footnotes
+### Footnotes
 
 [^1]: [IRA](https://mammasmias.github.io/IterativeRotationsAssignments/intro.html) has also been used in tandem with eOn for research in 2024-2025
 

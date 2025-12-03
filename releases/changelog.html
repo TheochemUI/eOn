@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-12-01T22:26:37+00:00" />
+    <meta property="article:modified_time" content="2025-12-03T16:24:52+00:00" />
     <title>Changelog &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="Releases" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Dec 01, 2025"/>
+    <meta name="docbuild:last-update" content="Dec 03, 2025"/>
   </head>
   
   
@@ -197,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/ase_pot.html">ASE Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/quip.html">QUIP with LAMMPS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/main.html">General Simulation Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
@@ -426,7 +427,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -442,6 +445,35 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-8-2-2025-12-01">v2.8.2 - 2025-12-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developer">Developer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-8-1-2025-11-03">v2.8.1 - 2025-11-03</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">2.8.0 - 2025-09-04</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Developer</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#build-tooling">Build &amp; Tooling</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#code-quality-refactoring">Code Quality &amp; Refactoring</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -453,6 +485,175 @@ document.write(`
                   
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h1>
+<section id="v2-8-2-2025-12-01">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/v2.8.2">v2.8.2</a> - 2025-12-01<a class="headerlink" href="#v2-8-2-2025-12-01" title="Link to this heading">#</a></h2>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Metatomic is now uncertainity aware</p></li>
+<li><p>Metatomic variance reports per-atom uncertainity mean</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Reworked metatomic to use torch 2.9</p></li>
+</ul>
+</section>
+<section id="developer">
+<h3>Developer<a class="headerlink" href="#developer" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Update to use <code class="docutils literal notranslate"><span class="pre">metatensor_torch::Module</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">metatomic::pick_device</span></code> correctly</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-8-1-2025-11-03">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/v2.8.1">v2.8.1</a> - 2025-11-03<a class="headerlink" href="#v2-8-1-2025-11-03" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3>Added<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Enable minimization for given initial paths</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Changed<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Reworked metatomic to use torch 2.8</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Generate neb.dat correctly without clobbering neb_000.dat</p></li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2><a class="reference external" href="https://github.com/theochemui/eongit/tree/2.8.0">2.8.0</a> - 2025-09-04<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h3>Added<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Potentials &amp; Interfaces</strong></p>
+<ul>
+<li><p>Expanded potential interfaces to a variety of new quantum chemistry and ML
+potentials via an embedded Python interpreter:</p>
+<ul>
+<li><p><strong>NWChem</strong>: A high-performance, socket-based interface.
+(<a class="reference external" href="https://github.com/theochemui/eongit/issues/244">#244</a>)</p></li>
+<li><p><strong>ORCA</strong>: Interface to the ORCA quantum chemistry program via ASE.</p></li>
+<li><p><strong>AMS</strong>: Interface for the Amsterdam Modeling Suite.</p></li>
+<li><p><strong>XTB</strong>: Interface for semi-empirical GFN-xTB methods.</p></li>
+<li><p><strong>ASE</strong>: A general-purpose interface to any calculator supported by
+the Atomic Simulation Environment.</p></li>
+</ul>
+</li>
+<li><p>Added the Ziegler-Biersack-Littmark (ZBL) universal screening potential,
+useful for collision cascade simulations.
+(<a class="reference external" href="https://github.com/theochemui/eongit/issues/241">#241</a>)</p></li>
+<li><p>Integrated support for <code class="docutils literal notranslate"><span class="pre">metatomic</span></code> machine-learned potentials via the
+<code class="docutils literal notranslate"><span class="pre">vesin</span></code> library, enabling high-performance simulations with models from
+the metatensor ecosystem.
+(<a class="reference external" href="https://github.com/theochemui/eongit/issues/201">#201</a>)</p></li>
+</ul>
+</li>
+<li><p><strong>Nudged Elastic Band (NEB)</strong></p>
+<ul>
+<li><p>NEB calculations can now pre-optimize the initial and final states,
+improving path quality and convergence. This feature is fully compatible
+with restarts. (<a class="reference external" href="https://github.com/theochemui/eongit/issues/221">#221</a>)</p></li>
+<li><p>NEB calculations can now be initialized from a user-provided sequence of
+structures, offering greater control over the initial reaction pathway.</p></li>
+<li><p>Introduced energy-weighted springs to improve the stability and quality of
+paths with high energy barriers.</p></li>
+<li><p>Enabled the use of dual optimizers (e.g., a starting with QuickMin and
+switching to LBFGS after a convergence threshold).</p></li>
+<li><p>Implement the novel RO-NEB-CI (Rohit’s Optimal NEB with MMF CI steps)
+method (<a class="reference external" href="https://github.com/theochemui/eongit/issues/239">#239</a>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id5">
+<h3>Developer<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Consistent formatting and counting</p></li>
+<li><p>Support for M1 MacOS machines</p></li>
+</ul>
+<section id="build-tooling">
+<h4>Build &amp; Tooling<a class="headerlink" href="#build-tooling" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Build System</strong></p>
+<ul>
+<li><p>Overhauled the build system, migrating from legacy Makefiles/CMake to
+<strong>Meson</strong> for a faster, more reliable, and truly cross-platform build
+experience. This change also lays the groundwork for a future pure Python
+<code class="docutils literal notranslate"><span class="pre">eon-server</span></code> package.
+(<a class="reference external" href="https://github.com/theochemui/eongit/issues/124">#124</a>)</p></li>
+</ul>
+</li>
+<li><p><strong>Dependency Management</strong></p>
+<ul>
+<li><p>Adopted <code class="docutils literal notranslate"><span class="pre">pixi</span></code> and <code class="docutils literal notranslate"><span class="pre">conda-lock</span></code> for robust, reproducible dependency
+management across all platforms.</p></li>
+</ul>
+</li>
+<li><p><strong>Cross-Platform Support &amp; CI</strong></p>
+<ul>
+<li><p>Established a full Continuous Integration (CI) pipeline, testing on Linux,
+Windows, and macOS (Intel &amp; Apple Silicon).</p></li>
+<li><p>The Command Line Interface (CLI) is now fully compatible with Windows
+environments.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="code-quality-refactoring">
+<h4>Code Quality &amp; Refactoring<a class="headerlink" href="#code-quality-refactoring" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>C++ Modernization</strong></p>
+<ul>
+<li><p>Modernized the C++ backend to the C++17 standard, improving code clarity
+and performance.</p></li>
+<li><p>Enhanced memory safety by replacing raw pointers with smart pointers
+(<code class="docutils literal notranslate"><span class="pre">std::unique_ptr</span></code>, <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>).</p></li>
+<li><p>Adopted the <code class="docutils literal notranslate"><span class="pre">&lt;filesystem&gt;</span></code> library for platform-independent file I/O.</p></li>
+</ul>
+</li>
+<li><p><strong>Logging</strong></p>
+<ul>
+<li><p>Replaced the internal logging system with <code class="docutils literal notranslate"><span class="pre">spdlog</span></code> for high-performance,
+asynchronous, and more informative configurable output.</p></li>
+</ul>
+</li>
+<li><p><strong>Code Style</strong></p>
+<ul>
+<li><p>Enforced a consistent code style and formatting across the entire C++ and
+Python codebase.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="documentation">
+<h4>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Configuration &amp; Schema</strong></p>
+<ul>
+<li><p>Implemented a comprehensive <strong>Pydantic schema</strong> for all configuration
+files, providing automatic input validation and clear error messages. This
+forms the foundation for automated API documentation.</p></li>
+</ul>
+</li>
+<li><p><strong>User Guides</strong></p>
+<ul>
+<li><p>Added detailed user documentation for the Nudged Elastic Band (NEB)
+module, covering theory, keywords, and practical examples.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
 </section>
 
 
@@ -491,6 +692,42 @@ document.write(`
             
             
               
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-8-2-2025-12-01">v2.8.2 - 2025-12-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developer">Developer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-8-1-2025-11-03">v2.8.1 - 2025-11-03</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">2.8.0 - 2025-09-04</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Developer</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#build-tooling">Build &amp; Tooling</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#code-quality-refactoring">Code Quality &amp; Refactoring</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
             
           </div>
           <footer class="bd-footer-content">
@@ -519,7 +756,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Dec 01, 2025.
+  Last updated on Dec 03, 2025.
   <br/>
 </p>
   </div>
