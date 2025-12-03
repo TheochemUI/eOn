@@ -34,7 +34,10 @@ jobs:
       - name: Generate Docs
         shell: pixi run bash -e {0}
         run: |
-          pixi r makedocs
+          pixi s
+          uvx pdm sync
+          uvx pdm run pip install . -vvv
+          uvx pdm run sphinx-build -b html docs/source docs/build/html
 
       - name: Deploy
         if: github.event_name == 'push'
