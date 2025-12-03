@@ -12,17 +12,6 @@ dependencies = [
 requires-python = ">=3.11"
 # readme = "readme.md"
 license = {text = "MIT"}
-
-[build-system]
-requires = ["meson-python", "numpy"]
-build-backend = "mesonpy"
-
-[tool.meson-python.args]
-setup = [
-    '-Dwrap_mode=forcefallback',
-]
-install = ['--skip-subprojects']
-dist = ['--include-subprojects']
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
@@ -44,6 +33,17 @@ classifiers = [
     "Operating System :: MacOS",
 ]
 
+[build-system]
+requires = ["meson-python", "numpy"]
+build-backend = "mesonpy"
+
+[tool.meson-python.args]
+setup = [
+    '-Dwrap_mode=forcefallback',
+]
+install = ['--skip-subprojects']
+dist = ['--include-subprojects']
+
 
 [tool.pdm]
 distribution = true
@@ -57,6 +57,21 @@ testing = [
     "pytest>=8.3.2",
     "pytest-datadir>=1.5.0",
 ]
+extras = [
+    "ase>=3.23.0",
+]
+
+[tool.pdm.scripts]
+check_ruff  = "ruff check ."
+ruff_fix    = "ruff --fix --unsafe-fixes ."
+ruff_format = "ruff format ."
+lint        = { composite = [ "ruff_fix", "ruff_format" ] }
+test        = "pytest --cov=src tests"
+mkdoc = {composite = ["sphinx-build -b html docs/source docs/build/html"]}
+[project.scripts]
+eon-server = "eon.main:main"
+
+[dependency-groups]
 docs = [
     "sphinx>=7.3.7",
     "sphinx-contributors>=0.2.7",
@@ -72,17 +87,5 @@ docs = [
     "mdit-py-plugins>0.3.4",
     "sphinxcontrib-bibtex>=2.6.2",
     "autodoc-pydantic>=2.0.0",
+    "sphinx-sitemap>=2.9.0",
 ]
-extras = [
-    "ase>=3.23.0",
-]
-
-[tool.pdm.scripts]
-check_ruff  = "ruff check ."
-ruff_fix    = "ruff --fix --unsafe-fixes ."
-ruff_format = "ruff format ."
-lint        = { composite = [ "ruff_fix", "ruff_format" ] }
-test        = "pytest --cov=src tests"
-mkdoc = {composite = ["sphinx-build -b html docs/source docs/build/html"]}
-[project.scripts]
-eon-server = "eon.main:main"
