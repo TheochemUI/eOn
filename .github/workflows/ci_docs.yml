@@ -6,9 +6,12 @@ concurrency:
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    tags: ["*"]
   pull_request:
+    # Check all PR
+  schedule:
+    - cron: '0 8 * * 1' # run every Monday at 8am UTC
 
 jobs:
   build_docs:
@@ -19,6 +22,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: prefix-dev/setup-pixi@v0.8.10
         with:
@@ -49,4 +54,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./html
+          publish_dir: docs/build/html/
