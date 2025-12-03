@@ -34,7 +34,6 @@ jobs:
       - name: Generate Docs
         shell: pixi run bash -e {0}
         run: |
-          pixi s
           uvx pdm sync
           uvx pdm run pip install . -vvv
           uvx pdm run sphinx-build -b html docs/source docs/build/html
