@@ -107,8 +107,12 @@ sphinx-sitemap = ">=2.8.0,<3"
 [feature.docs.pypi-dependencies]
 sphinx-contributors = "*"
 
-[feature.docs.tasks]
-makedocs = "sphinx-build -b html docs/source html"
+[feature.docs.tasks.makedocs]
+cmd = """
+uvx pdm sync &&
+uvx pdm run pip install . -vvv &&
+uvx pdm run sphinx-build -b html docs/source html
+"""
 
 [feature.docs.tasks.srvdocs]
 depends-on = [
