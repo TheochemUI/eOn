@@ -40,7 +40,6 @@ this version:
 :maxdepth: 2
 :caption: Contents
 
-changelog
 release-notes
 publications
 ```
