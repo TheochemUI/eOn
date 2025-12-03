@@ -88,32 +88,6 @@ pybind11 = ">=3.0.0,<4"
 [feature.nwchem.pypi-dependencies]
 psutil = ">=7.0.0, <8"
 
-[feature.docs.dependencies]
-myst-parser = "*"
-sphinx = "*"
-sphinx-copybutton = "*"
-sphinx-design = "*"
-sphinx-autobuild = "*"
-sphinxcontrib-spelling = "*"
-sphinx-autodoc2 = "*"
-sphinx-book-theme = "*"
-sphinx-togglebutton = "*"
-sphinx-favicon = "*"
-mdit-py-plugins = "*"
-sphinxcontrib-bibtex = "*"
-autodoc-pydantic = "*"
-sphinx-sitemap = ">=2.8.0,<3"
-
-[feature.docs.pypi-dependencies]
-sphinx-contributors = "*"
-
-[feature.docs.tasks.makedocs]
-cmd = """
-uvx pdm sync &&
-uvx pdm run pip install . -vvv &&
-uvx pdm run sphinx-build -b html docs/source html
-"""
-
 [feature.docs.tasks.srvdocs]
 depends-on = [
   { task = "makedocs", environment = "docs" },
