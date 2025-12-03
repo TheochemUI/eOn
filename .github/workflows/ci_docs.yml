@@ -28,10 +28,21 @@ jobs:
           environments: >-
             docs
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
       - name: Generate Docs
         shell: pixi run bash -e {0}
         run: |
-          pixi r makedocs
+          uvx pdm sync
+          uvx pdm run pip install . -vvv
+          uvx pdm run sphinx-build -b html docs/source docs/build/html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: docs/build/html/
 
       - name: Deploy
         if: github.event_name == 'push'

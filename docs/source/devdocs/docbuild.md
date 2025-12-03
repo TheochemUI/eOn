@@ -34,10 +34,10 @@ To facilitate interactions with `pdm`,
 
 ```{code-block} bash
 # Setup dependencies
-uvx run pdm sync
+uvx pdm sync
 # Need to install for autodoc-pydantic
-uvx run pdm run pip install . -vvv
-uvx run pdm run sphinx-build -b html docs/source docs/build/html
+uvx pdm run pip install . -vvv
+uvx pdm run sphinx-build -b html docs/source docs/build/html
 ```
 
 This can be viewed locally with an HTTP server.
@@ -64,7 +64,7 @@ The following sections detail methods to add functionality to the documentation.
 Additions to the build process are handled by the `pdm` development group `docs`, so additions are done via:
 
 ```{code-block} bash
-uvx run pdm add -dG docs "sphinxcontrib-bibtex"
+uvx pdm add -dG docs "sphinxcontrib-bibtex"
 ```
 
 ## Adding citations
