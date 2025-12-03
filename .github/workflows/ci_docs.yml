@@ -28,6 +28,9 @@ jobs:
           environments: >-
             docs
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
       - name: Generate Docs
         shell: pixi run bash -e {0}
         run: |
