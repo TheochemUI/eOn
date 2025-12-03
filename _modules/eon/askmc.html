@@ -1,0 +1,1127 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eon.askmc &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eon/askmc';</script>
+    <link rel="canonical" href="https://eondocs.org/_modules/eon/askmc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for eon.askmc</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;askmc&#39;</span><span class="p">)</span>
+
+<span class="n">ID</span><span class="p">,</span> <span class="n">ENERGY</span><span class="p">,</span> <span class="n">PREFACTOR</span><span class="p">,</span> <span class="n">PRODUCT</span><span class="p">,</span> <span class="n">PRODUCT_ENERGY</span><span class="p">,</span> <span class="n">PRODUCT_PREFACTOR</span><span class="p">,</span> <span class="n">BARRIER</span><span class="p">,</span> <span class="n">RATE</span><span class="p">,</span> <span class="n">REPEATS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">))</span>
+<span class="n">processtable_head_fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%7s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%11s</span><span class="s2"> </span><span class="si">%9s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%17s</span><span class="s2"> </span><span class="si">%8s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%7s</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">mod_processtable_head_fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%7s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%11s</span><span class="s2"> </span><span class="si">%9s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%17s</span><span class="s2"> </span><span class="si">%8s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%12s</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">processtable_header</span> <span class="o">=</span> <span class="n">processtable_head_fmt</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;proc #&quot;</span><span class="p">,</span> <span class="s2">&quot;saddle energy&quot;</span><span class="p">,</span> <span class="s2">&quot;prefactor&quot;</span><span class="p">,</span> <span class="s2">&quot;product&quot;</span><span class="p">,</span> <span class="s2">&quot;product energy&quot;</span><span class="p">,</span> <span class="s2">&quot;product prefactor&quot;</span><span class="p">,</span> <span class="s2">&quot;barrier&quot;</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">,</span> <span class="s2">&quot;repeats&quot;</span><span class="p">)</span>
+<span class="n">mod_processtable_header</span> <span class="o">=</span> <span class="n">processtable_head_fmt</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;proc #&quot;</span><span class="p">,</span> <span class="s2">&quot;saddle energy&quot;</span><span class="p">,</span> <span class="s2">&quot;prefactor&quot;</span><span class="p">,</span> <span class="s2">&quot;product&quot;</span><span class="p">,</span> <span class="s2">&quot;product energy&quot;</span><span class="p">,</span> <span class="s2">&quot;product prefactor&quot;</span><span class="p">,</span> <span class="s2">&quot;barrier&quot;</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">,</span> <span class="s2">&quot;view count&quot;</span><span class="p">)</span>
+<span class="n">processtable_line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%7d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="s2"> </span><span class="si">%11.5e</span><span class="s2"> </span><span class="si">%9d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="s2"> </span><span class="si">%17.5e</span><span class="s2"> </span><span class="si">%8.5f</span><span class="s2"> </span><span class="si">%12.5e</span><span class="s2"> </span><span class="si">%7d</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+
+<div class="viewcode-block" id="ASKMC">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ASKMC</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This is a class to keep track of things associated with</span>
+<span class="sd">        performing the Chatterjee &amp; Voter accelerated superbasin KMC method. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kT</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">barrier_test_on</span><span class="p">,</span> <span class="n">connection_test_on</span><span class="p">,</span> <span class="n">sb_recycling_on</span><span class="p">,</span> <span class="n">path_root</span><span class="p">,</span> <span class="n">thermal_window</span><span class="p">,</span> <span class="n">recycle_path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kT</span> <span class="o">=</span> <span class="n">kT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Beta</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">kT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_on</span> <span class="o">=</span> <span class="n">sb_recycling_on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path_root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thermal_window</span> <span class="o">=</span> <span class="n">thermal_window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recycle_path</span> <span class="o">=</span> <span class="n">recycle_path</span>
+
+        <span class="c1"># --- Defining the &quot;acceleration&quot; parameters ---</span>
+
+        <span class="c1"># &quot;delta&quot; is more or less a measure of maximum error encountered as a result of using this method.</span>
+        <span class="c1"># Smaller values of delta correspond to higher assurance that the superbasin exiting will be correct</span>
+        <span class="c1">#  with respect to exit time and direction (and smaller computational speed-up).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">confidence</span><span class="p">)</span>
+        <span class="c1"># alpha is the factor by which the rate constants are lowered when the superbasin criterion is passed.</span>
+        <span class="c1"># In general Chatterjee &amp; Voter found 2 to be an acceptable value, but if there are &quot;overlapping timescales&quot;,</span>
+        <span class="c1"># it should be less than the square root of gamma.</span>
+        <span class="c1"># Default in the config:  1.5.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="c1"># gamma determines what is a &quot;high&quot; barrier in the superbasin criterion.</span>
+        <span class="c1"># Chatterjee and Voter found 2 to be an acceptable value.</span>
+        <span class="c1"># Default in the config:  2.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
+        <span class="c1"># Nf is the number of times to have seen a process before performing the superbasin criterion.</span>
+        <span class="c1"># This comes from eq. 10 from the Chatterjee &amp; Voter paper.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nf</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
+
+        <span class="c1"># --- Extra check(s) on the superbasin criterion? ---</span>
+
+        <span class="c1"># &quot;checksb_barriers&quot; will check to see if there are any low-barrier, unvisited processes</span>
+        <span class="c1"># originating from states in the superbasin.</span>
+        <span class="c1"># Default in the config:  On</span>
+        <span class="k">if</span> <span class="n">barrier_test_on</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checksb_barriers</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checksb_barriers</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># &quot;checksb_connections&quot; will implement a method to determine whether there are any missed</span>
+        <span class="c1"># connections between states identified as &quot;in the superbasin&quot;.</span>
+        <span class="c1"># Default in the config:  Off</span>
+        <span class="k">if</span> <span class="n">connection_test_on</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checksb_connections</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checksb_connections</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">sb_recycling_on</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_on</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_on</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="ASKMC.compile_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.compile_process_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compile_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Load the normal process table, and replace all the rates edited by AS-KMC. &quot;&quot;&quot;</span>
+        <span class="n">current_state_procs_compiled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_real_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+        <span class="n">current_state_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_mod_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">current_state_procs_compiled</span><span class="p">[</span><span class="n">process_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># An exception is raised:</span>
+                <span class="c1"># If the process is somehow in the modified process list, but it&#39;s not</span>
+                <span class="c1"># in the normal list, there&#39;s a problem.</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Somehow the modified process table has a process that</span><span class="se">\</span>
+<span class="s2">                    the &#39;comprehensive&#39; process list does not.  That&#39;s a problem...&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">current_state_procs_compiled</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.get_ratetable">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.get_ratetable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Generate a rate table according to the kT and thermal_window. &quot;&quot;&quot;</span>
+        <span class="n">current_state_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+        <span class="c1"># Find the lowest barrier process for the state.</span>
+        <span class="n">lowest</span> <span class="o">=</span> <span class="mf">1e300</span>
+        <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">barrier</span> <span class="o">=</span> <span class="n">current_state_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;barrier&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">barrier</span> <span class="o">&lt;</span> <span class="n">lowest</span><span class="p">:</span>
+                <span class="n">lowest</span> <span class="o">=</span> <span class="n">barrier</span>
+        <span class="c1"># Make the rate table.</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">proc</span> <span class="o">=</span> <span class="n">current_state_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">proc</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lowest</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">thermal_window</span><span class="p">):</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">process_id</span><span class="p">,</span> <span class="n">proc</span><span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.get_askmc_metadata">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.get_askmc_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_askmc_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Check to see if the AS-KMC data has been saved.</span>
+<span class="sd">            If it hasn&#39;t, simply use the correct starting values.</span>
+<span class="sd">            Otherwise, read the current values. &quot;&quot;&quot;</span>
+        <span class="c1"># &quot;sb_check_count&quot; is a method to reduce the wasteful calls of working through the superbasin criterion.</span>
+        <span class="c1"># Rather than checking (calling raiseup) each time a process is seen more than Nf times (see register_transition),</span>
+        <span class="c1"># it is checked when a process is seen more than (2^sb_check_count)*Nf times with sb_check_count starting at 0</span>
+        <span class="c1"># and increasing by one each time the superbasin criterion fails.</span>
+        <span class="c1"># In order to keep track of it, it will be written to disk, along with &quot;num_rate_changes&quot;.</span>
+        <span class="c1"># &quot;num_rate_changes&quot; keeps up with how many times barriers were raised in the entire simulation.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;askmc_data.txt&quot;</span><span class="p">)):</span>
+            <span class="n">sb_check_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">num_rate_changes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fi</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;askmc_data.txt&quot;</span><span class="p">),</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">sb_check_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">num_rate_changes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">sb_check_count</span><span class="p">,</span> <span class="n">num_rate_changes</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.save_askmc_metadata">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.save_askmc_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_askmc_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sb_check_count</span><span class="p">,</span> <span class="n">num_rate_changes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Save the current values of the AS-KMC data. &quot;&quot;&quot;</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;askmc_data.txt&quot;</span><span class="p">),</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[Info for the Chatterjee &amp; Voter AS-KMC method]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;sb_check_count = </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sb_check_count</span><span class="p">))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;num_rate_changes = </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num_rate_changes</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.get_real_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.get_real_process_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_real_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the real process table. &quot;&quot;&quot;</span>
+        <span class="n">current_state</span><span class="o">.</span><span class="n">load_process_table</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">current_state</span><span class="o">.</span><span class="n">procs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.get_modified_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.get_modified_process_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_modified_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the table of modified processes. If it doesn&#39;t exist yet, it&#39;s hopefully because the system is in the first state.</span>
+<span class="sd">            These will be &quot;substituted&quot; in place of their corresponding rates in the normal rate table. &quot;&quot;&quot;</span>
+        <span class="n">mod_proctable_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;askmc_processtable&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mod_proctable_path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">fi</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">mod_proctable_path</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">fi</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">procs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">procs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">ID</span><span class="p">])]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">:</span>     <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">ENERGY</span><span class="p">]),</span>
+                                 <span class="s2">&quot;prefactor&quot;</span><span class="p">:</span>         <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">PREFACTOR</span><span class="p">]),</span>
+                                 <span class="s2">&quot;product&quot;</span><span class="p">:</span>           <span class="nb">int</span>  <span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">PRODUCT</span><span class="p">]),</span>
+                                 <span class="s2">&quot;product_energy&quot;</span><span class="p">:</span>    <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">PRODUCT_ENERGY</span><span class="p">]),</span>
+                                 <span class="s2">&quot;product_prefactor&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">PRODUCT_PREFACTOR</span><span class="p">]),</span>
+                                 <span class="s2">&quot;barrier&quot;</span><span class="p">:</span>           <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">BARRIER</span><span class="p">]),</span>
+                                 <span class="s2">&quot;rate&quot;</span><span class="p">:</span>              <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">RATE</span><span class="p">]),</span>
+                                 <span class="s2">&quot;view_count&quot;</span><span class="p">:</span>        <span class="nb">int</span>  <span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">REPEATS</span><span class="p">])}</span>
+        <span class="k">return</span> <span class="n">procs</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.save_modified_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.save_modified_process_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_modified_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">current_state_mod_procs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Write the modified process table for the current state to disk. &quot;&quot;&quot;</span>
+        <span class="n">mod_proctable_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;askmc_processtable&quot;</span><span class="p">)</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">mod_proctable_path</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mod_processtable_header</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_mod_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">proc</span> <span class="o">=</span> <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">]</span>
+            <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">processtable_line</span> <span class="o">%</span> <span class="p">(</span><span class="n">process_id</span><span class="p">,</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;saddle_energy&#39;</span><span class="p">],</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">],</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">],</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product_energy&#39;</span><span class="p">],</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product_prefactor&#39;</span><span class="p">],</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">],</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span>
+                                         <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;view_count&#39;</span><span class="p">]))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.append_modified_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.append_modified_process_table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_modified_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">process_id</span><span class="p">,</span> <span class="n">saddle_energy</span><span class="p">,</span> <span class="n">prefactor</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">product_energy</span><span class="p">,</span> <span class="n">product_prefactor</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">view_count</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Append a single line to the modified process table on disk. &quot;&quot;&quot;</span>
+        <span class="n">mod_proctable_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span><span class="s2">&quot;askmc_processtable&quot;</span><span class="p">)</span>
+        <span class="c1"># If the file doesn&#39;t exist yet, save a ready copy with the header.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mod_proctable_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_modified_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">mod_proctable_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">processtable_line</span> <span class="o">%</span> <span class="p">(</span><span class="n">process_id</span><span class="p">,</span> <span class="n">saddle_energy</span><span class="p">,</span> <span class="n">prefactor</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">product_energy</span><span class="p">,</span> <span class="n">product_prefactor</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">view_count</span><span class="p">))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.get_process_id">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.get_process_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_process_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state_procs</span><span class="p">,</span> <span class="n">next_state_num</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the process id of the process going from the current state</span>
+<span class="sd">            to the next state (number). &quot;&quot;&quot;</span>
+        <span class="c1"># If in &quot;try&quot; mode, return &quot;None&quot; if there is no process from current_state to next_state_num.</span>
+        <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;try&quot;</span><span class="p">:</span>
+            <span class="n">next_state_process_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">current_state_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;product&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">next_state_num</span><span class="p">:</span>
+                    <span class="n">next_state_process_id</span> <span class="o">=</span> <span class="n">process_id</span>
+                    <span class="k">break</span>
+        <span class="c1"># If in &quot;find&quot; mode, an exception will be raised if the next_state_num is never found.</span>
+        <span class="k">elif</span> <span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;find&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">current_state_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;product&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">next_state_num</span><span class="p">:</span>
+                    <span class="n">next_state_process_id</span> <span class="o">=</span> <span class="n">process_id</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">next_state_process_id</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.register_transition">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.register_transition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">next_state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Whenever there is a move (in KMC), update the view_count, and potentially</span>
+<span class="sd">            lower rate constants and raise the corresponding transition state energies.</span>
+<span class="sd">            If superbasin recycling is on, and a superbasin has just been exited from,</span>
+<span class="sd">            Perform the superbasin recycling. &quot;&quot;&quot;</span>
+        <span class="c1"># If for some reason, there wasn&#39;t actually a move, don&#39;t do anything.</span>
+        <span class="k">if</span> <span class="n">current_state</span> <span class="o">==</span> <span class="n">next_state</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">sb_check_count</span><span class="p">,</span> <span class="n">num_rate_changes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_askmc_metadata</span><span class="p">()</span>
+        <span class="n">current_state_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+        <span class="c1"># Determine if the process is new -- Try to find the process_id in the modified process table.</span>
+        <span class="n">next_state_process_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="n">current_state_mod_procs</span><span class="p">,</span> <span class="n">next_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="s2">&quot;try&quot;</span><span class="p">)</span>
+        <span class="c1"># If we&#39;ve never been along this path before, add it to our modified list</span>
+        <span class="k">if</span> <span class="n">next_state_process_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Find the find the process id from the real process table</span>
+            <span class="n">current_state_real_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_real_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+            <span class="n">next_state_process_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="n">current_state_real_procs</span><span class="p">,</span> <span class="n">next_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="s2">&quot;find&quot;</span><span class="p">)</span>
+            <span class="c1"># Get the info from the actual process table</span>
+            <span class="n">procs</span> <span class="o">=</span> <span class="n">current_state_real_procs</span><span class="p">[</span><span class="n">next_state_process_id</span><span class="p">]</span>
+            <span class="n">saddle_energy</span> <span class="o">=</span> <span class="n">procs</span><span class="p">[</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">]</span>
+            <span class="n">prefactor</span> <span class="o">=</span> <span class="n">procs</span><span class="p">[</span><span class="s2">&quot;prefactor&quot;</span><span class="p">]</span>
+            <span class="n">product</span> <span class="o">=</span> <span class="n">procs</span><span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">]</span>
+            <span class="n">product_energy</span> <span class="o">=</span> <span class="n">procs</span><span class="p">[</span><span class="s2">&quot;product_energy&quot;</span><span class="p">]</span>
+            <span class="n">product_prefactor</span> <span class="o">=</span> <span class="n">procs</span><span class="p">[</span><span class="s2">&quot;product_prefactor&quot;</span><span class="p">]</span>
+            <span class="n">barrier</span> <span class="o">=</span> <span class="n">procs</span><span class="p">[</span><span class="s2">&quot;barrier&quot;</span><span class="p">]</span>
+            <span class="n">rate</span> <span class="o">=</span> <span class="n">procs</span><span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_modified_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">next_state_process_id</span><span class="p">,</span> <span class="n">saddle_energy</span><span class="p">,</span> <span class="n">prefactor</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">product_energy</span><span class="p">,</span> <span class="n">product_prefactor</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Otherwise it&#39;s been seen before, and one simply needs to be added to the view_count</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">next_state_process_id</span><span class="p">][</span><span class="s2">&quot;view_count&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_modified_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">current_state_mod_procs</span><span class="p">)</span>
+            <span class="c1"># And if it&#39;s been seen enough, check for raising the barriers</span>
+            <span class="c1"># in the potential superbasin</span>
+            <span class="k">if</span> <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">next_state_process_id</span><span class="p">][</span><span class="s2">&quot;view_count&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">sb_check_count</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Nf</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">raiseup</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">sb_check_count</span><span class="p">,</span> <span class="n">num_rate_changes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.in_array">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.in_array">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">in_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Determine whether two arrays are equivalent.</span>
+<span class="sd">            Because of the use of numpy, the natural python &#39;in&#39; test does not work properly.  So this is a workaround.</span>
+<span class="sd">            &quot;test&quot; should be a 1Xn (1X2) list, and &quot;array&quot; should be a mXn (mX2) array. &quot;&quot;&quot;</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+        <span class="n">testvar</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+                <span class="n">testvar</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">testvar</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.is_equal">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.is_equal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Determine whether two floats are &#39;close&#39;. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-5</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.edgelist_to_statelist">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.edgelist_to_statelist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">edgelist_to_statelist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compile a list of state numbers from the current edgelist with no repeats. &quot;&quot;&quot;</span>
+        <span class="n">state_nums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">:</span>
+            <span class="n">ref_state_a_num</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ref_state_b_num</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ref_state_a_num</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state_nums</span><span class="p">:</span>
+                <span class="n">state_nums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_state_a_num</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ref_state_b_num</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state_nums</span><span class="p">:</span>
+                <span class="n">state_nums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_state_b_num</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">state_nums</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.missed_connections">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.missed_connections">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">missed_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origEtrans</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Determine whether or not there are low barrier processes which</span>
+<span class="sd">            connect states in the proposed superbasin which have been missed. &quot;&quot;&quot;</span>
+        <span class="c1"># testvar indicates whether or not a problem has arisen.</span>
+        <span class="c1"># A value of zero indicates &quot;all clear&quot;</span>
+        <span class="n">testvar</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Compile a list of the state *numbers* with no repeats.</span>
+        <span class="n">state_nums_in_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist_to_statelist</span><span class="p">()</span>
+        <span class="c1"># Make a list of state objects.</span>
+        <span class="n">states_in_basin</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_num</span><span class="p">)</span> <span class="k">for</span> <span class="n">state_num</span> <span class="ow">in</span> <span class="n">state_nums_in_basin</span><span class="p">]</span>
+        <span class="c1"># Convert all the &quot;-1&#39;s&quot; in the process tables to the correct</span>
+        <span class="c1"># product state number (if it&#39;s in the superbasin)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">connect_states</span><span class="p">(</span><span class="n">states_in_basin</span><span class="p">)</span>
+        <span class="c1"># See if any of the states have &quot;low-barrier&quot; processes</span>
+        <span class="c1"># to other states in the superbasin which haven&#39;t been caught</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">states_in_basin</span><span class="p">:</span>
+            <span class="n">state_real_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_real_process_table</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">state_real_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">product_state_num</span> <span class="o">=</span> <span class="n">state_real_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;product&quot;</span><span class="p">]</span>
+                <span class="c1"># If (1) the process goes somewhere in the basin, (2) it&#39;s not in the basin edgelist, and (3) it has a low barrier, that&#39;s bad.</span>
+                <span class="c1"># Note that the &quot;real&quot; process table may be used in this case because if it were in the &quot;modified&quot; process table,</span>
+                <span class="c1"># then this process *really* should have been caught in the &quot;locsearch&quot; function</span>
+                <span class="k">if</span> <span class="n">product_state_num</span> <span class="ow">in</span> <span class="n">state_nums_in_basin</span> \
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_array</span><span class="p">([</span><span class="n">product_state_num</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_array</span><span class="p">([</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">product_state_num</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">))</span> \
+                    <span class="ow">and</span> <span class="n">state_real_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">origEtrans</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">Beta</span><span class="p">:</span>
+                        <span class="n">testvar</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="k">return</span> <span class="n">testvar</span>
+        <span class="k">return</span> <span class="n">testvar</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.missed_low_barriers">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.missed_low_barriers">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">missed_low_barriers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origEtrans</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Determine whether or not there are low barrier processes originating</span>
+<span class="sd">            from any of the states in identified superbasin that *were missed*. &quot;&quot;&quot;</span>
+        <span class="c1"># testvar indicates whether or not a problem has arisen.</span>
+        <span class="c1"># A value of zero indicates &quot;all clear&quot;</span>
+        <span class="n">testvar</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Compile a list of the state *numbers* with no repeats.</span>
+        <span class="n">state_nums_in_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist_to_statelist</span><span class="p">()</span>
+        <span class="c1"># Make a list of state objects from the basin.</span>
+        <span class="n">states_in_basin</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_num</span><span class="p">)</span> <span class="k">for</span> <span class="n">state_num</span> <span class="ow">in</span> <span class="n">state_nums_in_basin</span><span class="p">]</span>
+        <span class="c1"># See if any of the states have &quot;low-barrier&quot; processes from them which have not been seen.</span>
+        <span class="c1"># Only processes not in the modified list (unvisited processes) will be considered.</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">states_in_basin</span><span class="p">:</span>
+            <span class="n">state_real_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_real_process_table</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">state_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">mod_proc_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">process_id</span> <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">state_mod_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+            <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">state_real_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">process_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mod_proc_ids</span> <span class="ow">and</span> <span class="n">state_real_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">origEtrans</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">Beta</span><span class="p">:</span>
+                    <span class="n">testvar</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">return</span> <span class="n">testvar</span>
+        <span class="k">return</span> <span class="n">testvar</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.locsearch">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.locsearch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">locsearch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">origEtrans</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Act recursively to find if the superbasic criterion is met.</span>
+<span class="sd">            However, ---Note--- that in this implementation, not all neighbors are necessarily checked --</span>
+<span class="sd">            just those which have been seen so far (which is *probably* all low barrier processes in a superbasin).</span>
+<span class="sd">            This can be remedied by using the checksb_barriers option.</span>
+<span class="sd">            origEtrans should be transition state energy (eV) of the process initially used for the call.</span>
+<span class="sd">            Immediately before each call, self.welltest should be set to 1 and self.edgelist should be any 2X1 numpy array. &quot;&quot;&quot;</span>
+        <span class="c1"># &quot;self.welltest&quot; will serve as a flag to stop the search if it has failed.</span>
+        <span class="c1"># A value of 1 will indicate it has not yet failed.</span>
+        <span class="c1"># &quot;self.edgelist&quot; is the list of edges that have been examined.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">welltest</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">current_state_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+            <span class="c1"># scan all the neighbor states</span>
+            <span class="k">for</span> <span class="n">next_state_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_mod_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">next_state_num</span> <span class="o">=</span> <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">next_state_id</span><span class="p">][</span><span class="s2">&quot;product&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">welltest</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># If this process has not already been traversed (either direction),</span>
+                    <span class="c1"># and the barrier is considered &quot;low&quot;, its number of sightings (view_count),</span>
+                    <span class="c1"># in both the forward and backward direction will be checked.</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_array</span><span class="p">([</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">next_state_num</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_array</span><span class="p">([</span><span class="n">next_state_num</span><span class="p">,</span> <span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">))</span> \
+                        <span class="ow">and</span> <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">next_state_id</span><span class="p">][</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">origEtrans</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">Beta</span><span class="p">:</span>
+                            <span class="n">next_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">next_state_num</span><span class="p">)</span>
+                            <span class="n">next_state_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+                            <span class="c1"># Try to find the &quot;process_id&quot; of the current state relative to the next state</span>
+                            <span class="n">current_state_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="n">next_state_mod_procs</span><span class="p">,</span> <span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="s2">&quot;try&quot;</span><span class="p">)</span>
+                            <span class="c1"># If the number of sightings is below the cut-off, the superbasin criterion fails.</span>
+                            <span class="c1"># Both forward and backward reaction counts are checked.</span>
+                            <span class="k">if</span> <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">next_state_id</span><span class="p">][</span><span class="s2">&quot;view_count&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nf</span> <span class="ow">or</span> <span class="n">current_state_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">next_state_mod_procs</span><span class="p">[</span><span class="n">current_state_id</span><span class="p">][</span><span class="s2">&quot;view_count&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nf</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">welltest</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="c1"># Otherwise, add this process to &quot;edgelist&quot; to note it&#39;s been viewed, and continue the search</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">,[</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">next_state_num</span><span class="p">]))</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">locsearch</span><span class="p">(</span><span class="n">next_state</span><span class="p">,</span> <span class="n">origEtrans</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ASKMC.raiseup">
+<a class="viewcode-back" href="../../apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.raiseup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">raiseup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">sb_check_count</span><span class="p">,</span> <span class="n">num_rate_changes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Determine (with the aid of locsearch) if a superbasin is present.</span>
+<span class="sd">            If a superbasin is found to be present, raise the rate constants,</span>
+<span class="sd">            lower the saddle energies and the barriers, and save the states in the basin. &quot;&quot;&quot;</span>
+        <span class="c1"># Preparing for the &quot;locsearch&quot; function.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">welltest</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">sb_check_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">current_state_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+        <span class="c1"># Find the &quot;process_id&quot; of the next state</span>
+        <span class="n">next_state_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="n">current_state_mod_procs</span><span class="p">,</span> <span class="n">next_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="s2">&quot;find&quot;</span><span class="p">)</span>
+        <span class="n">origEtrans</span> <span class="o">=</span> <span class="n">current_state_mod_procs</span><span class="p">[</span><span class="n">next_state_id</span><span class="p">][</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">]</span>
+        <span class="c1"># Perform &quot;locsearch&quot; to determine if the current state is in a superbasin,</span>
+        <span class="c1"># and if so, the &quot;bottom&quot; of edgelist will be the contained states.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locsearch</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">origEtrans</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">welltest</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:]</span>
+            <span class="c1"># &quot;continue_flag&quot; will indicate if it is safe to proceed (in case one of the following tests is performed).</span>
+            <span class="n">continue_flag</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="c1"># If the extra check to find missed connections within the discovered superbasin is on,</span>
+            <span class="c1"># and the test indicates there was a missed process (returns 1), that&#39;s problematic.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksb_connections</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">missed_connections</span><span class="p">(</span><span class="n">origEtrans</span><span class="p">):</span>
+                <span class="c1"># NOTE - Matt/Rye, do you think this should be just something to log, or should it raise an exception?</span>
+                <span class="n">continue_flag</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Based on &#39;connections-check&#39;, default superbasin criterion apparently missed a barrier - Not raising the barriers&quot;</span><span class="p">)</span>
+            <span class="c1"># If the extra check to find missed low barriers from superbasin states is on,</span>
+            <span class="c1"># and the test indicates there was a missed low barrier (returns 1), that&#39;s problematic.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">checksb_barriers</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">missed_low_barriers</span><span class="p">(</span><span class="n">origEtrans</span><span class="p">):</span>
+                <span class="n">continue_flag</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Based on &#39;Barrier-check&#39;, default superbasin criterion apparently missed a barrier - Not raising the barriers&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">continue_flag</span><span class="p">:</span>
+                <span class="c1"># Reset the check count, because a barrier raise is being performed</span>
+                <span class="n">sb_check_count</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># Performing adjustments</span>
+                <span class="k">for</span> <span class="n">state_pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">:</span>
+                    <span class="c1"># The state numbers</span>
+                    <span class="n">state_a_num</span> <span class="o">=</span> <span class="n">state_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">state_b_num</span> <span class="o">=</span> <span class="n">state_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Raising barrier between states </span><span class="si">%d</span><span class="s1"> and </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">state_a_num</span><span class="p">,</span> <span class="n">state_b_num</span><span class="p">))</span>
+                    <span class="c1"># The state objects</span>
+                    <span class="n">state_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_a_num</span><span class="p">)</span>
+                    <span class="n">state_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_b_num</span><span class="p">)</span>
+                    <span class="c1"># The state process tables</span>
+                    <span class="n">state_a_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">state_a</span><span class="p">)</span>
+                    <span class="n">state_b_mod_procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_process_table</span><span class="p">(</span><span class="n">state_b</span><span class="p">)</span>
+                    <span class="c1"># The state energies</span>
+                    <span class="n">state_a_energy</span> <span class="o">=</span> <span class="n">state_a</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
+                    <span class="n">state_b_energy</span> <span class="o">=</span> <span class="n">state_b</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
+                    <span class="c1"># And the state process id&#39;s from the other&#39;s perspective</span>
+                    <span class="n">state_b_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="n">state_a_mod_procs</span><span class="p">,</span> <span class="n">state_b_num</span><span class="p">,</span> <span class="s2">&quot;find&quot;</span><span class="p">)</span>
+                    <span class="n">state_a_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="n">state_b_mod_procs</span><span class="p">,</span> <span class="n">state_a_num</span><span class="p">,</span> <span class="s2">&quot;find&quot;</span><span class="p">)</span>
+                    <span class="c1"># The new rates</span>
+                    <span class="n">a_b_new_rate</span> <span class="o">=</span> <span class="n">state_a_mod_procs</span><span class="p">[</span><span class="n">state_b_id</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+                    <span class="n">b_a_new_rate</span> <span class="o">=</span> <span class="n">state_b_mod_procs</span><span class="p">[</span><span class="n">state_a_id</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+                    <span class="c1"># The new saddle energies. Both calculated then compared for assurance</span>
+                    <span class="n">a_b_new_saddle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a_b_new_rate</span><span class="o">/</span><span class="n">state_a_mod_procs</span><span class="p">[</span><span class="n">state_b_id</span><span class="p">][</span><span class="s2">&quot;prefactor&quot;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">Beta</span><span class="p">)</span> <span class="o">+</span> <span class="n">state_a_energy</span>
+                    <span class="n">b_a_new_saddle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">b_a_new_rate</span><span class="o">/</span><span class="n">state_b_mod_procs</span><span class="p">[</span><span class="n">state_a_id</span><span class="p">][</span><span class="s2">&quot;prefactor&quot;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">Beta</span><span class="p">)</span> <span class="o">+</span> <span class="n">state_b_energy</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_equal</span><span class="p">(</span><span class="n">a_b_new_saddle</span><span class="p">,</span> <span class="n">b_a_new_saddle</span><span class="p">):</span>
+                        <span class="c1"># NOTE - this exception is primarily for ensuring proper functioning of the method.</span>
+                        <span class="c1"># If it&#39;s never raised, then only one of the above saddles needs to be calculated,</span>
+                        <span class="c1"># and this &quot;if&quot; clause may be removed. (Note that below, *_*_new_saddle must then be replaced)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;When recalculating saddle energies from changed rate constants,</span><span class="se">\</span>
+<span class="s2">                                        different saddle energies were obtained from the two direction&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;When recalculating saddle energies from changed rate constants,</span><span class="se">\</span>
+<span class="s2">                                         different saddle energies were obtained from the two directions!&quot;</span><span class="p">)</span>
+                    <span class="c1"># The new &quot;barrier&quot; values.</span>
+                    <span class="n">a_b_new_barrier</span> <span class="o">=</span> <span class="n">a_b_new_saddle</span> <span class="o">-</span> <span class="n">state_a_energy</span>
+                    <span class="n">b_a_new_barrier</span> <span class="o">=</span> <span class="n">b_a_new_saddle</span> <span class="o">-</span> <span class="n">state_b_energy</span>
+                    <span class="c1"># Saving the new data</span>
+                    <span class="n">state_a_mod_procs</span><span class="p">[</span><span class="n">state_b_id</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_b_new_rate</span>
+                    <span class="n">state_b_mod_procs</span><span class="p">[</span><span class="n">state_a_id</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_a_new_rate</span>
+                    <span class="n">state_a_mod_procs</span><span class="p">[</span><span class="n">state_b_id</span><span class="p">][</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_b_new_saddle</span>
+                    <span class="n">state_b_mod_procs</span><span class="p">[</span><span class="n">state_a_id</span><span class="p">][</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_a_new_saddle</span>
+                    <span class="n">state_a_mod_procs</span><span class="p">[</span><span class="n">state_b_id</span><span class="p">][</span><span class="s2">&quot;barrier&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_b_new_barrier</span>
+                    <span class="n">state_b_mod_procs</span><span class="p">[</span><span class="n">state_a_id</span><span class="p">][</span><span class="s2">&quot;barrier&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_a_new_barrier</span>
+                    <span class="n">state_a_mod_procs</span><span class="p">[</span><span class="n">state_b_id</span><span class="p">][</span><span class="s2">&quot;view_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">state_b_mod_procs</span><span class="p">[</span><span class="n">state_a_id</span><span class="p">][</span><span class="s2">&quot;view_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">save_modified_process_table</span><span class="p">(</span><span class="n">state_a</span><span class="p">,</span> <span class="n">state_a_mod_procs</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">save_modified_process_table</span><span class="p">(</span><span class="n">state_b</span><span class="p">,</span> <span class="n">state_b_mod_procs</span><span class="p">)</span>
+                <span class="c1"># If using super-basin recycling, write out the list of states that are present in this &#39;superbasin&#39;.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_on</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recycle_path</span><span class="p">):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recycle_path</span><span class="p">)</span>
+                    <span class="n">sb_data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recycle_path</span><span class="p">,</span> <span class="s2">&quot;current_sb_states&quot;</span><span class="p">)</span>
+                    <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sb_data_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+                    <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Most recent &#39;superbasin&#39; states:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">state_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist_to_statelist</span><span class="p">()</span>
+                    <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">state_list</span><span class="p">))</span>
+                    <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="c1"># Update the number of times rate constants have been adjusted.</span>
+                <span class="n">num_rate_changes</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># Finally, save the &#39;tallies&#39; being kept track of</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_askmc_metadata</span><span class="p">(</span><span class="n">sb_check_count</span><span class="p">,</span> <span class="n">num_rate_changes</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

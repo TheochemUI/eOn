@@ -1,0 +1,1279 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Guide to the Nudged Elastic Band (NEB) method in EON for finding saddle points and minimum energy paths between known reactants and products." name="description" />
+<meta content="EON NEB, Nudged Elastic Band, minimum energy path, saddle point, climbing image" name="keywords" />
+    <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
+    <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
+    <link href="../_static/favicons/android-chrome-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
+    <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
+    <link href="../_static/favicons/site.webmanifest" rel="icon">
+    <meta property="article:modified_time" content="2025-11-03T07:05:44+00:00" />
+    <title>Nudged Elastic Band &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/neb';</script>
+    <link rel="canonical" href="https://eondocs.org/user_guide/neb.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dimer method" href="dimer.html" />
+    <link rel="prev" title="Minimization" href="minimization.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Nov 03, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">User Guide</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimization.html">Minimization</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/user_guide/neb.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Nudged Elastic Band</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variants">Variants</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_after"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_after</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_mmf"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_mmf</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_after"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_mmf_after</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_nsteps"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_mmf_nsteps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.climbing_image_method"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.climbing_image_method</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.energy_weighted"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.energy_weighted</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_max"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_max</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_min"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_min</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.images"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.images</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.initial_path_in"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.initial_path_in</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints_for_ipath</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_climbing_image_converged_only</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_converged_force"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_converged_force</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_doubly_nudged</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_doubly_nudged_switching</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_elastic_band"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_elastic_band</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_max_iterations"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_max_iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.old_tangent"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.old_tangent</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.spring"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.spring</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#refinement">Refinement</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.RefineConfig"><code class="docutils literal notranslate"><span class="pre">RefineConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.RefineConfig.refine_opt_method"><code class="docutils literal notranslate"><span class="pre">RefineConfig.refine_opt_method</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.RefineConfig.refine_threshold"><code class="docutils literal notranslate"><span class="pre">RefineConfig.refine_threshold</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="nudged-elastic-band">
+<h1>Nudged Elastic Band<a class="headerlink" href="#nudged-elastic-band" title="Link to this heading">#</a></h1>
+<p>The nudged elastic band (NEB) is a method for finding saddle points and minimum
+energy paths between known reactants and products. The method works by
+optimizing a number of intermediate images along the reaction path. Each image
+finds the lowest energy possible while maintaining equal spacing to neighboring
+images. This constrained optimization is done by adding spring forces along the
+band between images and by projecting out the component of the force due to the
+potential perpendicular to the band.</p>
+<p>Details may be found in <span id="id1">Jonsson <em>et al.</em> [<a class="reference internal" href="#id47" title="Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In Classical and Quantum Dynamics in Condensed Phase Simulations, pages 385–404. World Scientific, June 1998. doi:10.1142/9789812839664_0016.">NEB_JMJ98</a>]</span>,
+<span id="id2">Sheppard and Henkelman [<a class="reference internal" href="#id84" title="Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. Journal of Computational Chemistry, 32(8):1769–1771, 2011. doi:10.1002/jcc.21748.">NEB_SH11</a>]</span>, and
+<span id="id3">Ásgeirsson and Jónsson [<a class="reference internal" href="#id16" title="Vilhjálmur Ásgeirsson and Hannes Jónsson. Exploring Potential Energy Surfaces with Saddle Point Searches. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling, pages 1–26. Springer International Publishing, Cham, 2018. doi:10.1007/978-3-319-42913-7_28-1.">NEB_AsgeirssonJonsson18</a>]</span>.</p>
+<p>In order to run a nudged elastic band calculation, set <strong>job</strong> to
+<em>nudged_elastic_band</em> in the <strong>[Main]</strong> section. Details of the optimizer can be
+set as per the <a class="reference internal" href="optimizer.html"><span class="std std-doc">Optimizer</span></a> document.</p>
+<section id="variants">
+<h2>Variants<a class="headerlink" href="#variants" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Classic nudged elastic band of <span id="id4">Mills and Jónsson [<a class="reference internal" href="#id68" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span> and <span id="id5">Schenter <em>et al.</em> [<a class="reference internal" href="#id80" title="Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. The Journal of Chemical Physics, 101(10):8964–8971, November 1994. doi:10.1063/1.468447.">NEB_SMJonsson94</a>]</span>.</p></li>
+<li><p>Improved tangent method of <span id="id6">Henkelman and Jónsson [<a class="reference internal" href="#id40" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p></li>
+<li><p>Climbing image NEB of <span id="id7">Henkelman <em>et al.</em> [<a class="reference internal" href="#id38" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p></li>
+<li><p>Doubly nudged method of <span id="id8">Trygubenko and Wales [<a class="reference internal" href="#id93" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0: </span></p>
+<ul class="simple">
+<li><p>The energy weighted varying springs method of <span id="id9">Ásgeirsson <em>et al.</em> [<a class="reference internal" href="#id18" title="Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. Journal of Chemical Theory and Computation, 17(8):4929–4945, August 2021. doi:10.1021/acs.jctc.1c00462.">NEB_AsgeirssonBB+21</a>]</span>.</p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">eOn</span></code>, like many other codes after <span id="id10">Sheppard <em>et al.</em> [<a class="reference internal" href="#id83" title="Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. The Journal of Chemical Physics, 128(13):134106, April 2008. doi:10.1063/1.2841941.">NEB_STH08</a>]</span> uses one optimizer instance for moving the whole band of images.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.8: </span>Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in <span id="id11">Koistinen <em>et al.</em> [<a class="reference internal" href="#id55" title="Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. The Journal of Chemical Physics, 147(15):152720, September 2017. doi:10.1063/1.4986787.">NEB_KDagbjartsdottirAsgeirsson+17</a>]</span> and <span id="id12">Koistinen <em>et al.</em> [<a class="reference internal" href="#id56" title="Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. Journal of Chemical Theory and Computation, 15(12):6738–6751, December 2019. doi:10.1021/acs.jctc.9b00692.">NEB_KAsgeirssonVJonsson19</a>]</span>.</p>
+</div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Nudged Elastic Band]</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.1_TBA: </span>In TOML, this will be <code class="docutils literal notranslate"><span class="pre">[NEB]</span></code></p>
+</div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">NudgedElasticBandConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#NudgedElasticBandConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig" title="Link to this definition">#</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NudgedElasticBandConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;images&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of NEB images between the fixed endpoints.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Images&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;spring&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The spring constant, in eV/Ang^2 between the images.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Spring&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;climbing_image_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the climbing image method is used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Climbing Image Method&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;old_tangent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the old tangent method is used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Old Tangent&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;neb_max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum number of iterations allowed for the NEB.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Neb Max Iterations&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;neb_climbing_image_converged_only&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if only the climbing image converged is used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Neb Climbing Image Converged Only&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;neb_doubly_nudged&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the doubly nudged method is used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Neb Doubly Nudged&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;neb_doubly_nudged_switching&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the doubly nudged switching method is used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Neb Doubly Nudged Switching&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;neb_elastic_band&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the elastic band method is used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Neb Elastic Band&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;neb_converged_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Converged force threshold for the NEB.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Neb Converged Force&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;energy_weighted&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the energy-weighted method is used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Energy Weighted&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;ew_ksp_min&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum value for KSP in the energy-weighted method.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ew Ksp Min&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;ew_ksp_max&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum value for KSP in the energy-weighted method.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ew Ksp Max&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;initial_path_in&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;File from which the initial path is read.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Initial Path In&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;minimize_endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimize the reactant and product before the NEB.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimize Endpoints&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;minimize_endpoints_for_ipath&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimize the reactant and product before the NEB, even if an initial path is provided.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimize Endpoints For Ipath&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;ci_after&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">I</span><span class="kc">nf</span><span class="err">i</span><span class="kc">n</span><span class="err">i</span><span class="kc">t</span><span class="err">y</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Convergence before the CI is turned on.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ci After&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;ci_mmf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use an MMF method for a few steps at the CI.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ci Mmf&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;ci_mmf_after&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Convergence before the CI is turned on.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ci Mmf After&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;ci_mmf_nsteps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of steps for which the MMF is run at the CI image.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ci Mmf Nsteps&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ci_after" title="eon.schema.NudgedElasticBandConfig.ci_after"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ci_after</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ci_mmf" title="eon.schema.NudgedElasticBandConfig.ci_mmf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ci_mmf</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_after" title="eon.schema.NudgedElasticBandConfig.ci_mmf_after"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ci_mmf_after</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_nsteps" title="eon.schema.NudgedElasticBandConfig.ci_mmf_nsteps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ci_mmf_nsteps</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.climbing_image_method" title="eon.schema.NudgedElasticBandConfig.climbing_image_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">climbing_image_method</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.energy_weighted" title="eon.schema.NudgedElasticBandConfig.energy_weighted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">energy_weighted</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_max" title="eon.schema.NudgedElasticBandConfig.ew_ksp_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ew_ksp_max</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_min" title="eon.schema.NudgedElasticBandConfig.ew_ksp_min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ew_ksp_min</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.images" title="eon.schema.NudgedElasticBandConfig.images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">images</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.initial_path_in" title="eon.schema.NudgedElasticBandConfig.initial_path_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initial_path_in</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints" title="eon.schema.NudgedElasticBandConfig.minimize_endpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimize_endpoints</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath" title="eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimize_endpoints_for_ipath</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only" title="eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_climbing_image_converged_only</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_converged_force" title="eon.schema.NudgedElasticBandConfig.neb_converged_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_converged_force</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged" title="eon.schema.NudgedElasticBandConfig.neb_doubly_nudged"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_doubly_nudged</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching" title="eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_doubly_nudged_switching</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_elastic_band" title="eon.schema.NudgedElasticBandConfig.neb_elastic_band"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_elastic_band</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_max_iterations" title="eon.schema.NudgedElasticBandConfig.neb_max_iterations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_max_iterations</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.old_tangent" title="eon.schema.NudgedElasticBandConfig.old_tangent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">old_tangent</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.spring" title="eon.schema.NudgedElasticBandConfig.spring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spring</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.ci_after">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ci_after</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">inf</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.ci_after" title="Link to this definition">#</a></dt>
+<dd><p>Convergence before the CI is turned on.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.ci_mmf">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ci_mmf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.ci_mmf" title="Link to this definition">#</a></dt>
+<dd><p>Use an MMF method for a few steps at the CI.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.ci_mmf_after">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ci_mmf_after</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_after" title="Link to this definition">#</a></dt>
+<dd><p>Convergence before the CI is turned on.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.ci_mmf_nsteps">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ci_mmf_nsteps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_nsteps" title="Link to this definition">#</a></dt>
+<dd><p>Number of steps for which the MMF is run at the CI image.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.climbing_image_method">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">climbing_image_method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.climbing_image_method" title="Link to this definition">#</a></dt>
+<dd><p>As discussed in <span id="id1">Henkelman <em>et al.</em> [<a class="reference internal" href="#id38" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p>
+<p>Indicates if the climbing image method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.energy_weighted">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">energy_weighted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.energy_weighted" title="Link to this definition">#</a></dt>
+<dd><p>Method as demonstrated in <span id="id2">Ásgeirsson <em>et al.</em> [<a class="reference internal" href="#id18" title="Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. Journal of Chemical Theory and Computation, 17(8):4929–4945, August 2021. doi:10.1021/acs.jctc.1c00462.">NEB_AsgeirssonBB+21</a>]</span>.</p>
+<p>Indicates if the energy-weighted method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.ew_ksp_max">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ew_ksp_max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_max" title="Link to this definition">#</a></dt>
+<dd><p>Maximum value for KSP in the energy-weighted method.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.ew_ksp_min">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ew_ksp_min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_min" title="Link to this definition">#</a></dt>
+<dd><p>Minimum value for KSP in the energy-weighted method.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.images">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">images</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.images" title="Link to this definition">#</a></dt>
+<dd><p>Number of NEB images between the fixed endpoints.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.initial_path_in">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initial_path_in</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.initial_path_in" title="Link to this definition">#</a></dt>
+<dd><p>This file must contain a list of .con files, one per image on the path.</p>
+<p>File from which the initial path is read.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.minimize_endpoints">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minimize_endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints" title="Link to this definition">#</a></dt>
+<dd><p>Minimize the reactant and product before the NEB.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minimize_endpoints_for_ipath</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath" title="Link to this definition">#</a></dt>
+<dd><p>Minimize the reactant and product before the NEB, even if an initial path is provided.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neb_climbing_image_converged_only</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if only the climbing image converged is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_converged_force">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neb_converged_force</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_converged_force" title="Link to this definition">#</a></dt>
+<dd><p>This defaults to being the same as <a class="reference internal" href="optimizer.html#eon.schema.OptimizerConfig.converged_force" title="eon.schema.OptimizerConfig.converged_force"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.OptimizerConfig.converged_force</span></code></a></p>
+<p>Converged force threshold for the NEB.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_doubly_nudged">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neb_doubly_nudged</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if the doubly nudged method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neb_doubly_nudged_switching</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching" title="Link to this definition">#</a></dt>
+<dd><p>Method as demonstrated in <span id="id3">Trygubenko and Wales [<a class="reference internal" href="#id93" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p>
+<p>Indicates if the doubly nudged switching method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_elastic_band">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neb_elastic_band</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_elastic_band" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if the elastic band method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_max_iterations">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neb_max_iterations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_max_iterations" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of iterations allowed for the NEB.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.old_tangent">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">old_tangent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.old_tangent" title="Link to this definition">#</a></dt>
+<dd><p>From <span id="id4">Mills and Jónsson [<a class="reference internal" href="#id68" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span>, before <span id="id5">Henkelman and Jónsson [<a class="reference internal" href="#id40" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p>
+<p>Indicates if the old tangent method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.spring">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spring</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.spring" title="Link to this definition">#</a></dt>
+<dd><p>The spring constant, in eV/Ang^2 between the images.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="refinement">
+<h2>Refinement<a class="headerlink" href="#refinement" title="Link to this heading">#</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.0.</span></p>
+</div>
+<p>Far from the minimum energy path, second order optimizers like those using the
+LBFGS may not be optimal. In these situations, to traverse uninteresting
+sections of the potential energy surface rapidly, it is best to use an
+accelerating optimizer like QuickMin to begin with and transition to LBFGS
+later. To facilitate this, the <code class="docutils literal notranslate"><span class="pre">[Refine]</span></code> section has been introduced.</p>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.RefineConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">RefineConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#RefineConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.RefineConfig" title="Link to this definition">#</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RefineConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;refine_opt_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The optimization method to use for refinement.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;cg&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;lbfgs&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;fire&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;box&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;qm&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Refine Opt Method&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;refine_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Threshold for refinement optimization.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Refine Threshold&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.RefineConfig.refine_opt_method" title="eon.schema.RefineConfig.refine_opt_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refine_opt_method</span> <span class="pre">(Literal['none',</span> <span class="pre">'cg',</span> <span class="pre">'lbfgs',</span> <span class="pre">'fire',</span> <span class="pre">'box',</span> <span class="pre">'qm'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.RefineConfig.refine_threshold" title="eon.schema.RefineConfig.refine_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refine_threshold</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RefineConfig.refine_opt_method">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refine_opt_method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fire'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'box'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'qm'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></em><a class="headerlink" href="#eon.schema.RefineConfig.refine_opt_method" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">none</span></code>: No refinement optimization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cg</span></code>: Conjugate gradient</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lbfgs</span></code>: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fire</span></code>: Fast inertial relaxation engine</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">box</span></code>: Optimizes the atom positions and box using quickmin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qm</span></code>: Quickmin</p></li>
+</ul>
+</dd>
+</dl>
+<p>The optimization method to use for refinement.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.RefineConfig.refine_threshold">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">refine_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#eon.schema.RefineConfig.refine_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Threshold for refinement optimization.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id13">
+<div role="list" class="citation-list">
+<div class="citation" id="id40" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NEB_HJonsson00<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. <em>The Journal of Chemical Physics</em>, 113(22):9978–9985, December 2000. <a class="reference external" href="https://doi.org/10.1063/1.1323224">doi:10.1063/1.1323224</a>.</p>
+</div>
+<div class="citation" id="id38" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NEB_HUJonsson00<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
+<p>Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. <em>The Journal of Chemical Physics</em>, 113(22):9901–9904, November 2000. <a class="reference external" href="https://doi.org/10.1063/1.1329672">doi:10.1063/1.1329672</a>.</p>
+</div>
+<div class="citation" id="id47" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">NEB_JMJ98</a><span class="fn-bracket">]</span></span>
+<p>Hannes Jonsson, Greg Mills, and Karsten W. Jacobsen. Nudged elastic band method for finding minimum energy paths of transitions. In <em>Classical and Quantum Dynamics in Condensed Phase Simulations</em>, pages 385–404. World Scientific, June 1998. <a class="reference external" href="https://doi.org/10.1142/9789812839664_0016">doi:10.1142/9789812839664_0016</a>.</p>
+</div>
+<div class="citation" id="id55" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">NEB_KDagbjartsdottirAsgeirsson+17</a><span class="fn-bracket">]</span></span>
+<p>Olli-Pekka Koistinen, Freyja B. Dagbjartsdóttir, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged elastic band calculations accelerated with Gaussian process regression. <em>The Journal of Chemical Physics</em>, 147(15):152720, September 2017. <a class="reference external" href="https://doi.org/10.1063/1.4986787">doi:10.1063/1.4986787</a>.</p>
+</div>
+<div class="citation" id="id56" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">NEB_KAsgeirssonVJonsson19</a><span class="fn-bracket">]</span></span>
+<p>Olli-Pekka Koistinen, Vilhjálmur Ásgeirsson, Aki Vehtari, and Hannes Jónsson. Nudged Elastic Band Calculations Accelerated with Gaussian Process Regression Based on Inverse Interatomic Distances. <em>Journal of Chemical Theory and Computation</em>, 15(12):6738–6751, December 2019. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.9b00692">doi:10.1021/acs.jctc.9b00692</a>.</p>
+</div>
+<div class="citation" id="id68" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NEB_MJonsson94<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<p>Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. <em>Physical Review Letters</em>, 72(7):1124–1127, February 1994. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.72.1124">doi:10.1103/PhysRevLett.72.1124</a>.</p>
+</div>
+<div class="citation" id="id80" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">NEB_SMJonsson94</a><span class="fn-bracket">]</span></span>
+<p>Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. <em>The Journal of Chemical Physics</em>, 101(10):8964–8971, November 1994. <a class="reference external" href="https://doi.org/10.1063/1.468447">doi:10.1063/1.468447</a>.</p>
+</div>
+<div class="citation" id="id84" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">NEB_SH11</a><span class="fn-bracket">]</span></span>
+<p>Daniel Sheppard and Graeme Henkelman. Paths to which the nudged elastic band converges. <em>Journal of Computational Chemistry</em>, 32(8):1769–1771, 2011. <a class="reference external" href="https://doi.org/10.1002/jcc.21748">doi:10.1002/jcc.21748</a>.</p>
+</div>
+<div class="citation" id="id83" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">NEB_STH08</a><span class="fn-bracket">]</span></span>
+<p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
+</div>
+<div class="citation" id="id93" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NEB_TW04<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. <em>The Journal of Chemical Physics</em>, 120(5):2082–2094, February 2004. <a class="reference external" href="https://doi.org/10.1063/1.1636455">doi:10.1063/1.1636455</a>.</p>
+</div>
+<div class="citation" id="id18" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NEB_AsgeirssonBB+21<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Vilhjálmur Ásgeirsson, Benedikt Orri Birgisson, Ragnar Bjornsson, Ute Becker, Frank Neese, Christoph Riplinger, and Hannes Jónsson. Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following. <em>Journal of Chemical Theory and Computation</em>, 17(8):4929–4945, August 2021. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.1c00462">doi:10.1021/acs.jctc.1c00462</a>.</p>
+</div>
+<div class="citation" id="id16" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">NEB_AsgeirssonJonsson18</a><span class="fn-bracket">]</span></span>
+<p>Vilhjálmur Ásgeirsson and Hannes Jónsson. Exploring Potential Energy Surfaces with Saddle Point Searches. In Wanda Andreoni and Sidney Yip, editors, <em>Handbook of Materials Modeling</em>, pages 1–26. Springer International Publishing, Cham, 2018. <a class="reference external" href="https://doi.org/10.1007/978-3-319-42913-7_28-1">doi:10.1007/978-3-319-42913-7_28-1</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="minimization.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Minimization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dimer.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Dimer method</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variants">Variants</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_after"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_after</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_mmf"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_mmf</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_after"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_mmf_after</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ci_mmf_nsteps"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ci_mmf_nsteps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.climbing_image_method"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.climbing_image_method</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.energy_weighted"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.energy_weighted</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_max"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_max</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_min"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_min</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.images"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.images</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.initial_path_in"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.initial_path_in</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints_for_ipath</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_climbing_image_converged_only</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_converged_force"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_converged_force</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_doubly_nudged</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_doubly_nudged_switching</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_elastic_band"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_elastic_band</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_max_iterations"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_max_iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.old_tangent"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.old_tangent</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.spring"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.spring</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#refinement">Refinement</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.RefineConfig"><code class="docutils literal notranslate"><span class="pre">RefineConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.RefineConfig.refine_opt_method"><code class="docutils literal notranslate"><span class="pre">RefineConfig.refine_opt_method</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.RefineConfig.refine_threshold"><code class="docutils literal notranslate"><span class="pre">RefineConfig.refine_threshold</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Nov 03, 2025.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

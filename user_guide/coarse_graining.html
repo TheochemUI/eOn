@@ -1,0 +1,1121 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Guide to coarse-graining methods in EON, such as MCAMC and AS-KMC, for accelerating simulations with vastly different timescales." name="description" />
+<meta content="EON coarse graining, MCAMC, AS-KMC, superbasins, accelerated simulation" name="keywords" />
+    <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
+    <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
+    <link href="../_static/favicons/android-chrome-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
+    <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
+    <link href="../_static/favicons/site.webmanifest" rel="icon">
+    <meta property="article:modified_time" content="2025-11-03T07:05:44+00:00" />
+    <title>Coarse Graining &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/coarse_graining';</script>
+    <link rel="canonical" href="https://eondocs.org/user_guide/coarse_graining.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dynamics" href="dynamics.html" />
+    <link rel="prev" title="Recycling" href="recycling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Nov 03, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">User Guide</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recycling.html">Recycling</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/user_guide/coarse_graining.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Coarse Graining</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-with-absorbing-markov-chains-mcamc">Monte Carlo with Absorbing Markov Chains (MCAMC)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accelerated-superbasin-kinetic-monte-carlo-as-kmc">Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_barrier_raise_param</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_test_on"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_barrier_test_on</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_confidence"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_confidence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_connections_test_on"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_connections_test_on</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_high_barrier_def"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_high_barrier_def</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.energy_increment"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.energy_increment</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.max_size"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.max_size</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.number_of_transitions"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.number_of_transitions</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.rate_threshold"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.rate_threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.state_file"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.state_file</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.superbasin_confidence"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.superbasin_confidence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.superbasin_scheme"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.superbasin_scheme</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.use_askmc"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.use_askmc</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.use_mcamc"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.use_mcamc</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="coarse-graining">
+<h1>Coarse Graining<a class="headerlink" href="#coarse-graining" title="Link to this heading">#</a></h1>
+<p>In aKMC simulations where there are vastly different rates, the simulation can
+get stuck in a group of states connected by relatively fast rates. In order to
+explore slower transitions, a prohibitively large number of KMC steps may be
+needed. In order to circumvent this problem, <code class="docutils literal notranslate"><span class="pre">eOn</span></code> implements two methods.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>AS-KMC and MCAMC cannot be used simultaneously.</p>
+</div>
+<section id="monte-carlo-with-absorbing-markov-chains-mcamc">
+<h2>Monte Carlo with Absorbing Markov Chains (MCAMC)<a class="headerlink" href="#monte-carlo-with-absorbing-markov-chains-mcamc" title="Link to this heading">#</a></h2>
+<p>The first method, projective dynamics, described in
+<span id="id1">Novotny [<a class="reference internal" href="#id62" title="M. A. Novotny. A Tutorial on Advanced Dynamic Monte Carlo Methods for Systems with Discrete State Spaces, pages 153–210. WORLD SCIENTIFIC, April 2001. doi:10.1142/9789812811578_0003.">CG_Nov01</a>]</span>, groups states that are joined
+by fast rates into “superbasins”. Information about transitions between states
+in a superbasin is lost, but the rates for transitions across a superbasin are
+correct.</p>
+</section>
+<section id="accelerated-superbasin-kinetic-monte-carlo-as-kmc">
+<h2>Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)<a class="headerlink" href="#accelerated-superbasin-kinetic-monte-carlo-as-kmc" title="Link to this heading">#</a></h2>
+<p>The second method, accelerated superbasin kinetic Monte Carlo (AS-KMC) of
+<span id="id2">Voter [<a class="reference internal" href="#id84" title="Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. Physical Review Letters, 78(20):3908–3911, May 1997. doi:10.1103/PhysRevLett.78.3908.">CG_Vot97</a>]</span>, artificially raises low
+barriers. The dynamics between states connected by fast rates are simulated, but
+an error is introduced in the dynamics direction and time.</p>
+<p>The basic process of AS-KMC involves gradually raising process barriers found to
+be inside of a superbasin such that exiting from the basin gradually becomes
+more likely. The method is designed to raise all the barriers in the superbasin
+simultaneously. Once a particular barrier has been crossed a certain number of
+times, <span class="math notranslate nohighlight">\(N_f\)</span> (more on determining <span class="math notranslate nohighlight">\(N_f\)</span> shortly), a check is
+performed to determine whether or not the current state is part of a superbasin.
+This is called the Superbasin Criterion.</p>
+<p>In the Superbasin Criterion, a search is performed, originating at the current
+state and proceeding outward through all low-barrier processes to adjacent
+states, and then through all low-barrier processes from each of these states,
+etc. For each low-barrier process found, if the process has been followed fewer
+than <span class="math notranslate nohighlight">\(N_f\)</span> times, the Superbasin Criterion fails and no barriers are
+raised.</p>
+<p>Thus, in the outward-expanding search from the originating state, the search
+continues until either a low-barrier process has been seen fewer than
+<span class="math notranslate nohighlight">\(N_f\)</span> times (and the Criterion fails) or until all connected low-barrier
+processes have been found and have been crossed at least <span class="math notranslate nohighlight">\(N_f\)</span> times (the
+edges of the superbasin are then defined and the Criterion passes). If the
+Superbasin Criterion passes, all the low-barrier processes (each of which as
+been crossed <span class="math notranslate nohighlight">\(N_f\)</span> times) are raised.</p>
+<p>Several parameters dictate the functioning of the AS-KMC method. These
+parameters dictate how much the barriers are raised each time the Superbasin
+Criterion
+passes(<a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param" title="eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param</span></code></a>), what
+defines a “low-barrier” for use in the Superbasin
+Criterion(<a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_high_barrier_def" title="eon.schema.CoarseGrainingConfig.askmc_high_barrier_def"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.askmc_high_barrier_def</span></code></a>), and
+the approximate amount of error the user might expect in eventual superbasin
+exit direction and time compared to normal KMC simulation
+(<a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_confidence" title="eon.schema.CoarseGrainingConfig.askmc_confidence"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.askmc_confidence</span></code></a>).</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Coarse Graining]</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.1_TBA: </span>In TOML, this will be <code class="docutils literal notranslate"><span class="pre">[Coarse_Graining]</span></code></p>
+</div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">CoarseGrainingConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#CoarseGrainingConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.CoarseGrainingConfig" title="Link to this definition">#</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CoarseGrainingConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;use_mcamc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use Mcamc&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;state_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;superbasin&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;File name for the state-specific data stored within each of the state directories.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;State File&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;superbasin_scheme&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;transition_counting&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MCAMC provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;energy_level&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;transition_counting&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;rate&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Superbasin Scheme&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;max_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximal number of states that will be merged together. If 0, there is no limit.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Size&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;number_of_transitions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This is the number of transitions that must occur between two states before they are merged into a superbasin.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number Of Transitions&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;energy_increment&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The first time each state is visited, it is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Energy Increment&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;rate_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000000000.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Any state with a rate (in 1/time) greater than this is merged into a single basin.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rate Threshold&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;superbasin_confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Superbasin KMC confidence.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Superbasin Confidence&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;use_askmc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This option determines whether the AS-KMC coarse graining method will be used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use Askmc&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;askmc_confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Askmc Confidence&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;askmc_barrier_raise_param&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.5</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This parameter sets how much the barriers are raised during AS-KMC.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Askmc Barrier Raise Param&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;askmc_high_barrier_def&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This parameter sets how high a barrier must be to be considered &#39;high&#39; in AS-KMC.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Askmc High Barrier Def&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;askmc_barrier_test_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This test verifies that no low-barrier process in a superbasin has been missed, considering even processes which have not been visited.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Askmc Barrier Test On&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;askmc_connections_test_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ensures that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Askmc Connections Test On&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param" title="eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param"><code class="xref py py-obj docutils literal notranslate"><span class="pre">askmc_barrier_raise_param</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_test_on" title="eon.schema.CoarseGrainingConfig.askmc_barrier_test_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">askmc_barrier_test_on</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_confidence" title="eon.schema.CoarseGrainingConfig.askmc_confidence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">askmc_confidence</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_connections_test_on" title="eon.schema.CoarseGrainingConfig.askmc_connections_test_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">askmc_connections_test_on</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.askmc_high_barrier_def" title="eon.schema.CoarseGrainingConfig.askmc_high_barrier_def"><code class="xref py py-obj docutils literal notranslate"><span class="pre">askmc_high_barrier_def</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.energy_increment" title="eon.schema.CoarseGrainingConfig.energy_increment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">energy_increment</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.max_size" title="eon.schema.CoarseGrainingConfig.max_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_size</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.number_of_transitions" title="eon.schema.CoarseGrainingConfig.number_of_transitions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_transitions</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.rate_threshold" title="eon.schema.CoarseGrainingConfig.rate_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rate_threshold</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.state_file" title="eon.schema.CoarseGrainingConfig.state_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_file</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.superbasin_confidence" title="eon.schema.CoarseGrainingConfig.superbasin_confidence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">superbasin_confidence</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.superbasin_scheme" title="eon.schema.CoarseGrainingConfig.superbasin_scheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">superbasin_scheme</span> <span class="pre">(Literal['energy_level',</span> <span class="pre">'transition_counting',</span> <span class="pre">'rate'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.use_askmc" title="eon.schema.CoarseGrainingConfig.use_askmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">use_askmc</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.CoarseGrainingConfig.use_mcamc" title="eon.schema.CoarseGrainingConfig.use_mcamc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">use_mcamc</span> <span class="pre">(bool)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">askmc_barrier_raise_param</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param" title="Link to this definition">#</a></dt>
+<dd><p>This parameter sets how much the barriers are raised during AS-KMC.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.askmc_barrier_test_on">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">askmc_barrier_test_on</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_test_on" title="Link to this definition">#</a></dt>
+<dd><p>Because the implemented Superbasin Criterion actually only considers
+processes which have been passed over at least once, there is some chance
+that a low-barrier process in a superbasin might have not been visited at
+all while all other low-barrier processes have been visited at least
+<span class="math notranslate nohighlight">\(N_f\)</span> times. This is unlikely, but this test verifies that such has
+not happened, considering even processes which have not been visited when
+determining if the Superbasin Criterion has first, because the implemented
+Superbasin Criterion actually only considers processes which have been
+passed over at least once, there is some chance that a low-barrier process
+in a superbasin might have not been visited at all while all other
+low-barrier processes have been visited at least <span class="math notranslate nohighlight">\(N_f\)</span> times. This is
+unlikely, but this test verifies that such has not happened, considering
+even processes which have not been visited when determining if the
+Superbasin Criterion has passed. This check should not add significant
+overhead.</p>
+<p>This test verifies that no low-barrier process in a superbasin has been missed, considering even processes which have not been visited.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.askmc_confidence">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">askmc_confidence</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.askmc_confidence" title="Link to this definition">#</a></dt>
+<dd><p>The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.askmc_connections_test_on">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">askmc_connections_test_on</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.askmc_connections_test_on" title="Link to this definition">#</a></dt>
+<dd><p>This parameter determines whether to ensure that there are no processes
+which connect states in the defined superbasin which have not been visited
+yet and which have a low-barrier. This check is somewhat more
+computationally expensive than the previous because structure comparisons
+have to be made when finding product states of unvisited processes.</p>
+<p>Ensures that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.askmc_high_barrier_def">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">askmc_high_barrier_def</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.0</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.askmc_high_barrier_def" title="Link to this definition">#</a></dt>
+<dd><p>This parameter sets how high a barrier must be to be considered ‘high’ in AS-KMC.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.energy_increment">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">energy_increment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.energy_increment" title="Link to this definition">#</a></dt>
+<dd><p>Only used if <a class="reference internal" href="#eon.schema.CoarseGrainingConfig.superbasin_scheme" title="eon.schema.CoarseGrainingConfig.superbasin_scheme"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.superbasin_scheme</span></code></a> is
+<code class="docutils literal notranslate"><span class="pre">energy_level</span></code>.</p>
+<p>The first time each state is visited, it is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.max_size">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.max_size" title="Link to this definition">#</a></dt>
+<dd><p>The maximal number of states that will be merged together. If 0, there is no limit.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.number_of_transitions">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_transitions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.number_of_transitions" title="Link to this definition">#</a></dt>
+<dd><p>Only used if <a class="reference internal" href="#eon.schema.CoarseGrainingConfig.superbasin_scheme" title="eon.schema.CoarseGrainingConfig.superbasin_scheme"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.superbasin_scheme</span></code></a> is
+<code class="docutils literal notranslate"><span class="pre">transition_counting</span></code>.</p>
+<p>This is the number of transitions that must occur between two states before they are merged into a superbasin.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.rate_threshold">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rate_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000000000.0</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.rate_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Only used if <a class="reference internal" href="#eon.schema.CoarseGrainingConfig.superbasin_scheme" title="eon.schema.CoarseGrainingConfig.superbasin_scheme"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.superbasin_scheme</span></code></a> is
+<code class="docutils literal notranslate"><span class="pre">rate</span></code>.</p>
+<p>Any state with a rate (in 1/time) greater than this is merged into a single basin.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.state_file">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'superbasin'</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.state_file" title="Link to this definition">#</a></dt>
+<dd><p>File name for the state-specific data stored within each of the state directories.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.superbasin_confidence">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">superbasin_confidence</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.superbasin_confidence" title="Link to this definition">#</a></dt>
+<dd><p>Superbasin KMC steps only consider exit processes from the superbasin. As
+fast processes get absorbed more and more into the superbasin, the relevant
+exit processes have higher and higher barriers. The confidence to have found
+all relevant processes leading away from a state is heavily influenced by
+the fast processes, that no longer exit the superbasin. To make sure that
+the confidence is adequately high for the barrier energies leaving the
+superbasin, additional searches need to be performed. This setting (which
+defaults to true) enables these additional searches. The searches are marked
+in states/&lt;state_number&gt;/search_results.txt by appending the number of the
+superbasin in which the search was performed in brackets. In general, this
+option should not be disabled! It exists only for debug purposes and cases
+where the user is sure that the additional searches are not needed.</p>
+<p>Superbasin KMC confidence.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.superbasin_scheme">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">superbasin_scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'energy_level'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'transition_counting'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rate'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'transition_counting'</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.superbasin_scheme" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">transition_counting</span></code>: Counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occurred, the pair of states are merged to form a superbasin.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">energy_level</span></code>: States are merged based on energy levels filling up existing basins.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rate</span></code>: States are merged based only on rate criteria.</p></li>
+</ul>
+</dd>
+</dl>
+<p>MCAMC provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.use_askmc">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">use_askmc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.use_askmc" title="Link to this definition">#</a></dt>
+<dd><p>Mutually exclusive with <a class="reference internal" href="#eon.schema.CoarseGrainingConfig.use_mcamc" title="eon.schema.CoarseGrainingConfig.use_mcamc"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.use_mcamc</span></code></a>.</p>
+<p>This option determines whether the AS-KMC coarse graining method will be used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.CoarseGrainingConfig.use_mcamc">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">use_mcamc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.CoarseGrainingConfig.use_mcamc" title="Link to this definition">#</a></dt>
+<dd><p>Mutually exclusive with <a class="reference internal" href="#eon.schema.CoarseGrainingConfig.use_askmc" title="eon.schema.CoarseGrainingConfig.use_askmc"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.use_askmc</span></code></a>.</p>
+<p>This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id3">
+<div role="list" class="citation-list">
+<div class="citation" id="id62" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CG_Nov01</a><span class="fn-bracket">]</span></span>
+<p>M. A. Novotny. <em>A Tutorial on Advanced Dynamic Monte Carlo Methods for Systems with Discrete State Spaces</em>, pages 153–210. WORLD SCIENTIFIC, April 2001. <a class="reference external" href="https://doi.org/10.1142/9789812811578_0003">doi:10.1142/9789812811578_0003</a>.</p>
+</div>
+<div class="citation" id="id84" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">CG_Vot97</a><span class="fn-bracket">]</span></span>
+<p>Arthur F. Voter. Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events. <em>Physical Review Letters</em>, 78(20):3908–3911, May 1997. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.78.3908">doi:10.1103/PhysRevLett.78.3908</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="recycling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Recycling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dynamics.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Dynamics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-with-absorbing-markov-chains-mcamc">Monte Carlo with Absorbing Markov Chains (MCAMC)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accelerated-superbasin-kinetic-monte-carlo-as-kmc">Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_barrier_raise_param</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_barrier_test_on"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_barrier_test_on</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_confidence"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_confidence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_connections_test_on"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_connections_test_on</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.askmc_high_barrier_def"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.askmc_high_barrier_def</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.energy_increment"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.energy_increment</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.max_size"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.max_size</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.number_of_transitions"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.number_of_transitions</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.rate_threshold"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.rate_threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.state_file"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.state_file</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.superbasin_confidence"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.superbasin_confidence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.superbasin_scheme"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.superbasin_scheme</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.use_askmc"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.use_askmc</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.CoarseGrainingConfig.use_mcamc"><code class="docutils literal notranslate"><span class="pre">CoarseGrainingConfig.use_mcamc</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Nov 03, 2025.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

@@ -1,0 +1,990 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eon.basinhopping &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eon/basinhopping';</script>
+    <link rel="canonical" href="https://eondocs.org/_modules/eon/basinhopping.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for eon.basinhopping</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging.handlers</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;basinhopping&#39;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="n">numpy</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="n">over</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="n">under</span><span class="o">=</span><span class="s2">&quot;print&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">optparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">atoms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">communicator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">locking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+
+<span class="c1">#class RandomStructure:</span>
+<span class="c1">#    def __init__(self, structure):</span>
+<span class="c1">#        self.structure = structure</span>
+<span class="c1">#        self.radii = numpy.array([ atoms.elements[name][&#39;radius&#39;]</span>
+<span class="c1">#                                   for name in structure.names ])</span>
+<span class="c1">#        self.box_center = numpy.diagonal(structure.box)/2.0</span>
+<span class="c1">#        self.p = 0.1</span>
+<span class="c1">#</span>
+<span class="c1">#    def generate(self):</span>
+<span class="c1">#        indexes = range(len(self.structure))</span>
+<span class="c1">#        random.shuffle(indexes)</span>
+<span class="c1">#</span>
+<span class="c1">#        rs = atoms.Atoms(0)</span>
+<span class="c1">#        first = indexes[0]</span>
+<span class="c1">#        rs.append(numpy.zeros(3), True, self.structure.names[first],</span>
+<span class="c1">#                  self.structure.mass[first])</span>
+<span class="c1">#</span>
+<span class="c1">#        failures = 0</span>
+<span class="c1">#        for i in indexes[1:]:</span>
+<span class="c1">#            rs.append(numpy.zeros(3), True,</span>
+<span class="c1">#                      self.structure.names[i], self.structure.mass[i])</span>
+<span class="c1">#            rs.box = self.box_p(rs)</span>
+<span class="c1">#            valid = False</span>
+<span class="c1">#            while not valid:</span>
+<span class="c1">#                rs.r[-1] = numpy.random.uniform(-rs.box[0][0]/2.0,rs.box[0][0]/2.0,3)</span>
+<span class="c1">#                distances = numpy.zeros(len(rs)-1)</span>
+<span class="c1">#                for j in range(len(rs)-1):</span>
+<span class="c1">#                    distances[j] = numpy.linalg.norm(rs.r[-1]-rs.r[j])</span>
+<span class="c1">#                    bond_length = self.radii[i]+self.radii[j]</span>
+<span class="c1">#</span>
+<span class="c1">#                if min(distances) &lt; 0.8*bond_length:</span>
+<span class="c1">#                    failures += 1</span>
+<span class="c1">#                    valid = False</span>
+<span class="c1">#                elif min(distances) &gt; 1.3*bond_length:</span>
+<span class="c1">#                    failures += 1</span>
+<span class="c1">#                    valid = False</span>
+<span class="c1">#                else:</span>
+<span class="c1">#                    #print &#39;%i/%i&#39; % (i+1,len(self.structure))</span>
+<span class="c1">#                    valid = True</span>
+<span class="c1">#        rs.box = self.structure.box</span>
+<span class="c1">#        #XXX: shift to center of box, only correct for cubic cells</span>
+<span class="c1">#        rs.r += rs.box.diagonal()/2.0</span>
+<span class="c1">#        return rs</span>
+<span class="c1">#</span>
+<span class="c1">#    def box_p(self, rs):</span>
+<span class="c1">#        V_atoms = sum(4./3*3.14159*self.radii[0:len(rs)])</span>
+<span class="c1">#        a = (V_atoms/self.p)**(1/3.)</span>
+<span class="c1">#        return numpy.array( ((a,0,0),(0,a,0),(0,0,a)) )</span>
+
+<div class="viewcode-block" id="BHStates">
+<a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.BHStates">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BHStates</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">)</span>
+
+        <span class="n">state_table_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">,</span> <span class="s1">&#39;state_table&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">state_table_path</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">,</span> <span class="s1">&#39;repeats&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="BHStates.get_random_minimum">
+<a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.BHStates.get_random_minimum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_random_minimum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span><span class="o">-</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">])</span>
+        <span class="n">lowest_N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">rows</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">lowest_N</span><span class="p">)[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s1">&#39;minimum.con&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="BHStates.add_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.BHStates.add_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_files</span><span class="p">,</span> <span class="n">result_info</span><span class="p">):</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">result_info</span><span class="p">[</span><span class="s1">&#39;minimum_energy&#39;</span><span class="p">]</span>
+
+        <span class="n">energetically_close</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">added</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">energy</span><span class="o">-</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">comp_eps_e</span><span class="p">:</span>
+                    <span class="n">energetically_close</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">energetically_close</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">a1</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result_files</span><span class="p">[</span><span class="s1">&#39;min.con&#39;</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">state_number</span> <span class="ow">in</span> <span class="n">energetically_close</span><span class="p">:</span>
+                    <span class="n">state_con_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">,</span>
+                                                  <span class="nb">str</span><span class="p">(</span><span class="n">state_number</span><span class="p">),</span>
+                                                  <span class="s1">&#39;minimum.con&#39;</span><span class="p">)</span>
+                    <span class="n">a2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">state_con_path</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">atoms</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">comp_eps_r</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">comp_neighbor_cutoff</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found a repeat of state </span><span class="si">%i</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state_number</span><span class="p">)</span>
+                        <span class="n">added</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">state_number</span><span class="p">:</span>
+                                <span class="n">row</span><span class="p">[</span><span class="s1">&#39;repeats&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+                                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">added</span><span class="p">:</span>
+            <span class="n">state_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="p">)</span>
+
+            <span class="n">row</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span><span class="n">state_number</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">:</span><span class="n">energy</span><span class="p">,</span> <span class="s1">&#39;repeats&#39;</span><span class="p">:</span><span class="mi">0</span> <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span><span class="o">-</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">energy_table</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+
+            <span class="n">state_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">state_number</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">state_path</span><span class="p">)</span>
+
+            <span class="n">result_files</span><span class="p">[</span><span class="s1">&#39;minimum.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_files</span><span class="p">[</span><span class="s1">&#39;min.con&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">result_files</span><span class="p">[</span><span class="s1">&#39;min.con&#39;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">fn</span><span class="p">,</span> <span class="n">fh</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">result_files</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">state_path</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">added</span></div>
+</div>
+
+
+<div class="viewcode-block" id="basinhopping">
+<a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.basinhopping">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">basinhopping</span><span class="p">():</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Eon version: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+    <span class="c1"># First of all, does the root directory even exist?</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Root directory does not exist&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># load metadata</span>
+    <span class="n">bhstates</span> <span class="o">=</span> <span class="n">BHStates</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;wuid.dat&quot;</span><span class="p">):</span>
+        <span class="n">wuid_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;wuid.dat&quot;</span><span class="p">)</span>
+        <span class="n">wuid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wuid_file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">wuid_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">wuid</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># get communicator</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">communicator</span><span class="o">.</span><span class="n">get_communicator</span><span class="p">()</span>
+
+    <span class="c1"># Register all the results. There is  no need to ever discard found</span>
+    <span class="c1"># processes like we do with akmc. There is no confidence to calculate.</span>
+    <span class="n">register_results</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">)</span>
+
+    <span class="n">wuid</span> <span class="o">=</span> <span class="n">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">)</span>
+
+    <span class="n">wuid_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;wuid.dat&quot;</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">wuid_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wuid</span><span class="p">)</span>
+    <span class="n">wuid_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">io</span><span class="o">.</span><span class="n">save_prng_state</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="make_searches">
+<a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.make_searches">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_searches</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">wuid</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">):</span>
+    <span class="n">num_in_buffer</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">get_queue_size</span><span class="p">()</span><span class="o">*</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> searches in the queue&quot;</span> <span class="o">%</span> <span class="n">num_in_buffer</span><span class="p">)</span>
+    <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">-</span> <span class="n">num_in_buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Making </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_to_make</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">num_to_make</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">wuid</span>
+
+    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s1">&#39;pos.con&#39;</span><span class="p">))</span>
+    <span class="n">initial_react</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1">#invariants[&#39;reactant_passed.con&#39;]=reactIO</span>
+
+    <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;basin_hopping&#39;</span><span class="p">)</span> <span class="p">]</span>
+    <span class="c1">#invariants[&#39;config_passed.ini&#39;] = io.modify_config(config.config_path, ini_changes)</span>
+    <span class="c1">#invariants[&#39;reactant_passed.con&#39;]  = reactIO</span>
+
+    <span class="c1">#Merge potential files into invariants</span>
+    <span class="n">invariants</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">invariants</span><span class="p">,</span>  <span class="o">**</span><span class="n">io</span><span class="o">.</span><span class="n">load_potfiles</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_pot</span><span class="p">))</span>
+
+    <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">):</span>
+        <span class="n">search</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wuid</span>
+        <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;random_seed&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="p">)))</span> <span class="p">]</span>
+
+        <span class="c1">#if config.bh_random_structure:</span>
+        <span class="c1">#    reactIO = StringIO()</span>
+        <span class="c1">#    io.savecon(reactIO, rs.generate())</span>
+        <span class="c1">#else:</span>
+        <span class="c1">#    reactIO = initial_react</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">reactIO</span> <span class="o">=</span> <span class="n">initial_react</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">reactIO</span> <span class="o">=</span> <span class="n">bhstates</span><span class="o">.</span><span class="n">get_random_minimum</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">reactIO</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">reactIO</span> <span class="o">=</span> <span class="n">initial_react</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">&quot;Initial state pool size negative&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;pos.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactIO</span>
+        <span class="n">search</span><span class="p">[</span><span class="s1">&#39;config.ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">modify_config</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">ini_changes</span><span class="p">)</span>
+        <span class="n">searches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+        <span class="n">wuid</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">comm</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="n">searches</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; searches created&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wuid</span></div>
+
+
+<div class="viewcode-block" id="register_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.register_results">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_results</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">bhstates</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering results&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+
+    <span class="c1"># Function used by communicator to determine whether to discard a result</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">keep_result</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">num_registered</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">comm</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+        <span class="c1"># The result dictionary contains the following key-value pairs:</span>
+        <span class="c1"># product.con - an array of strings containing the reactant</span>
+        <span class="c1"># results.dat - an array of strings containing the results</span>
+        <span class="c1"># id - wuid</span>
+
+        <span class="c1">#result_id = result[&#39;id&#39;]</span>
+        <span class="c1">#del result[&#39;id&#39;]</span>
+        <span class="n">result_info</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;minimum_energy&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result_info</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">result_info</span><span class="p">[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bhstates</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">result_info</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;New structure with energy </span><span class="si">%.8e</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">result_info</span><span class="p">[</span><span class="s1">&#39;minimum_energy&#39;</span><span class="p">])</span>
+
+            <span class="c1">#logger.info(&quot;found new structure with energy %.3e&quot;, fe)</span>
+            <span class="c1">#if bhminima.add_minimum(fe, result[&#39;product.con&#39;].getvalue()):</span>
+            <span class="c1">#    logger.info(&quot;found new low energy structure with energy %.3e&quot;, fe)</span>
+
+        <span class="n">num_registered</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2"> (result) searches processed&quot;</span><span class="p">,</span> <span class="n">num_registered</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../apidocs/eon/eon.basinhopping.html#eon.basinhopping.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">optpar</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="s2">&quot;usage: %prog [options] config.ini&quot;</span><span class="p">)</span>
+    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-q&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;quiet&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;only write to the log file&quot;</span><span class="p">)</span>
+    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-submit&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;no_submit&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t submit searches; only register finished results&quot;</span><span class="p">)</span>
+    <span class="n">optpar</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;--reset&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;reset&quot;</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;reset the simulation, discarding all data&quot;</span><span class="p">)</span>
+    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">optpar</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;takes only one positional argument&quot;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="o">+=</span> <span class="n">args</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+    <span class="c1"># set options.path_root to be where the config file is if given as an arg</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">path_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: Basin Hopping only supports a bundle size of 1&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">no_submit</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">reset</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Are you sure you want to reset (all data files will be lost)? (y/N) &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+                <span class="n">rmdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_out</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">,</span>  <span class="n">config</span><span class="o">.</span><span class="n">path_states</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rmdirs</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="c1">#XXX: ugly way to remove all empty directories containing this one</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">removedirs</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">log_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">,</span> <span class="s2">&quot;bh.log&quot;</span><span class="p">)</span>
+                <span class="n">wuid_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">,</span> <span class="s2">&quot;wuid.dat&quot;</span><span class="p">)</span>
+                <span class="n">prng_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">,</span> <span class="s2">&quot;prng.pkl&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="n">log_path</span><span class="p">,</span> <span class="n">wuid_path</span><span class="p">,</span> <span class="n">prng_path</span> <span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reset.&quot;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not resetting.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># setup logging</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">,</span> <span class="s2">&quot;bh.log&quot;</span><span class="p">),</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">:</span><span class="si">%(name)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%F</span><span class="s2"> %T&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">raiseExceptions</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+        <span class="n">rootlogger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">rootlogger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+
+    <span class="n">lock</span> <span class="o">=</span> <span class="n">locking</span><span class="o">.</span><span class="n">LockFile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">,</span> <span class="s2">&quot;lockfile&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">lock</span><span class="o">.</span><span class="n">aquirelock</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">eon.mpiwait</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpiwait</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">mpiwait</span><span class="p">()</span>
+                <span class="n">basinhopping</span><span class="p">()</span>
+        <span class="n">basinhopping</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get lock&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

@@ -1,0 +1,1521 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eon.fileio &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eon/fileio';</script>
+    <link rel="canonical" href="https://eondocs.org/_modules/eon/fileio.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for eon.fileio</h1><div class="highlight"><pre>
+<span></span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Con(figuration) i/o library</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+<span class="c1">#from io import BytesIO as StringIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;io&#39;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pickle</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">atoms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+
+<div class="viewcode-block" id="save_prng_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.save_prng_state">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_prng_state</span><span class="p">():</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;prng.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">fh</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_prng_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.get_prng_state">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_prng_state</span><span class="p">():</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;prng.pkl&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+    <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="length_angle_to_box">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.length_angle_to_box">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">length_angle_to_box</span><span class="p">(</span><span class="n">boxlengths</span><span class="p">,</span> <span class="n">angles</span><span class="p">):</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">angles</span> <span class="o">*=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.0</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">-</span><span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">*=</span><span class="n">boxlengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">*=</span><span class="n">boxlengths</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">,:]</span><span class="o">*=</span><span class="n">boxlengths</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">box</span></div>
+
+
+<div class="viewcode-block" id="box_to_length_angle">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.box_to_length_angle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">box_to_length_angle</span><span class="p">(</span><span class="n">box</span><span class="p">):</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span>
+    <span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+    <span class="n">lengths</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">,:])</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">angles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">/</span><span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">/</span><span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">angles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">/</span><span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">,:]</span><span class="o">/</span><span class="n">lengths</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">angles</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">/</span><span class="n">lengths</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">,:]</span><span class="o">/</span><span class="n">lengths</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">angles</span> <span class="o">*=</span> <span class="mf">180.0</span><span class="o">/</span><span class="n">numpy</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">return</span> <span class="n">lengths</span><span class="p">,</span> <span class="n">angles</span></div>
+
+
+
+<div class="viewcode-block" id="loadcons">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.loadcons">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadcons</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">filein</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loadcon</span><span class="p">(</span><span class="n">filein</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p</span></div>
+
+
+
+<div class="viewcode-block" id="loadposcars">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.loadposcars">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadposcars</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">filein</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loadposcar</span><span class="p">(</span><span class="n">filein</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p</span></div>
+
+
+
+<div class="viewcode-block" id="loadcon">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.loadcon">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadcon</span><span class="p">(</span><span class="n">filein</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Load a con file</span>
+<span class="sd">        filein: may be either a filename or a file-like object</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">filein</span><span class="p">,</span> <span class="s1">&#39;readline&#39;</span><span class="p">):</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">filein</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filein</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># line 1: comment</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># line 2: comment</span>
+    <span class="c1"># determine how many dimensions</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="c1"># line 3: Box lengths</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)):</span>
+        <span class="n">dim</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">dim</span><span class="o">=</span><span class="n">i</span>
+            <span class="k">break</span>
+    <span class="c1"># handle the box</span>
+    <span class="n">boxlengths</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+        <span class="n">boxlengths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">boxangles</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="n">dim</span><span class="p">]</span> <span class="p">])</span> <span class="c1"># line 4: Box angles</span>
+    <span class="n">boxtemp</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dim</span><span class="p">,</span><span class="n">dim</span><span class="p">),</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
+    <span class="n">boxtemp</span> <span class="o">=</span> <span class="n">length_angle_to_box</span><span class="p">(</span><span class="n">boxlengths</span><span class="p">,</span><span class="n">boxangles</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># line 5: comment</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># line 6: comment</span>
+    <span class="n">num_types</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># line 7: number of atom types</span>
+    <span class="n">num_each_type</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="c1"># line 8: number of each type of atom</span>
+    <span class="n">mass_of_type</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="c1"># line 9: mass of each type of atom</span>
+    <span class="n">num_atoms</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_types</span><span class="p">):</span>
+        <span class="n">num_each_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_each_type</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">mass_of_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mass_of_type</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">num_atoms</span> <span class="o">+=</span> <span class="n">num_each_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">Atoms</span><span class="p">(</span><span class="n">num_atoms</span><span class="p">)</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">boxtemp</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_types</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">mass_of_type</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING: Mass of </span><span class="si">%s</span><span class="s2"> set to 1.0&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># skip meaningless line</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_each_type</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass_of_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+        <span class="n">con</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span></div>
+
+
+<div class="viewcode-block" id="savecon">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.savecon">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">savecon</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Save a con file</span>
+<span class="sd">        fileout: can be either a file name or a file-like object</span>
+<span class="sd">        p:       information (in the form of an atoms object) to save</span>
+<span class="sd">        w:       write/append flag</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">):</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">fileout</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Generated by eOn</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">lengths</span><span class="p">,</span> <span class="n">angles</span> <span class="o">=</span> <span class="n">box_to_length_angle</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">lengths</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%.6f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">atom_count</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">name_order</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name_order</span><span class="p">:</span>
+            <span class="n">name_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">atom_count</span><span class="p">:</span>
+            <span class="n">atom_count</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">atom_count</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name_order</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">atom_count</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">name_order</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">printmasses</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name_order</span><span class="p">)):</span>
+        <span class="n">printmasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">index</span> <span class="o">+=</span> <span class="n">atom_count</span><span class="p">[</span><span class="n">name_order</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%.6f</span><span class="s2">&quot;</span><span class="o">%</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">printmasses</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name_order</span><span class="p">)):</span>
+        <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">name_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Coordinates of component </span><span class="si">%3i</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">atom_count</span><span class="p">[</span><span class="n">name_order</span><span class="p">[</span><span class="n">i</span><span class="p">]]):</span>
+            <span class="n">con</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.6f</span><span class="s2"> </span><span class="si">%.6f</span><span class="s2"> </span><span class="si">%.6f</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span> <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">index</span><span class="p">]),</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="load_mode">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.load_mode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_mode</span><span class="p">(</span><span class="n">modefilein</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Reads a mode.dat file into an N by 3 numpy array</span>
+<span class="sd">        modefilein: may be either a file-like object of a filename</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">modefilein</span><span class="p">,</span> <span class="s1">&#39;readline&#39;</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">modefilein</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">modefilein</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">mode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span><span class="o">//</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_mode">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.save_mode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_mode</span><span class="p">(</span><span class="n">modefileout</span><span class="p">,</span> <span class="n">displace_vector</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Saves an Nx3 numpy array into a mode.dat file.</span>
+<span class="sd">        modefileout:     may be either a filename or file-like object</span>
+<span class="sd">        displace_vector: the mode (Nx3 numpy array)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">modefileout</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">modefileout</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">modefileout</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">displace_vector</span><span class="p">)):</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%.3f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">displace_vector</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">displace_vector</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">displace_vector</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span></div>
+
+
+
+<div class="viewcode-block" id="save_results_dat">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.save_results_dat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_results_dat</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Saves a results.dat file from a dictionary</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">fileout</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="c1">#print(results[key], key, con)  #GH: this made no sense to me - replaced with the following</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="modify_config">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.modify_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">modify_config</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="n">changes</span><span class="p">):</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">change</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="o">*</span><span class="n">change</span><span class="p">)</span>
+    <span class="n">config_str_io</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">config_str_io</span><span class="p">)</span>
+    <span class="n">config_str_io</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config_str_io</span></div>
+
+
+<div class="viewcode-block" id="parse_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.parse_results">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_results</span><span class="p">(</span><span class="n">filein</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Reads a results.dat file and gives a dictionary of the values contained therein</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">filein</span><span class="p">,</span> <span class="s1">&#39;readline&#39;</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">filein</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filein</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t parse float in results.dat: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t parse string in results.dat: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="loadposcar">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.loadposcar">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadposcar</span><span class="p">(</span><span class="n">filein</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Load the POSCAR file named filename and returns an atoms object</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">filein</span><span class="p">,</span> <span class="s1">&#39;readline&#39;</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">filein</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filein</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="c1"># Line 1: Atom types</span>
+    <span class="n">AtomTypes</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="c1"># Line 2: scaling of coordinates</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+    <span class="c1"># Lines 3-5: the box</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">box</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])])</span> <span class="o">*</span> <span class="n">scale</span>
+    <span class="c1"># Line 6: number of atoms of each type.</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">NumAtomsPerType</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+        <span class="n">NumAtomsPerType</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+    <span class="c1"># Now have enough info to make the atoms object.</span>
+    <span class="n">num_atoms</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">NumAtomsPerType</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">Atoms</span><span class="p">(</span><span class="n">num_atoms</span><span class="p">)</span>
+    <span class="c1"># Fill in the box.</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">box</span>
+    <span class="c1"># Line 7: selective or cartesian</span>
+    <span class="n">sel</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">selective_flag</span> <span class="o">=</span> <span class="p">(</span><span class="n">sel</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span> <span class="ow">or</span> <span class="n">sel</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">selective_flag</span><span class="p">:</span>
+        <span class="n">car</span> <span class="o">=</span> <span class="n">sel</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">car</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">direct_flag</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="n">car</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span> <span class="ow">or</span> <span class="n">car</span> <span class="o">==</span> <span class="s1">&#39;C&#39;</span> <span class="ow">or</span> <span class="n">car</span> <span class="o">==</span> <span class="s1">&#39;k&#39;</span> <span class="ow">or</span> <span class="n">car</span> <span class="o">==</span> <span class="s1">&#39;K&#39;</span><span class="p">)</span>
+    <span class="n">atom_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">NumAtomsPerType</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NumAtomsPerType</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">AtomTypes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">selective_flag</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">6</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">selective_flag</span><span class="p">:</span>
+                <span class="n">sel</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">sel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;T&#39;</span> <span class="ow">or</span> <span class="n">sel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">sel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;F&#39;</span> <span class="ow">or</span> <span class="n">sel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">pos</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">direct_flag</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">atom_index</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">*=</span> <span class="n">scale</span>
+            <span class="n">atom_index</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+
+<div class="viewcode-block" id="saveposcar">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.saveposcar">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">saveposcar</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">direct</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Save a POSCAR</span>
+<span class="sd">        fileout: name to save it under</span>
+<span class="sd">        point:    atoms object to save</span>
+<span class="sd">        w:        write/append flag</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="s1">&#39;write&#39;</span><span class="p">):</span>
+        <span class="n">poscar</span> <span class="o">=</span> <span class="n">fileout</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">poscar</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileout</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">atom_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">num_each_type</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">atom_types</span><span class="p">:</span>
+            <span class="n">atom_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">num_each_type</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_each_type</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">atom_types</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1">#Line 1: Atom type</span>
+    <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;1.0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1">#Line 2: scaling</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%20.14f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">box</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1">#lines 3-5: box</span>
+    <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">atom_types</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1">#Line 6: Atom type</span>
+    <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">num_each_type</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">atom_types</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Selective Dynamics</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1">#line 7: selective dynamics</span>
+    <span class="k">if</span> <span class="n">direct</span><span class="p">:</span>
+        <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Direct</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1">#line 8 cartesian coordinates</span>
+        <span class="n">ibox</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">box</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">ibox</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Cartesian</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="c1">#line 8 cartesian coordinates</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)):</span>
+            <span class="n">posline</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%20.14f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                    <span class="n">posline</span><span class="o">+=</span><span class="s1">&#39;   T&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">posline</span><span class="o">+=</span><span class="s1">&#39;   F&#39;</span>
+            <span class="n">poscar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">posline</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">configparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigParser</span> <span class="k">as</span> <span class="n">SCP</span>
+<div class="viewcode-block" id="ini">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.ini">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ini</span><span class="p">(</span><span class="n">SCP</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="n">filenames</span>
+        <span class="n">SCP</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ini.read">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.ini.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">SCP</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ini.get">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.ini.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ini_no_default&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="c1">#    def get(self, section, option, default=&quot;ini_no_default&quot;):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">SCP</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
+            <span class="c1">#value = SCP.get(self, section, option, raw=True, **kwargs)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">SCP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1">#value = SCP.get(self, section, option, raw=True)</span>
+            <span class="c1">#value = SCP.get(self, section, option)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="s2">&quot;ini_no_default&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Section or option missing, no default specified&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="ini.getint">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.ini.getint">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Use the get function with this ConfigParser wrapper&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ini.getfloat">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.ini.getfloat">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getfloat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Use the get function with this ConfigParser wrapper&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ini.getboolean">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.ini.getboolean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getboolean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Use the get function with this ConfigParser wrapper&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ini.set">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.ini.set">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+        <span class="n">SCP</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1">#        configfile = open(name, &#39;wb&#39;)</span>
+        <span class="n">configfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+        <span class="n">configfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Dynamics">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Dynamics">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dynamics</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; The Dynamics class handles I/O for the dynamics.txt file of an aKMC simulation. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="s2">  </span><span class="si">%12s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;step-number&#39;</span><span class="p">,</span> <span class="s1">&#39;reactant-id&#39;</span><span class="p">,</span> <span class="s1">&#39;process-id&#39;</span><span class="p">,</span> <span class="s1">&#39;product-id&#39;</span><span class="p">,</span> <span class="s1">&#39;step-time&#39;</span><span class="p">,</span> <span class="s1">&#39;total-time&#39;</span><span class="p">,</span> <span class="s1">&#39;barrier&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_step</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># read last lines of the file to determine iteration nr</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>	<span class="c1">#seek to EOF</span>
+            <span class="n">fsize</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+            <span class="c1"># seek 1024 bytes back (or to beginning of file if fsize &lt; 1024 )</span>
+            <span class="c1"># last line must be contained in this block</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span> <span class="nb">max</span><span class="p">(</span> <span class="n">fsize</span> <span class="o">-</span> <span class="mi">1024</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_step</span> <span class="o">=</span> <span class="nb">int</span> <span class="p">(</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1"># determine iteration nr of next step</span>
+
+<div class="viewcode-block" id="Dynamics.append">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Dynamics.append">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactant_id</span><span class="p">,</span> <span class="n">process_id</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">step_time</span><span class="p">,</span> <span class="n">total_time</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">energy</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12e</span><span class="s2">  </span><span class="si">%12e</span><span class="s2">  </span><span class="si">%12f</span><span class="s2">  </span><span class="si">%12e</span><span class="s2">  </span><span class="si">%12f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_step</span><span class="p">,</span> <span class="n">reactant_id</span><span class="p">,</span> <span class="n">process_id</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">step_time</span><span class="p">,</span> <span class="n">total_time</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">energy</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="Dynamics.append_sb">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Dynamics.append_sb">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_sb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactant_id</span><span class="p">,</span> <span class="n">process_id</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">step_time</span><span class="p">,</span> <span class="n">total_time</span><span class="p">,</span> <span class="n">basin_id</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">energy</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12e</span><span class="s2">  </span><span class="si">%12e</span><span class="s2">  </span><span class="si">%12d</span><span class="s2">  </span><span class="si">%12e</span><span class="s2">  </span><span class="si">%12f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_step</span><span class="p">,</span> <span class="n">reactant_id</span><span class="p">,</span> <span class="n">process_id</span><span class="p">,</span> <span class="n">product_id</span><span class="p">,</span> <span class="n">step_time</span><span class="p">,</span> <span class="n">total_time</span><span class="p">,</span> <span class="n">basin_id</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">energy</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="Dynamics.get">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Dynamics.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">split</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;reactant&quot;</span><span class="p">:</span>    <span class="nb">int</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                         <span class="s2">&quot;process&quot;</span><span class="p">:</span>     <span class="nb">int</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                         <span class="s2">&quot;product&quot;</span><span class="p">:</span>     <span class="nb">int</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+                         <span class="s2">&quot;steptime&quot;</span><span class="p">:</span>    <span class="nb">float</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span>
+                         <span class="s2">&quot;totaltime&quot;</span><span class="p">:</span>   <span class="nb">float</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="mi">5</span><span class="p">]),</span>
+                         <span class="s2">&quot;barrier&quot;</span><span class="p">:</span>     <span class="nb">float</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="mi">6</span><span class="p">]),</span>
+                         <span class="s2">&quot;prefactor&quot;</span><span class="p">:</span>   <span class="nb">float</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="mi">7</span><span class="p">])})</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+</div>
+
+
+<div class="viewcode-block" id="load_potfiles">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.load_potfiles">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_potfiles</span><span class="p">(</span><span class="n">pot_dir</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">pot_dir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pot_dir</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pot_dir</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">readlines</span><span class="p">()))</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pot_dir</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">st_mode</span>
+            <span class="n">ret</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="TableException">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.TableException">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TableException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Table</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that provides a nice io abstraction for table like data.  The data</span>
+<span class="sd">    is saved in a pretty printed format. Also provides nice data retrival</span>
+<span class="sd">    methods.</span>
+
+<span class="sd">    &gt;&gt;&gt; t = Table(&quot;sample.tbl&quot;, [&#39;id&#39;, &#39;name&#39;, &#39;age&#39; ])</span>
+<span class="sd">    &gt;&gt;&gt; t.eagerwrite = False</span>
+<span class="sd">    &gt;&gt;&gt; t.add_row({&#39;id&#39;:0,&#39;name&#39;:&quot;Sam&quot;,&quot;age&quot;:24})</span>
+<span class="sd">    &gt;&gt;&gt; t.add_row({&#39;id&#39;:1,&#39;name&#39;:&quot;David&quot;,&quot;age&quot;:50})</span>
+<span class="sd">    &gt;&gt;&gt; t.add_row({&#39;id&#39;:2,&#39;name&#39;:&quot;Anna&quot;,&quot;age&quot;:21})</span>
+<span class="sd">    &gt;&gt;&gt; t #doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">        id name  age</span>
+<span class="sd">        -- ----- ---</span>
+<span class="sd">        0  Sam   24</span>
+<span class="sd">        1  David 50</span>
+<span class="sd">        2  Anna  21</span>
+
+<span class="sd">    Rows can be accessed directly:</span>
+<span class="sd">    &gt;&gt;&gt; t.rows[1] #doctest: +SKIP</span>
+<span class="sd">        {&#39;age&#39;: 50, &#39;id&#39;: 1, &#39;name&#39;: &#39;David&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; t.max_value(&#39;age&#39;) #doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">        50</span>
+<span class="sd">    &gt;&gt;&gt; t.min_row(&#39;age&#39;) #doctest: +NORMALIZE_WHITESPACE +SKIP</span>
+<span class="sd">        {&#39;age&#39;: 21, &#39;id&#39;: 2, &#39;name&#39;: &#39;Anna&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; sorted(t.min_row(&#39;id&#39;).items()) #doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">        [(&#39;age&#39;, 24), (&#39;id&#39;, 0), (&#39;name&#39;, &#39;Sam&#39;)]</span>
+<span class="sd">    &gt;&gt;&gt; len(t) #doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">        3</span>
+<span class="sd">    &gt;&gt;&gt; sum(t.getcolumn(&#39;age&#39;)) #doctest: +NORMALIZE_WHITESPACE</span>
+<span class="sd">        95</span>
+<span class="sd">    &gt;&gt;&gt; t.write() #doctest: +SKIP</span>
+
+<span class="sd">    The table can be loaded from disk without specifying columns. This is</span>
+<span class="sd">    slightly unsafe because the columns can&#39;t be checked, but it could cut down</span>
+<span class="sd">    on the verbosity in some places.</span>
+<span class="sd">    &gt;&gt;&gt; t2 = Table(&quot;sample.tbl&quot;) #doctest: +SKIP</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+    <span class="c1">#XXX: This is the number of digits that a floating point number gets</span>
+    <span class="c1">#     serialized with. Should it be some sort of config option?</span>
+    <span class="c1">#     Or is there just a good default?</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columntypes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">floatprecision</span> <span class="o">=</span> <span class="mi">6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eagerwrite</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Table.init">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.init">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks to see if self.filename exists. If it does self.rows</span>
+<span class="sd">           will be initialized from disk.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TableException</span><span class="p">(</span><span class="s2">&quot;Columns are not optional for new tables&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Table.read">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eagerwrite</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">filecolumns</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filecolumns</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TableException</span><span class="p">(</span><span class="s2">&quot;Column name mismatch: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">filecolumns</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+        <span class="c1"># skip comment line</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">coli</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">field</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">field</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="k">pass</span>
+                <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">coli</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span>
+                <span class="n">coli</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eagerwrite</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writefilehandle</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">row</span>
+
+<div class="viewcode-block" id="Table.write">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.write">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="c1">#print(&quot;into table write: &quot;,self.filename)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writefilehandle</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Table.writefilehandle">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.writefilehandle">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">writefilehandle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filehandle</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">filehandle</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="s2">&quot;</span><span class="si">%-*s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39; &#39;</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">columntypes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%#-*.*G</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">floatprecision</span><span class="p">,</span>
+                                         <span class="n">row</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%-*s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Table.add_row">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.add_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">mismatched_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mismatched_columns</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TableException</span><span class="p">(</span><span class="s2">&quot;Mismatched columns </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">mismatched_columns</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">columntypes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columntypes</span><span class="p">[</span><span class="n">c</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="n">TableException</span><span class="p">(</span><span class="s2">&quot;Type mismatch for column </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">columntypes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">floatprecision</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columnwidths</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">c</span><span class="p">])))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eagerwrite</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Table.delete_row">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.delete_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">rows_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">rows_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="c1">#        map(self.rows.remove, rows_to_delete)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows_to_delete</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eagerwrite</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows_to_delete</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Table.delete_row_func">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.delete_row_func">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_row_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="n">rows_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]):</span>
+                <span class="n">rows_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="c1">#        map(self.rows.remove, rows_to_delete)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows_to_delete</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eagerwrite</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows_to_delete</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Table.find_value">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.find_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+                <span class="k">continue</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="Table.find_row">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.find_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">row</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">],</span><span class="n">value</span><span class="p">[</span><span class="n">column</span><span class="p">])</span><span class="o">==</span><span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">row</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="Table.min_value">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.min_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="nb">min</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Table.min_row">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.min_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_row</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="nb">min</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Table.max_value">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.max_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_value</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Table.max_row">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.max_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_row</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Table.get_row">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.get_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">row</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Table.get_rows">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.get_rows">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="Table.get_column">
+<a class="viewcode-back" href="../../apidocs/eon/eon.fileio.html#eon.fileio.Table.get_column">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+</div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

@@ -1,0 +1,1080 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eon.recycling &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eon/recycling';</script>
+    <link rel="canonical" href="https://eondocs.org/_modules/eon/recycling.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for eon.recycling</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">atoms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">EON_CONFIG</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigClass</span> <span class="c1"># Typing</span>
+
+<div class="viewcode-block" id="SB_Recycling">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SB_Recycling</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Constructs a super-basin recycling object.</span>
+<span class="sd">        The basic methods this undergoes are as follows:</span>
+
+<span class="sd">        *First, determine whether this is a continuation of a previous recycling effort.</span>
+<span class="sd">        *If it is a continuation, simply read in the metadata, and be ready to make suggestions</span>
+<span class="sd">            for saddles from where we left off previously.</span>
+<span class="sd">        *If it is a new recycling process, first determine whether or not we just left a superbasin.</span>
+<span class="sd">        *Then, if we did just leave a superbasin, obtain the list of states we will be recycling from,</span>
+<span class="sd">            (the list of states in the superbasin which was just exited)</span>
+<span class="sd">        *Next, make educated guesses about what the corresponding states in the new superbasin should look like.</span>
+<span class="sd">        *Then, using the states in the exited superbasin, find the process for each which leads to the corresponding state</span>
+<span class="sd">            in the new superbasin.</span>
+<span class="sd">        *Use the StateList object to make an actual state object of the corresponding states.</span>
+<span class="sd">        *Finally, it is ready to begin making saddle-search suggestions, using the corresponding pairs</span>
+<span class="sd">            of states, one from the old superbasin and its corresponding state in the new superbasin.</span>
+<span class="sd">        *In either case, this will use &quot;Recycling&quot; to actually generate the suggestions for each state pair.</span>
+
+<span class="sd">        states - the StateList object</span>
+<span class="sd">        previous_state - the state object just moved from</span>
+<span class="sd">        current_state - the state object just moved to</span>
+<span class="sd">        move_didstance - distance an atom must move to be in the &quot;hole&quot;</span>
+<span class="sd">        path - the path to the superbasin recycling directory.</span>
+<span class="sd">        sb_scheme - either &quot;mcamc&quot; or &quot;askmc&quot;</span>
+<span class="sd">        superbasining - if sb_scheme is &quot;mcamc&quot;, then this is the superbasining object; otherwise it is &quot;None&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">previous_state</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">move_distance</span><span class="p">,</span> <span class="n">recycle_save</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">sb_scheme</span><span class="p">,</span> <span class="n">superbasining</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize the data for the super-basin recycling object. &quot;&quot;&quot;</span>
+        <span class="c1"># Establish the base data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span> <span class="o">=</span> <span class="n">previous_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">current_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_distance</span> <span class="o">=</span> <span class="n">move_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recycle_save</span> <span class="o">=</span> <span class="n">recycle_save</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="o">=</span> <span class="n">sb_scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">superbasining</span> <span class="o">=</span> <span class="n">superbasining</span>
+
+        <span class="c1"># Establish the working directory.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># Read in the metadata from before.  This sets the following:</span>
+        <span class="c1"># self.sb_state_nums, self.on_state_num, and self.in_progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">()</span>
+        <span class="c1"># If the passed current_state is not in the current sb_state_nums from metadata,</span>
+        <span class="c1"># check to see if this &quot;previous_state&quot; was in a superbasin, and if it was,</span>
+        <span class="c1"># this is a new superbasin recycling process.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># Get sb_state_nums and the sb_states</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="o">==</span> <span class="s2">&quot;mcacm&quot;</span><span class="p">:</span>
+                <span class="c1"># Getting the superbasin that the previous state was in (if it was in one)</span>
+                <span class="n">containing_sb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasining</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="p">)</span>
+                <span class="c1"># If there was a return value other than None,</span>
+                <span class="k">if</span> <span class="n">containing_sb</span><span class="p">:</span>
+                    <span class="c1"># Get the states in the superbasin</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span> <span class="o">=</span> <span class="n">containing_sb</span><span class="o">.</span><span class="n">states</span>
+                    <span class="c1"># Find the &quot;real&quot; previous state -- the state in the basin which has</span>
+                    <span class="c1"># the fastest process leading to the current state.</span>
+                    <span class="c1"># NOTE -- this may be problematic if multiple states in the basin can lead</span>
+                    <span class="c1"># to the current state or if multpile processes can go the same state from</span>
+                    <span class="c1"># a given superbasin state... Not really sure of the best way to deal with that.</span>
+                    <span class="n">fastest</span> <span class="o">=</span> <span class="mf">1e-300</span>
+                    <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">:</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">load_process_table</span><span class="p">()</span>
+                        <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">procs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">pid</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">pid</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">fastest</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span> <span class="o">=</span> <span class="n">state</span>
+                            <span class="n">prev_state_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                    <span class="c1"># Reorganize the states so that the &#39;corresponding&#39; state is not defined.</span>
+                    <span class="c1"># This is rather ugly, but will be convenient for keeping track of the corresponding states.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span> <span class="o">=</span> <span class="p">[[</span><span class="n">state</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">]</span>
+                    <span class="c1"># Get the state numbers as well.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span> <span class="o">=</span> <span class="p">[[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">]</span>
+                    <span class="c1"># Place the current state into its &#39;corresponding&#39; position.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">[</span><span class="n">prev_state_index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span>
+                    <span class="c1"># Make the states that we hope to find in the next superbasin.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generate_corresponding_states</span><span class="p">()</span>
+                <span class="c1"># Otherwise, the previous state was not in a superbasin -- we&#39;re done for now.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="o">==</span> <span class="s2">&quot;askmc&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;current_sb_states&quot;</span><span class="p">)):</span>
+                    <span class="n">fi</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;current_sb_states&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+                    <span class="n">fi</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># The header</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">fi</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+                    <span class="n">fi</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="c1"># If the previous state was not in the last superbasin</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span> <span class="o">=</span> <span class="p">[[</span><span class="n">number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="c1"># The previous state *was* in the last superbasin</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># Find the index of the previous state.</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">)):</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+                                <span class="n">prev_state_index</span> <span class="o">=</span> <span class="n">i</span>
+                                <span class="k">break</span>
+                        <span class="c1"># Reorganize the state numbers so that the &#39;corresponding&#39; state is not defined.</span>
+                        <span class="c1"># This is rather ugly, but will be convenient for keeping track of the corresponding states.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span> <span class="o">=</span> <span class="p">[[</span><span class="n">number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">]</span>
+                        <span class="c1"># Place the current state into its &#39;corresponding&#39; position.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">[</span><span class="n">prev_state_index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span>
+                        <span class="c1"># Make the state objects of these states.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">]</span>
+                        <span class="c1"># Make the states that we hope to find in the next superbasin.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">generate_corresponding_states</span><span class="p">()</span>
+                <span class="c1"># If askmc hasn&#39;t even made a basin yet, we won&#39;t be doing recycling.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># If we&#39;re still in the middle of a previous superbasin recycling process,</span>
+        <span class="c1"># use the established data and remake the list of state objects.</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+                               <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SB_Recycling.get_process_id">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling.get_process_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_process_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state_procs</span><span class="p">,</span> <span class="n">next_state_num</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the process id of the process going from the current state</span>
+<span class="sd">            to the next state (number). &quot;&quot;&quot;</span>
+        <span class="n">next_state_process_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_state_procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">current_state_procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;product&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">next_state_num</span><span class="p">:</span>
+                <span class="n">next_state_process_id</span> <span class="o">=</span> <span class="n">process_id</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">next_state_process_id</span></div>
+
+
+<div class="viewcode-block" id="SB_Recycling.make_suggestion">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling.make_suggestion">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_suggestion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This will use the recycling class to make saddle search suggestions. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_metadata</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="n">ref_state_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+        <span class="n">ref_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">[</span><span class="n">ref_state_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">recycler</span> <span class="o">=</span> <span class="n">Recycling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="n">ref_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recycle_save</span><span class="p">,</span> <span class="n">from_sb</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">sugg_saddle</span><span class="p">,</span> <span class="n">sugg_mode</span> <span class="o">=</span> <span class="n">recycler</span><span class="o">.</span><span class="n">make_suggestion</span><span class="p">()</span>
+        <span class="c1"># Write the data before we send the search recommendation, because akmc.py *may* be about to terminate.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_metadata</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">sugg_saddle</span><span class="p">,</span> <span class="n">sugg_mode</span></div>
+
+
+<div class="viewcode-block" id="SB_Recycling.write_metadata">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling.write_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Write to disk the superbasin state list, and the new possibilities to consider.</span>
+<span class="sd">            Also write how far along in this superbasin recycling process we are. &quot;&quot;&quot;</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;recycling_data.txt&quot;</span><span class="p">)</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Superbasin Recycling Metadata</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&#39;Prev_Superbasin_state_list&#39; = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>          <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&#39;in_progress&#39; = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>                         <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SB_Recycling.read_metadata">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling.read_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Read the metadata and return the superbasin state list, the &quot;current/previous&quot;</span>
+<span class="sd">            states, and how far along in the superbasin recycling process we are. &quot;&quot;&quot;</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;recycling_data.txt&quot;</span><span class="p">)</span>
+        <span class="c1"># If the metadata is not there yet,</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fi</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">fi</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># The header</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span>  <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">fi</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span>    <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">fi</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">fi</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SB_Recycling.generate_corresponding_states">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling.generate_corresponding_states">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_corresponding_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Generate the list of reactants expected as part of the new superbasin.</span>
+<span class="sd">            Then, use the StateList object to create the actual states. &quot;&quot;&quot;</span>
+        <span class="c1"># First, create the expected states.</span>
+        <span class="c1"># Only start/continue this process if there hasn&#39;t already been a stop flag.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># Only generate states from states in the superbasin which are *not* the previous state.</span>
+        <span class="n">indices_to_gen_from</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">))</span>
+                               <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">number</span><span class="p">]</span>
+        <span class="n">current_reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+        <span class="n">previous_reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+        <span class="c1"># First generate a list of atoms which have moved enough to be considered &quot;in the hole&quot;</span>
+        <span class="n">num_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_reactant</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">per_atom_norm</span><span class="p">(</span><span class="n">current_reactant</span><span class="o">.</span><span class="n">r</span> <span class="o">-</span> <span class="n">previous_reactant</span><span class="o">.</span><span class="n">r</span><span class="p">,</span>
+                                   <span class="n">current_reactant</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+        <span class="n">moved</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_atoms</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">diff</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_distance</span><span class="p">:</span>
+                <span class="n">moved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1"># Now, generate what we hope will look like the new states.</span>
+        <span class="c1"># There should be as many as are in the sb state list less the original, premade one.</span>
+        <span class="n">state_possibilities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">indices_to_gen_from</span><span class="p">:</span>
+            <span class="n">sb_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">sb_state_reactant</span> <span class="o">=</span> <span class="n">sb_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+            <span class="c1"># Take the previous reactant as a base.</span>
+            <span class="n">new_state_reactant</span> <span class="o">=</span> <span class="n">sb_state_reactant</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># Try to take all the atoms that moved in the trigger process and move them in each of the sb_states.</span>
+            <span class="c1"># If any of them cannot be moved as they did in the trigger process (i.e. because they&#39;re not in the same place as in &quot;previous_state&quot;),</span>
+            <span class="c1"># then one of the superbasin atoms must have moved during the triggering process.</span>
+            <span class="c1"># Thus, scrap this whole super-basin recycling effort!</span>
+            <span class="c1"># (If any of the followng do not get changed to a 1, toss the sb recycling.)</span>
+            <span class="n">all_clear</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">moved</span><span class="p">)</span>
+            <span class="c1"># Move the atoms that moved in the process that initiated this recycling.</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">moved</span><span class="p">:</span>
+                <span class="c1"># If the any of the atoms has the same basic location and the same name,</span>
+                <span class="c1"># it will be considered the same atom, and will be moved as it did in the triggering process.</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_atoms</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sb_state_reactant</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">previous_reactant</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_distance</span>
+                      <span class="ow">and</span> <span class="n">sb_state_reactant</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">previous_reactant</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                        <span class="c1"># Move it to where it moved in the trigger process</span>
+                        <span class="n">new_state_reactant</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_reactant</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">all_clear</span><span class="p">[</span><span class="n">moved</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+            <span class="c1"># If we were able to move all of them successfully</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_clear</span><span class="p">:</span>
+                <span class="n">state_possibilities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_state_reactant</span><span class="p">)</span>
+            <span class="c1"># Otherwise, this should no longer be &quot;in progress&quot;,</span>
+            <span class="c1"># and there&#39;s no use going on (sniffle).</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">return</span>
+
+        <span class="c1"># Next, having created what we expect the corresponding states in</span>
+        <span class="c1"># the superbasin to look like, create the actual states.</span>
+        <span class="c1"># First, find the process that got us from the previous state to the current state.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">load_process_table</span><span class="p">()</span>
+        <span class="n">ref_pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_process_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">procs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+        <span class="n">ref_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">ref_pid</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span>
+        <span class="n">ref_barrier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">ref_pid</span><span class="p">][</span><span class="s2">&quot;barrier&quot;</span><span class="p">]</span>
+        <span class="c1"># Then, if we find a similar process from the other sb_states, which leads to a</span>
+        <span class="c1"># state that is similar to one of our generated possibilities, it&#39;s a keeper.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices_to_gen_from</span><span class="p">:</span>
+            <span class="n">sb_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">sb_state</span><span class="o">.</span><span class="n">load_process_table</span><span class="p">()</span>
+            <span class="n">state_path</span> <span class="o">=</span> <span class="n">sb_state</span><span class="o">.</span><span class="n">path</span>
+            <span class="n">product_con</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">sb_state</span><span class="o">.</span><span class="n">procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="c1"># If the process &quot;looks&quot; similar -- it has a rate less than an order of magnitude different, and a barrier less than 0.2 eV different.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">sb_state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">ref_rate</span><span class="p">,</span> <span class="n">ref_rate</span> <span class="o">/</span> <span class="n">sb_state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;rate&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">10</span>
+                  <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sb_state</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">process_id</span><span class="p">][</span><span class="s2">&quot;barrier&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">ref_barrier</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">):</span>
+                    <span class="c1"># Manually load the product.con for the process id and see if it&#39;s similar to the &quot;state_possibility&quot;</span>
+                    <span class="n">product_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">state_path</span><span class="p">,</span> <span class="s2">&quot;procdata&quot;</span><span class="p">,</span> <span class="s2">&quot;product_</span><span class="si">%d</span><span class="s2">.con&quot;</span> <span class="o">%</span> <span class="n">process_id</span><span class="p">)</span>
+                    <span class="n">fi</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">product_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+                    <span class="n">product_con</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">fi</span><span class="p">)</span>
+                    <span class="n">fi</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">atoms</span><span class="o">.</span><span class="n">identical</span><span class="p">(</span><span class="n">product_con</span><span class="p">,</span> <span class="n">state_possibilities</span><span class="p">[</span><span class="n">indices_to_gen_from</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_distance</span><span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">product_con</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">product_con</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_progress</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">return</span>
+            <span class="c1"># Now that we know which process from the reference state</span>
+            <span class="c1"># goes to the desired state, make that state.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_product_state</span><span class="p">(</span><span class="n">sb_state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">process_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_nums</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_states</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">number</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Recycling">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.Recycling">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Recycling</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Constructs a saddle point recycling object.</span>
+
+<span class="sd">        states - the StateList object</span>
+<span class="sd">        suggested_ref_state - state to make suggestions from</span>
+<span class="sd">        curr_state - state to make suggestions for</span>
+<span class="sd">        move_distance - distance an atom must move to be in the &quot;hole&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">suggested_ref_state</span><span class="p">,</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">move_distance</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">from_sb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize the data for the recycling object.</span>
+<span class="sd">            If there is a file containing the data for the current state,</span>
+<span class="sd">            use this file.  Otherwise, the previous state will be the reference. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span> <span class="o">=</span> <span class="n">suggested_ref_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">new_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;recycling_info&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_sb</span> <span class="o">=</span> <span class="n">from_sb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="n">save</span>
+        <span class="c1"># If this state has already used the recycling process, we know</span>
+        <span class="c1"># most of what we need about the state.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_path</span><span class="p">):</span>
+            <span class="c1"># Establish (1) self.process_number, (2) self.num_procs,</span>
+            <span class="c1"># (3) self.in_hole, (4) and self.not_in_hole.</span>
+            <span class="c1"># Overwrite self.ref_state if not called by SB_recycling</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_recycling_metadata</span><span class="p">()</span>
+            <span class="c1"># Re-load the current and reference reactants.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+        <span class="c1"># Otherwise, this is a new recycling process;</span>
+        <span class="c1"># start with the first process, find the total number of processes,</span>
+        <span class="c1"># and determine what is and isn&#39;t in the hole</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_number</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># Load the process table to determine the number</span>
+            <span class="c1"># of processes to recycle.</span>
+            <span class="c1"># Can&#39;t use the rate-table because that skips some processes.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span><span class="o">.</span><span class="n">load_process_table</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_procs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span><span class="o">.</span><span class="n">procs</span><span class="p">)</span>
+
+            <span class="c1"># Load the reference and current reactants.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+
+            <span class="c1"># GH: using the active region for all searches</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_atoms</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_process_atoms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_reactant</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_eps_r</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_active_region</span><span class="p">)</span>
+            <span class="c1">#if self.config.saddle_method == &#39;dynamics&#39;:</span>
+            <span class="c1">#    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,self.config.comp_eps_r,self.config.recycling_active_region)</span>
+            <span class="c1">#else:</span>
+            <span class="c1">#    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,self.config.comp_eps_r)</span>
+
+            <span class="c1"># Make a vector of distances between previous</span>
+            <span class="c1"># current positions for each atom in the state.</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">per_atom_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span><span class="o">.</span><span class="n">r</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_reactant</span><span class="o">.</span><span class="n">r</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+
+            <span class="c1"># The saddle will be taken as the reactant and will be modified</span>
+            <span class="c1"># (along with the mode) for each suggested process</span>
+            <span class="c1"># and then recommended as a search.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moved</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unmoved</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">diff</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">move_distance</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">unmoved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">moved</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1"># Set up the mode to be modified for process suggestions.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Recycling.make_suggestion">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.Recycling.make_suggestion">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_suggestion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Makes a saddle suggestion and returns True.</span>
+<span class="sd">            If no more saddle suggestions are possible</span>
+<span class="sd">            (end of process table has been reached), returns False. &quot;&quot;&quot;</span>
+        <span class="c1"># If we&#39;ve gone through all the possible processes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_number</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_procs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_recycling_metadata</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="c1"># Make a fresh copy of the &quot;saddle&quot; we&#39;re going to send,</span>
+        <span class="c1"># based on the current reactant.</span>
+        <span class="n">saddle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curr_reactant</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Determine what happens in the reference state saddle</span>
+        <span class="c1"># for the current process number.</span>
+        <span class="n">process_saddle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span><span class="o">.</span><span class="n">get_process_saddle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_number</span><span class="p">)</span>
+        <span class="n">process_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span><span class="o">.</span><span class="n">get_process_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_number</span><span class="p">)</span>
+
+        <span class="c1"># Now, for all the things that did *not* move getting to this state,</span>
+        <span class="c1"># suggest this particular process&#39;s position to them.</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unmoved</span><span class="p">:</span>
+            <span class="n">saddle</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_saddle</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_mode</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># And, for all the things that *did* move getting to this state,</span>
+        <span class="c1"># suggest the *motion* that they had available before to the</span>
+        <span class="c1"># current position they&#39;re in.</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">moved</span><span class="p">:</span>
+            <span class="n">movement</span> <span class="o">=</span> <span class="n">process_saddle</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_reactant</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">saddle</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">movement</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_mode</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Save suggestions?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">:</span>
+            <span class="n">save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;saddle_suggestions&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">save_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+            <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s2">&quot;proc_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">process_number</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">fo</span><span class="p">,</span> <span class="n">saddle</span><span class="p">)</span>
+            <span class="n">fo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># Make a note of the fact that we&#39;ve tried to recycle another saddle.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_number</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_recycling_metadata</span><span class="p">()</span>
+        <span class="c1"># Note: Uncomment the final return values to also return the list of indices of atoms</span>
+        <span class="c1"># which are not in the hole and in the hole.  No change should need to be made to the</span>
+        <span class="c1"># line in akmc.py which calls this function (unless akmc.py wants them as well).</span>
+        <span class="k">return</span> <span class="n">saddle</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Recycling.read_recycling_metadata">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.Recycling.read_recycling_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_recycling_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Open the recycling metadata file located in the current state&#39;s directory.</span>
+<span class="sd">            Return the state from which suggestions are being made.</span>
+<span class="sd">            Return the process number current up for recycling consideration. &quot;&quot;&quot;</span>
+        <span class="n">fi</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">fi</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="c1"># The header</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="c1"># If called from superbasin recycling, use its</span>
+        <span class="c1"># recommendation for reference state.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_sb</span><span class="p">:</span>
+            <span class="n">ref_state_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">ref_state_num</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_procs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moved</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unmoved</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_atoms</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Recycling.write_recycling_metadata">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.Recycling.write_recycling_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_recycling_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Write the recycling metadata file located in the current state&#39;s directory. &quot;&quot;&quot;</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Recycling Metadata</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Reference State:  </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref_state</span><span class="o">.</span><span class="n">number</span><span class="p">))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Current Process Number = </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_number</span><span class="p">))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Number of processes = </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_procs</span><span class="p">))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Indices of &#39;moved&#39; atoms = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moved</span><span class="p">)))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Indices of &#39;unmoved&#39; atoms = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unmoved</span><span class="p">)))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Indices of &#39;process&#39; atoms = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_atoms</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="Recycling.get_moved_indices">
+<a class="viewcode-back" href="../../apidocs/eon/eon.recycling.html#eon.recycling.Recycling.get_moved_indices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_moved_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the indices of atoms that moved in the process getting</span>
+<span class="sd">            to the current state from the reference state. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">moved</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

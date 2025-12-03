@@ -1,0 +1,1335 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eon.communicator &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eon/communicator';</script>
+    <link rel="canonical" href="https://eondocs.org/_modules/eon/communicator.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for eon.communicator</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">array</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;communicator&#39;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span><span class="p">,</span> <span class="n">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tarfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">EON_CONFIG</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigClass</span> <span class="c1"># Typing</span>
+
+<div class="viewcode-block" id="tryint">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.tryint">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tryint</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="alphanum_key">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.alphanum_key">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">alphanum_key</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Turn a string into a list of string and number chunks.</span>
+<span class="sd">        &quot;z23a&quot; -&gt; [&quot;z&quot;, 23, &quot;a&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span> <span class="n">tryint</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;([0-9]+)&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="sort_nicely">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.sort_nicely">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sort_nicely</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Sort the given list in the way that humans expect.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">alphanum_key</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_communicator">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.get_communicator">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_communicator</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+    <span class="c1"># This is an ugly hack to &quot;remember&quot; a communicator as it isn&#39;t possible to construct</span>
+    <span class="c1"># the MPI communicator multiple times and it needs to remember its object level variables.</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">get_communicator</span><span class="p">,</span> <span class="s1">&#39;comm&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_communicator</span><span class="o">.</span><span class="n">comm</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span><span class="o">==</span><span class="s1">&#39;cluster&#39;</span><span class="p">:</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="n">Script</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span><span class="p">,</span>
+                                   <span class="n">config</span><span class="o">.</span><span class="n">comm_script_name_prefix</span><span class="p">,</span>
+                                   <span class="n">config</span><span class="o">.</span><span class="n">comm_script_path</span><span class="p">,</span>
+                                   <span class="n">config</span><span class="o">.</span><span class="n">comm_script_queued_jobs_cmd</span><span class="p">,</span>
+                                   <span class="n">config</span><span class="o">.</span><span class="n">comm_script_cancel_job_cmd</span><span class="p">,</span>
+                                   <span class="n">config</span><span class="o">.</span><span class="n">comm_script_submit_job_cmd</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span><span class="o">==</span><span class="s1">&#39;local&#39;</span><span class="p">:</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="n">Local</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_local_client</span><span class="p">,</span>
+                                  <span class="n">config</span><span class="o">.</span><span class="n">comm_local_ncpus</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_type</span><span class="o">==</span><span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">comm_type</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is an unknown communicator.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+    <span class="n">get_communicator</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span>
+    <span class="k">return</span> <span class="n">comm</span></div>
+
+
+
+<div class="viewcode-block" id="NotImplementedError">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.NotImplementedError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NotImplementedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="CommunicatorError">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.CommunicatorError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CommunicatorError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="EONClientError">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.EONClientError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EONClientError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An EON client finished without outputting results, it probably crashed.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="Communicator">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Communicator</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">scratchpath</span><span class="p">):</span>
+            <span class="c1"># should probably log this event</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">scratchpath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span> <span class="o">=</span> <span class="n">scratchpath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bundle_size</span> <span class="o">=</span> <span class="n">bundle_size</span>
+
+<div class="viewcode-block" id="Communicator.submit_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator.submit_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Throws CommunicatorError if fails.&#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Communicator.get_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator.get_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Returns a list of dictionaries containing the results.&#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Communicator.get_queue_size">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator.get_queue_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Returns the number of items waiting to run in the queue.&#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Communicator.cancel_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator.cancel_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statenumber</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Returns the number of workunits that were canceled.&#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Communicator.get_bundle_size">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator.get_bundle_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bundle_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">job_path</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># List files in job_path.</span>
+            <span class="n">fnames</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">job_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># job_path is already a list of filenames.</span>
+            <span class="n">fnames</span> <span class="o">=</span> <span class="n">job_path</span>
+        <span class="c1"># Count results*.dat files.</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;results(?:_\d+)?.dat$&#39;</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span>
+                   <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span>
+                   <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+        <span class="n">is_bundle</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s2">&quot;results.dat&quot;</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">size</span><span class="p">,</span> <span class="n">is_bundle</span></div>
+
+
+<div class="viewcode-block" id="Communicator.unbundle">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator.unbundle">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unbundle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultpath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;This method unbundles multiple jobs into multiple single</span>
+<span class="sd">           jobs so the akmc script can process them.</span>
+
+<span class="sd">           If the job did not return results (probably because it</span>
+<span class="sd">           crashed or was canceled), this method will raise</span>
+<span class="sd">           EONClientError.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># These are the files in the result directory that we keep.</span>
+        <span class="n">jobpaths</span> <span class="o">=</span> <span class="p">[</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resultpath</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">resultpath</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resultpath</span><span class="p">,</span><span class="n">d</span><span class="p">))</span> <span class="p">]</span>
+
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\w+)_(\d+)(\.\w+)&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="n">jobpaths</span><span class="p">:</span>
+            <span class="n">basename</span><span class="p">,</span> <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_result</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="c1"># Need to figure out how many jobs were bundled together</span>
+            <span class="c1"># and then create the new job directories with the split files.</span>
+            <span class="n">bundle_size</span><span class="p">,</span> <span class="n">is_bundle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bundle_size</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">bundle_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Client running in </span><span class="si">%s</span><span class="s2"> returned no results. &quot;</span>
+                             <span class="s2">&quot;Check its output for errors.&quot;</span> <span class="o">%</span> <span class="n">jobpath</span><span class="p">)</span>
+                <span class="c1"># GH: just log the error and continue instead of quitting</span>
+                <span class="c1">#raise EONClientError(&quot;Client running in %s returned no results. &quot;</span>
+                <span class="c1">#                     &quot;Check its output for errors.&quot; % jobpath)</span>
+                <span class="k">continue</span>
+
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">dirname</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bundle_size</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bundle</span><span class="p">:</span>
+                <span class="c1"># Only a single task inside this job, no need to unbundle.</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="s2">&quot;*.*&quot;</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.con&quot;</span><span class="p">)</span> <span class="ow">or</span>
+                            <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.dat&quot;</span><span class="p">)):</span>
+                        <span class="k">continue</span>
+                    <span class="n">rootname</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+                    <span class="n">filedata</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                    <span class="c1"># add result to results</span>
+                    <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">fname</span><span class="p">]</span> <span class="o">=</span> <span class="n">filedata</span>
+                    <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Several tasks bundled inside this job, we need to unbundle.</span>
+                <span class="n">filenames</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jobpath</span><span class="p">,</span><span class="s2">&quot;*_[0-9]*.*&quot;</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.con&quot;</span><span class="p">)</span> <span class="ow">or</span>
+                            <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.dat&quot;</span><span class="p">)):</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># parse filename</span>
+                    <span class="n">rootname</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+                    <span class="c1"># Load data into stringIO object (should we just return filehandles?)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+                        <span class="n">filedata</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">IOError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to read file </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># add result to results</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">filedata</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+
+            <span class="c1"># XXX: UGLY: We need a way to check if there are no results.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())]):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to find a result.dat file for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">yield</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="Communicator.make_bundles">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Communicator.make_bundles">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_bundles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;This method is a generator that bundles together multiple jobs into a single job.</span>
+<span class="sd">           Example usage:</span>
+<span class="sd">               for jobpath in self.make_bundles(data, invariants):</span>
+<span class="sd">                   do_stuff()&#39;&#39;&#39;</span>
+
+        <span class="c1"># Split jobpaths in to lists of size self.bundle_size.</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">bundle_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bundle_size</span><span class="p">)</span> <span class="p">]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+            <span class="c1"># create the bundle&#39;s directory</span>
+
+            <span class="n">job_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span> <span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">job_path</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">invariants</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">job_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+                <span class="n">file_contents</span><span class="p">,</span> <span class="n">file_permissions</span> <span class="o">=</span> <span class="n">invariants</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+<span class="c1">#                f.write(invariants[filename].getvalue())</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_contents</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">job_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">file_permissions</span><span class="p">)</span>
+
+            <span class="c1"># Concatenate all of the displacement and modes together.</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">basename</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                    <span class="n">splitname</span> <span class="o">=</span> <span class="n">basename</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splitname</span><span class="p">)</span><span class="o">!=</span><span class="mi">2</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bundle_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">filename</span> <span class="o">=</span> <span class="n">basename</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%d</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">splitname</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">,</span> <span class="n">splitname</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">job_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">job</span><span class="p">[</span><span class="n">basename</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Returns the jobpath to the new bigger workunit.</span>
+            <span class="k">yield</span> <span class="n">job_path</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MPI">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MPI</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="kn">import</span> <span class="n">COMM_WORLD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">COMM_WORLD</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_ranks</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EON_CLIENT_RANKS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_ranks</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">resume_jobs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resume_jobs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">d</span><span class="p">))</span> <span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">%i</span><span class="s2"> jobs to resume in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resume_jobs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MPI.submit_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.submit_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+        <span class="n">ready_ranks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ready_ranks</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bundles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+            <span class="n">rank</span> <span class="o">=</span> <span class="n">ready_ranks</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1">#buf = array(&#39;c&#39;, jobpath+&#39;\0&#39;)</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+            <span class="n">bufval</span> <span class="o">=</span> <span class="n">jobpath</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="n">bufval</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Send</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MPI.run_resume_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.run_resume_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_resume_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resume_jobs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span>
+        <span class="n">ready_ranks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ready_ranks</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resume_jobs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">break</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ready_ranks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">break</span>
+
+            <span class="n">jobdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resume_jobs</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">rank</span> <span class="o">=</span> <span class="n">ready_ranks</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+            <span class="n">jobpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">jobdir</span><span class="p">)</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1">#buf = array(&#39;c&#39;, jobpath+&#39;\0&#39;)</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+            <span class="n">bufval</span> <span class="o">=</span> <span class="n">jobpath</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="n">bufval</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Send</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MPI.get_ready_ranks">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.get_ready_ranks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_ready_ranks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ready_ranks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_ranks</span><span class="p">:</span>
+            <span class="n">ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Iprobe</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ready</span><span class="p">:</span>
+                <span class="c1"># logger.info(&quot;Rank %i is ready&quot; % rank)</span>
+                <span class="n">ready_ranks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ready_ranks</span></div>
+
+
+<div class="viewcode-block" id="MPI.get_queue_size">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.get_queue_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_resume_jobs</span><span class="p">()</span>
+        <span class="n">nready</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ready_ranks</span><span class="p">())</span>
+        <span class="n">nclients</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_ranks</span><span class="p">)</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">nclients</span> <span class="o">-</span> <span class="n">nready</span>
+
+        <span class="k">return</span> <span class="n">qs</span></div>
+
+
+<div class="viewcode-block" id="MPI.get_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.get_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;into get_results&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Moves work from scratchpath to results path.&#39;&#39;&#39;</span>
+<span class="c1">#        from mpi4py.MPI import ANY_SOURCE, Status</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">MPI</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after import&quot;</span><span class="p">)</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Status</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Iprobe</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">):</span>
+            <span class="c1">#buf = array(&#39;c&#39;, &#39;\0&#39;*1024)</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;S1&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Recv</span><span class="p">([</span><span class="n">buf</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">CHARACTER</span><span class="p">],</span> <span class="n">source</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1">#print(&quot;after Recv&quot;)</span>
+            <span class="c1">#print(&quot;buf: &quot;,buf)</span>
+            <span class="n">strterm</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">buf</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">strindex</span> <span class="o">=</span> <span class="n">strterm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1">#jobdir = buf[:buf.index(&#39;\0&#39;)].tostring()</span>
+            <span class="n">jobdir</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[:</span><span class="n">strindex</span><span class="p">]</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>
+            <span class="c1">#print(&quot;jobdir: &quot;,jobdir.decode())</span>
+            <span class="n">jobdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">jobdir</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="c1">#print(&quot;jobdir: &quot;,jobdir)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">jobdir</span><span class="p">),</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span><span class="p">,</span> <span class="n">jobdir</span><span class="p">))</span>
+            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">jobdir</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">jobdir</span><span class="p">),</span> <span class="n">dest_dir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="MPI.get_number_in_progress">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.get_number_in_progress">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EON_NUMBER_OF_CLIENTS&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="MPI.cancel_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.MPI.cancel_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="c1">#XXX: how to support this...</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Local">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Local</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">ncpus</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratchpath</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="c1"># number of cpus to use</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncpus</span> <span class="o">=</span> <span class="n">ncpus</span>
+
+        <span class="c1"># path to the client</span>
+        <span class="k">if</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client binary: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">client</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># is the client in the local directory?</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+            <span class="c1"># is the client in the path?</span>
+            <span class="k">elif</span> <span class="nb">sum</span><span class="p">([</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">client</span><span class="p">))</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span>
+                       <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find client binary: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">client</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+        <span class="c1"># don&#39;t let clients hang around if the script dies</span>
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Local.cleanup">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.cleanup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Kills the running eonclients.&#39;&#39;&#39;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Local.get_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.get_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Moves work from scratchpath to results path.&#39;&#39;&#39;</span>
+        <span class="n">jobdirs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">d</span><span class="p">))</span> <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">jobdir</span> <span class="ow">in</span> <span class="n">jobdirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">jobdir</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span><span class="p">,</span><span class="n">jobdir</span><span class="p">))</span>
+            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">jobdir</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">jobdir</span><span class="p">),</span> <span class="n">dest_dir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">result</span>
+
+        <span class="c1"># Clean out scratch directory</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">):</span>
+            <span class="n">path_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_name</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Local.check_job">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.check_job">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span> <span class="o">=</span> <span class="n">job</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job finished: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">jobpath</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;job failed: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Local.submit_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.submit_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Run up to ncpu number of clients to process the work in jobpaths.</span>
+<span class="sd">           The job directories are moved to the scratch path before the calculation</span>
+<span class="sd">           is run. This method doesn&#39;t return anything.&#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bundles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+            <span class="c1"># move the job directory to the scratch directory</span>
+            <span class="c1"># update jobpath to be in the scratch directory</span>
+            <span class="n">fstdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="s2">&quot;stdout.dat&quot;</span><span class="p">),</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">fstdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+            <span class="c1">#commands.getoutput(&quot;renice -n 20 -p %d&quot; % p.pid)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span><span class="n">jobpath</span><span class="p">))</span>
+
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncpus</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)):</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">retval</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">retval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">check_job</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="k">break</span>
+                <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="c1"># wait for everything to finish</span>
+        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Local.cancel_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.cancel_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="Local.get_queue_size">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.get_queue_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="Local.get_number_in_progress">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.get_number_in_progress">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Script">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Script</span><span class="p">(</span><span class="n">Communicator</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratch_path</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">name_prefix</span><span class="p">,</span> <span class="n">scripts_path</span><span class="p">,</span>
+                 <span class="n">queued_jobs_cmd</span><span class="p">,</span> <span class="n">cancel_job_cmd</span><span class="p">,</span> <span class="n">submit_job_cmd</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+        <span class="n">Communicator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scratch_path</span><span class="p">,</span> <span class="n">bundle_size</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scripts_path</span><span class="p">,</span> <span class="n">queued_jobs_cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_job_cmd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scripts_path</span><span class="p">,</span> <span class="n">cancel_job_cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scripts_path</span><span class="p">,</span> <span class="n">submit_job_cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scratch_path</span><span class="p">,</span> <span class="s2">&quot;script_job_ids&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_prefix</span> <span class="o">=</span> <span class="n">name_prefix</span>
+
+        <span class="c1"># read in job ids</span>
+        <span class="k">try</span><span class="p">:</span>
+<span class="c1">#            f = open(self.job_id_path, &quot;r&quot;)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">pass</span>
+
+<div class="viewcode-block" id="Script.save_jobids">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.save_jobids">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_jobids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="c1">#        f = open(self.job_id_path, &quot;w&quot;)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_id_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Script.get_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Moves work from scratchpath to results path.&#39;&#39;&#39;</span>
+        <span class="c1"># queued_jobs.sh jobid1 jobid2 jobid 3</span>
+        <span class="c1"># the inverse of the jobids returned is</span>
+        <span class="c1"># job dirs needs to map</span>
+        <span class="n">queued_jobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">()</span>
+
+        <span class="n">finished_jobids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">())</span>
+
+        <span class="n">finished_eonids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">jobid</span> <span class="ow">in</span> <span class="n">finished_jobids</span><span class="p">:</span>
+            <span class="n">finished_eonids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">jobid</span><span class="p">)))</span>
+
+        <span class="n">jobdirs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">d</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">finished_eonids</span> <span class="p">]</span>
+
+        <span class="c1">#try to return jobs in order</span>
+        <span class="n">sort_nicely</span><span class="p">(</span><span class="n">jobdirs</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">jobdir</span> <span class="ow">in</span> <span class="n">jobdirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">jobdir</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_results_path</span><span class="p">,</span><span class="n">jobdir</span><span class="p">))</span>
+            <span class="n">dest_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">jobdir</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scratchpath</span><span class="p">,</span><span class="n">jobdir</span><span class="p">),</span> <span class="n">dest_dir</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">bundle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unbundle</span><span class="p">(</span><span class="n">resultspath</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="Script.check_command">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.check_command">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">CommunicatorError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; returned a non-zero exit status&quot;</span><span class="o">%</span><span class="n">cmdname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Script.submit_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.submit_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jobpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_bundles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+            <span class="c1"># submit_job.sh jobname jobpath</span>
+            <span class="c1"># should return a jobid</span>
+            <span class="c1"># need to associate this jobid with our jobid</span>
+            <span class="n">jobpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">jobpath</span><span class="p">)</span>
+            <span class="n">jobname</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_prefix</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">jobpath</span><span class="p">))</span>
+            <span class="n">eon_jobid</span> <span class="o">=</span> <span class="n">jobname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">jobpath</span><span class="p">)</span>
+<span class="c1">#            status, output = commands.getstatusoutput(cmd)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">submit_job_cmd</span><span class="p">,</span><span class="n">jobname</span><span class="p">,</span><span class="n">jobpath</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_command</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+
+            <span class="n">jobid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">[</span><span class="n">jobid</span><span class="p">]</span> <span class="o">=</span> <span class="n">eon_jobid</span>
+
+            <span class="c1"># XXX: It is probably slow to save after EVERY job submission,</span>
+            <span class="c1">#      but is slow better than losing jobs?</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_jobids</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Script.cancel_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.cancel_state">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="c1"># cancel_job.sh jobid</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">job_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_job_cmd</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+            <span class="n">job_id_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+<span class="c1">#            status, output = commands.getstatusoutput(cmd)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_job_cmd</span><span class="p">,</span> <span class="n">job_id_string</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_command</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Job cancel failed with error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jobids</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_jobids</span><span class="p">()</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="Script.get_queued_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_queued_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queued_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="c1">#        status, output = commands.getstatusoutput(self.queued_jobs_cmd)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_command</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">queued_jobs_cmd</span><span class="p">)</span>
+        <span class="n">queued_job_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">queued_job_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobids</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">queued_job_ids</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Script.get_number_in_progress">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_number_in_progress">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_in_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="Script.get_queue_size">
+<a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Script.get_queue_size">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queue_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queued_jobs</span><span class="p">())</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

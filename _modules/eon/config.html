@@ -1,0 +1,984 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eon.config &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eon/config';</script>
+    <link rel="canonical" href="https://eondocs.org/_modules/eon/config.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for eon.config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+
+
+<div class="viewcode-block" id="ConfigSection">
+<a class="viewcode-back" href="../../apidocs/eon/eon.config.html#eon.config.ConfigSection">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigSection</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="ConfigKey">
+<a class="viewcode-back" href="../../apidocs/eon/eon.config.html#eon.config.ConfigKey">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigKey</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="ConfigClass">
+<a class="viewcode-back" href="../../apidocs/eon/eon.config.html#eon.config.ConfigClass">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigClass</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">yaml_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">BaseLoader</span><span class="p">)</span>
+<span class="c1">#        y = yaml.load(yaml_file)</span>
+        <span class="n">yaml_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">sectionName</span> <span class="ow">in</span> <span class="n">y</span><span class="p">:</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="n">ConfigSection</span><span class="p">(</span><span class="n">sectionName</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">y</span><span class="p">[</span><span class="n">sectionName</span><span class="p">][</span><span class="s1">&#39;options&#39;</span><span class="p">]:</span>
+                <span class="n">kattr</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">sectionName</span><span class="p">][</span><span class="s1">&#39;options&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+                <span class="n">ck</span> <span class="o">=</span> <span class="n">ConfigKey</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">kattr</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">],</span> <span class="n">kattr</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">])</span>
+                <span class="n">section</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ck</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;values&#39;</span> <span class="ow">in</span> <span class="n">kattr</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kattr</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]:</span>
+                        <span class="n">ck</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConfigClass.init">
+<a class="viewcode-back" href="../../apidocs/eon/eon.config.html#eon.config.ConfigClass.init">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_done</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_done</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">)):</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+                <span class="n">parser</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">j</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="nb">str</span> <span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">default</span><span class="p">))</span>
+
+        <span class="n">gave_config</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">config_file</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+                <span class="n">parser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Specified configuration file </span><span class="si">%s</span><span class="s2"> does not exist&quot;</span> <span class="o">%</span> <span class="n">config_file</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;config.ini&#39;</span><span class="p">):</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;config.ini&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;config.ini&#39;</span><span class="p">)</span>
+            <span class="n">gave_config</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># makes sections all lowercase</span>
+        <span class="n">psections</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span>
+        <span class="n">fsections</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">psections</span><span class="p">)):</span>
+            <span class="n">psections</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">psections</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fsections</span><span class="p">)):</span>
+            <span class="n">fsections</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">fsections</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="c1"># checks all sections in config.ini are in configparser</span>
+        <span class="n">config_error</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">psections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fsections</span><span class="p">:</span>
+                <span class="n">config_error</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;unknown section &quot;</span><span class="si">%s</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">s</span><span class="p">)</span>
+
+        <span class="c1"># checks all options in config.ini are in configparser</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)):</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">foptions</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">k</span><span class="o">.</span><span class="n">keys</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">foptions</span><span class="p">)):</span>
+                        <span class="n">foptions</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">foptions</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">o</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">foptions</span><span class="p">:</span>
+                            <span class="n">config_error</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;unknown option &quot;</span><span class="si">%s</span><span class="s1">&quot; in section &quot;</span><span class="si">%s</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="c1"># checks all options are the right type and if parser option has values config.ini is using one of those values</span>
+        <span class="k">for</span> <span class="n">psection</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+            <span class="n">poptions</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">psection</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fsection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">psection</span> <span class="o">==</span> <span class="n">fsection</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">fsection</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">poptions</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">o</span> <span class="o">==</span> <span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
+                                    <span class="k">try</span><span class="p">:</span>
+                                        <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">psection</span><span class="p">,</span><span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                                    <span class="k">except</span><span class="p">:</span>
+                                        <span class="n">config_error</span> <span class="o">=</span> <span class="kc">True</span>
+                                        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;option &quot;</span><span class="si">%s</span><span class="s1">&quot; in section &quot;</span><span class="si">%s</span><span class="s1">&quot; should be an integer</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">psection</span><span class="p">))</span>
+                                <span class="k">elif</span> <span class="n">k</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;float&quot;</span><span class="p">:</span>
+                                    <span class="k">try</span><span class="p">:</span>
+                                        <span class="n">x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">psection</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                                    <span class="k">except</span><span class="p">:</span>
+                                        <span class="n">config_error</span> <span class="o">=</span> <span class="kc">True</span>
+                                        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;option &quot;</span><span class="si">%s</span><span class="s1">&quot; of section &quot;</span><span class="si">%s</span><span class="s1">&quot; should be a float</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">psection</span><span class="p">))</span>
+                                <span class="k">elif</span> <span class="n">k</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;boolean&quot;</span><span class="p">:</span>
+                                    <span class="n">booleans</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">]</span>
+                                    <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">psection</span><span class="p">,</span><span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">booleans</span><span class="p">:</span>
+                                        <span class="n">config_error</span> <span class="o">=</span> <span class="kc">True</span>
+                                        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;option &quot;</span><span class="si">%s</span><span class="s1">&quot; of section &quot;</span><span class="si">%s</span><span class="s1">&quot; should be boolean</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">psection</span><span class="p">))</span>
+                                <span class="k">elif</span> <span class="n">k</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+                                    <span class="n">values</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">values</span>
+                                    <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">psection</span><span class="p">,</span><span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                                        <span class="n">Vnames</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                                        <span class="n">config_error</span> <span class="o">=</span> <span class="kc">True</span>
+                                        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;option &quot;</span><span class="si">%s</span><span class="s1">&quot; should be one of: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">psection</span><span class="p">,</span><span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">),</span><span class="n">Vnames</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">config_error</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;aborting: could not parse config.ini</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Main options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_job</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_temperature</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_checkpoint</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;checkpoint&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_random_seed</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;random_seed&#39;</span><span class="p">)</span>
+
+<span class="c1">#       try:</span>
+<span class="c1">#           self.main_random_seed = parser.getint(&#39;Main&#39;, &#39;random_seed&#39;)</span>
+<span class="c1">#           numpy.random.seed(self.main_random_seed)</span>
+<span class="c1">#       except:</span>
+<span class="c1">#           self.main_random_seed = None</span>
+
+        <span class="c1"># Structure Comparison options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_eps_e</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_difference&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_eps_r</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;distance_difference&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_use_identical</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;indistinguishable_atoms&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_check_rotation</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;check_rotation&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_brute_neighbors</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;brute_neighbors&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_neighbor_cutoff</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;neighbor_cutoff&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_use_covalent</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;use_covalent&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_covalent_scale</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;covalent_scale&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comp_remove_translation</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Structure Comparison&#39;</span><span class="p">,</span> <span class="s1">&#39;remove_translation&#39;</span><span class="p">)</span>
+
+        <span class="c1"># AKMC options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_confidence</span>                 <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s1">&#39;confidence&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_server_side_process_search</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s1">&#39;server_side_process_search&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">akmc_server_side_process_search</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Prefactor&#39;</span><span class="p">,</span> <span class="s1">&#39;default_value&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: you must provide a default prefactor when using server-side process search mode.&quot;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;jobs_per_bundle&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: you cannot use a bundle size other than 1 when using server-side process search mode.&quot;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_thermal_window</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s1">&#39;thermally_accessible_window&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_max_thermal_window</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s1">&#39;thermally_accessible_buffer&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_max_kmc_steps</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s1">&#39;max_kmc_steps&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_confidence_scheme</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s1">&#39;confidence_scheme&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_confidence_correction</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s2">&quot;confidence_correction&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_max_rate</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s2">&quot;max_rate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">akmc_eq_rate</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;AKMC&#39;</span><span class="p">,</span> <span class="s2">&quot;eq_rate&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Basin Hopping options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bh_initial_random_structure_probability</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Basin Hopping&#39;</span><span class="p">,</span> <span class="s1">&#39;initial_random_structure_probability&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bh_initial_state_pool_size</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Basin Hopping&#39;</span><span class="p">,</span> <span class="s1">&#39;initial_state_pool_size&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Path options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_root</span>         <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;main_directory&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_jobs_out</span>     <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;jobs_out&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_jobs_in</span>      <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;jobs_in&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_incomplete</span>   <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;incomplete&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_states</span>       <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;states&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_results</span>      <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;results&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_pot</span>          <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;potential_files&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_bh_minima</span>    <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;bh_minima&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Rye-requested check</span>
+        <span class="c1"># Should we have some kind of sanity-check module/function somewhere?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gave_config</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">samefile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_random_seed</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s1">&#39;prng.pkl&#39;</span><span class="p">)):</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">get_prng_state</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_random_seed</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_random_seed</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Communicator options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_job_bundle_size</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;jobs_per_bundle&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;num_jobs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm_job_max_size</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;max_jobs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_scratch</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;scratch&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_local_client</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;client_path&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_local_ncpus</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;number_of_CPUs&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;cluster&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_script_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;script_path&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_script_name_prefix</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;name_prefix&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_script_queued_jobs_cmd</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;queued_jobs&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_script_cancel_job_cmd</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;cancel_job&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm_script_submit_job_cmd</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Communicator&#39;</span><span class="p">,</span> <span class="s1">&#39;submit_job&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm_type</span> <span class="o">==</span> <span class="s1">&#39;mpi&#39;</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">mpiexcepthook</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">__excepthook__</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;exception occured on rank </span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span><span class="p">);</span>
+                <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">Abort</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">excepthook</span> <span class="o">=</span> <span class="n">mpiexcepthook</span>
+
+        <span class="c1"># Process Search options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_search_minimization_offset</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Process Search&#39;</span><span class="p">,</span> <span class="s1">&#39;minimization_offset&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_search_default_prefactor</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Prefactor&#39;</span><span class="p">,</span> <span class="s1">&#39;default_value&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_search_minimize_first</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Process Search&#39;</span><span class="p">,</span> <span class="s1">&#39;minimize_first&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Saddle Search options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;method&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saddle_search_max_iterations</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;max_iterations&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saddle_dynamics_temperature</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;dynamics_temperature&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_random_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_random_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_listed_atom_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_listed_atom_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_listed_type_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_listed_type_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_all_listed</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_all_listed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_under_coordinated_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_under_coordinated_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_least_coordinated_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_least_coordinated_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_not_FCC_HCP_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_not_FCC_HCP_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_not_TCP_BCC_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_not_TCP_BCC_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_not_TCP_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_not_TCP_weight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_water_weight</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_water_weight&#39;</span><span class="p">)</span> <span class="c1"># undocumented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdev_translation</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;stdev_translation&#39;</span><span class="p">)</span> <span class="c1"># undocumented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdev_rotation</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;stdev_rotation&#39;</span><span class="p">)</span> <span class="c1"># undocumented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule_list</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;molecule_list&#39;</span><span class="p">))</span> <span class="c1"># undocumented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disp_at_random</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;disp_at_random&#39;</span><span class="p">)</span> <span class="c1"># undocumented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disp_magnitude</span><span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_magnitude&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disp_radius</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_radius&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disp_min_norm</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_min_norm&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">void_bias_fraction</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;void_bias_fraction&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disp_max_coord</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_max_coordination&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_mode</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;random_mode&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">displace_listed_atom_weight</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disp_listed_atoms</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_atom_list&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disp_listed_atoms</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;None&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">disp_listed_atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">displace_listed_type_weight</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disp_listed_types</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_type_list&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disp_listed_types</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;None&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">disp_listed_types</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace_1d</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_1d&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_max_init_curvature</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;dynamics_max_init_curvature&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_mode_abort_curvature</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;zero_mode_abort_curvature&#39;</span><span class="p">)</span>
+
+        <span class="c1"># KDB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;KDB&#39;</span><span class="p">,</span> <span class="s1">&#39;use_kdb&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_only</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;KDB&#39;</span><span class="p">,</span> <span class="s1">&#39;kdb_only&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_scratch_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;kdb_scratch&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;kdb&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_nodupes</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;KDB&#39;</span><span class="p">,</span> <span class="s1">&#39;remove_duplicates&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_name</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;KDB&#39;</span><span class="p">,</span> <span class="s1">&#39;kdb_name&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_nf</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;KDB&#39;</span><span class="p">,</span> <span class="s1">&#39;kdb_nf&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_dc</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;KDB&#39;</span><span class="p">,</span> <span class="s1">&#39;kdb_dc&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kdb_mac</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;KDB&#39;</span><span class="p">,</span> <span class="s1">&#39;kdb_mac&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Recycling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recycling_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Recycling&#39;</span><span class="p">,</span> <span class="s1">&#39;use_recycling&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recycling_save_sugg</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Recycling&#39;</span><span class="p">,</span> <span class="s1">&#39;save_suggestions&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">recycling_on</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disp_moved_only</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disp_moved_only</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Recycling&#39;</span><span class="p">,</span> <span class="s1">&#39;displace_moved_only&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recycling_move_distance</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Recycling&#39;</span><span class="p">,</span> <span class="s1">&#39;move_distance&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recycling_active_region</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Recycling&#39;</span><span class="p">,</span> <span class="s1">&#39;active_region&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recycling_mass_weight_factor</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Recycling&#39;</span><span class="p">,</span> <span class="s1">&#39;mass_weight_factor&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Recycling&#39;</span><span class="p">,</span><span class="s1">&#39;use_sb_recycling&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_on</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_recycling_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;superbasin_recycling&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Coarse Graining</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;use_mcamc&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_state_file</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;state_file&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Paths&#39;</span><span class="p">,</span> <span class="s1">&#39;superbasins&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;superbasin_scheme&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_max_size</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;max_size&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="o">==</span> <span class="s1">&#39;transition_counting&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_tc_ntrans</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;number_of_transitions&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="o">==</span> <span class="s1">&#39;energy_level&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_el_energy_increment</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;energy_increment&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sb_scheme</span> <span class="o">==</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sb_rt_rate_threshold</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;rate_threshold&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sb_superbasin_confidence</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;superbasin_confidence&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">askmc_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;use_askmc&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">askmc_on</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_confidence</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_confidence&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_alpha</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_barrier_raise_param&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_gamma</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_high_barrier_def&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_barrier_test_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_barrier_test_on&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_connections_test_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_connections_test_on&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Optimizers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizers_max_iterations</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Optimizer&#39;</span><span class="p">,</span> <span class="s1">&#39;max_iterations&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Debug options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_interactive_shell</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;interactive_shell&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug_interactive_shell</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span><span class="o">,</span><span class="w"> </span><span class="nn">code</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGQUIT</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">code</span><span class="o">.</span><span class="n">interact</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="nb">locals</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_keep_bad_saddles</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_bad_saddles&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_keep_all_results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_all_result_files&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;result_files_path&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_register_extra_results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;register_extra_results&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_use_mean_time</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;use_mean_time&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_target_trajectory</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;target_trajectory&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_stop_criterion</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;stop_criterion&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_poll_period</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Potential&#39;</span><span class="p">,</span> <span class="s1">&#39;mpi_poll_period&#39;</span><span class="p">)</span>
+
+        <span class="k">del</span> <span class="n">parser</span></div>
+</div>
+
+
+<span class="c1"># XXX(rg): Very leaky global state here because.........?</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">ConfigClass</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

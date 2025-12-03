@@ -1,0 +1,1535 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eon.explorer &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/eon/explorer';</script>
+    <link rel="canonical" href="https://eondocs.org/_modules/eon/explorer.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for eon.explorer</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;explorer&#39;</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">atoms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">communicator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">displace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+<span class="c1">#import kdb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">recycling</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">eon_kdb</span> <span class="k">as</span> <span class="n">kdb</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">EON_CONFIG</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigClass</span> <span class="c1"># Typing</span>
+
+<div class="viewcode-block" id="get_minmodexplorer">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.get_minmodexplorer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_minmodexplorer</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">akmc_server_side_process_search</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ServerMinModeExplorer</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ClientMinModeExplorer</span></div>
+
+
+<div class="viewcode-block" id="Explorer">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.Explorer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Explorer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wuid_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_scratch</span><span class="p">,</span> <span class="s2">&quot;wuid&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span> <span class="o">=</span> <span class="n">superbasin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_wuid</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Explorer.load_wuid">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.Explorer.load_wuid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_wuid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wuid_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># In a superbasin search, WUIDs would be repeated. So</span>
+                <span class="c1"># we assume there will never be more than 1e6 searches</span>
+                <span class="c1"># per state, so we start at superbasin number times</span>
+                <span class="c1"># one million.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="o">.</span><span class="n">id</span> <span class="o">*</span> <span class="mi">1000000</span></div>
+
+
+<div class="viewcode-block" id="Explorer.save_wuid">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.Explorer.save_wuid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_wuid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wuid_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MinModeExplorer">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.MinModeExplorer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MinModeExplorer</span><span class="p">(</span><span class="n">Explorer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">previous_state</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init MinModeExplorer.</span>
+
+<span class="sd">        If superbasin is passed, all states in the superbasin will be</span>
+<span class="sd">        searched until all of them have the required confidence. It</span>
+<span class="sd">        will also lead to a different confidence definition being</span>
+<span class="sd">        used, which takes only processes exiting the SB into account.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Explorer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span> <span class="o">=</span> <span class="n">previous_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">communicator</span><span class="o">.</span><span class="n">get_communicator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_on</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nrecycled</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recycler</span> <span class="o">=</span> <span class="n">recycling</span><span class="o">.</span><span class="n">Recycling</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">previous_state</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_move_distance</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_save_sugg</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># If we plan to only displace atoms that moved getting to the current state.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">disp_moved_only</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">moved_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recycler</span><span class="o">.</span><span class="n">process_atoms</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">moved_atoms</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_on</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">queried</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">,</span> <span class="s2">&quot;queried&quot;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">queried</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">queried</span><span class="p">:</span>
+                <span class="n">queried</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_scratch_path</span><span class="p">,</span> <span class="s2">&quot;queried&quot;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">queried</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">q</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">kdb</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displace</span> <span class="o">=</span> <span class="n">displace</span><span class="o">.</span><span class="n">DisplacementManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="p">,</span> <span class="n">moved_atoms</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MinModeExplorer.explore">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.MinModeExplorer.explore">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">explore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_results</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_jobs</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_cancelled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">cancel_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cancelled </span><span class="si">%i</span><span class="s2"> workunits from state </span><span class="si">%i</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">num_cancelled</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+            <span class="c1">#XXX: Do we ever call explore on a completed state twice?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_on</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding relevant processes to kinetic database&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">process_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_process_ids</span><span class="p">():</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">kdb</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">process_id</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;kdb insert: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MinModeExplorer.generate_displacement">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.MinModeExplorer.generate_displacement">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_displacement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_on</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recycler</span><span class="o">.</span><span class="n">make_suggestion</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">displacement</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nrecycled</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s1">&#39;recycling&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">kdb_on</span><span class="p">:</span>
+            <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">kdb</span><span class="o">.</span><span class="n">make_suggestion</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">displacement</span><span class="p">:</span>
+                <span class="n">displacement</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="o">.</span><span class="n">mass</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Made a KDB suggestion&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s1">&#39;kdb&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s1">&#39;dynamics&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;dynamics&#39;</span>
+
+        <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">displace</span><span class="o">.</span><span class="n">make_displacement</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s1">&#39;random&#39;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ClientMinModeExplorer">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ClientMinModeExplorer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClientMinModeExplorer</span><span class="p">(</span><span class="n">MinModeExplorer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">previous_state</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">MinModeExplorer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">previous_state</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">superbasin</span><span class="p">)</span>
+        <span class="n">job_table_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;jobs.tbl&quot;</span><span class="p">)</span>
+        <span class="n">job_table_columns</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;wuid&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">job_table_path</span><span class="p">,</span> <span class="n">job_table_columns</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span><span class="o">.</span><span class="n">delete_row_func</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="o">.</span><span class="n">state_dict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span><span class="o">.</span><span class="n">delete_row_func</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ClientMinModeExplorer.make_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ClientMinModeExplorer.make_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#XXX:what if the user changes the bundle size?</span>
+        <span class="n">num_in_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">get_queue_size</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Queue contains </span><span class="si">%i</span><span class="s2"> searches&quot;</span> <span class="o">%</span> <span class="n">num_in_buffer</span><span class="p">)</span>
+        <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">-</span> <span class="n">num_in_buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Making </span><span class="si">%i</span><span class="s2"> process searches&quot;</span> <span class="o">%</span> <span class="n">num_to_make</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_to_make</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">reactIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">reactIO</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="p">)</span>
+        <span class="n">file_permission</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="s2">&quot;pos.con&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">st_mode</span>
+        <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;pos.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">reactIO</span><span class="p">,</span> <span class="n">file_permission</span><span class="p">)</span>
+
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s1">&#39;dynamics&#39;</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_on</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">disp_moved_only</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="n">moved_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recycler</span><span class="o">.</span><span class="n">process_atoms</span>
+            <span class="n">mass_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">mass_weights</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_mass_weight_factor</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">moved_atoms</span><span class="p">:</span>
+                    <span class="n">mass_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">weightsIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">weightsIO</span><span class="p">,</span> <span class="n">mass_weights</span><span class="p">)</span>
+<span class="c1">#            file_permission = os.stat(&quot;masses.dat&quot;).st_mode</span>
+            <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;masses.dat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">weightsIO</span><span class="p">,</span> <span class="n">file_permission</span><span class="p">)</span>
+
+        <span class="c1"># Merge potential files into invariants</span>
+        <span class="n">invariants</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">invariants</span><span class="p">,</span> <span class="o">**</span><span class="n">io</span><span class="o">.</span><span class="n">load_potfiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_pot</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">):</span>
+            <span class="n">search</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># The search dictionary contains the following key-value pairs:</span>
+            <span class="c1"># id - CurrentState_WUID</span>
+            <span class="c1"># displacement - an atoms object containing the point the saddle search will start at</span>
+            <span class="c1"># mode - an Nx3 numpy array containing the initial mode</span>
+            <span class="n">search</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span><span class="p">)</span>
+            <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">disp_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_displacement</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span> <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span>
+                                     <span class="s1">&#39;wuid&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">wuid</span><span class="p">,</span>
+                                     <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">disp_type</span> <span class="p">}</span> <span class="p">)</span>
+
+            <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;process_search&#39;</span><span class="p">),</span>
+                            <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;random_seed&#39;</span><span class="p">,</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="mi">9</span><span class="p">))),</span>
+                          <span class="p">]</span>
+            <span class="c1"># if we are recycling a saddle, but using &quot;dynamics saddle search&quot; we need</span>
+            <span class="c1"># to switch to min_mode searches</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s1">&#39;dynamics&#39;</span> <span class="ow">and</span> <span class="n">disp_type</span> <span class="o">!=</span> <span class="s1">&#39;dynamics&#39;</span><span class="p">:</span>
+                <span class="n">ini_changes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="s1">&#39;Saddle Search&#39;</span><span class="p">,</span> <span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="s1">&#39;min_mode&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">search</span><span class="p">[</span><span class="s1">&#39;config.ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">modify_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">ini_changes</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">displacement</span><span class="p">:</span>
+                <span class="n">dispIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">dispIO</span><span class="p">,</span> <span class="n">displacement</span><span class="p">)</span>
+                <span class="n">search</span><span class="p">[</span><span class="s1">&#39;displacement.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dispIO</span>
+                <span class="n">modeIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">save_mode</span><span class="p">(</span><span class="n">modeIO</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+                <span class="n">search</span><span class="p">[</span><span class="s1">&#39;direction.dat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modeIO</span>
+
+            <span class="n">searches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># eager write</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_wuid</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_on</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrecycled</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Recycled </span><span class="si">%i</span><span class="s2"> saddles&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrecycled</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="n">searches</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
+            <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s2">&quot;Created &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">searches</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; searches&quot;</span><span class="p">)</span>
+            <span class="c1">#logger.debug( &quot;Created &quot; + str(num_to_make/(t2-t1)) + &quot; searches per second&quot;)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="s2">&quot;Created </span><span class="si">%.2f</span><span class="s2"> searches per second&quot;</span><span class="p">,</span> <span class="n">num_to_make</span><span class="o">/</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to submit searches&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span><span class="o">.</span><span class="n">write</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ClientMinModeExplorer.register_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ClientMinModeExplorer.register_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering results&quot;</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">):</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+
+        <span class="c1"># Function used by communicator to determine whether to discard a result</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">keep_result</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="c1"># note that all processes are assigned to the current state</span>
+            <span class="n">state_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">state_num</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="o">.</span><span class="n">state_dict</span> <span class="ow">and</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">state_num</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="ow">and</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">)</span>
+
+        <span class="n">num_registered</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+            <span class="c1"># The result dictionary contains the following key-value pairs:</span>
+            <span class="c1"># reactant - an array of strings containing the reactant</span>
+            <span class="c1"># saddle - an atoms object containing the saddle</span>
+            <span class="c1"># product - an array of strings containing the product</span>
+            <span class="c1"># mode - an array of strings conatining the mode</span>
+            <span class="c1"># results - a dictionary containing the key-value pairs in results.dat</span>
+            <span class="c1"># id - StateNumber_WUID</span>
+            <span class="c1">#</span>
+            <span class="c1"># The reactant, product, and mode are passed as lines of the files because</span>
+            <span class="c1"># the information contained in them is not needed for registering results</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_all_results</span><span class="p">:</span>
+                <span class="c1">#XXX: We should only do these checks once to speed things up,</span>
+                <span class="c1">#     but at the same time debug options don&#39;t have to be fast</span>
+                <span class="c1"># save_path = os.path.join(self.config.path_root, &quot;old_searches&quot;)</span>
+                <span class="c1"># if not os.path.isdir(save_path):</span>
+                <span class="c1">#    os.mkdir(save_path)</span>
+                <span class="c1"># shutil.copytree(result_path, os.path.join(save_path, i))</span>
+                <span class="c1"># XXX: This is currently broken by the new result passing</span>
+                <span class="c1">#      scheme. Should it be done in communicator?</span>
+                <span class="k">pass</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="n">state_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span>
+            <span class="n">searchdata_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">state_num</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+            <span class="c1"># Store information about the search into result_data for the</span>
+            <span class="c1"># search_results.txt file in the state directory.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">job_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span><span class="o">.</span><span class="n">get_row</span><span class="p">(</span><span class="s1">&#39;wuid&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">)[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not find job type for search </span><span class="si">%s</span><span class="s2">&quot;</span>
+                               <span class="o">%</span> <span class="n">searchdata_id</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">job_type</span>
+            <span class="k">if</span> <span class="n">job_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not find search data for search </span><span class="si">%s</span><span class="s2">&quot;</span>
+                               <span class="o">%</span> <span class="n">searchdata_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span><span class="o">.</span><span class="n">delete_row</span><span class="p">(</span><span class="s1">&#39;wuid&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;wuid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
+
+            <span class="c1"># If we are doing a search for a superbasin the results</span>
+            <span class="c1"># could be for a different state.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">state_num</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;State of job </span><span class="si">%s</span><span class="s2"> is not part of &quot;</span>
+                                   <span class="s2">&quot;the superbasin&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+                    <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span>
+
+            <span class="c1"># read in the results</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">add_process</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">register_bad_saddle</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_bad_saddles</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">)</span>
+            <span class="n">num_registered</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_register_extra_results</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># Approximate number of searches received</span>
+        <span class="n">tot_searches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span>
+
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processed </span><span class="si">%i</span><span class="s2"> results&quot;</span><span class="p">,</span> <span class="n">num_registered</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tot_searches</span> <span class="o">!=</span> <span class="n">num_registered</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Discarded approximately </span><span class="si">%i</span><span class="s2"> results&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tot_searches</span> <span class="o">-</span> <span class="n">num_registered</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Registered </span><span class="si">%.1f</span><span class="s2"> results per second&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">num_registered</span><span class="o">/</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_table</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">num_registered</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ServerMinModeExplorer">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ServerMinModeExplorer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServerMinModeExplorer</span><span class="p">(</span><span class="n">MinModeExplorer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">previous_state</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1">#XXX: need to init somehow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">wuid_to_search_id</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_info</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;explorer.pickle&quot;</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;explorer.pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+            <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">)</span>
+
+        <span class="n">MinModeExplorer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">previous_state</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">superbasin</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ServerMinModeExplorer.save">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ServerMinModeExplorer.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;explorer.pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;states&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;previous_state&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;comm&#39;</span><span class="p">]</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;searches.log&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%9s</span><span class="s2"> </span><span class="si">%13s</span><span class="s2"> </span><span class="si">%11s</span><span class="s2"> </span><span class="si">%10s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;search_id&quot;</span><span class="p">,</span> <span class="s2">&quot;job_type&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;job_name&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">search_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_info</span><span class="p">:</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%9i</span><span class="s2"> </span><span class="si">%13s</span><span class="s2"> </span><span class="si">%11s</span><span class="s2"> </span><span class="si">%10s</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;saddle_search&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;min1&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;min2&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">job</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_info</span><span class="p">[</span><span class="n">search_id</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="n">lines</span><span class="p">[</span><span class="n">job</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">search_id</span><span class="p">,</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="s1">&#39;saddle_search&#39;</span><span class="p">]:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;saddle_search&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="s1">&#39;min1&#39;</span><span class="p">]:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;min1&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">search_id</span><span class="p">,</span> <span class="s1">&#39;min1&#39;</span><span class="p">,</span> <span class="s1">&#39;not_running&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="s1">&#39;min2&#39;</span><span class="p">]:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="s1">&#39;min2&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">search_id</span><span class="p">,</span> <span class="s1">&#39;min2&#39;</span><span class="p">,</span> <span class="s1">&#39;not_running&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ServerMinModeExplorer.explore">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ServerMinModeExplorer.explore">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">explore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">):</span> <span class="c1">#XXX: does this condition ever happen?</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">MinModeExplorer</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ServerMinModeExplorer.register_results">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ServerMinModeExplorer.register_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Registering results&quot;</span><span class="p">)</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error cleaning up </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_incomplete</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_incomplete</span><span class="p">)</span>
+
+        <span class="c1"># Function used by communicator to determine whether to keep a result</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">keep_result</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="c1"># note that all processes are assigned to the current state</span>
+            <span class="n">state_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">state_num</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="ow">and</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">)</span>
+
+        <span class="n">num_registered</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">,</span> <span class="n">keep_result</span><span class="p">):</span>
+            <span class="n">state_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1"># XXX: doesn&#39;t this doesn&#39;t give the correct id wrt bundling</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span>
+            <span class="n">searchdata_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">state_num</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+
+            <span class="n">search_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wuid_to_search_id</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">search_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_info</span><span class="p">[</span><span class="n">search_id</span><span class="p">][</span><span class="n">searchdata_id</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;complete&#39;</span>
+            <span class="c1">#logger.info(&quot;got result for search_id %i&quot; % search_id)</span>
+            <span class="n">final_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span><span class="p">[</span><span class="n">search_id</span><span class="p">]</span><span class="o">.</span><span class="n">process_result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">final_result</span><span class="p">:</span>
+                <span class="n">results_dict</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">final_result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+                <span class="n">reason</span> <span class="o">=</span> <span class="n">results_dict</span><span class="p">[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">reason</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">add_process</span><span class="p">(</span><span class="n">final_result</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">final_result</span><span class="p">[</span><span class="s1">&#39;wuid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">register_bad_saddle</span><span class="p">(</span><span class="n">final_result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_keep_bad_saddles</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span><span class="p">[</span><span class="n">search_id</span><span class="p">]</span>
+                <span class="n">saddle</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">get_saddle</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">saddle</span><span class="p">:</span>
+                    <span class="n">barrier</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_reactant_to_product&#39;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">find_repeat</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">get_saddle_file</span><span class="p">(),</span> <span class="n">barrier</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">add_process</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">build_result</span><span class="p">())</span>
+                        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span><span class="p">[</span><span class="n">search_id</span><span class="p">]</span>
+            <span class="n">num_registered</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">superbasin</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug_register_extra_results</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># Approximate number of searches received</span>
+        <span class="n">tot_searches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_jobs_in</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span>
+
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Processed </span><span class="si">%i</span><span class="s2"> results&quot;</span><span class="p">,</span> <span class="n">num_registered</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tot_searches</span> <span class="o">!=</span> <span class="n">num_registered</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Discarded approximately </span><span class="si">%i</span><span class="s2"> results&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tot_searches</span> <span class="o">-</span> <span class="n">num_registered</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Registered </span><span class="si">%.1f</span><span class="s2"> results per second&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">num_registered</span><span class="o">/</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">num_registered</span></div>
+
+
+<div class="viewcode-block" id="ServerMinModeExplorer.make_jobs">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ServerMinModeExplorer.make_jobs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">num_unsent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">get_queue_size</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Queued </span><span class="si">%i</span><span class="s2"> jobs&quot;</span> <span class="o">%</span> <span class="n">num_unsent</span><span class="p">)</span>
+        <span class="n">num_in_progress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">get_number_in_progress</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_bundle_size</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running </span><span class="si">%i</span><span class="s2"> jobs&quot;</span> <span class="o">%</span> <span class="n">num_in_progress</span><span class="p">)</span>
+        <span class="n">num_total</span> <span class="o">=</span> <span class="n">num_unsent</span> <span class="o">+</span> <span class="n">num_in_progress</span>
+        <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_buffer_size</span> <span class="o">-</span> <span class="n">num_unsent</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_max_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">num_total</span> <span class="o">+</span> <span class="n">num_to_make</span><span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_max_size</span><span class="p">:</span>
+                <span class="n">num_to_make</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comm_job_max_size</span> <span class="o">-</span> <span class="n">num_total</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reached max_jobs&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Making </span><span class="si">%i</span><span class="s2"> jobs&quot;</span> <span class="o">%</span> <span class="n">num_to_make</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_to_make</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Merge potential files into invariants</span>
+        <span class="n">invariants</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">invariants</span><span class="p">,</span> <span class="o">**</span><span class="n">io</span><span class="o">.</span><span class="n">load_potfiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_pot</span><span class="p">))</span>
+
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># start new searches</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_to_make</span><span class="p">):</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="n">job</span><span class="p">,</span> <span class="n">job_type</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">job</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">wuid_to_search_id</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wuid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">search_id</span>
+                    <span class="n">sid</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">search_id</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">job</span><span class="p">:</span>
+                <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">disp_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_displacement</span><span class="p">()</span>
+                <span class="n">reactant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+                <span class="n">process_search</span> <span class="o">=</span> <span class="n">ProcessSearch</span><span class="p">(</span><span class="n">reactant</span><span class="p">,</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span>
+                                               <span class="n">disp_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process_searches</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">search_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_search</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wuid_to_search_id</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wuid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span>
+                <span class="n">job</span><span class="p">,</span> <span class="n">job_type</span> <span class="o">=</span> <span class="n">process_search</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+                <span class="n">sid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">job</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%i</span><span class="s2">_</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span><span class="p">)</span>
+            <span class="n">job_entry</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">job_type</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">:</span><span class="s1">&#39;running&#39;</span><span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">sid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_info</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">job_info</span><span class="p">[</span><span class="n">sid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_info</span><span class="p">[</span><span class="n">sid</span><span class="p">][</span><span class="n">job</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">job_entry</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">wuid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_wuid</span><span class="p">()</span>
+            <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_on</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrecycled</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Recycled </span><span class="si">%i</span><span class="s2"> saddles&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrecycled</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
+            <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s2">&quot;Created &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">jobs</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; searches&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="s2">&quot;Created &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num_to_make</span><span class="o">/</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; searches per second&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to submit searches&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ProcessSearch">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessSearch</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reactant</span><span class="p">,</span> <span class="n">displacement</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">disp_type</span><span class="p">,</span> <span class="n">search_id</span><span class="p">,</span> <span class="n">state_number</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span> <span class="o">=</span> <span class="n">reactant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displacement</span> <span class="o">=</span> <span class="n">displacement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span> <span class="o">=</span> <span class="n">search_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displacement_type</span> <span class="o">=</span> <span class="n">disp_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_number</span> <span class="o">=</span> <span class="n">state_number</span>
+
+        <span class="c1"># valid statuses are &#39;not_started&#39;, &#39;running&#39;, &#39;complete&#39;, &#39;unneeded&#39;, and &#39;error&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span> <span class="o">=</span> <span class="p">{</span>
+                             <span class="s1">&#39;saddle_search&#39;</span><span class="p">:</span><span class="s1">&#39;not_started&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;min1&#39;</span><span class="p">:</span><span class="s1">&#39;not_started&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;min2&#39;</span><span class="p">:</span><span class="s1">&#39;not_started&#39;</span>
+                            <span class="p">}</span>
+
+        <span class="n">unknown</span> <span class="o">=</span> <span class="s2">&quot;unknown_exit_code&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_termination_reasons</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;saddle_search&#39;</span><span class="p">:[</span> <span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="n">unknown</span><span class="p">,</span> <span class="s2">&quot;no_convex&quot;</span><span class="p">,</span> <span class="s2">&quot;high_energy&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;max_concave_iterations&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;max_iterations&quot;</span><span class="p">,</span> <span class="n">unknown</span><span class="p">,</span> <span class="n">unknown</span><span class="p">,</span> <span class="n">unknown</span><span class="p">,</span>
+                                  <span class="n">unknown</span><span class="p">,</span> <span class="n">unknown</span><span class="p">,</span> <span class="s2">&quot;potential_failed&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;nonnegative_abort&quot;</span><span class="p">,</span> <span class="s2">&quot;nonlocal abort&quot;</span><span class="p">],</span>
+                <span class="s1">&#39;minimization&#39;</span><span class="p">:[</span> <span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="s2">&quot;max_iterations&quot;</span><span class="p">,</span> <span class="s2">&quot;potential_failed&quot;</span><span class="p">,</span> <span class="p">]}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_jobs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_min1_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_min2_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_reactant_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_product_name</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                      <span class="s1">&#39;termination_reason&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+                      <span class="s1">&#39;potential_energy_saddle&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="s1">&#39;potential_energy_reactant&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="s1">&#39;potential_energy_product&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="s1">&#39;barrier_reactant_to_product&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="s1">&#39;barrier_product_to_reactant&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="s1">&#39;prefactor_reactant_to_product&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">process_search_default_prefactor</span><span class="p">,</span>
+                      <span class="s1">&#39;prefactor_product_to_reactant&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">process_search_default_prefactor</span><span class="p">,</span>
+                      <span class="s1">&#39;displacement_saddle_distance&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span>
+                      <span class="s1">&#39;force_calls_saddle&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+                      <span class="s1">&#39;force_calls_minimization&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+                      <span class="s1">&#39;force_calls_prefactors&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="p">}</span>
+
+<div class="viewcode-block" id="ProcessSearch.get_job">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.get_job">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_number</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">state_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_number</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="p">[</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;saddle_search&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;not_started&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;saddle_search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_search</span><span class="p">(),</span> <span class="s1">&#39;saddle_search&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;min1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;not_started&#39;</span> <span class="ow">and</span> \
+           <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;saddle_search&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;complete&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;min1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_minimization</span><span class="p">(</span><span class="s1">&#39;min1&#39;</span><span class="p">),</span> <span class="s1">&#39;min1&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;min2&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;not_started&#39;</span> <span class="ow">and</span> \
+           <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;saddle_search&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;complete&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;min2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_minimization</span><span class="p">(</span><span class="s1">&#39;min2&#39;</span><span class="p">),</span> <span class="s1">&#39;min2&#39;</span>
+
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.process_result">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.process_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">results_dat</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+        <span class="c1">#XXX: can remove this line now</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">job_type</span> <span class="o">=</span> <span class="n">results_dat</span><span class="p">[</span><span class="s1">&#39;job_type&#39;</span><span class="p">]</span>
+        <span class="n">termination_code</span> <span class="o">=</span> <span class="n">results_dat</span><span class="p">[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">job_type</span> <span class="o">==</span> <span class="s1">&#39;saddle_search&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">termination_code</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Search_id: </span><span class="si">%i</span><span class="s2"> saddle search complete&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">termination_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="n">job_type</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;complete&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="n">job_type</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;error&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finish_search</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">job_type</span> <span class="o">==</span> <span class="s1">&#39;minimization&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="s1">&#39;min1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;running&#39;</span><span class="p">:</span>
+                <span class="n">min_name</span> <span class="o">=</span> <span class="s1">&#39;min1&#39;</span>
+                <span class="n">min_number</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">finished_min1_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">min_name</span> <span class="o">=</span> <span class="s1">&#39;min2&#39;</span>
+                <span class="n">min_number</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">finished_min2_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="p">[</span><span class="n">min_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;complete&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Search_id: </span><span class="si">%i</span><span class="s2"> minimization </span><span class="si">%i</span><span class="s2"> complete&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_id</span><span class="p">,</span> <span class="n">min_number</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">min_number</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">finish_minimization</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span> <span class="ow">not</span> <span class="ow">in</span>  <span class="p">[</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;complete&#39;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span> <span class="ow">in</span> <span class="p">[</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">job_statuses</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_result</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.build_result">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.build_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">saddle_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_reactant_name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_product_name</span><span class="p">:</span>
+            <span class="n">reactant_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_reactant_name</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;reactant.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactant_result</span><span class="p">[</span><span class="s1">&#39;min.con&#39;</span><span class="p">]</span>
+            <span class="n">product_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_product_name</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;product.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">product_result</span><span class="p">[</span><span class="s1">&#39;min.con&#39;</span><span class="p">]</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;saddle.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">saddle_result</span><span class="p">[</span><span class="s1">&#39;saddle.con&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;mode.dat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">saddle_result</span><span class="p">[</span><span class="s1">&#39;mode.dat&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">results_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="p">])</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">results_string</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacement_type</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;search_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_id</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.get_saddle">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.get_saddle">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_saddle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span><span class="p">:</span>
+            <span class="n">saddle_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span><span class="p">)</span>
+            <span class="n">saddle</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">saddle_result</span><span class="p">[</span><span class="s1">&#39;saddle.con&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">saddle</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">saddle</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.get_saddle_file">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.get_saddle_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_saddle_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span><span class="p">:</span>
+            <span class="n">saddle_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span><span class="p">)</span>
+            <span class="n">saddle</span> <span class="o">=</span> <span class="n">saddle_result</span><span class="p">[</span><span class="s1">&#39;saddle.con&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">saddle</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">saddle</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.start_minimization">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.start_minimization">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_minimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which_min</span><span class="p">):</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">saddle_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_incomplete</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_saddle_name</span><span class="p">)</span>
+
+        <span class="n">mode_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">saddle_path</span><span class="p">,</span> <span class="s2">&quot;mode.dat&quot;</span><span class="p">))</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load_mode</span><span class="p">(</span><span class="n">mode_file</span><span class="p">)</span>
+        <span class="n">mode_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">reactant_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">saddle_path</span><span class="p">,</span> <span class="s2">&quot;saddle.con&quot;</span><span class="p">))</span>
+        <span class="n">reactant</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">reactant_file</span><span class="p">)</span>
+        <span class="n">reactant_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">which_min</span> <span class="o">==</span> <span class="s2">&quot;min2&quot;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="o">-</span><span class="n">mode</span>
+
+        <span class="n">reactant</span><span class="o">.</span><span class="n">r</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">process_search_minimization_offset</span><span class="o">*</span><span class="n">mode</span>
+
+        <span class="n">reactIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">reactIO</span><span class="p">,</span> <span class="n">reactant</span><span class="p">)</span>
+        <span class="n">job</span><span class="p">[</span><span class="s1">&#39;pos.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactIO</span>
+
+        <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;minimization&#39;</span><span class="p">)</span> <span class="p">]</span>
+        <span class="n">job</span><span class="p">[</span><span class="s1">&#39;config.ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">modify_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">ini_changes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">job</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.finish_minimization">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.finish_minimization">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">finish_minimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">result1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finished_min1_name</span><span class="p">)</span>
+        <span class="n">result2</span> <span class="o">=</span> <span class="n">result</span>
+
+        <span class="n">atoms1</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result1</span><span class="p">[</span><span class="s1">&#39;min.con&#39;</span><span class="p">])</span>
+        <span class="n">atoms2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result2</span><span class="p">[</span><span class="s1">&#39;min.con&#39;</span><span class="p">])</span>
+
+        <span class="n">results_dat1</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result1</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+        <span class="n">results_dat2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result2</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;force_calls_minimization&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">results_dat1</span><span class="p">[</span><span class="s1">&#39;total_force_calls&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;force_calls_minimization&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">results_dat2</span><span class="p">[</span><span class="s1">&#39;total_force_calls&#39;</span><span class="p">]</span>
+
+        <span class="n">is_reactant</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_eps_r</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_neighbor_cutoff</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">tc1</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result1</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span>
+        <span class="n">tc2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result2</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span>
+
+        <span class="n">termination_reason1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_termination_reasons</span><span class="p">[</span><span class="s1">&#39;minimization&#39;</span><span class="p">][</span><span class="n">tc1</span><span class="p">]</span>
+        <span class="n">termination_reason2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_termination_reasons</span><span class="p">[</span><span class="s1">&#39;minimization&#39;</span><span class="p">][</span><span class="n">tc2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">termination_reason1</span> <span class="o">==</span> <span class="s1">&#39;max_iterations&#39;</span> <span class="ow">or</span> <span class="n">termination_reason2</span> <span class="o">==</span> <span class="s1">&#39;max_iterations&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_saddle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_reactant_to_product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_product_to_reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check the connectivity of the process</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_reactant</span><span class="p">(</span><span class="n">atoms1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_reactant</span><span class="p">(</span><span class="n">atoms2</span><span class="p">))</span> <span class="ow">or</span> \
+           <span class="p">(</span><span class="n">is_reactant</span><span class="p">(</span><span class="n">atoms1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_reactant</span><span class="p">(</span><span class="n">atoms2</span><span class="p">)):</span>
+            <span class="c1"># Not connected</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_saddle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_reactant_to_product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_product_to_reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">is_reactant</span><span class="p">(</span><span class="n">atoms1</span><span class="p">):</span>
+            <span class="n">reactant_results_dat</span> <span class="o">=</span> <span class="n">results_dat1</span>
+            <span class="n">product_results_dat</span> <span class="o">=</span> <span class="n">results_dat2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished_reactant_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_min1_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished_product_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_min2_name</span>
+        <span class="k">elif</span> <span class="n">is_reactant</span><span class="p">(</span><span class="n">atoms2</span><span class="p">):</span>
+            <span class="n">reactant_results_dat</span> <span class="o">=</span> <span class="n">results_dat2</span>
+            <span class="n">product_results_dat</span> <span class="o">=</span> <span class="n">results_dat1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished_reactant_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_min2_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished_product_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_min1_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactant_results_dat</span><span class="p">[</span><span class="s1">&#39;potential_energy&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">product_results_dat</span><span class="p">[</span><span class="s1">&#39;potential_energy&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_reactant_to_product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_saddle&#39;</span><span class="p">]</span> <span class="o">-</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_reactant&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_product_to_reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_saddle&#39;</span><span class="p">]</span> <span class="o">-</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_product&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.start_search">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.start_search">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">dispIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">dispIO</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacement</span><span class="p">)</span>
+        <span class="n">job</span><span class="p">[</span><span class="s1">&#39;displacement.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dispIO</span>
+
+        <span class="n">modeIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">save_mode</span><span class="p">(</span><span class="n">modeIO</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">job</span><span class="p">[</span><span class="s1">&#39;direction.dat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">modeIO</span>
+
+        <span class="n">reactIO</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">savecon</span><span class="p">(</span><span class="n">reactIO</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span><span class="p">)</span>
+        <span class="n">job</span><span class="p">[</span><span class="s1">&#39;pos.con&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactIO</span>
+
+        <span class="n">ini_changes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="s1">&#39;Main&#39;</span><span class="p">,</span> <span class="s1">&#39;job&#39;</span><span class="p">,</span> <span class="s1">&#39;saddle_search&#39;</span><span class="p">)</span> <span class="p">]</span>
+        <span class="n">job</span><span class="p">[</span><span class="s1">&#39;config.ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">modify_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">ini_changes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">job</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.finish_search">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.finish_search">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">finish_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">results_dat</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">parse_results</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">results_dat</span><span class="p">)</span>
+        <span class="n">reactant_energy</span> <span class="o">=</span> <span class="n">results_dat</span><span class="p">[</span><span class="s1">&#39;potential_energy_reactant&#39;</span><span class="p">]</span>
+        <span class="n">barrier</span> <span class="o">=</span> <span class="n">results_dat</span><span class="p">[</span><span class="s1">&#39;potential_energy_saddle&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">reactant_energy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;potential_energy_reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reactant_energy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;barrier_reactant_to_product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">barrier</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.save_result">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.save_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_incomplete</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="s1">&#39;getvalue&#39;</span><span class="p">):</span>
+                <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ProcessSearch.load_result">
+<a class="viewcode-back" href="../../apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.load_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_name</span><span class="p">):</span>
+        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_incomplete</span><span class="p">,</span> <span class="n">result_name</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">):</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">file</span><span class="p">]</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

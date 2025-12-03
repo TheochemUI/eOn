@@ -1,0 +1,1096 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
+    <link href="../../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
+    <link href="../../_static/favicons/android-chrome-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
+    <link href="../../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
+    <link href="../../_static/favicons/site.webmanifest" rel="icon">
+    <meta property="article:modified_time" content="2025-09-04T00:51:34+00:00" />
+    <title>eon.communicator &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'apidocs/eon/eon.communicator';</script>
+    <link rel="canonical" href="https://eondocs.org/apidocs/eon/eon.communicator.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="eon.mpiwait" href="eon.mpiwait.html" />
+    <link rel="prev" title="eon.server" href="eon.server.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Sep 04, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>eon.communicator</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data">Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api">API</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.tryint"><code class="docutils literal notranslate"><span class="pre">tryint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.alphanum_key"><code class="docutils literal notranslate"><span class="pre">alphanum_key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.sort_nicely"><code class="docutils literal notranslate"><span class="pre">sort_nicely()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.get_communicator"><code class="docutils literal notranslate"><span class="pre">get_communicator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.NotImplementedError"><code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.CommunicatorError"><code class="docutils literal notranslate"><span class="pre">CommunicatorError</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.EONClientError"><code class="docutils literal notranslate"><span class="pre">EONClientError</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator"><code class="docutils literal notranslate"><span class="pre">Communicator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.submit_jobs"><code class="docutils literal notranslate"><span class="pre">Communicator.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.get_results"><code class="docutils literal notranslate"><span class="pre">Communicator.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.get_queue_size"><code class="docutils literal notranslate"><span class="pre">Communicator.get_queue_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.cancel_state"><code class="docutils literal notranslate"><span class="pre">Communicator.cancel_state()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.get_bundle_size"><code class="docutils literal notranslate"><span class="pre">Communicator.get_bundle_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.unbundle"><code class="docutils literal notranslate"><span class="pre">Communicator.unbundle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.make_bundles"><code class="docutils literal notranslate"><span class="pre">Communicator.make_bundles()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI"><code class="docutils literal notranslate"><span class="pre">MPI</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.submit_jobs"><code class="docutils literal notranslate"><span class="pre">MPI.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.run_resume_jobs"><code class="docutils literal notranslate"><span class="pre">MPI.run_resume_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_ready_ranks"><code class="docutils literal notranslate"><span class="pre">MPI.get_ready_ranks()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_queue_size"><code class="docutils literal notranslate"><span class="pre">MPI.get_queue_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_results"><code class="docutils literal notranslate"><span class="pre">MPI.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_number_in_progress"><code class="docutils literal notranslate"><span class="pre">MPI.get_number_in_progress()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.cancel_state"><code class="docutils literal notranslate"><span class="pre">MPI.cancel_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local"><code class="docutils literal notranslate"><span class="pre">Local</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.cleanup"><code class="docutils literal notranslate"><span class="pre">Local.cleanup()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.get_results"><code class="docutils literal notranslate"><span class="pre">Local.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.check_job"><code class="docutils literal notranslate"><span class="pre">Local.check_job()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.submit_jobs"><code class="docutils literal notranslate"><span class="pre">Local.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.cancel_state"><code class="docutils literal notranslate"><span class="pre">Local.cancel_state()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.get_queue_size"><code class="docutils literal notranslate"><span class="pre">Local.get_queue_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.get_number_in_progress"><code class="docutils literal notranslate"><span class="pre">Local.get_number_in_progress()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script"><code class="docutils literal notranslate"><span class="pre">Script</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.save_jobids"><code class="docutils literal notranslate"><span class="pre">Script.save_jobids()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_results"><code class="docutils literal notranslate"><span class="pre">Script.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.check_command"><code class="docutils literal notranslate"><span class="pre">Script.check_command()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.submit_jobs"><code class="docutils literal notranslate"><span class="pre">Script.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.cancel_state"><code class="docutils literal notranslate"><span class="pre">Script.cancel_state()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_queued_jobs"><code class="docutils literal notranslate"><span class="pre">Script.get_queued_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_number_in_progress"><code class="docutils literal notranslate"><span class="pre">Script.get_number_in_progress()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_queue_size"><code class="docutils literal notranslate"><span class="pre">Script.get_queue_size()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-eon.communicator">
+<span id="eon-communicator"></span><h1><a class="reference internal" href="#module-eon.communicator" title="eon.communicator"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a><a class="headerlink" href="#module-eon.communicator" title="Link to this heading">#</a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table table-left">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.Communicator" title="eon.communicator.Communicator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Communicator</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.communicator.MPI" title="eon.communicator.MPI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MPI</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.Local" title="eon.communicator.Local"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Local</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.communicator.Script" title="eon.communicator.Script"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Script</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table table-left">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.tryint" title="eon.communicator.tryint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tryint</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.communicator.alphanum_key" title="eon.communicator.alphanum_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alphanum_key</span></code></a></p></td>
+<td><p>Turn a string into a list of string and number chunks.
+“z23a” -&gt; [“z”, 23, “a”]</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.sort_nicely" title="eon.communicator.sort_nicely"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_nicely</span></code></a></p></td>
+<td><p>Sort the given list in the way that humans expect.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.communicator.get_communicator" title="eon.communicator.get_communicator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_communicator</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="data">
+<h3>Data<a class="headerlink" href="#data" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table table-left">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.logger" title="eon.communicator.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="api">
+<h3>API<a class="headerlink" href="#api" title="Link to this heading">#</a></h3>
+<dl class="py data">
+<dt class="sig sig-object py" id="eon.communicator.logger">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#eon.communicator.logger" title="Link to this definition">#</a></dt>
+<dd><p>‘getLogger(…)’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.communicator.tryint">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">tryint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#tryint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.tryint" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.communicator.alphanum_key">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">alphanum_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#alphanum_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.alphanum_key" title="Link to this definition">#</a></dt>
+<dd><p>Turn a string into a list of string and number chunks.
+“z23a” -&gt; [“z”, 23, “a”]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.communicator.sort_nicely">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">sort_nicely</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#sort_nicely"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.sort_nicely" title="Link to this definition">#</a></dt>
+<dd><p>Sort the given list in the way that humans expect.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.communicator.get_communicator">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">get_communicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#get_communicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.get_communicator" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="eon.communicator.NotImplementedError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">NotImplementedError</span></span><a class="reference internal" href="../../_modules/eon/communicator.html#NotImplementedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.NotImplementedError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="eon.communicator.CommunicatorError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">CommunicatorError</span></span><a class="reference internal" href="../../_modules/eon/communicator.html#CommunicatorError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.CommunicatorError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="eon.communicator.EONClientError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">EONClientError</span></span><a class="reference internal" href="../../_modules/eon/communicator.html#EONClientError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.EONClientError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>An EON client finished without outputting results, it probably crashed.</p>
+<p class="rubric">Initialization</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eon.communicator.Communicator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">Communicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scratchpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator" title="Link to this definition">#</a></dt>
+<dd><p class="rubric">Initialization</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Communicator.submit_jobs">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">submit_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator.submit_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator.submit_jobs" title="Link to this definition">#</a></dt>
+<dd><p>Throws CommunicatorError if fails.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Communicator.get_results">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator.get_results" title="Link to this definition">#</a></dt>
+<dd><p>Returns a list of dictionaries containing the results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Communicator.get_queue_size">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_queue_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator.get_queue_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator.get_queue_size" title="Link to this definition">#</a></dt>
+<dd><p>Returns the number of items waiting to run in the queue.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Communicator.cancel_state">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statenumber</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator.cancel_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator.cancel_state" title="Link to this definition">#</a></dt>
+<dd><p>Returns the number of workunits that were canceled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Communicator.get_bundle_size">
+<span class="sig-name descname"><span class="pre">get_bundle_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator.get_bundle_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator.get_bundle_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Communicator.unbundle">
+<span class="sig-name descname"><span class="pre">unbundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resultpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator.unbundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator.unbundle" title="Link to this definition">#</a></dt>
+<dd><p>This method unbundles multiple jobs into multiple single
+jobs so the akmc script can process them.</p>
+<p>If the job did not return results (probably because it
+crashed or was canceled), this method will raise
+EONClientError.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Communicator.make_bundles">
+<span class="sig-name descname"><span class="pre">make_bundles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Communicator.make_bundles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Communicator.make_bundles" title="Link to this definition">#</a></dt>
+<dd><p>This method is a generator that bundles together multiple jobs into a single job.
+Example usage:
+for jobpath in self.make_bundles(data, invariants):
+do_stuff()</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eon.communicator.MPI">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">MPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scratchpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eon.communicator.Communicator" title="eon.communicator.Communicator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.communicator.Communicator</span></code></a></p>
+<p class="rubric">Initialization</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.MPI.submit_jobs">
+<span class="sig-name descname"><span class="pre">submit_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI.submit_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI.submit_jobs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.MPI.run_resume_jobs">
+<span class="sig-name descname"><span class="pre">run_resume_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI.run_resume_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI.run_resume_jobs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.MPI.get_ready_ranks">
+<span class="sig-name descname"><span class="pre">get_ready_ranks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI.get_ready_ranks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI.get_ready_ranks" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.MPI.get_queue_size">
+<span class="sig-name descname"><span class="pre">get_queue_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI.get_queue_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI.get_queue_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.MPI.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resultspath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI.get_results" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.MPI.get_number_in_progress">
+<span class="sig-name descname"><span class="pre">get_number_in_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI.get_number_in_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI.get_number_in_progress" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.MPI.cancel_state">
+<span class="sig-name descname"><span class="pre">cancel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#MPI.cancel_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.MPI.cancel_state" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eon.communicator.Local">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">Local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scratchpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncpus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eon.communicator.Communicator" title="eon.communicator.Communicator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.communicator.Communicator</span></code></a></p>
+<p class="rubric">Initialization</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Local.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local.cleanup" title="Link to this definition">#</a></dt>
+<dd><p>Kills the running eonclients.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Local.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resultspath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local.get_results" title="Link to this definition">#</a></dt>
+<dd><p>Moves work from scratchpath to results path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Local.check_job">
+<span class="sig-name descname"><span class="pre">check_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local.check_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local.check_job" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Local.submit_jobs">
+<span class="sig-name descname"><span class="pre">submit_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local.submit_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local.submit_jobs" title="Link to this definition">#</a></dt>
+<dd><p>Run up to ncpu number of clients to process the work in jobpaths.
+The job directories are moved to the scratch path before the calculation
+is run. This method doesn’t return anything.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Local.cancel_state">
+<span class="sig-name descname"><span class="pre">cancel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local.cancel_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local.cancel_state" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Local.get_queue_size">
+<span class="sig-name descname"><span class="pre">get_queue_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local.get_queue_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local.get_queue_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Local.get_number_in_progress">
+<span class="sig-name descname"><span class="pre">get_number_in_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Local.get_number_in_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Local.get_number_in_progress" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="eon.communicator.Script">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">Script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scratch_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scripts_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queued_jobs_cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_job_cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submit_job_cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eon.communicator.Communicator" title="eon.communicator.Communicator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.communicator.Communicator</span></code></a></p>
+<p class="rubric">Initialization</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.save_jobids">
+<span class="sig-name descname"><span class="pre">save_jobids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.save_jobids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.save_jobids" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resultspath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.get_results" title="Link to this definition">#</a></dt>
+<dd><p>Moves work from scratchpath to results path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.check_command">
+<span class="sig-name descname"><span class="pre">check_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.check_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.check_command" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.submit_jobs">
+<span class="sig-name descname"><span class="pre">submit_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.submit_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.submit_jobs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.cancel_state">
+<span class="sig-name descname"><span class="pre">cancel_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.cancel_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.cancel_state" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.get_queued_jobs">
+<span class="sig-name descname"><span class="pre">get_queued_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.get_queued_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.get_queued_jobs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.get_number_in_progress">
+<span class="sig-name descname"><span class="pre">get_number_in_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.get_number_in_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.get_number_in_progress" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.communicator.Script.get_queue_size">
+<span class="sig-name descname"><span class="pre">get_queue_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#Script.get_queue_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.Script.get_queue_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="eon.server.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="eon.mpiwait.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data">Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api">API</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.tryint"><code class="docutils literal notranslate"><span class="pre">tryint()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.alphanum_key"><code class="docutils literal notranslate"><span class="pre">alphanum_key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.sort_nicely"><code class="docutils literal notranslate"><span class="pre">sort_nicely()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.get_communicator"><code class="docutils literal notranslate"><span class="pre">get_communicator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.NotImplementedError"><code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.CommunicatorError"><code class="docutils literal notranslate"><span class="pre">CommunicatorError</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.EONClientError"><code class="docutils literal notranslate"><span class="pre">EONClientError</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator"><code class="docutils literal notranslate"><span class="pre">Communicator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.submit_jobs"><code class="docutils literal notranslate"><span class="pre">Communicator.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.get_results"><code class="docutils literal notranslate"><span class="pre">Communicator.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.get_queue_size"><code class="docutils literal notranslate"><span class="pre">Communicator.get_queue_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.cancel_state"><code class="docutils literal notranslate"><span class="pre">Communicator.cancel_state()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.get_bundle_size"><code class="docutils literal notranslate"><span class="pre">Communicator.get_bundle_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.unbundle"><code class="docutils literal notranslate"><span class="pre">Communicator.unbundle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Communicator.make_bundles"><code class="docutils literal notranslate"><span class="pre">Communicator.make_bundles()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI"><code class="docutils literal notranslate"><span class="pre">MPI</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.submit_jobs"><code class="docutils literal notranslate"><span class="pre">MPI.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.run_resume_jobs"><code class="docutils literal notranslate"><span class="pre">MPI.run_resume_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_ready_ranks"><code class="docutils literal notranslate"><span class="pre">MPI.get_ready_ranks()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_queue_size"><code class="docutils literal notranslate"><span class="pre">MPI.get_queue_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_results"><code class="docutils literal notranslate"><span class="pre">MPI.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.get_number_in_progress"><code class="docutils literal notranslate"><span class="pre">MPI.get_number_in_progress()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.MPI.cancel_state"><code class="docutils literal notranslate"><span class="pre">MPI.cancel_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local"><code class="docutils literal notranslate"><span class="pre">Local</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.cleanup"><code class="docutils literal notranslate"><span class="pre">Local.cleanup()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.get_results"><code class="docutils literal notranslate"><span class="pre">Local.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.check_job"><code class="docutils literal notranslate"><span class="pre">Local.check_job()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.submit_jobs"><code class="docutils literal notranslate"><span class="pre">Local.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.cancel_state"><code class="docutils literal notranslate"><span class="pre">Local.cancel_state()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.get_queue_size"><code class="docutils literal notranslate"><span class="pre">Local.get_queue_size()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Local.get_number_in_progress"><code class="docutils literal notranslate"><span class="pre">Local.get_number_in_progress()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script"><code class="docutils literal notranslate"><span class="pre">Script</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.save_jobids"><code class="docutils literal notranslate"><span class="pre">Script.save_jobids()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_results"><code class="docutils literal notranslate"><span class="pre">Script.get_results()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.check_command"><code class="docutils literal notranslate"><span class="pre">Script.check_command()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.submit_jobs"><code class="docutils literal notranslate"><span class="pre">Script.submit_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.cancel_state"><code class="docutils literal notranslate"><span class="pre">Script.cancel_state()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_queued_jobs"><code class="docutils literal notranslate"><span class="pre">Script.get_queued_jobs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_number_in_progress"><code class="docutils literal notranslate"><span class="pre">Script.get_number_in_progress()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.communicator.Script.get_queue_size"><code class="docutils literal notranslate"><span class="pre">Script.get_queue_size()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Sep 04, 2025.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>
