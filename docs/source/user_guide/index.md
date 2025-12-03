@@ -67,6 +67,7 @@ described in the subsequent sections.
 lammps_pot
 ase_pot
 metatomic_pot
+quip
 mpi_potential
 ```
 
