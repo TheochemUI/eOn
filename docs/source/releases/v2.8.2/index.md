@@ -18,7 +18,6 @@ maintain compatibility with the latest machine learning potential ecosystems.
 :maxdepth: 2
 :caption: Contents
 
-changelog
 release-notes
 ```
 
