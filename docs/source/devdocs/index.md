@@ -22,4 +22,5 @@ svn
 svn-migration
 tracking-changes
 release
+design/client
 ```
