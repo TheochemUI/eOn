@@ -2,55 +2,90 @@
 name = "eon"
 version = "2.8.2.dev0"
 description = "Server component of eon project"
-dependencies = ["numpy>=1.26.4"]
+authors = [
+    {name = "Henkelman Group", email = "contact@henkelmanlab.com"},
+    {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
+]
+dependencies = [
+    "numpy>=1.26.4",
+]
 requires-python = ">=3.11"
-classifiers = ["Development Status :: 5 - Production/Stable", "Intended Audience :: Science/Research", "Intended Audience :: Developers", "License :: OSI Approved :: BSD License", "Programming Language :: C", "Programming Language :: C++", "Programming Language :: Fortran", "Programming Language :: Python", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Topic :: Software Development :: Libraries", "Topic :: Scientific/Engineering", "Operating System :: Microsoft :: Windows", "Operating System :: POSIX :: Linux", "Operating System :: POSIX", "Operating System :: Unix", "Operating System :: MacOS"]
-
-[[project.authors]]
-name = "Henkelman Group"
-email = "contact@henkelmanlab.com"
-
-[[project.authors]]
-name = "Rohit Goswami"
-email = "rgoswami@ieee.org"
-
-[project.license]
-text = "MIT"
-
-[project.scripts]
-eon-server = "eon.main:main"
-
-[project.optional-dependencies]
-docs = ["sphinx>=7.3.7", "sphinx-contributors>=0.2.7", "sphinx-copybutton>=0.5.2", "sphinx-design>=0.6.0", "sphinx-autobuild>=2024.4.16", "sphinxcontrib-spelling>=8.0.0", "myst-parser>=2", "sphinx-autodoc2>=0.4.2", "sphinx-book-theme>=1.1.3", "sphinx-togglebutton>=0.3.2", "sphinx-favicon>=1.0.1", "mdit-py-plugins>0.3.4", "sphinxcontrib-bibtex>=2.6.2", "autodoc-pydantic>=2.0.0", "sphinx-sitemap>=2.9.0"]
-lint = ["ruff>=0.3.4"]
-testing = ["pytest-cov>=5.0.0", "pytest>=8.3.2", "pytest-datadir>=1.5.0"]
-extras = ["ase>=3.23.0"]
+# readme = "readme.md"
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: C",
+    "Programming Language :: C++",
+    "Programming Language :: Fortran",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+]
 
 [build-system]
 requires = ["meson-python", "numpy"]
 build-backend = "mesonpy"
 
 [tool.meson-python.args]
-setup = ["-Dwrap_mode=forcefallback"]
-install = ["--skip-subprojects"]
-dist = ["--include-subprojects"]
+setup = [
+    '-Dwrap_mode=forcefallback',
+]
+install = ['--skip-subprojects']
+dist = ['--include-subprojects']
+
 
 [tool.pdm]
 distribution = true
 
 [tool.pdm.dev-dependencies]
-lint = ["ruff>=0.3.4"]
-testing = ["pytest-cov>=5.0.0", "pytest>=8.3.2", "pytest-datadir>=1.5.0"]
-extras = ["ase>=3.23.0"]
+lint = [
+    "ruff>=0.3.4",
+]
+testing = [
+    "pytest-cov>=5.0.0",
+    "pytest>=8.3.2",
+    "pytest-datadir>=1.5.0",
+]
+extras = [
+    "ase>=3.23.0",
+]
 
 [tool.pdm.scripts]
-check_ruff = "ruff check ."
-ruff_fix = "ruff --fix --unsafe-fixes ."
+check_ruff  = "ruff check ."
+ruff_fix    = "ruff --fix --unsafe-fixes ."
 ruff_format = "ruff format ."
-test = "pytest --cov=src tests"
+lint        = { composite = [ "ruff_fix", "ruff_format" ] }
+test        = "pytest --cov=src tests"
+mkdoc = {composite = ["sphinx-build -b html docs/source docs/build/html"]}
+[project.scripts]
+eon-server = "eon.main:main"
 
-[tool.pdm.scripts.lint]
-composite = ["ruff_fix", "ruff_format"]
-
-[tool.pdm.scripts.mkdoc]
-composite = ["sphinx-build -b html docs/source docs/build/html"]
+[dependency-groups]
+docs = [
+    "sphinx>=7.3.7",
+    "sphinx-contributors>=0.2.7",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-design>=0.6.0",
+    "sphinx-autobuild>=2024.4.16",
+    "sphinxcontrib-spelling>=8.0.0",
+    "myst-parser>=2",
+    "sphinx-autodoc2>=0.4.2",
+    "sphinx-book-theme>=1.1.3",
+    "sphinx-togglebutton>=0.3.2",
+    "sphinx-favicon>=1.0.1",
+    "mdit-py-plugins>0.3.4",
+    "sphinxcontrib-bibtex>=2.6.2",
+    "autodoc-pydantic>=2.0.0",
+    "sphinx-sitemap>=2.9.0",
+]
