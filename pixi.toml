@@ -39,6 +39,7 @@ extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
 [environments]
 # TODO(rg): Flesh out the rest of these
 metatomic = {features = ["metatomic"]}
+dev-lite = {features = ["lint", "develop"]}
 dev = {features = ["lint", "develop", "nwchem", "metatomic"]}
 # ams is incompatible with metatomic
 dev-mta = {features = ["lint", "develop", "metatomic"]}
