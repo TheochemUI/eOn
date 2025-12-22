@@ -31,7 +31,7 @@ jobs:
           --buildtype release              \
           --libdir=lib                     \
           -Dwith_xtb=True            \
-          -Dwith_tests=True               
+          -Dwith_tests=True
           meson install -C bbdir
       - name: Run tests
         shell: bash -el {0}

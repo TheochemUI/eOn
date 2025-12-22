@@ -41,7 +41,7 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   double expected_energy = -623.58142247693342597;
   AtomMatrix expected_forces(m1->numberOfAtoms(), 3);
   // clang-format off
-  expected_forces << 
+  expected_forces <<
      1.22362,   -0.111937,  -0.65068,
      1.41682,   -0.0333704, -0.0175255,
      0.191715,  -0.169379,   0.123635,
