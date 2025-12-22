@@ -19,5 +19,5 @@ jobs:
         with:
           workflow_run_id: ${{ github.event.workflow_run.id }}
           head_sha: ${{ github.event.workflow_run.head_sha }}
-          artifact_name: eondocs
-          comment_header: '### EON Documentation Preview'
+          artifact_name: documentation
+          comment_header: "### EON Documentation Previer"
