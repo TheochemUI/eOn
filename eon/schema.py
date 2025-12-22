@@ -609,6 +609,8 @@ class XTBPot(BaseModel):
     max_iterations: int = Field(
         default=250, description="Maximum number of XTB iterations."
     )
+    uhf: int = Field(default=0, description="Multiplicity")
+    charge: float = Field(default=0.0, description="Total charge")
 
 
 class ZBLPot(BaseModel):
