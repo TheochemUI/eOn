@@ -92,6 +92,8 @@ public:
   double xtb_elec_temperature;
   size_t xtb_maxiter;
   double xtb_acc;
+  double xtb_charge;
+  int xtb_uhf;
 
   // [ZBLPot] //
   struct zbl_options_t {
