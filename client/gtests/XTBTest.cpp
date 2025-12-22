@@ -77,6 +77,17 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
     REQUIRE_THAT(f_mta,
                  helper_functions::test::IsApprox(expected_forces, threshold));
   }
+  // Call again to see that update works
+  pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
+             m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
+             m1->getCell().data());
+  SECTION("Energy Check") {
+    REQUIRE_THAT(e_mta, WithinAbs(expected_energy, threshold));
+  }
+  SECTION("Force Matrix Check") {
+    REQUIRE_THAT(f_mta,
+                 helper_functions::test::IsApprox(expected_forces, threshold));
+  }
   TearDown();
 }
 
