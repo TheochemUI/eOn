@@ -34,20 +34,6 @@ While reading older documentation, calls to `eon` must now be `python -m
 eon.server`.
 ```
 
-## Getting help
-
-We support a variety of methods to provide assistance:
-
-- **Github Issues** :: For bug reports and software errors, [open issues](https://github.com/TheochemUI/eOn/issues)
-- **Community Forum** :: EON has a section on the [Materials Science Community Discourse](https://matsci.org/c/eon/)
-
-## Supporting packages
-
-Additional visualization and parsing may be found in the `rgpycrumbs` diagnostic
-suite ([Home](https://rgpycrumbs.rgoswami.me/tools/eon/index.html),
-[Github](https://github.com/HaoZeke/rgpycrumbs),
-[PyPI](https://pypi.org/project/rgpycrumbs/)).
-
 # Obtaining sources
 
 ```{versionadded} 2.0

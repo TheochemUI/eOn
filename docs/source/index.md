@@ -4,6 +4,7 @@ myst:
     "description": "Official documentation for the EON software package, a tool for modeling long-timescale dynamics in atomic systems with methods like aKMC, NEB, and Parallel Replica Dynamics."
     "keywords": "EON, long-timescale dynamics, aKMC, NEB, Parallel Replica Dynamics"
 ---
+
 # eOn: Long Timescale Dynamics Software
 
 The EON software package contains a set of algorithms used primarily to model
@@ -29,10 +30,10 @@ alt: Collection of systems which can be modeled
 class: full-width
 align: center
 ---
-An overview of some systems modelled with eOn
+An overview of some systems modeled with eOn
 ```
 
-However, the systems which are best modelled using EON are those in which the
+However, the systems which are best modeled using EON are those in which the
 important kinetics are governed by rare events. Diffusion in solids and chemical
 reactions at surface are particularly suitable when there is a clear separation
 of time scales between atomic vibrations at the diffusion or catalytic events of
@@ -51,7 +52,7 @@ Al(100) ripening dynamics
 In the example showing ripening dynamics on an `Al(100)` surface, a compact
 island forms after `65720` transitions in a time scale of a `ms` at `300K`.
 
-# Interatomic Interactions
+## Interatomic Interactions
 
 There are a variety of empirical potentials included with `eOn`. You can also
 use the potentials built into the LAMMPS library. `eOn` also provides an
@@ -59,21 +60,41 @@ interace to the VASP and GPAW density functional theory codes.
 
 ```{versionadded} 2.0
 `eOn` now supports additional potentials
-* via an embeded Python interpreter, all the potentials accessible from the atomic simulation environment, ASE.
+* via an embeded Python interpreter, all the potentials in [ASE](https://ase-lib.org/).
 * via native Fortran-C interface, different forms of the tight binding `XTB` potentials
-* via an I/O and server-client interface, potentials from the Amsterdam Modeling Suite (AMS)
+* via native interface, the [Metatomic](https://docs.metatensor.org/metatomic/) potentials
+* via an I/O and server-client interface, Amsterdam Modeling Suite (AMS) potentials
 ```
 
-# Parallel Interfaces
+# Getting started
 
-The algorithms in EON can be run in parallel using a set of communication
-options including local communication, distribution over a cluster using a
-queueing system, multiple process multiple data MPI jobs, and distributed
-computing environments.
+See [the installation instructions](https://eondocs.org/install/), but in a line:
 
-<!-- Is this still true -->
+```{code-block} bash
+micromamba install -c conda-forge eon
+# single point calculation, Lennard-Jones
+eonclient -s molecule.con -p lj
+# or with a config.ini and pos.con file
+eonclient # reads config.ini and runs
+# or for akmc, needs config.ini and pos.con
+python -m eon.server
+```
 
-# Additional Topics
+## Getting help
+
+We support a variety of methods to provide assistance:
+
+- **Github Issues** :: For bug reports and software errors, [open issues](https://github.com/TheochemUI/eOn/issues)
+- **Community Forum** :: EON has a section on the [Materials Science Community Discourse](https://matsci.org/c/eon/)
+
+## Supporting packages
+
+Additional visualization and parsing may be found in the `rgpycrumbs` diagnostic
+suite ([Home](https://rgpycrumbs.rgoswami.me/tools/eon/index.html),
+[Github](https://github.com/HaoZeke/rgpycrumbs),
+[PyPI](https://pypi.org/project/rgpycrumbs/)).
+
+# User Guide
 
 ```{toctree}
 :maxdepth: 2
