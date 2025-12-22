@@ -582,6 +582,9 @@ if get_option('with_tests')
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
     endif
+    if get_option('with_xtb')
+        test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
+    endif
     foreach test : test_array
         test(
             test.get(0),
