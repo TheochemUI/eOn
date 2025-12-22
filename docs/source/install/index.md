@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Installation guide for the EON software package. Learn how to install EON using conda or build it from source using meson."
+    "description": "Installation guide for the EON software package, using pixi/conda or source builds."
     "keywords": "install EON, build EON, conda, meson, compilation"
 ---
 
@@ -17,7 +17,11 @@ results.
 The simplest way to hit the ground running is with the `conda` package:
 
 ```{code-block} bash
-micromamba install -c "https://prefix.dev/channels/rg-forge" eon
+# best with pixi
+pixi init
+pixi add eon
+# or with conda/micromamba
+micromamba install -c conda-forge eon
 ```
 
 At this point any of the many examples should be good to go.
@@ -29,6 +33,20 @@ binary is automatically made available in the activated environment..
 While reading older documentation, calls to `eon` must now be `python -m
 eon.server`.
 ```
+
+## Getting help
+
+We support a variety of methods to provide assistance:
+
+- **Github Issues** :: For bug reports and software errors, [open issues](https://github.com/TheochemUI/eOn/issues)
+- **Community Forum** :: EON has a section on the [Materials Science Community Discourse](https://matsci.org/c/eon/)
+
+## Supporting packages
+
+Additional visualization and parsing may be found in the `rgpycrumbs` diagnostic
+suite ([Home](https://rgpycrumbs.rgoswami.me/tools/eon/index.html),
+[Github](https://github.com/HaoZeke/rgpycrumbs),
+[PyPI](https://pypi.org/project/rgpycrumbs/)).
 
 # Obtaining sources
 
@@ -47,7 +65,7 @@ cd eOn
 ```{note}
 
 * The [GitHub CLI tool](https://cli.github.com/) makes authentication much easier.
-* Micromamba ([installation](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html)) is a faster conda-helper
+* [Pixi](https://pixi.sh/) is now recommended
 ```
 ````
 
@@ -56,16 +74,19 @@ cd eOn
 We provide a `conda` environment and `pixi` setup, with dependencies handled by `conda-lock`.
 
 ```{code-block} bash
-micromamba create -n eongit -f conda-lock.yml
-micromamba activate eongit
-# Or
 pixi shell
+# or
+pixi s -e dev-lite
 ```
+
+Other environments can be found by inspecting the `pixi.toml` file.
 
 This leads to the most robust installation approach:
 
 ```{code-block} bash
-# conda-compilers may try to install to $CONDA_PREFIX/lib/x86_64-linux-gnu without --libdir
+# conda-compilers may try to install to
+# $CONDA_PREFIX/lib/x86_64-linux-gnu
+# without --libdir
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release
 meson install -C bbdir
 ```
@@ -92,18 +113,17 @@ License](https://opensource.org/license/BSD-3-Clause).
 Some libraries[^2] are distributed along with `eOn`, namely:
 
 - `mcamc` which contains `libqd` :: BSD-3-Clause license
+
 ```{versionadded} 2.0
 - `cxxopts` :: MIT License
 - `magic_enum` :: MIT License
 - `catch2` :: Boost Software License, Version 1.0
 - `ApprovalTests.cpp` :: Apache 2.0 License
 ```
+
 ```{deprecated} 2.0
 - Eigen 2.x :: Mozilla Public License
 ```
-
-
-<!-- pipx run pdm run sphinx-build -b html docs/source docs/build/html -->
 
 [^1]: Installation instructions [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 [^2]: All with compatible licenses
