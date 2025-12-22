@@ -64,8 +64,8 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   params->xtb_acc = 1.0;
   params->xtb_elec_temperature = 300.0;
   params->xtb_maxiter = 250;
-  // params->xtb_charge = 0.0;
-  // params->xtb_uhf = 0;
+  params->xtb_charge = 0.0;
+  params->xtb_uhf = 0;
   auto pot = helper_functions::makePotential(params->potential, params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,

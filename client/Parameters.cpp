@@ -93,6 +93,8 @@ Parameters::Parameters() {
   xtb_acc = 1.0;
   xtb_elec_temperature = 0.0;
   xtb_maxiter = 250;
+  xtb_charge = 0.0;
+  xtb_uhf = 0;
 
   // [ZBLPot] //
   // NOTE(rg): No good defaults TBH
@@ -520,6 +522,8 @@ int Parameters::load(FILE *file) {
       xtb_elec_temperature = ini.GetValueF("XTBPot", "electronic_temperature",
                                            xtb_elec_temperature);
       xtb_maxiter = ini.GetValueL("XTBPot", "max_iterations", xtb_maxiter);
+      xtb_uhf = ini.GetValueL("XTBPot", "uhf", xtb_uhf);
+      xtb_charge = ini.GetValueF("XTBPot", "charge", xtb_charge);
     }
     // [ZBLPot]
     if (potential == PotType::ZBL) {
