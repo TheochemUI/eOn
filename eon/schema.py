@@ -599,7 +599,7 @@ class PotentialConfig(BaseModel):
 class XTBPot(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    paramset: str = Field(
+    paramset: Literal["GFNFF", "GFN0xTB", "GFN1xTB", "GFN2xTB"] = Field(
         default="GFNFF", description="Parameter set for XTB potential."
     )
     accuracy: float = Field(default=1.0, description="Accuracy of the XTB calculation.")
@@ -609,6 +609,8 @@ class XTBPot(BaseModel):
     max_iterations: int = Field(
         default=250, description="Maximum number of XTB iterations."
     )
+    uhf: int = Field(default=0, description="Multiplicity")
+    charge: float = Field(default=0.0, description="Total charge")
 
 
 class ZBLPot(BaseModel):
@@ -672,7 +674,7 @@ class Metatomic(BaseModel):
         description="Whether to check consistency of the Metatomic model.",
     )
     uncertainty_threshold: float = Field(
-        default=0.1, # 100meV/atom
+        default=0.1,  # 100meV/atom
         description="Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.",
     )
 

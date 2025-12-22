@@ -412,8 +412,8 @@ if get_option('with_metatomic')
 
     torch_inc_args = []
     foreach d : LIB_TORCH_INCLUDE_LIST
-      # Reduce the priority of each
-       torch_inc_args += ['-isystem', d]
+        # Reduce the priority of each
+        torch_inc_args += ['-isystem', d]
     endforeach
 
     torch_deps = declare_dependency(
@@ -581,6 +581,9 @@ if get_option('with_tests')
     ]
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
+    endif
+    if get_option('with_xtb')
+        test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
     endif
     foreach test : test_array
         test(
