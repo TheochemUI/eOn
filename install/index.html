@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="Installation guide for the EON software package. Learn how to install EON using conda or build it from source using meson." name="description" />
+<meta content="Installation guide for the EON software package, using pixi/conda or source builds." name="description" />
 <meta content="install EON, build EON, conda, meson, compilation" name="keywords" />
     <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-09-05T11:32:24+00:00" />
+    <meta property="article:modified_time" content="2025-12-22T09:43:00+00:00" />
     <title>Installation &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="eOn Team" href="../team.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Sep 05, 2025"/>
+    <meta name="docbuild:last-update" content="Dec 22, 2025"/>
   </head>
   
   
@@ -486,7 +486,11 @@ results.</p>
 <section id="getting-started">
 <h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h2>
 <p>The simplest way to hit the ground running is with the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;https://prefix.dev/channels/rg-forge&quot;</span><span class="w"> </span>eon
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># best with pixi</span>
+pixi<span class="w"> </span>init
+pixi<span class="w"> </span>add<span class="w"> </span>eon
+<span class="c1"># or with conda/micromamba</span>
+micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>eon
 </pre></div>
 </div>
 <p>At this point any of the many examples should be good to go.</p>
@@ -513,21 +517,23 @@ binary is automatically made available in the activated environment..</p>
 <p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://cli.github.com/">GitHub CLI tool</a> makes authentication much easier.</p></li>
-<li><p>Micromamba (<a class="reference external" href="https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html">installation</a>) is a faster conda-helper</p></li>
+<li><p><a class="reference external" href="https://pixi.sh/">Pixi</a> is now recommended</p></li>
 </ul>
 </div>
 </aside>
 <section id="building-from-source">
 <h2>Building from source<a class="headerlink" href="#building-from-source" title="Link to this heading">#</a></h2>
 <p>We provide a <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment and <code class="docutils literal notranslate"><span class="pre">pixi</span></code> setup, with dependencies handled by <code class="docutils literal notranslate"><span class="pre">conda-lock</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>eongit<span class="w"> </span>-f<span class="w"> </span>conda-lock.yml
-micromamba<span class="w"> </span>activate<span class="w"> </span>eongit
-<span class="c1"># Or</span>
-pixi<span class="w"> </span>shell
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>shell
+<span class="c1"># or</span>
+pixi<span class="w"> </span>s<span class="w"> </span>-e<span class="w"> </span>dev-lite
 </pre></div>
 </div>
+<p>Other environments can be found by inspecting the <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> file.</p>
 <p>This leads to the most robust installation approach:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># conda-compilers may try to install to $CONDA_PREFIX/lib/x86_64-linux-gnu without --libdir</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># conda-compilers may try to install to</span>
+<span class="c1"># $CONDA_PREFIX/lib/x86_64-linux-gnu</span>
+<span class="c1"># without --libdir</span>
 meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span>--buildtype<span class="o">=</span>release
 meson<span class="w"> </span>install<span class="w"> </span>-C<span class="w"> </span>bbdir
 </pre></div>
@@ -571,7 +577,6 @@ License</a>.</p>
 <li><p>Eigen 2.x :: Mozilla Public License</p></li>
 </ul>
 </div>
-<!-- pipx run pdm run sphinx-build -b html docs/source docs/build/html -->
 </section>
 </section>
 <hr class="footnotes docutils" />
@@ -680,7 +685,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Sep 05, 2025.
+  Last updated on Dec 22, 2025.
   <br/>
 </p>
   </div>

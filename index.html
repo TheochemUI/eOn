@@ -16,7 +16,7 @@
     <link href="_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-09-05T11:32:24+00:00" />
+    <meta property="article:modified_time" content="2025-12-22T09:43:00+00:00" />
     <title>eOn: Long Timescale Dynamics Software &#8212; eOn</title>
   
   
@@ -69,7 +69,7 @@
     <link rel="next" title="eOn Team" href="team.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Sep 05, 2025"/>
+    <meta name="docbuild:last-update" content="Dec 22, 2025"/>
   </head>
   
   
@@ -453,11 +453,15 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">eOn: Long Timescale Dynamics Software</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-systems">Supported systems</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interatomic-interactions">Interatomic Interactions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#interatomic-interactions">Interatomic Interactions</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-interfaces">Parallel Interfaces</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-topics">Additional Topics</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting started</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-help">Getting help</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supporting-packages">Supporting packages</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#user-guide">User Guide</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -492,10 +496,10 @@ hyperdyamics, adaptive kinetic Monte Carlo, and basin hopping.</p>
 <figure class="align-center" id="id1">
 <img alt="Collection of systems which can be modeled" class="full-width" src="_images/esys_trans.png" />
 <figcaption>
-<p><span class="caption-text">An overview of some systems modelled with eOn</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">An overview of some systems modeled with eOn</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>However, the systems which are best modelled using EON are those in which the
+<p>However, the systems which are best modeled using EON are those in which the
 important kinetics are governed by rare events. Diffusion in solids and chemical
 reactions at surface are particularly suitable when there is a clear separation
 of time scales between atomic vibrations at the diffusion or catalytic events of
@@ -509,31 +513,52 @@ interest.</p>
 <p>In the example showing ripening dynamics on an <code class="docutils literal notranslate"><span class="pre">Al(100)</span></code> surface, a compact
 island forms after <code class="docutils literal notranslate"><span class="pre">65720</span></code> transitions in a time scale of a <code class="docutils literal notranslate"><span class="pre">ms</span></code> at <code class="docutils literal notranslate"><span class="pre">300K</span></code>.</p>
 </section>
-</section>
 <section id="interatomic-interactions">
-<h1>Interatomic Interactions<a class="headerlink" href="#interatomic-interactions" title="Link to this heading">#</a></h1>
+<h2>Interatomic Interactions<a class="headerlink" href="#interatomic-interactions" title="Link to this heading">#</a></h2>
 <p>There are a variety of empirical potentials included with <code class="docutils literal notranslate"><span class="pre">eOn</span></code>. You can also
 use the potentials built into the LAMMPS library. <code class="docutils literal notranslate"><span class="pre">eOn</span></code> also provides an
 interace to the VASP and GPAW density functional theory codes.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.0: </span><code class="docutils literal notranslate"><span class="pre">eOn</span></code> now supports additional potentials</p>
 <ul class="simple">
-<li><p>via an embeded Python interpreter, all the potentials accessible from the atomic simulation environment, ASE.</p></li>
+<li><p>via an embeded Python interpreter, all the potentials in <a class="reference external" href="https://ase-lib.org/">ASE</a>.</p></li>
 <li><p>via native Fortran-C interface, different forms of the tight binding <code class="docutils literal notranslate"><span class="pre">XTB</span></code> potentials</p></li>
-<li><p>via an I/O and server-client interface, potentials from the Amsterdam Modeling Suite (AMS)</p></li>
+<li><p>via native interface, the <a class="reference external" href="https://docs.metatensor.org/metatomic/">Metatomic</a> potentials</p></li>
+<li><p>via an I/O and server-client interface, Amsterdam Modeling Suite (AMS) potentials</p></li>
 </ul>
 </div>
 </section>
-<section id="parallel-interfaces">
-<h1>Parallel Interfaces<a class="headerlink" href="#parallel-interfaces" title="Link to this heading">#</a></h1>
-<p>The algorithms in EON can be run in parallel using a set of communication
-options including local communication, distribution over a cluster using a
-queueing system, multiple process multiple data MPI jobs, and distributed
-computing environments.</p>
-<!-- Is this still true -->
 </section>
-<section id="additional-topics">
-<h1>Additional Topics<a class="headerlink" href="#additional-topics" title="Link to this heading">#</a></h1>
+<section id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://eondocs.org/install/">the installation instructions</a>, but in a line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>eon
+<span class="c1"># single point calculation, Lennard-Jones</span>
+eonclient<span class="w"> </span>-s<span class="w"> </span>molecule.con<span class="w"> </span>-p<span class="w"> </span>lj
+<span class="c1"># or with a config.ini and pos.con file</span>
+eonclient<span class="w"> </span><span class="c1"># reads config.ini and runs</span>
+<span class="c1"># or for akmc, needs config.ini and pos.con</span>
+python<span class="w"> </span>-m<span class="w"> </span>eon.server
+</pre></div>
+</div>
+<section id="getting-help">
+<h2>Getting help<a class="headerlink" href="#getting-help" title="Link to this heading">#</a></h2>
+<p>We support a variety of methods to provide assistance:</p>
+<ul class="simple">
+<li><p><strong>Github Issues</strong> :: For bug reports and software errors, <a class="reference external" href="https://github.com/TheochemUI/eOn/issues">open issues</a></p></li>
+<li><p><strong>Community Forum</strong> :: EON has a section on the <a class="reference external" href="https://matsci.org/c/eon/">Materials Science Community Discourse</a></p></li>
+</ul>
+</section>
+<section id="supporting-packages">
+<h2>Supporting packages<a class="headerlink" href="#supporting-packages" title="Link to this heading">#</a></h2>
+<p>Additional visualization and parsing may be found in the <code class="docutils literal notranslate"><span class="pre">rgpycrumbs</span></code> diagnostic
+suite (<a class="reference external" href="https://rgpycrumbs.rgoswami.me/tools/eon/index.html">Home</a>,
+<a class="reference external" href="https://github.com/HaoZeke/rgpycrumbs">Github</a>,
+<a class="reference external" href="https://pypi.org/project/rgpycrumbs/">PyPI</a>).</p>
+</section>
+</section>
+<section id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
@@ -637,11 +662,15 @@ computing environments.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">eOn: Long Timescale Dynamics Software</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-systems">Supported systems</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interatomic-interactions">Interatomic Interactions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#interatomic-interactions">Interatomic Interactions</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-interfaces">Parallel Interfaces</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-topics">Additional Topics</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting started</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-help">Getting help</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supporting-packages">Supporting packages</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#user-guide">User Guide</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -679,7 +708,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Sep 05, 2025.
+  Last updated on Dec 22, 2025.
   <br/>
 </p>
   </div>
