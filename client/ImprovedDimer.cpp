@@ -40,14 +40,43 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   log = spdlog::get("combi");
 }
 
+void ImprovedDimer::setReferenceMode(const VectorXd &ref) {
+  fixedReferenceMode = ref;
+  if (fixedReferenceMode.norm() > 1e-10) {
+    fixedReferenceMode.normalize();
+  }
+  hasFixedReference = true;
+}
+
+void ImprovedDimer::clearReferenceMode() { hasFixedReference = false; }
+
 void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
 
   VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),
                                             3 * matter->numberOfAtoms());
   tau = initialDirection.array() * matter->getFreeV().array();
-  tau = initialDirection;
-  tau.normalize();
+  // Handle initial direction tracking
+  rotationDidConverge = true;
+  if (tau.norm() > 1e-10) {
+    tau.normalize();
+  } else {
+    // Fallback if the tangent was zero on free atoms (unlikely but safe)
+    tau.setRandom();
+    tau = tau.array() * matter->getFreeV().array();
+    tau.normalize();
+  }
+  // RONEB setup
+  VectorXd referenceMode;
+  // This represents the "NEB Tangent" restricted to the free atoms.
+  if (hasFixedReference) {
+    // Use the persistent NEB tangent
+    referenceMode = fixedReferenceMode;
+  } else {
+    // Standard Dimer behavior: preventing mode switching within one force call
+    referenceMode = tau;
+  }
+  // --- end
   *x0 = *matter;
   *x1 = *matter;
   VectorXd x0_r = x0->getPositionsV();
@@ -208,6 +237,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
     statsAngle = phi_prime * (180.0 / M_PI);
 
+    double alignment = std::abs(tau.dot(referenceMode));
     if (abs(phi_prime) > phi_tol) {
       double b1 = 0.5 * d_C_tau_d_phi;
 
@@ -286,15 +316,22 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       statsRotations += 1;
       SPDLOG_LOGGER_INFO(
           log,
-          "[IDimerRot]  -----   ---------   ----------   ------------------   "
-          "{:9.4f}   {:7.3f}   {:6.2f}   {:4}",
-          C_tau, statsTorque, statsAngle, statsRotations);
+          "[IDimerRot]  -----   ---------   ----------   ----------   "
+          "{:9.4f}   {:7.3f}   {:6.2f}   {:4}   {:5.3f}",
+          C_tau, statsTorque, statsAngle, statsRotations, alignment);
     } else {
       SPDLOG_LOGGER_INFO(
           log,
-          "[IDimerRot]  -----   ---------   ----------   ------------------   "
-          "{:9.4f}   {:7.3f}   ------   ----",
-          C_tau, F_R.norm() / delta);
+          "[IDimerRot]  -----   ---------   ----------   ----------   "
+          "{:9.4f}   {:7.3f}   ------   ----   {:5.3f}",
+          C_tau, F_R.norm() / delta, alignment);
+    }
+    if (alignment < 0.8) { // TODO(rg): set in parameters
+      SPDLOG_LOGGER_WARN(
+          log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
+
+      rotationDidConverge = false;
+      break;
     }
 
   } while (abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and
