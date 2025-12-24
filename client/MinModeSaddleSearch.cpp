@@ -17,6 +17,7 @@
 #include "Lanczos.h"
 #include "LowestEigenmode.h"
 #include "SaddleSearchJob.h"
+#include "eonExceptions.hpp"
 #include <memory>
 #ifdef WITH_GPRD
 #include "AtomicGPDimer.h"
@@ -50,6 +51,11 @@ public:
 
     if (!fdstep || iteration == 0) {
       minModeMethod->compute(matter, eigenvector);
+      // Check if ImprovedDimer lost the mode immediately after compute()
+      auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
+      if (dimer && !dimer->rotationDidConverge) {
+        throw DimerModeLostException();
+      }
       iteration++;
     }
 
