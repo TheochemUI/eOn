@@ -16,6 +16,7 @@
 #include "Lanczos.h"
 #include "MinModeSaddleSearch.h"
 #include "Optimizer.h"
+#include "eonExceptions.hpp"
 #include "magic_enum/magic_enum.hpp"
 
 #include <filesystem>
@@ -485,6 +486,9 @@ NudgedElasticBand::NudgedElasticBand(
 }
 
 NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
+  if (current_mmf_threshold < 0) {
+    current_mmf_threshold = params->nebciMMFAfter;
+  }
   long iteration = 0;
   this->status = NEBStatus::RUNNING;
 
@@ -535,7 +539,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       // so that we print forces before taking an optimizer step
       if (climbingImage > 0 && climbingImage <= numImages &&
           params->nebciWithMMF && params->nebClimbingImageMethod &&
-          convForce < params->nebciMMFAfter && iteration > 1) {
+          convForce < current_mmf_threshold && iteration > 1) {
+
+        SPDLOG_LOGGER_DEBUG(
+            log, "Triggering MMF. Current Force: {:.4f}, Threshold: {:.4f}",
+            convForce, current_mmf_threshold);
 
         auto tempMinModeSearch = std::make_shared<MinModeSaddleSearch>(
             path[climbingImage], *tangent[climbingImage],
@@ -544,15 +552,47 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         // Save the original value of saddleMaxIterations
         auto originalSaddleMaxIterations = params->saddleMaxIterations;
         params->saddleMaxIterations = params->nebciMMFnSteps;
-        int minModeStatus = tempMinModeSearch->run();
+        int minModeStatus;
+        try {
+          minModeStatus = tempMinModeSearch->run();
+        } catch (const DimerModeLostException &e) {
+          // Determine we crashed because of mode loss
+          minModeStatus = MinModeSaddleSearch::STATUS_DIMER_LOST_MODE;
+        }
 
         // Restore the original value of saddleMaxIterations
         params->saddleMaxIterations = originalSaddleMaxIterations;
         if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD &&
             minModeStatus != MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
-          SPDLOG_WARN(
-              "MinModeSaddleSearch for climbing image returned status: {}",
-              minModeStatus);
+          SPDLOG_LOGGER_WARN(
+              log,
+              "MMF Failed (Status {}). Landscape too complex at this "
+              "force level.",
+              static_cast<int>(minModeStatus));
+
+          // --- THE PHYSICAL FIX: ARRHIENIUS-STYLE REDUCTION ---
+          // We failed at the current force level. The quadratic region is
+          // smaller than expected. We physically constrain the next attempt to
+          // be closer to the saddle. Reducing the threshold by half (or to the
+          // current force * 0.9) ensures we DO NOT try again until NEB has done
+          // significant work.
+
+          double old_threshold = current_mmf_threshold;
+
+          // Set new threshold slightly below CURRENT convergence force.
+          // This forces NEB to improve the image before we trust MMF again.
+          // TODO(rg): use parameters here
+          current_mmf_threshold =
+              std::min(current_mmf_threshold * 0.9, convForce * 0.8);
+
+          SPDLOG_LOGGER_WARN(log, "Tightening MMF Threshold: {:.4f} -> {:.4f}",
+                             old_threshold, current_mmf_threshold);
+
+        } else {
+          // If it worked (or just ran out of steps without crashing),
+          // we can relax the threshold back to the original parameter
+          // just in case we need it again later (hysteresis).
+          current_mmf_threshold = params->nebciMMFAfter;
         }
 
         // Now, the climbing image (path[climbingImage]) has been optimized for
