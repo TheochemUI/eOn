@@ -171,6 +171,16 @@ MinModeSaddleSearch::MinModeSaddleSearch(
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
     if (params->dimerImproved) {
       minModeMethod = std::make_shared<ImprovedDimer>(matter, params, pot);
+      if (true) { // TODO(rg): convert to param
+        auto dimer = std::static_pointer_cast<ImprovedDimer>(minModeMethod);
+
+        // Convert the input AtomMatrix 'mode' to VectorXd
+        VectorXd refVec =
+            VectorXd::Map(mode.data(), 3 * matter->numberOfAtoms());
+        refVec = refVec.array() * matter->getFreeV().array();
+
+        dimer->setReferenceMode(refVec);
+      }
     } else {
       minModeMethod = std::make_shared<Dimer>(matter, params, pot);
     }
@@ -220,7 +230,7 @@ int MinModeSaddleSearch::run() {
                          "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
                          "{:7s}   {:6s}   {:4s}\n",
                          "Step", "Step Size", "Delta E", forceLabel,
-                         "Curvature", "Torque", "Angle", "Rots");
+                         "Curvature", "Torque", "Angle", "Rots", "Alignment");
     } else if (params->saddleMinmodeMethod ==
                LowestEigenmode::MINMODE_LANCZOS) {
       SPDLOG_LOGGER_INFO(
@@ -301,6 +311,21 @@ int MinModeSaddleSearch::run() {
         }
       } else {
         optStatus = optim->step(params->optMaxMove);
+      }
+
+      if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+        // We need to cast the pointer to access the ImprovedDimer-specific flag
+        auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
+
+        if (dimer && !dimer->rotationDidConverge) {
+          SPDLOG_LOGGER_WARN(
+              log, "Dimer failed to hold mode. Aborting Saddle Search loop.");
+
+          // We return a status that tells NEB this wasn't a clean run,
+          // but not a catastrophic crash (so NEB continues with springs).
+          status = STATUS_DIMER_LOST_MODE;
+          break;
+        }
       }
 
       if (optStatus < 0) {

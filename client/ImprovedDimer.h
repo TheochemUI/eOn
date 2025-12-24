@@ -21,6 +21,9 @@ class ImprovedDimer : public LowestEigenmode {
 
 private:
   shared_ptr<spdlog::logger> log;
+  // For use when called as part of the NEB-MMF
+  VectorXd fixedReferenceMode;
+  bool hasFixedReference = false;
 
 public:
   // Optimization for the dimer
@@ -46,7 +49,10 @@ public:
   VectorXd theta;             // Dimer rotation direction
   VectorXd F_R;               // Dimer rotational force
   double C_tau;               // Curvature along tau
-
+  // For use when called as part of the NEB-MMF
+  void setReferenceMode(const VectorXd &ref);
+  void clearReferenceMode();
+  bool rotationDidConverge;
   // parameters used for conjugate gradients
   VectorXd F_R_Old;
   VectorXd thetaOld;
