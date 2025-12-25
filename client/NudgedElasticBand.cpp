@@ -241,15 +241,28 @@ NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Potential> potPassed)
     : NudgedElasticBand(
           [&, initialPassed]() {
-            if (!parametersPassed->nebIpath.empty()) {
+            switch (parametersPassed->neb_initializer) {
+            case NEBInit::FILE: {
+              if (parametersPassed->nebIpath.empty()) {
+                throw std::runtime_error(
+                    "NEB initializer set to FILE, but neb_ipath is empty.");
+              }
               std::vector<fs::path> file_paths =
                   helper_functions::neb_paths::readFilePaths(
                       parametersPassed->nebIpath);
               return helper_functions::neb_paths::filePathInit(
                   file_paths, *initialPassed, parametersPassed->nebImages);
-            } else {
+            }
+            case NEBInit::IDPP: {
+              return helper_functions::neb_paths::idppPath(
+                  *initialPassed, *finalPassed, parametersPassed->nebImages,
+                  parametersPassed);
+            }
+            case NEBInit::LINEAR:
+            default: {
               return helper_functions::neb_paths::linearPath(
                   *initialPassed, *finalPassed, parametersPassed->nebImages);
+            }
             }
           }(),
           parametersPassed, potPassed) {}
