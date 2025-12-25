@@ -258,6 +258,10 @@ Nudged Elastic Band:
             kind: string
             default: ""
 
+        initializer:
+            kind: string
+            default: "linear"
+
         minimize_endpoints:
             kind: boolean
             default: true
