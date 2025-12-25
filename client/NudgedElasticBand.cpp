@@ -180,6 +180,118 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
   return path;
 }
 
+// Helper to insert an image linearly between two others
+Matter interpolateImage(const Matter &A, const Matter &B, double fraction) {
+  Matter newImg(A);
+  AtomMatrix posA = A.getPositions();
+  AtomMatrix posB = B.getPositions();
+  // Use PBC-aware interpolation
+  AtomMatrix diff = A.pbc(posB - posA);
+  newImg.setPositions(posA + fraction * diff);
+  return newImg;
+}
+
+std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
+                              size_t target_nimgs,
+                              std::shared_ptr<Parameters> params) {
+
+  auto log = spdlog::get("combi");
+  SPDLOG_LOGGER_INFO(
+      log, "Generating initial path using Sequential IDPP (S-IDPP)...");
+
+  // 1. Start with [Init, Final]
+  std::vector<Matter> path;
+  path.push_back(initImg);
+  path.push_back(finalImg);
+
+  // Track how many images we have added to the Reactant (left) and Product
+  // (right) sides In ORCA this is nR and nP. We start with 0 intermediate
+  // images.
+  int nLeft = 0;
+  int nRight = 0;
+  int nIntermediate = 0;
+
+  // 2. Growth Loop
+  while (nIntermediate < target_nimgs) {
+
+    // --- STEP A: ADD IMAGES ---
+    // We add images if we haven't reached the target yet.
+    // Strategy: Add one to left, one to right (if space permits)
+
+    // Add to Left (Reaction side)
+    if (nIntermediate < target_nimgs) {
+      // Insert after the last "Left" image (index nLeft)
+      // Interpolate between path[nLeft] and path[nLeft+1] (which is the first
+      // "Right" image) For the very first step, this interpolates between Init
+      // and Final.
+
+      // We place it close to the frontier (e.g., 20% of the way to the next
+      // image) effectively "growing" slowly.
+      Matter frontier = path[nLeft];
+      Matter next = path[nLeft + 1];
+      Matter newImg = interpolateImage(
+          frontier, next, 0.33); // 0.33 is a heuristic for "growth"
+
+      path.insert(path.begin() + nLeft + 1, newImg);
+      nLeft++;
+      nIntermediate++;
+      SPDLOG_LOGGER_DEBUG(log, "S-IDPP: Added Left Frontier. Total: {}",
+                          nIntermediate);
+    }
+
+    // Add to Right (Product side)
+    if (nIntermediate < target_nimgs) {
+      // Insert before the first "Right" image.
+      // Current indices: [0 ... nLeft] [NEW] [nLeft+1 ... END]
+      // We want to insert before the last element (Final).
+
+      int rightFrontierIdx = path.size() - 1 - nRight;
+      Matter frontier = path[rightFrontierIdx];
+      Matter prev = path[rightFrontierIdx - 1];
+
+      // Grow backwards from product
+      Matter newImg = interpolateImage(frontier, prev, 0.33);
+
+      path.insert(path.begin() + rightFrontierIdx, newImg);
+      nRight++;
+      nIntermediate++;
+      SPDLOG_LOGGER_DEBUG(log, "S-IDPP: Added Right Frontier. Total: {}",
+                          nIntermediate);
+    }
+
+    // --- STEP B: OPTIMIZE CURRENT SET ---
+    // Create the collective objective function for the current path size
+    auto idpp_objf =
+        std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+
+    // Use LBFGS for fast relaxation
+    auto optim = helpers::create::mkOptim(idpp_objf, OptType::LBFGS, params);
+
+    // Run for a few steps to relax the new frontiers
+    // We don't need tight convergence, just enough to resolve clashes
+    int steps = 150;
+    optim->run(steps, params->optMaxMove);
+
+    SPDLOG_LOGGER_DEBUG(log, "S-IDPP: Relaxed with {} images. Residual: {:.4f}",
+                        nIntermediate, idpp_objf->getConvergence());
+  }
+
+  // 3. Final Interpolation / Alignment
+  // The path now has size target_nimgs + 2.
+  // However, the "growth" heuristic might have left the middle gap uneven.
+  // It is good practice to run one final IDPP on the FULL path to evenly space
+  // everything.
+
+  SPDLOG_LOGGER_INFO(log, "S-IDPP: Final relaxation of full path...");
+  auto final_objf =
+      std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+  auto final_optim =
+      helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
+  final_optim->run(500, params->optMaxMove);
+
+  return path;
+}
+
 } // namespace helper_functions::neb_paths
 
 // NEBObjectiveFunction definitions
@@ -289,6 +401,11 @@ NudgedElasticBand::NudgedElasticBand(
             }
             case NEBInit::IDPP_COLLECTIVE: {
               return helper_functions::neb_paths::idppCollectivePath(
+                  *initialPassed, *finalPassed, parametersPassed->nebImages,
+                  parametersPassed);
+            }
+            case NEBInit::SIDPP: {
+              return helper_functions::neb_paths::sidppPath(
                   *initialPassed, *finalPassed, parametersPassed->nebImages,
                   parametersPassed);
             }

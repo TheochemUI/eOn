@@ -116,6 +116,6 @@ enum class OptType {
   SD
 };
 
-enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, FILE };
+enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, SIDPP, FILE };
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
