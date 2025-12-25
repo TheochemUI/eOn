@@ -1484,6 +1484,16 @@ class NudgedElasticBandConfig(BaseModel):
     """
     This file must contain a list of .con files, one per image on the path.
     """
+    initializer: Literal["linear", "idpp", "file"] = Field(
+        default="linear",
+        description="Initialization strategy.",
+    )
+    """
+    Options:
+    - ``linear``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
+    - ``idpp``: Image depedent pair potential initialzation :cite:t:`neb-smidstrupImprovedInitialGuess2014`.
+    - ``file``: Start from an arbitrary path, needs initial_path_in set as well.
+    """
     minimize_endpoints: bool = Field(
         default=True,
         description="Minimize the reactant and product before the NEB.",
