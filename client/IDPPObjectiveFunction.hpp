@@ -29,7 +29,6 @@ public:
 
     // Initialize working variables to avoid re-allocation
     int natoms = matter->numberOfAtoms();
-    d_current.resize(natoms, natoms);
   }
 
   // IDPP Energy: E = 0.5 * sum( w * (r_ij - d_target_ij)^2 )
@@ -71,8 +70,7 @@ public:
   }
 
 private:
-  Eigen::MatrixXd d_target;  // The interpolated "ideal" distances
-  Eigen::MatrixXd d_current; // Workspace for current distances
+  Eigen::MatrixXd d_target; // The interpolated "ideal" distances
 };
 
 class CollectiveIDPPObjectiveFunction : public ObjectiveFunction {
@@ -92,7 +90,6 @@ public:
   // for debugging
   double getEnergy() override { return 0.0; }
 
-  // THE CORE LOGIC: mimicking ORCA's NEB force projection
   VectorXd getGradient(bool fdstep = false) override;
 
   // Plumbing to map the entire path (all images) to one vector
@@ -123,8 +120,7 @@ public:
 
   // Check convergence of the IDPP-NEB
   bool isConverged() override {
-      // TODO(rg): parameterize, but tighter tolerance here works better
-    return getConvergence() < 0.001;
+    return getConvergence() < params->nebInitForceTol;
   }
 
   double getConvergence() override { return lastMaxForce; }

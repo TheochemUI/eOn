@@ -268,6 +268,22 @@ Nudged Elastic Band:
                 - sidpp
                 - file
 
+        init_max_iterations:
+            kind: float
+            default: 5000
+
+        init_max_move:
+            kind: float
+            default: 0.1
+
+        init_force_threshold:
+            kind: float
+            default: 0.001
+
+        sidpp_growth_alpha:
+            kind: float
+            default: 0.33
+
         minimize_endpoints:
             kind: boolean
             default: true
