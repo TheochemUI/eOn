@@ -319,21 +319,6 @@ int MinModeSaddleSearch::run() {
         optStatus = optim->step(params->optMaxMove);
       }
 
-      if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-        // We need to cast the pointer to access the ImprovedDimer-specific flag
-        auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
-
-        if (dimer && !dimer->rotationDidConverge) {
-          SPDLOG_LOGGER_WARN(
-              log, "Dimer failed to hold mode. Aborting Saddle Search loop.");
-
-          // We return a status that tells NEB this wasn't a clean run,
-          // but not a catastrophic crash (so NEB continues with springs).
-          status = STATUS_DIMER_LOST_MODE;
-          break;
-        }
-      }
-
       if (optStatus < 0) {
         status = STATUS_OPTIMIZER_ERROR;
         break;
@@ -397,17 +382,32 @@ int MinModeSaddleSearch::run() {
         matter->matter2con(climb.str(), true);
       }
 
-      if (de > params->saddleMaxEnergy) {
-        status = STATUS_BAD_HIGH_ENERGY;
-        break;
-      }
-
       if (params->checkpoint) {
         matter->matter2con("displacement_cp.con", false);
         FILE *fileMode = fopen("mode_cp.dat", "wb");
         helper_functions::saveMode(fileMode, matter,
                                    minModeMethod->getEigenvector());
         fclose(fileMode);
+      }
+
+      if (de > params->saddleMaxEnergy) {
+        status = STATUS_BAD_HIGH_ENERGY;
+        break;
+      }
+
+      if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+        // We need to cast the pointer to access the ImprovedDimer-specific flag
+        auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
+
+        if (dimer && !dimer->rotationDidConverge) {
+          SPDLOG_LOGGER_WARN(
+              log, "Dimer failed to hold mode. Aborting Saddle Search loop.");
+
+          // We return a status that tells NEB this wasn't a clean run,
+          // but not a catastrophic crash (so NEB continues with springs).
+          status = STATUS_DIMER_LOST_MODE;
+          break;
+        }
       }
     }
 
