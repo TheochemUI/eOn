@@ -397,6 +397,7 @@ public:
   long nebciMMFnSteps;
 
   // Initial path
+  NEBInit neb_initializer;
   string nebIpath; // file containing list of .con files for the initial path
   // Minimize endpoints
   bool nebMinimEP;
