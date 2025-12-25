@@ -1484,6 +1484,30 @@ class NudgedElasticBandConfig(BaseModel):
     """
     This file must contain a list of .con files, one per image on the path.
     """
+    initializer: Literal["linear", "idpp", "idpp_collective", "sidpp", "file"] = Field(
+        default="linear",
+        description="Initialization strategy.",
+    )
+    """
+    Options:
+    - ``linear``: Euclidean distance based image interpolation for initial NEB paths.
+    - ``idpp``: Image depedent pair potential initialzation :cite:t:`neb-smidstrupImprovedInitialGuess2014`.
+    - ``idpp_collective``: IDPP as a potential initialized with the NEB.
+    - ``sidpp``: Sequential Image depedent pair potential initialzation :cite:t:`neb-schmerwitzImprovedInitializationOptimal2024`.
+    - ``file``: Start from an arbitrary path, needs initial_path_in set as well.
+    """
+    init_max_iterations: int = Field(
+        default=5000, description="Steps to run the IDPP for."
+    )
+    init_max_move: float = Field(
+        default=0.1, description="Max move for NEB initialization."
+    )
+    init_force_threshold: float = Field(
+        default=0.001, description="Force threshold for NEB IDPP initialization."
+    )
+    sidpp_growth_alpha: float = Field(
+        default=0.33, description="The step size for adding new images in S-IDPP."
+    )
     minimize_endpoints: bool = Field(
         default=True,
         description="Minimize the reactant and product before the NEB.",

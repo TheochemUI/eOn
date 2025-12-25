@@ -397,7 +397,12 @@ public:
   long nebciMMFnSteps;
 
   // Initial path
-  string nebIpath; // file containing list of .con files for the initial path
+  NEBInit neb_initializer;
+  string nebIpath;    // file containing list of .con files for the initial path
+  int nebInitMaxIter; // Default: 5000
+  double nebInitMaxMove;   // Default: 0.1
+  double nebInitForceTol;  // Default: 0.001
+  double sidppGrowthAlpha; // Default: 0.33
   // Minimize endpoints
   bool nebMinimEP;
   bool nebMinimEPIpath;
