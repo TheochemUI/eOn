@@ -265,6 +265,7 @@ Nudged Elastic Band:
                 - linear
                 - idpp
                 - idpp_collective
+                - sidpp
                 - file
 
         minimize_endpoints:
