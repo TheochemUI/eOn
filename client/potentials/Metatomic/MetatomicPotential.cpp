@@ -155,8 +155,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                                const int *atomicNrs, double *forces,
                                double *energy, double *variance,
                                const double *box) {
-  forceCallCounter++;
-
   // 1. Convert input arrays to torch::Tensors
   auto f64_options =
       torch::TensorOptions().dtype(torch::kFloat64).device(torch::kCPU);
