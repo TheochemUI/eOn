@@ -260,7 +260,12 @@ Nudged Elastic Band:
 
         initializer:
             kind: string
-            default: "linear"
+            default: linear
+            values:
+                - linear
+                - idpp
+                - idpp_collective
+                - file
 
         minimize_endpoints:
             kind: boolean
