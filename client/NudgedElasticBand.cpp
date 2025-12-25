@@ -11,7 +11,7 @@
 */
 #include "NudgedElasticBand.h"
 #include "BaseStructures.h"
-#include "IDPPObjectiveFunction.h"
+#include "IDPPObjectiveFunction.hpp"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
 #include "MinModeSaddleSearch.h"
@@ -151,6 +151,35 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
   return path;
 }
 
+std::vector<Matter> idppCollectivePath(const Matter &initImg,
+                                       const Matter &finalImg, size_t nimgs,
+                                       std::shared_ptr<Parameters> params) {
+  auto log = spdlog::get("combi");
+  SPDLOG_LOGGER_INFO(log,
+                     "Generating initial path using Collective IDPP-NEB...");
+
+  // 1. Initial Guess (Linear)
+  std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
+
+  // 2. Create the Collective Objective Function
+  // This object treats the whole path as one optimization problem
+  auto idpp_objf =
+      std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+
+  // 3. Use LBFGS for fast collective relaxation
+  auto optim = helpers::create::mkOptim(idpp_objf, OptType::LBFGS, params);
+
+  // 4. Run Optimization
+  // Run for a fixed number of steps or until loose convergence
+  int steps = 200;
+  optim->run(steps, params->optMaxMove);
+
+  SPDLOG_LOGGER_INFO(log, "IDPP-NEB complete. Max Residual: {:.4f}",
+                     idpp_objf->getConvergence());
+
+  return path;
+}
+
 } // namespace helper_functions::neb_paths
 
 // NEBObjectiveFunction definitions
@@ -255,6 +284,11 @@ NudgedElasticBand::NudgedElasticBand(
             }
             case NEBInit::IDPP: {
               return helper_functions::neb_paths::idppPath(
+                  *initialPassed, *finalPassed, parametersPassed->nebImages,
+                  parametersPassed);
+            }
+            case NEBInit::IDPP_COLLECTIVE: {
+              return helper_functions::neb_paths::idppCollectivePath(
                   *initialPassed, *finalPassed, parametersPassed->nebImages,
                   parametersPassed);
             }

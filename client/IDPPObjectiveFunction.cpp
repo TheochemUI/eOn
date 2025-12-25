@@ -75,3 +75,98 @@ VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
   // -Forces Actually, typical eOn getGradient returns dV/dx.
   return VectorXd::Map(forces.data(), 3 * natoms) * -1.0;
 }
+
+Eigen::MatrixXd
+CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
+  int natoms = m.numberOfAtoms();
+  Eigen::MatrixXd d(natoms, natoms);
+  auto pos = m.getPositions();
+  for (int i = 0; i < natoms; ++i) {
+    for (int j = 0; j < natoms; ++j) {
+      d(i, j) = m.pbc(pos.row(i) - pos.row(j)).norm();
+    }
+  }
+  return d;
+}
+
+Eigen::MatrixXd
+CollectiveIDPPObjectiveFunction::getIDPPForces(const Matter &m,
+                                               const Eigen::MatrixXd &dTarget) {
+  int natoms = m.numberOfAtoms();
+  Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(natoms, 3);
+  auto pos = m.getPositions();
+
+  for (int i = 0; i < natoms; ++i) {
+    for (int j = i + 1; j < natoms; ++j) {
+      Eigen::RowVector3d dr_vec = m.pbc(pos.row(i) - pos.row(j));
+      double r = dr_vec.norm();
+      if (r < 1e-4)
+        r = 1e-4;
+
+      double diff = r - dTarget(i, j);
+      // SOTA Weighting: w = 1/r^4. Gradient logic matches Smidstrup/ASE
+      double dEdr = (diff / std::pow(r, 5)) * (2.0 * dTarget(i, j) - r);
+
+      Eigen::RowVector3d f = -dEdr * (dr_vec / r); // -dE/dr * r_hat
+      forces.row(i) += f;
+      forces.row(j) -= f;
+    }
+  }
+  return forces;
+}
+
+VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
+  int nImgs = path.size() - 2; // Exclude fixed endpoints
+  int natoms = path[0].numberOfAtoms();
+  VectorXd totalGradient(3 * natoms * nImgs);
+  double maxForce = 0.0;
+
+  // 1. Compute Raw IDPP Forces and Tangents
+  std::vector<Eigen::MatrixXd> rawForces(path.size());
+  std::vector<Eigen::MatrixXd> tangents(path.size());
+
+  // We compute for 1..N (moving images)
+  for (size_t i = 1; i <= nImgs; ++i) {
+    // Interpolate Target
+    double xi = static_cast<double>(i) / (nImgs + 1);
+    Eigen::MatrixXd dTarget = (1.0 - xi) * dInit + xi * dFinal;
+
+    rawForces[i] = getIDPPForces(path[i], dTarget);
+
+    // Simple Tangent: Next - Prev
+    Eigen::MatrixXd nextPos = path[i + 1].getPositions();
+    Eigen::MatrixXd prevPos = path[i - 1].getPositions();
+    tangents[i] = path[i].pbc(nextPos - prevPos);
+    tangents[i].normalize(); // Unit tangent
+  }
+
+  // 2. Project Forces and Add Springs (The "NEB" part of IDPP-NEB)
+  double k = params->nebSpring; // Use user's spring constant
+
+  for (size_t i = 1; i <= nImgs; ++i) {
+    Eigen::MatrixXd f = rawForces[i];
+    Eigen::MatrixXd t = tangents[i];
+
+    // Perpendicular Force (IDPP optimization)
+    double f_dot_t = (f.array() * t.array()).sum();
+    Eigen::MatrixXd f_perp = f - f_dot_t * t;
+
+    // Spring Force (Spacing optimization)
+    double distNext = path[i].distanceTo(path[i + 1]);
+    double distPrev = path[i].distanceTo(path[i - 1]);
+    Eigen::MatrixXd f_spring = k * (distNext - distPrev) * t;
+
+    // Total NEB Force
+    Eigen::MatrixXd f_neb = f_perp + f_spring;
+
+    // Store as Gradient (-Force)
+    totalGradient.segment(3 * natoms * (i - 1), 3 * natoms) =
+        VectorXd::Map(f_neb.data(), 3 * natoms) * -1.0;
+
+    // Tracking convergence
+    maxForce = std::max(maxForce, f_neb.template lpNorm<Eigen::Infinity>());
+  }
+
+  lastMaxForce = maxForce;
+  return totalGradient;
+}
