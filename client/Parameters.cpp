@@ -303,14 +303,18 @@ Parameters::Parameters() {
   nebEnergyWeighted = false;
   nebKSPMin = 0.97;
   nebKSPMax = 9.7;
-  nebIpath = ""s;
   nebMinimEP = true;
   nebMinimEPIpath = false;
   nebciAfter = std::numeric_limits<double>::infinity();
   nebciWithMMF = false;
   nebciMMFAfter = 0.5;
   nebciMMFnSteps = 10;
-
+  neb_initializer = NEBInit::LINEAR;
+  nebIpath = ""s;
+  nebInitMaxIter = 5000;
+  nebInitMaxMove = 0.1;
+  nebInitForceTol = 0.001;
+  sidppGrowthAlpha = 0.33;
   // [Dynamics] //
   mdTimeStepInput = 1.0;
   mdTimeInput = 1000.0;
@@ -926,7 +930,6 @@ int Parameters::load(FILE *file) {
                                       nebEnergyWeighted);
     nebKSPMin = ini.GetValueF("Nudged Elastic Band", "ew_ksp_min", nebKSPMin);
     nebKSPMax = ini.GetValueF("Nudged Elastic Band", "ew_ksp_max", nebKSPMax);
-    nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
     nebMinimEP =
         ini.GetValueB("Nudged Elastic Band", "minimize_endpoints", nebMinimEP);
     nebMinimEPIpath = ini.GetValueB(
@@ -937,6 +940,19 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Nudged Elastic Band", "ci_mmf_after", nebciMMFAfter);
     nebciMMFnSteps =
         ini.GetValueL("Nudged Elastic Band", "ci_mmf_nsteps", nebciMMFnSteps);
+    // TODO(rg): convert to a struct at some point
+    neb_initializer = magic_enum::enum_cast<NEBInit>(
+                          ini.GetValue("Nudged Elastic Band", "initializer"),
+                          magic_enum::case_insensitive)
+                          .value_or(NEBInit::LINEAR);
+    nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
+    nebInitMaxIter =
+        ini.GetValueL("Nudged Elastic Band", "init_max_iterations", 5000);
+    nebInitMaxMove = ini.GetValueF("Nudged Elastic Band", "init_max_move", 0.1);
+    nebInitForceTol =
+        ini.GetValueF("Nudged Elastic Band", "init_force_threshold", 0.001);
+    sidppGrowthAlpha =
+        ini.GetValueF("Nudged Elastic Band", "sidpp_growth_alpha", 0.33);
 
     // [Dynamics] //
 
@@ -1193,6 +1209,14 @@ int Parameters::load(FILE *file) {
         magic_enum::enum_name<JobType>(job) == "parallel_replica") {
       SPDLOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
       error = 1;
+    }
+
+    // Check if an initial path exists without a specific non-linear initializer
+    if (!nebIpath.empty() && neb_initializer == NEBInit::LINEAR) {
+      SPDLOG_WARN("[Nudged Elastic Band] 'initial_path_in' is provided, but "
+                  "'initializer' defaults to linear. "
+                  "Ensure this is intentional, as the loaded path will not be "
+                  "used without initializer set to file.");
     }
 
     if (saddleDynamicsRecordIntervalInput >
