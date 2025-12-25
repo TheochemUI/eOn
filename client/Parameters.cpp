@@ -310,6 +310,7 @@ Parameters::Parameters() {
   nebciWithMMF = false;
   nebciMMFAfter = 0.5;
   nebciMMFnSteps = 10;
+  neb_initializer = NEBInit::LINEAR;
 
   // [Dynamics] //
   mdTimeStepInput = 1.0;
@@ -937,6 +938,10 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Nudged Elastic Band", "ci_mmf_after", nebciMMFAfter);
     nebciMMFnSteps =
         ini.GetValueL("Nudged Elastic Band", "ci_mmf_nsteps", nebciMMFnSteps);
+    neb_initializer = magic_enum::enum_cast<NEBInit>(
+                          ini.GetValue("Nudged Elastic Band", "initializer"),
+                          magic_enum::case_insensitive)
+                          .value_or(NEBInit::LINEAR);
 
     // [Dynamics] //
 
