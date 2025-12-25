@@ -648,9 +648,11 @@ document.write(`
 </li>
       <li><a href="user_guide/dimer.html#eon.schema.DimerConfig.converged_angle">converged_angle (eon.schema.DimerConfig attribute)</a>
 </li>
-      <li><a href="user_guide/optimizer.html#eon.schema.OptimizerConfig.converged_force">converged_force (eon.schema.OptimizerConfig attribute)</a>
+      <li><a href="user_guide/neb.html#eon.schema.NudgedElasticBandConfig.converged_force">converged_force (eon.schema.NudgedElasticBandConfig attribute)</a>
 
       <ul>
+        <li><a href="user_guide/optimizer.html#eon.schema.OptimizerConfig.converged_force">(eon.schema.OptimizerConfig attribute)</a>
+</li>
         <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.converged_force">(eon.schema.SaddleSearchConfig attribute)</a>
 </li>
       </ul></li>
@@ -690,8 +692,6 @@ document.write(`
 </li>
       <li><a href="user_guide/dimer.html#eon.schema.DimerConfig.dimer_remove_rotation">dimer_remove_rotation (eon.schema.DimerConfig attribute)</a>
 </li>
-      <li><a href="user_guide/dimer.html#eon.schema.DimerConfig.dimer_rotation_angle">dimer_rotation_angle (eon.schema.DimerConfig attribute)</a>
-</li>
       <li><a href="user_guide/dimer.html#eon.schema.DimerConfig.dimer_rotations_min">dimer_rotations_min (eon.schema.DimerConfig attribute)</a>
 </li>
       <li><a href="user_guide/dimer.html#eon.schema.DimerConfig.dimer_torque_max">dimer_torque_max (eon.schema.DimerConfig attribute)</a>
@@ -710,10 +710,10 @@ document.write(`
 </li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.displace_listed_type_weight">displace_listed_type_weight (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.displace_magnitude">displace_magnitude (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.displace_max_coordination">displace_max_coordination (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
       <li><a href="user_guide/recycling.html#eon.schema.RecyclingConfig.displace_moved_only">displace_moved_only (eon.schema.RecyclingConfig attribute)</a>
@@ -881,8 +881,6 @@ document.write(`
         <li><a href="apidocs/eon/eon.locking.html#module-eon.locking">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     eon.mcamc
 
@@ -890,6 +888,8 @@ document.write(`
         <li><a href="apidocs/eon/eon.mcamc.html#module-eon.mcamc">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     eon.mcamc.mcamc
 
@@ -1001,6 +1001,8 @@ document.write(`
       </ul></li>
       <li><a href="apidocs/eon/eon.explorer.html#eon.explorer.Explorer">Explorer (class in eon.explorer)</a>
 </li>
+      <li><a href="user_guide/potential.html#eon.schema.PotentialConfig.ext_pot_path">ext_pot_path (eon.schema.PotentialConfig attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1017,15 +1019,17 @@ document.write(`
 </li>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.find_repeat">find_repeat() (eon.akmcstate.AKMCState method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.Table.find_row">find_row() (eon.fileio.Table method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.Table.find_value">find_value() (eon.fileio.Table method)</a>
 </li>
       <li><a href="apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.finish_minimization">finish_minimization() (eon.explorer.ProcessSearch method)</a>
 </li>
       <li><a href="apidocs/eon/eon.explorer.html#eon.explorer.ProcessSearch.finish_search">finish_search() (eon.explorer.ProcessSearch method)</a>
+</li>
+      <li><a href="user_guide/dimer.html#eon.schema.DimerConfig.finite_angle">finite_angle (eon.schema.DimerConfig attribute)</a>
 </li>
       <li><a href="user_guide/main.html#eon.schema.MainConfig.finite_difference">finite_difference (eon.schema.MainConfig attribute)</a>
 </li>
@@ -1359,6 +1363,10 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.lambertw">lambertw() (in module eon.akmcstate)</a>
 </li>
+      <li><a href="user_guide/potential.html#eon.schema.PotentialConfig.lammps_logging">lammps_logging (eon.schema.PotentialConfig attribute)</a>
+</li>
+      <li><a href="user_guide/potential.html#eon.schema.PotentialConfig.lammps_threads">lammps_threads (eon.schema.PotentialConfig attribute)</a>
+</li>
       <li><a href="user_guide/dynamics.html#eon.schema.DynamicsConfig.langevin_friction">langevin_friction (eon.schema.DynamicsConfig attribute)</a>
 </li>
       <li><a href="user_guide/optimizer.html#eon.schema.LBFGSConfig.lbfgs_angle_reset">lbfgs_angle_reset (eon.schema.LBFGSConfig attribute)</a>
@@ -1407,10 +1415,10 @@ document.write(`
 </li>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.loadposcar">loadposcar() (in module eon.fileio)</a>
 </li>
-      <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.loadposcars">loadposcars() (in module eon.fileio)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.loadposcars">loadposcars() (in module eon.fileio)</a>
+</li>
       <li><a href="apidocs/eon/eon.communicator.html#eon.communicator.Local">Local (class in eon.communicator)</a>
 </li>
       <li><a href="apidocs/eon/eon.locking.html#eon.locking.LockFile">LockFile (class in eon.locking)</a>
@@ -1543,6 +1551,8 @@ document.write(`
 </li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.match">match() (in module eon.atoms)</a>
 </li>
+      <li><a href="user_guide/basin_hopping.html#eon.schema.BasinHoppingConfig.max_displacement_algorithm">max_displacement_algorithm (eon.schema.BasinHoppingConfig attribute)</a>
+</li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.max_energy">max_energy (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
       <li><a href="user_guide/main.html#eon.schema.MainConfig.max_force_calls">max_force_calls (eon.schema.MainConfig attribute)</a>
@@ -1575,10 +1585,10 @@ document.write(`
 </li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.method">method (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
-      <li><a href="user_guide/prefactor.html#eon.schema.PrefactorConfig.min_displacement">min_displacement (eon.schema.PrefactorConfig attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user_guide/prefactor.html#eon.schema.PrefactorConfig.min_displacement">min_displacement (eon.schema.PrefactorConfig attribute)</a>
+</li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.min_mode_method">min_mode_method (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.Table.min_row">min_row() (eon.fileio.Table method)</a>
@@ -1688,8 +1698,6 @@ document.write(`
 </li>
       <li><a href="user_guide/neb.html#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only">neb_climbing_image_converged_only (eon.schema.NudgedElasticBandConfig attribute)</a>
 </li>
-      <li><a href="user_guide/neb.html#eon.schema.NudgedElasticBandConfig.neb_converged_force">neb_converged_force (eon.schema.NudgedElasticBandConfig attribute)</a>
-</li>
       <li><a href="user_guide/neb.html#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged">neb_doubly_nudged (eon.schema.NudgedElasticBandConfig attribute)</a>
 </li>
       <li><a href="user_guide/neb.html#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching">neb_doubly_nudged_switching (eon.schema.NudgedElasticBandConfig attribute)</a>
@@ -1712,10 +1720,10 @@ document.write(`
 </li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.nonlocal_count_abort">nonlocal_count_abort (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.nonlocal_distance_abort">nonlocal_distance_abort (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.nonnegative_displacement_abort">nonnegative_displacement_abort (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
       <li><a href="user_guide/dynamics.html#eon.schema.DynamicsConfig.nose_mass">nose_mass (eon.schema.DynamicsConfig attribute)</a>
@@ -1852,12 +1860,14 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/optimizer.html#eon.schema.QuickMinConfig.qm_steepest_descent">qm_steepest_descent (eon.schema.QuickMinConfig attribute)</a>
 </li>
-      <li><a href="apidocs/eon/eon.eon_kdb.html#eon.eon_kdb.query">query() (in module eon.eon_kdb)</a>
+      <li><a href="user_guide/basin_hopping.html#eon.schema.BasinHoppingConfig.quenching_steps">quenching_steps (eon.schema.BasinHoppingConfig attribute)</a>
 </li>
-      <li><a href="user_guide/communicator.html#eon.schema.CommunicatorConfig.queued_jobs">queued_jobs (eon.schema.CommunicatorConfig attribute)</a>
+      <li><a href="apidocs/eon/eon.eon_kdb.html#eon.eon_kdb.query">query() (in module eon.eon_kdb)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user_guide/communicator.html#eon.schema.CommunicatorConfig.queued_jobs">queued_jobs (eon.schema.CommunicatorConfig attribute)</a>
+</li>
       <li><a href="user_guide/main.html#eon.schema.MainConfig.quiet">quiet (eon.schema.MainConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.mpiwait.html#eon.mpiwait.QUIT">QUIT (in module eon.mpiwait)</a>

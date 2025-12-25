@@ -462,7 +462,9 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.initial_state_pool_size"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.initial_state_pool_size</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_max"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_max</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.max_displacement_algorithm</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.push_apart_distance"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.push_apart_distance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.quenching_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.quenching_steps</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.significant_structure"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.significant_structure</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.single_atom_displace"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.single_atom_displace</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.steps</span></code></a></li>
@@ -587,7 +589,7 @@ is also implemented, and is controlled by
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;displacement_distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Distribution used for the displacement of each atom.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
@@ -595,6 +597,18 @@ is also implemented, and is controlled by
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displacement Distribution&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;max_displacement_algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Method for displacements.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Displacement Algorithm&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;quenching_steps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of quenching steps.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Quenching Steps&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;swap_probability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
@@ -647,7 +661,9 @@ is also implemented, and is controlled by
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.initial_state_pool_size" title="eon.schema.BasinHoppingConfig.initial_state_pool_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initial_state_pool_size</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.jump_max" title="eon.schema.BasinHoppingConfig.jump_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jump_max</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.jump_steps" title="eon.schema.BasinHoppingConfig.jump_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jump_steps</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm" title="eon.schema.BasinHoppingConfig.max_displacement_algorithm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_displacement_algorithm</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.push_apart_distance" title="eon.schema.BasinHoppingConfig.push_apart_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_apart_distance</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.quenching_steps" title="eon.schema.BasinHoppingConfig.quenching_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quenching_steps</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.significant_structure" title="eon.schema.BasinHoppingConfig.significant_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">significant_structure</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.single_atom_displace" title="eon.schema.BasinHoppingConfig.single_atom_displace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">single_atom_displace</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.steps" title="eon.schema.BasinHoppingConfig.steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">steps</span> <span class="pre">(int)</span></code></a></p></li>
@@ -683,7 +699,7 @@ is also implemented, and is controlled by
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.displacement_distribution">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">displacement_distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'gaussian'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uniform'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gaussian'</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.displacement_distribution" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">displacement_distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'gaussian'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uniform'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uniform'</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.displacement_distribution" title="Link to this definition">#</a></dt>
 <dd><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.displacement" title="eon.schema.BasinHoppingConfig.displacement"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.BasinHoppingConfig.displacement</span></code></a> for the <strong>gaussian</strong> will
 serve as the standard deviation of the normal distribution used to select
 displacements.</p>
@@ -722,11 +738,23 @@ basin. The number of jump steps is assigned in
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.max_displacement_algorithm">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_displacement_algorithm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm" title="Link to this definition">#</a></dt>
+<dd><p>Method for displacements.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.push_apart_distance">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">push_apart_distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.4</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.push_apart_distance" title="Link to this definition">#</a></dt>
 <dd><p>This criterion is enforced for <strong>both</strong> the initial structure and all those
 generated by random displacement.</p>
 <p>Push atoms apart until no atoms are closer than this distance.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.quenching_steps">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quenching_steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.quenching_steps" title="Link to this definition">#</a></dt>
+<dd><p>Number of quenching steps.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -854,7 +882,9 @@ seen. For clusters it is important to set
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.initial_state_pool_size"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.initial_state_pool_size</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_max"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_max</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.max_displacement_algorithm</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.push_apart_distance"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.push_apart_distance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.quenching_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.quenching_steps</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.significant_structure"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.significant_structure</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.single_atom_displace"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.single_atom_displace</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.steps</span></code></a></li>

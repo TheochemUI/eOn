@@ -417,13 +417,14 @@ document.write(`
         <span class="s2">&quot;basin_hopping&quot;</span><span class="p">,</span>
         <span class="s2">&quot;displacement_sampling&quot;</span><span class="p">,</span>
         <span class="s2">&quot;dynamics&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;escaperate&quot;</span><span class="p">,</span>  <span class="c1"># TODO(rg): Document</span>
+        <span class="s2">&quot;escape_rate&quot;</span><span class="p">,</span>  <span class="c1"># TODO(rg): Document</span>
         <span class="s2">&quot;finite_differences&quot;</span><span class="p">,</span>
         <span class="s2">&quot;global_optimization&quot;</span><span class="p">,</span>
         <span class="s2">&quot;gp_surrogate&quot;</span><span class="p">,</span>
         <span class="s2">&quot;hessian&quot;</span><span class="p">,</span>
         <span class="s2">&quot;minimization&quot;</span><span class="p">,</span>
         <span class="s2">&quot;monte_carlo&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;molecular_dynamics&quot;</span><span class="p">,</span>
         <span class="s2">&quot;nudged_elastic_band&quot;</span><span class="p">,</span>
         <span class="s2">&quot;parallel_replica&quot;</span><span class="p">,</span>  <span class="c1"># Alias for unbiased_parallel_replica</span>
         <span class="s2">&quot;point&quot;</span><span class="p">,</span>
@@ -434,6 +435,7 @@ document.write(`
         <span class="s2">&quot;safe_hyperdynamics&quot;</span><span class="p">,</span>
         <span class="s2">&quot;structure_comparison&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tad&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unbiased_parallel_replica&quot;</span><span class="p">,</span>  <span class="c1"># Alias for parallel_replica</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;akmc&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The type of job to execute.&quot;</span><span class="p">,</span>
@@ -644,7 +646,7 @@ document.write(`
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Target acceptance ratio used to determine whether to increase or decrease the step size.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">displacement_distribution</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Distribution used for the displacement of each atom.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -655,6 +657,14 @@ document.write(`
 <span class="sd">    **uniform** will select a random number between the positive and negative</span>
 <span class="sd">    values of :any:`eon.schema.BasinHoppingConfig.displacement`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_displacement_algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Method for displacements.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">quenching_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of quenching steps.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">swap_probability</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Probability (in range [0,1]) that a swapping step takes place instead of a displacement step.&quot;</span><span class="p">,</span>
@@ -931,9 +941,16 @@ document.write(`
     <span class="n">mpi_poll_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Polling period for MPI potential.&quot;</span>
     <span class="p">)</span>
+    <span class="c1"># TODO(rg): move these around</span>
+    <span class="n">lammps_logging</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Logging LAMMPS calls.&quot;</span><span class="p">)</span>
+    <span class="n">lammps_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LAMMPS threads.&quot;</span><span class="p">)</span>
+    <span class="n">ext_pot_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ext_pot&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path for the external potential.&quot;</span>
+    <span class="p">)</span>
     <span class="n">potential</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
         <span class="s2">&quot;ams&quot;</span><span class="p">,</span>
         <span class="s2">&quot;ams_io&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ase_nwcem&quot;</span><span class="p">,</span>
         <span class="s2">&quot;ase_orca&quot;</span><span class="p">,</span>
         <span class="s2">&quot;bop&quot;</span><span class="p">,</span>
         <span class="s2">&quot;bopfox&quot;</span><span class="p">,</span>
@@ -941,7 +958,7 @@ document.write(`
         <span class="s2">&quot;eam_al&quot;</span><span class="p">,</span>
         <span class="s2">&quot;edip&quot;</span><span class="p">,</span>
         <span class="s2">&quot;emt&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ext&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ext_pot&quot;</span><span class="p">,</span>
         <span class="s2">&quot;fehe&quot;</span><span class="p">,</span>
         <span class="s2">&quot;gpr&quot;</span><span class="p">,</span>
         <span class="s2">&quot;imd&quot;</span><span class="p">,</span>
@@ -949,13 +966,14 @@ document.write(`
         <span class="s2">&quot;lenosky_si&quot;</span><span class="p">,</span>
         <span class="s2">&quot;lj&quot;</span><span class="p">,</span>
         <span class="s2">&quot;ljcluster&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;metatomic&quot;</span><span class="p">,</span>
         <span class="s2">&quot;morse_pt&quot;</span><span class="p">,</span>
         <span class="s2">&quot;mpi&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mpi&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;new_pot&quot;</span><span class="p">,</span>
         <span class="s2">&quot;pyamff&quot;</span><span class="p">,</span>
         <span class="s2">&quot;python&quot;</span><span class="p">,</span>
         <span class="s2">&quot;qsc&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;qsc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;socket_nwchem&quot;</span><span class="p">,</span>
         <span class="s2">&quot;spce&quot;</span><span class="p">,</span>
         <span class="s2">&quot;sw_si&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tersoff_si&quot;</span><span class="p">,</span>
@@ -966,7 +984,7 @@ document.write(`
         <span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
         <span class="s2">&quot;xtb&quot;</span><span class="p">,</span>
         <span class="s2">&quot;zbl&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;socket_nwchem&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;zpice&quot;</span><span class="p">,</span>  <span class="c1"># TODO(rg): probably not present anymore</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;lj&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of potential to execute.&quot;</span><span class="p">,</span>
@@ -1300,7 +1318,7 @@ document.write(`
     <span class="p">)</span>
     <span class="n">client_displace_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
         <span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="s2">&quot;last_atom&quot;</span><span class="p">,</span> <span class="s2">&quot;min_coordinated&quot;</span><span class="p">,</span> <span class="s2">&quot;not_fcc_or_hcp&quot;</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of displacement method used.&quot;</span><span class="p">)</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of displacement method used.&quot;</span><span class="p">)</span>
     <span class="n">zero_mode_abort_curvature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The saddle search will abort when the magnitude of the minmode curvature is less than this value.&quot;</span><span class="p">,</span>
@@ -1635,7 +1653,7 @@ document.write(`
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum distance that an atom may be moved in a single optimization step (Angstroms).&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The dynamical timestep for the quickmin algorithm (fs).&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -1844,7 +1862,7 @@ document.write(`
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">dimer_rotation_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">finite_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Finite angle for dimer rotation.&quot;</span>
     <span class="p">)</span>
     <span class="n">dimer_improved</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -1884,7 +1902,7 @@ document.write(`
         <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The spring constant, in eV/Ang^2 between the images.&quot;</span>
     <span class="p">)</span>
     <span class="n">climbing_image_method</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Indicates if the climbing image method is used.&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Indicates if the climbing image method is used.&quot;</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    As discussed in :cite:t:`neb-henkelmanClimbingImageNudged2000`.</span>
@@ -1915,7 +1933,7 @@ document.write(`
     <span class="n">neb_elastic_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Indicates if the elastic band method is used.&quot;</span>
     <span class="p">)</span>
-    <span class="n">neb_converged_force</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">converged_force</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># Assuming `optConvergedForce` is 0.0 as it&#39;s not provided</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Converged force threshold for the NEB.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -1929,10 +1947,11 @@ document.write(`
 <span class="sd">    Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ew_ksp_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum value for KSP in the energy-weighted method.&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.972</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum value for KSP in the energy-weighted method.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">ew_ksp_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum value for KSP in the energy-weighted method.&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">9.72</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum value for KSP in the energy-weighted method.&quot;</span>
     <span class="p">)</span>
     <span class="n">initial_path_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -1974,7 +1993,7 @@ document.write(`
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the convergence criteria for relative change in the estimated lowest eigenvalue.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -2168,6 +2187,33 @@ document.write(`
 
 
 
+<span class="k">class</span><span class="w"> </span><span class="nc">GPRDimerConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">finite_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+    <span class="n">converged_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">relaxation_converged_angle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+    <span class="n">max_initial_rotation_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">max_relaxation_rotation_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">divisor_t_dimer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">max_outer_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+    <span class="n">max_inner_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">max_midpoint_displacement</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">rotation_opt_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">)</span>
+    <span class="n">translation_opt_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;lbfgs&quot;</span><span class="p">)</span>
+    <span class="n">active_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">dimer_separation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">force_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DistributedReplicaConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">sampling_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;sampling steps&quot;</span><span class="p">)</span>
+    <span class="n">target_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">300.0</span><span class="p">)</span>
+    <span class="n">balance_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+
 <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -2193,6 +2239,8 @@ document.write(`
     <span class="n">recycling</span><span class="p">:</span> <span class="n">RecyclingConfig</span>
     <span class="n">coarse_graining</span><span class="p">:</span> <span class="n">CoarseGrainingConfig</span>
     <span class="n">optimizer</span><span class="p">:</span> <span class="n">OptimizerConfig</span>
+    <span class="n">distributed_replica</span><span class="p">:</span> <span class="n">DistributedReplicaConfig</span>
+    <span class="n">gprdimer</span><span class="p">:</span> <span class="n">GPRDimerConfig</span>
     <span class="n">debug</span><span class="p">:</span> <span class="n">DebugConfig</span>
 
     <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;communicator&quot;</span><span class="p">)</span>
