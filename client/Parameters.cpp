@@ -1200,6 +1200,14 @@ int Parameters::load(FILE *file) {
       error = 1;
     }
 
+    // Check if an initial path exists without a specific non-linear initializer
+    if (!nebIpath.empty() && neb_initializer == NEBInit::LINEAR) {
+      SPDLOG_WARN("[Nudged Elastic Band] 'initial_path_in' is provided, but "
+                  "'initializer' defaults to linear. "
+                  "Ensure this is intentional, as the loaded path will not be "
+                  "used without initializer set to file.");
+    }
+
     if (saddleDynamicsRecordIntervalInput >
         saddleDynamicsStateCheckIntervalInput) {
       SPDLOG_ERROR("[Saddle Search] dynamics_record_interval must be <= "
