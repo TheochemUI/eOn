@@ -16,6 +16,8 @@
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 #include <Eigen/Dense>
+#include <cmath>
+#include <vector>
 
 class IDPPObjectiveFunction : public ObjectiveFunction {
 public:
@@ -71,4 +73,74 @@ public:
 private:
   Eigen::MatrixXd d_target;  // The interpolated "ideal" distances
   Eigen::MatrixXd d_current; // Workspace for current distances
+};
+
+class CollectiveIDPPObjectiveFunction : public ObjectiveFunction {
+public:
+  CollectiveIDPPObjectiveFunction(std::vector<Matter> &pathRef,
+                                  std::shared_ptr<Parameters> paramsPassed)
+      : ObjectiveFunction(
+            nullptr, paramsPassed), // We manage a vector, not single Matter
+        path(pathRef) {
+
+    // Initialize distances for endpoints
+    dInit = getDistanceMatrix(path.front());
+    dFinal = getDistanceMatrix(path.back());
+  }
+
+  // Return total energy (IDPP + Springs) - Optional for optimization but good
+  // for debugging
+  double getEnergy() override { return 0.0; }
+
+  // THE CORE LOGIC: mimicking ORCA's NEB force projection
+  VectorXd getGradient(bool fdstep = false) override;
+
+  // Plumbing to map the entire path (all images) to one vector
+  void setPositions(VectorXd x) override {
+    int atoms = path[0].numberOfAtoms();
+    // Skip endpoints (0 and N+1)
+    for (size_t i = 1; i < path.size() - 1; ++i) {
+      path[i].setPositions(MatrixXd::Map(
+          x.segment(3 * atoms * (i - 1), 3 * atoms).data(), atoms, 3));
+    }
+  }
+
+  VectorXd getPositions() override {
+    int atoms = path[0].numberOfAtoms();
+    int n_free_images = path.size() - 2;
+    VectorXd pos(3 * atoms * n_free_images);
+
+    for (size_t i = 1; i < path.size() - 1; ++i) {
+      pos.segment(3 * atoms * (i - 1), 3 * atoms) =
+          VectorXd::Map(path[i].getPositions().data(), 3 * atoms);
+    }
+    return pos;
+  }
+
+  int degreesOfFreedom() override {
+    return 3 * path[0].numberOfAtoms() * (path.size() - 2);
+  }
+
+  // Check convergence of the IDPP-NEB
+  bool isConverged() override {
+      // TODO(rg): parameterize, but tighter tolerance here works better
+    return getConvergence() < 0.001;
+  }
+
+  double getConvergence() override { return lastMaxForce; }
+
+  VectorXd difference(VectorXd a, VectorXd b) override {
+    // Simple difference for this purpose, assuming pre-aligned or handling PBC
+    // inside
+    return a - b;
+  }
+
+private:
+  std::vector<Matter> &path;
+  Eigen::MatrixXd dInit, dFinal;
+  double lastMaxForce = 100.0;
+
+  Eigen::MatrixXd getDistanceMatrix(const Matter &m);
+  Eigen::MatrixXd getIDPPForces(const Matter &m,
+                                const Eigen::MatrixXd &dTarget);
 };

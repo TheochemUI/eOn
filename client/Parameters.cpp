@@ -927,7 +927,6 @@ int Parameters::load(FILE *file) {
                                       nebEnergyWeighted);
     nebKSPMin = ini.GetValueF("Nudged Elastic Band", "ew_ksp_min", nebKSPMin);
     nebKSPMax = ini.GetValueF("Nudged Elastic Band", "ew_ksp_max", nebKSPMax);
-    nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
     nebMinimEP =
         ini.GetValueB("Nudged Elastic Band", "minimize_endpoints", nebMinimEP);
     nebMinimEPIpath = ini.GetValueB(
@@ -942,6 +941,7 @@ int Parameters::load(FILE *file) {
                           ini.GetValue("Nudged Elastic Band", "initializer"),
                           magic_enum::case_insensitive)
                           .value_or(NEBInit::LINEAR);
+    nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
 
     // [Dynamics] //
 
