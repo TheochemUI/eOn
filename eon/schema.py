@@ -19,13 +19,14 @@ class MainConfig(BaseModel):
         "basin_hopping",
         "displacement_sampling",
         "dynamics",
-        "escaperate",  # TODO(rg): Document
+        "escape_rate",  # TODO(rg): Document
         "finite_differences",
         "global_optimization",
         "gp_surrogate",
         "hessian",
         "minimization",
         "monte_carlo",
+        "molecular_dynamics",
         "nudged_elastic_band",
         "parallel_replica",  # Alias for unbiased_parallel_replica
         "point",
@@ -36,6 +37,7 @@ class MainConfig(BaseModel):
         "safe_hyperdynamics",
         "structure_comparison",
         "tad",
+        "unbiased_parallel_replica",  # Alias for parallel_replica
     ] = Field(
         default="akmc",
         description="The type of job to execute.",
@@ -237,7 +239,7 @@ class BasinHoppingConfig(BaseModel):
         description="Target acceptance ratio used to determine whether to increase or decrease the step size.",
     )
     displacement_distribution: Literal["gaussian", "uniform"] = Field(
-        default="gaussian",
+        default="uniform",
         description="Distribution used for the displacement of each atom.",
     )
     """
@@ -248,6 +250,14 @@ class BasinHoppingConfig(BaseModel):
     **uniform** will select a random number between the positive and negative
     values of :any:`eon.schema.BasinHoppingConfig.displacement`.
     """
+    max_displacement_algorithm: str = Field(
+        default=0,
+        description="Method for displacements.",
+    )
+    quenching_steps: int = Field(
+        default=0,
+        description="Number of quenching steps.",
+    )
     swap_probability: float = Field(
         default=0.0,
         description="Probability (in range [0,1]) that a swapping step takes place instead of a displacement step.",
@@ -506,9 +516,16 @@ class PotentialConfig(BaseModel):
     mpi_poll_period: float = Field(
         default=0.25, description="Polling period for MPI potential."
     )
+    # TODO(rg): move these around
+    lammps_logging: bool = Field(default=True, description="Logging LAMMPS calls.")
+    lammps_threads: int = Field(default=0, description="LAMMPS threads.")
+    ext_pot_path: str = Field(
+        default="ext_pot", description="Path for the external potential."
+    )
     potential: Literal[
         "ams",
         "ams_io",
+        "ase_nwcem",
         "ase_orca",
         "bop",
         "bopfox",
@@ -516,7 +533,7 @@ class PotentialConfig(BaseModel):
         "eam_al",
         "edip",
         "emt",
-        "ext",
+        "ext_pot",
         "fehe",
         "gpr",
         "imd",
@@ -524,13 +541,14 @@ class PotentialConfig(BaseModel):
         "lenosky_si",
         "lj",
         "ljcluster",
+        "metatomic",
         "morse_pt",
         "mpi",
-        "mpi",
+        "new_pot",
         "pyamff",
         "python",
         "qsc",
-        "qsc",
+        "socket_nwchem",
         "spce",
         "sw_si",
         "tersoff_si",
@@ -541,7 +559,7 @@ class PotentialConfig(BaseModel):
         "vasp",
         "xtb",
         "zbl",
-        "socket_nwchem",
+        "zpice",  # TODO(rg): probably not present anymore
     ] = Field(
         default="lj",
         description="Type of potential to execute.",
@@ -869,7 +887,7 @@ class SaddleSearchConfig(BaseModel):
     )
     client_displace_type: Literal[
         "load", "random", "last_atom", "min_coordinated", "not_fcc_or_hcp"
-    ] = Field(default="load", description="Type of displacement method used.")
+    ] = Field(default="random", description="Type of displacement method used.")
     zero_mode_abort_curvature: float = Field(
         default=0.0,
         description="The saddle search will abort when the magnitude of the minmode curvature is less than this value.",
@@ -1186,7 +1204,7 @@ class OptimizerConfig(BaseModel):
         description="Maximum distance that an atom may be moved in a single optimization step (Angstroms).",
     )
     time_step: float = Field(
-        default=1.0,
+        default=0.25,
         description="The dynamical timestep for the quickmin algorithm (fs).",
     )
     max_iterations: int = Field(
@@ -1371,7 +1389,7 @@ class DimerConfig(BaseModel):
         description="This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.",
     )
 
-    dimer_rotation_angle: float = Field(
+    finite_angle: float = Field(
         default=0.005, description="Finite angle for dimer rotation."
     )
     dimer_improved: bool = Field(
@@ -1408,7 +1426,7 @@ class NudgedElasticBandConfig(BaseModel):
         default=5.0, description="The spring constant, in eV/Ang^2 between the images."
     )
     climbing_image_method: bool = Field(
-        default=False, description="Indicates if the climbing image method is used."
+        default=True, description="Indicates if the climbing image method is used."
     )
     """
     As discussed in :cite:t:`neb-henkelmanClimbingImageNudged2000`.
@@ -1439,7 +1457,7 @@ class NudgedElasticBandConfig(BaseModel):
     neb_elastic_band: bool = Field(
         default=False, description="Indicates if the elastic band method is used."
     )
-    neb_converged_force: float = Field(
+    converged_force: float = Field(
         default=0.01,  # Assuming `optConvergedForce` is 0.0 as it's not provided
         description="Converged force threshold for the NEB.",
     )
@@ -1453,10 +1471,11 @@ class NudgedElasticBandConfig(BaseModel):
     Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.
     """
     ew_ksp_min: float = Field(
-        default=0.5, description="Minimum value for KSP in the energy-weighted method."
+        default=0.972,
+        description="Minimum value for KSP in the energy-weighted method.",
     )
     ew_ksp_max: float = Field(
-        default=5.0, description="Maximum value for KSP in the energy-weighted method."
+        default=9.72, description="Maximum value for KSP in the energy-weighted method."
     )
     initial_path_in: str = Field(
         default="",
@@ -1495,7 +1514,7 @@ class LanczosConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
     tolerance: float = Field(
-        default=0.01,
+        default=0.001,
         description="This is the convergence criteria for relative change in the estimated lowest eigenvalue.",
     )
     max_iterations: int = Field(
@@ -1676,6 +1695,33 @@ class HyperdynamicsConfig(BaseModel):
     """
 
 
+class GPRDimerConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    finite_angle: float = Field(default=0.005)
+    converged_angle: float = Field(default=5.0)
+    relaxation_converged_angle: float = Field(default=0.005)
+    max_initial_rotation_iterations: int = Field(default=6)
+    max_relaxation_rotation_iterations: int = Field(default=10)
+    divisor_t_dimer: int = Field(default=10)
+    max_outer_iterations: int = Field(default=300)
+    max_inner_iterations: int = Field(default=1000)
+    max_midpoint_displacement: float = Field(default=0.5)
+    rotation_opt_method: str = Field(default="lbfgs")
+    translation_opt_method: str = Field(default="lbfgs")
+    active_radius: float = Field(default=5.0)
+    dimer_separation: float = Field(default=0.01)
+    force_threshold: float = Field(default=0.01)
+
+
+class DistributedReplicaConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    sampling_steps: int = Field(default=500, alias="sampling steps")
+    target_temperature: float = Field(default=300.0)
+    balance_steps: int = Field(default=500)
+
+
 class Config(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -1701,6 +1747,8 @@ class Config(BaseModel):
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
     optimizer: OptimizerConfig
+    distributed_replica: DistributedReplicaConfig
+    gprdimer: GPRDimerConfig
     debug: DebugConfig
 
     @validator("communicator")

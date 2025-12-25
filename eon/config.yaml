@@ -9,17 +9,29 @@ Main:
             kind: string
             default: akmc
             values:
-                - finite_difference
-                - parallel_replica
-                - unbiased_parallel_replica
-                - escape_rate
-                - saddle_search
-                - minimization
-                - process_search
-                - basin_hopping
                 - akmc
+                - basin_hopping
+                - displacement_sampling
+                - dynamics
+                - escape_rate
+                - finite_difference
+                - global_optimization
+                - gp_surrogate
                 - hessian
+                - minimization
                 - molecular_dynamics
+                - monte_carlo
+                - nudged_elastic_band
+                - parallel_replica
+                - point
+                - prefactor
+                - process_search
+                - replica_exchange
+                - saddle_search
+                - safe_hyperdynamics
+                - structure_comparison
+                - tad
+                - unbiased_parallel_replica
 
         random_seed:
             kind: int
@@ -63,35 +75,43 @@ Potential:
             kind: string
             default: lj
             values:
-                - qsc
-                - lenosky_Si
+                - ase
+                - ams_io
                 - ase_nwchem
                 - ase_orca
-                - sw_si
+                - bop
+                - bopfox
+                - cuh2
+                - eam_al
+                - edip
+                - emt
+                - ext_pot
+                - fehe
+                - gpr
+                - imd
+                - lammps
+                - lenosky_Si
                 - lj
                 - ljcluster
-                - edip
-                - gprpot
+                - metatomic
                 - morse_pt
-                - zpice
-                - bopfox
-                - bop
-                - emt
-                - eam_al
-                - fehe
-                - vasp
-                - tersoff_si
-                - lammps
                 - mpi
+                - new_pot
+                - pyamff
+                - python
+                - qsc
+                - socket_nwchem
+                - spce
+                - sw_si
+                - tersoff_si
                 - tip4p
                 - tip4p_h
                 - tip4p_pt
-                - ext_pot
-                - new_pot
-                - pyamff
-                - ase
-                - metatomic
+                - unknown
+                - vasp
+                - xtb
                 - zbl
+                - zpice
 
         mpi_poll_period:
             kind: float
@@ -201,10 +221,6 @@ Nudged Elastic Band:
         old_tangent:
             kind: boolean
             default: false
-
-        opt_method:
-            kind: string
-            default: OPT_CG
 
         max_iterations:
             kind: int
