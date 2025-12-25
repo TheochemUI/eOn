@@ -177,6 +177,7 @@ potentials = [
 eonclib_sources = [
     'Parameters.cpp',
     'Optimizer.cpp',
+    'IDPPObjectiveFunction.cpp',
     'PrefactorJob.cpp',
     'LBFGS.cpp',
     'ReplicaExchangeJob.cpp',
