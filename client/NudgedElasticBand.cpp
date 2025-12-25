@@ -133,8 +133,8 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
         helpers::create::mkOptim(idpp_objf, params->optMethod, params);
 
     // Run the optimization
-    // TODO(rg): parameterize this 500
-    int status = idpp_optim->run(5000, params->optMaxMove);
+    int status =
+        idpp_optim->run(params->nebInitMaxIter, params->nebInitMaxMove);
 
     // Log progress
     double residual = idpp_objf->getConvergence();
@@ -229,8 +229,8 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
       // image) effectively "growing" slowly.
       Matter frontier = path[nLeft];
       Matter next = path[nLeft + 1];
-      Matter newImg = interpolateImage(
-          frontier, next, 0.33); // 0.33 is a heuristic for "growth"
+      Matter newImg =
+          interpolateImage(frontier, next, params->sidppGrowthAlpha);
 
       path.insert(path.begin() + nLeft + 1, newImg);
       nLeft++;
