@@ -1960,6 +1960,30 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This file must contain a list of .con files, one per image on the path.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">initializer</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="s2">&quot;idpp&quot;</span><span class="p">,</span> <span class="s2">&quot;idpp_collective&quot;</span><span class="p">,</span> <span class="s2">&quot;sidpp&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Initialization strategy.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options:</span>
+<span class="sd">    - ``linear``: Euclidean distance based image interpolation for initial NEB paths.</span>
+<span class="sd">    - ``idpp``: Image depedent pair potential initialzation :cite:t:`neb-smidstrupImprovedInitialGuess2014`.</span>
+<span class="sd">    - ``idpp_collective``: IDPP as a potential initialized with the NEB.</span>
+<span class="sd">    - ``sidpp``: Sequential Image depedent pair potential initialzation :cite:t:`neb-schmerwitzImprovedInitializationOptimal2024`.</span>
+<span class="sd">    - ``file``: Start from an arbitrary path, needs initial_path_in set as well.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">init_max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Steps to run the IDPP for.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">init_max_move</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Max move for NEB initialization.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">init_force_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Force threshold for NEB IDPP initialization.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">sidpp_growth_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The step size for adding new images in S-IDPP.&quot;</span>
+    <span class="p">)</span>
     <span class="n">minimize_endpoints</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimize the reactant and product before the NEB.&quot;</span><span class="p">,</span>

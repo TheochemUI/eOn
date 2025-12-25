@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-11-03T07:05:44+00:00" />
+    <meta property="article:modified_time" content="2025-12-25T17:38:49+00:00" />
     <title>Nudged Elastic Band &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="Minimization" href="minimization.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Nov 03, 2025"/>
+    <meta name="docbuild:last-update" content="Dec 25, 2025"/>
   </head>
   
   
@@ -463,7 +463,11 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_max"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_max</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_min"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_min</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.images"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.images</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.init_force_threshold"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.init_force_threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.init_max_iterations"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.init_max_iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.init_max_move"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.init_max_move</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.initial_path_in"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.initial_path_in</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.initializer"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.initializer</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints_for_ipath</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_climbing_image_converged_only</span></code></a></li>
@@ -472,6 +476,7 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_elastic_band"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_elastic_band</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_max_iterations"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_max_iterations</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.old_tangent"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.old_tangent</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.sidpp_growth_alpha"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.sidpp_growth_alpha</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.spring"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.spring</span></code></a></li>
 </ul>
 </li>
@@ -518,7 +523,7 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 <li><p>Classic nudged elastic band of <span id="id4">Mills and Jónsson [<a class="reference internal" href="#id68" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span> and <span id="id5">Schenter <em>et al.</em> [<a class="reference internal" href="#id80" title="Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. The Journal of Chemical Physics, 101(10):8964–8971, November 1994. doi:10.1063/1.468447.">NEB_SMJonsson94</a>]</span>.</p></li>
 <li><p>Improved tangent method of <span id="id6">Henkelman and Jónsson [<a class="reference internal" href="#id40" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p></li>
 <li><p>Climbing image NEB of <span id="id7">Henkelman <em>et al.</em> [<a class="reference internal" href="#id38" title="Graeme Henkelman, Blas P. Uberuaga, and Hannes Jónsson. A climbing image nudged elastic band method for finding saddle points and minimum energy paths. The Journal of Chemical Physics, 113(22):9901–9904, November 2000. doi:10.1063/1.1329672.">NEB_HUJonsson00</a>]</span>.</p></li>
-<li><p>Doubly nudged method of <span id="id8">Trygubenko and Wales [<a class="reference internal" href="#id93" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p></li>
+<li><p>Doubly nudged method of <span id="id8">Trygubenko and Wales [<a class="reference internal" href="#id94" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p></li>
 </ul>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.0: </span></p>
@@ -634,6 +639,43 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Initial Path In&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;initializer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Initialization strategy.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;idpp&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;idpp_collective&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;sidpp&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;file&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Initializer&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;init_max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Steps to run the IDPP for.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Init Max Iterations&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;init_max_move&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max move for NEB initialization.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Init Max Move&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;init_force_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.001</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Force threshold for NEB IDPP initialization.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Init Force Threshold&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;sidpp_growth_alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.33</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The step size for adding new images in S-IDPP.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Sidpp Growth Alpha&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;minimize_endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimize the reactant and product before the NEB.&quot;</span><span class="p">,</span>
@@ -692,7 +734,11 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_max" title="eon.schema.NudgedElasticBandConfig.ew_ksp_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ew_ksp_max</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_min" title="eon.schema.NudgedElasticBandConfig.ew_ksp_min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ew_ksp_min</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.images" title="eon.schema.NudgedElasticBandConfig.images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">images</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.init_force_threshold" title="eon.schema.NudgedElasticBandConfig.init_force_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_force_threshold</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.init_max_iterations" title="eon.schema.NudgedElasticBandConfig.init_max_iterations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_max_iterations</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.init_max_move" title="eon.schema.NudgedElasticBandConfig.init_max_move"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_max_move</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.initial_path_in" title="eon.schema.NudgedElasticBandConfig.initial_path_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initial_path_in</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.initializer" title="eon.schema.NudgedElasticBandConfig.initializer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initializer</span> <span class="pre">(Literal['linear',</span> <span class="pre">'idpp',</span> <span class="pre">'idpp_collective',</span> <span class="pre">'sidpp',</span> <span class="pre">'file'])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints" title="eon.schema.NudgedElasticBandConfig.minimize_endpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimize_endpoints</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath" title="eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimize_endpoints_for_ipath</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only" title="eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_climbing_image_converged_only</span> <span class="pre">(bool)</span></code></a></p></li>
@@ -701,6 +747,7 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_elastic_band" title="eon.schema.NudgedElasticBandConfig.neb_elastic_band"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_elastic_band</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.neb_max_iterations" title="eon.schema.NudgedElasticBandConfig.neb_max_iterations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neb_max_iterations</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.old_tangent" title="eon.schema.NudgedElasticBandConfig.old_tangent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">old_tangent</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.sidpp_growth_alpha" title="eon.schema.NudgedElasticBandConfig.sidpp_growth_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sidpp_growth_alpha</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.NudgedElasticBandConfig.spring" title="eon.schema.NudgedElasticBandConfig.spring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spring</span> <span class="pre">(float)</span></code></a></p></li>
 </ul>
 </dd>
@@ -769,10 +816,40 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.init_force_threshold">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_force_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.001</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.init_force_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Force threshold for NEB IDPP initialization.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.init_max_iterations">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_max_iterations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5000</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.init_max_iterations" title="Link to this definition">#</a></dt>
+<dd><p>Steps to run the IDPP for.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.init_max_move">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_max_move</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.init_max_move" title="Link to this definition">#</a></dt>
+<dd><p>Max move for NEB initialization.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.initial_path_in">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initial_path_in</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.initial_path_in" title="Link to this definition">#</a></dt>
 <dd><p>This file must contain a list of .con files, one per image on the path.</p>
 <p>File from which the initial path is read.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.initializer">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initializer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'idpp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'idpp_collective'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sidpp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'file'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'linear'</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.initializer" title="Link to this definition">#</a></dt>
+<dd><p>Options:
+- <code class="docutils literal notranslate"><span class="pre">linear</span></code>: Euclidean distance based image interpolation for initial NEB paths.
+- <code class="docutils literal notranslate"><span class="pre">idpp</span></code>: Image depedent pair potential initialzation <span id="id3">Smidstrup <em>et al.</em> [<a class="reference internal" href="#id86" title="Søren Smidstrup, Andreas Pedersen, Kurt Stokbro, and Hannes Jónsson. Improved initial guess for minimum energy path calculations. The Journal of Chemical Physics, 140(21):214106, June 2014. doi:10.1063/1.4878664.">NEB_SPSJonsson14</a>]</span>.
+- <code class="docutils literal notranslate"><span class="pre">idpp_collective</span></code>: IDPP as a potential initialized with the NEB.
+- <code class="docutils literal notranslate"><span class="pre">sidpp</span></code>: Sequential Image depedent pair potential initialzation <span id="id4">Schmerwitz <em>et al.</em> [<a class="reference internal" href="#id81" title="Yorick L. A. Schmerwitz, Vilhjálmur Ásgeirsson, and Hannes Jónsson. Improved Initialization of Optimal Path Calculations Using Sequential Traversal over the Image-Dependent Pair Potential Surface. Journal of Chemical Theory and Computation, 20(1):155–163, January 2024. doi:10.1021/acs.jctc.3c01111.">NEB_SAsgeirssonJonsson24</a>]</span>.
+- <code class="docutils literal notranslate"><span class="pre">file</span></code>: Start from an arbitrary path, needs initial_path_in set as well.</p>
+<p>Initialization strategy.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -802,7 +879,7 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">neb_doubly_nudged_switching</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.neb_doubly_nudged_switching" title="Link to this definition">#</a></dt>
-<dd><p>Method as demonstrated in <span id="id3">Trygubenko and Wales [<a class="reference internal" href="#id93" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p>
+<dd><p>Method as demonstrated in <span id="id5">Trygubenko and Wales [<a class="reference internal" href="#id94" title="Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. The Journal of Chemical Physics, 120(5):2082–2094, February 2004. doi:10.1063/1.1636455.">NEB_TW04</a>]</span>.</p>
 <p>Indicates if the doubly nudged switching method is used.</p>
 </dd></dl>
 
@@ -821,8 +898,14 @@ set as per the <a class="reference internal" href="optimizer.html"><span class="
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.old_tangent">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">old_tangent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.old_tangent" title="Link to this definition">#</a></dt>
-<dd><p>From <span id="id4">Mills and Jónsson [<a class="reference internal" href="#id68" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span>, before <span id="id5">Henkelman and Jónsson [<a class="reference internal" href="#id40" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p>
+<dd><p>From <span id="id6">Mills and Jónsson [<a class="reference internal" href="#id68" title="Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. Physical Review Letters, 72(7):1124–1127, February 1994. doi:10.1103/PhysRevLett.72.1124.">NEB_MJonsson94</a>]</span>, before <span id="id7">Henkelman and Jónsson [<a class="reference internal" href="#id40" title="Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. The Journal of Chemical Physics, 113(22):9978–9985, December 2000. doi:10.1063/1.1323224.">NEB_HJonsson00</a>]</span>.</p>
 <p>Indicates if the old tangent method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.NudgedElasticBandConfig.sidpp_growth_alpha">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sidpp_growth_alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.33</span></em><a class="headerlink" href="#eon.schema.NudgedElasticBandConfig.sidpp_growth_alpha" title="Link to this definition">#</a></dt>
+<dd><p>The step size for adding new images in S-IDPP.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -921,7 +1004,7 @@ later. To facilitate this, the <code class="docutils literal notranslate"><span 
 <div role="list" class="citation-list">
 <div class="citation" id="id40" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_HJonsson00<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
 <p>Graeme Henkelman and Hannes Jónsson. Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points. <em>The Journal of Chemical Physics</em>, 113(22):9978–9985, December 2000. <a class="reference external" href="https://doi.org/10.1063/1.1323224">doi:10.1063/1.1323224</a>.</p>
 </div>
 <div class="citation" id="id38" role="doc-biblioentry">
@@ -943,12 +1026,16 @@ later. To facilitate this, the <code class="docutils literal notranslate"><span 
 </div>
 <div class="citation" id="id68" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_MJonsson94<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Greg Mills and Hannes Jónsson. Quantum and thermal effects in H 2 dissociative adsorption: Evaluation of free energy barriers in multidimensional quantum systems. <em>Physical Review Letters</em>, 72(7):1124–1127, February 1994. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.72.1124">doi:10.1103/PhysRevLett.72.1124</a>.</p>
 </div>
 <div class="citation" id="id80" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">NEB_SMJonsson94</a><span class="fn-bracket">]</span></span>
 <p>Gregory K. Schenter, Gregory Mills, and Hannes Jónsson. Reversible work based quantum transition state theory. <em>The Journal of Chemical Physics</em>, 101(10):8964–8971, November 1994. <a class="reference external" href="https://doi.org/10.1063/1.468447">doi:10.1063/1.468447</a>.</p>
+</div>
+<div class="citation" id="id81" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">NEB_SAsgeirssonJonsson24</a><span class="fn-bracket">]</span></span>
+<p>Yorick L. A. Schmerwitz, Vilhjálmur Ásgeirsson, and Hannes Jónsson. Improved Initialization of Optimal Path Calculations Using Sequential Traversal over the Image-Dependent Pair Potential Surface. <em>Journal of Chemical Theory and Computation</em>, 20(1):155–163, January 2024. <a class="reference external" href="https://doi.org/10.1021/acs.jctc.3c01111">doi:10.1021/acs.jctc.3c01111</a>.</p>
 </div>
 <div class="citation" id="id84" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">NEB_SH11</a><span class="fn-bracket">]</span></span>
@@ -958,9 +1045,13 @@ later. To facilitate this, the <code class="docutils literal notranslate"><span 
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">NEB_STH08</a><span class="fn-bracket">]</span></span>
 <p>Daniel Sheppard, Rye Terrell, and Graeme Henkelman. Optimization methods for finding minimum energy paths. <em>The Journal of Chemical Physics</em>, 128(13):134106, April 2008. <a class="reference external" href="https://doi.org/10.1063/1.2841941">doi:10.1063/1.2841941</a>.</p>
 </div>
-<div class="citation" id="id93" role="doc-biblioentry">
+<div class="citation" id="id86" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">NEB_SPSJonsson14</a><span class="fn-bracket">]</span></span>
+<p>Søren Smidstrup, Andreas Pedersen, Kurt Stokbro, and Hannes Jónsson. Improved initial guess for minimum energy path calculations. <em>The Journal of Chemical Physics</em>, 140(21):214106, June 2014. <a class="reference external" href="https://doi.org/10.1063/1.4878664">doi:10.1063/1.4878664</a>.</p>
+</div>
+<div class="citation" id="id94" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>NEB_TW04<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
 <p>Semen A. Trygubenko and David J. Wales. A doubly nudged elastic band method for finding transition states. <em>The Journal of Chemical Physics</em>, 120(5):2082–2094, February 2004. <a class="reference external" href="https://doi.org/10.1063/1.1636455">doi:10.1063/1.1636455</a>.</p>
 </div>
 <div class="citation" id="id18" role="doc-biblioentry">
@@ -1035,7 +1126,11 @@ later. To facilitate this, the <code class="docutils literal notranslate"><span 
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_max"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_max</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.ew_ksp_min"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.ew_ksp_min</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.images"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.images</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.init_force_threshold"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.init_force_threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.init_max_iterations"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.init_max_iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.init_max_move"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.init_max_move</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.initial_path_in"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.initial_path_in</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.initializer"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.initializer</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.minimize_endpoints_for_ipath"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.minimize_endpoints_for_ipath</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_climbing_image_converged_only"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_climbing_image_converged_only</span></code></a></li>
@@ -1044,6 +1139,7 @@ later. To facilitate this, the <code class="docutils literal notranslate"><span 
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_elastic_band"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_elastic_band</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.neb_max_iterations"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.neb_max_iterations</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.old_tangent"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.old_tangent</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.sidpp_growth_alpha"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.sidpp_growth_alpha</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.NudgedElasticBandConfig.spring"><code class="docutils literal notranslate"><span class="pre">NudgedElasticBandConfig.spring</span></code></a></li>
 </ul>
 </li>
@@ -1091,7 +1187,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Nov 03, 2025.
+  Last updated on Dec 25, 2025.
   <br/>
 </p>
   </div>
