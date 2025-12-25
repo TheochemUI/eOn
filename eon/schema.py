@@ -1490,7 +1490,7 @@ class NudgedElasticBandConfig(BaseModel):
     )
     """
     Options:
-    - ``linear``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
+    - ``linear``: Euclidean distance based image interpolation for initial NEB paths.
     - ``idpp``: Image depedent pair potential initialzation :cite:t:`neb-smidstrupImprovedInitialGuess2014`.
     - ``idpp_collective``: IDPP as a potential initialized with the NEB.
     - ``sidpp``: Sequential Image depedent pair potential initialzation :cite:t:`neb-schmerwitzImprovedInitializationOptimal2024`.
