@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-11-03T07:05:44+00:00" />
+    <meta property="article:modified_time" content="2025-12-25T17:38:49+00:00" />
     <title>Basin Hopping &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="Saddle Search" href="saddle_search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Nov 03, 2025"/>
+    <meta name="docbuild:last-update" content="Dec 25, 2025"/>
   </head>
   
   
@@ -462,7 +462,9 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.initial_state_pool_size"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.initial_state_pool_size</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_max"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_max</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.max_displacement_algorithm</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.push_apart_distance"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.push_apart_distance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.quenching_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.quenching_steps</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.significant_structure"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.significant_structure</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.single_atom_displace"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.single_atom_displace</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.steps</span></code></a></li>
@@ -489,7 +491,7 @@ document.write(`
 <h1>Basin Hopping<a class="headerlink" href="#basin-hopping" title="Link to this heading">#</a></h1>
 <p>Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimum
-<span id="id1">[<a class="reference internal" href="#id87" title="David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. The Journal of Physical Chemistry A, 101(28):5111–5116, July 1997. doi:10.1021/jp970984n.">BH_WD97</a>]</span>.</p>
+<span id="id1">[<a class="reference internal" href="#id88" title="David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. The Journal of Physical Chemistry A, 101(28):5111–5116, July 1997. doi:10.1021/jp970984n.">BH_WD97</a>]</span>.</p>
 <p>At each basin hopping step the client will print out:</p>
 <ul class="simple">
 <li><p>the current energy (<code class="docutils literal notranslate"><span class="pre">current</span></code>),</p></li>
@@ -503,7 +505,7 @@ is taken to be the energy of a local minimum
 <h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">eOn</span></code> defaults to letting displacements occur from minimized structures as per
-the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id88" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>, which is
+the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id89" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>, which is
 controlled by <a class="reference internal" href="#eon.schema.BasinHoppingConfig.significant_structure" title="eon.schema.BasinHoppingConfig.significant_structure"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">siginificant_structure</span></code></a></p></li>
 <li><p>The occasional jumping variant of <span id="id3">Iwamatsu and Okabe [<a class="reference internal" href="#id36" title="Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. Chemical Physics Letters, 399(4):396–400, December 2004. doi:10.1016/j.cplett.2004.10.032.">BH_IO04</a>]</span>
 is also implemented, and is controlled by
@@ -587,7 +589,7 @@ is also implemented, and is controlled by
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;displacement_distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Distribution used for the displacement of each atom.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
@@ -595,6 +597,18 @@ is also implemented, and is controlled by
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displacement Distribution&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;max_displacement_algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Method for displacements.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Displacement Algorithm&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;quenching_steps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of quenching steps.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Quenching Steps&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;swap_probability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
@@ -647,7 +661,9 @@ is also implemented, and is controlled by
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.initial_state_pool_size" title="eon.schema.BasinHoppingConfig.initial_state_pool_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initial_state_pool_size</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.jump_max" title="eon.schema.BasinHoppingConfig.jump_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jump_max</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.jump_steps" title="eon.schema.BasinHoppingConfig.jump_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jump_steps</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm" title="eon.schema.BasinHoppingConfig.max_displacement_algorithm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_displacement_algorithm</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.push_apart_distance" title="eon.schema.BasinHoppingConfig.push_apart_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push_apart_distance</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.quenching_steps" title="eon.schema.BasinHoppingConfig.quenching_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quenching_steps</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.significant_structure" title="eon.schema.BasinHoppingConfig.significant_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">significant_structure</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.single_atom_displace" title="eon.schema.BasinHoppingConfig.single_atom_displace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">single_atom_displace</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.steps" title="eon.schema.BasinHoppingConfig.steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">steps</span> <span class="pre">(int)</span></code></a></p></li>
@@ -683,7 +699,7 @@ is also implemented, and is controlled by
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.displacement_distribution">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">displacement_distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'gaussian'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uniform'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gaussian'</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.displacement_distribution" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">displacement_distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'gaussian'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uniform'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uniform'</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.displacement_distribution" title="Link to this definition">#</a></dt>
 <dd><p><a class="reference internal" href="#eon.schema.BasinHoppingConfig.displacement" title="eon.schema.BasinHoppingConfig.displacement"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.BasinHoppingConfig.displacement</span></code></a> for the <strong>gaussian</strong> will
 serve as the standard deviation of the normal distribution used to select
 displacements.</p>
@@ -722,6 +738,12 @@ basin. The number of jump steps is assigned in
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.max_displacement_algorithm">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_displacement_algorithm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm" title="Link to this definition">#</a></dt>
+<dd><p>Method for displacements.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.push_apart_distance">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">push_apart_distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.4</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.push_apart_distance" title="Link to this definition">#</a></dt>
 <dd><p>This criterion is enforced for <strong>both</strong> the initial structure and all those
@@ -730,9 +752,15 @@ generated by random displacement.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.quenching_steps">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quenching_steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.quenching_steps" title="Link to this definition">#</a></dt>
+<dd><p>Number of quenching steps.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.BasinHoppingConfig.significant_structure">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">significant_structure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#eon.schema.BasinHoppingConfig.significant_structure" title="Link to this definition">#</a></dt>
-<dd><p>Implements the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id88" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>.</p>
+<dd><p>Implements the method of <span id="id2">White and Mayne [<a class="reference internal" href="#id89" title="Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. Chemical Physics Letters, 289(5-6):463–468, June 1998. doi:10.1016/S0009-2614(98)00431-X.">BH_WM98</a>]</span>.</p>
 <p>Displace from minimized structures.</p>
 </dd></dl>
 
@@ -783,11 +811,11 @@ seen. For clusters it is important to set
 <span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
 <p>Masao Iwamatsu and Yutaka Okabe. Basin hopping with occasional jumping. <em>Chemical Physics Letters</em>, 399(4):396–400, December 2004. <a class="reference external" href="https://doi.org/10.1016/j.cplett.2004.10.032">doi:10.1016/j.cplett.2004.10.032</a>.</p>
 </div>
-<div class="citation" id="id87" role="doc-biblioentry">
+<div class="citation" id="id88" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">BH_WD97</a><span class="fn-bracket">]</span></span>
 <p>David J. Wales and Jonathan P. K. Doye. Global Optimization by Basin-Hopping and the Lowest Energy Structures of Lennard-Jones Clusters Containing up to 110 Atoms. <em>The Journal of Physical Chemistry A</em>, 101(28):5111–5116, July 1997. <a class="reference external" href="https://doi.org/10.1021/jp970984n">doi:10.1021/jp970984n</a>.</p>
 </div>
-<div class="citation" id="id88" role="doc-biblioentry">
+<div class="citation" id="id89" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>BH_WM98<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
 <p>Ronald P White and Howard R Mayne. An investigation of two approaches to basin hopping minimization for atomic and molecular clusters. <em>Chemical Physics Letters</em>, 289(5-6):463–468, June 1998. <a class="reference external" href="https://doi.org/10.1016/S0009-2614(98)00431-X">doi:10.1016/S0009-2614(98)00431-X</a>.</p>
@@ -854,7 +882,9 @@ seen. For clusters it is important to set
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.initial_state_pool_size"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.initial_state_pool_size</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_max"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_max</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.jump_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.jump_steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.max_displacement_algorithm"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.max_displacement_algorithm</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.push_apart_distance"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.push_apart_distance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.quenching_steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.quenching_steps</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.significant_structure"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.significant_structure</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.single_atom_displace"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.single_atom_displace</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.BasinHoppingConfig.steps"><code class="docutils literal notranslate"><span class="pre">BasinHoppingConfig.steps</span></code></a></li>
@@ -899,7 +929,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Nov 03, 2025.
+  Last updated on Dec 25, 2025.
   <br/>
 </p>
   </div>

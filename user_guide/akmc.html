@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-11-03T07:05:44+00:00" />
+    <meta property="article:modified_time" content="2025-12-25T17:38:49+00:00" />
     <title>Adaptive Kinetic Monte Carlo &#8212; eOn</title>
   
   
@@ -71,7 +71,7 @@
     <link rel="prev" title="Prefactor" href="prefactor.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Nov 03, 2025"/>
+    <meta name="docbuild:last-update" content="Dec 25, 2025"/>
   </head>
   
   
@@ -482,7 +482,7 @@ document.write(`
 <h1>Adaptive Kinetic Monte Carlo<a class="headerlink" href="#adaptive-kinetic-monte-carlo" title="Link to this heading">#</a></h1>
 <p>The adaptive kinetic Monte Carlo (aKMC) method is a method to coarse grain
 molecular dynamics for rare event systems as described in
-<span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id32" title="Graeme Henkelman and Hannes Jónsson. Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table. The Journal of Chemical Physics, 115(21):9657–9666, November 2001. doi:10.1063/1.1415500.">AK_HJonsson01</a>], Xu and Henkelman [<a class="reference internal" href="#id90" title="Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. The Journal of Chemical Physics, 129(11):114104, September 2008. doi:10.1063/1.2976010.">AK_XH08</a>]</span>.  A rare
+<span id="id1">Henkelman and Jónsson [<a class="reference internal" href="#id32" title="Graeme Henkelman and Hannes Jónsson. Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table. The Journal of Chemical Physics, 115(21):9657–9666, November 2001. doi:10.1063/1.1415500.">AK_HJonsson01</a>], Xu and Henkelman [<a class="reference internal" href="#id91" title="Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. The Journal of Chemical Physics, 129(11):114104, September 2008. doi:10.1063/1.2976010.">AK_XH08</a>]</span>.  A rare
 event system is one in which the interesting dynamics is governed by short
 transitions between stable states. The fast vibrational motion within a stable
 state is considered to be in equilibrium and described statisitcally. A
@@ -516,7 +516,7 @@ determine the connecting states. The prefactor for the transition is also
 calculated by finite difference and the hTST rate is calculated. These data are
 reported back to the server.</p>
 <p>Essentially, then, unlike traditional Kinetic Monte Carlo (KMC) methods,
-adaptive (a), or off-lattice KMC <span id="id3">[<a class="reference internal" href="#id83" title="Mickaël Trochet, Normand Mousseau, Laurent Karim Béland, and Graeme Henkelman. Off-Lattice Kinetic Monte Carlo Methods. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling: Methods: Theory and Modeling, pages 715–743. Springer International Publishing, Cham, 2020. doi:10.1007/978-3-319-44677-6_29.">AK_TMBelandH20</a>]</span>
+adaptive (a), or off-lattice KMC <span id="id3">[<a class="reference internal" href="#id84" title="Mickaël Trochet, Normand Mousseau, Laurent Karim Béland, and Graeme Henkelman. Off-Lattice Kinetic Monte Carlo Methods. In Wanda Andreoni and Sidney Yip, editors, Handbook of Materials Modeling: Methods: Theory and Modeling, pages 715–743. Springer International Publishing, Cham, 2020. doi:10.1007/978-3-319-44677-6_29.">AK_TMBelandH20</a>]</span>
 doesn’t require a lattice of predetermined points in configuration space. The
 method dynamically builds a rate table based on local atomic movements and
 energy barriers. This allows for more accurate modeling of complex systems where
@@ -700,11 +700,11 @@ rate of escape from the state.</p>
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">AK_HJonsson01</a><span class="fn-bracket">]</span></span>
 <p>Graeme Henkelman and Hannes Jónsson. Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table. <em>The Journal of Chemical Physics</em>, 115(21):9657–9666, November 2001. <a class="reference external" href="https://doi.org/10.1063/1.1415500">doi:10.1063/1.1415500</a>.</p>
 </div>
-<div class="citation" id="id83" role="doc-biblioentry">
+<div class="citation" id="id84" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">AK_TMBelandH20</a><span class="fn-bracket">]</span></span>
 <p>Mickaël Trochet, Normand Mousseau, Laurent Karim Béland, and Graeme Henkelman. Off-Lattice Kinetic Monte Carlo Methods. In Wanda Andreoni and Sidney Yip, editors, <em>Handbook of Materials Modeling: Methods: Theory and Modeling</em>, pages 715–743. Springer International Publishing, Cham, 2020. <a class="reference external" href="https://doi.org/10.1007/978-3-319-44677-6_29">doi:10.1007/978-3-319-44677-6_29</a>.</p>
 </div>
-<div class="citation" id="id90" role="doc-biblioentry">
+<div class="citation" id="id91" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">AK_XH08</a><span class="fn-bracket">]</span></span>
 <p>Lijun Xu and Graeme Henkelman. Adaptive kinetic Monte Carlo for first-principles accelerated dynamics. <em>The Journal of Chemical Physics</em>, 129(11):114104, September 2008. <a class="reference external" href="https://doi.org/10.1063/1.2976010">doi:10.1063/1.2976010</a>.</p>
 </div>
@@ -807,7 +807,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Nov 03, 2025.
+  Last updated on Dec 25, 2025.
   <br/>
 </p>
   </div>
