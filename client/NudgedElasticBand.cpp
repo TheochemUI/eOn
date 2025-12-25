@@ -11,6 +11,7 @@
 */
 #include "NudgedElasticBand.h"
 #include "BaseStructures.h"
+#include "IDPPObjectiveFunction.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
 #include "MinModeSaddleSearch.h"
@@ -80,6 +81,76 @@ std::vector<fs::path> readFilePaths(const std::string &listFilePath) {
 
   return paths;
 }
+
+Eigen::MatrixXd getDistanceMatrix(const Matter &m) {
+  int natoms = m.numberOfAtoms();
+  Eigen::MatrixXd d(natoms, natoms);
+  AtomMatrix pos = m.getPositions();
+  for (int i = 0; i < natoms; ++i) {
+    for (int j = 0; j < natoms; ++j) {
+      if (i == j) {
+        d(i, j) = 0.0;
+      } else {
+        d(i, j) = m.pbc(pos.row(i) - pos.row(j)).norm();
+      }
+    }
+  }
+  return d;
+}
+
+std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
+                             const size_t nimgs,
+                             std::shared_ptr<Parameters> params) {
+
+  auto log = spdlog::get("combi");
+  SPDLOG_LOGGER_INFO(log, "Generating initial path using IDPP...");
+
+  // Start with a linear interpolation to get initial Cartesian coordinates
+  std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
+
+  // Pre-calculate endpoint distance matrices
+  Eigen::MatrixXd dInit = getDistanceMatrix(initImg);
+  Eigen::MatrixXd dFinal = getDistanceMatrix(finalImg);
+
+  // Optimize intermediate images
+  // Note: path[0] and path[nimgs+1] are fixed endpoints
+  for (size_t i = 1; i <= nimgs; ++i) {
+
+    // Calculate the interpolation factor (Reaction Coordinate)
+    double xi = static_cast<double>(i) / (nimgs + 1);
+
+    // Linear interpolation of the distance matrix (The "Image Dependent" part)
+    Eigen::MatrixXd dTarget = (1.0 - xi) * dInit + xi * dFinal;
+
+    // Create the IDPP Objective Function
+    auto idpp_objf = std::make_shared<IDPPObjectiveFunction>(
+        std::make_shared<Matter>(path[i]), params, dTarget);
+
+    // Create an Optimizer
+    // Defaults to taking the same one as optimizer
+    // TODO(rg): maybe rework to a separate stanza
+    auto idpp_optim =
+        helpers::create::mkOptim(idpp_objf, params->optMethod, params);
+
+    // Run the optimization
+    // TODO(rg): parameterize this 500
+    int status = idpp_optim->run(5000, params->optMaxMove);
+
+    // Log progress
+    double residual = idpp_objf->getConvergence();
+    SPDLOG_LOGGER_DEBUG(
+        log, "IDPP Image {:2d}/{:2d} | xi: {:.2f} | Residual: {:.4e}", i, nimgs,
+        xi, residual);
+
+    // Explicitly sync positions back to the path vector just to be safe
+    path[i].setPositions(MatrixXd::Map(idpp_objf->getPositions().data(),
+                                       path[i].numberOfAtoms(), 3));
+  }
+
+  SPDLOG_LOGGER_INFO(log, "IDPP path generation complete.");
+  return path;
+}
+
 } // namespace helper_functions::neb_paths
 
 // NEBObjectiveFunction definitions
