@@ -140,3 +140,67 @@ private:
   Eigen::MatrixXd getIDPPForces(const Matter &m,
                                 const Eigen::MatrixXd &dTarget);
 };
+
+class ZBLRepulsiveIDPPObjective : public ObjectiveFunction {
+public:
+  std::shared_ptr<ObjectiveFunction> idpp_obj;
+  std::shared_ptr<Potential> zbl_pot;
+  std::vector<Matter> &path; // Reference to the actual path vector
+  double zbl_weight;
+
+  ZBLRepulsiveIDPPObjective(std::shared_ptr<ObjectiveFunction> idpp,
+                            std::shared_ptr<Potential> zbl,
+                            std::vector<Matter> &p,
+                            std::shared_ptr<Parameters> params,
+                            double weight = 1.0)
+      : ObjectiveFunction(nullptr, params),
+        idpp_obj(idpp),
+        zbl_pot(zbl),
+        path(p),
+        zbl_weight(weight) {}
+
+  double getEnergy() override {
+    // IDPP "Energy" (Residual) + ZBL Energy
+    return idpp_obj->getEnergy();
+  }
+
+  VectorXd getGradient(bool fdstep = false) override {
+    // 1. Get IDPP Gradient (forces atoms towards interpolated distances)
+    VectorXd grad = idpp_obj->getGradient(fdstep);
+
+    // 2. Calculate ZBL Forces for every image
+    int n_images = path.size();
+    int atoms_per_image = path[0].numberOfAtoms();
+
+    // ZBL calculation loop
+    for (int i = 1; i < n_images - 1; ++i) { // Skip endpoints
+      AtomMatrix forces = MatrixXd::Zero(atoms_per_image, 3);
+      double energy = 0;
+
+      // Calculate ZBL forces for this image
+      zbl_pot->force(atoms_per_image, path[i].getPositions().data(),
+                     path[i].getAtomicNrs().data(), forces.data(), &energy,
+                     nullptr, path[i].getCell().data());
+
+      int segment_start = (i - 1) * 3 * atoms_per_image;
+      VectorXd zbl_grad_vec = VectorXd::Map(forces.data(), 3 * atoms_per_image);
+
+      // Add repulsive push (negate force to get gradient)
+      grad.segment(segment_start, 3 * atoms_per_image) -=
+          (zbl_grad_vec * zbl_weight);
+    }
+
+    return grad;
+  }
+
+  // Delegate other methods
+  void setPositions(VectorXd x) override { idpp_obj->setPositions(x); }
+  VectorXd getPositions() override { return idpp_obj->getPositions(); }
+  int degreesOfFreedom() override { return idpp_obj->degreesOfFreedom(); }
+  bool isConverged() override { return idpp_obj->isConverged(); }
+  double getConvergence() override { return idpp_obj->getConvergence(); }
+
+  VectorXd difference(VectorXd a, VectorXd b) override {
+    return idpp_obj->difference(a, b);
+  }
+};

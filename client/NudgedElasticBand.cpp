@@ -141,6 +141,12 @@ NudgedElasticBand::NudgedElasticBand(
                   *initialPassed, *finalPassed,
                   parametersPassed->neb_options.image_count, parametersPassed);
             }
+            case NEBInit::SIDPP_ZBL: {
+              return helper_functions::neb_paths::sidppPath(
+                  *initialPassed, *finalPassed,
+                  parametersPassed->neb_options.image_count, parametersPassed,
+                  true);
+            }
             case NEBInit::LINEAR:
             default: {
               return helper_functions::neb_paths::linearPath(

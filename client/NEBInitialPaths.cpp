@@ -1,8 +1,27 @@
 #include "NEBInitialPaths.hpp"
+#include "BaseStructures.h"
 #include "IDPPObjectiveFunction.hpp"
 #include "Optimizer.h"
+#include "Parameters.h"
+#include <filesystem>
+#include <fstream>
+#include <vector>
+
+namespace fs = std::filesystem;
 
 namespace helper_functions::neb_paths {
+
+// Forward declaration of ZBL setup helper to keep code clean
+std::shared_ptr<Potential> createZBLPotential() {
+  auto zbl_params = std::make_shared<Parameters>();
+  zbl_params->potential = PotType::ZBL;
+  // Strong short-range repulsion
+  zbl_params->zbl_options.cut_inner = 0.5;
+  // Cutoff sufficient to push overlapping atoms apart
+  zbl_params->zbl_options.cut_global = 3.0;
+  return helper_functions::makePotential(PotType::ZBL, zbl_params);
+}
+
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                                const size_t nimgs) {
   std::vector<Matter> all_images_on_path(nimgs + 2, initImg);
@@ -78,10 +97,15 @@ Eigen::MatrixXd getDistanceMatrix(const Matter &m) {
 
 std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
                              const size_t nimgs,
-                             std::shared_ptr<Parameters> params) {
+                             std::shared_ptr<Parameters> params, bool use_zbl) {
 
   auto log = spdlog::get("combi");
   SPDLOG_LOGGER_INFO(log, "Generating initial path using IDPP...");
+  if (use_zbl) {
+    SPDLOG_LOGGER_WARN(
+        log, "ZBL Repulsion not implemented for iterative IDPP (idppPath). "
+             "Using standard IDPP.");
+  }
 
   // Start with a linear interpolation to get initial Cartesian coordinates
   std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
@@ -131,15 +155,27 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
 std::vector<Matter> idppCollectivePath(const Matter &initImg,
                                        const Matter &finalImg, size_t nimgs,
-                                       std::shared_ptr<Parameters> params) {
+                                       std::shared_ptr<Parameters> params,
+                                       bool use_zbl) {
   auto log = spdlog::get("combi");
   SPDLOG_LOGGER_INFO(log,
                      "Generating initial path using Collective IDPP-NEB...");
 
   std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
-  // This object treats the whole path as one optimization problem
-  auto idpp_objf =
+
+  // 1. Base Objective
+  std::shared_ptr<ObjectiveFunction> idpp_objf =
       std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+
+  // 2. Optional ZBL Wrapper
+  if (use_zbl) {
+    SPDLOG_LOGGER_INFO(log, "Enabling ZBL repulsive penalty for IDPP...");
+    auto zbl_pot = createZBLPotential();
+    // Wrap the IDPP objective with ZBL repulsion (weight = 1.0)
+    idpp_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(idpp_objf, zbl_pot,
+                                                            path, params, 1.0);
+  }
+
   auto optim = helpers::create::mkOptim(
       idpp_objf, params->neb_options.initialization.opt_method, params);
 
@@ -179,16 +215,28 @@ Matter interpolateImage(const Matter &A, const Matter &B, double fraction) {
 
 std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
                               size_t target_nimgs,
-                              std::shared_ptr<Parameters> params) {
+                              std::shared_ptr<Parameters> params,
+                              bool use_zbl) {
 
   auto log = spdlog::get("combi");
-  SPDLOG_LOGGER_INFO(
-      log, "Generating initial path using Sequential IDPP (S-IDPP)...");
+  if (use_zbl) {
+    SPDLOG_LOGGER_INFO(
+        log, "Generating initial path using Sequential IDPP-ZBL (S-IDPP)...");
+  } else {
+    SPDLOG_LOGGER_INFO(
+        log, "Generating initial path using Sequential IDPP (S-IDPP)...");
+  }
 
   // 1. Start with [Init, Final]
   std::vector<Matter> path;
   path.push_back(initImg);
   path.push_back(finalImg);
+
+  // Initialize ZBL potential if requested (created once to be efficient)
+  std::shared_ptr<Potential> zbl_pot = nullptr;
+  if (use_zbl) {
+    zbl_pot = createZBLPotential();
+  }
 
   // Track how many images we have added to the Reactant (left) and Product
   // (right) sides In ORCA this is nR and nP. We start with 0 intermediate
@@ -247,8 +295,17 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
     // --- STEP B: OPTIMIZE CURRENT SET ---
     int steps = params->neb_options.initialization.nsteps;
-    auto idpp_objf =
+
+    // Create Base IDPP Objective
+    std::shared_ptr<ObjectiveFunction> idpp_objf =
         std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+
+    // Apply ZBL Wrapper if enabled
+    if (use_zbl && zbl_pot) {
+      idpp_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(
+          idpp_objf, zbl_pot, path, params, 1.0);
+    }
+
     // TODO(rg): this is a headache, since it uses the optimizer stanza but with
     // the NEB OptType
     auto optim = helpers::create::mkOptim(
@@ -280,8 +337,16 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   // everything.
 
   SPDLOG_LOGGER_INFO(log, "S-IDPP: Final relaxation of full path...");
-  auto final_objf =
+
+  std::shared_ptr<ObjectiveFunction> final_objf =
       std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+
+  // Apply ZBL Wrapper for final relaxation as well
+  if (use_zbl && zbl_pot) {
+    final_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(
+        final_objf, zbl_pot, path, params, 1.0);
+  }
+
   auto final_optim =
       helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
   final_optim->run(500, params->optMaxMove);
