@@ -1476,6 +1476,10 @@ class NudgedElasticBandConfig(BaseModel):
     """
     Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.
     """
+    ew_trigger: float = Field(
+        default=10.0,
+        description="Threshold for the energy-weighted method.",
+    )
     ew_ksp_min: float = Field(
         default=0.972,
         description="Minimum value for KSP in the energy-weighted method.",

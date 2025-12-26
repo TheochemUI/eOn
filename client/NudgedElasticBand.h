@@ -69,6 +69,7 @@ public:
 private:
   double current_mmf_threshold{-1.0};
   bool ci_latch{false};
+  bool ew_latch{false};
   std::shared_ptr<Parameters> params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;

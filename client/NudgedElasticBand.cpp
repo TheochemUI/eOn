@@ -194,6 +194,7 @@ NudgedElasticBand::NudgedElasticBand(
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
   ci_latch = false;
+  ew_latch = false;
 
   // Setup springs
   k_u = params->neb_options.spring.weighting.k_max;
@@ -455,7 +456,6 @@ void NudgedElasticBand::updateForces(void) {
   double maxDiffEnergy, minDiffEnergy;
   double energyDiffPrev, energyDiffNext;
   double energy, energyPrev, energyNext;
-  // bool higherEnergyPrev, higherEnergyNext;
 
   // variables for climbing image
   double maxEnergy;
@@ -474,10 +474,20 @@ void NudgedElasticBand::updateForces(void) {
       posDiffNext(atoms, 3), posDiffPrev(atoms, 3);
   double distNext, distPrev;
 
-  // Update forces for all intermediate images
+  // Update forces for all intermediate images FIRST
+  // This ensures Onsager-Machlup and Energy Weighting use current forces
+  double rawMaxForce = 0.0;
   for (long i = 1; i <= numImages; i++) {
     path[i]->getForces();
+
+    // Check for max force to trigger CI and EW
+    if (params->optConvergenceMetric == "norm") {
+      rawMaxForce = std::max(rawMaxForce, path[i]->getForces().norm());
+    } else {
+      rawMaxForce = std::max(rawMaxForce, path[i]->getForces().maxCoeff());
+    }
   }
+
   // Find the highest energy non-endpoint image
   auto first = path.begin() + 1;
   auto last = path.begin() + numImages + 1;
@@ -488,18 +498,9 @@ void NudgedElasticBand::updateForces(void) {
       });
   maxEnergyImage = std::distance(path.begin(), it);
   maxEnergy = (*it)->getPotentialEnergy();
-  // Determine if energy weighting applies
-  double rawMaxForce = 0.0;
-  for (long k = 1; k <= numImages; k++) {
-    // Use the raw forces (already updated above) to check convergence proximity
-    if (params->optConvergenceMetric == "norm") {
-      rawMaxForce = std::max(rawMaxForce, path[k]->getForces().norm());
-    } else {
-      // Default to max component/atom proxy for safety
-      rawMaxForce = std::max(rawMaxForce, path[k]->getForces().maxCoeff());
-    }
-  }
 
+  // Handle Triggers
+  // 1. Climbing Image
   double ciTrigger = params->neb_options.climbing_image.trigger_force;
   if (!ci_latch && rawMaxForce < ciTrigger) {
     ci_latch = true;
@@ -507,8 +508,19 @@ void NudgedElasticBand::updateForces(void) {
         "Climbing Image trigger force reached ({:.4f} < {:.4f}). CI locked ON.",
         rawMaxForce, ciTrigger);
   }
+
+  // 2. Energy Weighting
+  // Assumes a separate trigger: params->neb_options.spring.weighting.trigger
+  double ewTrigger = params->neb_options.spring.weighting.trigger;
+  if (!ew_latch && rawMaxForce < ewTrigger) {
+    ew_latch = true;
+    SPDLOG_INFO("Energy Weighting trigger force reached ({:.4f} < {:.4f}). EW "
+                "locked ON.",
+                rawMaxForce, ewTrigger);
+  }
+
   bool weightingActive =
-      params->neb_options.spring.weighting.enabled && this->ci_latch;
+      params->neb_options.spring.weighting.enabled && this->ew_latch;
 
   // Onsager-Machlup (OM) Action Logic
   // Mandelli & Parrinello (2021)
@@ -549,6 +561,7 @@ void NudgedElasticBand::updateForces(void) {
               params->neb_options.spring.constant);
   }
 
+  // Projection Loop
   for (long i = 1; i <= numImages; i++) {
     force = path[i]->getForces();
     pos = path[i]->getPositions();
@@ -667,11 +680,7 @@ void NudgedElasticBand::updateForces(void) {
       } else {
         *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
       }
-      //*projectedForce[i] = forceSpring + forcePerp;
-
-      // if (params->nebFullSpring) {
-
-      movedAfterForceCall = false; // so that we don't repeat a force call
+      // movedAfterForceCall = false; // so that we don't repeat a force call
     }
 
     // Zero net translational force (if all atoms are free)
@@ -684,6 +693,8 @@ void NudgedElasticBand::updateForces(void) {
     }
   }
 
+  // Flag that forces are fresh
+  movedAfterForceCall = false;
   return;
 }
 
