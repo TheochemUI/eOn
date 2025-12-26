@@ -1573,7 +1573,7 @@ class NudgedElasticBandConfig(BaseModel):
         description="Baseline for losing mode.",
     )
     ci_mmf_penalty_strength: float = Field(
-        default=0.7,
+        default=0.5,
         description="Multiplier for losing mode.",
     )
     setup_mmf_peaks: bool = Field(
