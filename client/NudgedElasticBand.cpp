@@ -502,7 +502,8 @@ void NudgedElasticBand::updateForces(void) {
   // Handle Triggers
   // 1. Climbing Image
   double ciTrigger = params->neb_options.climbing_image.trigger_force;
-  if (!ci_latch && rawMaxForce < ciTrigger && params->neb_options.climbing_image.enabled) {
+  if (!ci_latch && rawMaxForce < ciTrigger &&
+      params->neb_options.climbing_image.enabled) {
     ci_latch = true;
     SPDLOG_INFO(
         "Climbing Image trigger force reached ({:.4f} < {:.4f}). CI locked ON.",
@@ -583,7 +584,6 @@ void NudgedElasticBand::updateForces(void) {
     }
     // Pre-calculate L vectors for all images (including endpoints)
     L_vecs.resize(numImages + 2);
-    double alpha = 1.0 / (2.0 * base_k);
 
     for (long j = 0; j <= numImages + 1; j++) {
       L_vecs[j].resize(atoms, 3);
@@ -591,7 +591,15 @@ void NudgedElasticBand::updateForces(void) {
       if (j == 0 || j == numImages + 1) {
         L_vecs[j].setZero();
       } else {
-        L_vecs[j] = alpha * path[j]->getForces();
+        AtomMatrix forces = path[j]->getForces();
+        for (int k = 0; k < atoms; k++) {
+          // Apply 1/m scaling as per Eq (12)
+          // Note: base_k here represents (nu / 2 dt).
+          // L = (1 / (2 * base_k * m)) * Force
+          double m = atomMasses(k);
+          double alpha_k = 1.0 / (2.0 * base_k * m);
+          L_vecs[j].row(k) = alpha_k * forces.row(k);
+        }
       }
     }
   } else if (weightingActive) {
