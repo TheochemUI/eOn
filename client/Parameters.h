@@ -380,7 +380,10 @@ public:
     OptType opt_method; // Optimization algorithm (e.g., QuickMin, FIRE, L-BFGS)
     double
         force_tolerance; // Convergence criterion for the root-mean-square force
-    bool setup_mmf_peaks; // Initialize mode estimates for each peak
+    struct mmf_peak_options_t {
+      bool enabled;     // Initialize mode estimates for each peak
+      double tolerance; // Cutoff for generating peaks
+    } mmf_peaks;
 
     struct spring_options_t {
       double constant;       // The spring constant (k) connecting images
