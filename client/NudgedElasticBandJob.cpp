@@ -11,6 +11,7 @@
 */
 #include "NudgedElasticBandJob.h"
 #include "ConjugateGradients.h"
+#include "NEBInitialPaths.hpp"
 #include "Potential.h"
 
 using namespace std;

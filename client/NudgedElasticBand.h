@@ -98,22 +98,3 @@ public:
 private:
   NudgedElasticBand *neb;
 };
-
-namespace helper_functions {
-namespace neb_paths {
-std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
-                               const size_t nimgs);
-std::vector<Matter>
-filePathInit(const std::vector<std::filesystem::path> &fsrcs,
-             const Matter &refImg, const size_t nimgs);
-/**
- * @brief Reads a file where each line contains a path to another file.
- *
- * @param listFilePath The path to the file containing the list of file paths.
- * @return A vector of filesystem paths. Returns an empty vector if the
- * file cannot be opened.
- */
-std::vector<std::filesystem::path>
-readFilePaths(const std::string &listFilePath);
-} // namespace neb_paths
-} // namespace helper_functions
