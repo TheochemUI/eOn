@@ -320,13 +320,13 @@ Nudged Elastic Band:
             kind: float
             default: 0.8
 
-        ci_mmf_threshold_discount:
+        ci_mmf_penalty_strength:
             kind: float
-            default: 0.9
+            default: 0.7
 
-        ci_mmf_convforce_discount:
+        ci_mmf_penalty_base:
             kind: float
-            default: 0.8
+            default: 0.1
 
 ################################################################################
 

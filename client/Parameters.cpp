@@ -323,8 +323,8 @@ Parameters::Parameters() {
   // Use the angle criteria instead
   neb_options.climbing_image.roneb.max_steps = 1000;
   neb_options.climbing_image.roneb.angle_tol = 0.8;
-  neb_options.climbing_image.roneb.thresh_discount = 0.9;
-  neb_options.climbing_image.roneb.convforce_discount = 0.8;
+  neb_options.climbing_image.roneb.penalty.base = 0.1;
+  neb_options.climbing_image.roneb.penalty.strength = 0.7;
 
   // Initial path guess and pre-optimization
   neb_options.initialization.method = NEBInit::LINEAR;
@@ -991,10 +991,10 @@ int Parameters::load(FILE *file) {
         ini.GetValueL(neb_section, "ci_mmf_nsteps", roneb.max_steps);
     roneb.angle_tol =
         ini.GetValueF(neb_section, "ci_mmf_angle", roneb.angle_tol);
-    roneb.thresh_discount = ini.GetValueF(
-        neb_section, "ci_mmf_threshold_discount", roneb.thresh_discount);
-    roneb.convforce_discount = ini.GetValueF(
-        neb_section, "ci_mmf_convforce_discount", roneb.convforce_discount);
+    roneb.penalty.strength = ini.GetValueF(
+        neb_section, "ci_mmf_penalty_strength", roneb.penalty.strength);
+    roneb.penalty.base =
+        ini.GetValueF(neb_section, "ci_mmf_penalty_base", roneb.penalty.base);
 
     // Initial path construction (e.g., IDPP)
     auto &init = neb_options.initialization;

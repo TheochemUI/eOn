@@ -82,6 +82,15 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   VectorXd x0_r = x0->getPositionsV();
 
   x1->setPositionsV(x0_r + params->finiteDifference * tau);
+  // Quick check: If we stepped into a wall, flip the tangent immediately
+  // This saves the optimizer from fighting a huge gradient in the first step
+  if (x1->getPotentialEnergy() - x0->getPotentialEnergy() >
+      10.0 * params->finiteDifference) {
+    tau = -tau;
+    x1->setPositionsV(x0_r + params->finiteDifference * tau);
+    SPDLOG_LOGGER_DEBUG(
+        log, "[IDimer] Initial tangent flipped due to high energy wall.");
+  }
 
   if (params->dimerOptMethod == OPT_LBFGS) {
     s.clear();
