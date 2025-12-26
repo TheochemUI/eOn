@@ -309,6 +309,10 @@ Parameters::Parameters() {
   nebciWithMMF = false;
   nebciMMFAfter = 0.5;
   nebciMMFnSteps = 10;
+  nebciAngle = 0.8;
+  nebci_thresh_discount = 0.9;
+  nebci_convforce_discount = 0.8;
+
   neb_initializer = NEBInit::LINEAR;
   nebIpath = ""s;
   nebInitMaxIter = 5000;
@@ -940,6 +944,12 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Nudged Elastic Band", "ci_mmf_after", nebciMMFAfter);
     nebciMMFnSteps =
         ini.GetValueL("Nudged Elastic Band", "ci_mmf_nsteps", nebciMMFnSteps);
+    nebciAngle =
+        ini.GetValueF("Nudged Elastic Band", "ci_mmf_angle", nebciAngle);
+    nebci_thresh_discount =
+        ini.GetValueF("Nudged Elastic Band", "ci_mmf_threshold_discount", nebci_thresh_discount);
+    nebci_convforce_discount =
+        ini.GetValueF("Nudged Elastic Band", "ci_mmf_convforce_discount", nebci_convforce_discount);
     // TODO(rg): convert to a struct at some point
     neb_initializer = magic_enum::enum_cast<NEBInit>(
                           ini.GetValue("Nudged Elastic Band", "initializer"),

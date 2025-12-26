@@ -395,6 +395,9 @@ public:
   bool nebciWithMMF;
   double nebciMMFAfter;
   long nebciMMFnSteps;
+  double nebciAngle;
+  double nebci_thresh_discount;
+  double nebci_convforce_discount;
 
   // Initial path
   NEBInit neb_initializer;
