@@ -482,11 +482,21 @@ void NudgedElasticBand::updateForces(void) {
   maxEnergyImage = std::distance(path.begin(), it);
   maxEnergy = (*it)->getPotentialEnergy();
   // Determine if energy weighting applies
-  double convForce = convergenceForce();
+  double rawMaxForce = 0.0;
+  for (long k = 1; k <= numImages; k++) {
+    // Use the raw forces (already updated above) to check convergence proximity
+    if (params->optConvergenceMetric == "norm") {
+      rawMaxForce = std::max(rawMaxForce, path[k]->getForces().norm());
+    } else {
+      // Default to max component/atom proxy for safety
+      rawMaxForce = std::max(rawMaxForce, path[k]->getForces().maxCoeff());
+    }
+  }
+
   double ciTrigger = params->neb_options.climbing_image.trigger_force;
-  bool triggerMet = (convForce < ciTrigger);
+  bool triggerMet = (rawMaxForce < ciTrigger);
   bool weightingActive =
-      params->neb_options.spring.weighting.enabled && (convForce < ciTrigger);
+      params->neb_options.spring.weighting.enabled && triggerMet;
 
   // Energy weighted springs, calculated here since all the springs are used
   // internally
