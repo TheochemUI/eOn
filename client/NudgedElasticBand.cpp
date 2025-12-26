@@ -510,9 +510,30 @@ void NudgedElasticBand::updateForces(void) {
   bool weightingActive =
       params->neb_options.spring.weighting.enabled && this->ci_latch;
 
-  // Energy weighted springs, calculated here since all the springs are used
-  // internally
-  if (weightingActive) {
+  // Onsager-Machlup (OM) Action Logic
+  // Mandelli & Parrinello (2021)
+  // L_i = (1 / 2k) * Force_i
+  bool omActive = params->neb_options.spring.onsager_machlup;
+  std::vector<AtomMatrix> L_vecs;
+
+  if (omActive) {
+    // Reuse the standard spring constant as k_OM
+    double k_om = params->neb_options.spring.constant;
+    // Pre-calculate L vectors for all images (including endpoints)
+    L_vecs.resize(numImages + 2);
+    double alpha = 1.0 / (2.0 * k_om);
+
+    for (long j = 0; j <= numImages + 1; j++) {
+      L_vecs[j].resize(atoms, 3);
+      // Endpoints might not have updated forces if fixed, assume 0 (minima)
+      if (j == 0 || j == numImages + 1) {
+        L_vecs[j].setZero();
+      } else {
+        L_vecs[j] = alpha * path[j]->getForces();
+      }
+    }
+  } else if (weightingActive) {
+    // Energy weighted springs (Mutually exclusive with OM in this logic)
     for (int idx = 1; idx <= numImages + 1; idx++) {
       double Ei = std::max(path[idx]->getPotentialEnergy(),
                            path[idx - 1]->getPotentialEnergy());
@@ -579,8 +600,18 @@ void NudgedElasticBand::updateForces(void) {
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
 
-    // Calculate spring forces with the conditional trigger
-    if (weightingActive) {
+    // Calculate spring forces
+    if (omActive) {
+      // Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i-1) - L(i) )
+      double k_om = params->neb_options.spring.constant;
+      AtomMatrix f_om_vec =
+          k_om * (posNext + posPrev - (2.0 * pos) + L_vecs[i - 1] - L_vecs[i]);
+
+      // Mandelli Eq. 15: Project onto tangent
+      forceSpringPar =
+          (f_om_vec.array() * (*tangent[i]).array()).sum() * *tangent[i];
+
+    } else if (weightingActive) {
       // Use energy-weighted constants if trigger is met
       // Spring for segment (i) -> (i+1)
       double kspNext = springConstants[i];
@@ -596,7 +627,7 @@ void NudgedElasticBand::updateForces(void) {
     }
 
     // Doubly Nudged Elastic Band logic
-    if (params->neb_options.spring.doubly_nudged) {
+    if (params->neb_options.spring.doubly_nudged && !omActive) {
       if (!weightingActive) {
         forceSpringPerp =
             forceSpring -
@@ -630,7 +661,8 @@ void NudgedElasticBand::updateForces(void) {
     } else // all non-climbing numImages
     {
       // sum the spring and potential forces for the neb force
-      if (params->neb_options.spring.use_elastic_band && !weightingActive) {
+      if (params->neb_options.spring.use_elastic_band && !weightingActive &&
+          !omActive) {
         *projectedForce[i] = forceSpring + force;
       } else {
         *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;

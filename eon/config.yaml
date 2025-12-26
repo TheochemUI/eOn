@@ -250,6 +250,10 @@ Nudged Elastic Band:
             kind: float
             default: 0.01
 
+        onsager_machlup:
+            kind: boolean
+            default: false
+
         energy_weighted:
             kind: boolean
             default: false
