@@ -581,9 +581,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
           // Set new threshold slightly below CURRENT convergence force.
           // This forces NEB to improve the image before we trust MMF again.
-          // TODO(rg): use parameters here
           current_mmf_threshold =
-              std::min(current_mmf_threshold * 0.9, convForce * 0.8);
+              std::min(current_mmf_threshold * params->nebci_thresh_discount,
+                       convForce * params->nebci_convforce_discount);
 
           SPDLOG_LOGGER_WARN(log, "Tightening MMF Threshold: {:.4f} -> {:.4f}",
                              old_threshold, current_mmf_threshold);

@@ -308,6 +308,18 @@ Nudged Elastic Band:
             kind: int
             default: 10
 
+        ci_mmf_angle:
+            kind: float
+            default: 0.8
+
+        ci_mmf_threshold_discount:
+            kind: float
+            default: 0.9
+
+        ci_mmf_convforce_discount:
+            kind: float
+            default: 0.8
+
 ################################################################################
 
 Distributed Replica:

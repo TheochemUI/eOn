@@ -1532,6 +1532,18 @@ class NudgedElasticBandConfig(BaseModel):
         default=10,
         description="Number of steps for which the MMF is run at the CI image.",
     )
+    ci_mmf_angle: float = Field(
+        default=0.8,
+        description="Alignment threshold w.r.t NEB mode.",
+    )
+    ci_mmf_threshold_discount: float = Field(
+        default=0.9,
+        description="Multiplier on losing mode.",
+    )
+    ci_mmf_convforce_discount: float = Field(
+        default=0.9,
+        description="Multiplier on losing mode.",
+    )
 
 
 class LanczosConfig(BaseModel):
