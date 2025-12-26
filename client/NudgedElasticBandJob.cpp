@@ -155,6 +155,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   fprintf(fileResults, "%f energy_reference\n",
           neb->path[0]->getPotentialEnergy());
   fprintf(fileResults, "%li number_of_images\n", neb->numImages);
+
   for (long i = 0; i <= neb->numImages + 1; i++) {
     fprintf(fileResults, "%f image%li_energy\n",
             neb->path[i]->getPotentialEnergy() -
@@ -162,23 +163,22 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
             i);
     fprintf(fileResults, "%f image%li_force\n",
             neb->path[i]->getForces().norm(), i);
+
     // Only interior images have a meaningful projected force
-    double proj_norm = 0.0;
-    if (i >= 1 && i <= neb->numImages) {
-      proj_norm = neb->projectedForce[i]->norm();
-    }
-    fprintf(fileResults, "%f image%li_projected_force\n",
-            neb->projectedForce[i]->norm(), i);
+    double proj_norm =
+        (i >= 1 && i <= neb->numImages) ? neb->projectedForce[i]->norm() : 0.0;
+    fprintf(fileResults, "%f image%li_projected_force\n", proj_norm, i);
   }
+
   fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
   for (long i = 0; i < neb->numExtrema; i++) {
     fprintf(fileResults, "%f extremum%li_position\n", neb->extremumPosition[i],
             i);
     fprintf(fileResults, "%f extremum%li_energy\n", neb->extremumEnergy[i], i);
   }
-
   fclose(fileResults);
 
+  // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
   fileNEB = fopen(nebFilename.c_str(), "wb");
@@ -186,6 +186,55 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
     neb->path[i]->matter2con(fileNEB);
   }
   fclose(fileNEB);
+
+  // Save Discrete Saddle Point (Highest Energy Image)
+  std::string spFilename("sp.con");
+  neb->path[neb->maxEnergyImage]->matter2con(spFilename);
+  returnFiles.push_back(spFilename);
+
+  // Setup Dimer Configurations for Each Spline Peak
+  if (params->neb_options.setup_mmf_peaks && neb->numExtrema > 0) {
+    for (long i = 0; i < neb->numExtrema; i++) {
+      // Negative curvature indicates a maximum (Transition State)
+      if (neb->extremumCurvature[i] < 0) {
+        double posFraction = neb->extremumPosition[i];
+        int leftIdx = static_cast<int>(std::floor(posFraction));
+        double f = posFraction - leftIdx;
+
+        // Ensure indices stay within path bounds
+        if (leftIdx < 0 || leftIdx >= neb->numImages + 1)
+          continue;
+
+        // Generate Interpolated Position
+        Matter peakPos = helper_functions::neb_paths::interpolateImage(
+            *neb->path[leftIdx], *neb->path[leftIdx + 1], f);
+
+        // Generate Interpolated Tangent (The Dimer Mode)
+        // We blend the normalized tangents of the neighboring images
+        AtomMatrix peakMode = (1.0 - f) * (*neb->tangent[leftIdx]) +
+                              f * (*neb->tangent[leftIdx + 1]);
+        peakMode.normalize();
+
+        // Write Position Configuration
+        std::string peakPosFile = fmt::format("peak{:02d}_pos.con", i);
+        peakPos.matter2con(peakPosFile);
+        returnFiles.push_back(peakPosFile);
+
+        // Write Mode Configuration
+        // We repurpose a Matter object to store the displacement vector as
+        // "positions"
+        std::string peakModeFile = fmt::format("peak{:02d}_mode.con", i);
+        Matter peakModeMatter(peakPos);
+        peakModeMatter.setPositions(peakMode);
+        peakModeMatter.matter2con(peakModeFile);
+        returnFiles.push_back(peakModeFile);
+
+        SPDLOG_LOGGER_INFO(
+            m_log, "Generated dimer setup for peak {} at image position {:.3f}",
+            i, posFraction);
+      }
+    }
+  }
 
   returnFiles.push_back("neb.dat");
   neb->printImageData(true, std::numeric_limits<size_t>::max());

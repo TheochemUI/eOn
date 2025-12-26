@@ -1522,7 +1522,7 @@ class NudgedElasticBandConfig(BaseModel):
     )
     ci_mmf: bool = Field(
         default=False,
-        description="Use an MMF method for a few steps at the CI.",
+        description="Use an MMF method for the CI.",
     )
     ci_mmf_after: float = Field(
         default=0.5,
@@ -1543,6 +1543,10 @@ class NudgedElasticBandConfig(BaseModel):
     ci_mmf_convforce_discount: float = Field(
         default=0.9,
         description="Multiplier on losing mode.",
+    )
+    setup_mmf_peaks: bool = Field(
+        default=True,
+        description="Generate modes and peak configurations.",
     )
 
 
