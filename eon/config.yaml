@@ -258,6 +258,10 @@ Nudged Elastic Band:
             kind: boolean
             default: false
 
+        ew_trigger:
+            kind: float
+            default: 10.0
+
         ew_ksp_min:
             kind: float
             default: 0.972

@@ -308,6 +308,7 @@ Parameters::Parameters() {
 
   // Energy-weighted spring adjustments for high-curvature regions
   neb_options.spring.weighting.enabled = false;
+  neb_options.spring.weighting.trigger = 10.0;
   neb_options.spring.weighting.k_max = 9.7;
   neb_options.spring.weighting.k_min = 0.97;
 
@@ -968,6 +969,8 @@ int Parameters::load(FILE *file) {
     // Energy weighting for resolution control
     neb_options.spring.weighting.enabled = ini.GetValueB(
         neb_section, "energy_weighted", neb_options.spring.weighting.enabled);
+    neb_options.spring.weighting.trigger = ini.GetValueF(
+        neb_section, "ew_trigger", neb_options.spring.weighting.trigger);
     neb_options.spring.weighting.k_min = ini.GetValueF(
         neb_section, "ew_ksp_min", neb_options.spring.weighting.k_min);
     neb_options.spring.weighting.k_max = ini.GetValueF(
