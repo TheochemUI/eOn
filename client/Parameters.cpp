@@ -334,7 +334,7 @@ Parameters::Parameters() {
   neb_options.climbing_image.roneb.max_steps = 1000;
   neb_options.climbing_image.roneb.angle_tol = 0.8;
   neb_options.climbing_image.roneb.penalty.base = 0.1;
-  neb_options.climbing_image.roneb.penalty.strength = 0.7;
+  neb_options.climbing_image.roneb.penalty.strength = 0.5;
 
   // Initial path guess and pre-optimization
   neb_options.initialization.method = NEBInit::LINEAR;
