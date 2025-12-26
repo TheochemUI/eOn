@@ -312,6 +312,15 @@ Parameters::Parameters() {
   neb_options.spring.weighting.k_max = 9.7;
   neb_options.spring.weighting.k_min = 0.97;
 
+  // Onsager-Machlup settings
+  neb_options.spring.om.enabled = false;
+  neb_options.spring.om.optimize_k = true;
+  // > 1 (stiff) provides a smoother path but may "cut corners" near the saddle
+  // < 1 (softer) hugs valleys but paths may become jagged/noisy
+  neb_options.spring.om.k_scale = 1.0;
+  neb_options.spring.om.k_min = 0.1;
+  neb_options.spring.om.k_max = 100;
+
   // Climbing Image (CI-NEB) settings for barrier identification
   neb_options.climbing_image.enabled = true;
   neb_options.climbing_image.converged_only = true;
@@ -963,8 +972,6 @@ int Parameters::load(FILE *file) {
     neb_options.spring.use_switching =
         ini.GetValueB(neb_section, "doubly_nudged_switching",
                       neb_options.spring.use_switching);
-    neb_options.spring.onsager_machlup = ini.GetValueB(
-        neb_section, "onsager_machlup", neb_options.spring.onsager_machlup);
 
     // Energy weighting for resolution control
     neb_options.spring.weighting.enabled = ini.GetValueB(
@@ -975,6 +982,18 @@ int Parameters::load(FILE *file) {
         neb_section, "ew_ksp_min", neb_options.spring.weighting.k_min);
     neb_options.spring.weighting.k_max = ini.GetValueF(
         neb_section, "ew_ksp_max", neb_options.spring.weighting.k_max);
+
+    // Onsager-Machlup settings
+    neb_options.spring.om.enabled = ini.GetValueB(
+        neb_section, "onsager_machlup", neb_options.spring.om.enabled);
+    neb_options.spring.om.optimize_k = ini.GetValueB(
+        neb_section, "om_optimize_k", neb_options.spring.om.optimize_k);
+    neb_options.spring.om.k_scale =
+        ini.GetValueF(neb_section, "om_k_scale", neb_options.spring.om.k_scale);
+    neb_options.spring.om.k_min =
+        ini.GetValueF(neb_section, "om_k_min", neb_options.spring.om.k_min);
+    neb_options.spring.om.k_max =
+        ini.GetValueF(neb_section, "om_k_max", neb_options.spring.om.k_max);
 
     // Climbing Image (CI-NEB) for saddle point identification
     neb_options.climbing_image.enabled =

@@ -400,6 +400,17 @@ public:
         double k_min;   // Minimum spring constant for low-energy regions
         double k_max; // Maximum spring constant for high-energy barrier regions
       } weighting;
+      struct onsager_machlup_t {
+        bool enabled; // Main toggle for OM-NEB
+
+        // Adaptive Spring Constant Logic
+        bool optimize_k; // Re-calculate k_om every step?
+        double k_scale;  // Scaling factor for the heuristic (dimensionless)
+
+        // Optional: Safety bounds to prevent numerical explosions
+        double k_min;
+        double k_max;
+      } om;
     } spring;
 
     struct climbing_image_options_t {

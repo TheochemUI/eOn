@@ -1465,11 +1465,33 @@ class NudgedElasticBandConfig(BaseModel):
     This defaults to being the same as :any:`eon.schema.OptimizerConfig.converged_force`
     """
     onsager_machlup: bool = Field(
-        default=False, description="Indicates if the Onsager-Machlup (OM) Action is used."
+        default=False,
+        description="Indicates if the Onsager-Machlup (OM) Action is used.",
     )
     """
     Method as demonstrated in :cite:t:`neb-mandelliModifiedNudgedElastic2021`.
     """
+    om_optimize_k: bool = Field(
+        default=True,
+        description="Indicates if the Onsager-Machlup (OM) Action spacing is recalculated at each step.",
+    )
+    om_k_scale: float = Field(
+        default=1.0,
+        description="Indicates stiffness of OM adaption of springs.",
+    )
+    """
+    Stiffness:
+    - > 1 (stiff) provides a smoother path but may "cut corners" near the saddle
+    - < 1 (softer) hugs valleys but paths may become jagged/noisy
+    """
+    om_k_min: float = Field(
+        default=0.1,
+        description="Minimum stiffness.",
+    )
+    om_k_max: float = Field(
+        default=100,
+        description="Minimum stiffness.",
+    )
     energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."
     )
