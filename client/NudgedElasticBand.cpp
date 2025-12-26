@@ -159,27 +159,33 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
   SPDLOG_LOGGER_INFO(log,
                      "Generating initial path using Collective IDPP-NEB...");
 
-  // 1. Initial Guess (Linear)
   std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
-
-  // 2. Create the Collective Objective Function
   // This object treats the whole path as one optimization problem
   auto idpp_objf =
       std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
-
-  // 3. Use LBFGS for fast collective relaxation
   auto optim = helpers::create::mkOptim(
       idpp_objf, params->neb_options.initialization.opt_method, params);
 
-  // 4. Run Optimization
-  // Run for a fixed number of steps or until loose convergence
-  // TODO(rg): use the convergence criteria
-  int steps = params->neb_options.initialization.nsteps;
-  optim->run(steps, params->optMaxMove);
+  int maxSteps = params->neb_options.initialization.max_iterations;
+  int currentStep = 0;
+  int checkInterval = 40;
 
-  SPDLOG_LOGGER_INFO(log, "IDPP-NEB complete. Max Residual: {:.4f}",
-                     idpp_objf->getConvergence());
+  while (currentStep < maxSteps) {
+    optim->run(checkInterval, params->optMaxMove);
+    currentStep += checkInterval;
 
+    if (idpp_objf->isConverged()) {
+      SPDLOG_LOGGER_INFO(
+          log, "IDPP-NEB converged after {} steps. Max Residual: {:.4f}",
+          currentStep, idpp_objf->getConvergence());
+      return path;
+    }
+  }
+
+  SPDLOG_LOGGER_WARN(log,
+                     "IDPP-NEB reached max_iterations ({}) without full "
+                     "convergence. Residual: {:.4f}",
+                     maxSteps, idpp_objf->getConvergence());
   return path;
 }
 
@@ -263,21 +269,28 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
     }
 
     // --- STEP B: OPTIMIZE CURRENT SET ---
-    // Create the collective objective function for the current path size
+    int steps = params->neb_options.initialization.nsteps;
     auto idpp_objf =
         std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
-
-    // Use LBFGS for fast relaxation
+    // TODO(rg): this is a headache, since it uses the optimizer stanza but with
+    // the NEB OptType
     auto optim = helpers::create::mkOptim(
         idpp_objf, params->neb_options.initialization.opt_method, params);
 
-    // Run for a few steps to relax the new frontiers
-    // We don't need tight convergence, just enough to resolve clashes
-    // TODO(rg): use a real convergence criteria
-    int steps = params->neb_options.initialization.nsteps;
-    // TODO(rg): this is a headache, since it uses the optimizer stanza but with
-    // the NEB OptType
-    optim->run(steps, params->optMaxMove);
+    // Relax the current intermediate path until it meets the tolerance
+    int growthRelaxSteps = params->neb_options.initialization.max_iterations;
+    int step = 0;
+    while (step < growthRelaxSteps) {
+      optim->run(5, params->optMaxMove); // Run small batches
+      step += 5;
+      if (idpp_objf->isConverged())
+        break;
+    }
+
+    SPDLOG_LOGGER_DEBUG(
+        log,
+        "S-IDPP Frontier Relaxed: {} images | Steps: {} | Residual: {:.4f}",
+        nIntermediate, step, idpp_objf->getConvergence());
 
     SPDLOG_LOGGER_DEBUG(log, "S-IDPP: Relaxed with {} images. Residual: {:.4f}",
                         nIntermediate, idpp_objf->getConvergence());
