@@ -531,6 +531,53 @@ void NudgedElasticBand::updateForces(void) {
   if (omActive) {
     // Reuse the standard spring constant as k_OM
     double k_om = params->neb_options.spring.constant;
+    if (params->neb_options.spring.om_optimize_k) {
+      // Method A: Physical estimation (assuming v*dt=1)
+      // k_om = m / (2 * dt^2). With v*dt=1, v = 1/dt.
+      // k_om = m * (1/dt) / (2 * dt) = m / (2 * dt^2).
+      // This requires a valid timestep 'dt'.
+      // If dt is not reliable, we use Method B (Force Balancing).
+
+      // Method B: Force Balancing (Heuristic)
+      // We want F_spring ~ F_potential on average.
+      // F_spring_OM ~ k_om * <|R_{i+1} + R_{i-1} - 2R_i|>
+      // F_potential ~ <|Force|>
+      // k_om = <|Force|> / <|2nd_derivative_finite_diff|>
+
+      double avgPotForce = 0.0;
+      double avgPathCurvature = 0.0;
+      int count = 0;
+
+      for (long j = 1; j <= numImages; j++) {
+        avgPotForce += path[j]->getForces().norm();
+
+        // Calculate finite difference curvature (R_{i+1} + R_{i-1} - 2R_i)
+        // Need to handle PBC carefully
+        AtomMatrix next = path[j + 1]->getPositions();
+        AtomMatrix prev = path[j - 1]->getPositions();
+        AtomMatrix curr = path[j]->getPositions();
+
+        AtomMatrix curvVec = path[j]->pbc(next + prev - 2.0 * curr);
+        avgPathCurvature += curvVec.norm();
+        count++;
+      }
+
+      if (count > 0 && avgPathCurvature > 1e-6) { // Avoid division by zero
+        avgPotForce /= count;
+        avgPathCurvature /= count;
+
+        // Scale factor can be a tuning parameter, default 1.0
+        double scale = params->neb_options.spring.om_k_scale;
+        k_om = scale * (avgPotForce / avgPathCurvature);
+
+        // Optional: Clamp k_om to reasonable bounds to prevent instability
+        k_om = std::max(k_om, 0.1);
+        k_om = std::min(k_om, 100.0);
+      }
+
+      // Log the optimized k for debugging
+      SPDLOG_DEBUG("Optimized OM k: {}", k_om);
+    }
     // Pre-calculate L vectors for all images (including endpoints)
     L_vecs.resize(numImages + 2);
     double alpha = 1.0 / (2.0 * k_om);
