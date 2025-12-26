@@ -187,6 +187,7 @@ NudgedElasticBand::NudgedElasticBand(
   path[0]->getPotentialEnergy();
   path[numImages + 1]->getPotentialEnergy();
   climbingImage = 0;
+  ci_latch = false;
 
   // Setup springs
   k_u = params->neb_options.spring.weighting.k_max;
@@ -494,9 +495,14 @@ void NudgedElasticBand::updateForces(void) {
   }
 
   double ciTrigger = params->neb_options.climbing_image.trigger_force;
-  bool triggerMet = (rawMaxForce < ciTrigger);
+  if (!ci_latch && rawMaxForce < ciTrigger) {
+    ci_latch = true;
+    SPDLOG_INFO(
+        "Climbing Image trigger force reached ({:.4f} < {:.4f}). CI locked ON.",
+        rawMaxForce, ciTrigger);
+  }
   bool weightingActive =
-      params->neb_options.spring.weighting.enabled && triggerMet;
+      params->neb_options.spring.weighting.enabled && this->ci_latch;
 
   // Energy weighted springs, calculated here since all the springs are used
   // internally
@@ -608,7 +614,7 @@ void NudgedElasticBand::updateForces(void) {
     // Apply the Climbing Image projection or standard NEB force
     // Note: CI only activates if both the parameter is enabled AND the trigger
     // is met
-    if (params->neb_options.climbing_image.enabled && triggerMet &&
+    if (params->neb_options.climbing_image.enabled && this->ci_latch &&
         i == maxEnergyImage) {
       climbingImage = maxEnergyImage;
       *projectedForce[i] =
