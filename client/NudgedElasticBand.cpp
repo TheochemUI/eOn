@@ -578,7 +578,8 @@ void NudgedElasticBand::updateForces(void) {
       }
 
       // Log the optimized k for debugging
-      SPDLOG_LOGGER_DEBUG(log, "Optimized OM k: {}", base_k);
+      // TODO(rg): refactor and log separately
+      // SPDLOG_LOGGER_DEBUG(log, "Optimized OM k: {}", base_k);
     }
     // Pre-calculate L vectors for all images (including endpoints)
     L_vecs.resize(numImages + 2);
