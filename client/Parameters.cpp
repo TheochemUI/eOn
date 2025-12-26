@@ -290,35 +290,53 @@ Parameters::Parameters() {
   hessianZeroFreqValue = 1e-6;
 
   // [Nudged Elastic Band] //
-  nebImages = 5;
-  nebSpring = 5.0;
-  nebClimbingImageMethod = true;
-  nebClimbingImageConvergedOnly = true;
-  nebOldTangent = false;
-  nebMaxIterations = 1000;
-  nebDoublyNudged = false;
-  nebDoublyNudgedSwitching = false;
-  nebElasticBand = false;
-  nebConvergedForce = optConvergedForce;
-  nebEnergyWeighted = false;
-  nebKSPMin = 0.97;
-  nebKSPMax = 9.7;
-  nebMinimEP = true;
-  nebMinimEPIpath = false;
-  nebciAfter = std::numeric_limits<double>::infinity();
-  nebciWithMMF = false;
-  nebciMMFAfter = 0.5;
-  nebciMMFnSteps = 10;
-  nebciAngle = 0.8;
-  nebci_thresh_discount = 0.9;
-  nebci_convforce_discount = 0.8;
+  // General optimization and path parameters
+  neb_options.image_count = 5;
+  neb_options.max_iterations = 1000;
+  neb_options.opt_method = OptType::LBFGS;
+  neb_options.force_tolerance = optConvergedForce;
 
-  neb_initializer = NEBInit::LINEAR;
-  nebIpath = ""s;
-  nebInitMaxIter = 5000;
-  nebInitMaxMove = 0.1;
-  nebInitForceTol = 0.001;
-  sidppGrowthAlpha = 0.33;
+  // Inter-image spring dynamics
+  neb_options.spring.constant = 5.0;
+  neb_options.spring.use_elastic_band = false;
+  neb_options.spring.doubly_nudged = false;
+  neb_options.spring.use_switching = false;
+
+  // Energy-weighted spring adjustments for high-curvature regions
+  neb_options.spring.weighting.enabled = false;
+  neb_options.spring.weighting.k_max = 9.7;
+  neb_options.spring.weighting.k_min = 0.97;
+
+  // Climbing Image (CI-NEB) settings for barrier identification
+  neb_options.climbing_image.enabled = true;
+  neb_options.climbing_image.converged_only = true;
+  neb_options.climbing_image.use_old_tangent = false;
+  neb_options.climbing_image.trigger_force =
+      std::numeric_limits<double>::infinity();
+
+  // Hybrid NEB-Dimer (RONEB) parameters using Min-Mode Following (MMF)
+  neb_options.climbing_image.roneb.use_mmf = false;
+  neb_options.climbing_image.roneb.trigger_force = 0.5;
+  // Use the angle criteria instead
+  neb_options.climbing_image.roneb.max_steps = 1000;
+  neb_options.climbing_image.roneb.angle_tol = 0.8;
+  neb_options.climbing_image.roneb.thresh_discount = 0.9;
+  neb_options.climbing_image.roneb.convforce_discount = 0.8;
+
+  // Initial path guess and pre-optimization
+  neb_options.initialization.method = NEBInit::LINEAR;
+  neb_options.initialization.input_path = ""s;
+  neb_options.initialization.max_iterations = 5000;
+  neb_options.initialization.nsteps = 250;
+  neb_options.initialization.max_move = 0.1;
+  neb_options.initialization.force_tolerance = 0.001;
+  neb_options.initialization.sidpp_alpha = 0.33;
+  neb_options.initialization.opt_method = OptType::LBFGS;
+
+  // Boundary condition preferences
+  neb_options.endpoints.minimize = true;
+  neb_options.endpoints.use_path_file = false;
+
   // [Dynamics] //
   mdTimeStepInput = 1.0;
   mdTimeInput = 1000.0;
@@ -909,60 +927,99 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Hessian", "zero_freq_value", hessianZeroFreqValue);
 
     // [Nudged Elastic Band] //
+    const std::string neb_section = "Nudged Elastic Band";
 
-    nebImages = ini.GetValueL("Nudged Elastic Band", "images", nebImages);
-    nebSpring = ini.GetValueF("Nudged Elastic Band", "spring", nebSpring);
-    nebClimbingImageMethod = ini.GetValueB(
-        "Nudged Elastic Band", "climbing_image_method", nebClimbingImageMethod);
-    nebClimbingImageConvergedOnly =
-        ini.GetValueB("Nudged Elastic Band", "climbing_image_converged_only",
-                      nebClimbingImageConvergedOnly);
-    nebOldTangent =
-        ini.GetValueB("Nudged Elastic Band", "old_tangent", nebOldTangent);
-    nebMaxIterations = ini.GetValueL("Nudged Elastic Band", "max_iterations",
-                                     optMaxIterations);
-    nebDoublyNudged =
-        ini.GetValueB("Nudged Elastic Band", "doubly_nudged", nebDoublyNudged);
-    nebDoublyNudgedSwitching =
-        ini.GetValueB("Nudged Elastic Band", "doubly_nudged_switching",
-                      nebDoublyNudgedSwitching);
-    nebElasticBand =
-        ini.GetValueB("Nudged Elastic Band", "elastic_band", nebElasticBand);
-    nebConvergedForce = ini.GetValueF("Nudged Elastic Band", "converged_force",
-                                      optConvergedForce);
-    nebEnergyWeighted = ini.GetValueB("Nudged Elastic Band", "energy_weighted",
-                                      nebEnergyWeighted);
-    nebKSPMin = ini.GetValueF("Nudged Elastic Band", "ew_ksp_min", nebKSPMin);
-    nebKSPMax = ini.GetValueF("Nudged Elastic Band", "ew_ksp_max", nebKSPMax);
-    nebMinimEP =
-        ini.GetValueB("Nudged Elastic Band", "minimize_endpoints", nebMinimEP);
-    nebMinimEPIpath = ini.GetValueB(
-        "Nudged Elastic Band", "minimize_endpoints_for_ipath", nebMinimEPIpath);
-    nebciAfter = ini.GetValueF("Nudged Elastic Band", "ci_after", nebciAfter);
-    nebciWithMMF = ini.GetValueB("Nudged Elastic Band", "ci_mmf", nebciWithMMF);
-    nebciMMFAfter =
-        ini.GetValueF("Nudged Elastic Band", "ci_mmf_after", nebciMMFAfter);
-    nebciMMFnSteps =
-        ini.GetValueL("Nudged Elastic Band", "ci_mmf_nsteps", nebciMMFnSteps);
-    nebciAngle =
-        ini.GetValueF("Nudged Elastic Band", "ci_mmf_angle", nebciAngle);
-    nebci_thresh_discount =
-        ini.GetValueF("Nudged Elastic Band", "ci_mmf_threshold_discount", nebci_thresh_discount);
-    nebci_convforce_discount =
-        ini.GetValueF("Nudged Elastic Band", "ci_mmf_convforce_discount", nebci_convforce_discount);
-    // TODO(rg): convert to a struct at some point
-    neb_initializer = magic_enum::enum_cast<NEBInit>(
-                          ini.GetValue("Nudged Elastic Band", "initializer"),
-                          magic_enum::case_insensitive)
-                          .value_or(NEBInit::LINEAR);
-    nebIpath = ini.GetValue("Nudged Elastic Band", "initial_path_in", nebIpath);
-    nebInitMaxIter =
-        ini.GetValueL("Nudged Elastic Band", "init_max_iterations", 5000);
-    nebInitMaxMove = ini.GetValueF("Nudged Elastic Band", "init_max_move", 0.1);
-    nebInitForceTol =
-        ini.GetValueF("Nudged Elastic Band", "init_force_threshold", 0.001);
-    sidppGrowthAlpha =
-        ini.GetValueF("Nudged Elastic Band", "sidpp_growth_alpha", 0.33);
+    // Core path parameters
+    neb_options.image_count =
+        ini.GetValueL(neb_section, "images", neb_options.image_count);
+    neb_options.max_iterations =
+        ini.GetValueL(neb_section, "max_iterations", optMaxIterations);
+    neb_options.force_tolerance =
+        ini.GetValueF(neb_section, "converged_force", optConvergedForce);
+    auto neb_optMethod = magic_enum::enum_cast<OptType>(
+                             ini.GetValue(neb_section, "opt_method", "none"),
+                             magic_enum::case_insensitive)
+                             .value_or(OptType::Unknown);
+    if (neb_optMethod != OptType::None) {
+      neb_options.opt_method = neb_optMethod;
+    }
+
+    // Inter-image spring configuration
+    neb_options.spring.constant =
+        ini.GetValueF(neb_section, "spring", neb_options.spring.constant);
+    neb_options.spring.use_elastic_band = ini.GetValueB(
+        neb_section, "elastic_band", neb_options.spring.use_elastic_band);
+    neb_options.spring.doubly_nudged = ini.GetValueB(
+        neb_section, "doubly_nudged", neb_options.spring.doubly_nudged);
+    neb_options.spring.use_switching =
+        ini.GetValueB(neb_section, "doubly_nudged_switching",
+                      neb_options.spring.use_switching);
+
+    // Energy weighting for resolution control
+    neb_options.spring.weighting.enabled = ini.GetValueB(
+        neb_section, "energy_weighted", neb_options.spring.weighting.enabled);
+    neb_options.spring.weighting.k_min = ini.GetValueF(
+        neb_section, "ew_ksp_min", neb_options.spring.weighting.k_min);
+    neb_options.spring.weighting.k_max = ini.GetValueF(
+        neb_section, "ew_ksp_max", neb_options.spring.weighting.k_max);
+
+    // Climbing Image (CI-NEB) for saddle point identification
+    neb_options.climbing_image.enabled =
+        ini.GetValueB(neb_section, "climbing_image_method",
+                      neb_options.climbing_image.enabled);
+    neb_options.climbing_image.converged_only =
+        ini.GetValueB(neb_section, "climbing_image_converged_only",
+                      neb_options.climbing_image.converged_only);
+    neb_options.climbing_image.use_old_tangent = ini.GetValueB(
+        neb_section, "old_tangent", neb_options.climbing_image.use_old_tangent);
+    neb_options.climbing_image.trigger_force = ini.GetValueF(
+        neb_section, "ci_after", neb_options.climbing_image.trigger_force);
+
+    // Hybrid Dimer / Min-Mode Following refinement
+    auto &roneb = neb_options.climbing_image.roneb;
+    roneb.use_mmf = ini.GetValueB(neb_section, "ci_mmf", roneb.use_mmf);
+    roneb.trigger_force =
+        ini.GetValueF(neb_section, "ci_mmf_after", roneb.trigger_force);
+    roneb.max_steps =
+        ini.GetValueL(neb_section, "ci_mmf_nsteps", roneb.max_steps);
+    roneb.angle_tol =
+        ini.GetValueF(neb_section, "ci_mmf_angle", roneb.angle_tol);
+    roneb.thresh_discount = ini.GetValueF(
+        neb_section, "ci_mmf_threshold_discount", roneb.thresh_discount);
+    roneb.convforce_discount = ini.GetValueF(
+        neb_section, "ci_mmf_convforce_discount", roneb.convforce_discount);
+
+    // Initial path construction (e.g., IDPP)
+    auto &init = neb_options.initialization;
+    init.method =
+        magic_enum::enum_cast<NEBInit>(ini.GetValue(neb_section, "initializer"),
+                                       magic_enum::case_insensitive)
+            .value_or(NEBInit::LINEAR);
+    init.input_path =
+        ini.GetValue(neb_section, "initial_path_in", init.input_path);
+    init.max_iterations =
+        ini.GetValueL(neb_section, "init_max_iterations", init.max_iterations);
+    init.nsteps = ini.GetValueL(neb_section, "init_nsteps", init.nsteps);
+    init.max_move = ini.GetValueF(neb_section, "init_max_move", init.max_move);
+    init.force_tolerance = ini.GetValueF(neb_section, "init_force_threshold",
+                                         init.force_tolerance);
+    init.sidpp_alpha =
+        ini.GetValueF(neb_section, "sidpp_growth_alpha", init.sidpp_alpha);
+    auto neb_ipath_optMethod =
+        magic_enum::enum_cast<OptType>(
+            ini.GetValue(neb_section, "ipath_opt_method", "none"),
+            magic_enum::case_insensitive)
+            .value_or(OptType::Unknown);
+    if (neb_ipath_optMethod != OptType::None) {
+      neb_options.initialization.opt_method = neb_ipath_optMethod;
+    }
+
+    // Endpoint handling
+    neb_options.endpoints.minimize = ini.GetValueB(
+        neb_section, "minimize_endpoints", neb_options.endpoints.minimize);
+    neb_options.endpoints.use_path_file =
+        ini.GetValueB(neb_section, "minimize_endpoints_for_ipath",
+                      neb_options.endpoints.use_path_file);
 
     // [Dynamics] //
 
@@ -1222,7 +1279,8 @@ int Parameters::load(FILE *file) {
     }
 
     // Check if an initial path exists without a specific non-linear initializer
-    if (!nebIpath.empty() && neb_initializer == NEBInit::LINEAR) {
+    if (!neb_options.initialization.input_path.empty() &&
+        neb_options.initialization.method == NEBInit::LINEAR) {
       SPDLOG_WARN("[Nudged Elastic Band] 'initial_path_in' is provided, but "
                   "'initializer' defaults to linear. "
                   "Ensure this is intentional, as the loaded path will not be "

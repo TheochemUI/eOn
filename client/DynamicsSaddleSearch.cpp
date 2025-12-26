@@ -168,7 +168,7 @@ int DynamicsSaddleSearch::run(void) {
         }
 
         AtomMatrix mode;
-        if (params->nebMaxIterations > 0) {
+        if (params->neb_options.max_iterations > 0) {
           LowestEigenmode *minModeMethod;
           if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
             if (params->dimerImproved) {

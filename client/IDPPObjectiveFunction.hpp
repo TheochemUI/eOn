@@ -52,10 +52,9 @@ public:
 
   int degreesOfFreedom() override { return 3 * matter->numberOfAtoms(); }
 
-  // Use the force convergence criteria from params, or a specific IDPP one if
-  // added
   bool isConverged() override {
-    return getConvergence() < params->nebConvergedForce;
+    return getConvergence() <
+           params->neb_options.initialization.force_tolerance;
   }
 
   double getConvergence() override {
@@ -120,7 +119,8 @@ public:
 
   // Check convergence of the IDPP-NEB
   bool isConverged() override {
-    return getConvergence() < params->nebInitForceTol;
+    return getConvergence() <
+           params->neb_options.initialization.force_tolerance;
   }
 
   double getConvergence() override { return lastMaxForce; }
