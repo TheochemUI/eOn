@@ -413,8 +413,12 @@ public:
         double trigger_force; // Force threshold to activate hybrid dimer search
         long max_steps;       // Maximum steps for the MMF refinement phase
         double angle_tol;     // Angular tolerance for the dimer rotation
-        double thresh_discount;    // Discount factor for MMF thresholds
-        double convforce_discount; // Discount factor for force convergence
+        struct roneb_penalty_t {
+          // penalty_factor = base + (strength * alignment);
+          // std::abs(finalMode.normalized().dot(currentTangent.normalized()))
+          double strength; // amount by which the threshold is reduced
+          double base;     // baseline
+        } penalty;
       } roneb;
     } climbing_image;
 

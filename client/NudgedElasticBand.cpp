@@ -301,31 +301,42 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         params->saddleMaxIterations = originalSaddleMaxIterations;
         if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD &&
             minModeStatus != MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
-          SPDLOG_LOGGER_WARN(
-              log,
-              "MMF Failed (Status {}). Landscape too complex at this "
-              "force level.",
-              static_cast<int>(minModeStatus));
+          SPDLOG_LOGGER_WARN(log,
+                             "MMF Failed (Status {}). Adjusting threshold "
+                             "based on Mode-Tangent alignment.",
+                             static_cast<int>(minModeStatus));
 
-          // --- THE PHYSICAL FIX: ARRHIENIUS-STYLE REDUCTION ---
-          // We failed at the current force level. The quadratic region is
-          // smaller than expected. We physically constrain the next attempt to
-          // be closer to the saddle. Reducing the threshold by half (or to the
-          // current force * 0.9) ensures we DO NOT try again until NEB has done
-          // significant work.
+          // Retrieve the calculated mode from the failed search
+          AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
+          VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * atoms);
+
+          // Retrieve the current NEB tangent
+          VectorXd currentTangent =
+              VectorXd::Map(tangent[climbingImage]->data(), 3 * atoms);
+
+          // Calculate alignment (absolute dot product)
+          // We use absolute value because the mode direction sign is arbitrary
+          double alignment =
+              std::abs(finalMode.normalized().dot(currentTangent.normalized()));
+
+          // Define a penalty scaling factor based on alignment.
+          // High alignment (1.0) -> Mild penalty (0.8x)
+          // Low alignment (0.0) -> Harsh penalty (0.1x)
+          // This uses a sigmoid-like or linear blend.
+          double penalty_factor =
+              neb_options.climbing_image.roneb.penalty.base +
+              (neb_options.climbing_image.roneb.penalty.strength * alignment);
 
           double old_threshold = current_mmf_threshold;
 
-          // Set new threshold slightly below CURRENT convergence force.
-          // This forces NEB to improve the image before we trust MMF again.
-          current_mmf_threshold = std::min(
-              current_mmf_threshold *
-                  params->neb_options.climbing_image.roneb.thresh_discount,
-              convForce *
-                  params->neb_options.climbing_image.roneb.convforce_discount);
+          // Set new threshold based on the CURRENT force and the physical
+          // alignment We discard the 'std::min' history because the physics of
+          // the current configuration dictates the trust radius.
+          current_mmf_threshold = convForce * penalty_factor;
 
-          SPDLOG_LOGGER_WARN(log, "Tightening MMF Threshold: {:.4f} -> {:.4f}",
-                             old_threshold, current_mmf_threshold);
+          SPDLOG_LOGGER_WARN(
+              log, "Alignment: {:.3f}. New Threshold: {:.4f} (Factor {:.2f})",
+              alignment, current_mmf_threshold, penalty_factor);
 
         } else {
           // If it worked (or just ran out of steps without crashing),
