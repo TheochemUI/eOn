@@ -324,8 +324,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           // Low alignment (0.0) -> Harsh penalty (0.1x)
           // This uses a sigmoid-like or linear blend.
           double penalty_factor =
-              neb_options.climbing_image.roneb.penalty.base +
-              (neb_options.climbing_image.roneb.penalty.strength * alignment);
+              params->neb_options.climbing_image.roneb.penalty.base +
+              (params->neb_options.climbing_image.roneb.penalty.strength *
+               alignment);
 
           double old_threshold = current_mmf_threshold;
 
@@ -480,10 +481,16 @@ void NudgedElasticBand::updateForces(void) {
       });
   maxEnergyImage = std::distance(path.begin(), it);
   maxEnergy = (*it)->getPotentialEnergy();
+  // Determine if energy weighting applies
+  double convForce = convergenceForce();
+  double ciTrigger = params->neb_options.climbing_image.trigger_force;
+  bool triggerMet = (convForce < ciTrigger);
+  bool weightingActive =
+      params->neb_options.spring.weighting.enabled && (convForce < ciTrigger);
 
   // Energy weighted springs, calculated here since all the springs are used
   // internally
-  if (params->neb_options.spring.weighting.enabled) {
+  if (weightingActive) {
     for (int idx = 1; idx <= numImages + 1; idx++) {
       double Ei = std::max(path[idx]->getPotentialEnergy(),
                            path[idx - 1]->getPotentialEnergy());
@@ -493,10 +500,13 @@ void NudgedElasticBand::updateForces(void) {
             (1 - alpha_i) * k_u + alpha_i * k_l; // Equation (3) and (4)
       } // else always k_l
     }
+  } else {
+    // If CI is not yet active, use the standard uniform spring constant
+    std::fill(springConstants.begin(), springConstants.end(),
+              params->neb_options.spring.constant);
   }
 
   for (long i = 1; i <= numImages; i++) {
-    // set local variables
     force = path[i]->getForces();
     pos = path[i]->getPositions();
     posPrev = path[i - 1]->getPositions();
@@ -543,13 +553,13 @@ void NudgedElasticBand::updateForces(void) {
     }
     tangent[i]->normalize();
 
-    // project the forces and add springs
-    force = path[i]->getForces();
-
-    // calculate the force perpendicular to the tangent
+    // Calculate the force perpendicular to the tangent
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
-    if (params->neb_options.spring.weighting.enabled) {
+
+    // Calculate spring forces with the conditional trigger
+    if (weightingActive) {
+      // Use energy-weighted constants if trigger is met
       // Spring for segment (i) -> (i+1)
       double kspNext = springConstants[i];
       // Spring for segment (i-1) -> (i)
@@ -557,13 +567,15 @@ void NudgedElasticBand::updateForces(void) {
       forceSpringPar =
           ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
     } else {
+      // Use uniform spring constant during initial relaxation
       this->ksp = params->neb_options.spring.constant;
       forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
       forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
     }
 
+    // Doubly Nudged Elastic Band logic
     if (params->neb_options.spring.doubly_nudged) {
-      if (not params->neb_options.spring.weighting.enabled) {
+      if (!weightingActive) {
         forceSpringPerp =
             forceSpring -
             (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
@@ -571,13 +583,11 @@ void NudgedElasticBand::updateForces(void) {
             forceSpringPerp -
             (forceSpringPerp.array() * forcePerp.normalized().array()).sum() *
                 forcePerp.normalized();
-        if (params->neb_options.spring.doubly_nudged) {
-          double switching;
-          switching =
-              2.0 / M_PI *
-              atan(pow(forcePerp.norm(), 2) / pow(forceSpringPerp.norm(), 2));
-          forceDNEB *= switching;
-        }
+
+        double switching =
+            2.0 / M_PI *
+            atan(pow(forcePerp.norm(), 2) / pow(forceSpringPerp.norm(), 2));
+        forceDNEB *= switching;
       } else {
         SPDLOG_WARN("Not using doubly nudged since energy_weighted is set");
       }
@@ -585,8 +595,11 @@ void NudgedElasticBand::updateForces(void) {
       forceDNEB.setZero();
     }
 
-    if (params->neb_options.climbing_image.enabled && i == maxEnergyImage) {
-      // we are at the climbing image
+    // Apply the Climbing Image projection or standard NEB force
+    // Note: CI only activates if both the parameter is enabled AND the trigger
+    // is met
+    if (params->neb_options.climbing_image.enabled && triggerMet &&
+        i == maxEnergyImage) {
       climbingImage = maxEnergyImage;
       *projectedForce[i] =
           force -
@@ -595,12 +608,8 @@ void NudgedElasticBand::updateForces(void) {
     } else // all non-climbing numImages
     {
       // sum the spring and potential forces for the neb force
-      if (params->neb_options.spring.use_elastic_band) {
-        if (not params->neb_options.spring.weighting.enabled) {
-          *projectedForce[i] = forceSpring + force;
-        } else {
-          SPDLOG_WARN("Not using elastic_band  since energy_weighted is set");
-        }
+      if (params->neb_options.spring.use_elastic_band && !weightingActive) {
+        *projectedForce[i] = forceSpring + force;
       } else {
         *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
       }
@@ -611,7 +620,7 @@ void NudgedElasticBand::updateForces(void) {
       movedAfterForceCall = false; // so that we don't repeat a force call
     }
 
-    // zero net translational force
+    // Zero net translational force (if all atoms are free)
     if (path[i]->numberOfFreeAtoms() == path[i]->numberOfAtoms()) {
       for (int j = 0; j <= 2; j++) {
         double translationMag = projectedForce[i]->col(j).sum();
