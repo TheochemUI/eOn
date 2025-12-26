@@ -1548,6 +1548,10 @@ class NudgedElasticBandConfig(BaseModel):
         default=True,
         description="Generate modes and peak configurations.",
     )
+    mmf_peak_tolerance: float = Field(
+        default=0.05,
+        description="Generate modes and peak configurations.",
+    )
 
 
 class LanczosConfig(BaseModel):

@@ -193,45 +193,53 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back(spFilename);
 
   // Setup Dimer Configurations for Each Spline Peak
-  if (params->neb_options.setup_mmf_peaks && neb->numExtrema > 0) {
+  if (params->neb_options.mmf_peaks.enabled && neb->numExtrema > 0) {
+    int peakCount = 0;
     for (long i = 0; i < neb->numExtrema; i++) {
-      // Negative curvature indicates a maximum (Transition State)
-      if (neb->extremumCurvature[i] < 0) {
+      // Filter 1: Only look at maxima (negative curvature)
+      // Filter 2: Energy threshold (e.g., peak must be > 0.05 eV above
+      // reactant)
+      double relativeEnergy =
+          neb->extremumEnergy[i] - neb->path[0]->getPotentialEnergy();
+
+      if (neb->extremumCurvature[i] < 0 &&
+          relativeEnergy > params->neb_options.mmf_peaks.tolerance) {
         double posFraction = neb->extremumPosition[i];
         int leftIdx = static_cast<int>(std::floor(posFraction));
         double f = posFraction - leftIdx;
 
-        // Ensure indices stay within path bounds
         if (leftIdx < 0 || leftIdx >= neb->numImages + 1)
           continue;
 
-        // Generate Interpolated Position
+        // 1. Write Interpolated Position (.con)
         Matter peakPos = helper_functions::neb_paths::interpolateImage(
             *neb->path[leftIdx], *neb->path[leftIdx + 1], f);
+        std::string peakPosFile = fmt::format("peak{:02d}_pos.con", peakCount);
+        peakPos.matter2con(peakPosFile);
+        returnFiles.push_back(peakPosFile);
 
-        // Generate Interpolated Tangent (The Dimer Mode)
-        // We blend the normalized tangents of the neighboring images
+        // 2. Write Interpolated Tangent as standard mode.dat
         AtomMatrix peakMode = (1.0 - f) * (*neb->tangent[leftIdx]) +
                               f * (*neb->tangent[leftIdx + 1]);
         peakMode.normalize();
 
-        // Write Position Configuration
-        std::string peakPosFile = fmt::format("peak{:02d}_pos.con", i);
-        peakPos.matter2con(peakPosFile);
-        returnFiles.push_back(peakPosFile);
-
-        // Write Mode Configuration
-        // We repurpose a Matter object to store the displacement vector as
-        // "positions"
-        std::string peakModeFile = fmt::format("peak{:02d}_mode.con", i);
-        Matter peakModeMatter(peakPos);
-        peakModeMatter.setPositions(peakMode);
-        peakModeMatter.matter2con(peakModeFile);
-        returnFiles.push_back(peakModeFile);
+        std::string peakModeFile =
+            fmt::format("peak{:02d}_mode.dat", peakCount);
+        FILE *fMode = fopen(peakModeFile.c_str(), "w");
+        if (fMode) {
+          for (int row = 0; row < peakMode.rows(); ++row) {
+            fprintf(fMode, "%12.6f %12.6f %12.6f\n", peakMode(row, 0),
+                    peakMode(row, 1), peakMode(row, 2));
+          }
+          fclose(fMode);
+          returnFiles.push_back(peakModeFile);
+        }
 
         SPDLOG_LOGGER_INFO(
-            m_log, "Generated dimer setup for peak {} at image position {:.3f}",
-            i, posFraction);
+            m_log,
+            "Generated MMF peak {:02d} at position {:.3f} (Energy: {:.3f} eV)",
+            peakCount, posFraction, relativeEnergy);
+        peakCount++;
       }
     }
   }

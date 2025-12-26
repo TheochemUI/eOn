@@ -295,7 +295,9 @@ Parameters::Parameters() {
   neb_options.max_iterations = 1000;
   neb_options.opt_method = OptType::LBFGS;
   neb_options.force_tolerance = optConvergedForce;
-  neb_options.setup_mmf_peaks = true;
+  // Post-run peak handling
+  neb_options.mmf_peaks.enabled = true;
+  neb_options.mmf_peaks.tolerance = 0.05;
 
   // Inter-image spring dynamics
   neb_options.spring.constant = 5.0;
@@ -944,8 +946,10 @@ int Parameters::load(FILE *file) {
     if (neb_optMethod != OptType::None) {
       neb_options.opt_method = neb_optMethod;
     }
-    neb_options.setup_mmf_peaks = ini.GetValueB(neb_section, "setup_mmf_peaks",
-                                                neb_options.setup_mmf_peaks);
+    neb_options.mmf_peaks.enabled = ini.GetValueB(
+        neb_section, "setup_mmf_peaks", neb_options.mmf_peaks.enabled);
+    neb_options.mmf_peaks.tolerance = ini.GetValueF(
+        neb_section, "mmf_peak_tolerance", neb_options.mmf_peaks.tolerance);
 
     // Inter-image spring configuration
     neb_options.spring.constant =

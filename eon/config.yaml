@@ -242,6 +242,10 @@ Nudged Elastic Band:
             kind: boolean
             default: true
 
+        mmf_peak_tolerance:
+            kind: float
+            default: 0.05
+
         converged_force:
             kind: float
             default: 0.01
