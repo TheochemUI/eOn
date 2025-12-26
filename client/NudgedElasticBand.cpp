@@ -502,8 +502,7 @@ void NudgedElasticBand::updateForces(void) {
   // Handle Triggers
   // 1. Climbing Image
   double ciTrigger = params->neb_options.climbing_image.trigger_force;
-  if (!ci_latch && rawMaxForce < ciTrigger &&
-      params->neb_options.climbing_image.enabled) {
+  if (!ci_latch && rawMaxForce < ciTrigger && params->neb_options.climbing_image.enabled) {
     ci_latch = true;
     SPDLOG_INFO(
         "Climbing Image trigger force reached ({:.4f} < {:.4f}). CI locked ON.",
@@ -568,13 +567,10 @@ void NudgedElasticBand::updateForces(void) {
       if (count > 0 && avgPathCurvature > 1e-6) { // Avoid division by zero
         avgPotForce /= count;
         avgPathCurvature /= count;
-        // Normalize by average mass to keep k physically reasonable in atomic
-        // units
-        double avgMass = atomMasses.sum() / atoms;
 
         // Scale factor can be a tuning parameter, default 1.0
         double scale = params->neb_options.spring.om.k_scale;
-        base_k = scale * (avgPotForce / (avgMass * avgPathCurvature));
+        base_k = scale * (avgPotForce / avgPathCurvature);
 
         // Optional: Clamp base_k to reasonable bounds to prevent instability
         base_k = std::max(base_k, params->neb_options.spring.om.k_min);
@@ -685,11 +681,10 @@ void NudgedElasticBand::updateForces(void) {
           count++;
         }
         if (count > 0 && avgPathCurvature > 1e-6) {
-          double avgMass = atomMasses.sum() / atoms;
           double scale = params->neb_options.spring.om.k_scale;
-          base_k = scale * (avgPotForce / (avgMass * avgPathCurvature));
-          base_k = std::max(base_k, params->neb_options.spring.om.k_min);
-          base_k = std::min(base_k, params->neb_options.spring.om.k_max);
+          base_k = scale * (avgPotForce / avgPathCurvature);
+          base_k = std::max(base_k, 0.1);
+          base_k = std::min(base_k, 100.0);
         }
       }
 
