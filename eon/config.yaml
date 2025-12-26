@@ -254,6 +254,22 @@ Nudged Elastic Band:
             kind: boolean
             default: false
 
+        om_optimize_k:
+            kind: boolean
+            default: true
+
+        om_k_scale:
+            kind: float
+            default: 1.0
+
+        om_k_min:
+            kind: float
+            default: 0.1
+
+        om_k_max:
+            kind: float
+            default: 100.0
+
         energy_weighted:
             kind: boolean
             default: false
