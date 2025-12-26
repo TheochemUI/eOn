@@ -502,7 +502,7 @@ void NudgedElasticBand::updateForces(void) {
   // Handle Triggers
   // 1. Climbing Image
   double ciTrigger = params->neb_options.climbing_image.trigger_force;
-  if (!ci_latch && rawMaxForce < ciTrigger) {
+  if (!ci_latch && rawMaxForce < ciTrigger && params->neb_options.climbing_image.enabled) {
     ci_latch = true;
     SPDLOG_INFO(
         "Climbing Image trigger force reached ({:.4f} < {:.4f}). CI locked ON.",
@@ -512,7 +512,8 @@ void NudgedElasticBand::updateForces(void) {
   // 2. Energy Weighting
   // Assumes a separate trigger: params->neb_options.spring.weighting.trigger
   double ewTrigger = params->neb_options.spring.weighting.trigger;
-  if (!ew_latch && rawMaxForce < ewTrigger) {
+  if (!ew_latch && rawMaxForce < ewTrigger &&
+      params->neb_options.spring.weighting.enabled) {
     ew_latch = true;
     SPDLOG_INFO("Energy Weighting trigger force reached ({:.4f} < {:.4f}). EW "
                 "locked ON.",
@@ -577,7 +578,7 @@ void NudgedElasticBand::updateForces(void) {
       }
 
       // Log the optimized k for debugging
-      SPDLOG_DEBUG("Optimized OM k: {}", base_k);
+      SPDLOG_LOGGER_DEBUG(log, "Optimized OM k: {}", base_k);
     }
     // Pre-calculate L vectors for all images (including endpoints)
     L_vecs.resize(numImages + 2);
