@@ -41,34 +41,37 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   final_state->con2matter(productFilename);
 
   // Endpoint minimization logic:
-  // - If params->nebMinimEP is false: never minimize endpoints.
-  // - If params->nebMinimEP is true and params->nebIpath is empty: minimize
+  // - If params->neb_options.endpoints.minimize is false: never minimize
   // endpoints.
+  // - If params->neb_options.endpoints.minimize is true and
+  // params->neb_options.initialization.input_path is empty: minimize endpoints.
   // - If params->nebMinimEP is true and params->nebIpath is NOT empty:
   //     -> minimize endpoints only if params->nebMinimEPIpath is true.
   // Log what decision was made so users can see behavior.
   bool shouldMinimizeEndpoints = false;
-  if (!params->nebMinimEP) {
-    SPDLOG_LOGGER_DEBUG(m_log,
-                        "nebMinimEP == false: not minimizing endpoints.");
+  if (!params->neb_options.endpoints.minimize) {
+    SPDLOG_LOGGER_DEBUG(
+        m_log, "minimize_endpoints == false: not minimizing endpoints.");
     shouldMinimizeEndpoints = false;
   } else {
-    if (params->nebIpath.empty()) {
-      SPDLOG_LOGGER_DEBUG(
-          m_log,
-          "nebMinimEP == true and nebIpath empty: minimizing endpoints.");
+    if (params->neb_options.initialization.input_path.empty()) {
+      SPDLOG_LOGGER_DEBUG(m_log, "minimize_endpoints == true and nebIpath "
+                                 "empty: minimizing endpoints.");
       shouldMinimizeEndpoints = true;
     } else {
-      // nebIpath provided: only minimize if nebMinimEPIpath explicitly allowed.
-      if (params->nebMinimEPIpath) {
-        SPDLOG_LOGGER_DEBUG(m_log,
-                            "nebMinimEP == true and nebIpath provided, but "
-                            "nebMinimEPIpath == true: minimizing endpoints.");
+      // nebIpath provided: only minimize if neb_options.endpoints.use_path_file
+      // explicitly allowed.
+      if (params->neb_options.endpoints.use_path_file) {
+        SPDLOG_LOGGER_DEBUG(
+            m_log,
+            "minimize_endpoints == true and nebIpath provided, but "
+            "minimize_endpoints_for_ipath == true: minimizing endpoints.");
         shouldMinimizeEndpoints = true;
       } else {
         SPDLOG_LOGGER_DEBUG(
-            m_log, "nebMinimEP == true but nebIpath provided and "
-                   "nebMinimEPIpath == false: not minimizing endpoints.");
+            m_log,
+            "minimize_endpoints == true but nebIpath provided and "
+            "minimize_endpoints_for_ipath == false: not minimizing endpoints.");
         shouldMinimizeEndpoints = false;
       }
     }

@@ -326,7 +326,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
           "{:9.4f}   {:7.3f}   ------   ----   {:5.3f}",
           C_tau, F_R.norm() / delta, alignment);
     }
-    if (alignment < params->nebciAngle) {
+    if (alignment < params->neb_options.climbing_image.roneb.angle_tol) {
       SPDLOG_LOGGER_WARN(
           log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
 
