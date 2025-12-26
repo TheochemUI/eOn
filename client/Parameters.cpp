@@ -304,6 +304,7 @@ Parameters::Parameters() {
   neb_options.spring.use_elastic_band = false;
   neb_options.spring.doubly_nudged = false;
   neb_options.spring.use_switching = false;
+  neb_options.spring.onsager_machlup = false;
 
   // Energy-weighted spring adjustments for high-curvature regions
   neb_options.spring.weighting.enabled = false;
@@ -961,6 +962,8 @@ int Parameters::load(FILE *file) {
     neb_options.spring.use_switching =
         ini.GetValueB(neb_section, "doubly_nudged_switching",
                       neb_options.spring.use_switching);
+    neb_options.spring.onsager_machlup = ini.GetValueB(
+        neb_section, "onsager_machlup", neb_options.spring.onsager_machlup);
 
     // Energy weighting for resolution control
     neb_options.spring.weighting.enabled = ini.GetValueB(

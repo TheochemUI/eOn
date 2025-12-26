@@ -1464,6 +1464,12 @@ class NudgedElasticBandConfig(BaseModel):
     """
     This defaults to being the same as :any:`eon.schema.OptimizerConfig.converged_force`
     """
+    onsager_machlup: bool = Field(
+        default=False, description="Indicates if the Onsager-Machlup (OM) Action is used."
+    )
+    """
+    Method as demonstrated in :cite:t:`neb-mandelliModifiedNudgedElastic2021`.
+    """
     energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."
     )
