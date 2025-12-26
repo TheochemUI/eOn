@@ -304,7 +304,6 @@ Parameters::Parameters() {
   neb_options.spring.use_elastic_band = false;
   neb_options.spring.doubly_nudged = false;
   neb_options.spring.use_switching = false;
-  neb_options.spring.onsager_machlup = false;
 
   // Energy-weighted spring adjustments for high-curvature regions
   neb_options.spring.weighting.enabled = false;

@@ -390,7 +390,6 @@ public:
       bool use_elastic_band; // Toggle for the elastic band projection
       bool doubly_nudged;    // Inclusion of the perpendicular spring force
                              // components
-      bool onsager_machlup;  // Onsager-Machlup (OM) Action Logic
       bool use_switching;    // Switching function for doubly nudged NEB
 
       struct energy_weighting_t {

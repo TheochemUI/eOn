@@ -526,7 +526,7 @@ void NudgedElasticBand::updateForces(void) {
   // Onsager-Machlup (OM) Action Logic
   // Mandelli & Parrinello (2021)
   // L_i = (1 / 2k) * Force_i
-  bool omActive = params->neb_options.spring.onsager_machlup;
+  bool omActive = params->neb_options.spring.om.enabled;
   const VectorXd &atomMasses = path[0]->getMasses();
   std::vector<AtomMatrix> L_vecs;
 
