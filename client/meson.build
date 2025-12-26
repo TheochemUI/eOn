@@ -199,6 +199,7 @@ eonclib_sources = [
     'TADJob.cpp',
     'ProcessSearchJob.cpp',
     'Bundling.cpp',
+    'NEBInitialPaths.cpp',
     'NudgedElasticBand.cpp',
     'MonteCarloJob.cpp',
     'DynamicsJob.cpp',
