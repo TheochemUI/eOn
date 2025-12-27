@@ -67,6 +67,8 @@ public:
                 // reactant or product energy minimum
 
 private:
+  int runMMFRefinement();
+  double computeMaxForceAllImages();
   double current_mmf_threshold{-1.0};
   bool ci_latch{false};
   bool ew_latch{false};
@@ -74,6 +76,8 @@ private:
   std::shared_ptr<Potential> pot;
   NEBStatus status;
   std::shared_ptr<spdlog::logger> log;
+  bool mmf_active{false};
+  int mmf_iterations_used{0};
 };
 
 class NEBObjectiveFunction : public ObjectiveFunction {
