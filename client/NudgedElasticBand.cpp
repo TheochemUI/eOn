@@ -284,24 +284,49 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     VectorXd pos = objf->getPositions();
     double convForce = convergenceForce();
 
+    if (iteration == 0) {
+      baseline_force = convForce;
+      // Initialize MMF threshold based on baseline
+      current_mmf_threshold =
+          baseline_force *
+          params->neb_options.climbing_image.roneb.trigger_factor;
+
+      SPDLOG_DEBUG(
+          "---------------------------------------------------------------");
+      SPDLOG_DEBUG(
+          "Baseline force: {:.4f}, CI trigger: {:.4f}, MMF trigger: {:.4f}",
+          baseline_force,
+          baseline_force * params->neb_options.climbing_image.trigger_factor,
+          current_mmf_threshold);
+      SPDLOG_DEBUG(
+          "---------------------------------------------------------------\n");
+    }
+
+    // CI active when force drops below relative threshold
     bool ci_active =
         params->neb_options.climbing_image.enabled &&
-        (convForce < params->neb_options.climbing_image.trigger_force);
+        (convForce < baseline_force *
+                         params->neb_options.climbing_image.trigger_factor ||
+         convForce < params->neb_options.climbing_image.trigger_force);
 
     if (iteration) {
-      // MMF triggering:  use dynamic threshold, allow retries after backoff
+      // MMF triggering
       if (params->neb_options.climbing_image.roneb.use_mmf && ci_active &&
           climbingImage > 0 && climbingImage <= numImages &&
-          convForce < current_mmf_threshold &&
+          (ciStabilityCounter > stability_threshold) &&
+          (convForce < current_mmf_threshold ||
+           convForce <
+               params->neb_options.climbing_image.roneb.trigger_force) &&
           convForce > params->neb_options.force_tolerance) {
 
-        SPDLOG_LOGGER_DEBUG(
-            log, "Triggering MMF.  Force:  {:.4f}, Dynamic Threshold: {:.4f}",
-            convForce, current_mmf_threshold);
+        SPDLOG_LOGGER_DEBUG(log,
+                            "Triggering MMF.  Force: {:.4f}, Threshold: {:.4f} "
+                            "({:.2f}x baseline)",
+                            convForce, current_mmf_threshold,
+                            current_mmf_threshold / baseline_force);
 
         // Save climbing image state before MMF
         AtomMatrix savedPositions = path[climbingImage]->getPositions();
-        double savedEnergy = path[climbingImage]->getPotentialEnergy();
 
         // Run MMF and get alignment info
         double alignment = 0.0;
@@ -311,13 +336,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         movedAfterForceCall = true;
         updateForces();
         double newForce = convergenceForce();
-        double newEnergy = path[climbingImage]->getPotentialEnergy();
 
         // Check if we're done
         if (newForce < params->neb_options.force_tolerance) {
-          current_mmf_threshold =
-              params->neb_options.climbing_image.roneb.trigger_force;
-          SPDLOG_LOGGER_DEBUG(log, "NEB converged after MMF.  Force: {:.4f}",
+          SPDLOG_LOGGER_DEBUG(log, "NEB converged after MMF. Force: {:.4f}",
                               newForce);
           status = NEBStatus::GOOD;
           break;
@@ -327,18 +349,26 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         bool mmfHelped = (newForce < convForce);
 
         if (mmfHelped) {
-          // MMF made progress - adjust threshold based on how much it helped
-          double improvement_ratio = newForce / convForce;
-          // If big improvement, allow earlier retry; if small, wait longer
-          current_mmf_threshold = newForce * (0.5 + 0.4 * improvement_ratio);
+          // MMF made progress - set threshold relative to baseline
+          double progress_ratio = newForce / baseline_force;
+          // Allow retry when force drops to ~50-90% of current level
+          current_mmf_threshold =
+              newForce * (0.5 + 0.4 * (newForce / convForce));
+
+          // But never above the initial MMF trigger
+          double max_threshold =
+              baseline_force *
+              params->neb_options.climbing_image.roneb.trigger_factor;
+          current_mmf_threshold =
+              std::min(current_mmf_threshold, max_threshold);
 
           SPDLOG_LOGGER_DEBUG(log,
-                              "MMF helped (status={}). Force: {:.4f} -> "
-                              "{:.4f}. New threshold: {:.4f}",
+                              "MMF helped (status={}). Force: {:.4f} -> {:.4f} "
+                              "({:.2f}x baseline). New threshold: {:.4f}",
                               mmfResult, convForce, newForce,
-                              current_mmf_threshold);
+                              newForce / baseline_force, current_mmf_threshold);
         } else {
-          // MMF didn't help or made things worse - apply backoff
+          // MMF didn't help - apply backoff relative to baseline
           double strength =
               params->neb_options.climbing_image.roneb.penalty.strength;
           double base = params->neb_options.climbing_image.roneb.penalty.base;
@@ -346,36 +376,36 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           // Ensure alignment stays within a physically meaningful [0, 1] range
           double alpha = std::clamp(alignment, 0.0, 1.0);
 
-          /* 
-           * Good alignment (1.0) -> factor approaches 1.0 (mild backoff)
-           * Poor alignment (0.0) -> factor approaches 'base' (strong backoff)
-           */
+          // penalty_factor:  how much of the baseline trigger to use
+          // Good alignment (1.0) -> factor approaches 1.0 (use full trigger)
+          // Poor alignment (0.0) -> factor approaches 'base' (reduced trigger)
           double penalty_factor =
               base + (1.0 - base) * std::pow(alpha, strength);
 
           // Clamp the factor to ensure the threshold never increases
           penalty_factor = std::clamp(penalty_factor, base, 1.0);
 
-          current_mmf_threshold = convForce * penalty_factor;
+          // New threshold as fraction of baseline
+          double trigger_factor =
+              params->neb_options.climbing_image.roneb.trigger_factor;
+          current_mmf_threshold =
+              baseline_force * trigger_factor * penalty_factor;
 
-          // Protect against the threshold dropping below global force tolerance
-          // This ensures the MMF phase remains reachable
+          // Floor at 2x force tolerance
           double min_threshold = params->neb_options.force_tolerance * 2.0;
           current_mmf_threshold =
               std::max(current_mmf_threshold, min_threshold);
 
-          SPDLOG_LOGGER_DEBUG(log,
-                              "MMF backoff (status={}). Force: {:.4f} -> "
-                              "{:.4f}, Alignment: {:.3f}. "
-                              "New threshold: {:.4f}",
-                              mmfResult, convForce, newForce, alignment,
-                              current_mmf_threshold);
+          SPDLOG_LOGGER_DEBUG(
+              log,
+              "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
+              "Alignment:  {:.3f}. New threshold: {:.4f} ({:.2f}x baseline)",
+              mmfResult, convForce, newForce, alignment, current_mmf_threshold,
+              current_mmf_threshold / baseline_force);
 
-          // Only revert if MMF actually made things worse
-          if (newForce > convForce * 10) {
-            SPDLOG_LOGGER_DEBUG(log, "Reverting to older position.", mmfResult,
-                                convForce, newForce, alignment,
-                                current_mmf_threshold);
+          // Only revert if MMF made things much worse
+          if (newForce > convForce * 2) {
+            SPDLOG_LOGGER_DEBUG(log, "Reverting to older position.");
             path[climbingImage]->setPositions(savedPositions);
           }
         }

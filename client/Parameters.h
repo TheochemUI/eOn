@@ -416,8 +416,9 @@ public:
       bool enabled; // Enables the Climbing Image (CI-NEB) modification
       bool
           converged_only; // Wait for initial MEP convergence before starting CI
-      bool use_old_tangent; // Algorithm choice for the local tangent estimate
-      double trigger_force; // Force threshold to activate the CI-NEB algorithm
+      bool use_old_tangent;  // Algorithm choice for the local tangent estimate
+      double trigger_force;  // Force threshold to activate the CI-NEB algorithm
+      double trigger_factor; // relative factor
 
       struct hybrid_dimer_t {
         bool use_mmf; // Integrates Min-Mode Following (MMF) for saddle point
@@ -425,6 +426,7 @@ public:
         double trigger_force; // Force threshold to activate hybrid dimer search
         long max_steps;       // Maximum steps for the MMF refinement phase
         double angle_tol;     // Angular tolerance for the dimer rotation
+        double trigger_factor; // relative factor
         struct roneb_penalty_t {
           // penalty_factor = base + (strength * alignment);
           // std::abs(finalMode.normalized().dot(currentTangent.normalized()))

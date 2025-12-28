@@ -326,10 +326,13 @@ Parameters::Parameters() {
   neb_options.climbing_image.use_old_tangent = false;
   neb_options.climbing_image.trigger_force =
       std::numeric_limits<double>::infinity();
+  neb_options.climbing_image.trigger_factor =
+      std::numeric_limits<double>::infinity();
 
   // Hybrid NEB-Dimer (RONEB) parameters using Min-Mode Following (MMF)
   neb_options.climbing_image.roneb.use_mmf = false;
-  neb_options.climbing_image.roneb.trigger_force = 0.5;
+  neb_options.climbing_image.roneb.trigger_force = 0.1;
+  neb_options.climbing_image.roneb.trigger_factor = 0.5;
   // Use the angle criteria instead
   neb_options.climbing_image.roneb.max_steps = 1000;
   neb_options.climbing_image.roneb.angle_tol = 0.8;
@@ -1006,12 +1009,16 @@ int Parameters::load(FILE *file) {
         neb_section, "old_tangent", neb_options.climbing_image.use_old_tangent);
     neb_options.climbing_image.trigger_force = ini.GetValueF(
         neb_section, "ci_after", neb_options.climbing_image.trigger_force);
+    neb_options.climbing_image.trigger_factor = ini.GetValueF(
+        neb_section, "ci_after_rel", neb_options.climbing_image.trigger_factor);
 
     // Hybrid Dimer / Min-Mode Following refinement
     auto &roneb = neb_options.climbing_image.roneb;
     roneb.use_mmf = ini.GetValueB(neb_section, "ci_mmf", roneb.use_mmf);
     roneb.trigger_force =
         ini.GetValueF(neb_section, "ci_mmf_after", roneb.trigger_force);
+    roneb.trigger_factor =
+        ini.GetValueF(neb_section, "ci_mmf_after_rel", roneb.trigger_factor);
     roneb.max_steps =
         ini.GetValueL(neb_section, "ci_mmf_nsteps", roneb.max_steps);
     roneb.angle_tol =
