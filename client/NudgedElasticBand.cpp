@@ -243,6 +243,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   mmf_active = false;
   mmf_iterations_used = 0;
 
+  long previousClimbingImage = -1;
+  int ciStabilityCounter = 0;
+  const int stability_threshold = 3; // Number of stable iterations required TODO(rg): parameterize
+
   SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band calculation started.");
 
   // Initialize E_ref for energy weighting
@@ -283,6 +287,15 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
     VectorXd pos = objf->getPositions();
     double convForce = convergenceForce();
+
+    // convergenceForce() calls updateForces(), which updates 'climbingImage'
+    if (climbingImage == previousClimbingImage) {
+      ciStabilityCounter++;
+    } else {
+      ciStabilityCounter = 0;
+      previousClimbingImage = climbingImage;
+    }
+    // -------------------------------------
 
     if (iteration == 0) {
       baseline_force = convForce;
