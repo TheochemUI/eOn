@@ -111,49 +111,56 @@ NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Parameters> parametersPassed,
     std::shared_ptr<Potential> potPassed)
     : NudgedElasticBand(
-          [&, initialPassed]() {
-            switch (parametersPassed->neb_options.initialization.method) {
+          [&]() {
+            auto &init_opt = parametersPassed->neb_options.initialization;
+            const size_t base_count = parametersPassed->neb_options.image_count;
+
+            // Apply oversampling factor (e.g., 3x) if flag exists
+            const size_t relax_count =
+                init_opt.oversampling ? base_count * 3 : base_count;
+
+            std::vector<Matter> path;
+            switch (init_opt.method) {
             case NEBInit::FILE: {
-              if (parametersPassed->neb_options.initialization.input_path
-                      .empty()) {
-                throw std::runtime_error(
-                    "NEB initializer set to FILE, but neb_ipath is empty.");
-              }
               std::vector<fs::path> file_paths =
                   helper_functions::neb_paths::readFilePaths(
-                      parametersPassed->neb_options.initialization.input_path);
-              return helper_functions::neb_paths::filePathInit(
-                  file_paths, *initialPassed,
-                  parametersPassed->neb_options.image_count);
+                      init_opt.input_path);
+              path = helper_functions::neb_paths::filePathInit(
+                  file_paths, *initialPassed, base_count);
+              break;
             }
-            case NEBInit::IDPP: {
-              return helper_functions::neb_paths::idppPath(
-                  *initialPassed, *finalPassed,
-                  parametersPassed->neb_options.image_count, parametersPassed);
-            }
-            case NEBInit::IDPP_COLLECTIVE: {
-              return helper_functions::neb_paths::idppCollectivePath(
-                  *initialPassed, *finalPassed,
-                  parametersPassed->neb_options.image_count, parametersPassed);
-            }
-            case NEBInit::SIDPP: {
-              return helper_functions::neb_paths::sidppPath(
-                  *initialPassed, *finalPassed,
-                  parametersPassed->neb_options.image_count, parametersPassed);
-            }
-            case NEBInit::SIDPP_ZBL: {
-              return helper_functions::neb_paths::sidppPath(
-                  *initialPassed, *finalPassed,
-                  parametersPassed->neb_options.image_count, parametersPassed,
-                  true);
-            }
+            case NEBInit::IDPP:
+              path = helper_functions::neb_paths::idppPath(
+                  *initialPassed, *finalPassed, relax_count, parametersPassed);
+              break;
+            case NEBInit::IDPP_COLLECTIVE:
+              path = helper_functions::neb_paths::idppCollectivePath(
+                  *initialPassed, *finalPassed, relax_count, parametersPassed);
+              break;
+            case NEBInit::SIDPP:
+            case NEBInit::SIDPP_ZBL:
+              path = helper_functions::neb_paths::sidppPath(
+                  *initialPassed, *finalPassed, relax_count, parametersPassed,
+                  (init_opt.method == NEBInit::SIDPP_ZBL));
+              break;
             case NEBInit::LINEAR:
-            default: {
-              return helper_functions::neb_paths::linearPath(
-                  *initialPassed, *finalPassed,
-                  parametersPassed->neb_options.image_count);
+            default:
+              path = helper_functions::neb_paths::linearPath(
+                  *initialPassed, *finalPassed, base_count);
+              break;
             }
+
+            // Decimate path back to the target count using the cubic spline
+            if (init_opt.oversampling && path.size() > (base_count + 2)) {
+              auto log = spdlog::get("combi");
+              SPDLOG_LOGGER_INFO(log,
+                                 "Decimating oversampled path ({} images) to "
+                                 "{} images via cubic spline.",
+                                 relax_count, base_count);
+              return helper_functions::neb_paths::resamplePath(path,
+                                                               base_count);
             }
+            return path;
           }(),
           parametersPassed, potPassed) {}
 

@@ -345,6 +345,7 @@ Parameters::Parameters() {
   neb_options.initialization.force_tolerance = 0.001;
   neb_options.initialization.sidpp_alpha = 0.33;
   neb_options.initialization.opt_method = OptType::LBFGS;
+  neb_options.initialization.oversampling = false;
 
   // Boundary condition preferences
   neb_options.endpoints.minimize = true;

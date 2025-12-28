@@ -446,6 +446,7 @@ public:
       double sidpp_alpha; // Growth parameter for Steepest Intensity Decent Path
                           // Probing
       OptType opt_method; // for the IDPP
+      bool oversampling;
     } initialization;
 
     struct endpoint_options_t {

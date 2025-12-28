@@ -354,4 +354,69 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   return path;
 }
 
+AtomMatrix cubicInterpolate(const AtomMatrix &P0, const AtomMatrix &T0,
+                            const AtomMatrix &P1, const AtomMatrix &T1,
+                            double f) {
+  double f2 = f * f;
+  double f3 = f2 * f;
+
+  // Hermite basis functions
+  double h00 = 2 * f3 - 3 * f2 + 1;
+  double h10 = f3 - 2 * f2 + f;
+  double h01 = -2 * f3 + 3 * f2;
+  double h11 = f3 - f2;
+
+  return h00 * P0 + h10 * T0 + h01 * P1 + h11 * T1;
+}
+
+std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
+                                 size_t targetCount) {
+  if (densePath.size() == targetCount + 2)
+    return densePath;
+
+  size_t nDense = densePath.size() - 2; // intermediate images
+  std::vector<Matter> resampled;
+  resampled.reserve(targetCount + 2);
+  resampled.push_back(densePath.front());
+
+  // Calculate tangents for the dense path to feed the spline
+  // We scale tangents by the segment distance to maintain spline velocity
+  std::vector<AtomMatrix> tangents(densePath.size());
+  for (size_t i = 0; i < densePath.size(); ++i) {
+    AtomMatrix T;
+    if (i == 0)
+      T = densePath[i].pbc(densePath[i + 1].getPositions() -
+                           densePath[i].getPositions());
+    else if (i == densePath.size() - 1)
+      T = densePath[i].pbc(densePath[i].getPositions() -
+                           densePath[i - 1].getPositions());
+    else {
+      AtomMatrix dNext = densePath[i].pbc(densePath[i + 1].getPositions() -
+                                          densePath[i].getPositions());
+      AtomMatrix dPrev = densePath[i].pbc(densePath[i].getPositions() -
+                                          densePath[i - 1].getPositions());
+      T = 0.5 * (dNext + dPrev);
+    }
+    tangents[i] = T;
+  }
+
+  double step = static_cast<double>(densePath.size() - 1) / (targetCount + 1);
+
+  for (size_t i = 1; i <= targetCount; ++i) {
+    double exactIdx = i * step;
+    size_t lowIdx = static_cast<size_t>(std::floor(exactIdx));
+    size_t highIdx = lowIdx + 1;
+    double f = exactIdx - lowIdx;
+
+    Matter newImg(densePath[0]);
+    newImg.setPositions(cubicInterpolate(
+        densePath[lowIdx].getPositions(), tangents[lowIdx],
+        densePath[highIdx].getPositions(), tangents[highIdx], f));
+    resampled.push_back(newImg);
+  }
+
+  resampled.push_back(densePath.back());
+  return resampled;
+}
+
 } // namespace helper_functions::neb_paths
