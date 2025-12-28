@@ -349,6 +349,7 @@ Parameters::Parameters() {
   neb_options.initialization.sidpp_alpha = 0.33;
   neb_options.initialization.opt_method = OptType::LBFGS;
   neb_options.initialization.oversampling = false;
+  neb_options.initialization.oversampling_factor = 3;
 
   // Boundary condition preferences
   neb_options.endpoints.minimize = true;
@@ -1052,6 +1053,10 @@ int Parameters::load(FILE *file) {
     if (neb_ipath_optMethod != OptType::None) {
       neb_options.initialization.opt_method = neb_ipath_optMethod;
     }
+    init.oversampling =
+        ini.GetValueB(neb_section, "oversampling", init.oversampling);
+    init.oversampling_factor = ini.GetValueL(neb_section, "oversampling_factor",
+                                             init.oversampling_factor);
 
     // Endpoint handling
     neb_options.endpoints.minimize = ini.GetValueB(

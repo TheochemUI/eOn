@@ -449,6 +449,7 @@ public:
                           // Probing
       OptType opt_method; // for the IDPP
       bool oversampling;
+      int oversampling_factor;
     } initialization;
 
     struct endpoint_options_t {
