@@ -67,11 +67,9 @@ public:
                 // reactant or product energy minimum
 
 private:
-  int runMMFRefinement();
-  double computeMaxForceAllImages();
+  int runMMFRefinement(double &alignment);
   double current_mmf_threshold{-1.0};
-  bool ci_latch{false};
-  bool ew_latch{false};
+  double baseline_force{-1.0};
   std::shared_ptr<Parameters> params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;

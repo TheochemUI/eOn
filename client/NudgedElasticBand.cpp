@@ -270,10 +270,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
   while (this->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
-      bool append = true;
-      if (iteration == 0) {
-        append = false;
-      }
+      bool append = (iteration != 0);
       path[maxEnergyImage]->matter2con("neb_maximage.con", append);
       std::string nebFilename(fmt::format("neb_path_{:03d}.con", iteration));
       FILE *fileNEBPath = fopen(nebFilename.c_str(), "wb");
@@ -287,70 +284,100 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     VectorXd pos = objf->getPositions();
     double convForce = convergenceForce();
 
-    // Determine if CI should be active based on force threshold
     bool ci_active =
         params->neb_options.climbing_image.enabled &&
         (convForce < params->neb_options.climbing_image.trigger_force);
 
     if (iteration) {
-      // Check if we should switch to MMF-based saddle refinement
-      // Only do this ONCE when we cross the threshold, not repeatedly
-      if (!mmf_active && params->neb_options.climbing_image.roneb.use_mmf &&
-          ci_active && climbingImage > 0 && climbingImage <= numImages &&
-          convForce < params->neb_options.climbing_image.roneb.trigger_force) {
+      // MMF triggering:  use dynamic threshold, allow retries after backoff
+      if (params->neb_options.climbing_image.roneb.use_mmf && ci_active &&
+          climbingImage > 0 && climbingImage <= numImages &&
+          convForce < current_mmf_threshold &&
+          convForce > params->neb_options.force_tolerance) {
 
         SPDLOG_LOGGER_DEBUG(
-            log,
-            "Attempting MMF refinement.  Force:  {:.4f}, Threshold: {:.4f}",
-            convForce, params->neb_options.climbing_image.roneb.trigger_force);
+            log, "Triggering MMF.  Force:  {:.4f}, Dynamic Threshold: {:.4f}",
+            convForce, current_mmf_threshold);
 
         // Save climbing image state before MMF
         AtomMatrix savedPositions = path[climbingImage]->getPositions();
         double savedEnergy = path[climbingImage]->getPotentialEnergy();
 
-        int mmfResult = runMMFRefinement();
+        // Run MMF and get alignment info
+        double alignment = 0.0;
+        int mmfResult = runMMFRefinement(alignment);
 
-        if (mmfResult == 0) {
-          // MMF succeeded - we're done
-          SPDLOG_LOGGER_DEBUG(log, "MMF refinement converged.  NEB complete.");
+        // Always update forces after MMF - it moved the climbing image
+        movedAfterForceCall = true;
+        updateForces();
+        double newForce = convergenceForce();
+        double newEnergy = path[climbingImage]->getPotentialEnergy();
+
+        // Check if we're done
+        if (newForce < params->neb_options.force_tolerance) {
+          current_mmf_threshold =
+              params->neb_options.climbing_image.roneb.trigger_force;
+          SPDLOG_LOGGER_DEBUG(log, "NEB converged after MMF.  Force: {:.4f}",
+                              newForce);
           status = NEBStatus::GOOD;
           break;
-        } else if (mmfResult == 1) {
-          // MMF hit max iterations - check if it helped
-          movedAfterForceCall = true;
-          updateForces();
+        }
 
-          double newForce = convergenceForce();
-          double newEnergy = path[climbingImage]->getPotentialEnergy();
+        // Evaluate whether MMF helped, regardless of its internal status
+        bool mmfHelped = (newForce < convForce);
 
-          // If force got worse or energy dropped significantly, revert
-          if (newForce > convForce * 1.5 || newEnergy < savedEnergy - 0.1) {
-            SPDLOG_LOGGER_WARN(
-                log,
-                "MMF made things worse (force: {:.4f} -> {:.4f}), reverting.",
-                convForce, newForce);
-            path[climbingImage]->setPositions(savedPositions);
-            movedAfterForceCall = true;
-            updateForces();
-          } else if (newForce < params->neb_options.force_tolerance) {
-            status = NEBStatus::GOOD;
-            break;
-          }
-          // Otherwise, continue with NEB but don't re-trigger MMF
-          mmf_active = true;
-          optim = helpers::create::mkOptim(objf, params->neb_options.opt_method,
-                                           params);
-          SPDLOG_LOGGER_DEBUG(log, "MMF incomplete, continuing with NEB.");
+        if (mmfHelped) {
+          // MMF made progress - adjust threshold based on how much it helped
+          double improvement_ratio = newForce / convForce;
+          // If big improvement, allow earlier retry; if small, wait longer
+          current_mmf_threshold = newForce * (0.5 + 0.4 * improvement_ratio);
+
+          SPDLOG_LOGGER_DEBUG(log,
+                              "MMF helped (status={}). Force: {:.4f} -> "
+                              "{:.4f}. New threshold: {:.4f}",
+                              mmfResult, convForce, newForce,
+                              current_mmf_threshold);
         } else {
-          // MMF failed - continue with standard NEB
-          mmf_active = true; // Prevent re-triggering
-          optim = helpers::create::mkOptim(objf, params->neb_options.opt_method,
-                                           params);
+          // MMF didn't help or made things worse - apply backoff
+          double strength =
+              params->neb_options.climbing_image.roneb.penalty.strength;
+          double base = params->neb_options.climbing_image.roneb.penalty.base;
 
-          SPDLOG_LOGGER_WARN(log,
-                             "MMF failed, continuing with standard CI-NEB.");
-          movedAfterForceCall = true;
-          updateForces();
+          // Ensure alignment stays within a physically meaningful [0, 1] range
+          double alpha = std::clamp(alignment, 0.0, 1.0);
+
+          /* 
+           * Good alignment (1.0) -> factor approaches 1.0 (mild backoff)
+           * Poor alignment (0.0) -> factor approaches 'base' (strong backoff)
+           */
+          double penalty_factor =
+              base + (1.0 - base) * std::pow(alpha, strength);
+
+          // Clamp the factor to ensure the threshold never increases
+          penalty_factor = std::clamp(penalty_factor, base, 1.0);
+
+          current_mmf_threshold = convForce * penalty_factor;
+
+          // Protect against the threshold dropping below global force tolerance
+          // This ensures the MMF phase remains reachable
+          double min_threshold = params->neb_options.force_tolerance * 2.0;
+          current_mmf_threshold =
+              std::max(current_mmf_threshold, min_threshold);
+
+          SPDLOG_LOGGER_DEBUG(log,
+                              "MMF backoff (status={}). Force: {:.4f} -> "
+                              "{:.4f}, Alignment: {:.3f}. "
+                              "New threshold: {:.4f}",
+                              mmfResult, convForce, newForce, alignment,
+                              current_mmf_threshold);
+
+          // Only revert if MMF actually made things worse
+          if (newForce > convForce * 10) {
+            SPDLOG_LOGGER_DEBUG(log, "Reverting to older position.", mmfResult,
+                                convForce, newForce, alignment,
+                                current_mmf_threshold);
+            path[climbingImage]->setPositions(savedPositions);
+          }
         }
       }
 
@@ -412,30 +439,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   return status;
 }
 
-double NudgedElasticBand::computeMaxForceAllImages() {
-  if (movedAfterForceCall)
-    updateForces();
+// Modified signature to return alignment
+int NudgedElasticBand::runMMFRefinement(double &alignment) {
+  alignment = 0.0;
 
-  double fmax = 0;
-  for (long i = 1; i <= numImages; i++) {
-    if (params->optConvergenceMetric == "norm") {
-      fmax = max(fmax, projectedForce[i]->norm());
-    } else if (params->optConvergenceMetric == "max_atom") {
-      for (int j = 0; j < path[0]->numberOfAtoms(); j++) {
-        if (path[0]->getFixed(j))
-          continue;
-        fmax = max(fmax, projectedForce[i]->row(j).norm());
-      }
-    } else if (params->optConvergenceMetric == "max_component") {
-      fmax = max(fmax, projectedForce[i]->maxCoeff());
-    }
-  }
-  return fmax;
-}
-
-// Run MMF refinement on the climbing image
-// Returns:  0 = converged, 1 = max iterations, -1 = failed
-int NudgedElasticBand::runMMFRefinement() {
   if (climbingImage <= 0 || climbingImage > numImages) {
     SPDLOG_LOGGER_WARN(log, "Invalid climbing image for MMF:  {}",
                        climbingImage);
@@ -459,6 +466,7 @@ int NudgedElasticBand::runMMFRefinement() {
 
   // Save and override saddle search parameters
   auto originalSaddleMaxIterations = params->saddleMaxIterations;
+
   params->saddleMaxIterations =
       params->neb_options.climbing_image.roneb.max_steps;
 
@@ -473,26 +481,31 @@ int NudgedElasticBand::runMMFRefinement() {
   // Restore original parameters
   params->saddleMaxIterations = originalSaddleMaxIterations;
 
-  // Track iterations used by MMF
+  // Track iterations used
   mmf_iterations_used += tempMinModeSearch->iteration;
 
-  if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD) {
-    return 0; // Converged
-  } else if (minModeStatus == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
-    return 1; // Max iterations but may have made progress
-  } else {
-    // Check mode-tangent alignment to diagnose failure
-    AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
-    VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * atoms);
-    VectorXd currentTangent =
-        VectorXd::Map(tangent[climbingImage]->data(), 3 * atoms);
+  // Calculate alignment for all outcomes
+  AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
+  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * atoms);
+  VectorXd currentTangent =
+      VectorXd::Map(tangent[climbingImage]->data(), 3 * atoms);
+  alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));
 
-    double alignment =
-        std::abs(finalMode.normalized().dot(currentTangent.normalized()));
+  if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD) {
+    // Check alignment - if mode drifted too far, treat as failure
+    if (alignment < params->neb_options.climbing_image.roneb.angle_tol) {
+      SPDLOG_LOGGER_WARN(
+          log, "MMF converged but mode drifted (alignment={:.3f} < {:.3f})",
+          alignment, params->neb_options.climbing_image.roneb.angle_tol);
+      return -1;
+    }
+    return 0;
+  } else if (minModeStatus == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
+    return 1;
+  } else {
     SPDLOG_LOGGER_WARN(log, "MMF failed.  Mode-tangent alignment: {:.3f}",
                        alignment);
-
-    return -1; // Failed
+    return -1;
   }
 }
 
@@ -842,7 +855,7 @@ void NudgedElasticBand::updateForces(void) {
             atan(pow(forcePerpNorm, 2) / pow(forceSpringPerpNorm, 2));
         forceDNEB *= switching;
       } else {
-        SPDLOG_WARN("Not using doubly nudged since energy_weighted is set");
+        // Force norms too small for stable DNEB calculation
         forceDNEB.setZero();
       }
     } else {
