@@ -529,6 +529,18 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
   // Track iterations used
   mmf_iterations_used += tempMinModeSearch->iteration;
 
+  double eigenvalue = tempMinModeSearch->getEigenvalue();
+
+  // If the surface is convex (positive curvature), MMF will drag us to a
+  // minimum. We only want to refine if we are in a saddle region (negative
+  // curvature).
+  if (eigenvalue > 0.0) {
+    SPDLOG_LOGGER_WARN(log,
+                       "MMF skipped: Positive curvature detected (eig={:.4f}).",
+                       eigenvalue);
+    return -1;
+  }
+
   // Calculate alignment for all outcomes
   AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
   VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * atoms);
