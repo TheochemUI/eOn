@@ -11,6 +11,21 @@ std::vector<Matter> filePathInit(const std::vector<fs::path> &fsrcs,
                                  const Matter &refImg, const size_t nimgs);
 
 /**
+ * @brief Interpolates positions using a cubic Hermite spline.
+ * @param P0 Starting positions
+ * @param T0 Tangent at P0 (scaled by segment length)
+ * @param P1 Ending positions
+ * @param T1 Tangent at P1 (scaled by segment length)
+ * @param f Fraction between 0 and 1
+ */
+AtomMatrix cubicInterpolate(const AtomMatrix &P0, const AtomMatrix &T0,
+                            const AtomMatrix &P1, const AtomMatrix &T1,
+                            double f);
+
+std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
+                                 size_t targetCount);
+
+/**
  * @brief Reads a file where each line contains a path to another file.
  *
  * @param listFilePath The path to the file containing the list of file paths.
