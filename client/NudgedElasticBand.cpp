@@ -115,9 +115,11 @@ NudgedElasticBand::NudgedElasticBand(
             auto &init_opt = parametersPassed->neb_options.initialization;
             const size_t base_count = parametersPassed->neb_options.image_count;
 
-            // Apply oversampling factor (e.g., 3x) if flag exists
+            // Apply oversampling factor if flag exists
             const size_t relax_count =
-                init_opt.oversampling ? base_count * 3 : base_count;
+                init_opt.oversampling
+                    ? base_count * init_opt.oversampling_factor
+                    : base_count;
 
             std::vector<Matter> path;
             switch (init_opt.method) {
