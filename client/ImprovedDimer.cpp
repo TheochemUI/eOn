@@ -58,6 +58,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   tau = initialDirection.array() * matter->getFreeV().array();
   // Handle initial direction tracking
   rotationDidConverge = true;
+  foundNegativeCurvature = false;
   if (tau.norm() > 1e-10) {
     tau.normalize();
   } else {
@@ -67,6 +68,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     tau.normalize();
   }
   // RONEB setup
+  // Track the best (most negative) curvature and corresponding mode
+  double bestNegativeCurvature = std::numeric_limits<double>::max();
+  VectorXd bestTau;
+  bestTau = tau;
   VectorXd referenceMode;
   // This represents the "NEB Tangent" restricted to the free atoms.
   if (hasFixedReference) {
@@ -241,6 +246,12 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     // Calculate the curvature along tau, C_tau.
     C_tau = (g1 - g0).dot(tau) / delta;
 
+    // Track the best negative curvature and its corresponding eigenvector
+    if (C_tau < bestNegativeCurvature) {
+      bestNegativeCurvature = C_tau;
+      bestTau = tau;
+    }
+
     // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
     double d_C_tau_d_phi = 2.0 * (g1 - g0).dot(theta) / delta;
     phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
@@ -341,6 +352,20 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
           log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
 
       rotationDidConverge = false;
+
+      // Restore the best negative curvature state we found
+      if (bestNegativeCurvature < 0.0) {
+        C_tau = bestNegativeCurvature;
+        tau = bestTau;
+        SPDLOG_LOGGER_DEBUG(log, "Restoring best negative curvature: {:.4f}",
+                            C_tau);
+      } else {
+        // Never found negative curvature - keep current (positive) value
+        // to signal we're not at a saddle
+        SPDLOG_LOGGER_WARN(
+            log, "Never found negative curvature.  Final C_tau: {:.4f}",
+            C_tau);
+      }
       break;
     }
 
