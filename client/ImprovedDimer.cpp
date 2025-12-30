@@ -15,6 +15,7 @@
 #include "ImprovedDimer.h"
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
+#include "eonExceptions.hpp"
 
 using namespace helper_functions;
 
@@ -70,8 +71,12 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // RONEB setup
   // Track the best (most negative) curvature and corresponding mode
   double bestNegativeCurvature = std::numeric_limits<double>::max();
-  VectorXd bestTau;
-  bestTau = tau;
+  VectorXd bestTau = tau;
+  VectorXd bestX0Positions; // Positions at best curvature
+  VectorXd bestG0;          // Gradient at best curvature
+  VectorXd bestG1;          // Gradient at x1 for best curvature
+
+  // Reference mode tracking
   VectorXd referenceMode;
   // This represents the "NEB Tangent" restricted to the free atoms.
   if (hasFixedReference) {
@@ -85,6 +90,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   *x0 = *matter;
   *x1 = *matter;
   VectorXd x0_r = x0->getPositionsV();
+  bestX0Positions = x0_r;
 
   x1->setPositionsV(x0_r + params->finiteDifference * tau);
   // Quick check: If we stepped into a wall, flip the tangent immediately
@@ -133,6 +139,9 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Calculate the gradients on x0 and x1, g0 and g1, respectively.
   VectorXd g0 = -x0->getForcesV();
   VectorXd g1 = -x1->getForcesV();
+
+  bestG0 = g0;
+  bestG1 = g1;
 
   positions.clear();
   gradients.clear();
@@ -250,6 +259,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     if (C_tau < bestNegativeCurvature) {
       bestNegativeCurvature = C_tau;
       bestTau = tau;
+      bestX0Positions = x0->getPositionsV();
+      bestG0 = g0;
+      bestG1 = g1;
+      foundNegativeCurvature = (C_tau < 0.0);
     }
 
     // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
@@ -353,18 +366,29 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       rotationDidConverge = false;
 
-      // Restore the best negative curvature state we found
+      // Restore the best negative curvature state
       if (bestNegativeCurvature < 0.0) {
         C_tau = bestNegativeCurvature;
         tau = bestTau;
-        SPDLOG_LOGGER_DEBUG(log, "Restoring best negative curvature: {:.4f}",
-                            C_tau);
+
+        // Restore x0 to the position where we had best curvature
+        x0->setPositionsV(bestX0Positions);
+        x1->setPositionsV(bestX0Positions + delta * bestTau);
+
+        // Also update the input matter to reflect the restored position
+        *matter = *x0;
+
+        SPDLOG_LOGGER_DEBUG(
+            log, "Restored best negative curvature state:  C_tau={:.4f}",
+            C_tau);
+        throw eonc::DimerModeRestoredException();
       } else {
         // Never found negative curvature - keep current (positive) value
         // to signal we're not at a saddle
+        rotationDidConverge = false;
         SPDLOG_LOGGER_WARN(
-            log, "Never found negative curvature.  Final C_tau: {:.4f}",
-            C_tau);
+            log, "Never found negative curvature.  Final C_tau: {:.4f}", C_tau);
+        throw eonc::DimerModeLostException();
       }
       break;
     }
