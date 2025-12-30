@@ -374,39 +374,67 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
   if (densePath.size() == targetCount + 2)
     return densePath;
 
-  size_t nDense = densePath.size() - 2; // intermediate images
-  std::vector<Matter> resampled;
-  resampled.reserve(targetCount + 2);
-  resampled.push_back(densePath.front());
+  size_t n = densePath.size();
 
-  // Calculate tangents for the dense path to feed the spline
-  // We scale tangents by the segment distance to maintain spline velocity
-  std::vector<AtomMatrix> tangents(densePath.size());
-  for (size_t i = 0; i < densePath.size(); ++i) {
+  // Calculate cumulative arc length along the path
+  std::vector<double> arcLength(n, 0.0);
+  for (size_t i = 1; i < n; ++i) {
+    AtomMatrix diff = densePath[i].pbc(densePath[i].getPositions() -
+                                       densePath[i - 1].getPositions());
+    arcLength[i] = arcLength[i - 1] + diff.norm();
+  }
+  double totalLength = arcLength.back();
+
+  // Calculate tangents for cubic interpolation
+  std::vector<AtomMatrix> tangents(n);
+  for (size_t i = 0; i < n; ++i) {
     AtomMatrix T;
-    if (i == 0)
+    if (i == 0) {
       T = densePath[i].pbc(densePath[i + 1].getPositions() -
                            densePath[i].getPositions());
-    else if (i == densePath.size() - 1)
+    } else if (i == n - 1) {
       T = densePath[i].pbc(densePath[i].getPositions() -
                            densePath[i - 1].getPositions());
-    else {
+    } else {
       AtomMatrix dNext = densePath[i].pbc(densePath[i + 1].getPositions() -
                                           densePath[i].getPositions());
       AtomMatrix dPrev = densePath[i].pbc(densePath[i].getPositions() -
                                           densePath[i - 1].getPositions());
       T = 0.5 * (dNext + dPrev);
     }
+    // Scale tangent by local segment length for proper spline parameterization
+    if (i > 0 && i < n - 1) {
+      double localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;
+      T = T.normalized() * localScale;
+    }
     tangents[i] = T;
   }
 
-  double step = static_cast<double>(densePath.size() - 1) / (targetCount + 1);
+  std::vector<Matter> resampled;
+  resampled.reserve(targetCount + 2);
+  resampled.push_back(densePath.front());
+
+  // Place new images at equal arc-length intervals
+  double segmentLength = totalLength / (targetCount + 1);
 
   for (size_t i = 1; i <= targetCount; ++i) {
-    double exactIdx = i * step;
-    size_t lowIdx = static_cast<size_t>(std::floor(exactIdx));
+    double targetArc = i * segmentLength;
+
+    // Find the segment containing this arc length
+    size_t lowIdx = 0;
+    for (size_t j = 1; j < n; ++j) {
+      if (arcLength[j] >= targetArc) {
+        lowIdx = j - 1;
+        break;
+      }
+    }
     size_t highIdx = lowIdx + 1;
-    double f = exactIdx - lowIdx;
+
+    // Interpolation parameter within this segment
+    double segmentArc = arcLength[highIdx] - arcLength[lowIdx];
+    double f = (segmentArc > 1e-10)
+                   ? (targetArc - arcLength[lowIdx]) / segmentArc
+                   : 0.0;
 
     Matter newImg(densePath[0]);
     newImg.setPositions(cubicInterpolate(
