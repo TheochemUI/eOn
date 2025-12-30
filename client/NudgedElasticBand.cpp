@@ -426,10 +426,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           //   path[climbingImage]->setPositions(savedPositions);
           // }
         }
-        if (mmfResult == 2) {
-            SPDLOG_LOGGER_DEBUG(log, "Reverting to older position.");
-            path[climbingImage]->setPositions(savedPositions);
-        }
         if ((savedPositions - path[climbingImage]->getPositions()).norm() >
             params->optMaxMove * params->neb_options.image_count) {
           // Reset optimizer after MMF - history is stale
@@ -534,7 +530,11 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
   int minModeStatus;
   try {
     minModeStatus = tempMinModeSearch->run();
-  } catch (const DimerModeLostException &e) {
+  } catch (const eonc::DimerModeRestoredException &e) {
+    // Dimer restored to valid state - treat as partial success
+    minModeStatus = MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST;
+    SPDLOG_LOGGER_DEBUG(log, "MMF:  Dimer restored to best state");
+  } catch (const eonc::DimerModeLostException &e) {
     minModeStatus = MinModeSaddleSearch::STATUS_DIMER_LOST_MODE;
     SPDLOG_LOGGER_WARN(log, "Dimer lost mode during MMF refinement");
   }
@@ -564,11 +564,13 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
       VectorXd::Map(tangent[climbingImage]->data(), 3 * atoms);
   alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));
 
-  if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD) {
+  if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD ||
+      minModeStatus == MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST) {
     // Check alignment - if mode drifted too far, treat as failure
     if (alignment < params->neb_options.climbing_image.roneb.angle_tol) {
       SPDLOG_LOGGER_WARN(
-          log, "MMF converged but mode drifted (alignment={:.3f} < {:.3f})",
+          log,
+          "MMF converged/restored but mode drifted (alignment={:.3f} < {:.3f})",
           alignment, params->neb_options.climbing_image.roneb.angle_tol);
       return -1;
     }

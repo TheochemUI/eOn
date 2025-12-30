@@ -54,7 +54,19 @@ public:
       // Check if ImprovedDimer lost the mode immediately after compute()
       auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
       if (dimer && !dimer->rotationDidConverge) {
-        throw DimerModeLostException();
+        // Check if it restored to a valid negative curvature state
+        if (dimer->getEigenvalue() < 0.0) {
+          // Dimer restored to best state - update eigenvector and continue
+          // but signal that we should probably stop soon
+          eigenvector = minModeMethod->getEigenvector();
+          SPDLOG_DEBUG(
+              "[MinMode] Dimer restored to best state with C_tau={:.4f}",
+              dimer->getEigenvalue());
+          throw eonc::DimerModeRestoredException();
+        } else {
+          // Truly lost - no valid state to restore to
+          throw eonc::DimerModeLostException();
+        }
       }
       iteration++;
     }
@@ -306,17 +318,40 @@ int MinModeSaddleSearch::run() {
 
       AtomMatrix pos = matter->getPositions();
 
-      if (params->saddleBowlBreakout) {
-        // use negative step to communicate that the system is the negative
-        // region and a max step should be performed
-        if ((minModeMethod->getEigenvalue() > 0) and
-            (params->optMethod == OptType::CG)) {
-          optStatus = optim->step(-params->optMaxMove);
+      try {
+        if (params->saddleBowlBreakout) {
+          // use negative step to communicate that the system is the negative
+          // region and a max step should be performed
+          if ((minModeMethod->getEigenvalue() > 0) and
+              (params->optMethod == OptType::CG)) {
+            optStatus = optim->step(-params->optMaxMove);
+          } else {
+            optStatus = optim->step(params->optMaxMove);
+          }
         } else {
           optStatus = optim->step(params->optMaxMove);
         }
-      } else {
-        optStatus = optim->step(params->optMaxMove);
+      } catch (const eonc::DimerModeRestoredException &e) {
+        // Dimer lost mode but restored to valid negative curvature state
+        // Check if we're now converged
+        SPDLOG_LOGGER_DEBUG(
+            log, "Dimer restored to best state.  Checking convergence...");
+
+        // Force might have changed - recompute convergence
+        if (objf->isConverged()) {
+          SPDLOG_LOGGER_DEBUG(log, "Converged after dimer restoration.");
+          status = STATUS_GOOD;
+        } else {
+          // Not converged, but we have a valid state - report as partial
+          // success
+          status = STATUS_DIMER_RESTORED_BEST;
+        }
+        break;
+      } catch (const eonc::DimerModeLostException &e) {
+        // Truly lost the mode with no valid state
+        SPDLOG_LOGGER_WARN(log, "Dimer lost mode completely. Aborting.");
+        status = STATUS_DIMER_LOST_MODE;
+        break;
       }
 
       if (optStatus < 0) {
@@ -400,12 +435,16 @@ int MinModeSaddleSearch::run() {
         auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
 
         if (dimer && !dimer->rotationDidConverge) {
-          SPDLOG_LOGGER_WARN(
-              log, "Dimer failed to hold mode. Aborting Saddle Search loop.");
-
-          // We return a status that tells NEB this wasn't a clean run,
-          // but not a catastrophic crash (so NEB continues with springs).
-          status = STATUS_DIMER_LOST_MODE;
+          // This shouldn't happen if we caught the exceptions above,
+          // but keep as safety check
+          if (dimer->getEigenvalue() < 0.0) {
+            SPDLOG_LOGGER_DEBUG(log,
+                                "Dimer restored to valid state.  C_tau={:.4f}",
+                                dimer->getEigenvalue());
+            status = STATUS_DIMER_RESTORED_BEST;
+          } else {
+            status = STATUS_DIMER_LOST_MODE;
+          }
           break;
         }
       }
