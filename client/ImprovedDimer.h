@@ -52,7 +52,8 @@ public:
   // For use when called as part of the NEB-MMF
   void setReferenceMode(const VectorXd &ref);
   void clearReferenceMode();
-  bool rotationDidConverge;
+  bool rotationDidConverge{false};
+  bool foundNegativeCurvature{false};
   // parameters used for conjugate gradients
   VectorXd F_R_Old;
   VectorXd thetaOld;
