@@ -361,7 +361,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         }
 
         // Evaluate whether MMF helped, regardless of its internal status
-        bool mmfHelped = (newForce < convForce);
+        bool mmfHelped = (newForce < convForce) && mmfResult != -2;
 
         if (mmfHelped) {
           // MMF made progress - set threshold relative to baseline
@@ -418,12 +418,27 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
               mmfResult, convForce, newForce, alignment, current_mmf_threshold,
               current_mmf_threshold / baseline_force);
 
+          // NOTE(rg): Doesn't really help anyway
           // Only revert if MMF made things much worse
-          if (newForce > convForce * 2) {
+          // if (newForce > convForce * 2) {
+          //   SPDLOG_LOGGER_DEBUG(log, "Reverting to older position.");
+          //   path[climbingImage]->setPositions(savedPositions);
+          // }
+        }
+        if (mmfResult == 2) {
             SPDLOG_LOGGER_DEBUG(log, "Reverting to older position.");
             path[climbingImage]->setPositions(savedPositions);
-          }
         }
+        if ((savedPositions - path[climbingImage]->getPositions()).norm() >
+            params->optMaxMove * params->neb_options.image_count) {
+          // Reset optimizer after MMF - history is stale
+          SPDLOG_LOGGER_DEBUG(log, "Resetting optimization history.");
+          optim = helpers::create::mkOptim(objf, params->neb_options.opt_method,
+                                           params);
+        }
+
+        // Reset stability counter since MMF moved the image
+        ciStabilityCounter = 0;
       }
 
       if (iteration >= params->neb_options.max_iterations) {
@@ -538,7 +553,7 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
     SPDLOG_LOGGER_WARN(log,
                        "MMF skipped: Positive curvature detected (eig={:.4f}).",
                        eigenvalue);
-    return -1;
+    return -2;
   }
 
   // Calculate alignment for all outcomes
