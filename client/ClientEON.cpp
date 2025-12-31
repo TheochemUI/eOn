@@ -313,8 +313,7 @@ int main(int argc, char **argv) {
 
   eonc::enableFPE(); // from ExceptionsEON.h
 
-  double beginTime = 0.0;
-  helper_functions::getTime(&beginTime, NULL, NULL);
+  auto start_time = std::chrono::steady_clock::now();
 
 #ifdef EONMPI
   // XXX: When do we stop? The server should probably tell everyone when to
@@ -414,6 +413,29 @@ int main(int argc, char **argv) {
 
       filenames.push_back(std::string("client.log"));
 
+      // Finalize Timing Information
+      auto end_time = std::chrono::steady_clock::now();
+      std::chrono::duration<double> elapsed = end_time - start_time;
+
+      double utime = 0, stime = 0, rtime = 0;
+      helper_functions::getTime(&rtime, &utime, &stime);
+
+      spdlog::info("Timing Information:");
+      spdlog::info("  Real time: {:.3f} seconds", elapsed.count());
+      spdlog::info("  User time: {:.3f} seconds", utime);
+      spdlog::info("  System time: {:.3f} seconds", stime);
+
+      std::ofstream result_file("results.dat", std::ios::app);
+      if (result_file.is_open()) {
+        result_file << "time_seconds " << elapsed.count() << "\n";
+#ifndef WIN32
+        result_file << "user_time" << utime << "\n";
+        result_file << "system_time" << stime << "\n";
+#endif
+      } else {
+        spdlog::error("Failed to write timing to results.dat");
+      }
+
       if (bundlingEnabled) {
         bundle(i, filenames, &bundledFilenames);
         deleteUnbundledFiles(unbundledFilenames);
@@ -431,20 +453,6 @@ int main(int argc, char **argv) {
     // End of MPI while loop
   }
 #endif
-
-  // Timing Information
-  double utime = 0, stime = 0, rtime = 0;
-  helper_functions::getTime(&rtime, &utime, &stime);
-  rtime = rtime - beginTime;
-
-  // if (Potential::totalUserTime > 0) {
-  //     printf("\ntime not in potential: %.4f%%\n",
-  //     100*(1-Potential::totalUserTime/utime));
-  // }
-
-  printf("timing information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  "
-         "%10.3f seconds\n",
-         rtime, utime, stime);
 
 #ifdef OSX
 #ifndef __aarch64__
