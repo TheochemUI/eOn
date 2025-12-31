@@ -429,8 +429,8 @@ int main(int argc, char **argv) {
       if (result_file.is_open()) {
         result_file << "time_seconds " << elapsed.count() << "\n";
 #ifndef WIN32
-        result_file << "user_time" << utime << "\n";
-        result_file << "system_time" << stime << "\n";
+        result_file << "user_time " << utime << "\n";
+        result_file << "system_time " << stime << "\n";
 #endif
       } else {
         spdlog::error("Failed to write timing to results.dat");
