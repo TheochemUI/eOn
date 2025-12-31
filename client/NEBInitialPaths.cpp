@@ -284,7 +284,8 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
       Matter prev = path[rightFrontierIdx - 1];
 
       // Grow backwards from product
-      Matter newImg = interpolateImage(frontier, prev, 0.33);
+      Matter newImg = interpolateImage(
+          frontier, next, params->neb_options.initialization.sidpp_alpha);
 
       path.insert(path.begin() + rightFrontierIdx, newImg);
       nRight++;
