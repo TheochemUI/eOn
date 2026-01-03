@@ -326,13 +326,12 @@ Parameters::Parameters() {
   neb_options.climbing_image.use_old_tangent = false;
   neb_options.climbing_image.trigger_force =
       std::numeric_limits<double>::infinity();
-  neb_options.climbing_image.trigger_factor =
-      std::numeric_limits<double>::infinity();
+  neb_options.climbing_image.trigger_factor = 0.0;
 
   // Hybrid NEB-Dimer (RONEB) parameters using Min-Mode Following (MMF)
   neb_options.climbing_image.roneb.use_mmf = false;
   neb_options.climbing_image.roneb.trigger_force = 0.1;
-  neb_options.climbing_image.roneb.trigger_factor = 0.5;
+  neb_options.climbing_image.roneb.trigger_factor = 0.0;
   // Use the angle criteria instead
   neb_options.climbing_image.roneb.max_steps = 1000;
   neb_options.climbing_image.roneb.angle_tol = 0.8;
