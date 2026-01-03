@@ -309,11 +309,14 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
       SPDLOG_DEBUG(
           "---------------------------------------------------------------");
-      SPDLOG_DEBUG(
-          "Baseline force: {:.4f}, CI trigger: {:.4f}, MMF trigger: {:.4f}",
-          baseline_force,
-          baseline_force * params->neb_options.climbing_image.trigger_factor,
-          current_mmf_threshold);
+      SPDLOG_DEBUG("Baseline force: {:.4f}, CI trigger: {:.4f}, MMF trigger: "
+                   "{:.4f}\nAbsolute CI trigger: {:.4f}, MMF trigger: {:.4f}",
+                   baseline_force,
+                   baseline_force *
+                       params->neb_options.climbing_image.trigger_factor,
+                   current_mmf_threshold,
+                   params->neb_options.climbing_image.trigger_force,
+                   params->neb_options.climbing_image.roneb.trigger_force);
       SPDLOG_DEBUG(
           "---------------------------------------------------------------\n");
     }
