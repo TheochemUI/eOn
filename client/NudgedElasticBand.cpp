@@ -269,12 +269,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     refine_optim =
         helpers::create::mkOptim(objf, params->refineOptMethod, params);
   }
-  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
-               "step size", params->optConvergenceMetricLabel, "max image",
-               "max energy");
-  SPDLOG_DEBUG(
-      "---------------------------------------------------------------\n");
-
   while (this->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
       bool append = (iteration != 0);
@@ -307,16 +301,69 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           baseline_force *
           params->neb_options.climbing_image.roneb.trigger_factor;
 
-      SPDLOG_DEBUG(
+      // --- Improved Logging Start ---
+      auto &ci_opt = params->neb_options.climbing_image;
+      auto &mmf_opt = ci_opt.roneb;
+
+      // Helper to format infinity
+      auto fmt_trigger = [](double val) -> std::string {
+        if (val > 1e100)
+          return "INF";
+        return fmt::format("{:.4f}", val);
+      };
+
+      SPDLOG_LOGGER_INFO(
+          log,
+          "===============================================================");
+      SPDLOG_LOGGER_INFO(log, " NEB Optimization Configuration");
+      SPDLOG_LOGGER_INFO(
+          log,
+          "===============================================================");
+      SPDLOG_LOGGER_INFO(log, " {:<25} : {:.4f}", "Baseline Force",
+                         baseline_force);
+
+      // Climbing Image Logs
+      std::string ci_status = ci_opt.enabled ? "ENABLED" : "DISABLED";
+      SPDLOG_LOGGER_INFO(log, " {:<25} : {}", "Climbing Image (CI)", ci_status);
+      if (ci_opt.enabled) {
+        double ci_rel_val = baseline_force * ci_opt.trigger_factor;
+        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {} (Factor: {:.2f})",
+                           "Relative Trigger", fmt_trigger(ci_rel_val),
+                           ci_opt.trigger_factor);
+        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {}", "Absolute Trigger",
+                           fmt_trigger(ci_opt.trigger_force));
+        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {}", "Converged Only",
+                           ci_opt.converged_only);
+      }
+
+      // RONEB / MMF Logs
+      std::string mmf_status =
+          (ci_opt.enabled && mmf_opt.use_mmf) ? "ENABLED" : "DISABLED";
+      SPDLOG_LOGGER_INFO(log, " {:<25} : {}", "Hybrid MMF (RONEB)", mmf_status);
+      if (ci_opt.enabled && mmf_opt.use_mmf) {
+        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {:.4f} (Factor: {:.2f})",
+                           "Initial Threshold", current_mmf_threshold,
+                           mmf_opt.trigger_factor);
+        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {:.4f}", "Absolute Floor",
+                           mmf_opt.trigger_force);
+        SPDLOG_LOGGER_INFO(log,
+                           "   - {:<21} : {:.2f} (Base: {:.2f}, Str: {:.2f})",
+                           "Penalty Scheme", mmf_opt.penalty.base,
+                           mmf_opt.penalty.base, mmf_opt.penalty.strength);
+        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {:.4f}", "Angle Tolerance",
+                           mmf_opt.angle_tol);
+      }
+      SPDLOG_LOGGER_INFO(
+          log,
           "---------------------------------------------------------------");
-      SPDLOG_DEBUG("Baseline force: {:.4f}, CI trigger: {:.4f}, MMF trigger: "
-                   "{:.4f}\nAbsolute CI trigger: {:.4f}, MMF trigger: {:.4f}",
-                   baseline_force,
-                   baseline_force *
-                       params->neb_options.climbing_image.trigger_factor,
-                   current_mmf_threshold,
-                   params->neb_options.climbing_image.trigger_force,
-                   params->neb_options.climbing_image.roneb.trigger_force);
+      // --- Improved Logging End ---
+    }
+
+    if (iteration == 0) {
+
+      SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
+                   "step size", params->optConvergenceMetricLabel, "max image",
+                   "max energy");
       SPDLOG_DEBUG(
           "---------------------------------------------------------------\n");
     }
