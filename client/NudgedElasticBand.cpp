@@ -247,8 +247,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
   long previousClimbingImage = -1;
   int ciStabilityCounter = 0;
-  // Number of stable iterations required TODO(rg): parameterize
-  const int stability_threshold = 5;
+  // Number of stable iterations required
+  const int stability_threshold =
+      params->neb_options.climbing_image_roneb_ci_stability_count;
 
   SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band calculation started.");
 
