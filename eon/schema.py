@@ -1564,6 +1564,10 @@ class NudgedElasticBandConfig(BaseModel):
         default=10,
         description="Number of steps for which the MMF is run at the CI image.",
     )
+    ci_mmf_ci_stability_count: int = Field(
+        default=5,
+        description="Number of stable iterations before settling on a CI image index.",
+    )
     ci_mmf_angle: float = Field(
         default=0.8,
         description="Alignment threshold w.r.t NEB mode.",

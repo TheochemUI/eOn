@@ -425,8 +425,10 @@ public:
                       // refinement
         double trigger_force; // Force threshold to activate hybrid dimer search
         long max_steps;       // Maximum steps for the MMF refinement phase
-        double angle_tol;     // Angular tolerance for the dimer rotation
-        double trigger_factor; // relative factor
+        long ci_stability_count; // Number of stable iterations before settling
+                                 // on a CI for MMF
+        double angle_tol;        // Angular tolerance for the dimer rotation
+        double trigger_factor;   // relative factor
         struct roneb_penalty_t {
           // penalty_factor = base + (strength * alignment);
           // std::abs(finalMode.normalized().dot(currentTangent.normalized()))

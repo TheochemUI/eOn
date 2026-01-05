@@ -334,6 +334,7 @@ Parameters::Parameters() {
   neb_options.climbing_image.roneb.trigger_factor = 0.0;
   // Use the angle criteria instead
   neb_options.climbing_image.roneb.max_steps = 1000;
+  neb_options.climbing_image.roneb.ci_stability_count = 5;
   neb_options.climbing_image.roneb.angle_tol = 0.8;
   neb_options.climbing_image.roneb.penalty.base = 0.1;
   neb_options.climbing_image.roneb.penalty.strength = 0.5;
@@ -1021,6 +1022,8 @@ int Parameters::load(FILE *file) {
         ini.GetValueF(neb_section, "ci_mmf_after_rel", roneb.trigger_factor);
     roneb.max_steps =
         ini.GetValueL(neb_section, "ci_mmf_nsteps", roneb.max_steps);
+    roneb.ci_stability_count = ini.GetValueL(
+        neb_section, "ci_mmf_ci_stability_count", roneb.ci_stability_count);
     roneb.angle_tol =
         ini.GetValueF(neb_section, "ci_mmf_angle", roneb.angle_tol);
     roneb.penalty.strength = ini.GetValueF(

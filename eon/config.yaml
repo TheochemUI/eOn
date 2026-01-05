@@ -340,6 +340,10 @@ Nudged Elastic Band:
             kind: int
             default: 10
 
+        ci_mmf_ci_stability_count:
+            kind: int
+            default: 5
+
         ci_mmf_angle:
             kind: float
             default: 0.8
