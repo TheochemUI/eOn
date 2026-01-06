@@ -53,5 +53,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
 // Helper to insert an image linearly between two others
 Matter interpolateImage(const Matter &A, const Matter &B, double fraction);
+// Helper to construct ZBL potentials
+std::shared_ptr<Potential> createZBLPotential();
 
 } // namespace helper_functions::neb_paths

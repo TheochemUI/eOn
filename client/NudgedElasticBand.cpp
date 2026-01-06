@@ -11,6 +11,7 @@
 */
 #include "NudgedElasticBand.h"
 #include "BaseStructures.h"
+#include "IDPPObjectiveFunction.hpp"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
 #include "MinModeSaddleSearch.h"
@@ -158,9 +159,39 @@ NudgedElasticBand::NudgedElasticBand(
               SPDLOG_LOGGER_INFO(log,
                                  "Decimating oversampled path ({} images) to "
                                  "{} images via cubic spline.",
-                                 relax_count, base_count);
-              return helper_functions::neb_paths::resamplePath(path,
-                                                               base_count);
+                                 path.size() - 2, base_count);
+
+              // Perform the Spline Resampling
+              path =
+                  helper_functions::neb_paths::resamplePath(path, base_count);
+
+              // POST-DECIMATION RE-RELAXATION
+              // The spline might have placed atoms in high-energy positions.
+              SPDLOG_LOGGER_INFO(
+                  log, "Relaxing decimated path to restore IDPP surface...");
+
+              // Collective IDPP objective for the new reduced path
+              std::shared_ptr<ObjectiveFunction> post_decim_objf =
+                  std::make_shared<CollectiveIDPPObjectiveFunction>(
+                      path, parametersPassed);
+
+              // Wrap with ZBL if the original method used ZBL options
+              bool use_zbl = (init_opt.method == NEBInit::SIDPP_ZBL);
+              if (use_zbl) {
+                auto zbl_pot =
+                    helper_functions::neb_paths::createZBLPotential();
+                post_decim_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(
+                    post_decim_objf, zbl_pot, path, parametersPassed, 1.0);
+              }
+
+              auto optim = helpers::create::mkOptim(
+                  post_decim_objf, parametersPassed->neb_options.opt_method,
+                  parametersPassed);
+
+              // Run a short optimization
+              optim->run(
+                  parametersPassed->neb_options.initialization.max_iterations,
+                  parametersPassed->neb_options.initialization.max_move);
             }
             return path;
           }(),
