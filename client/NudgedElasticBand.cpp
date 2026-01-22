@@ -824,14 +824,8 @@ void NudgedElasticBand::updateForces(void) {
         AtomMatrix forces = path[j]->getForces();
         for (int k = 0; k < atoms; k++) {
           // Apply 1/m scaling as per Eq (12)
-          // Note: base_k here represents (nu / 2 dt).
-          // L = (1 / (2 * base_k * m)) * Force
-          double m = atomMasses(k);
-          if (m > 1e-8) {
-            double alpha_k = 1.0 / (2.0 * base_k * m);
-            L_vecs[j].row(k) = alpha_k * forces.row(k);
-          } else {
-            L_vecs[j].row(k).setZero();
+          double alpha_k = 1.0 / (2.0 * base_k);
+          L_vecs[j].row(k) = alpha_k * forces.row(k);
           }
         }
       }
