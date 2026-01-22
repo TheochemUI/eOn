@@ -758,7 +758,6 @@ void NudgedElasticBand::updateForces(void) {
   // Mandelli & Parrinello (2021)
   // L_i = (1 / 2k) * Force_i
   bool omActive = params->neb_options.spring.om.enabled;
-  const VectorXd &atomMasses = path[0]->getMasses();
   std::vector<AtomMatrix> L_vecs;
 
   if (omActive) {
@@ -826,227 +825,228 @@ void NudgedElasticBand::updateForces(void) {
           // Apply 1/m scaling as per Eq (12)
           double alpha_k = 1.0 / (2.0 * base_k);
           L_vecs[j].row(k) = alpha_k * forces.row(k);
-          }
         }
       }
     }
-  } else if (params->neb_options.spring.weighting.enabled) {
-    // Energy weighted springs
-    // Protect against division by zero
-    double energyRange = maxEnergy - E_ref;
-    if (energyRange < 1e-10) {
-      // All images at same energy - use uniform springs
-      std::fill(springConstants.begin(), springConstants.end(), k_l);
-    } else {
-      for (int idx = 1; idx <= numImages + 1; idx++) {
-        double Ei = std::max(path[idx]->getPotentialEnergy(),
-                             path[idx - 1]->getPotentialEnergy());
-        if (Ei > E_ref) {
-          double alpha_i = (maxEnergy - Ei) / energyRange;
-          // Clamp alpha to [0, 1] for numerical safety
-          alpha_i = std::max(0.0, std::min(1.0, alpha_i));
-          springConstants[idx - 1] = (1.0 - alpha_i) * k_u + alpha_i * k_l;
-        } else {
-          springConstants[idx - 1] = k_l;
-        }
-      }
-    }
+  }
+}
+else if (params->neb_options.spring.weighting.enabled) {
+  // Energy weighted springs
+  // Protect against division by zero
+  double energyRange = maxEnergy - E_ref;
+  if (energyRange < 1e-10) {
+    // All images at same energy - use uniform springs
+    std::fill(springConstants.begin(), springConstants.end(), k_l);
   } else {
-    // If CI is not yet active, use the standard uniform spring constant
-    std::fill(springConstants.begin(), springConstants.end(),
-              params->neb_options.spring.constant);
+    for (int idx = 1; idx <= numImages + 1; idx++) {
+      double Ei = std::max(path[idx]->getPotentialEnergy(),
+                           path[idx - 1]->getPotentialEnergy());
+      if (Ei > E_ref) {
+        double alpha_i = (maxEnergy - Ei) / energyRange;
+        // Clamp alpha to [0, 1] for numerical safety
+        alpha_i = std::max(0.0, std::min(1.0, alpha_i));
+        springConstants[idx - 1] = (1.0 - alpha_i) * k_u + alpha_i * k_l;
+      } else {
+        springConstants[idx - 1] = k_l;
+      }
+    }
+  }
+}
+else {
+  // If CI is not yet active, use the standard uniform spring constant
+  std::fill(springConstants.begin(), springConstants.end(),
+            params->neb_options.spring.constant);
+}
+
+// Projection Loop
+for (long i = 1; i <= numImages; i++) {
+  // Zero out temporary force matrices
+  forceSpring.setZero();
+  forceSpringPar.setZero();
+  forceSpringPerp.setZero();
+  forceDNEB.setZero();
+
+  // set local variables
+  force = path[i]->getForces();
+  pos = path[i]->getPositions();
+  posPrev = path[i - 1]->getPositions();
+  posNext = path[i + 1]->getPositions();
+  energy = path[i]->getPotentialEnergy();
+  energyPrev = path[i - 1]->getPotentialEnergy();
+  energyNext = path[i + 1]->getPotentialEnergy();
+  posDiffNext = path[i]->pbc(posNext - pos); // R[i+1] - R[i]
+  posDiffPrev = path[i]->pbc(pos - posPrev); // R[i] - R[i-1]
+  distNext = posDiffNext.norm();             // Distance to next image
+  distPrev = posDiffPrev.norm();             // Distance to previous image
+
+  // determine the tangent
+  if (params->neb_options.climbing_image.use_old_tangent) {
+    // old tangent
+    *tangent[i] = posDiffNext;
+  } else {
+    // new improved tangent
+    // higherEnergyPrev = energyPrev > energyNext;
+    // higherEnergyNext = energyNext > energyPrev;
+
+    if (energyNext > energy && energy > energyPrev) {
+      *tangent[i] = posDiffNext;
+    } else if (energy > energyNext && energyPrev > energy) {
+      *tangent[i] = posDiffPrev;
+    } else {
+      // we are at an extremum
+      energyDiffPrev = energyPrev - energy;
+      energyDiffNext = energyNext - energy;
+
+      // calculate the energy difference to neighboring numImages
+      minDiffEnergy = min(abs(energyDiffPrev), abs(energyDiffNext));
+      maxDiffEnergy = max(abs(energyDiffPrev), abs(energyDiffNext));
+
+      // use these energy differences to weight the tangent
+      if (energyDiffPrev > energyDiffNext) {
+        *tangent[i] = posDiffNext * minDiffEnergy;
+        *tangent[i] += posDiffPrev * maxDiffEnergy;
+      } else {
+        *tangent[i] = posDiffNext * maxDiffEnergy;
+        *tangent[i] += posDiffPrev * minDiffEnergy;
+      }
+    }
   }
 
-  // Projection Loop
-  for (long i = 1; i <= numImages; i++) {
-    // Zero out temporary force matrices
-    forceSpring.setZero();
-    forceSpringPar.setZero();
-    forceSpringPerp.setZero();
-    forceDNEB.setZero();
-
-    // set local variables
-    force = path[i]->getForces();
-    pos = path[i]->getPositions();
-    posPrev = path[i - 1]->getPositions();
-    posNext = path[i + 1]->getPositions();
-    energy = path[i]->getPotentialEnergy();
-    energyPrev = path[i - 1]->getPotentialEnergy();
-    energyNext = path[i + 1]->getPotentialEnergy();
-    posDiffNext = path[i]->pbc(posNext - pos); // R[i+1] - R[i]
-    posDiffPrev = path[i]->pbc(pos - posPrev); // R[i] - R[i-1]
-    distNext = posDiffNext.norm();             // Distance to next image
-    distPrev = posDiffPrev.norm();             // Distance to previous image
-
-    // determine the tangent
-    if (params->neb_options.climbing_image.use_old_tangent) {
-      // old tangent
-      *tangent[i] = posDiffNext;
-    } else {
-      // new improved tangent
-      // higherEnergyPrev = energyPrev > energyNext;
-      // higherEnergyNext = energyNext > energyPrev;
-
-      if (energyNext > energy && energy > energyPrev) {
-        *tangent[i] = posDiffNext;
-      } else if (energy > energyNext && energyPrev > energy) {
-        *tangent[i] = posDiffPrev;
-      } else {
-        // we are at an extremum
-        energyDiffPrev = energyPrev - energy;
-        energyDiffNext = energyNext - energy;
-
-        // calculate the energy difference to neighboring numImages
-        minDiffEnergy = min(abs(energyDiffPrev), abs(energyDiffNext));
-        maxDiffEnergy = max(abs(energyDiffPrev), abs(energyDiffNext));
-
-        // use these energy differences to weight the tangent
-        if (energyDiffPrev > energyDiffNext) {
-          *tangent[i] = posDiffNext * minDiffEnergy;
-          *tangent[i] += posDiffPrev * maxDiffEnergy;
-        } else {
-          *tangent[i] = posDiffNext * maxDiffEnergy;
-          *tangent[i] += posDiffPrev * minDiffEnergy;
-        }
-      }
-    }
-
-    // Normalize tangent with safety check
-    double tangentNorm = tangent[i]->norm();
+  // Normalize tangent with safety check
+  double tangentNorm = tangent[i]->norm();
+  if (tangentNorm > 1e-10) {
+    *tangent[i] /= tangentNorm;
+  } else {
+    // Fallback:  use direction to next image
+    *tangent[i] = posDiffNext;
+    tangentNorm = tangent[i]->norm();
     if (tangentNorm > 1e-10) {
       *tangent[i] /= tangentNorm;
-    } else {
-      // Fallback:  use direction to next image
-      *tangent[i] = posDiffNext;
-      tangentNorm = tangent[i]->norm();
-      if (tangentNorm > 1e-10) {
-        *tangent[i] /= tangentNorm;
-      }
-    }
-
-    // Calculate the force perpendicular to the tangent
-    forcePerp =
-        force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
-
-    // Calculate spring forces
-    if (omActive) {
-      double base_k = params->neb_options.spring.constant;
-      if (params->neb_options.spring.om.optimize_k) {
-        // This is recalculated unnecessarily here, could be cached if
-        // optimizing k But for clarity and following the logic:
-        double avgPotForce = 0.0;
-        double avgPathCurvature = 0.0;
-        int count = 0;
-        for (long j = 1; j <= numImages; j++) {
-          avgPotForce += path[j]->getForces().norm();
-          AtomMatrix next = path[j + 1]->getPositions();
-          AtomMatrix prev = path[j - 1]->getPositions();
-          AtomMatrix curr = path[j]->getPositions();
-          AtomMatrix curvVec = path[j]->pbc(next + prev - 2.0 * curr);
-          avgPathCurvature += curvVec.norm();
-          count++;
-        }
-        if (count > 0 && avgPathCurvature > 1e-6) {
-          double scale = params->neb_options.spring.om.k_scale;
-          base_k = scale * (avgPotForce / avgPathCurvature);
-          base_k = std::max(base_k, params->neb_options.spring.om.k_min);
-          base_k = std::min(base_k, params->neb_options.spring.om.k_max);
-        }
-      }
-
-      // Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i-1) - L(i) )
-      AtomMatrix diff = path[i]->pbc(posNext + posPrev - 2.0 * pos +
-                                     L_vecs[i + 1] - L_vecs[i]);
-
-      for (int k = 0; k < atoms; k++) {
-        diff.row(k) *= atomMasses(k);
-      }
-
-      // Now multiply by the global tuning constant
-      AtomMatrix f_om_vec = base_k * diff;
-
-      // Mandelli Eq. 15: Project onto tangent
-      forceSpringPar =
-          (f_om_vec.array() * (*tangent[i]).array()).sum() * *tangent[i];
-
-    } else if (params->neb_options.spring.weighting.enabled) {
-      // Use energy-weighted constants if trigger is met
-      // Spring for segment (i) -> (i+1)
-      double kspNext = springConstants[i];
-      // Spring for segment (i-1) -> (i)
-      double kspPrev = springConstants[i - 1];
-      forceSpringPar =
-          ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
-    } else {
-      // Use uniform spring constant during initial relaxation
-      this->ksp = params->neb_options.spring.constant;
-      forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
-      forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
-    }
-
-    // DNEB forces
-    if (params->neb_options.spring.doubly_nudged && !omActive &&
-        !params->neb_options.spring.weighting.enabled) {
-      forceSpringPerp =
-          forceSpring -
-          (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
-
-      double forceSpringPerpNorm = forceSpringPerp.norm();
-      double forcePerpNorm = forcePerp.norm();
-
-      if (forceSpringPerpNorm > 1e-10 && forcePerpNorm > 1e-10) {
-        AtomMatrix forcePerpNormalized = forcePerp / forcePerpNorm;
-        forceDNEB =
-            forceSpringPerp -
-            (forceSpringPerp.array() * forcePerpNormalized.array()).sum() *
-                forcePerpNormalized;
-
-        double switching =
-            2.0 / M_PI *
-            atan(pow(forcePerpNorm, 2) / pow(forceSpringPerpNorm, 2));
-        forceDNEB *= switching;
-      } else {
-        // Force norms too small for stable DNEB calculation
-        forceDNEB.setZero();
-      }
-    } else {
-      forceDNEB.setZero();
-    }
-
-    // Apply the Climbing Image projection or standard NEB force
-    // Note: CI only activates if both the parameter is enabled AND the trigger
-    // is met
-    if (params->neb_options.climbing_image.enabled && i == maxEnergyImage) {
-      climbingImage = maxEnergyImage;
-      // Climbing image:  invert force component along tangent
-      *projectedForce[i] =
-          force -
-          (2.0 * (force.array() * (*tangent[i]).array()).sum() * *tangent[i]) +
-          forceDNEB;
-    } else { // non-climbing images
-      // Regular image
-      // sum the spring and potential forces for the neb force
-      if (params->neb_options.spring.use_elastic_band && !omActive &&
-          !params->neb_options.spring.weighting.enabled) {
-        *projectedForce[i] = forceSpring + force;
-      } else {
-        *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
-      }
-    }
-
-    // Zero net translational force (if all atoms are free)
-    if (path[i]->numberOfFreeAtoms() == path[i]->numberOfAtoms()) {
-      for (int j = 0; j <= 2; j++) {
-        double translationMag = projectedForce[i]->col(j).sum();
-        int natoms = projectedForce[i]->col(j).size();
-        projectedForce[i]->col(j).array() -= translationMag / ((double)natoms);
-      }
     }
   }
 
-  // Flag that forces are fresh
-  movedAfterForceCall = false;
-  return;
+  // Calculate the force perpendicular to the tangent
+  forcePerp =
+      force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
+
+  // Calculate spring forces
+  if (omActive) {
+    double base_k = params->neb_options.spring.constant;
+    if (params->neb_options.spring.om.optimize_k) {
+      // This is recalculated unnecessarily here, could be cached if
+      // optimizing k But for clarity and following the logic:
+      double avgPotForce = 0.0;
+      double avgPathCurvature = 0.0;
+      int count = 0;
+      for (long j = 1; j <= numImages; j++) {
+        avgPotForce += path[j]->getForces().norm();
+        AtomMatrix next = path[j + 1]->getPositions();
+        AtomMatrix prev = path[j - 1]->getPositions();
+        AtomMatrix curr = path[j]->getPositions();
+        AtomMatrix curvVec = path[j]->pbc(next + prev - 2.0 * curr);
+        avgPathCurvature += curvVec.norm();
+        count++;
+      }
+      if (count > 0 && avgPathCurvature > 1e-6) {
+        double scale = params->neb_options.spring.om.k_scale;
+        base_k = scale * (avgPotForce / avgPathCurvature);
+        base_k = std::max(base_k, params->neb_options.spring.om.k_min);
+        base_k = std::min(base_k, params->neb_options.spring.om.k_max);
+      }
+    }
+
+    // Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i-1) - L(i) )
+    AtomMatrix diff =
+        path[i]->pbc(posNext + posPrev - 2.0 * pos + L_vecs[i + 1] - L_vecs[i]);
+
+    // Removed incorrect mass multiplication. base_k is stiffness
+    // (Force/Length), so base_k * diff (Length) = Force.
+
+    // Now multiply by the global tuning constant
+    AtomMatrix f_om_vec = base_k * diff;
+
+    // Mandelli Eq. 15: Project onto tangent
+    forceSpringPar =
+        (f_om_vec.array() * (*tangent[i]).array()).sum() * *tangent[i];
+
+  } else if (params->neb_options.spring.weighting.enabled) {
+    // Use energy-weighted constants if trigger is met
+    // Spring for segment (i) -> (i+1)
+    double kspNext = springConstants[i];
+    // Spring for segment (i-1) -> (i)
+    double kspPrev = springConstants[i - 1];
+    forceSpringPar =
+        ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
+  } else {
+    // Use uniform spring constant during initial relaxation
+    this->ksp = params->neb_options.spring.constant;
+    forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
+    forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
+  }
+
+  // DNEB forces
+  if (params->neb_options.spring.doubly_nudged && !omActive &&
+      !params->neb_options.spring.weighting.enabled) {
+    forceSpringPerp =
+        forceSpring -
+        (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
+
+    double forceSpringPerpNorm = forceSpringPerp.norm();
+    double forcePerpNorm = forcePerp.norm();
+
+    if (forceSpringPerpNorm > 1e-10 && forcePerpNorm > 1e-10) {
+      AtomMatrix forcePerpNormalized = forcePerp / forcePerpNorm;
+      forceDNEB =
+          forceSpringPerp -
+          (forceSpringPerp.array() * forcePerpNormalized.array()).sum() *
+              forcePerpNormalized;
+
+      double switching =
+          2.0 / M_PI *
+          atan(pow(forcePerpNorm, 2) / pow(forceSpringPerpNorm, 2));
+      forceDNEB *= switching;
+    } else {
+      // Force norms too small for stable DNEB calculation
+      forceDNEB.setZero();
+    }
+  } else {
+    forceDNEB.setZero();
+  }
+
+  // Apply the Climbing Image projection or standard NEB force
+  // Note: CI only activates if both the parameter is enabled AND the trigger
+  // is met
+  if (params->neb_options.climbing_image.enabled && i == maxEnergyImage) {
+    climbingImage = maxEnergyImage;
+    // Climbing image:  invert force component along tangent
+    *projectedForce[i] =
+        force -
+        (2.0 * (force.array() * (*tangent[i]).array()).sum() * *tangent[i]) +
+        forceDNEB;
+  } else { // non-climbing images
+    // Regular image
+    // sum the spring and potential forces for the neb force
+    if (params->neb_options.spring.use_elastic_band && !omActive &&
+        !params->neb_options.spring.weighting.enabled) {
+      *projectedForce[i] = forceSpring + force;
+    } else {
+      *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
+    }
+  }
+
+  // Zero net translational force (if all atoms are free)
+  if (path[i]->numberOfFreeAtoms() == path[i]->numberOfAtoms()) {
+    for (int j = 0; j <= 2; j++) {
+      double translationMag = projectedForce[i]->col(j).sum();
+      int natoms = projectedForce[i]->col(j).size();
+      projectedForce[i]->col(j).array() -= translationMag / ((double)natoms);
+    }
+  }
+}
+
+// Flag that forces are fresh
+movedAfterForceCall = false;
+return;
 }
 
 // Print NEB image data
