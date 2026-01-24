@@ -44,7 +44,7 @@ TEST_F(ObsTest, TestMatter) {
   gpr::Observation o = helper_functions::eon_matter_to_init_obs(matter);
   EXPECT_EQ(o.R.extractEigenMatrix(), matter->getPositions())
       << "Positions do not match";
-  EXPECT_EQ(o.G.extractEigenMatrix(), matter->getForces())
+  EXPECT_EQ(o.G.extractEigenMatrix() * -1, matter->getForces())
       << "Forces do not match";
   EXPECT_EQ(o.E[0], matter->getPotentialEnergy())
       << "Potential energy does not match";
