@@ -373,39 +373,94 @@ public:
   double hessianZeroFreqValue;
 
   // [Nudged Elastic Band] //
-  long nebImages;
-  long nebMaxIterations;
-  double nebSpring;
-  bool nebClimbingImageMethod;
-  bool nebClimbingImageConvergedOnly;
-  bool nebOldTangent;
-  bool nebDoublyNudged;
-  bool nebDoublyNudgedSwitching;
-  string nebOptMethod;
-  bool nebElasticBand;
-  double nebConvergedForce; // force convergence criterion required for an
-                            // optimization
-  double nebciAfter;        // force convergence before ci-neb is used
-  // For energy weighted
-  double nebKSPMin;
-  double nebKSPMax;
-  bool nebEnergyWeighted;
+  struct neb_options_t {
+    // Core parameters for the chain-of-states simulation
+    long image_count;    // Number of replicas along the reaction coordinate
+    long max_iterations; // Maximum steps for the path optimization
+    OptType opt_method; // Optimization algorithm (e.g., QuickMin, FIRE, L-BFGS)
+    double
+        force_tolerance; // Convergence criterion for the root-mean-square force
+    struct mmf_peak_options_t {
+      bool enabled;     // Initialize mode estimates for each peak
+      double tolerance; // Cutoff for generating peaks
+    } mmf_peaks;
 
-  // For hybrid dimer-NEB
-  bool nebciWithMMF;
-  double nebciMMFAfter;
-  long nebciMMFnSteps;
+    struct spring_options_t {
+      double constant;       // The spring constant (k) connecting images
+      bool use_elastic_band; // Toggle for the elastic band projection
+      bool doubly_nudged;    // Inclusion of the perpendicular spring force
+                             // components
+      bool use_switching;    // Switching function for doubly nudged NEB
 
-  // Initial path
-  NEBInit neb_initializer;
-  string nebIpath;    // file containing list of .con files for the initial path
-  int nebInitMaxIter; // Default: 5000
-  double nebInitMaxMove;   // Default: 0.1
-  double nebInitForceTol;  // Default: 0.001
-  double sidppGrowthAlpha; // Default: 0.33
-  // Minimize endpoints
-  bool nebMinimEP;
-  bool nebMinimEPIpath;
+      struct energy_weighting_t {
+        bool
+            enabled; // Adjusts spring constants based on image potential energy
+        double trigger; // Threshold to activate energy weighted springs
+        double k_min;   // Minimum spring constant for low-energy regions
+        double k_max; // Maximum spring constant for high-energy barrier regions
+      } weighting;
+      struct onsager_machlup_t {
+        bool enabled; // Main toggle for OM-NEB
+
+        // Adaptive Spring Constant Logic
+        bool optimize_k; // Re-calculate k_om every step?
+        double k_scale;  // Scaling factor for the heuristic (dimensionless)
+
+        // Optional: Safety bounds to prevent numerical explosions
+        double k_min;
+        double k_max;
+      } om;
+    } spring;
+
+    struct climbing_image_options_t {
+      bool enabled; // Enables the Climbing Image (CI-NEB) modification
+      bool
+          converged_only; // Wait for initial MEP convergence before starting CI
+      bool use_old_tangent;  // Algorithm choice for the local tangent estimate
+      double trigger_force;  // Force threshold to activate the CI-NEB algorithm
+      double trigger_factor; // relative factor
+
+      struct hybrid_dimer_t {
+        bool use_mmf; // Integrates Min-Mode Following (MMF) for saddle point
+                      // refinement
+        double trigger_force; // Force threshold to activate hybrid dimer search
+        long max_steps;       // Maximum steps for the MMF refinement phase
+        long ci_stability_count; // Number of stable iterations before settling
+                                 // on a CI for MMF
+        double angle_tol;        // Angular tolerance for the dimer rotation
+        double trigger_factor;   // relative factor
+        struct roneb_penalty_t {
+          // penalty_factor = base + (strength * alignment);
+          // std::abs(finalMode.normalized().dot(currentTangent.normalized()))
+          double strength; // amount by which the threshold is reduced
+          double base;     // baseline
+        } penalty;
+      } roneb;
+    } climbing_image;
+
+    struct path_initialization_t {
+      NEBInit method; // Method for generating the initial guess (e.g., IDPP)
+      std::string
+          input_path;     // Path to a file containing initial image coordinates
+      int max_iterations; // Maximum iterations for the path pre-optimizer
+      int nsteps;         // Iterations for the path pre-optimizer
+      double max_move;    // Maximum displacement per step during initialization
+      double force_tolerance; // Convergence criterion for the initial path
+                              // generation
+      double sidpp_alpha; // Growth parameter for Steepest Intensity Decent Path
+                          // Probing
+      OptType opt_method; // for the IDPP
+      bool oversampling;
+      int oversampling_factor;
+    } initialization;
+
+    struct endpoint_options_t {
+      bool minimize; // Flag to optimize the reactant and product geometries
+                     // first
+      bool use_path_file; // Pull endpoint geometries from the initial path file
+    } endpoints;
+
+  } neb_options;
 
   // [Molecular Dynamics] //
   double mdTimeStepInput;

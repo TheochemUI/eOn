@@ -1464,12 +1464,44 @@ class NudgedElasticBandConfig(BaseModel):
     """
     This defaults to being the same as :any:`eon.schema.OptimizerConfig.converged_force`
     """
+    onsager_machlup: bool = Field(
+        default=False,
+        description="Indicates if the Onsager-Machlup (OM) Action is used.",
+    )
+    """
+    Method as demonstrated in :cite:t:`neb-mandelliModifiedNudgedElastic2021`.
+    """
+    om_optimize_k: bool = Field(
+        default=True,
+        description="Indicates if the Onsager-Machlup (OM) Action spacing is recalculated at each step.",
+    )
+    om_k_scale: float = Field(
+        default=1.0,
+        description="Indicates stiffness of OM adaption of springs.",
+    )
+    """
+    Stiffness:
+    - > 1 (stiff) provides a smoother path but may "cut corners" near the saddle
+    - < 1 (softer) hugs valleys but paths may become jagged/noisy
+    """
+    om_k_min: float = Field(
+        default=0.1,
+        description="Minimum stiffness.",
+    )
+    om_k_max: float = Field(
+        default=100,
+        description="Minimum stiffness.",
+    )
     energy_weighted: bool = Field(
         default=False, description="Indicates if the energy-weighted method is used."
     )
     """
     Method as demonstrated in :cite:t:`neb-asgeirssonNudgedElasticBand2021`.
     """
+    ew_trigger: float = Field(
+        default=10.0,
+        description="Threshold for the energy-weighted method.",
+    )
     ew_ksp_min: float = Field(
         default=0.972,
         description="Minimum value for KSP in the energy-weighted method.",
@@ -1522,7 +1554,7 @@ class NudgedElasticBandConfig(BaseModel):
     )
     ci_mmf: bool = Field(
         default=False,
-        description="Use an MMF method for a few steps at the CI.",
+        description="Use an MMF method for the CI.",
     )
     ci_mmf_after: float = Field(
         default=0.5,
@@ -1531,6 +1563,30 @@ class NudgedElasticBandConfig(BaseModel):
     ci_mmf_nsteps: int = Field(
         default=10,
         description="Number of steps for which the MMF is run at the CI image.",
+    )
+    ci_mmf_ci_stability_count: int = Field(
+        default=5,
+        description="Number of stable iterations before settling on a CI image index.",
+    )
+    ci_mmf_angle: float = Field(
+        default=0.8,
+        description="Alignment threshold w.r.t NEB mode.",
+    )
+    ci_mmf_penalty_base: float = Field(
+        default=0.1,
+        description="Baseline for losing mode.",
+    )
+    ci_mmf_penalty_strength: float = Field(
+        default=0.5,
+        description="Multiplier for losing mode.",
+    )
+    setup_mmf_peaks: bool = Field(
+        default=True,
+        description="Generate modes and peak configurations.",
+    )
+    mmf_peak_tolerance: float = Field(
+        default=0.05,
+        description="Generate modes and peak configurations.",
     )
 
 

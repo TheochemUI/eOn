@@ -15,6 +15,7 @@
 #include "ImprovedDimer.h"
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
+#include "eonExceptions.hpp"
 
 using namespace helper_functions;
 
@@ -40,19 +41,67 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   log = spdlog::get("combi");
 }
 
+void ImprovedDimer::setReferenceMode(const VectorXd &ref) {
+  fixedReferenceMode = ref;
+  if (fixedReferenceMode.norm() > 1e-10) {
+    fixedReferenceMode.normalize();
+  }
+  hasFixedReference = true;
+}
+
+void ImprovedDimer::clearReferenceMode() { hasFixedReference = false; }
+
 void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
 
   VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),
                                             3 * matter->numberOfAtoms());
   tau = initialDirection.array() * matter->getFreeV().array();
-  tau = initialDirection;
-  tau.normalize();
+  // Handle initial direction tracking
+  rotationDidConverge = true;
+  foundNegativeCurvature = false;
+  if (tau.norm() > 1e-10) {
+    tau.normalize();
+  } else {
+    // Fallback if the tangent was zero on free atoms (unlikely but safe)
+    tau.setRandom();
+    tau = tau.array() * matter->getFreeV().array();
+    tau.normalize();
+  }
+  // RONEB setup
+  // Track the best (most negative) curvature and corresponding mode
+  double bestNegativeCurvature = std::numeric_limits<double>::max();
+  VectorXd bestTau = tau;
+  VectorXd bestX0Positions; // Positions at best curvature
+  VectorXd bestG0;          // Gradient at best curvature
+  VectorXd bestG1;          // Gradient at x1 for best curvature
+
+  // Reference mode tracking
+  VectorXd referenceMode;
+  // This represents the "NEB Tangent" restricted to the free atoms.
+  if (hasFixedReference) {
+    // Use the persistent NEB tangent
+    referenceMode = fixedReferenceMode;
+  } else {
+    // Standard Dimer behavior: preventing mode switching within one force call
+    referenceMode = tau;
+  }
+  // --- end
   *x0 = *matter;
   *x1 = *matter;
   VectorXd x0_r = x0->getPositionsV();
+  bestX0Positions = x0_r;
 
   x1->setPositionsV(x0_r + params->finiteDifference * tau);
+  // Quick check: If we stepped into a wall, flip the tangent immediately
+  // This saves the optimizer from fighting a huge gradient in the first step
+  if (x1->getPotentialEnergy() - x0->getPotentialEnergy() >
+      10.0 * params->finiteDifference) {
+    tau = -tau;
+    x1->setPositionsV(x0_r + params->finiteDifference * tau);
+    SPDLOG_LOGGER_DEBUG(
+        log, "[IDimer] Initial tangent flipped due to high energy wall.");
+  }
 
   if (params->dimerOptMethod == OPT_LBFGS) {
     s.clear();
@@ -90,6 +139,9 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Calculate the gradients on x0 and x1, g0 and g1, respectively.
   VectorXd g0 = -x0->getForcesV();
   VectorXd g1 = -x1->getForcesV();
+
+  bestG0 = g0;
+  bestG1 = g1;
 
   positions.clear();
   gradients.clear();
@@ -203,11 +255,22 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     // Calculate the curvature along tau, C_tau.
     C_tau = (g1 - g0).dot(tau) / delta;
 
+    // Track the best negative curvature and its corresponding eigenvector
+    if (C_tau < bestNegativeCurvature) {
+      bestNegativeCurvature = C_tau;
+      bestTau = tau;
+      bestX0Positions = x0->getPositionsV();
+      bestG0 = g0;
+      bestG1 = g1;
+      foundNegativeCurvature = (C_tau < 0.0);
+    }
+
     // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
     double d_C_tau_d_phi = 2.0 * (g1 - g0).dot(theta) / delta;
     phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
     statsAngle = phi_prime * (180.0 / M_PI);
 
+    double alignment = std::abs(tau.dot(referenceMode));
     if (abs(phi_prime) > phi_tol) {
       double b1 = 0.5 * d_C_tau_d_phi;
 
@@ -286,15 +349,48 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       statsRotations += 1;
       SPDLOG_LOGGER_INFO(
           log,
-          "[IDimerRot]  -----   ---------   ----------   ------------------   "
-          "{:9.4f}   {:7.3f}   {:6.2f}   {:4}",
-          C_tau, statsTorque, statsAngle, statsRotations);
+          "[IDimerRot]  -----   ---------   ----------   ----------   "
+          "{:9.4f}   {:7.3f}   {:6.2f}   {:4}   {:5.3f}",
+          C_tau, statsTorque, statsAngle, statsRotations, alignment);
     } else {
       SPDLOG_LOGGER_INFO(
           log,
-          "[IDimerRot]  -----   ---------   ----------   ------------------   "
-          "{:9.4f}   {:7.3f}   ------   ----",
-          C_tau, F_R.norm() / delta);
+          "[IDimerRot]  -----   ---------   ----------   ----------   "
+          "{:9.4f}   {:7.3f}   ------   ----   {:5.3f}",
+          C_tau, F_R.norm() / delta, alignment);
+    }
+    if (alignment < params->neb_options.climbing_image.roneb.angle_tol &&
+        params->neb_options.climbing_image.roneb.use_mmf) {
+      SPDLOG_LOGGER_WARN(
+          log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
+
+      rotationDidConverge = false;
+
+      // Restore the best negative curvature state
+      if (bestNegativeCurvature < 0.0) {
+        C_tau = bestNegativeCurvature;
+        tau = bestTau;
+
+        // Restore x0 to the position where we had best curvature
+        x0->setPositionsV(bestX0Positions);
+        x1->setPositionsV(bestX0Positions + delta * bestTau);
+
+        // Also update the input matter to reflect the restored position
+        *matter = *x0;
+
+        SPDLOG_LOGGER_DEBUG(
+            log, "Restored best negative curvature state:  C_tau={:.4f}",
+            C_tau);
+        throw eonc::DimerModeRestoredException();
+      } else {
+        // Never found negative curvature - keep current (positive) value
+        // to signal we're not at a saddle
+        rotationDidConverge = false;
+        SPDLOG_LOGGER_WARN(
+            log, "Never found negative curvature.  Final C_tau: {:.4f}", C_tau);
+        throw eonc::DimerModeLostException();
+      }
+      break;
     }
 
   } while (abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and
