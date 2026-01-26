@@ -17,6 +17,7 @@
 #include "Lanczos.h"
 #include "LowestEigenmode.h"
 #include "SaddleSearchJob.h"
+#include "eonExceptions.hpp"
 #include <memory>
 #ifdef WITH_GPRD
 #include "AtomicGPDimer.h"
@@ -50,6 +51,23 @@ public:
 
     if (!fdstep || iteration == 0) {
       minModeMethod->compute(matter, eigenvector);
+      // Check if ImprovedDimer lost the mode immediately after compute()
+      auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
+      if (dimer && !dimer->rotationDidConverge) {
+        // Check if it restored to a valid negative curvature state
+        if (dimer->getEigenvalue() < 0.0) {
+          // Dimer restored to best state - update eigenvector and continue
+          // but signal that we should probably stop soon
+          eigenvector = minModeMethod->getEigenvector();
+          SPDLOG_DEBUG(
+              "[MinMode] Dimer restored to best state with C_tau={:.4f}",
+              dimer->getEigenvalue());
+          throw eonc::DimerModeRestoredException();
+        } else {
+          // Truly lost - no valid state to restore to
+          throw eonc::DimerModeLostException();
+        }
+      }
       iteration++;
     }
 
@@ -171,6 +189,16 @@ MinModeSaddleSearch::MinModeSaddleSearch(
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
     if (params->dimerImproved) {
       minModeMethod = std::make_shared<ImprovedDimer>(matter, params, pot);
+      if (true) { // TODO(rg): convert to param
+        auto dimer = std::static_pointer_cast<ImprovedDimer>(minModeMethod);
+
+        // Convert the input AtomMatrix 'mode' to VectorXd
+        VectorXd refVec =
+            VectorXd::Map(mode.data(), 3 * matter->numberOfAtoms());
+        refVec = refVec.array() * matter->getFreeV().array();
+
+        dimer->setReferenceMode(refVec);
+      }
     } else {
       minModeMethod = std::make_shared<Dimer>(matter, params, pot);
     }
@@ -220,7 +248,7 @@ int MinModeSaddleSearch::run() {
                          "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
                          "{:7s}   {:6s}   {:4s}\n",
                          "Step", "Step Size", "Delta E", forceLabel,
-                         "Curvature", "Torque", "Angle", "Rots");
+                         "Curvature", "Torque", "Angle", "Rots", "Alignment");
     } else if (params->saddleMinmodeMethod ==
                LowestEigenmode::MINMODE_LANCZOS) {
       SPDLOG_LOGGER_INFO(
@@ -290,17 +318,40 @@ int MinModeSaddleSearch::run() {
 
       AtomMatrix pos = matter->getPositions();
 
-      if (params->saddleBowlBreakout) {
-        // use negative step to communicate that the system is the negative
-        // region and a max step should be performed
-        if ((minModeMethod->getEigenvalue() > 0) and
-            (params->optMethod == OptType::CG)) {
-          optStatus = optim->step(-params->optMaxMove);
+      try {
+        if (params->saddleBowlBreakout) {
+          // use negative step to communicate that the system is the negative
+          // region and a max step should be performed
+          if ((minModeMethod->getEigenvalue() > 0) and
+              (params->optMethod == OptType::CG)) {
+            optStatus = optim->step(-params->optMaxMove);
+          } else {
+            optStatus = optim->step(params->optMaxMove);
+          }
         } else {
           optStatus = optim->step(params->optMaxMove);
         }
-      } else {
-        optStatus = optim->step(params->optMaxMove);
+      } catch (const eonc::DimerModeRestoredException &e) {
+        // Dimer lost mode but restored to valid negative curvature state
+        // Check if we're now converged
+        SPDLOG_LOGGER_DEBUG(
+            log, "Dimer restored to best state.  Checking convergence...");
+
+        // Force might have changed - recompute convergence
+        if (objf->isConverged()) {
+          SPDLOG_LOGGER_DEBUG(log, "Converged after dimer restoration.");
+          status = STATUS_GOOD;
+        } else {
+          // Not converged, but we have a valid state - report as partial
+          // success
+          status = STATUS_DIMER_RESTORED_BEST;
+        }
+        break;
+      } catch (const eonc::DimerModeLostException &e) {
+        // Truly lost the mode with no valid state
+        SPDLOG_LOGGER_WARN(log, "Dimer lost mode completely. Aborting.");
+        status = STATUS_DIMER_LOST_MODE;
+        break;
       }
 
       if (optStatus < 0) {
@@ -366,17 +417,36 @@ int MinModeSaddleSearch::run() {
         matter->matter2con(climb.str(), true);
       }
 
-      if (de > params->saddleMaxEnergy) {
-        status = STATUS_BAD_HIGH_ENERGY;
-        break;
-      }
-
       if (params->checkpoint) {
         matter->matter2con("displacement_cp.con", false);
         FILE *fileMode = fopen("mode_cp.dat", "wb");
         helper_functions::saveMode(fileMode, matter,
                                    minModeMethod->getEigenvector());
         fclose(fileMode);
+      }
+
+      if (de > params->saddleMaxEnergy) {
+        status = STATUS_BAD_HIGH_ENERGY;
+        break;
+      }
+
+      if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+        // We need to cast the pointer to access the ImprovedDimer-specific flag
+        auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
+
+        if (dimer && !dimer->rotationDidConverge) {
+          // This shouldn't happen if we caught the exceptions above,
+          // but keep as safety check
+          if (dimer->getEigenvalue() < 0.0) {
+            SPDLOG_LOGGER_DEBUG(log,
+                                "Dimer restored to valid state.  C_tau={:.4f}",
+                                dimer->getEigenvalue());
+            status = STATUS_DIMER_RESTORED_BEST;
+          } else {
+            status = STATUS_DIMER_LOST_MODE;
+          }
+          break;
+        }
       }
     }
 

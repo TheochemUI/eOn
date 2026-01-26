@@ -141,7 +141,7 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
   }
 
   // 2. Project Forces and Add Springs (The "NEB" part of IDPP-NEB)
-  double k = params->nebSpring; // Use user's spring constant
+  double k = params->neb_options.spring.constant;
 
   for (size_t i = 1; i <= nImgs; ++i) {
     Eigen::MatrixXd f = rawForces[i];

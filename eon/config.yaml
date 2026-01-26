@@ -238,13 +238,45 @@ Nudged Elastic Band:
             kind: boolean
             default: false
 
+        setup_mmf_peaks:
+            kind: boolean
+            default: true
+
+        mmf_peak_tolerance:
+            kind: float
+            default: 0.05
+
         converged_force:
             kind: float
             default: 0.01
 
+        onsager_machlup:
+            kind: boolean
+            default: false
+
+        om_optimize_k:
+            kind: boolean
+            default: true
+
+        om_k_scale:
+            kind: float
+            default: 1.0
+
+        om_k_min:
+            kind: float
+            default: 0.1
+
+        om_k_max:
+            kind: float
+            default: 100.0
+
         energy_weighted:
             kind: boolean
             default: false
+
+        ew_trigger:
+            kind: float
+            default: 10.0
 
         ew_ksp_min:
             kind: float
@@ -307,6 +339,22 @@ Nudged Elastic Band:
         ci_mmf_nsteps:
             kind: int
             default: 10
+
+        ci_mmf_ci_stability_count:
+            kind: int
+            default: 5
+
+        ci_mmf_angle:
+            kind: float
+            default: 0.8
+
+        ci_mmf_penalty_strength:
+            kind: float
+            default: 0.5
+
+        ci_mmf_penalty_base:
+            kind: float
+            default: 0.1
 
 ################################################################################
 

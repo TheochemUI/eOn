@@ -43,7 +43,9 @@ public:
     STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE, // 16
     STATUS_BAD_NO_BARRIER,                 // 17
     STATUS_ZEROMODE_ABORT,                 // 18
-    STATUS_OPTIMIZER_ERROR                 // 19
+    STATUS_OPTIMIZER_ERROR,                // 19
+    STATUS_DIMER_LOST_MODE,                // 20
+    STATUS_DIMER_RESTORED_BEST             // 21
   };
 
   MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
