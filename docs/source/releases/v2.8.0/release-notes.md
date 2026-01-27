@@ -1,15 +1,15 @@
 ---
 myst:
   html_meta:
-    "description": "Detailed release notes for EON v2.8.0, covering new features, enhancements, build system improvements, and documentation updates."
-    "keywords": "EON v2.8.0 release notes, new features, enhancements, bug fixes"
+    "description": "Detailed release notes for eOn v2.8.0, covering new features, enhancements, build system improvements, and documentation updates."
+    "keywords": "eOn v2.8.0 release notes, new features, enhancements, bug fixes"
 ---
 
 # Release notes
 
 ## [2.8.0] - 2025-09-04
 
-This is a landmark release for EON, representing over five years of dedicated
+This is a landmark release for eOn, representing over five years of dedicated
 development. The entire framework has been modernized to be more powerful,
 easier to use, and more accessible to researchers across all major platforms.
 This release introduces cutting-edge simulation methods, a vast expansion of

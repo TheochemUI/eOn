@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "A step-by-step tutorial on running an Adaptive Kinetic Monte Carlo (aKMC) simulation with EON, demonstrated with a Pt heptamer island on a Pt(111) surface."
-    "keywords": "EON aKMC tutorial, Kinetic Monte Carlo, Pt(111), saddle search, simulation"
+    "description": "A step-by-step tutorial on running an Adaptive Kinetic Monte Carlo (aKMC) simulation with eOn, demonstrated with a Pt heptamer island on a Pt(111) surface."
+    "keywords": "eOn aKMC tutorial, Kinetic Monte Carlo, Pt(111), saddle search, simulation"
 ---
 
 # AKMC Tutorial
@@ -24,7 +24,7 @@ The Pt heptamer island on a Pt(111) surface.
 After following the [installation instructions](project:../install/index.md):
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit
+eOngit/examples/akmc-pt on main via 🅒 eongit
 ➜ python -m eon.server
 Eon version 1d9860cf
 State list path does not exist; Creating: .//states/
@@ -38,24 +38,24 @@ Created 2 searches
 Currently in state 0 with confidence 0.000000
 ```
 
-Each time you run EON, the server registers results from the previous execution.
-The first time the EON server is run, there are no results to register. Two
+Each time you run eOn, the server registers results from the previous execution.
+The first time the eOn server is run, there are no results to register. Two
 saddle searches are executed, but their results will only be registered on the
-next execution of EON. You can see this by looking at the `search_results.txt`
+next execution of eOn. You can see this by looking at the `search_results.txt`
 file in your states directory.
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit
+eOngit/examples/akmc-pt on main via 🅒 eongit
 ➜ cat states/0/search_results.txt
     wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
 -------------------------------------------------------------------------------------
 ```
 
-It's empty. We can register the results of the first execution of EON by running
+It's empty. We can register the results of the first execution of eOn by running
 the server again
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit
+eOngit/examples/akmc-pt on main via 🅒 eongit
 ➜ python -m eon.server
 Eon version 1d9860cf
 Registering results
@@ -74,7 +74,7 @@ Currently in state 0 with confidence 0.000000
 Now some results should be present in the table (these will vary):
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit took 10s
+eOngit/examples/akmc-pt on main via 🅒 eongit took 10s
 ➜ cat states/0/search_results.txt
     wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
 -------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ directory:
 
 ```{code-block} bash
 
-EONgit/examples/akmc-pt on main via 🅒 eongit
+eOngit/examples/akmc-pt on main via 🅒 eongit
 ➜ cat states/0/processtable
  proc #    saddle energy   prefactor   product   product energy product prefactor  barrier         rate repeats
       0      -1774.80409 7.32913e+12        -1      -1775.00608       2.64735e+12  0.98707  1.91855e-04       0
@@ -99,7 +99,7 @@ You can find the files relevant to a process in the `procdata` directory of a
 given state:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit
+eOngit/examples/akmc-pt on main via 🅒 eongit
 ➜ ls states/0/procdata
 mode_0.dat  product_0.con  reactant_0.con  results_0.dat  saddle_0.con  stdout_0.dat
 mode_1.dat  product_1.con  reactant_1.con  results_1.dat  saddle_1.con  stdout_1.dat
@@ -117,7 +117,7 @@ align: center
 Left to right, reactant, saddle and product configurations.
 ```
 
-Subsequent runs of EON will show an increasing confidence as the event table (in
+Subsequent runs of eOn will show an increasing confidence as the event table (in
 the specified energy window) becomes complete:
 
 ```{code-block} bash
@@ -132,7 +132,7 @@ We need to explore a larger part of the phase space until a KMC step can be
 taken. To iterate over states quickly, consider a `for` loop in `bash`:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit took 7s
+eOngit/examples/akmc-pt on main via 🅒 eongit took 7s
 ➜ for i in {0..60}; do python -m eon.server; done
 ```
 
@@ -140,7 +140,7 @@ Eventually, the simulation will reach the required confidence and take a KMC
 step to the next state:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit
+eOngit/examples/akmc-pt on main via 🅒 eongit
 ➜ python -m eon.server
 Registering results
 Processed 4 results
@@ -155,7 +155,7 @@ currently in state 1 with confidence 0.000000
 This will then be reflected in the `dynamics.txt` file of the simulation directory:
 
 ```{code-block} bash
-EONgit/examples/akmc-pt on main via 🅒 eongit
+eOngit/examples/akmc-pt on main via 🅒 eongit
 ➜ cat dynamics.txt
  step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate        energy
 -----------------------------------------------------------------------------------------------------------------------------

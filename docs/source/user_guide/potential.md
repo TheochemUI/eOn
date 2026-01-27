@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "A list and description of interatomic potentials supported by EON, including vendored potentials and interfaces to external codes like VASP, LAMMPS, and ASE."
-    "keywords": "EON potential, interatomic potential, VASP, LAMMPS, ASE, EMT, EAM"
+    "description": "A list and description of interatomic potentials supported by eOn, including vendored potentials and interfaces to external codes like VASP, LAMMPS, and ASE."
+    "keywords": "eOn potential, interatomic potential, VASP, LAMMPS, ASE, EMT, EAM"
 ---
 
 # Potential

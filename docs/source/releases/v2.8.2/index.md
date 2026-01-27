@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Overview of the EON v2.8.1 release, introducing uncertainty quantification for Metatomic potentials and updating core dependencies."
-    "keywords": "EON v2.8.2, release, uncertainty"
+    "description": "Overview of the eOn v2.8.1 release, introducing uncertainty quantification for Metatomic potentials and updating core dependencies."
+    "keywords": "eOn v2.8.2, release, uncertainty"
 ---
 
 ## [v2.8.2] - 2025-12-01

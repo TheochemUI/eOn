@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Historical documentation for developers on the process of migrating the EON project from Subversion (SVN) to Git."
-    "keywords": "EON SVN migration, git svn, version control history, repository migration"
+    "description": "Historical documentation for developers on the process of migrating the eOn project from Subversion (SVN) to Git."
+    "keywords": "eOn SVN migration, git svn, version control history, repository migration"
 ---
 
 # Migrating from SVN
