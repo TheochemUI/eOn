@@ -1,16 +1,16 @@
 ---
 myst:
   html_meta:
-    "description": "Official documentation for the EON software package, a tool for modeling long-timescale dynamics in atomic systems with methods like aKMC, NEB, and Parallel Replica Dynamics."
-    "keywords": "EON, long-timescale dynamics, aKMC, NEB, Parallel Replica Dynamics"
+    "description": "Official documentation for the eOn software package, a tool for modeling long-timescale dynamics in atomic systems with methods like aKMC, NEB, and Parallel Replica Dynamics."
+    "keywords": "eOn, long-timescale dynamics, aKMC, NEB, Parallel Replica Dynamics"
 ---
 
 # eOn: Long Timescale Dynamics Software
 
-The EON software package contains a set of algorithms used primarily to model
+The eOn software package contains a set of algorithms used primarily to model
 the evolution of atomic scale systems over long time scales. Standard molecular
 dynamics algorithms, based upon solving Newton's equations, are limited by the
-femtosecond time scale of atomic vibrations. EON simulations are designed for
+femtosecond time scale of atomic vibrations. eOn simulations are designed for
 rare event systems where the interesting dynamics can be described by fast
 transition between stable states. In each algorithm, the residence time in the
 stable states is modeled with statistical mechanics, and the important
@@ -33,7 +33,7 @@ align: center
 An overview of some systems modeled with eOn
 ```
 
-However, the systems which are best modeled using EON are those in which the
+However, the systems which are best modeled using eOn are those in which the
 important kinetics are governed by rare events. Diffusion in solids and chemical
 reactions at surface are particularly suitable when there is a clear separation
 of time scales between atomic vibrations at the diffusion or catalytic events of
@@ -85,7 +85,7 @@ python -m eon.server
 We support a variety of methods to provide assistance:
 
 - **Github Issues** :: For bug reports and software errors, [open issues](https://github.com/TheochemUI/eOn/issues)
-- **Community Forum** :: EON has a section on the [Materials Science Community Discourse](https://matsci.org/c/eon/)
+- **Community Forum** :: eOn has a section on the [Materials Science Community Discourse](https://matsci.org/c/eon/)
 
 ## Supporting packages
 

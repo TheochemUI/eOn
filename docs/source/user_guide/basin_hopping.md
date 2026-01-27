@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to the Basin Hopping global optimization method in EON for exploring potential energy surfaces."
-    "keywords": "EON Basin Hopping, global optimization, Monte Carlo, potential energy surface"
+    "description": "Guide to the Basin Hopping global optimization method in eOn for exploring potential energy surfaces."
+    "keywords": "eOn Basin Hopping, global optimization, Monte Carlo, potential energy surface"
 ---
 
 # Basin Hopping

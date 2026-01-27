@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Information on obtaining older versions of EON from the Subversion (SVN) repository."
-    "keywords": "EON SVN, Subversion, legacy code, version control"
+    "description": "Information on obtaining older versions of eOn from the Subversion (SVN) repository."
+    "keywords": "eOn SVN, Subversion, legacy code, version control"
 ---
 
 # Subversion

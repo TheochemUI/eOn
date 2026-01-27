@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Configuration guide for the Lanczos method in EON, used for determining the lowest eigenmode of a system."
-    "keywords": "EON Lanczos, lowest eigenmode, saddle point search, dynamics"
+    "description": "Configuration guide for the Lanczos method in eOn, used for determining the lowest eigenmode of a system."
+    "keywords": "eOn Lanczos, lowest eigenmode, saddle point search, dynamics"
 ---
 
 # Lanczos

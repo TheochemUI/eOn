@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Index of releases for the EON software, with links to changelogs, release notes, and relevant publications for each version."
-    "keywords": "EON releases, versions, changelog, release notes"
+    "description": "Index of releases for the eOn software, with links to changelogs, release notes, and relevant publications for each version."
+    "keywords": "eOn releases, versions, changelog, release notes"
 ---
 
 
@@ -17,7 +17,8 @@ has more details.
 :caption: Versions
 
 changelog
-v2.8.0/index
-v2.8.1/index
+v2.9.0/index
 v2.8.2/index
+v2.8.1/index
+v2.8.0/index
 ```

@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Information for developers on the type system used in the EON C++ client, particularly the use of the Eigen library."
-    "keywords": "EON type system, C++, Eigen library, row major, header conventions"
+    "description": "Information for developers on the type system used in the eOn C++ client, particularly the use of the Eigen library."
+    "keywords": "eOn type system, C++, Eigen library, row major, header conventions"
 ---
 
 # Type system

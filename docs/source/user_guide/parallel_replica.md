@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to Parallel Replica Dynamics (PRD) in EON, a method to accelerate molecular dynamics simulations by running multiple independent replicas."
-    "keywords": "EON Parallel Replica, PRD, accelerated MD, replica dynamics"
+    "description": "Guide to Parallel Replica Dynamics (PRD) in eOn, a method to accelerate molecular dynamics simulations by running multiple independent replicas."
+    "keywords": "eOn Parallel Replica, PRD, accelerated MD, replica dynamics"
 ---
 
 # Parallel Replica

@@ -1,15 +1,15 @@
 ---
 myst:
   html_meta:
-    "description": "A tutorial on running a Parallel Replica Dynamics (PRD) job with EON, including how to add hyperdynamics for accelerated simulations."
-    "keywords": "EON Parallel Replica tutorial, PRD, hyperdynamics, accelerated dynamics, Al(100)"
+    "description": "A tutorial on running a Parallel Replica Dynamics (PRD) job with eOn, including how to add hyperdynamics for accelerated simulations."
+    "keywords": "eOn Parallel Replica tutorial, PRD, hyperdynamics, accelerated dynamics, Al(100)"
 ---
 
 # Running a Parallel Replica Job
 
 A sample parallel replica simulation can be found in the directory:
 `examples/parallel-replica/`. Two input files `config.ini` and `pos.con` are
-required for EON simlution.
+required for eOn simlution.
 
 The example system is the diffusion of an Al adatom on the Al(100) surface. A
 snapshot of the system is given below:
@@ -31,7 +31,7 @@ The `config.ini` file will run a parallel replica job with 2 replicas on one loc
 Now we can run the trajectory by executing the command `python -m eon.server`
 
 ```{code-block} bash
-EONgit/examples/parallel-replica via 🅒 eongit
+eOngit/examples/parallel-replica via 🅒 eongit
 ➜ python -m eon.server
 Eon version: 1321976b
 Simulation time: 0.000000e+00 s
@@ -50,7 +50,7 @@ Created: 2 searches
 Then use the `-n` flag to register the result::
 
 ```{code-block} bash
-EONgit/examples/parallel-replica via 🅒 eongit
+eOngit/examples/parallel-replica via 🅒 eongit
 ➜ python -m eon.server -n
 Eon version: 1321976b
 Simulation time: 0.000000e+00 s

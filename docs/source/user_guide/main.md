@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to the general simulation parameters in EON's main configuration section, covering job types, temperature, and other shared settings."
-    "keywords": "EON main config, general parameters, job type, temperature, settings"
+    "description": "Guide to the general simulation parameters in eOn's main configuration section, covering job types, temperature, and other shared settings."
+    "keywords": "eOn main config, general parameters, job type, temperature, settings"
 ---
 
 # General Simulation Parameters

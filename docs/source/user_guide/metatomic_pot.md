@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Learn how to set up and use the Metatomic interface in EON for machine learning potentials with metatensor and PyTorch."
-    "keywords": "EON metatomic, machine learning potential, metatensor, PyTorch, MLIP"
+    "description": "Learn how to set up and use the Metatomic interface in eOn for machine learning potentials with metatensor and PyTorch."
+    "keywords": "eOn metatomic, machine learning potential, metatensor, PyTorch, MLIP"
 ---
 
 # Metatomic Interface
@@ -10,7 +10,7 @@ myst:
 ```{versionadded} 2.0
 ```
 
-The Metatomic interface allows EON to use machine learning potentials developed
+The Metatomic interface allows eOn to use machine learning potentials developed
 with the `metatensor` and `pytorch` libraries.
 
 ## Setup and Compilation
@@ -75,7 +75,7 @@ This will create the `lennard-jones.pt` file in your current directory.
 <!-- This needs to be re-exported every time the Torch version changes. -->
 
 
-This can be loaded checked with a configuration file for EON:
+This can be loaded checked with a configuration file for eOn:
 
 ```{code-block} ini
 [Main]
@@ -145,7 +145,7 @@ activation switch and the warning threshold.
 This functionality supports models which expose an `energy_uncertainty` [output
 key](https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty).
 If the configuration specifies a `variant_base` or `variant_energy_uncertainty`,
-EON will automatically target the corresponding variant key (e.g.,
+eOn will automatically target the corresponding variant key (e.g.,
 `energy_uncertainty/ensemble`).
 
 ````{margin}
@@ -158,13 +158,13 @@ EON will automatically target the corresponding variant key (e.g.,
 
 ## Variants
 
-```{versionadded} 2.8.3
+```{versionadded} 2.9.0
 ```
 
 Metatomic models frequently act as multi-headed neural networks, capable of
 predicting properties corresponding to different levels of theory (e.g.,
 `energy/pbe0` versus `energy/r2scan`) or auxiliary outputs within a single model
-file. The EON interface permits precise selection of these output heads through
+file. The eOn interface permits precise selection of these output heads through
 the `[Metatomic]` configuration block.
 
 The implementation follows the [upstream Metatomic

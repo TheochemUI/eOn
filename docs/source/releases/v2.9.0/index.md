@@ -1,11 +1,11 @@
 ---
 myst:
   html_meta:
-    "description": "Overview of the eOn v2.8.1 release, highlighting major features like RO-NEB-CI, metatomic potential support, and a modernized build system."
-    "keywords": "eOn v2.8.1, release"
+    "description": "Overview of the eOn v2.9.0 release, highlighting major features like RO-NEB-CI, metatomic potential support, and a modernized build system."
+    "keywords": "eOn v2.9.0, release"
 ---
 
-## [v2.8.1] - 2025-11-03
+## [v2.9.0] - 2026-01-27
 
 A quick bugfix release that addresses issues in Nudged Elastic Band (NEB)
 calculations, including endpoint handling and potential floating-point errors.

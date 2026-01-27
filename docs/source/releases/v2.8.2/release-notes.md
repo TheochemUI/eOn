@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Detailed release notes for EON v2.8.2, covering Metatomic uncertainty features, build system updates, and dependency changes."
-    "keywords": "EON v2.8.2 release notes, new features, enhancements, bug fixes"
+    "description": "Detailed release notes for eOn v2.8.2, covering Metatomic uncertainty features, build system updates, and dependency changes."
+    "keywords": "eOn v2.8.2 release notes, new features, enhancements, bug fixes"
 ---
 
 # Release notes
@@ -20,7 +20,7 @@ infrastructure.
     * Introduced the `uncertainty_threshold` parameter (default: `0.1`,
         corresponding to \~100 meV/atom).
     * If the model supports the `energy_uncertainty` output (e.g., PET-MAD),
-        EON will now warn if atoms exceed this threshold.
+        eOn will now warn if atoms exceed this threshold.
     * The **variance** is now automatically populated using the mean of these
         per-atom uncertainties if available.
 * **Pixi Build System:** Added new environments (`rel`, `eon`) and tasks to
