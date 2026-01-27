@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Documentation for the saddle point recycling method in EON, which significantly reduces the computational cost of aKMC simulations."
-    "keywords": "EON recycling, saddle point recycling, aKMC optimization, computational efficiency"
+    "description": "Documentation for the saddle point recycling method in eOn, which significantly reduces the computational cost of aKMC simulations."
+    "keywords": "eOn recycling, saddle point recycling, aKMC optimization, computational efficiency"
 ---
 
 # Recycling

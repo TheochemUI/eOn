@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Comprehensive user guide for the EON software, detailing all algorithms, configuration settings, and job types."
-    "keywords": "EON user guide, documentation, configuration, algorithms, tutorials"
+    "description": "Comprehensive user guide for the eOn software, detailing all algorithms, configuration settings, and job types."
+    "keywords": "eOn user guide, documentation, configuration, algorithms, tutorials"
 ---
 
 # User Guide
@@ -45,7 +45,7 @@ As of version 2.0 onwards, we recommend using dedicated workflow management tool
 ```
 ````
 
-EON is designed to run in serial on one computer or in parallel using a
+eOn is designed to run in serial on one computer or in parallel using a
 communicator to send jobs from a server to clients and receive the results back.
 Several parallelization schemes have been implemented, including local
 communication through files, cluster communication via a queuing system or via

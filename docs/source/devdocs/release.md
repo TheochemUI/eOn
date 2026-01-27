@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "A release checklist for EON developers, outlining the steps for preparing a new software release, including updating changelogs and versions."
-    "keywords": "EON release checklist, software release, versioning, changelog, towncrier"
+    "description": "A release checklist for eOn developers, outlining the steps for preparing a new software release, including updating changelogs and versions."
+    "keywords": "eOn release checklist, software release, versioning, changelog, towncrier"
 ---
 
 # Checklist

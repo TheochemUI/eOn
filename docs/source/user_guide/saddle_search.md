@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Configuration for initiating saddle searches in EON by displacing atoms from a minimum energy state."
-    "keywords": "EON saddle search, transition state, displacement, potential energy surface"
+    "description": "Configuration for initiating saddle searches in eOn by displacing atoms from a minimum energy state."
+    "keywords": "eOn saddle search, transition state, displacement, potential energy surface"
 ---
 
 # Saddle Search
