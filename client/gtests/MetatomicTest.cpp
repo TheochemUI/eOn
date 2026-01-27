@@ -97,4 +97,45 @@ TEST_CASE_METHOD(PotTest,
   TearDown();
 }
 
+TEST_CASE_METHOD(PotTest, "Metatomic variant (doubled)", "[PotTest][variant]") {
+  SetUp();
+  auto matEq =
+      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+
+  // Define base expected values
+  double base_energy = 98374.87753058573;
+  AtomMatrix base_forces(m1->numberOfAtoms(), 3);
+  base_forces << -90017.67874663, 14048.6323898, 42667.56998833, 51715.62564964,
+      81020.09231365, -33288.72879168, 13893.5617694, 89793.76258628,
+      33937.11367155, -71755.76235155, 52324.79462503, -32402.45955531,
+      46268.61994191, -89837.93451292, 11509.42733453, -67770.6981497,
+      -6678.90441423, -33619.79643378, -17329.67691782, -68054.08864133,
+      -59929.39232182, -14176.97088206, 30833.36510504, -85864.44933633,
+      -75239.50566824, -57104.7492775, -3715.98865599, 90169.5778592,
+      5214.90295971, 30786.57650636, 20281.84422414, 21840.57389606,
+      85752.46910389, 104913.11853287, -11120.68664665, -29664.02315515,
+      9047.94473885, -62279.76038293, 73831.6816454;
+
+  double e_mta{0};
+  AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
+  params->potential = PotType::METATOMIC;
+  params->metatomic_options.model_path = "lennard-jones.pt";
+
+  // Set the variant to 'doubled'
+  params->metatomic_options.variant.base = "doubled";
+
+  auto pot = helper_functions::makePotential(params->potential, params);
+  pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
+             m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
+             m1->getCell().data());
+
+  // Check that energy and forces are exactly double the base values
+  REQUIRE_THAT(e_mta, WithinAbs(base_energy * 2.0, threshold));
+
+  AtomMatrix expected_doubled = base_forces * 2.0;
+  REQUIRE(matEq(f_mta, expected_doubled));
+
+  TearDown();
+}
+
 } /* namespace tests */
