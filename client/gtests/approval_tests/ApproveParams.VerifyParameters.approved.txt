@@ -189,7 +189,7 @@ gprDebugDz: 0.100000000000000006
 [Surrogate]
 use_surrogate: false
 sub_job: Unknown
-gp_uncertainity: 0.0500000000000000028
+gp_uncertainty: 0.0500000000000000028
 gp_linear_path_always: false
 surrogatePotential: CatLearn
 

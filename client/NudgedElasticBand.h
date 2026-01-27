@@ -30,7 +30,7 @@ public:
     INIT = 1,
     BAD_MAX_ITERATIONS = 2,
     RUNNING,
-    MAX_UNCERTAINITY
+    MAX_UNCERTAINTY
   };
   NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                     std::shared_ptr<Matter> finalPassed,

@@ -1,1 +1,1 @@
-feat(mtapot): handle variants for energy and energy uncertainity within Metatomic models
+feat(mtapot): handle variants for energy and energy uncertainty within Metatomic models

@@ -301,7 +301,7 @@ public:
   // GP Surrogate Parameters
   bool use_surrogate;
   JobType sub_job;
-  double gp_uncertainity;
+  double gp_uncertainty;
   bool gp_linear_path_always;
   PotType surrogatePotential; // ONLY: catlearn for now
 
