@@ -63,6 +63,9 @@ private:
   torch::Tensor atomic_types_;
   std::vector<int> last_atomic_nrs_;
 
+  // -- Variants
+  std::string energy_key_;
+  std::string energy_uncertainty_key_;
   // --- Uncertainty handling ---
   // If non-positive, uncertainty checks are effectively disabled.
   double uncertainty_threshold_{-1.0};
