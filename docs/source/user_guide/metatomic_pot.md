@@ -27,7 +27,7 @@ Some notes about this implemetnation:
 
 For more details including building from source, refer to the [upstream documentation](https://docs.metatensor.org/latest/index.html).
 
-## Configuration
+## Basic Configuration
 
 ```{code-block} ini
 [Potential]
@@ -151,3 +151,56 @@ like PET-MAD, which reports LLPR energy uncertainities.
 
 ```
 ````
+
+## Variants
+
+```{versionadded} 2.8.3
+```
+
+Metatomic models frequently act as multi-headed neural networks, capable of
+predicting properties corresponding to different levels of theory (e.g.,
+`energy/pbe0` versus `energy/r2scan`) or auxiliary outputs within a single model
+file. The EON interface permits precise selection of these output heads through
+the `[Metatomic]` configuration block.
+
+The implementation follows the [upstream Metatomic
+specification](https://docs.metatensor.org/metatomic/latest/outputs/variants.html#output-variants)
+where variants appear as suffixes to the base quantity (e.g.,
+`energy/<variant>`).
+
+### Variant Configuration
+
+Three keys control variant selection:
+
+- **`variant_base`**: Appends the specified string to *all* requested outputs
+  (energy, forces, and uncertainty). For example, setting this to `pbe` targets
+  `energy/pbe` and `energy_uncertainty/pbe`.
+- **`variant_energy`**: Overrides the energy selection specifically. Setting
+  this takes precedence over `variant_base`. Use the special value `off` to
+  revert to the default `energy` output even if `variant_base` remains active
+  for other quantities.
+- **`variant_energy_uncertainty`**: Overrides the uncertainty selection
+  specifically, functioning identically to `variant_energy`.
+
+### Example
+
+To select a specific functional (e.g., PBE0) for both energy and uncertainty:
+
+```{code-block} ini
+[Metatomic]
+model_path = universal-potential.pt
+variant_base = pbe0
+
+```
+
+To use a baseline potential for energy but a specific variance head for
+uncertainty quantification:
+
+```{code-block} ini
+[Metatomic]
+model_path = active-learning.pt
+# Uses 'energy' (default)
+variant_energy = off
+# Uses 'energy_uncertainty/ensemble'
+variant_energy_uncertainty = ensemble
+```
