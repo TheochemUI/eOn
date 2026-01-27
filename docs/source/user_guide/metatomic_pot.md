@@ -158,7 +158,7 @@ eOn will automatically target the corresponding variant key (e.g.,
 
 ## Variants
 
-```{versionadded} 2.8.3
+```{versionadded} 2.9.0
 ```
 
 Metatomic models frequently act as multi-headed neural networks, capable of
