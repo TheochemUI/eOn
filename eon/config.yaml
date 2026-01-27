@@ -1709,6 +1709,18 @@ Metatomic:
           kind: float
           default: 0.1
 
+        variant_base:
+            kind: string
+            default: ""
+
+        variant_energy:
+            kind: string
+            default: ""
+
+        variant_energy_uncertainty:
+            kind: string
+            default: ""
+
 ################################################################################
 
 ASE_NWCHEM:

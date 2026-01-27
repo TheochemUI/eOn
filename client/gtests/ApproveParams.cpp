@@ -263,7 +263,7 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
   os << "\n[Surrogate]" << std::endl;
   os << "use_surrogate: " << params.use_surrogate << std::endl;
   os << "sub_job: " << magic_enum::enum_name(params.sub_job) << std::endl;
-  os << "gp_uncertainity: " << params.gp_uncertainity << std::endl;
+  os << "gp_uncertainty: " << params.gp_uncertainty << std::endl;
   os << "gp_linear_path_always: " << std::boolalpha
      << params.gp_linear_path_always << std::endl;
   os << "surrogatePotential: "
