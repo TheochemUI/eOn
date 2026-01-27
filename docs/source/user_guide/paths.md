@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Configuration for specifying the directory paths for calculations and output in EON."
-    "keywords": "EON paths, configuration, directories, file paths, output"
+    "description": "Configuration for specifying the directory paths for calculations and output in eOn."
+    "keywords": "eOn paths, configuration, directories, file paths, output"
 ---
 
 # Paths

@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Configuration options for calculating the Hessian matrix in EON, used for evaluating prefactors in harmonic transition state theory."
-    "keywords": "EON Hessian, vibrational analysis, prefactor, harmonic transition state theory, hTST"
+    "description": "Configuration options for calculating the Hessian matrix in eOn, used for evaluating prefactors in harmonic transition state theory."
+    "keywords": "eOn Hessian, vibrational analysis, prefactor, harmonic transition state theory, hTST"
 ---
 
 # Hessian
