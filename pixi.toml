@@ -1,5 +1,5 @@
 [workspace]
-authors = ["Rohit Goswami <rog32@hi.is>"]
+authors = ["Rohit Goswami <rgoswami@ieee.org>"]
 channels = ["conda-forge"]
 name = "eOn"
 platforms = ["linux-64", "osx-64"] # , "osx-arm64" needs to be built for EON release
