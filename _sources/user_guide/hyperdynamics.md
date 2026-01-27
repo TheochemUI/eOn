@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Documentation for the Hyperdynamics method in EON, which uses a bias potential to accelerate the rate of transitions in MD simulations."
-    "keywords": "EON Hyperdynamics, accelerated molecular dynamics, bias potential, bond-boost"
+    "description": "Documentation for the Hyperdynamics method in eOn, which uses a bias potential to accelerate the rate of transitions in MD simulations."
+    "keywords": "eOn Hyperdynamics, accelerated molecular dynamics, bias potential, bond-boost"
 ---
 
 # Hyperdynamics
@@ -15,7 +15,7 @@ The hyperdynamics time step {math}`\delta t` can be obtained from the molecular
 dynamics simulation time step {math}`\delta t^b` multiplied by a boost factor
 {math}`e^{\beta \Delta V}`, where {math}`{\Delta V}` is the bias potential.
 
-There are several possible forms of bias potential. In EON, we have implemented
+There are several possible forms of bias potential. In eOn, we have implemented
 the bond-boost method of {cite:t}`hd-mironAcceleratedMolecularDynamics2003`
 where the bias potential is controlled by the maximal (fractional) change in any
 bond length in the system. This is a good bias potential for systems in which

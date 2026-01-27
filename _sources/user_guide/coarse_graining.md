@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to coarse-graining methods in EON, such as MCAMC and AS-KMC, for accelerating simulations with vastly different timescales."
-    "keywords": "EON coarse graining, MCAMC, AS-KMC, superbasins, accelerated simulation"
+    "description": "Guide to coarse-graining methods in eOn, such as MCAMC and AS-KMC, for accelerating simulations with vastly different timescales."
+    "keywords": "eOn coarse graining, MCAMC, AS-KMC, superbasins, accelerated simulation"
 ---
 
 # Coarse Graining

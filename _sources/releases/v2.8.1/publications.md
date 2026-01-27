@@ -1,13 +1,13 @@
 ---
 myst:
   html_meta:
-    "description": "A list of scientific publications related to the new methods and features implemented in the EON v2.8.1 release."
-    "keywords": "EON publications, citations, research papers, scientific articles"
+    "description": "A list of scientific publications related to the new methods and features implemented in the eOn v2.8.1 release."
+    "keywords": "eOn publications, citations, research papers, scientific articles"
 ---
 
 # Related Publications
 
-EON is actively used by groups across the world, we limit ourselves to a few
+eOn is actively used by groups across the world, we limit ourselves to a few
 pegged to this release, pull requests are welcome. As a minor release, the
 majority of publications are reported in the major release.
 

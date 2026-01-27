@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Detailed release notes for EON v2.8.1, covering new features, enhancements, build system improvements, and documentation updates."
-    "keywords": "EON v2.8.1 release notes, new features, enhancements, bug fixes"
+    "description": "Detailed release notes for eOn v2.8.1, covering new features, enhancements, build system improvements, and documentation updates."
+    "keywords": "eOn v2.8.1 release notes, new features, enhancements, bug fixes"
 ---
 
 # Release notes

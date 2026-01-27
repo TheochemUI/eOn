@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to using the Atomic Simulation Environment (ASE) interface in EON, allowing the use of any ASE calculator as a potential."
-    "keywords": "EON ASE, Atomic Simulation Environment, ASE calculator, Python potential"
+    "description": "Guide to using the Atomic Simulation Environment (ASE) interface in eOn, allowing the use of any ASE calculator as a potential."
+    "keywords": "eOn ASE, Atomic Simulation Environment, ASE calculator, Python potential"
 ---
 
 # ASE Interface
@@ -29,12 +29,12 @@ The last line (`ext_pot_path`) is required, and it may be the relative or the
 absolute path to the Python script containing the desired ASE calculator (see
 next section).
 
-When running EON (e.g. AKMC jobs), which calls `eonclient` in the back, **it is
+When running eOn (e.g. AKMC jobs), which calls `eonclient` in the back, **it is
 highly recommended to write the full absolute path to the script**.
 
 ### Scripting `ASE`
 
-EON client imports this Python script to get the energy and forces.
+eOn client imports this Python script to get the energy and forces.
 The script should look like this (e.g. using ASE's Lennard Jones calculator)::
 
 ```{code-block} python
@@ -76,7 +76,7 @@ desired ASE calculator, **but not that of `_calculate()` nor the function
 names**.
 
 Often, the ASE calculator may require an external potential file. When running
-EON (e.g. AKMC jobs) and an external file name is used in this script, **it is
+eOn (e.g. AKMC jobs) and an external file name is used in this script, **it is
 highly recommended to write the full absolute path to the external file**.
 
 Before using it, make sure that this script contains no errors on the Python

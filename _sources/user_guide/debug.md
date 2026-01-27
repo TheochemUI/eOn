@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Information on debug options in EON for aiding in method development and bug reporting."
-    "keywords": "EON debug, debugging, developer options, troubleshooting"
+    "description": "Information on debug options in eOn for aiding in method development and bug reporting."
+    "keywords": "eOn debug, debugging, developer options, troubleshooting"
 ---
 
 # Debug

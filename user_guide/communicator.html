@@ -7,8 +7,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="Guide to EON's server-client architecture and communication options for running parallel calculations locally, via MPI, or on a cluster." name="description" />
-<meta content="EON communicator, parallel, MPI, cluster, server-client" name="keywords" />
+<meta content="Guide to eOn's server-client architecture and communication options for running parallel calculations locally, via MPI, or on a cluster." name="description" />
+<meta content="eOn communicator, parallel, MPI, cluster, server-client" name="keywords" />
     <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
     <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-09-05T11:32:24+00:00" />
+    <meta property="article:modified_time" content="2026-01-27T04:40:10+00:00" />
     <title>Communicator &#8212; eOn</title>
   
   
@@ -50,7 +50,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=9cb2bd26"></script>
+    <script src="../_static/documentation_options.js?v=cce08ab1"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -70,7 +70,7 @@
     <link rel="prev" title="Hyperdynamics" href="hyperdynamics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Sep 05, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 27, 2026"/>
   </head>
   
   
@@ -271,9 +271,13 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.2/release-notes.html">Release notes</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -281,8 +285,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.2/release-notes.html">Release notes</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
 </ul>
 </details></li>
 </ul>
@@ -737,16 +742,16 @@ The number of clients that are run and thus the number of jobs is set at runtime
 by the MPI environment.</p>
 <p>A MPI aware client must be compiled, which will be named <code class="docutils literal notranslate"><span class="pre">eonclientmpi</span></code>
 instead of <code class="docutils literal notranslate"><span class="pre">eonclient</span></code>. It can only be used to run MPI jobs.</p>
-<p>To run EON with MPI, two environment variables must be set. The
-variable <code class="docutils literal notranslate"><span class="pre">EON_NUMBER_OF_CLIENTS</span></code> determines how many of the ranks
-should become clients and <code class="docutils literal notranslate"><span class="pre">EON_SERVER_PATH</span></code> is the path to the
+<p>To run eOn with MPI, two environment variables must be set. The
+variable <code class="docutils literal notranslate"><span class="pre">eOn_NUMBER_OF_CLIENTS</span></code> determines how many of the ranks
+should become clients and <code class="docutils literal notranslate"><span class="pre">eOn_SERVER_PATH</span></code> is the path to the
 server Python script. In MPI mode the clients need to be started
 instead of the server and one of them will become the server process.
 Currently only AKMC is supported. Below is an example of running using
 the MPI communicator:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">EON_NUMBER_OF_CLIENTS</span><span class="o">=</span><span class="m">7</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">EON_SERVER_PATH</span><span class="o">=</span>~/eon/akmc.py
+<span class="nb">export</span><span class="w"> </span><span class="nv">eOn_NUMBER_OF_CLIENTS</span><span class="o">=</span><span class="m">7</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">eOn_SERVER_PATH</span><span class="o">=</span>~/eon/akmc.py
 mpirun<span class="w"> </span>-n<span class="w"> </span><span class="m">8</span><span class="w"> </span>~/eon/client/eonclientmpi
 </pre></div>
 </div>
@@ -870,7 +875,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Sep 05, 2025.
+  Last updated on Jan 27, 2026.
   <br/>
 </p>
   </div>

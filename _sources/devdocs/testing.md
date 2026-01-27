@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide for developers on the testing suite in EON, including unit tests, approval tests, and integration tests, and how to add new tests."
-    "keywords": "EON testing, unit tests, integration tests, meson tests, gtest"
+    "description": "Guide for developers on the testing suite in eOn, including unit tests, approval tests, and integration tests, and how to add new tests."
+    "keywords": "eOn testing, unit tests, integration tests, meson tests, gtest"
 ---
 
 # Tests
@@ -21,7 +21,7 @@ language[^1].
 
 ```{code-block} meson
 if get_option('build_tests')
-  _args += ['-DEONTEST'] # Unused
+  _args += ['-DeOnTEST'] # Unused
   _deps += [ gtest_dep ]
 test_array = [#
   ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
