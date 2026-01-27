@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Developer documentation for the EON software project, including guidelines for contributing, testing, and building the documentation."
-    "keywords": "EON developer guide, contributing, testing, documentation build, development"
+    "description": "Developer documentation for the eOn software project, including guidelines for contributing, testing, and building the documentation."
+    "keywords": "eOn developer guide, contributing, testing, documentation build, development"
 ---
 
 # Development Documentation

@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to the Nudged Elastic Band (NEB) method in EON for finding saddle points and minimum energy paths between known reactants and products."
-    "keywords": "EON NEB, Nudged Elastic Band, minimum energy path, saddle point, climbing image"
+    "description": "Guide to the Nudged Elastic Band (NEB) method in eOn for finding saddle points and minimum energy paths between known reactants and products."
+    "keywords": "eOn NEB, Nudged Elastic Band, minimum energy path, saddle point, climbing image"
 ---
 
 # Nudged Elastic Band
