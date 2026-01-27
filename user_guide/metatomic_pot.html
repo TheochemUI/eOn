@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-12-01T23:40:56+00:00" />
+    <meta property="article:modified_time" content="2026-01-27T03:33:54+00:00" />
     <title>Metatomic Interface &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="ASE Interface" href="ase_pot.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Dec 01, 2025"/>
+    <meta name="docbuild:last-update" content="Jan 27, 2026"/>
   </head>
   
   
@@ -451,13 +451,18 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-and-compilation">Setup and Compilation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-configuration">Basic Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage-example">Usage example</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lennard-jones-baseline">Lennard Jones Baseline</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet-mad">PET-MAD</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance">Variance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variants">Variants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variant-configuration">Variant Configuration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -488,8 +493,8 @@ across the client</p></li>
 </ul>
 <p>For more details including building from source, refer to the <a class="reference external" href="https://docs.metatensor.org/latest/index.html">upstream documentation</a>.</p>
 </section>
-<section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
+<section id="basic-configuration">
+<h2>Basic Configuration<a class="headerlink" href="#basic-configuration" title="Link to this heading">#</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Potential]</span>
 <span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">metatomic</span>
 
@@ -583,11 +588,14 @@ eonclient
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.2.</span></p>
 </div>
-<p>To enable per-atom energy uncertainity checks set the <code class="docutils literal notranslate"><span class="pre">uncertainty_threshold</span></code>
-parameter to a positive value, which will also act as the threshold. This will
-work for models which expose an <code class="docutils literal notranslate"><span class="pre">energy_uncertainity</span></code> <a class="reference external" href="https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty">output
-key</a>
-like PET-MAD, which reports LLPR energy uncertainities.</p>
+<p>To enable per-atom energy uncertainty checks, set the <code class="docutils literal notranslate"><span class="pre">uncertainty_threshold</span></code>
+parameter to a positive value. This parameter serves simultaneously as the
+activation switch and the warning threshold.</p>
+<p>This functionality supports models which expose an <code class="docutils literal notranslate"><span class="pre">energy_uncertainty</span></code> <a class="reference external" href="https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty">output
+key</a>.
+If the configuration specifies a <code class="docutils literal notranslate"><span class="pre">variant_base</span></code> or <code class="docutils literal notranslate"><span class="pre">variant_energy_uncertainty</span></code>,
+EON will automatically target the corresponding variant key (e.g.,
+<code class="docutils literal notranslate"><span class="pre">energy_uncertainty/ensemble</span></code>).</p>
 <aside class="margin sidebar">
 <p class="sidebar-title"></p>
 <div class="admonition note">
@@ -597,6 +605,55 @@ like PET-MAD, which reports LLPR energy uncertainities.</p>
 </ul>
 </div>
 </aside>
+</section>
+<section id="variants">
+<h2>Variants<a class="headerlink" href="#variants" title="Link to this heading">#</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.8.3.</span></p>
+</div>
+<p>Metatomic models frequently act as multi-headed neural networks, capable of
+predicting properties corresponding to different levels of theory (e.g.,
+<code class="docutils literal notranslate"><span class="pre">energy/pbe0</span></code> versus <code class="docutils literal notranslate"><span class="pre">energy/r2scan</span></code>) or auxiliary outputs within a single model
+file. The EON interface permits precise selection of these output heads through
+the <code class="docutils literal notranslate"><span class="pre">[Metatomic]</span></code> configuration block.</p>
+<p>The implementation follows the <a class="reference external" href="https://docs.metatensor.org/metatomic/latest/outputs/variants.html#output-variants">upstream Metatomic
+specification</a>
+where variants appear as suffixes to the base quantity (e.g.,
+<code class="docutils literal notranslate"><span class="pre">energy/&lt;variant&gt;</span></code>).</p>
+<section id="variant-configuration">
+<h3>Variant Configuration<a class="headerlink" href="#variant-configuration" title="Link to this heading">#</a></h3>
+<p>Three keys control variant selection:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_base</span></code></strong>: Appends the specified string to <em>all</em> requested outputs
+(energy, forces, and uncertainty). For example, setting this to <code class="docutils literal notranslate"><span class="pre">pbe</span></code> targets
+<code class="docutils literal notranslate"><span class="pre">energy/pbe</span></code> and <code class="docutils literal notranslate"><span class="pre">energy_uncertainty/pbe</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_energy</span></code></strong>: Overrides the energy selection specifically. Setting
+this takes precedence over <code class="docutils literal notranslate"><span class="pre">variant_base</span></code>. Use the special value <code class="docutils literal notranslate"><span class="pre">off</span></code> to
+revert to the default <code class="docutils literal notranslate"><span class="pre">energy</span></code> output even if <code class="docutils literal notranslate"><span class="pre">variant_base</span></code> remains active
+for other quantities.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_energy_uncertainty</span></code></strong>: Overrides the uncertainty selection
+specifically, functioning identically to <code class="docutils literal notranslate"><span class="pre">variant_energy</span></code>.</p></li>
+</ul>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h3>
+<p>To select a specific functional (e.g., PBE0) for both energy and uncertainty:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Metatomic]</span>
+<span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">universal-potential.pt</span>
+<span class="na">variant_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">pbe0</span>
+</pre></div>
+</div>
+<p>To use a baseline potential for energy but a specific variance head for
+uncertainty quantification:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Metatomic]</span>
+<span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">active-learning.pt</span>
+<span class="c1"># Uses &#39;energy&#39; (default)</span>
+<span class="na">variant_energy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">off</span>
+<span class="c1"># Uses &#39;energy_uncertainty/ensemble&#39;</span>
+<span class="na">variant_energy_uncertainty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ensemble</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -646,13 +703,18 @@ like PET-MAD, which reports LLPR energy uncertainities.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-and-compilation">Setup and Compilation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-configuration">Basic Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage-example">Usage example</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lennard-jones-baseline">Lennard Jones Baseline</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet-mad">PET-MAD</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance">Variance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variants">Variants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variant-configuration">Variant Configuration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -686,7 +748,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Dec 01, 2025.
+  Last updated on Jan 27, 2026.
   <br/>
 </p>
   </div>
