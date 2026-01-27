@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to using the Kinetic Database (KDB) in EON to store and reuse information about kinetic processes, speeding up aKMC simulations."
-    "keywords": "EON Kinetic Database, KDB, aKMC acceleration, process recycling, tsase"
+    "description": "Guide to using the Kinetic Database (KDB) in eOn to store and reuse information about kinetic processes, speeding up aKMC simulations."
+    "keywords": "eOn Kinetic Database, KDB, aKMC acceleration, process recycling, tsase"
 ---
 
 # Kinetic Database

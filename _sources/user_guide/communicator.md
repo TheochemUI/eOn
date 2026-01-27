@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Guide to EON's server-client architecture and communication options for running parallel calculations locally, via MPI, or on a cluster."
-    "keywords": "EON communicator, parallel, MPI, cluster, server-client"
+    "description": "Guide to eOn's server-client architecture and communication options for running parallel calculations locally, via MPI, or on a cluster."
+    "keywords": "eOn communicator, parallel, MPI, cluster, server-client"
 ---
 
 # Communicator
@@ -62,9 +62,9 @@ by the MPI environment.
 A MPI aware client must be compiled, which will be named ``eonclientmpi``
 instead of ``eonclient``. It can only be used to run MPI jobs.
 
-To run EON with MPI, two environment variables must be set. The
-variable `EON_NUMBER_OF_CLIENTS` determines how many of the ranks
-should become clients and `EON_SERVER_PATH` is the path to the
+To run eOn with MPI, two environment variables must be set. The
+variable `eOn_NUMBER_OF_CLIENTS` determines how many of the ranks
+should become clients and `eOn_SERVER_PATH` is the path to the
 server Python script. In MPI mode the clients need to be started
 instead of the server and one of them will become the server process.
 Currently only AKMC is supported. Below is an example of running using
@@ -72,8 +72,8 @@ the MPI communicator:
 
 ```{code-block} bash
 #!/bin/bash
-export EON_NUMBER_OF_CLIENTS=7
-export EON_SERVER_PATH=~/eon/akmc.py
+export eOn_NUMBER_OF_CLIENTS=7
+export eOn_SERVER_PATH=~/eon/akmc.py
 mpirun -n 8 ~/eon/client/eonclientmpi
 ```
 

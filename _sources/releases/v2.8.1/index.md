@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Overview of the EON v2.8.1 release, highlighting major features like RO-NEB-CI, metatomic potential support, and a modernized build system."
-    "keywords": "EON v2.8.1, release"
+    "description": "Overview of the eOn v2.8.1 release, highlighting major features like RO-NEB-CI, metatomic potential support, and a modernized build system."
+    "keywords": "eOn v2.8.1, release"
 ---
 
 ## [v2.8.1] - 2025-11-03
