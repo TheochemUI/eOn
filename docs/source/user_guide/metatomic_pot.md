@@ -138,11 +138,15 @@ mtt export https://huggingface.co/lab-cosmo/pet-mad/resolve/v1.1.0/models/pet-ma
 ```{versionadded} 2.2
 ```
 
-To enable per-atom energy uncertainty checks set the `uncertainty_threshold`
-parameter to a positive value, which will also act as the threshold. This will
-work for models which expose an `energy_uncertainty` [output
-key](https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty)
-like PET-MAD, which reports LLPR energy uncertainities.
+To enable per-atom energy uncertainty checks, set the `uncertainty_threshold`
+parameter to a positive value. This parameter serves simultaneously as the
+activation switch and the warning threshold.
+
+This functionality supports models which expose an `energy_uncertainty` [output
+key](https://docs.metatensor.org/metatomic/latest/outputs/energy.html#energy-uncertainty).
+If the configuration specifies a `variant_base` or `variant_energy_uncertainty`,
+EON will automatically target the corresponding variant key (e.g.,
+`energy_uncertainty/ensemble`).
 
 ````{margin}
 ```{note}
