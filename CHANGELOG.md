@@ -1,3 +1,29 @@
+## [v2.9.0](https://github.com/theochemui/eongit/tree/v2.9.0) - 2026-01-27
+
+### Added
+
+- Add support for 'charge' and 'uhf' (multiplicity) parameters in the xTB potential
+- Introduce custom Catch2 Eigen matchers and add comprehensive regression tests for GFN2-xTB forces
+- Setup Collective-IDPP path generation for NEB runs
+- Setup IDPP path generation for NEB runs
+- Setup sequential Collective-IDPP path generation for NEB runs
+- feat(mtapot): handle variants for energy and energy uncertainty within Metatomic models
+- feat(neb): add a zbl+sidpp penalty for initial path generation
+- feat(neb): implement the OCI-NEB/RONEB/enhanced CI via MMF
+- feat(neb): implement the onsager machlup action logic
+- feat(neb): write out peaks and modes for subsequent dimer runs
+
+### Changed
+
+- Optimize xTB potential performance by persisting internal state and using coordinate updates between force calls
+- Update installation guide to recommend Pixi and clarify dependency management
+
+### Fixed
+
+- bug(ewneb): do not turn on if cineb threshold is not met!
+- fix(mtapot): stop double counting mta calls
+
+
 ## [v2.8.2](https://github.com/theochemui/eongit/tree/v2.8.2) - 2025-12-01
 
 ### Added

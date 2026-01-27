@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Troubleshooting guide for setting up and running EON on the virtual machine provided for the CECAM-LTS-MAP 2024 event."
-    "keywords": "EON troubleshooting, CECAM, virtual machine, installation help, setup"
+    "description": "Troubleshooting guide for setting up and running eOn on the virtual machine provided for the CECAM-LTS-MAP 2024 event."
+    "keywords": "eOn troubleshooting, CECAM, virtual machine, installation help, setup"
 ---
 
 # Virtualbox Troublshooting

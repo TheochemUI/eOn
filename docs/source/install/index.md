@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Installation guide for the EON software package, using pixi/conda or source builds."
-    "keywords": "install EON, build EON, conda, meson, compilation"
+    "description": "Installation guide for the eOn software package, using pixi/conda or source builds."
+    "keywords": "install eOn, build eOn, conda, meson, compilation"
 ---
 
 # Installation
