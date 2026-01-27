@@ -695,6 +695,15 @@ class Metatomic(BaseModel):
         default=0.1,  # 100meV/atom
         description="Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.",
     )
+    variant_base: str = Field(
+        default="", description="Global variant for energy and uncertainty."
+    )
+    variant_energy: str = Field(
+        default="", description="Override variant for energy."
+    )
+    variant_energy_uncertainty: str = Field(
+        default="", description="Override variant for energy_uncertainty."
+    )
 
 
 class ASE_NWCHEM(BaseModel):

@@ -301,7 +301,7 @@ public:
   // GP Surrogate Parameters
   bool use_surrogate;
   JobType sub_job;
-  double gp_uncertainity;
+  double gp_uncertainty;
   bool gp_linear_path_always;
   PotType surrogatePotential; // ONLY: catlearn for now
 
@@ -336,6 +336,12 @@ public:
     double uncertainty_threshold;     // Threshold for uncertainty reporting.
                                       // also used to populate the variance
                                       // -1 to disable, 100meV/atom default
+    struct variants_t {
+      std::string base;               // global key for energy and forces
+      std::string energy;             // override for energy variant
+      std::string energy_uncertainty; // override for variant on the
+                                      // energy uncertainty
+    } variant;
   } metatomic_options;
 
   // [Lanczos] //

@@ -78,9 +78,9 @@ bool NEBObjectiveFunction::isUncertain() {
       maxMaxUnc = currentMaxUnc;
     }
   }
-  bool unc_conv{maxMaxUnc > params->gp_uncertainity};
+  bool unc_conv{maxMaxUnc > params->gp_uncertainty};
   if (unc_conv) {
-    this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY;
+    this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY;
   }
   return unc_conv;
 }
@@ -559,8 +559,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
     if (pot->getType() == PotType::CatLearn) {
       if (objf->isUncertain()) {
-        SPDLOG_LOGGER_DEBUG(log, "NEB failed due to high uncertainity");
-        status = NEBStatus::MAX_UNCERTAINITY;
+        SPDLOG_LOGGER_DEBUG(log, "NEB failed due to high uncertainty");
+        status = NEBStatus::MAX_UNCERTAINTY;
         break;
       } else if (objf->isConverged()) {
         SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");

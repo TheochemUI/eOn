@@ -99,6 +99,73 @@ bopfox
 .. autopydantic_model:: eon.schema.PotentialConfig
 ```
 
+## Potential configurations
+
+Several potentials have additional configuration stanzas.
+
+### Metatomic
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.Metatomic
+```
+
+### XTB
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.XTBPot
+```
+
+### ZBL
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.ZBLPot
+```
+
+### NWChem
+
+Support for `nwchem` works best with the socket potential structure as noted in
+the [reproduction details](https://github.com/theochemUI/otgpd_repro) of the
+Optimal transport Gaussian Process
+{cite:p}`pot-goswamiAdaptivePruningIncreased2025b`, and can lead to manyfold
+increases in speed compared to file or ASE interfaces
+{cite:p}`pot-goswamiEfficientExplorationChemical2025`.
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.SocketNWChemPot
+```
+
+An older ASE interface exists as well.
+
+### ASE potentials
+
+There are several specific ASE potentials supported,
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.ASE_NWCHEM
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.ASE_ORCA
+```
+
+### AMS potentials
+
+Both a direct server model and a file based integration exist.
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.AMSConfig
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.AMSIOConfig
+```
+
+Along with helpers to set environment variables for these calculations.
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.AMSEnvConfig
+```
+
 ## References
 
 ```{bibliography}

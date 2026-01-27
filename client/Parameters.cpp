@@ -220,6 +220,9 @@ Parameters::Parameters() {
   metatomic_options.extensions_directory = ""s;
   metatomic_options.check_consistency = false;
   metatomic_options.uncertainty_threshold = 0.1;
+  metatomic_options.variant.base = ""s;
+  metatomic_options.variant.energy = ""s;
+  metatomic_options.variant.energy_uncertainty = ""s;
 
   // [Lanczos] //
   lanczosTolerance = 0.01;
@@ -281,7 +284,7 @@ Parameters::Parameters() {
   // GP Surrogate Parameters
   use_surrogate = false;
   sub_job = JobType::Unknown;
-  gp_uncertainity = 0.05;
+  gp_uncertainty = 0.05;
   gp_linear_path_always = false;
   surrogatePotential = PotType::CatLearn;
 
@@ -749,8 +752,8 @@ int Parameters::load(FILE *file) {
       sub_job = job;
       job = JobType::GP_Surrogate;
     }
-    gp_uncertainity =
-        ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
+    gp_uncertainty =
+        ini.GetValueF("Surrogate", "gp_uncertainty", gp_uncertainty);
     if (ini.FindKey("Surrogate") != -1) {
       surrogatePotential =
           magic_enum::enum_cast<PotType>(ini.GetValue("Surrogate", "potential"),
@@ -809,6 +812,11 @@ int Parameters::load(FILE *file) {
           ini.GetValueB("Metatomic", "check_consistency", false);
       metatomic_options.uncertainty_threshold =
           ini.GetValueF("Metatomic", "uncertainty_threshold", 0.1);
+      auto &_variant = metatomic_options.variant;
+      _variant.base = ini.GetValue("Metatomic", "variant_base", "");
+      _variant.energy = ini.GetValue("Metatomic", "variant_energy", "");
+      _variant.energy_uncertainty =
+          ini.GetValue("Metatomic", "variant_energy_uncertainty", "");
     }
     // GP_NEB only
     gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",

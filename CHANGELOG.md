@@ -2,8 +2,8 @@
 
 ### Added
 
-- Metatomic is now uncertainity aware
-- Metatomic variance reports per-atom uncertainity mean
+- Metatomic is now uncertainty aware
+- Metatomic variance reports per-atom uncertainty mean
 
 ### Changed
 
