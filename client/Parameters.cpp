@@ -284,7 +284,7 @@ Parameters::Parameters() {
   // GP Surrogate Parameters
   use_surrogate = false;
   sub_job = JobType::Unknown;
-  gp_uncertainity = 0.05;
+  gp_uncertainty = 0.05;
   gp_linear_path_always = false;
   surrogatePotential = PotType::CatLearn;
 
@@ -752,8 +752,8 @@ int Parameters::load(FILE *file) {
       sub_job = job;
       job = JobType::GP_Surrogate;
     }
-    gp_uncertainity =
-        ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
+    gp_uncertainty =
+        ini.GetValueF("Surrogate", "gp_uncertainty", gp_uncertainty);
     if (ini.FindKey("Surrogate") != -1) {
       surrogatePotential =
           magic_enum::enum_cast<PotType>(ini.GetValue("Surrogate", "potential"),
