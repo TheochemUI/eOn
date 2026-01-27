@@ -54,14 +54,14 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto status_neb{neb->compute()};
   bool job_not_finished{true};
   size_t n_gp{0};
-  double unc_conv{pyparams->gp_uncertainity};
+  double unc_conv{pyparams->gp_uncertainty};
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
       SPDLOG_CRITICAL("Whoops, power level of problem too high!!");
       break;
     }
-    // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY ||
+    // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
     // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
     SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
@@ -251,7 +251,7 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
-  // SPDLOG_TRACE("Uncertainity along path is {}\nmax_index: {}, maxVal: {}",
+  // SPDLOG_TRACE("Uncertainty along path is {}\nmax_index: {}, maxVal: {}",
   //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
