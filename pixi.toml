@@ -41,9 +41,10 @@ extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
 # TODO(rg): Flesh out the rest of these
 metatomic = {features = ["metatomic"]}
 dev-lite = {features = ["lint", "develop"]}
-dev = {features = ["lint", "develop", "nwchem", "metatomic"]}
+dev-xtb = {features = ["lint", "develop", "xtb"]}
+dev = {features = ["lint", "develop", "nwchem", "metatomic", "xtb"]}
 # ams is incompatible with metatomic
-dev-mta = {features = ["lint", "develop", "metatomic", "xtb"]}
+dev-mta = {features = ["lint", "develop", "metatomic"]}
 lammps = {features = ["lammps"]}
 ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
