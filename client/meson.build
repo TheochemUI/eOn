@@ -306,9 +306,15 @@ if get_option('with_ams')
 endif
 
 if get_option('with_xtb')
-    xtb_proj = subproject('xtb')
-    xtb_dep_static = xtb_proj.get_variable('xtb_dep_static')
-    _deps += [xtb_dep_static]
+    # Try finding system 'xtb'.
+    # If not found, look for 'xtb' in subprojects/ and use the 'xtb_dep_static' variable from it.
+    xtb_dep = dependency(
+        'xtb',
+        required: true,
+        fallback: ['xtb', 'xtb_dep_static'],
+    )
+
+    _deps += [xtb_dep]
     subdir('potentials/XTBPot')
     potentials += xtb_eon
     _args += ['-DWITH_XTB']
