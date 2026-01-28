@@ -2,7 +2,9 @@
 authors = ["Rohit Goswami <rgoswami@ieee.org>"]
 channels = ["conda-forge"]
 name = "eOn"
-platforms = ["linux-64", "osx-64"] # , "osx-arm64" needs to be built for eOn release
+# NOTE: not every platform has 100% support other than Linux
+# e.g. LAMMPS and NWChem do not have builds for Windows
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 version = "2.10.0"
 
 [tasks]
@@ -80,9 +82,14 @@ ase = "*"
 [feature.develop.dependencies]
 ipython = ">=9.3.0,<10"
 
+[feature.lammps]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
 [feature.lammps.dependencies]
 lammps = ">=2024.8.29,<2025"
 
+[feature.nwchem]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
 [feature.nwchem.dependencies]
 nwchem = ">=7.2.3,<8"
 i-pi = ">=3.1.5.1,<4"
