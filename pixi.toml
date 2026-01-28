@@ -25,6 +25,7 @@ compilers = ">=1.9.0,<2"
 gfortran = ">=13.3.0,<13.4"
 fmt = ">=12,<13"
 spdlog = ">=1.16,<2"
+pkg-config = ">=0.29.2,<0.30"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
@@ -42,7 +43,7 @@ metatomic = {features = ["metatomic"]}
 dev-lite = {features = ["lint", "develop"]}
 dev = {features = ["lint", "develop", "nwchem", "metatomic"]}
 # ams is incompatible with metatomic
-dev-mta = {features = ["lint", "develop", "metatomic"]}
+dev-mta = {features = ["lint", "develop", "metatomic", "xtb"]}
 lammps = {features = ["lammps"]}
 ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
@@ -98,7 +99,9 @@ python -m http.server -d html
 """
 
 [feature.release.dependencies]
-# eon = "*"
+
+[feature.xtb.dependencies]
+xtb = "*"
 
 [feature.metatomic.tasks.mkeon]
 args = ["buildtype"]
