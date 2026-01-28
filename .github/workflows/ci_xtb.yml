@@ -22,7 +22,7 @@ jobs:
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           activate-environment: true
           environments: >-
-            dev-lite
+            dev-xtb
       - name: Install eon
         shell: pixi run bash -e {0}
         run: |
