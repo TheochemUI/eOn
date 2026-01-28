@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2026-01-27T04:40:10+00:00" />
+    <meta property="article:modified_time" content="2026-01-27T05:17:43+00:00" />
     <title>Checklist &#8212; eOn</title>
   
   
@@ -480,6 +480,18 @@ document.write(`
 </li>
 <li><p>[ ] Generate release notes, and also the publication page, e.g. see <code class="docutils literal notranslate"><span class="pre">releases/v2.8.0</span></code></p></li>
 </ul>
+<p>To generate the archive since auto-generated archives of tags have <a class="reference external" href="https://github.blog/open-source/git/update-on-the-future-stability-of-source-code-archives-and-hashes/">security
+issues</a>..</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>v2.9.0<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-v2.9.0.tar.xz
+</pre></div>
+</div>
+<p>Paper related tags do not need full release machinery, just a lightweight tag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>arXiv_2510.06030v3<span class="w"> </span>45c077cb
+<span class="c1"># feat(arxiv): descriptive</span>
+<span class="c1">#</span>
+<span class="c1"># more details including the arxiv link</span>
+</pre></div>
+</div>
 </section>
 
 
