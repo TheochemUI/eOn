@@ -19,8 +19,10 @@ def mpiwait():
 
     signal.signal(signal.SIGINT,  signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    signal.signal(signal.SIGUSR1, signal_handler)
-    signal.signal(signal.SIGUSR2, signal_handler)
+    if hasattr(signal, 'SIGUSR1'):
+        signal.signal(signal.SIGUSR1, signal_handler)
+    if hasattr(signal, 'SIGUSR2'):
+        signal.signal(signal.SIGUSR2, signal_handler)
 
     while True:
         sleep(config.mpi_poll_period)

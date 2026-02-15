@@ -244,7 +244,7 @@ class MPI(Communicator):
         from mpi4py.MPI import COMM_WORLD
         self.comm = COMM_WORLD
 
-        self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
+        self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(os.pathsep) ]
         self.config.comm_job_buffer_size = len(self.client_ranks)
 
         self.resume_jobs = []
@@ -349,19 +349,19 @@ class Local(Communicator):
         self.ncpus = ncpus
 
         # path to the client
-        if '/' in client:
+        if os.sep in client or '/' in client:
             self.client = os.path.abspath(client)
             if not os.path.isfile(self.client):
                 logger.error("Can't find client: %s", client)
                 raise CommunicatorError("Can't find client binary: %s"%client)
         else:
+            import shutil
             # is the client in the local directory?
             if os.path.isfile(client):
                 self.client = os.path.abspath(client)
             # is the client in the path?
-            elif sum([ os.path.isfile(os.path.join(d, client)) for d in
-                       os.environ['PATH'].split(':') ]) != 0:
-                self.client = client
+            elif shutil.which(client) is not None:
+                self.client = shutil.which(client)
             else:
                 logger.error("Can't find client: %s", client)
                 raise CommunicatorError("Can't find client binary: %s"%client)
@@ -374,11 +374,10 @@ class Local(Communicator):
 
     def cleanup(self):
         '''Kills the running eonclients.'''
-        import signal
         for job in self.joblist:
             p = job[0]
             try:
-                os.kill(p.pid, signal.SIGKILL)
+                p.kill()
             except OSError:
                 pass
 
