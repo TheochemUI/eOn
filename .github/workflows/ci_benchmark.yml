@@ -1,0 +1,136 @@
+name: Benchmark PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: prefix-dev/setup-pixi@v0.8.10
+        with:
+          cache: true
+          cache-write: false
+          activate-environment: true
+
+      - name: Install ASV and spyglass
+        shell: pixi run bash -e {0}
+        run: pip install asv asv-spyglass
+
+      - name: Initialise ASV machine
+        shell: pixi run bash -e {0}
+        run: asv machine --yes
+
+      - name: Record commit SHAs
+        id: shas
+        run: |
+          echo "pr=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          echo "main=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+
+      # ── Benchmark main ──────────────────────────────────────────
+      - name: Build eonclient (main)
+        shell: pixi run bash -e {0}
+        run: |
+          git checkout ${{ steps.shas.outputs.main }}
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release --wipe 2>/dev/null \
+            || meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
+          meson install -C bbdir
+
+      - name: Benchmark main
+        shell: pixi run bash -e {0}
+        run: |
+          git checkout ${{ github.event.pull_request.head.sha }} -- benchmarks asv.conf.json
+          asv run --python=same --set-commit-hash ${{ steps.shas.outputs.main }} --quick
+
+      # ── Benchmark PR HEAD ───────────────────────────────────────
+      - name: Build eonclient (PR)
+        shell: pixi run bash -e {0}
+        run: |
+          git checkout ${{ steps.shas.outputs.pr }}
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release --wipe 2>/dev/null \
+            || meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
+          meson install -C bbdir
+
+      - name: Benchmark PR
+        shell: pixi run bash -e {0}
+        run: asv run --python=same --set-commit-hash ${{ steps.shas.outputs.pr }} --quick
+
+      # ── Compare & comment ───────────────────────────────────────
+      - name: Locate result files
+        id: results
+        shell: pixi run bash -e {0}
+        run: |
+          MACHINE=$(ls .asv/results/ | grep -v benchmarks.json | head -1)
+          echo "machine=$MACHINE" >> "$GITHUB_OUTPUT"
+          echo "before=.asv/results/$MACHINE/${{ steps.shas.outputs.main }}.json" >> "$GITHUB_OUTPUT"
+          echo "after=.asv/results/$MACHINE/${{ steps.shas.outputs.pr }}.json" >> "$GITHUB_OUTPUT"
+          echo "benchmarks=.asv/results/benchmarks.json" >> "$GITHUB_OUTPUT"
+
+      - name: Compare results
+        id: compare
+        shell: pixi run bash -e {0}
+        run: |
+          TABLE=$(asv-spyglass compare \
+            ${{ steps.results.outputs.before }} \
+            ${{ steps.results.outputs.after }} \
+            ${{ steps.results.outputs.benchmarks }} 2>&1) || true
+          echo "table<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$TABLE" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Post PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- asv-benchmark-result -->';
+            const body = [
+              marker,
+              '## Benchmark results',
+              '',
+              process.env.TABLE,
+              '',
+              '<details><summary>Details</summary>',
+              '',
+              `- **main:** \`${process.env.MAIN_SHA.slice(0, 8)}\``,
+              `- **PR:** \`${process.env.PR_SHA.slice(0, 8)}\``,
+              '- Runner: `ubuntu-22.04`',
+              '',
+              '</details>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+        env:
+          TABLE: ${{ steps.compare.outputs.table }}
+          MAIN_SHA: ${{ steps.shas.outputs.main }}
+          PR_SHA: ${{ steps.shas.outputs.pr }}
