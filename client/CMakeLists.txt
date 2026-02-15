@@ -1,226 +1,356 @@
-cmake_minimum_required(VERSION 3.11...3.19)
+# ---------------------- Compiler setup
+set(EON_INCLUDE_DIRS
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
+)
 
-project(
-  eonclient
-  VERSION 1.0
-  DESCRIPTION "EON client"
-  LANGUAGES C CXX Fortran)
-
-if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-  message(
-    FATAL_ERROR
-      "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.\n"
-  )
+# Fortran compiler flags
+if(WITH_FORTRAN OR WITH_XTB OR WITH_CUH2)
+  include(CheckFortranCompilerFlag)
+  set(EON_FORTRAN_FLAGS "")
+  foreach(flag -fno-implicit-none -Wno-compare-reals -Wno-conversion
+               -Wno-line-truncation -Wno-surprising -Wno-unused-dummy-argument
+               -Wno-deprecated -Wno-unused-label -w -Wno-maybe-uninitialized
+               -Wno-uninitialized -Wno-unused-but-set-parameter
+               -Wno-unused-but-set-variable -Wno-unused-parameter
+               -Wno-unused-variable)
+    string(MAKE_C_IDENTIFIER "FORTRAN_SUPPORTS${flag}" flag_var)
+    check_fortran_compiler_flag("${flag}" ${flag_var})
+    if(${flag_var})
+      list(APPEND EON_FORTRAN_FLAGS "${flag}")
+    endif()
+  endforeach()
 endif()
 
-set(CMAKE_COLOR_MAKEFILE ON)
-cmake_policy(SET CMP0079 NEW)
-
-# # CXX Compiler Flags
-# string(APPEND CMAKE_CXX_FLAGS
-#        " -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors ")
-# string(APPEND CMAKE_CXX_FLAGS_RELEASE
-#        " -O3 -march=native -ffast-math -funroll-loops ")
-# # string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0 -Warray-bounds -Wall -Wno-unused -g3 -ggdb ")
-
-# # Fortran Compiler Flags
-# string(APPEND CMAKE_Fortran_FLAGS
-#        " -fbounds-check -ffpe-trap=invalid,zero,overflow ")
-# string(APPEND CMAKE_Fortran_FLAGS_RELEASE
-#        " -O3 -march=native -ffast-math -funroll-loops -std=legacy ")
-# string(APPEND CMAKE_Fortran_FLAGS_DEBUG
-#        " -O0 -Warray-bounds -std=legacy -Wall -Wno-unused ")
-
-# Other flags
-# set(DOUBLE "-r8")
-
-if(NO_WARN)
-  string(APPEND CMAKE_CXX_FLAGS " -w ")
-  string(APPEND CMAKE_Fortran_FLAGS " -w ")
+# MKL support
+if(USE_MKL)
+  find_package(MKL CONFIG REQUIRED)
+  add_compile_definitions(EIGEN_USE_MKL_ALL)
+  link_libraries(mkl_intel_lp64 mkl_core mkl_sequential)
 endif()
 
-# add_compile_options("$<$<CONFIG:Debug>:-O0;-g3;-ggdb;-Warray-bounds;-Wall;-Wno-unused>")
+# ---------------------- Platform detection
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  add_compile_definitions(OSX=TRUE)
+  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-faligned-allocation>)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  add_compile_definitions(IS_WINDOWS)
+endif()
 
-# add_compile_options(# "-Wall" "-Wpedantic" "-Wextra" "-fexceptions"
-# "$<$<CONFIG:Debug>:-O0;-g3;-ggdb>")
-# -g -Wall -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors
-# -lpython3 -O0  -w -DLINUX
+# Compiler warning suppression (matching Meson)
+include(CheckCXXCompilerFlag)
+foreach(flag -Wno-class-memaccess -Wno-unused-function -Wno-reorder
+             -Wno-sign-compare -Wno-unused-but-set-parameter
+             -Wno-unused-but-set-variable -Wno-unused-parameter
+             -Wno-unused-result -Wno-unused-variable)
+  string(MAKE_C_IDENTIFIER "CXX_SUPPORTS${flag}" flag_var)
+  check_cxx_compiler_flag("${flag}" ${flag_var})
+  if(${flag_var})
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:${flag}>)
+  endif()
+endforeach()
+
+# Safety checks in non-release builds
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_compile_definitions(EON_CHECKS=TRUE)
+endif()
+
+# ---------------------- Version detection
+# Python3 already found by top-level CMakeLists.txt
+execute_process(
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/get_version.py
+  OUTPUT_VARIABLE VERSION_OUTPUT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  ERROR_QUIET)
+if(NOT VERSION_OUTPUT)
+  set(VERSION_OUTPUT "unknown,unknown")
+endif()
+string(REPLACE "," ";" VERSION_LIST "${VERSION_OUTPUT}")
+list(GET VERSION_LIST 0 VERSION)
+list(GET VERSION_LIST 1 BUILD_DATE)
+set(OS_INFO ${CMAKE_SYSTEM_NAME})
+set(ARCH ${CMAKE_SYSTEM_PROCESSOR})
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/version.h
+  @ONLY)
 
 # Messages
-message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
-message(STATUS "Fortran compiler: " ${CMAKE_Fortran_COMPILER})
-message(STATUS "C compiler: " ${CMAKE_C_COMPILER})
-message(STATUS "CXX compiler: " ${CMAKE_CXX_COMPILER})
-message(STATUS "Python: " ${Python_EXECUTABLE})
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "eOn version: ${VERSION}")
+message(STATUS "Platform: ${OS_INFO} ${ARCH}")
 
-if(${CMAKE_BUILD_TYPE} MATCHES "Release")
-  find_package(BLAS)
-  find_package(LAPACK)
-  find_package(OpenMP)
-  message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS}
-                 ${CMAKE_Fortran_FLAGS_RELEASE} ${COMPILE_OPTIONS})
-  message(STATUS "CXX compiler flags:" ${CMAKE_CXX_FLAGS}
-                 ${CMAKE_CXX_FLAGS_RELEASE} ${COMPILE_OPTIONS})
-elseif(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS}
-                 ${CMAKE_Fortran_FLAGS_DEBUG} ${COMPILE_OPTIONS})
-  message(STATUS "CXX compiler flags:" ${CMAKE_CXX_FLAGS}
-                 ${CMAKE_CXX_FLAGS_DEBUG} ${COMPILE_OPTIONS})
+# ---------------------- Dependencies
+find_package(Threads REQUIRED)
+find_package(Eigen3 3.3 REQUIRED)
+find_package(spdlog REQUIRED)
+
+set(EON_DEPS Eigen3::Eigen spdlog::spdlog Threads::Threads)
+
+if(NOT WIN32)
+  find_library(MATH_LIB m)
+  if(MATH_LIB)
+    list(APPEND EON_DEPS ${MATH_LIB})
+  endif()
 endif()
 
-# Build
-add_executable(eonclient ClientEON.cpp CommandLine.cpp)
-
-# Optional, for nix
-if(FIND_EIGEN)
-  find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-  include_directories(${EIGEN3_INCLUDE_DIR})
-  message(STATUS "EIGEN: " ${EIGEN3_INCLUDE_DIR})
-  target_link_libraries(eonclient Eigen3::Eigen)
+if(EON_NEED_PYTHON_EMBED)
+  list(APPEND EON_DEPS Python3::Python Python3::NumPy)
 endif()
 
-# Set version
-target_compile_features(eonclient PUBLIC cxx_std_17)
-set_target_properties(
-  eonclient
-  PROPERTIES CXX_STANDARD 17
-             CXX_STANDARD_REQUIRED YES
-             CXX_EXTENSIONS NO)
+# ---------------------- eoncbase library
+add_library(eoncbase SHARED INIFile.cpp fpe_handler.cpp)
+target_include_directories(eoncbase PUBLIC
+  ${EON_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(eoncbase PUBLIC ${EON_DEPS})
+install(TARGETS eoncbase)
 
-# Versioning
-add_custom_target(
-  version
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/version.sh >
-          ${CMAKE_CURRENT_SOURCE_DIR}/version.h
-  COMMENT "run version update command in ${CMAKE_CURRENT_SOURCE_DIR}")
-
-# Build order
-add_dependencies(eonclient potentials eonlib version gprdimer)
-
-# Libraries
-target_link_libraries(eonclient potentials eonlib gprdimer)
-
-# Sub-directories
-add_subdirectory(subprojects/gprdimer)
+# ---------------------- Potentials
 add_subdirectory(potentials)
 
-# Dependencies
-add_library(
-  eonlib SHARED
-  MinModeSaddleSearch.cpp
-  Dimer.cpp
-  EpiCenters.cpp
-  Hessian.cpp
-  ConjugateGradients.cpp
-  HelperFunctions.cpp
-  Matter.cpp
+# ---------------------- eonclib library
+set(EONCLIB_SOURCES
   Parameters.cpp
-  INIFile.cpp
-  Potential.cpp
-  Quickmin.cpp
-  ProcessSearchJob.cpp
-  PointJob.cpp
-  MinimizationJob.cpp
-  HessianJob.cpp
-  ParallelReplicaJob.cpp
-  SafeHyperJob.cpp
-  TADJob.cpp
-  ReplicaExchangeJob.cpp
-  Dynamics.cpp
-  BondBoost.cpp
-  FiniteDifferenceJob.cpp
-  NudgedElasticBandJob.cpp
-  # TestJob.cpp
-  GPRHelpers.cpp
-  BasinHoppingJob.cpp
-  SaddleSearchJob.cpp
-  ImprovedDimer.cpp
-  NudgedElasticBand.cpp
-  Lanczos.cpp
-  Bundling.cpp
-  Job.cpp
-  CommandLine.cpp
-  DynamicsJob.cpp
-  Log.cpp
-  LBFGS.cpp
-  LowestEigenmode.cpp
   Optimizer.cpp
-  Prefactor.cpp
-  DynamicsSaddleSearch.cpp
+  IDPPObjectiveFunction.cpp
   PrefactorJob.cpp
-  FIRE.cpp
-  GlobalOptimizationJob.cpp
+  LBFGS.cpp
+  ReplicaExchangeJob.cpp
+  BondBoost.cpp
+  Job.cpp
   GlobalOptimization.cpp
+  LowestEigenmode.cpp
+  MinModeSaddleSearch.cpp
   StructureComparisonJob.cpp
-  MonteCarloJob.cpp
-  MonteCarlo.cpp
   SteepestDescent.cpp
-  BasinHoppingSaddleSearch.cpp
+  ImprovedDimer.cpp
+  PointJob.cpp
+  Prefactor.cpp
+  ConjugateGradients.cpp
+  Matter.cpp
+  FiniteDifferenceJob.cpp
+  Lanczos.cpp
+  HessianJob.cpp
+  TADJob.cpp
+  ProcessSearchJob.cpp
+  Bundling.cpp
+  NEBInitialPaths.cpp
+  NudgedElasticBand.cpp
+  MonteCarloJob.cpp
+  DynamicsJob.cpp
+  MonteCarlo.cpp
+  Hessian.cpp
+  NudgedElasticBandJob.cpp
+  DynamicsSaddleSearch.cpp
+  HelperFunctions.cpp
+  MatrixHelpers.hpp
+  Dimer.cpp
+  Dynamics.cpp
+  GlobalOptimizationJob.cpp
   BiasedGradientSquaredDescent.cpp
-  AtomicGPDimer.cpp)
+  SafeHyperJob.cpp
+  MinimizationJob.cpp
+  Quickmin.cpp
+  ParallelReplicaJob.cpp
+  Potential.cpp
+  SurrogatePotential.cpp
+  BasinHoppingJob.cpp
+  FIRE.cpp
+  EpiCenters.cpp
+  SaddleSearchJob.cpp
+  BasinHoppingSaddleSearch.cpp)
 
-# Options
-if(MPI)
-  target_compile_definitions(eonclient PUBLIC -DEONMPI)
-  # Python is used with MPI
-  find_package(Python COMPONENTS Interpreter Development)
-  include_directories(${Python_INCLUDE_DIRS})
-  # Need the MPI libraries
-  find_package(MPI REQUIRED)
-  set(CMAKE_CXX_COMPILER ${MPI_CXX_COMPILER})
-  set(CMAKE_Fortran_COMPILER ${MPI_Fortran_COMPILER})
-  target_link_libraries(eonclient ${Python_LIBRARIES} MPI::MPI_CXX)
-endif()
-
-# https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/How-To-Write-Platform-Checks
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  target_compile_definitions(eonlib PUBLIC -DOSX)
-  target_compile_definitions(eonclient PUBLIC -DOSX)
-  elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  target_compile_definitions(eonlib PUBLIC -DLINUX)
-    target_compile_definitions(eonclient PUBLIC -DLINUX)
-  elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    target_compile_definitions(eonlib PUBLIC -DWIN32) # No VASP
-    target_compile_definitions(eonclient PUBLIC -DWIN32)
-endif()
-
-if(WITH_WATER)
-  target_compile_definitions(eonlib PUBLIC -DWITH_WATER)
-endif()
-
-if(WITH_AMS)
-  target_compile_definitions(eonlib PUBLIC -DWITH_AMS)
-endif()
-
+# Conditional sources
 if(WITH_GPRD)
-  target_compile_definitions(eonlib PUBLIC -DWITH_GPRD)
+  list(APPEND EONCLIB_SOURCES AtomicGPDimer.cpp GPRHelpers.cpp)
+endif()
+if(WITH_GP_SURROGATE)
+  list(APPEND EONCLIB_SOURCES GPSurrogateJob.cpp)
 endif()
 
+add_library(eonclib SHARED ${EONCLIB_SOURCES})
+target_include_directories(eonclib PUBLIC
+  ${EON_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(eonclib PUBLIC eoncbase potentials ${EON_DEPS})
+install(TARGETS eonclib)
+
+# ---------------------- Compile definitions for options
+if(WITH_GPRD)
+  target_compile_definitions(eonclib PUBLIC WITH_GPRD)
+endif()
+if(WITH_GP_SURROGATE)
+  target_compile_definitions(eonclib PUBLIC WITH_GP_SURROGATE)
+  if(WITH_CATLEARN)
+    target_compile_definitions(eonclib PUBLIC WITH_CATLEARN)
+  endif()
+endif()
+if(WITH_VASP)
+  target_compile_definitions(eonclib PUBLIC WITH_VASP)
+endif()
+if(WITH_WATER)
+  target_compile_definitions(eonclib PUBLIC WITH_WATER)
+endif()
+if(WITH_AMS)
+  target_compile_definitions(eonclib PUBLIC WITH_AMS)
+endif()
 if(WITH_LAMMPS)
-  target_compile_definitions(eonlib PUBLIC -DLAMMPS_POT)
-  target_compile_definitions(eonclient PUBLIC -DLAMMPS_POT)
+  target_compile_definitions(eonclib PUBLIC LAMMPS_POT)
 endif()
-
 if(WITH_FORTRAN)
-  target_compile_definitions(eonlib PUBLIC -DWITH_FORTRAN)
+  target_compile_definitions(eonclib PUBLIC WITH_FORTRAN)
+endif()
+if(WITH_CUH2)
+  target_compile_definitions(eonclib PUBLIC CUH2_POT WITH_FORTRAN)
+endif()
+if(WITH_XTB)
+  target_compile_definitions(eonclib PUBLIC WITH_XTB)
+endif()
+if(WITH_METATOMIC)
+  target_compile_definitions(eonclib PUBLIC WITH_METATOMIC)
+endif()
+if(EON_NEED_PYTHON_EMBED)
+  target_compile_definitions(eonclib PUBLIC EMBED_PYTHON)
+endif()
+if(WITH_ASE)
+  target_compile_definitions(eonclib PUBLIC ASE_POT)
+endif()
+if(WITH_ASE_ORCA)
+  target_compile_definitions(eonclib PUBLIC WITH_ASE_ORCA)
+endif()
+if(WITH_ASE_NWCHEM)
+  target_compile_definitions(eonclib PUBLIC WITH_ASE_NWCHEM)
+endif()
+if(WITH_MPI)
+  target_compile_definitions(eonclib PUBLIC EONMPI)
 endif()
 
-if(WITH_PYTHON)
-  # Python is used for potentials
-  find_package(Python COMPONENTS Interpreter Development)
-  include_directories(${Python_INCLUDE_DIRS})
-  target_link_libraries(eonclient ${Python_LIBRARIES})
+# ---------------------- GPRD subproject
+if(WITH_GPRD)
+  find_package(gpr_optim QUIET)
+  if(gpr_optim_FOUND)
+    target_link_libraries(eonclib PUBLIC gpr_optim::gpr_optim)
+  else()
+    message(WARNING "gpr_optim not found. WITH_GPRD is ON but the library is missing.")
+  endif()
 endif()
 
-# Tests
-option(PACKAGE_TESTS "Build the tests" OFF)
-if(PACKAGE_TESTS)
-  find_package(GTest REQUIRED)
-  enable_testing()
-  include(GoogleTest)
-  add_subdirectory(gtests)
+# ---------------------- XTB dependency
+if(WITH_XTB)
+  find_package(xtb QUIET)
+  if(xtb_FOUND)
+    target_link_libraries(eonclib PUBLIC xtb::xtb)
+  else()
+    find_library(XTB_LIBRARY xtb)
+    find_path(XTB_INCLUDE_DIR xtb.h)
+    if(XTB_LIBRARY)
+      target_link_libraries(eonclib PUBLIC ${XTB_LIBRARY})
+      if(XTB_INCLUDE_DIR)
+        target_include_directories(eonclib PUBLIC ${XTB_INCLUDE_DIR})
+      endif()
+    else()
+      message(FATAL_ERROR "XTB not found. Set xtb_DIR or install xtb.")
+    endif()
+  endif()
 endif()
 
-# Install
+# ---------------------- Metatomic / Torch dependencies
+if(WITH_METATOMIC)
+  if(TORCH_PATH)
+    set(LIB_TORCH_PATH "${TORCH_PATH}")
+  else()
+    execute_process(
+      COMMAND ${Python3_EXECUTABLE} -c "import torch; print(torch.utils.cmake_prefix_path)"
+      OUTPUT_VARIABLE TORCH_CMAKE_PREFIX
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET)
+    if(TORCH_CMAKE_PREFIX)
+      list(APPEND CMAKE_PREFIX_PATH "${TORCH_CMAKE_PREFIX}")
+    endif()
+  endif()
+
+  find_package(Torch QUIET)
+  if(Torch_FOUND)
+    target_link_libraries(eonclib PUBLIC ${TORCH_LIBRARIES})
+    target_include_directories(eonclib SYSTEM PUBLIC ${TORCH_INCLUDE_DIRS})
+  else()
+    # Manual fallback: find libraries directly
+    if(TORCH_PATH)
+      set(LIB_TORCH_LIB_PATH "${TORCH_PATH}/lib")
+      set(LIB_TORCH_INCL_PATH "${TORCH_PATH}/include")
+      foreach(lib c10 torch torch_cpu torch_global_deps)
+        find_library(${lib}_LIB ${lib} PATHS ${LIB_TORCH_LIB_PATH} NO_DEFAULT_PATH)
+        if(${lib}_LIB)
+          target_link_libraries(eonclib PUBLIC ${${lib}_LIB})
+        endif()
+      endforeach()
+      target_include_directories(eonclib SYSTEM PUBLIC
+        ${LIB_TORCH_INCL_PATH}
+        ${LIB_TORCH_INCL_PATH}/torch/csrc/api/include)
+    else()
+      message(FATAL_ERROR "Metatomic requires Torch. Set TORCH_PATH or install PyTorch.")
+    endif()
+  endif()
+
+  # metatensor and metatomic
+  find_library(METATENSOR_LIB metatensor)
+  find_library(METATENSOR_TORCH_LIB metatensor_torch)
+  find_library(METATOMIC_TORCH_LIB metatomic_torch)
+  if(METATENSOR_LIB AND METATENSOR_TORCH_LIB AND METATOMIC_TORCH_LIB)
+    target_link_libraries(eonclib PUBLIC
+      ${METATENSOR_LIB} ${METATENSOR_TORCH_LIB} ${METATOMIC_TORCH_LIB})
+  else()
+    message(FATAL_ERROR "metatensor/metatomic libraries not found.")
+  endif()
+
+  # vesin
+  find_library(VESIN_LIB vesin QUIET)
+  if(VESIN_LIB)
+    target_link_libraries(eonclib PUBLIC ${VESIN_LIB})
+  else()
+    # Build vesin from thirdparty
+    add_library(vesin_internal STATIC thirdparty/vesin/vesin-single-build.cpp)
+    target_include_directories(vesin_internal PUBLIC thirdparty/vesin)
+    target_link_libraries(eonclib PUBLIC vesin_internal)
+  endif()
+endif()
+
+# ---------------------- AMS dependencies
+if(WITH_AMS)
+  find_package(absl CONFIG REQUIRED)
+  find_package(fmt CONFIG REQUIRED)
+  find_package(Boost CONFIG REQUIRED COMPONENTS headers iostreams)
+  target_link_libraries(eonclib PUBLIC
+    absl::base absl::strings absl::numeric absl::utility
+    Boost::headers Boost::iostreams
+    fmt::fmt)
+endif()
+
+# ---------------------- MPI
+if(WITH_MPI)
+  find_package(MPI REQUIRED)
+  target_link_libraries(eonclib PUBLIC MPI::MPI_CXX)
+endif()
+
+# ---------------------- Executable
+add_executable(eonclient ClientEON.cpp CommandLine.cpp)
+target_include_directories(eonclient PRIVATE
+  ${EON_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(eonclient PRIVATE eonclib)
 install(TARGETS eonclient)
-install(TARGETS eonlib)
+
+# ---------------------- Tests
+if(WITH_TESTS)
+  enable_testing()
+  add_subdirectory(gtests)
+
+  add_executable(testWriteR testWriteR.cpp)
+  target_include_directories(testWriteR PRIVATE
+    ${EON_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR})
+  target_link_libraries(testWriteR PRIVATE eonclib)
+endif()

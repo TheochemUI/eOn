@@ -11,6 +11,6 @@ add_library(
   Asap/Exception.cpp
   Asap/GhostAtoms.cpp
   Asap/EMTRasmussenParameterProvider.cpp)
-
-# Install
+target_link_libraries(EMT PRIVATE eoncbase ${EON_DEPS})
+target_include_directories(EMT PRIVATE ${EON_INCLUDE_DIRS})
 install(TARGETS EMT)
