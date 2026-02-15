@@ -32,16 +32,13 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     if (m_params.metatomic_options.variant.energy == "off") {
       this->energy_key_ = "energy";
     } else {
-      this->energy_key_ =
-          "energy/" + m_params.metatomic_options.variant.energy;
+      this->energy_key_ = "energy/" + m_params.metatomic_options.variant.energy;
     }
   }
 
   // Apply variant/energy_uncertainty override
-  if (!m_params.metatomic_options.variant.energy_uncertainty
-           .empty()) {
-    if (m_params.metatomic_options.variant.energy_uncertainty ==
-        "off") {
+  if (!m_params.metatomic_options.variant.energy_uncertainty.empty()) {
+    if (m_params.metatomic_options.variant.energy_uncertainty == "off") {
       this->energy_uncertainty_key_ = "energy_uncertainty";
     } else {
       this->energy_uncertainty_key_ =
@@ -53,8 +50,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // 1. Load the model from the path specified in parameters
   torch::optional<std::string> extensions_directory = torch::nullopt;
   if (!m_params.metatomic_options.extensions_directory.empty()) {
-    extensions_directory =
-        m_params.metatomic_options.extensions_directory;
+    extensions_directory = m_params.metatomic_options.extensions_directory;
   }
 
   try {
@@ -109,8 +105,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // 5. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
-  evaluations_options_->set_length_unit(
-      m_params.metatomic_options.length_unit);
+  evaluations_options_->set_length_unit(m_params.metatomic_options.length_unit);
 
   auto outputs = this->capabilities_->outputs();
   if (!outputs.contains(this->energy_key_)) {
@@ -180,8 +175,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     }
   }
 
-  this->check_consistency_ =
-      m_params.metatomic_options.check_consistency;
+  this->check_consistency_ = m_params.metatomic_options.check_consistency;
   m_log->info("[MetatomicPotential] Initialization complete.");
 }
 
@@ -376,8 +370,7 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     metatomic_torch::NeighborListOptions request, long nAtoms,
     const double *positions, const double *box, bool periodic) {
 
-  auto cutoff =
-      request->engine_cutoff(m_params.metatomic_options.length_unit);
+  auto cutoff = request->engine_cutoff(m_params.metatomic_options.length_unit);
 
   VesinOptions options;
   options.cutoff = cutoff;
