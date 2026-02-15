@@ -14,7 +14,6 @@
 #include <errno.h>
 #include <iostream>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "IMD.h"
 

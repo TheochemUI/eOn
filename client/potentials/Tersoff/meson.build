@@ -1,4 +1,4 @@
-tersoff=shared_library('tersoff',
+tersoff=library('tersoff',
            'Tersoff.cpp',
            'tersoffFortran.f90',
            dependencies : _deps,

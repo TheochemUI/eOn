@@ -1,4 +1,4 @@
-water=shared_library('water',
+water=library('water',
            'spce_ccl.cpp',
            'tip4p_ccl.cpp',
            'ccl.cpp',

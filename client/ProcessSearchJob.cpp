@@ -250,12 +250,12 @@ void ProcessSearchJob::saveData(int status) {
           std::string{magic_enum::enum_name<PotType>(
                           params.potential_options.potential)}
               .c_str());
-  fprintf(fileResults, "%ld total_force_calls\n",
+  fprintf(fileResults, "%zu total_force_calls\n",
           fCallsMin + fCallsSaddle + fCallsPrefactors);
-  fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
+  fprintf(fileResults, "%zu force_calls_minimization\n", fCallsMin);
   //    fprintf(fileResults, "%ld force_calls_minimization\n",
   //    SaddleSearch->forceCallsMinimization + fCallsMin);
-  fprintf(fileResults, "%ld force_calls_saddle\n", fCallsSaddle);
+  fprintf(fileResults, "%zu force_calls_saddle\n", fCallsSaddle);
   fprintf(fileResults, "%.12e potential_energy_saddle\n",
           saddle->getPotentialEnergy());
   fprintf(fileResults, "%.12e potential_energy_reactant\n",
@@ -279,7 +279,7 @@ void ProcessSearchJob::saveData(int status) {
     fprintf(fileResults, "%.12e md_temperature\n",
             params.saddle_search_options.dynamics.temperature);
   }
-  fprintf(fileResults, "%ld force_calls_prefactors\n", fCallsPrefactors);
+  fprintf(fileResults, "%zu force_calls_prefactors\n", fCallsPrefactors);
   fprintf(fileResults, "%.12e prefactor_reactant_to_product\n",
           prefactorsValues[0]);
   fprintf(fileResults, "%.12e prefactor_product_to_reactant\n",

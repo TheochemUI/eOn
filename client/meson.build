@@ -158,7 +158,9 @@ subdir('potentials/LJ')
 subdir('potentials/LJCluster')
 subdir('potentials/Morse')
 subdir('potentials/ZBL')
-subdir('potentials/SocketNWChem')
+if not is_windows
+    subdir('potentials/SocketNWChem')
+endif
 subdir('potentials/NewPot')
 
 potentials = [
@@ -171,8 +173,10 @@ potentials = [
     morse,
     newpot,
     zbl,
-    socket_nwchem,
 ]
+if not is_windows
+    potentials += [socket_nwchem]
+endif
 
 eonclib_sources = [
     'Parameters.cpp',

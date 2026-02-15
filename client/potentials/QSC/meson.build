@@ -9,7 +9,7 @@ libqsc = static_library(
     include_directories: _incdirs,
     link_with : _linkto,
 )
-qsc=shared_library('qsc',
+qsc=library('qsc',
            'QSC.cpp',
            dependencies : _deps,
            cpp_args : _args,

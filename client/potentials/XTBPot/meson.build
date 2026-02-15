@@ -1,4 +1,4 @@
-xtb_eon = shared_library('xtbeon',
+xtb_eon = library('xtbeon',
            'XTBPot.cpp',
            dependencies : _deps,
            cpp_args : _args,

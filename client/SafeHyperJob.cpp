@@ -88,7 +88,7 @@ int SafeHyperJob::dynamics() {
   newStateFlag = metaStateFlag = false;
 
   mdBufferLength = long(StateCheckInterval / RecordInterval);
-  Matter *mdBuffer[mdBufferLength];
+  std::vector<Matter *> mdBuffer(mdBufferLength);
   for (long i = 0; i < mdBufferLength; i++) {
     mdBuffer[i] = new Matter(pot, params);
   }
@@ -194,7 +194,7 @@ int SafeHyperJob::dynamics() {
       // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
       // time.");
       refFCalls = Potential::fcalls;
-      refineStep = refine(mdBuffer, mdBufferLength, reactant);
+      refineStep = refine(mdBuffer.data(), mdBufferLength, reactant);
 
       transitionStep =
           newStateStep - StateCheckInterval + refineStep * RecordInterval;
@@ -376,7 +376,7 @@ void SafeHyperJob::dephase() {
     // this should be allocated once, and of length DephaseSteps
     dephaseBufferLength = DephaseSteps - step;
     loop++;
-    Matter *dephaseBuffer[dephaseBufferLength];
+    std::vector<Matter *> dephaseBuffer(dephaseBufferLength);
 
     for (long i = 0; i < dephaseBufferLength; i++) {
       dephaseBuffer[i] = new Matter(pot, params);
@@ -387,7 +387,8 @@ void SafeHyperJob::dephase() {
     transitionFlag = checkState(current, reactant);
 
     if (transitionFlag) {
-      dephaseRefineStep = refine(dephaseBuffer, dephaseBufferLength, reactant);
+      dephaseRefineStep =
+          refine(dephaseBuffer.data(), dephaseBufferLength, reactant);
       SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
                           dephaseRefineStep);
       transitionStep = dephaseRefineStep - 1; // check that this is correct

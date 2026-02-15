@@ -9,6 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include "BaseStructures.h"
 #include "Bundling.h"
 #include "CommandLine.h"
@@ -46,11 +51,11 @@
 // Includes for FPE trapping
 #include "fpe_handler.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <float.h>
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/utsname.h>
@@ -430,7 +435,7 @@ int main(int argc, char **argv) {
       std::ofstream result_file("results.dat", std::ios::app);
       if (result_file.is_open()) {
         result_file << "time_seconds " << elapsed.count() << "\n";
-#ifndef WIN32
+#ifndef _WIN32
         result_file << "user_time " << utime << "\n";
         result_file << "system_time " << stime << "\n";
 #endif

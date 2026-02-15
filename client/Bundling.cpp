@@ -12,63 +12,53 @@
 
 #include "Bundling.h"
 
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <dirent.h>
 #include <filesystem>
 #include <iostream>
-#include <unistd.h>
 
 namespace fs = std::filesystem;
 
 int getBundleSize(void) {
-  DIR *dir;
-  struct dirent *dp;
   int num_bundle = -1;
 
-  dir = opendir(".");
+  for (const auto &entry : fs::directory_iterator(".")) {
+    std::string name = entry.path().filename().string();
 
-  if (!dir) {
-    perror("opendir");
-    return num_bundle;
-  }
-
-  // Find the highest numbered bundle file
-  // and return that number.
-  while ((dp = readdir(dir))) {
-    if (dp->d_name[0] == '.') {
+    if (name[0] == '.') {
       continue;
     }
 
     // If "config" is not in the filename
     // then skip.
-    if (strstr(dp->d_name, "config") == NULL &&
-        strstr(dp->d_name, "ini") == NULL) {
+    if (name.find("config") == std::string::npos &&
+        name.find("ini") == std::string::npos) {
       continue;
     }
 
     // Find the last underscore
-    char *ch = strrchr(dp->d_name, '_');
-    if (ch == NULL) {
+    auto upos = name.rfind('_');
+    if (upos == std::string::npos) {
       continue;
-    } else {
-      ch += 1;
     }
+
     // Find the last period
-    char *cch = strrchr(dp->d_name, '.');
-    if (cch == NULL)
+    auto dpos = name.rfind('.');
+    if (dpos == std::string::npos || dpos <= upos) {
       continue;
-    *cch = '\0';
-    if (isdigit(*ch)) {
-      int i = atoi(ch) + 1;
+    }
+
+    std::string numstr = name.substr(upos + 1, dpos - upos - 1);
+    if (!numstr.empty() &&
+        std::isdigit(static_cast<unsigned char>(numstr[0]))) {
+      int i = std::atoi(numstr.c_str()) + 1;
       if (i > num_bundle) {
         num_bundle = i;
       }
     }
   }
-
-  closedir(dir);
 
   return num_bundle;
 }
@@ -85,52 +75,43 @@ int strchrcount(const char *haystack, char needle) {
 
 std::vector<std::string> unbundle(int number) {
   std::vector<std::string> filenames;
-  DIR *dir;
-  struct dirent *dp;
 
-  dir = opendir(".");
+  for (const auto &entry : fs::directory_iterator(".")) {
+    std::string originalFilename = entry.path().filename().string();
 
-  if (!dir) {
-    perror("opendir");
-    return filenames;
-  }
-
-  while ((dp = readdir(dir))) {
-    int bundleNumber;
-    std::string originalFilename(dp->d_name);
-
-    if (dp->d_name[0] == '.') {
+    if (originalFilename[0] == '.') {
       continue;
     }
 
-    int numUnderscores = strchrcount(dp->d_name, '_');
+    int numUnderscores = strchrcount(originalFilename.c_str(), '_');
     if (numUnderscores < 1) {
       continue;
     }
 
     // Find the last underscore
-    char *ch = strrchr(dp->d_name, '_');
-    if (ch == NULL) {
+    auto upos = originalFilename.rfind('_');
+    if (upos == std::string::npos) {
       continue;
-    } else {
-      ch += 1;
     }
+
     // Find the last period
-    char *cch = strrchr(dp->d_name, '.');
-    if (cch == NULL)
+    auto dpos = originalFilename.rfind('.');
+    if (dpos == std::string::npos || dpos <= upos) {
       continue;
-    *cch = '\0';
-    if (isdigit(*ch)) {
-      bundleNumber = atoi(ch);
+    }
+
+    std::string numstr = originalFilename.substr(upos + 1, dpos - upos - 1);
+    if (!numstr.empty() &&
+        std::isdigit(static_cast<unsigned char>(numstr[0]))) {
+      int bundleNumber = std::atoi(numstr.c_str());
       if (bundleNumber != number) {
         continue;
       }
     }
 
-    *(ch - 1) = '\0';
-
-    std::string newFilename =
-        std::string(dp->d_name) + "." + std::string(cch + 1);
+    std::string baseName = originalFilename.substr(0, upos);
+    std::string ext = originalFilename.substr(dpos + 1);
+    std::string newFilename = baseName + "." + ext;
 
     try {
       fs::copy_file(originalFilename, newFilename,
@@ -143,7 +124,6 @@ std::vector<std::string> unbundle(int number) {
     filenames.push_back(newFilename);
   }
 
-  closedir(dir);
   return filenames;
 }
 
