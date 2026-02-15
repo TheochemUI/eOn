@@ -103,6 +103,18 @@ class MinModeExplorer(Explorer):
                 f.close()
                 kdb.query(self.state)
 
+        # If a per-state displacement atom list script was used, inject the
+        # cached result into the config so DisplacementManager's ListedAtoms
+        # picks it up.
+        if self.config.displace_atom_kmc_state_script:
+            from eon import _utils as utl
+            atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
+            if atom_list_str:
+                self.config.disp_listed_atoms = utl.parse_atom_list_str(atom_list_str)
+                # Ensure the listed-atom displacement method is active
+                if self.config.displace_listed_atom_weight == 0.0:
+                    self.config.displace_listed_atom_weight = 1.0
+
         self.reactant = self.state.get_reactant()
         self.displace = displace.DisplacementManager(self.reactant, moved_atoms, config = self.config)
 
