@@ -103,6 +103,18 @@ class MinModeExplorer(Explorer):
                 f.close()
                 kdb.query(self.state)
 
+        # If a per-state displacement atom list script was used, inject the
+        # cached result into the config so DisplacementManager's ListedAtoms
+        # picks it up.
+        if self.config.displace_atom_kmc_state_script:
+            from eon import _utils as utl
+            atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
+            if atom_list_str:
+                self.config.disp_listed_atoms = utl.parse_atom_list_str(atom_list_str)
+                # Ensure the listed-atom displacement method is active
+                if self.config.displace_listed_atom_weight == 0.0:
+                    self.config.displace_listed_atom_weight = 1.0
+
         self.reactant = self.state.get_reactant()
         self.displace = displace.DisplacementManager(self.reactant, moved_atoms, config = self.config)
 
@@ -194,7 +206,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
-
+        atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
         for i in range(num_to_make):
             search = {}
             # The search dictionary contains the following key-value pairs:
@@ -215,6 +227,9 @@ class ClientMinModeExplorer(MinModeExplorer):
             # to switch to min_mode searches
             if self.config.saddle_method == 'dynamics' and disp_type != 'dynamics':
                 ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
+
+            if atom_list_str:
+                ini_changes.append(("Saddle Search", "displace_atom_list", atom_list_str))
 
             search['config.ini'] = io.modify_config(self.config.config_path, ini_changes)
 

@@ -163,6 +163,14 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.saddle_search_options.confine_positive.min_active << std::endl;
   os << "saddleZeroModeAbortCurvature: "
      << params.saddle_search_options.zero_mode_abort_curvature << std::endl;
+  os << "saddleDisplaceAtomList: [";
+  for (size_t i = 0; i < params.saddle_search_options.displace_atom_list.size();
+       ++i) {
+    if (i > 0)
+      os << ", ";
+    os << params.saddle_search_options.displace_atom_list[i];
+  }
+  os << "]" << std::endl;
 
   os << "\n[Optimizers]" << std::endl;
   os << "optMethod: " << magic_enum::enum_name(params.optimizer_options.method)

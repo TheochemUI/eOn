@@ -278,6 +278,21 @@ void EpiCenters::coordinationLessOrEqual(bool *result, long coordinationMaxVal,
   return;
 }
 
+long EpiCenters::listedAtomEpiCenter(const Matter *matter,
+                                     const std::vector<long> &atomList) {
+  long nAtoms = matter->numberOfAtoms();
+  // Filter to only free atoms from the provided list
+  std::vector<long> freeAtoms;
+  for (long idx : atomList) {
+    if (idx >= 0 && idx < nAtoms && !matter->getFixed(idx)) {
+      freeAtoms.push_back(idx);
+    }
+  }
+  assert(!freeAtoms.empty());
+  long pick = (long)randomDouble((long)(freeAtoms.size() - 1));
+  return freeAtoms[pick];
+}
+
 long EpiCenters::minCoordination(const Matter *matter, double neighborCutoff) {
   long *coordinationVal;
   long nAtoms;
