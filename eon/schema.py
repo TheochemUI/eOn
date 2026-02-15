@@ -900,7 +900,8 @@ class SaddleSearchConfig(BaseModel):
         description="If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.",
     )
     client_displace_type: Literal[
-        "load", "random", "last_atom", "min_coordinated", "not_fcc_or_hcp"
+        "load", "random", "last_atom", "min_coordinated", "not_fcc_or_hcp",
+        "listed_atoms"
     ] = Field(default="random", description="Type of displacement method used.")
     zero_mode_abort_curvature: float = Field(
         default=0.0,
