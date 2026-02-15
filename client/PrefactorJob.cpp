@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "PrefactorJob.h"
+#include "HelperFunctions.h"
 #include "Hessian.h"
 #include "Matter.h"
 #include "Potential.h"
@@ -106,9 +107,11 @@ std::vector<std::string> PrefactorJob::run(void) {
   if (!failed) {
     for (int i = 0; i < freqs.size(); i++) {
       if (0. < freqs[i]) {
-        fprintf(fileFreq, "%f\n", sqrt(freqs[i]) / (2 * M_PI * 10.18e-15));
+        fprintf(fileFreq, "%f\n",
+                sqrt(freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
       } else {
-        fprintf(fileFreq, "%f\n", -sqrt(-freqs[i]) / (2 * M_PI * 10.18e-15));
+        fprintf(fileFreq, "%f\n",
+                -sqrt(-freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
       }
     }
   }

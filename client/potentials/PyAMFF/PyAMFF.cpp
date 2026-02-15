@@ -78,18 +78,18 @@ void PyAMFF::force(long N, const double *R, const int *atomicNrs, double *F,
   int num_elements;
   num_elements = unique_atomicNrs.size();
   // cout << "num_unique_elements" << num_elements << endl;
-  int unique[num_elements];
-  copy(unique_atomicNrs.begin(), unique_atomicNrs.end(), unique);
+  std::vector<int> unique(num_elements);
+  copy(unique_atomicNrs.begin(), unique_atomicNrs.end(), unique.begin());
 
   if (new_pyamff == true) {
     cout << "reading mlff in c" << endl;
-    read_mlffParas(&N, &num_elements, &max_fps, atomicNrs, unique);
+    read_mlffParas(&N, &num_elements, &max_fps, atomicNrs, unique.data());
     cout << "prepping fnn in c" << endl;
-    prepfNN(&N, &num_elements, &max_fps, atomicNrs, unique);
+    prepfNN(&N, &num_elements, &max_fps, atomicNrs, unique.data());
     cout << "fnn prepped!" << endl;
   }
   new_pyamff = false;
-  calc_eon(&N, R, box, atomicNrs, F, U, &num_elements, unique);
+  calc_eon(&N, R, box, atomicNrs, F, U, &num_elements, unique.data());
 
   return;
 }

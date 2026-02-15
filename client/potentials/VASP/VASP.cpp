@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #define sleep(n) Sleep(1000 * n)
 // #define popen _popen

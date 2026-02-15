@@ -1003,8 +1003,8 @@ void NudgedElasticBand::updateForces(void) {
                 forcePerpNormalized;
 
         double switching =
-            2.0 / M_PI *
-            atan(pow(forcePerpNorm, 2) / pow(forceSpringPerpNorm, 2));
+            2.0 / helper_functions::pi *
+            atan(std::pow(forcePerpNorm, 2) / std::pow(forceSpringPerpNorm, 2));
         forceDNEB *= switching;
       } else {
         // Force norms too small for stable DNEB calculation
@@ -1145,7 +1145,8 @@ void NudgedElasticBand::findExtrema(void) {
   // calculate the cubic parameters for each interval (a,b,c,d)
 
   AtomMatrix tangentEndpoint;
-  double a[numImages + 1], b[numImages + 1], c[numImages + 1], d[numImages + 1];
+  std::vector<double> a(numImages + 1), b(numImages + 1), c(numImages + 1),
+      d(numImages + 1);
   double F1, F2, U1, U2, dist;
 
   for (long i = 0; i <= numImages; i++) {
@@ -1186,7 +1187,7 @@ void NudgedElasticBand::findExtrema(void) {
   double discriminant, f;
 
   for (long i = 0; i <= numImages; i++) {
-    discriminant = pow(c[i], 2) - 3. * b[i] * d[i];
+    discriminant = std::pow(c[i], 2) - 3. * b[i] * d[i];
     if (discriminant >= 0) {
       f = -1;
 
@@ -1201,7 +1202,7 @@ void NudgedElasticBand::findExtrema(void) {
       if ((f >= 0) && (f <= 1)) {
         extremumPosition[numExtrema] = i + f;
         extremumEnergy[numExtrema] =
-            d[i] * pow(f, 3) + c[i] * pow(f, 2) + b[i] * f + a[i];
+            d[i] * std::pow(f, 3) + c[i] * std::pow(f, 2) + b[i] * f + a[i];
         extremumCurvature[numExtrema] = 6.0 * d[i] * f + 2 * c[i];
         numExtrema++;
       }
@@ -1212,7 +1213,7 @@ void NudgedElasticBand::findExtrema(void) {
       if ((f >= 0) && (f <= 1)) {
         extremumPosition[numExtrema] = i + f;
         extremumEnergy[numExtrema] =
-            d[i] * pow(f, 3) + c[i] * pow(f, 2) + b[i] * f + a[i];
+            d[i] * std::pow(f, 3) + c[i] * std::pow(f, 2) + b[i] * f + a[i];
         extremumCurvature[numExtrema] = 6 * d[i] * f + 2 * c[i];
         numExtrema++;
       }

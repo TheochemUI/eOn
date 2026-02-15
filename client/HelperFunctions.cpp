@@ -19,7 +19,7 @@
 #include <time.h>
 #include <unordered_map>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif
@@ -456,7 +456,7 @@ VectorXd helper_functions::maxMotionAppliedV(const VectorXd v1,
 }
 
 void helper_functions::getTime(double *real, double *user, double *sys) {
-#ifdef WIN32
+#ifdef _WIN32
   *real = (double)time(NULL);
   if (user != NULL) {
     *user = 0.0;

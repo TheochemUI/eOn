@@ -35,7 +35,9 @@
 #include "potentials/LJ/LJ.h"
 #include "potentials/LJCluster/LJCluster.h"
 #include "potentials/Morse/Morse.h"
+#ifndef IS_WINDOWS
 #include "potentials/SocketNWChem/SocketNWChemPot.h"
+#endif
 #include "potentials/ZBL/ZBLPot.h"
 
 #ifdef WITH_FORTRAN
@@ -76,7 +78,7 @@
 #include "potentials/CuH2/CuH2.h"
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 #ifdef WITH_VASP
 #include "potentials/VASP/VASP.h"
 #endif
@@ -125,7 +127,7 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
                                                  const VectorXi atmnrs,
                                                  const Matrix3d box) {
   double energy{std::numeric_limits<double>::infinity()};
-  long nAtoms{pos.rows()};
+  long nAtoms = static_cast<long>(pos.rows());
   AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
   double var{0}; // no variance for true potentials
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
@@ -229,7 +231,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-#ifndef WIN32
+#ifndef _WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
     return (std::make_shared<VASP>(params));
@@ -332,10 +334,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     return (std::make_shared<ZBLPot>(params));
     break;
   }
+#ifndef IS_WINDOWS
   case PotType::SocketNWChem: {
     return (std::make_shared<SocketNWChemPot>(params));
     break;
   }
+#endif
   default:
     SPDLOG_ERROR("No known potential could be constructed from {}",
                  magic_enum::enum_name(ptype));

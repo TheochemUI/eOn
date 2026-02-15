@@ -57,7 +57,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   }
 
   int loopmax = m_s.size();
-  double a[loopmax];
+  std::vector<double> a(loopmax);
 
   Eigen::VectorXd q = -a_f;
 
@@ -90,7 +90,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     vd = 1.0;
   if (vd < -1.0)
     vd = -1.0;
-  double angle = acos(vd) * (180.0 / M_PI);
+  double angle = acos(vd) * (180.0 / helper_functions::pi);
   if (angle > 90.0 && m_params.optimizer_options.lbfgs.angle_reset) {
     SPDLOG_LOGGER_DEBUG(m_log,
                         "[LBFGS] reset memory, angle between LBFGS angle and "

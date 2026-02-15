@@ -1,4 +1,4 @@
-fehe = shared_library('fehe',
+fehe = library('fehe',
            'feforce.f',
            'FeHe.cpp',
            dependencies : _deps,
