@@ -18,8 +18,8 @@
 
 MPIPot::MPIPot(std::shared_ptr<Parameters> p)
     : Potential(p) {
-  potentialRank = p->MPIPotentialRank;
-  poll_period = p->MPIPollPeriod;
+  potentialRank = p->potential_options.MPIPotentialRank;
+  poll_period = p->potential_options.MPIPollPeriod;
   return;
 }
 

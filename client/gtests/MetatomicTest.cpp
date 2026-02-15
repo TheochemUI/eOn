@@ -52,9 +52,10 @@ TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  params->potential = PotType::METATOMIC;
+  params->potential_options.potential = PotType::METATOMIC;
   params->metatomic_options.model_path = "lennard-jones.pt";
-  auto pot = helper_functions::makePotential(params->potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());
@@ -72,12 +73,13 @@ TEST_CASE_METHOD(PotTest,
   // If the model does not provide per-atom energy_uncertainty, the variance
   // should remain untouched (we initialize it to a sentinel and only assert
   // when it changes).
-  params->potential = PotType::METATOMIC;
+  params->potential_options.potential = PotType::METATOMIC;
   params->metatomic_options.model_path = "lennard-jones.pt";
   // request uncertainty checks
   params->metatomic_options.uncertainty_threshold = 0.1;
 
-  auto pot = helper_functions::makePotential(params->potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Zero(m1->numberOfAtoms(), 3);
@@ -118,13 +120,14 @@ TEST_CASE_METHOD(PotTest, "Metatomic variant (doubled)", "[PotTest][variant]") {
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  params->potential = PotType::METATOMIC;
+  params->potential_options.potential = PotType::METATOMIC;
   params->metatomic_options.model_path = "lennard-jones.pt";
 
   // Set the variant to 'doubled'
   params->metatomic_options.variant.base = "doubled";
 
-  auto pot = helper_functions::makePotential(params->potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());

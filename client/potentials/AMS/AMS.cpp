@@ -20,29 +20,32 @@ AMS::AMS(std::shared_ptr<Parameters> p)
     : Potential(PotType::AMS, p) {
   // Get the values from the configuration
   // All the parameter values are converted to lowercase in generate_run
-  this->engine = p->engine;
-  this->forcefield = p->forcefield;
-  this->model = p->model;
-  this->xc = p->xc;
-  this->resources = p->resources;
-  this->basis = p->basis;
+  this->engine = p->ams_options.engine;
+  this->forcefield = p->ams_options.forcefield;
+  this->model = p->ams_options.model;
+  this->xc = p->ams_options.xc;
+  this->resources = p->ams_options.resources;
+  this->basis = p->ams_options.basis;
   this->engine_setup = generate_run(p);
   // Environment
   // TODO: Add more checks for how this can be set
-  if (p->amshome.empty() && p->scm_tmpdir.empty() && p->scmlicense.empty() &&
-      p->scm_pythondir.empty() && p->amsbin.empty() &&
-      p->amsresources.empty()) {
+  if (p->ams_options.env.amshome.empty() &&
+      p->ams_options.env.scm_tmpdir.empty() &&
+      p->ams_options.env.scmlicense.empty() &&
+      p->ams_options.env.scm_pythondir.empty() &&
+      p->ams_options.env.amsbin.empty() &&
+      p->ams_options.env.amsresources.empty()) {
     nativenv = boost::this_process::environment();
   } else {
     nativenv = boost::this_process::environment();
     // Some of these can be derived from the others
-    nativenv["AMSHOME"] = p->amshome;
-    nativenv["SCM_TMPDIR"] = p->scm_tmpdir;
-    nativenv["SCMLICENSE"] = p->scmlicense;
-    nativenv["SCM_PYTHONDIR"] = p->scm_pythondir;
-    nativenv["AMSBIN"] = p->amsbin;
-    nativenv["AMSRESOURCES"] = p->amsresources;
-    nativenv["PATH"] += p->amsbin;
+    nativenv["AMSHOME"] = p->ams_options.env.amshome;
+    nativenv["SCM_TMPDIR"] = p->ams_options.env.scm_tmpdir;
+    nativenv["SCMLICENSE"] = p->ams_options.env.scmlicense;
+    nativenv["SCM_PYTHONDIR"] = p->ams_options.env.scm_pythondir;
+    nativenv["AMSBIN"] = p->ams_options.env.amsbin;
+    nativenv["AMSRESOURCES"] = p->ams_options.env.amsresources;
+    nativenv["PATH"] += p->ams_options.env.amsbin;
   }
   // Do not pass "" in the config files
   // std::cout<<nativenv["PATH"].to_string()<<std::endl;
