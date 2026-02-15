@@ -245,10 +245,11 @@ if get_option('with_gprd')
         'use_hdf5': true,
         'do_install': true,
         'buildtype': 'release',
+        'linalg_backend': get_option('gprd_linalg_backend'),
     }
     libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
-    libgprd = libgprd_proj.get_variable('libgprd_dep')
-    gprd_deps = libgprd_proj.get_variable('gprd_deps')
+    libgprd = libgprd_proj.get_variable('gpr_optim_dep')
+    gprd_deps = libgprd_proj.get_variable('gpr_optim_deps')
     # subdir('potentials/GPRPotential')
     # potentials += [ gprpot ]
     _args += ['-DWITH_GPRD']

@@ -1,1 +1,0 @@
-Added displacement strategies prose section to saddle search docs explaining epicenters, weight-based selection, and dynamic atom lists
