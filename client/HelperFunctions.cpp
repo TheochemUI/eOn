@@ -433,14 +433,7 @@ void helper_functions::translationRemove(Matter &m1, const Matter &m2) {
 }
 
 double helper_functions::maxAtomMotion(const AtomMatrix v1) {
-  double max = 0.0;
-  for (int i = 0; i < v1.rows(); i++) {
-    double norm = v1.row(i).norm();
-    if (max < norm) {
-      max = norm;
-    }
-  }
-  return max;
+  return v1.rowwise().norm().maxCoeff();
 }
 
 double helper_functions::maxAtomMotionV(const VectorXd v1) {

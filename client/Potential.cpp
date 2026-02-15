@@ -123,9 +123,9 @@ int Potential::fcallsTotal = 0;
 int Potential::wu_fcallsTotal = 0;
 double Potential::totalUserTime = 0.0;
 
-std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
-                                                 const VectorXi atmnrs,
-                                                 const Matrix3d box) {
+std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
+                                                 const VectorXi &atmnrs,
+                                                 const Matrix3d &box) {
   double energy{std::numeric_limits<double>::infinity()};
   long nAtoms = static_cast<long>(pos.rows());
   AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
