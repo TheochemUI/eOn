@@ -50,10 +50,10 @@ TEST_F(GPRDimerTest, TestMatter) {
   LowestEigenmode *minModeMethod;
   Parameters *parameters = new Parameters;
   parameters->load("config.ini");
-  // parameters->potential = potential;
-  // parameters->optMethod = optimizer;
-  // parameters->optConvergedForce = optConvergedForce;
-  // parameters->dimerConvergedAngle = 0.0873;
+  // parameters->potential_options.potential = potential;
+  // parameters->optimizer_options.method = optimizer;
+  // parameters->optimizer_options.converged_force = optConvergedForce;
+  // parameters->dimer_options.converged_angle = 0.0873;
   // parameters->saddleMinmodeMethod = LowestEigenmode::MINMODE_GPRDIMER;
   Matter *initial = new Matter(parameters);
   Matter *saddle = new Matter(parameters);

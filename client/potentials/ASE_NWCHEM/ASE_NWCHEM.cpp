@@ -17,9 +17,9 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
   py::module_ ase_nwchem = py::module_::import("ase.calculators.nwchem");
   py::module_ psutil = py::module_::import("psutil");
   std::string nwchempth = helper_functions::get_value_from_env_or_param(
-      "NWCHEM_COMMAND", a_params->nwchem_path, "", "", true);
+      "NWCHEM_COMMAND", a_params->ase_nwchem_options.path, "", "", true);
   std::string nwc_mult = helper_functions::get_value_from_env_or_param(
-      "NWCHEM_MULTIPLICITY", a_params->nwchem_multiplicity, "1",
+      "NWCHEM_MULTIPLICITY", a_params->ase_nwchem_options.multiplicity, "1",
       "Using 1 as a default multiplicity, i.e. an RHF calculation suitable for "
       "closed shell molecules, set multiplicity or the "
       "environment variable NWCHEM_MULTIPLICITY.\n");
@@ -31,10 +31,10 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
   auto mult = std::stoi(nwc_mult); // 1 for singlet, 2 for doublet
 
   // TODO(rg): Use
-  if (a_params->nwchem_nproc == "auto") {
+  if (a_params->ase_nwchem_options.nproc == "auto") {
     nproc = py::cast<int>(psutil.attr("cpu_count")(false));
   } else {
-    nproc = std::stoi(a_params->nwchem_nproc);
+    nproc = std::stoi(a_params->ase_nwchem_options.nproc);
   }
 
   // TODO(rg): Directory should be set by the user, and created here
@@ -46,9 +46,10 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
       "command"_a = py::str(fmt::format(
           "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
       "memory"_a = py::str("2 gb"),
-      "scf"_a = py::dict("nopen"_a = mult - 1,
-                         "thresh"_a = a_params->nwchem_scf_thresh,
-                         "maxiter"_a = a_params->nwchem_scf_maxiter),
+      "scf"_a =
+          py::dict("nopen"_a = mult - 1,
+                   "thresh"_a = a_params->ase_nwchem_options.scf_thresh,
+                   "maxiter"_a = a_params->ase_nwchem_options.scf_maxiter),
       "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
       "directory"_a = ".");
 

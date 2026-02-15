@@ -14,7 +14,7 @@ namespace helper_functions::neb_paths {
 // Forward declaration of ZBL setup helper to keep code clean
 std::shared_ptr<Potential> createZBLPotential() {
   auto zbl_params = std::make_shared<Parameters>();
-  zbl_params->potential = PotType::ZBL;
+  zbl_params->potential_options.potential = PotType::ZBL;
   // Strong short-range repulsion
   zbl_params->zbl_options.cut_inner = 0.5;
   // Cutoff sufficient to push overlapping atoms apart
@@ -184,7 +184,7 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
   int checkInterval = 40;
 
   while (currentStep < maxSteps) {
-    optim->run(checkInterval, params->optMaxMove);
+    optim->run(checkInterval, params->optimizer_options.max_move);
     currentStep += checkInterval;
 
     if (idpp_objf->isConverged()) {
@@ -316,7 +316,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
     int growthRelaxSteps = params->neb_options.initialization.max_iterations;
     int step = 0;
     while (step < growthRelaxSteps) {
-      optim->run(5, params->optMaxMove); // Run small batches
+      optim->run(5, params->optimizer_options.max_move); // Run small batches
       step += 5;
       if (idpp_objf->isConverged())
         break;
@@ -350,7 +350,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
   auto final_optim =
       helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
-  final_optim->run(500, params->optMaxMove);
+  final_optim->run(500, params->optimizer_options.max_move);
 
   return path;
 }
