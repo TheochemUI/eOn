@@ -36,9 +36,11 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   }
 
   if (m_iteration == 0 && m_params->optimizer_options.lbfgs.auto_scale) {
-    m_objf->setPositions(r + m_params->main_options.finiteDifference * a_f.normalized());
+    m_objf->setPositions(r + m_params->main_options.finiteDifference *
+                                 a_f.normalized());
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
-    double C = dg.dot(a_f.normalized()) / m_params->main_options.finiteDifference;
+    double C =
+        dg.dot(a_f.normalized()) / m_params->main_options.finiteDifference;
     H0 = 1.0 / C;
     m_objf->setPositions(r);
     if (H0 < 0) {
@@ -74,7 +76,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   Eigen::VectorXd d = -z;
 
   double distance = helper_functions::maxAtomMotionV(d);
-  if (distance >= a_maxMove && m_params->optimizer_options.lbfgs.distance_reset) {
+  if (distance >= a_maxMove &&
+      m_params->optimizer_options.lbfgs.distance_reset) {
     SPDLOG_LOGGER_DEBUG(m_log,
                         "[LBFGS] reset memory, proposed step too large: {:.4f}",
                         distance);

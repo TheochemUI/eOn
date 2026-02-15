@@ -88,12 +88,15 @@ public:
         if (params->saddle_search_options.confine_positive.bowl_breakout) {
           AtomMatrix forceTemp = matter->getForces();
           double *indices_max;
-          indices_max = new double[params->saddle_search_options.confine_positive.bowl_active];
+          indices_max = new double[params->saddle_search_options
+                                       .confine_positive.bowl_active];
 
           // determine the force for the x largest component
           double f_max;
           int i_max;
-          for (int j = 0; j < params->saddle_search_options.confine_positive.bowl_active; j++) {
+          for (int j = 0;
+               j < params->saddle_search_options.confine_positive.bowl_active;
+               j++) {
             f_max = forceTemp.row(0).norm();
             i_max = 0;
             for (int i = 0; i < matter->numberOfAtoms(); i++) {
@@ -114,7 +117,9 @@ public:
           }
           // only set the projected forces corresponding to the atoms subject to
           // the largest forces
-          for (int j = 0; j < params->saddle_search_options.confine_positive.bowl_active; j++) {
+          for (int j = 0;
+               j < params->saddle_search_options.confine_positive.bowl_active;
+               j++) {
             size_t tind = static_cast<size_t>(indices_max[j]);
             forceTemp(3 * tind + 0) = -proj(3 * tind + 0);
             forceTemp(3 * tind + 1) = -proj(3 * tind + 1);
@@ -124,8 +129,10 @@ public:
           delete[] indices_max;
         } else {
           int sufficientForce = 0;
-          double minForce = params->saddle_search_options.confine_positive.min_force;
-          while (sufficientForce < params->saddle_search_options.confine_positive.min_active) {
+          double minForce =
+              params->saddle_search_options.confine_positive.min_force;
+          while (sufficientForce <
+                 params->saddle_search_options.confine_positive.min_active) {
             sufficientForce = 0;
             force = matter->getForces();
             for (int i = 0; i < 3 * matter->numberOfAtoms(); i++) {
@@ -133,10 +140,13 @@ public:
                 force(i) = 0;
               else {
                 sufficientForce = sufficientForce + 1;
-                force(i) = -params->saddle_search_options.confine_positive.boost * proj(i);
+                force(i) =
+                    -params->saddle_search_options.confine_positive.boost *
+                    proj(i);
               }
             }
-            minForce *= params->saddle_search_options.confine_positive.scale_ratio;
+            minForce *=
+                params->saddle_search_options.confine_positive.scale_ratio;
           }
         }
       } else {
@@ -155,14 +165,17 @@ public:
   void setPositions(VectorXd x) { matter->setPositionsV(x); }
   VectorXd getPositions() { return matter->getPositionsV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
-  bool isConverged() { return getConvergence() < params->saddle_search_options.converged_force; }
+  bool isConverged() {
+    return getConvergence() < params->saddle_search_options.converged_force;
+  }
 
   double getConvergence() {
     if (params->optimizer_options.convergence_metric == "norm") {
       return matter->getForcesFreeV().norm();
     } else if (params->optimizer_options.convergence_metric == "max_atom") {
       return matter->maxForce();
-    } else if (params->optimizer_options.convergence_metric == "max_component") {
+    } else if (params->optimizer_options.convergence_metric ==
+               "max_component") {
       return matter->getForces().maxCoeff();
     } else {
       SPDLOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
@@ -186,7 +199,8 @@ MinModeSaddleSearch::MinModeSaddleSearch(
   iteration = 0;
   log = spdlog::get("combi");
 
-  if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_DIMER) {
+  if (params->saddle_search_options.minmode_method ==
+      LowestEigenmode::MINMODE_DIMER) {
     if (params->dimer_options.improved) {
       minModeMethod = std::make_shared<ImprovedDimer>(matter, params, pot);
       if (true) { // TODO(rg): convert to param
@@ -202,11 +216,13 @@ MinModeSaddleSearch::MinModeSaddleSearch(
     } else {
       minModeMethod = std::make_shared<Dimer>(matter, params, pot);
     }
-  } else if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddle_search_options.minmode_method ==
+             LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = std::make_shared<Lanczos>(matter, params, pot);
   }
 #ifdef WITH_GPRD
-  else if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_GPRDIMER) {
+  else if (params->saddle_search_options.minmode_method ==
+           LowestEigenmode::MINMODE_GPRDIMER) {
     minModeMethod = std::make_shared<AtomicGPDimer>(matter, params, pot);
   }
 #endif
@@ -219,9 +235,11 @@ int MinModeSaddleSearch::run() {
 
   int optStatus;
   int firstIteration = 1;
-  const char *forceLabel = params->optimizer_options.convergence_metric_label.c_str();
+  const char *forceLabel =
+      params->optimizer_options.convergence_metric_label.c_str();
 
-  if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_GPRDIMER) {
+  if (params->saddle_search_options.minmode_method ==
+      LowestEigenmode::MINMODE_GPRDIMER) {
     SPDLOG_LOGGER_DEBUG(
         log, "================= Using the GP Dimer Library =================");
     minModeMethod->compute(matter, mode);
@@ -243,7 +261,8 @@ int MinModeSaddleSearch::run() {
     forcecalls = minModeMethod->totalForceCalls;
   } else {
 
-    if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_DIMER) {
+    if (params->saddle_search_options.minmode_method ==
+        LowestEigenmode::MINMODE_DIMER) {
       SPDLOG_LOGGER_INFO(log,
                          "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
                          "{:7s}   {:6s}   {:4s}\n",
@@ -284,7 +303,8 @@ int MinModeSaddleSearch::run() {
       }
     }
 
-    auto optim = helpers::create::mkOptim(objf, params->optimizer_options.method, params);
+    auto optim = helpers::create::mkOptim(
+        objf, params->optimizer_options.method, params);
 
     while (!objf->isConverged() || iteration == 0) {
 
@@ -292,8 +312,9 @@ int MinModeSaddleSearch::run() {
 
         // Abort if negative mode becomes delocalized
         if (params->saddle_search_options.nonlocal_count_abort != 0) {
-          long nm = numAtomsMoved(initialPosition - matter->getPositions(),
-                                  params->saddle_search_options.nonlocal_distance_abort);
+          long nm = numAtomsMoved(
+              initialPosition - matter->getPositions(),
+              params->saddle_search_options.nonlocal_distance_abort);
           if (nm >= params->saddle_search_options.nonlocal_count_abort) {
             status = STATUS_NONLOCAL_ABORT;
             break;
@@ -376,7 +397,8 @@ int MinModeSaddleSearch::run() {
 
       iteration++;
 
-      if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_DIMER) {
+      if (params->saddle_search_options.minmode_method ==
+          LowestEigenmode::MINMODE_DIMER) {
         SPDLOG_LOGGER_DEBUG(
             log,
             "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
@@ -430,7 +452,8 @@ int MinModeSaddleSearch::run() {
         break;
       }
 
-      if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_DIMER) {
+      if (params->saddle_search_options.minmode_method ==
+          LowestEigenmode::MINMODE_DIMER) {
         // We need to cast the pointer to access the ImprovedDimer-specific flag
         auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
 

@@ -163,7 +163,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     if (params->dimer_options.opt_method == OPT_SD) // steepest descent
     {
       theta = F_R / F_R.norm();
-    } else if (params->dimer_options.opt_method == OPT_CG) // conjugate gradients
+    } else if (params->dimer_options.opt_method ==
+               OPT_CG) // conjugate gradients
     {
       if (init_cg) {
         init_cg = false;

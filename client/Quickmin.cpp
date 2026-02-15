@@ -27,7 +27,8 @@ int Quickmin::step(double a_maxMove) {
 
   m_vel += force * m_dt;
   Eigen::VectorXd dr = helper_functions::maxAtomMotionAppliedV(
-      m_vel * m_dt, a_maxMove); // used to be m_params->optimizer_options.max_time_step
+      m_vel * m_dt,
+      a_maxMove); // used to be m_params->optimizer_options.max_time_step
   SPDLOG_LOGGER_INFO(m_log, "{} M_Vel.norm() is {}", m_iteration, m_vel.norm());
   m_objf->setPositions(m_objf->getPositions() + dr);
   m_iteration++;

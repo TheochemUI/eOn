@@ -33,7 +33,8 @@ ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
   std::string orcpth = helper_functions::get_value_from_env_or_param(
       "ORCA_COMMAND", a_params->ase_orca_options.path, "", "", true);
   std::string orca_simpleinput = helper_functions::get_value_from_env_or_param(
-      "ORCA_SIMPLEINPUT", a_params->ase_orca_options.simpleinput, "ENGRAD HF-3c",
+      "ORCA_SIMPLEINPUT", a_params->ase_orca_options.simpleinput,
+      "ENGRAD HF-3c",
       "Using ENGRAD HF-3c as a default input, set simpleinput or the "
       "environment variable ORCA_SIMPLEINPUT.\n");
 

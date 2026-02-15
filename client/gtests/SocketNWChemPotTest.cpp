@@ -20,7 +20,8 @@ public:
     params->socket_nwchem_options.unix_socket_mode = true;
     params->socket_nwchem_options.unix_socket_path = "eon_nwchem_test_socket";
 
-    pot_socket = helper_functions::makePotential(params->potential_options.potential, params);
+    pot_socket = helper_functions::makePotential(
+        params->potential_options.potential, params);
     matter = std::make_shared<Matter>(pot_socket, params);
 
     const std::string confile("pos.con");

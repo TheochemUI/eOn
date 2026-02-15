@@ -80,7 +80,8 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     // convergence scheme
     if ((torque > params->dimer_options.torque_max &&
          rotations >= params->dimer_options.rotations_max) ||
-        (torque < params->dimer_options.torque_max && torque >= params->dimer_options.torque_min &&
+        (torque < params->dimer_options.torque_max &&
+         torque >= params->dimer_options.torque_min &&
          rotations >= params->dimer_options.rotations_min) ||
         (torque < params->dimer_options.torque_min)) {
       /*            cout << "torque: "<<torque<<endl;
@@ -107,8 +108,8 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       rotationalForce2 =
           (rotationalForce.array() * rotationalPlane.array()).sum();
 
-      rotationalForceChange =
-          ((rotationalForce1 - rotationalForce2) / params->dimer_options.rotation_angle);
+      rotationalForceChange = ((rotationalForce1 - rotationalForce2) /
+                               params->dimer_options.rotation_angle);
 
       forceDimer = (rotationalForce1 + rotationalForce2) / 2.0;
 
@@ -193,10 +194,12 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   forceB = makeOrthogonal(forceB, direction);
 
   // determine difference in force orthogonal to dimer
-  rotationalForce = (forceA - forceB) / (2.0 * params->main_options.finiteDifference);
+  rotationalForce =
+      (forceA - forceB) / (2.0 * params->main_options.finiteDifference);
 
   // curvature along the dimer
-  return (projectedForceB - projectedForceA) / (2.0 * params->main_options.finiteDifference);
+  return (projectedForceB - projectedForceA) /
+         (2.0 * params->main_options.finiteDifference);
 }
 
 void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,

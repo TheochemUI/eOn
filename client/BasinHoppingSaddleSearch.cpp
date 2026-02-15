@@ -23,7 +23,8 @@ int BasinHoppingSaddleSearch::run(void) {
   saddle->relax(false, true, false, "displacementmin");
   product = std::make_shared<Matter>(pot, params);
   *product = *saddle;
-  // accept or reject based on boltzman exp(-de/(kB*params->main_options.temperature))
+  // accept or reject based on boltzman
+  // exp(-de/(kB*params->main_options.temperature))
   double eproduct, ereactant, de;
   eproduct = product->getPotentialEnergy();
   ereactant = reactant->getPotentialEnergy();

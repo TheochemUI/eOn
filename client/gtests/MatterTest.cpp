@@ -68,7 +68,8 @@ TEST_CASE("SetPotential", "[MatterTest]") {
 
   double m1_ipot = m1->getPotentialEnergy();
   params->potential_options.potential = PotType::MORSE_PT;
-  auto pot = helper_functions::makePotential(params->potential_options.potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
 
   REQUIRE(m1->getPotential() != pot);
   m1->setPotential(pot);

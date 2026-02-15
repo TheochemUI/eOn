@@ -56,7 +56,8 @@ public:
   Job(std::unique_ptr<Parameters> parameters)
       : jtype{parameters->main_options.job},
         params{std::make_shared<Parameters>(*std::move(parameters))},
-        pot{helper_functions::makePotential(params->potential_options.potential, params)} {}
+        pot{helper_functions::makePotential(params->potential_options.potential,
+                                            params)} {}
   Job(std::shared_ptr<Potential> potPassed,
       std::shared_ptr<Parameters> parameters)
       : jtype{parameters->main_options.job},

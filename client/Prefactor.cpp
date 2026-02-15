@@ -20,7 +20,8 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
   // determine which atoms moved in the process
   VectorXi atoms;
 
-  if (parameters->prefactor_options.filter_scheme == Prefactor::FILTER_FRACTION) {
+  if (parameters->prefactor_options.filter_scheme ==
+      Prefactor::FILTER_FRACTION) {
     atoms = movedAtomsPct(parameters, min1, saddle, min2);
   } else {
     atoms = movedAtoms(parameters, min1, saddle, min2);
@@ -132,8 +133,8 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
     pref2 = sqrt(pref2) / (2 * M_PI * 10.18e-15);
   } else if (parameters->prefactor_options.rate == Prefactor::RATE_QQHTST) {
     float kB_T = parameters->main_options.temperature * 8.617332e-5; // eV
-    float h_bar = 6.582119e-16;                         // eV*s
-    float h = 4.135667e-15;                             // eV*s
+    float h_bar = 6.582119e-16;                                      // eV*s
+    float h = 4.135667e-15;                                          // eV*s
     float temp = (h_bar / (2. * kB_T));
 
     for (int i = 0; i < min1Freqs.size(); i++) {
@@ -188,8 +189,10 @@ VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
 
   int nMoved = 0;
   for (int i = 0; i < nAtoms; i++) {
-    if ((diffMin1.row(i).norm() > parameters->prefactor_options.min_displacement) ||
-        (diffMin2.row(i).norm() > parameters->prefactor_options.min_displacement)) {
+    if ((diffMin1.row(i).norm() >
+         parameters->prefactor_options.min_displacement) ||
+        (diffMin2.row(i).norm() >
+         parameters->prefactor_options.min_displacement)) {
       if (!(moved.array() == i).any()) {
         moved[nMoved] = i;
         nMoved++;
@@ -247,7 +250,8 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
 
   int nMoved = 0;
   double d = 0.0;
-  while (d / sum <= parameters->prefactor_options.filter_fraction && nMoved < nFree) {
+  while (d / sum <= parameters->prefactor_options.filter_fraction &&
+         nMoved < nFree) {
     int maxi = mini;
     for (int i = 0; i < nAtoms; i++) {
       if (diff[i] >= diff[maxi]) {

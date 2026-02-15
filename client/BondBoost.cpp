@@ -138,7 +138,8 @@ double BondBoost::boost() {
   Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs, 1);
   bool flag = 0;
 
-  RMDS = int(parameters->hyperdynamics_options.rmd_time / parameters->dynamics_options.time_step);
+  RMDS = int(parameters->hyperdynamics_options.rmd_time /
+             parameters->dynamics_options.time_step);
   biasPot = 0.0;
 
   if (nReg <= RMDS) {

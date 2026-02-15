@@ -45,8 +45,9 @@ std::vector<std::string> MinimizationJob::run(void) {
 
   bool converged;
   try {
-    converged = pos->relax(false, params->debug_options.write_movies, params->main_options.checkpoint,
-                           "minimization", "pos");
+    converged =
+        pos->relax(false, params->debug_options.write_movies,
+                   params->main_options.checkpoint, "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
       SPDLOG_LOGGER_DEBUG(log, "Minimization converged within tolerence");
@@ -85,7 +86,8 @@ std::vector<std::string> MinimizationJob::run(void) {
   fileResults << magic_enum::enum_name<RunStatus>(status)
               << " termination_reason\n";
   fileResults << "minimization job_type\n";
-  fileResults << magic_enum::enum_name<PotType>(params->potential_options.potential)
+  fileResults << magic_enum::enum_name<PotType>(
+                     params->potential_options.potential)
               << " potential_type\n";
   fileResults << this->pot->forceCallCounter << " total_force_calls\n";
 
