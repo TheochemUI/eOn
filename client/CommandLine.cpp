@@ -48,7 +48,7 @@ void commandLine(int argc, char **argv) {
   string confile;
   string optimizer("cg");
 
-  auto params = std::make_shared<Parameters>();
+  auto params = Parameters{};
 
   cxxopts::Options options("eonclient", "The eOn client");
   options.add_options()("v,version", "Print version information")(
@@ -104,7 +104,7 @@ void commandLine(int argc, char **argv) {
     }
 
     if (result.count("tolerance")) {
-      params->structure_comparison_options.distance_difference =
+      params.structure_comparison_options.distance_difference =
           result["tolerance"].as<double>();
     }
 
@@ -135,18 +135,18 @@ void commandLine(int argc, char **argv) {
     }
 
     if (!cflag) {
-      params->potential_options.potential =
+      params.potential_options.potential =
           magic_enum::enum_cast<PotType>(potential,
                                          magic_enum::case_insensitive)
               .value_or(PotType::UNKNOWN);
     }
 
     if (!sflag) {
-      params->optimizer_options.method =
+      params.optimizer_options.method =
           magic_enum::enum_cast<OptType>(optimizer,
                                          magic_enum::case_insensitive)
               .value_or(OptType::CG);
-      params->optimizer_options.converged_force = optConvergedForce;
+      params.optimizer_options.converged_force = optConvergedForce;
     }
 
     auto pot = helper_functions::makePotential(params);
@@ -166,7 +166,7 @@ void commandLine(int argc, char **argv) {
     } else if (mflag) {
       minimize(std::move(matter), confileout);
     } else if (cflag) {
-      params->structure_comparison_options.check_rotation = true;
+      params.structure_comparison_options.check_rotation = true;
       if (matter->compare(*matter2, true)) {
         std::cout << "Structures match" << std::endl;
       } else {

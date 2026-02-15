@@ -57,8 +57,6 @@ private:
   c10::DeviceType device_type_;
   torch::Device device_;
   bool check_consistency_;
-  std::shared_ptr<Parameters> m_params;
-
   // --- Cached Tensors and Data for Performance ---
   torch::Tensor atomic_types_;
   std::vector<int> last_atomic_nrs_;
@@ -94,7 +92,7 @@ public:
    * @param params A shared pointer to the simulation parameters object.
    * This object should contain the settings needed for the metatomic model.
    */
-  MetatomicPotential(std::shared_ptr<Parameters> params);
+  MetatomicPotential(const Parameters &params);
 
   /**
    * @brief Destructor.

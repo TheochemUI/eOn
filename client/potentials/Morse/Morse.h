@@ -23,7 +23,7 @@
 
 class Morse : public Potential {
 public:
-  Morse(std::shared_ptr<Parameters> params)
+  Morse(const Parameters &params)
       : Potential(params),
         De_{0.7102},
         a_{1.6047},

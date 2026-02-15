@@ -21,7 +21,7 @@ class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
   BiasedGradientSquaredDescent(std::shared_ptr<Matter> matterPassed,
                                double reactantEnergyPassed,
-                               std::shared_ptr<Parameters> parametersPassed)
+                               const Parameters &parametersPassed)
       : SaddleSearchMethod(matterPassed->getPotential(), parametersPassed),
         saddle{matterPassed} {
     reactantEnergy = reactantEnergyPassed;

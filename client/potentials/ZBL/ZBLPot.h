@@ -25,7 +25,7 @@
  */
 class ZBLPot : public Potential {
 public:
-  ZBLPot(std::shared_ptr<Parameters> p);
+  ZBLPot(const Parameters &p);
 
   ~ZBLPot() override = default;
 

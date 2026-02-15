@@ -20,7 +20,7 @@
 namespace helpers::create {
 std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
                                    OptType a_otype,
-                                   std::shared_ptr<Parameters> a_params) {
+                                   const Parameters &a_params) {
   switch (a_otype) {
   case OptType::FIRE: {
     return std::make_unique<FIRE>(a_objf, a_params);

@@ -38,17 +38,16 @@ readFilePaths(const std::string &listFilePath);
 Eigen::MatrixXd getDistanceMatrix(const Matter &m);
 
 std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
-                             size_t nimgs, std::shared_ptr<Parameters> params,
+                             size_t nimgs, const Parameters &params,
                              bool use_zbl = false);
 
 std::vector<Matter> idppCollectivePath(const Matter &initImg,
                                        const Matter &finalImg, size_t nimgs,
-                                       std::shared_ptr<Parameters> params,
+                                       const Parameters &params,
                                        bool use_zbl = false);
 
 std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
-                              size_t target_nimgs,
-                              std::shared_ptr<Parameters> params,
+                              size_t target_nimgs, const Parameters &params,
                               bool use_zbl = false);
 
 // Helper to insert an image linearly between two others

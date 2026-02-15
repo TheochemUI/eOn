@@ -187,7 +187,7 @@ def register_results(comm, current_state, states):
         if result['results']['transition_found'] == 1:
             result['results']['transition_time_s'] += state.get_time()
             a = result['results']['potential_energy_product']
-            f = open ("states/0/end_state_table","a+")
+            f = open (os.path.join("states", "0", "end_state_table"),"a+")
             lines = f.readlines()
             f.close()
             proc = []
@@ -199,7 +199,7 @@ def register_results(comm, current_state, states):
 
 
             for i in range(0, numres):
-                product2 = io.loadcon ("states/0/procdata/product_%i.con" % i )
+                product2 = io.loadcon (os.path.join("states", "0", "procdata", "product_%i.con" % i))
                 if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):
                     if flag == 0:
                         state_match = number_state[i]
@@ -229,7 +229,7 @@ def register_results(comm, current_state, states):
                 proc.append({'state': number_state[numres],  'views': 1, 'rate': 1/(float(time_check+result['results']['transition_time_s'])) , 'time': time_check + result['results']['transition_time_s']})
 
 
-            g = open ("states/0/end_state_table","w")
+            g = open (os.path.join("states", "0", "end_state_table"),"w")
             g.write('state       views         rate        time \n')
             for j in range(0,len(proc)):
                 g.write(str(proc[j]['state']))

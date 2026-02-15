@@ -64,7 +64,7 @@ char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 class MatterObjectiveFunction : public ObjectiveFunction {
 public:
   MatterObjectiveFunction(std::shared_ptr<Matter> matterPassed,
-                          std::shared_ptr<Parameters> parametersPassed)
+                          const Parameters &parametersPassed)
       : ObjectiveFunction(matterPassed, parametersPassed) {}
   ~MatterObjectiveFunction() = default;
   double getEnergy() { return matter->getPotentialEnergy(); }
@@ -75,19 +75,18 @@ public:
   VectorXd getPositions() { return matter->getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
   bool isConverged() {
-    return getConvergence() < params->optimizer_options.converged_force;
+    return getConvergence() < params.optimizer_options.converged_force;
   }
   double getConvergence() {
-    if (params->optimizer_options.convergence_metric == "norm") {
+    if (params.optimizer_options.convergence_metric == "norm") {
       return matter->getForcesFreeV().norm();
-    } else if (params->optimizer_options.convergence_metric == "max_atom") {
+    } else if (params.optimizer_options.convergence_metric == "max_atom") {
       return matter->maxForce();
-    } else if (params->optimizer_options.convergence_metric ==
-               "max_component") {
+    } else if (params.optimizer_options.convergence_metric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
       SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
-                      params->optimizer_options.convergence_metric);
+                      params.optimizer_options.convergence_metric);
       std::exit(1);
     }
   }
@@ -282,9 +281,9 @@ VectorXi Matter::getAtomicNrsFree() const {
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    string prefixMovie, string prefixCheckpoint) {
   auto objf = std::make_shared<MatterObjectiveFunction>(
-      std::make_shared<Matter>(*this), parameters);
+      std::make_shared<Matter>(*this), *parameters);
   auto optim = helpers::create::mkOptim(
-      objf, parameters->optimizer_options.method, parameters);
+      objf, parameters->optimizer_options.method, *parameters);
 
   ostringstream min;
   min << prefixMovie;
@@ -613,12 +612,12 @@ bool Matter::matter2con(FILE *file) {
   lengths[2] = cell.row(2).norm();
   fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
   double angles[3];
-  angles[0] =
-      acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) * 180 / M_PI;
-  angles[1] =
-      acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) * 180 / M_PI;
-  angles[2] =
-      acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) * 180 / M_PI;
+  angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
+              180 / helper_functions::pi;
+  angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
+              180 / helper_functions::pi;
+  angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
+              180 / helper_functions::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
   fputs(headerCon6, file);
@@ -695,9 +694,9 @@ bool Matter::con2matter(FILE *file) {
     cell(1, 1) = lengths[1];
     cell(2, 2) = lengths[2];
   } else {
-    angles[0] *= M_PI / 180.0;
-    angles[1] *= M_PI / 180.0;
-    angles[2] *= M_PI / 180.0;
+    angles[0] *= helper_functions::pi / 180.0;
+    angles[1] *= helper_functions::pi / 180.0;
+    angles[2] *= helper_functions::pi / 180.0;
 
     cell(0, 0) = 1.0;
     cell(1, 0) = cos(angles[0]);
@@ -828,7 +827,7 @@ void Matter::computePotential() {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
       potential = helper_functions::makePotential(
-          parameters->potential_options.potential, parameters);
+          parameters->potential_options.potential, *parameters);
     }
     auto surrogatePotential =
         std::dynamic_pointer_cast<SurrogatePotential>(potential);
@@ -1008,12 +1007,12 @@ bool Matter::matter2convel(FILE *file) {
   lengths[2] = cell.row(2).norm();
   fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
   double angles[3];
-  angles[0] =
-      acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) * 180 / M_PI;
-  angles[1] =
-      acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) * 180 / M_PI;
-  angles[2] =
-      acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) * 180 / M_PI;
+  angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
+              180 / helper_functions::pi;
+  angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
+              180 / helper_functions::pi;
+  angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
+              180 / helper_functions::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
   fputs(headerCon6, file);
@@ -1100,9 +1099,9 @@ bool Matter::convel2matter(FILE *file) {
     cell(1, 1) = lengths[1];
     cell(2, 2) = lengths[2];
   } else {
-    angles[0] *= M_PI / 180.0;
-    angles[1] *= M_PI / 180.0;
-    angles[2] *= M_PI / 180.0;
+    angles[0] *= helper_functions::pi / 180.0;
+    angles[1] *= helper_functions::pi / 180.0;
+    angles[2] *= helper_functions::pi / 180.0;
 
     cell(0, 0) = 1.0;
     cell(1, 0) = cos(angles[0]);

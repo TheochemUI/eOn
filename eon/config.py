@@ -329,7 +329,8 @@ class ConfigClass:
         self.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')
         if self.debug_interactive_shell:
             import signal, code
-            signal.signal(signal.SIGQUIT, lambda signum, frame: code.interact(local=locals()))
+            if hasattr(signal, 'SIGQUIT'):
+                signal.signal(signal.SIGQUIT, lambda signum, frame: code.interact(local=locals()))
         self.debug_keep_bad_saddles = parser.getboolean('Debug', 'keep_bad_saddles')
         self.debug_keep_all_results = parser.getboolean('Debug', 'keep_all_result_files')
         self.debug_results_path = parser.get('Debug', 'result_files_path')

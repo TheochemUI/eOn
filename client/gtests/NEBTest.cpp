@@ -29,22 +29,20 @@ using namespace std::placeholders;
 namespace tests {
 
 NEBTest::NEBTest()
-    : params{new Parameters},
-      m1{new Matter(params)},
-      m2{new Matter(params)},
+    : params{},
+      pot{helper_functions::makePotential(PotType::MORSE_PT, params)},
+      m1{new Matter(pot, params)},
+      m2{new Matter(pot, params)},
       threshold{1e-3} {}
 
-NEBTest::~NEBTest() {
-  delete params;
-  delete m1;
-}
+NEBTest::~NEBTest() { delete m1; }
 
 void NEBTest::SetUp() {
   std::string confile("pos.con");
   m1->con2matter(confile);
   m2->con2matter(confile);
   m2->setPositions(m1->getPositions() * 0.7);
-  params->optimizer_options.max_iterations = 100000;
+  params.optimizer_options.max_iterations = 100000;
 }
 
 void NEBTest::TearDown() {}

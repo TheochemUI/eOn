@@ -1,4 +1,4 @@
-eam = shared_library('eam',
+eam = library('eam',
            'EAM.cpp',
            dependencies : _deps,
            cpp_args : _args,

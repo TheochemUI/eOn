@@ -26,7 +26,7 @@ std::vector<std::string> DynamicsJob::run(void) {
   R->con2matter("pos.con");
   *F = *R;
 
-  Dynamics *d = new Dynamics(R.get(), params.get());
+  Dynamics *d = new Dynamics(R.get(), params);
   d->run();
 
   *F = *R;

@@ -44,7 +44,7 @@ extern "C"
 /** FeHe potential.*/
 class FeHe : public Potential {
 public:
-  FeHe(std::shared_ptr<Parameters> params)
+  FeHe(const Parameters &params)
       : Potential(params) {}
   ~FeHe(void) {};
   // To satisfy interface

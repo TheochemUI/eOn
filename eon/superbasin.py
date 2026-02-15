@@ -1,5 +1,6 @@
 
 import os
+import shutil
 import numpy
 from eon.mcamc import mcamc
 import logging
@@ -140,7 +141,7 @@ class Superbasin:
         else:
             logger.debug('storing %s' % self.path)
             path_storage = os.path.join(storage, str(self.id))
-            os.rename(self.path, path_storage)
+            shutil.move(self.path, path_storage)
         self.states = None
 
     def _get_filtered_states(self):

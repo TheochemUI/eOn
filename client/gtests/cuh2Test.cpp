@@ -35,13 +35,12 @@ CuH2Test::~CuH2Test() {
 
 TEST_F(CuH2Test, TestMatter) {
   string confile("pos.con");
-  Parameters *parameters = new Parameters;
-  parameters->potential_options.potential = "cuh2_pot";
-  Matter *matter = new Matter(parameters);
+  Parameters parameters;
+  parameters.potential_options.potential = PotType::CUH2;
+  auto pot = helper_functions::makePotential(parameters);
+  auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter(confile);
   std::cout << matter->getPotentialEnergy();
-  delete matter;
-  delete parameters;
 }
 
 } /* namespace tests */

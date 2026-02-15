@@ -23,7 +23,7 @@ std::vector<std::string> HessianJob::run(void) {
 
   matter->con2matter(matter_in);
 
-  Hessian hessian(params.get(), matter.get());
+  Hessian hessian(params, matter.get());
   long nAtoms = matter->numberOfAtoms();
 
   VectorXi moved(nAtoms);
