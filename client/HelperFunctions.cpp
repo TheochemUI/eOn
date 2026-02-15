@@ -288,48 +288,111 @@ bool helper_functions::rotationMatch(const Matter &m1, const Matter &m2,
   return true;
 }
 
+// Project out rigid-body translation and rotation from a displacement vector.
+// Uses infinitesimal-rotation basis vectors and modified Gram-Schmidt
+// orthonormalization, following the approach in:
+//   R. Goswami and H. Jónsson, "Adaptive Pruning for Increased Robustness and
+//   Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point
+//   Searches," ChemPhysChem, Nov. 2025, doi: 10.1002/cphc.202500730.
+void helper_functions::projectOutRotTrans(Eigen::VectorXd &step,
+                                          const AtomMatrix &positions) {
+  long nAtoms = positions.rows();
+  long dof = nAtoms * 3;
+
+  // 1. Compute center of mass (unweighted geometric center)
+  Eigen::Vector3d com = Eigen::Vector3d::Zero();
+  for (long i = 0; i < nAtoms; ++i) {
+    com(0) += positions(i, 0);
+    com(1) += positions(i, 1);
+    com(2) += positions(i, 2);
+  }
+  com /= static_cast<double>(nAtoms);
+
+  // 2. Construct 6 basis vectors for rigid-body translation and rotation
+  std::vector<Eigen::VectorXd> basis;
+  basis.reserve(6);
+
+  // Translational basis vectors
+  for (int d = 0; d < 3; ++d) {
+    Eigen::VectorXd t = Eigen::VectorXd::Zero(dof);
+    for (long j = 0; j < nAtoms; ++j) {
+      t(3 * j + d) = 1.0;
+    }
+    basis.push_back(t);
+  }
+
+  // Rotational basis vectors (infinitesimal rotations around COM)
+  Eigen::VectorXd rx = Eigen::VectorXd::Zero(dof);
+  Eigen::VectorXd ry = Eigen::VectorXd::Zero(dof);
+  Eigen::VectorXd rz = Eigen::VectorXd::Zero(dof);
+
+  for (long i = 0; i < nAtoms; ++i) {
+    double x = positions(i, 0) - com(0);
+    double y = positions(i, 1) - com(1);
+    double z = positions(i, 2) - com(2);
+    // Rotation around x-axis: cross(xhat, r) = (0, -z, y)
+    rx(3 * i + 1) = -z;
+    rx(3 * i + 2) = y;
+    // Rotation around y-axis: cross(yhat, r) = (z, 0, -x)
+    ry(3 * i + 0) = z;
+    ry(3 * i + 2) = -x;
+    // Rotation around z-axis: cross(zhat, r) = (-y, x, 0)
+    rz(3 * i + 0) = -y;
+    rz(3 * i + 1) = x;
+  }
+  basis.push_back(rx);
+  basis.push_back(ry);
+  basis.push_back(rz);
+
+  // 3. Modified Gram-Schmidt orthonormalization
+  std::vector<Eigen::VectorXd> ortho;
+  ortho.reserve(6);
+
+  for (auto &v : basis) {
+    Eigen::VectorXd u = v;
+    for (const auto &e : ortho) {
+      u -= u.dot(e) * e;
+    }
+    // Handles linear molecules where one rotational mode is degenerate
+    if (u.norm() > 1e-9) {
+      u.normalize();
+      ortho.push_back(u);
+    }
+  }
+
+  // 4. Project out rigid-body components from step
+  for (const auto &e : ortho) {
+    step -= step.dot(e) * e;
+  }
+}
+
 void helper_functions::rotationRemove(const AtomMatrix r1_passed,
                                       std::shared_ptr<Matter> m2) {
-  AtomMatrix r1 = r1_passed;
+  // Skip for extended systems (slabs/surfaces with frozen atoms).
+  // Rigid-body rotation and translation are not well-defined when the
+  // system is anchored by frozen atoms.
+  if (m2->numberOfFixedAtoms() > 0) {
+    return;
+  }
+
   AtomMatrix r2 = m2->getPositions();
+  long n = r1_passed.size();
 
-  // Align centroids
-  Eigen::VectorXd c1(3);
-  Eigen::VectorXd c2(3);
+  // Compute displacement as flat 3N vector
+  Eigen::VectorXd step(n);
+  Eigen::Map<const Eigen::VectorXd> r1_flat(r1_passed.data(), n);
+  Eigen::Map<const Eigen::VectorXd> r2_flat(r2.data(), n);
+  step = r2_flat - r1_flat;
 
-  c1[0] = r1.col(0).sum();
-  c1[1] = r1.col(1).sum();
-  c1[2] = r1.col(2).sum();
-  c2[0] = r2.col(0).sum();
-  c2[1] = r2.col(1).sum();
-  c2[2] = r2.col(2).sum();
-  c1 /= r1.rows();
-  c2 /= r2.rows();
+  // Project out rigid-body translation and rotation
+  projectOutRotTrans(step, r1_passed);
 
-  for (int i = 0; i < r1.rows(); i++) {
-    r1(i, 0) -= c1[0];
-    r1(i, 1) -= c1[1];
-    r1(i, 2) -= c1[2];
+  // Reconstruct positions: r1 + projected step
+  Eigen::VectorXd result = r1_flat + step;
+  AtomMatrix resultMat(r1_passed.rows(), 3);
+  Eigen::Map<Eigen::VectorXd>(resultMat.data(), n) = result;
 
-    r2(i, 0) -= c2[0];
-    r2(i, 1) -= c2[1];
-    r2(i, 2) -= c2[2];
-  }
-
-  RotationMatrix R = rotationExtract(r1, r2);
-
-  // Eigen is transposed relative to numpy
-  r2 = r2 * R;
-
-  // Move centroid back to initial position
-  for (int i = 0; i < r2.rows(); i++) {
-    r2(i, 0) += c2[0];
-    r2(i, 1) += c2[1];
-    r2(i, 2) += c2[2];
-  }
-
-  m2->setPositions(r2);
-  return;
+  m2->setPositions(resultMat);
 }
 
 void helper_functions::rotationRemove(const std::shared_ptr<Matter> m1,
