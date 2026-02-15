@@ -51,7 +51,7 @@ void BondBoost::initialize() {
   int leng_strlist;
   nBBs = 0;
   nReg = 1;
-  BALstring = parameters->bondBoostBALS;
+  BALstring = parameters->hyperdynamics_options.boost_atom_list;
   atoms = helper_functions::split_string_int(BALstring, ",");
   leng_strlist = atoms.size();
   if (BALstring.c_str() == string("all") or atoms.size() == 0) {
@@ -138,7 +138,7 @@ double BondBoost::boost() {
   Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs, 1);
   bool flag = 0;
 
-  RMDS = int(parameters->bondBoostRMDTime / parameters->mdTimeStep);
+  RMDS = int(parameters->hyperdynamics_options.rmd_time / parameters->dynamics_options.time_step);
   biasPot = 0.0;
 
   if (nReg <= RMDS) {
@@ -197,9 +197,9 @@ double BondBoost::Booststeps() {
   AddForces.setZero();
   BiasForces.setZero();
 
-  QRR = parameters->bondBoostQRR;
-  PRR = parameters->bondBoostPRR;
-  DVMAX = parameters->bondBoostDVMAX;
+  QRR = parameters->hyperdynamics_options.qrr;
+  PRR = parameters->hyperdynamics_options.prr;
+  DVMAX = parameters->hyperdynamics_options.dvmax;
   Epsr_MAX = 0.0;
   A_EPS_M = 0.0;
   Boost_Fact = 0.0;
@@ -368,7 +368,7 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
 
 long BondBoost::BondSelect() {
   long count = 0, i, nBBs_tmp = 0;
-  double Qcutoff = parameters->bondBoostQcut;
+  double Qcutoff = parameters->hyperdynamics_options.qcut;
 
   for (i = 0; i < nTABs; i++) {
     if (TABLList(i, 0) <= Qcutoff) {

@@ -18,7 +18,7 @@ std::vector<std::string> MonteCarloJob::run(void) {
   string posInFilename("pos.con");
   string posOutFilename("out.con");
 
-  if (params->checkpoint) {
+  if (params->main_options.checkpoint) {
     FILE *pos;
     pos = fopen("pos_cp.con", "r");
     if (pos != NULL) {
@@ -37,8 +37,8 @@ std::vector<std::string> MonteCarloJob::run(void) {
 
   // code will go
   MonteCarlo mc = MonteCarlo(matter, params);
-  mc.run(params->monteCarloSteps, params->temperature,
-         params->monteCarloStepSize);
+  mc.run(params->monte_carlo_options.steps, params->main_options.temperature,
+         params->monte_carlo_options.step_size);
 
   // FILE *fileResults;
 
@@ -49,7 +49,7 @@ std::vector<std::string> MonteCarloJob::run(void) {
   // fprintf(fileResults, "%d termination_reason\n", status);
   // fprintf(fileResults, "minimization job_type\n");
   // fprintf(fileResults, "%s potential_type\n",
-  // helper_functions::getPotentialName(params->potential).c_str());
+  // helper_functions::getPotentialName(params->potential_options.potential).c_str());
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
   // if (status != STATUS_POTENTIAL_FAILED) {
   //     fprintf(fileResults, "%f potential_energy\n",

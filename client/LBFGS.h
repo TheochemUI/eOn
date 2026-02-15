@@ -27,7 +27,7 @@ public:
       : Optimizer(a_objf, OptType::LBFGS, a_params),
         m_iteration{0},
         m_memory{min(a_objf->degreesOfFreedom(),
-                     static_cast<int>(a_params->optLBFGSMemory))} {
+                     static_cast<int>(a_params->optimizer_options.lbfgs.memory))} {
 
     if (spdlog::get("lbfgs")) {
       m_log = spdlog::get("lbfgs");

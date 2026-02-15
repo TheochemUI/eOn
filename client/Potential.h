@@ -37,7 +37,7 @@ public:
 
   // Delegating Constructor
   Potential(std::shared_ptr<Parameters> a_params)
-      : Potential(a_params->potential, a_params) {}
+      : Potential(a_params->potential_options.potential, a_params) {}
 
   virtual ~Potential() {
     if (m_log) {

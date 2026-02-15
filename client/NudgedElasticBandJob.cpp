@@ -82,14 +82,14 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
     SPDLOG_LOGGER_DEBUG(m_log, "Minimizing reactant");
     // TODO(rg): Maybe when we have even more parameters, false can be set by
     // the user too..
-    initial->relax(false, params->writeMovies, params->checkpoint, "react_neb",
+    initial->relax(false, params->debug_options.write_movies, params->main_options.checkpoint, "react_neb",
                    "react_neb");
     // TODO(rg): How do we report the total E/F now? Currently this is just the
     // total total, people might want "per-stage" totals (but they can also get
     // them from the log.)
     SPDLOG_LOGGER_DEBUG(m_log, "Minimized reactant in ");
     SPDLOG_LOGGER_DEBUG(m_log, "Minimizing product");
-    final_state->relax(false, params->writeMovies, params->checkpoint,
+    final_state->relax(false, params->debug_options.write_movies, params->main_options.checkpoint,
                        "prod_neb", "prod_neb");
   }
 
@@ -149,7 +149,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
   fprintf(
       fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->potential)}.c_str());
+      std::string{magic_enum::enum_name<PotType>(params->potential_options.potential)}.c_str());
   // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
   // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
   fprintf(fileResults, "%f energy_reference\n",

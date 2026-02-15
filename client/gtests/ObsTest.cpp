@@ -38,7 +38,7 @@ ObsTest::~ObsTest() {
 TEST_F(ObsTest, TestMatter) {
   string confile("pos.con");
   Parameters *parameters = new Parameters;
-  parameters->potential = "morse_pt";
+  parameters->potential_options.potential = "morse_pt";
   Matter *matter = new Matter(parameters);
   matter->con2matter(confile);
   gpr::Observation o = helper_functions::eon_matter_to_init_obs(matter);

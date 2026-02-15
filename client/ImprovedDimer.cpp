@@ -35,7 +35,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   tau.setZero();
   totalForceCalls = 0;
 
-  if (params->dimerOptMethod == OPT_CG) {
+  if (params->dimer_options.opt_method == OPT_CG) {
     init_cg = true;
   }
   log = spdlog::get("combi");
@@ -92,18 +92,18 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   VectorXd x0_r = x0->getPositionsV();
   bestX0Positions = x0_r;
 
-  x1->setPositionsV(x0_r + params->finiteDifference * tau);
+  x1->setPositionsV(x0_r + params->main_options.finiteDifference * tau);
   // Quick check: If we stepped into a wall, flip the tangent immediately
   // This saves the optimizer from fighting a huge gradient in the first step
   if (x1->getPotentialEnergy() - x0->getPotentialEnergy() >
-      10.0 * params->finiteDifference) {
+      10.0 * params->main_options.finiteDifference) {
     tau = -tau;
-    x1->setPositionsV(x0_r + params->finiteDifference * tau);
+    x1->setPositionsV(x0_r + params->main_options.finiteDifference * tau);
     SPDLOG_LOGGER_DEBUG(
         log, "[IDimer] Initial tangent flipped due to high energy wall.");
   }
 
-  if (params->dimerOptMethod == OPT_LBFGS) {
+  if (params->dimer_options.opt_method == OPT_LBFGS) {
     s.clear();
     y.clear();
     rho.clear();
@@ -117,8 +117,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   VectorXd tau_Old;
   VectorXd g1_prime;
 
-  double delta = params->finiteDifference;
-  double phi_tol = M_PI * (params->dimerConvergedAngle / 180.0);
+  double delta = params->main_options.finiteDifference;
+  double phi_tol = M_PI * (params->dimer_options.converged_angle / 180.0);
   double phi_prime = 0.0;
   double phi_min = 0.0;
 
@@ -128,7 +128,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
   // http://doi.org/10.1021/ct501155k
-  if (params->dimerRemoveRotation) {
+  if (params->dimer_options.remove_rotation) {
     rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
     tau = x1_r - x0_r;
@@ -157,13 +157,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     // Calculate the rotational force, F_R.
     F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).dot(tau)) * tau;
 
-    statsTorque = F_R.norm() / (params->finiteDifference * 2.0);
+    statsTorque = F_R.norm() / (params->main_options.finiteDifference * 2.0);
 
     // Determine the step direction, theta
-    if (params->dimerOptMethod == OPT_SD) // steepest descent
+    if (params->dimer_options.opt_method == OPT_SD) // steepest descent
     {
       theta = F_R / F_R.norm();
-    } else if (params->dimerOptMethod == OPT_CG) // conjugate gradients
+    } else if (params->dimer_options.opt_method == OPT_CG) // conjugate gradients
     {
       if (init_cg) {
         init_cg = false;
@@ -192,7 +192,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       theta.normalize();
 
       F_R_Old = F_R;
-    } else if (params->dimerOptMethod == OPT_LBFGS) // quasi-newton
+    } else if (params->dimer_options.opt_method == OPT_LBFGS) // quasi-newton
     {
       if (init_lbfgs == false) {
         // xph: s0 should the difference between tau and tau_Old, which are
@@ -325,7 +325,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
       // http://doi.org/10.1021/ct501155k
-      if (params->dimerRemoveRotation) {
+      if (params->dimer_options.remove_rotation) {
         x1->setPositionsV(x1_r);
         rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
         x1_r = x1->getPositionsV();
@@ -345,7 +345,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
            g1_prime * (sin(phi_min) / sin(phi_prime)) +
            g0 * (1.0 - cos(phi_min) - sin(phi_min) * tan(phi_prime * 0.5));
 
-      statsTorque = F_R.norm() / (2.0 * params->finiteDifference);
+      statsTorque = F_R.norm() / (2.0 * params->main_options.finiteDifference);
       statsRotations += 1;
       SPDLOG_LOGGER_INFO(
           log,
@@ -394,7 +394,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     }
 
   } while (abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and
-           statsRotations < params->dimerRotationsMax);
+           statsRotations < params->dimer_options.rotations_max);
 }
 
 double ImprovedDimer::getEigenvalue() { return C_tau; }

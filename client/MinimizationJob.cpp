@@ -24,7 +24,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   string posInFilename("pos.con");
   string posOutFilename("min.con");
 
-  if (params->checkpoint) {
+  if (params->main_options.checkpoint) {
     FILE *pos_file;
     pos_file = fopen("pos_cp.con", "r");
     if (pos_file != NULL) {
@@ -45,7 +45,7 @@ std::vector<std::string> MinimizationJob::run(void) {
 
   bool converged;
   try {
-    converged = pos->relax(false, params->writeMovies, params->checkpoint,
+    converged = pos->relax(false, params->debug_options.write_movies, params->main_options.checkpoint,
                            "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
@@ -85,7 +85,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   fileResults << magic_enum::enum_name<RunStatus>(status)
               << " termination_reason\n";
   fileResults << "minimization job_type\n";
-  fileResults << magic_enum::enum_name<PotType>(params->potential)
+  fileResults << magic_enum::enum_name<PotType>(params->potential_options.potential)
               << " potential_type\n";
   fileResults << this->pot->forceCallCounter << " total_force_calls\n";
 

@@ -48,11 +48,11 @@ TEST_F(ImpDimerTest, TestMatter) {
   LowestEigenmode *minModeMethod;
   Parameters *parameters = new Parameters;
   // parameters->load("matter.ini");
-  parameters->potential = PotType::LJ;
-  parameters->optMethod = optimizer;
-  parameters->optConvergedForce = optConvergedForce;
-  parameters->dimerConvergedAngle = 0.001;
-  parameters->saddleMinmodeMethod = LowestEigenmode::MINMODE_DIMER;
+  parameters->potential_options.potential = PotType::LJ;
+  parameters->optimizer_options.method = optimizer;
+  parameters->optimizer_options.converged_force = optConvergedForce;
+  parameters->dimer_options.converged_angle = 0.001;
+  parameters->saddle_search_options.minmode_method = LowestEigenmode::MINMODE_DIMER;
   Matter *initial = new Matter(parameters);
   Matter *displacement = new Matter(parameters);
   Matter *saddle = new Matter(parameters);

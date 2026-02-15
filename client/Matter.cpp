@@ -74,17 +74,17 @@ public:
   void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
   VectorXd getPositions() { return matter->getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
-  bool isConverged() { return getConvergence() < params->optConvergedForce; }
+  bool isConverged() { return getConvergence() < params->optimizer_options.converged_force; }
   double getConvergence() {
-    if (params->optConvergenceMetric == "norm") {
+    if (params->optimizer_options.convergence_metric == "norm") {
       return matter->getForcesFreeV().norm();
-    } else if (params->optConvergenceMetric == "max_atom") {
+    } else if (params->optimizer_options.convergence_metric == "max_atom") {
       return matter->maxForce();
-    } else if (params->optConvergenceMetric == "max_component") {
+    } else if (params->optimizer_options.convergence_metric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
       SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
-                      params->optConvergenceMetric);
+                      params->optimizer_options.convergence_metric);
       std::exit(1);
     }
   }
@@ -125,32 +125,32 @@ const Matter &Matter::operator=(const Matter &matter) {
 
 // The == comparison considers identity. This is crucial for process search.
 // bool Matter::operator==(const Matter& matter) {
-//     if(parameters->checkRotation) {
+//     if(parameters->structure_comparison_options.check_rotation) {
 //         return helper_functions::rotationMatch(this, &matter,
-//         parameters->distanceDifference);
+//         parameters->structure_comparison_options.distance_difference);
 //     }else{
-//         return (parameters->distanceDifference) > perAtomNorm(matter);
+//         return (parameters->structure_comparison_options.distance_difference) > perAtomNorm(matter);
 //     }
 // }
 
 bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
-  if (parameters->checkRotation && indistinguishable) {
+  if (parameters->structure_comparison_options.check_rotation && indistinguishable) {
     return helper_functions::sortedR(*this, matter,
-                                     parameters->distanceDifference);
+                                     parameters->structure_comparison_options.distance_difference);
   } else if (indistinguishable) {
-    if (this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and parameters->structure_comparison_options.remove_translation)
       helper_functions::translationRemove(*this, matter);
     return helper_functions::identical(*this, matter,
-                                       parameters->distanceDifference);
-  } else if (parameters->checkRotation) {
+                                       parameters->structure_comparison_options.distance_difference);
+  } else if (parameters->structure_comparison_options.check_rotation) {
     return helper_functions::rotationMatch(*this, matter,
-                                           parameters->distanceDifference);
+                                           parameters->structure_comparison_options.distance_difference);
   } else {
-    if (this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
+    if (this->numberOfFixedAtoms() == 0 and parameters->structure_comparison_options.remove_translation)
       helper_functions::translationRemove(*this, matter);
-    return (parameters->distanceDifference) > perAtomNorm(matter);
+    return (parameters->structure_comparison_options.distance_difference) > perAtomNorm(matter);
   }
 }
 
@@ -273,7 +273,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   auto objf = std::make_shared<MatterObjectiveFunction>(
       std::make_shared<Matter>(*this), parameters);
   auto optim =
-      helpers::create::mkOptim(objf, parameters->optMethod, parameters);
+      helpers::create::mkOptim(objf, parameters->optimizer_options.method, parameters);
 
   ostringstream min;
   min << prefixMovie;
@@ -285,17 +285,17 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   if (!quiet) {
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
                         "[Matter]", "Iter", "Step size",
-                        parameters->optConvergenceMetricLabel, "Energy");
+                        parameters->optimizer_options.convergence_metric_label, "Energy");
     SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
                         "[Matter]", iteration, 0.0, objf->getConvergence(),
                         getPotentialEnergy());
   }
 
-  while (!objf->isConverged() && iteration < parameters->optMaxIterations) {
+  while (!objf->isConverged() && iteration < parameters->optimizer_options.max_iterations) {
 
     AtomMatrix pos = getPositions();
 
-    optim->step(parameters->optMaxMove);
+    optim->step(parameters->optimizer_options.max_move);
     iteration++;
     setPositionsFreeV(objf->getPositions());
 
@@ -326,8 +326,8 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                           getPotentialEnergy());
     }
   }
-  //    bool converged = optimizer->run(parameters->optMaxIterations,
-  //    parameters->optMaxMove);
+  //    bool converged = optimizer->run(parameters->optimizer_options.max_iterations,
+  //    parameters->optimizer_options.max_move);
   return objf->isConverged();
 }
 
@@ -814,7 +814,7 @@ void Matter::computePotential() {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
       potential =
-          helper_functions::makePotential(parameters->potential, parameters);
+          helper_functions::makePotential(parameters->potential_options.potential, parameters);
     }
     auto surrogatePotential =
         std::dynamic_pointer_cast<SurrogatePotential>(potential);
@@ -840,7 +840,7 @@ void Matter::computePotential() {
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 && parameters->removeNetForce) {
+    if (isFixed.sum() == 0 && parameters->main_options.removeNetForce) {
       Vector3d tempForce(3);
       tempForce = forces.colwise().sum() / nAtoms;
 
