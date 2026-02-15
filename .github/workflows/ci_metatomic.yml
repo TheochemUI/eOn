@@ -31,7 +31,9 @@ jobs:
           -Dwith_metatomic=True            \
           -Dtorch_version=2.9              \
           -Dwith_tests=True                \
-          -Dpip_metatomic=True
+          -Dpip_metatomic=True             \
+          -Dwith_fortran=False             \
+          -Dwith_cuh2=False
           meson install -C bbdir
       - name: Run tests
         shell: bash -el {0}

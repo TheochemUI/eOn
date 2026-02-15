@@ -55,7 +55,7 @@ rel = {features = ["metatomic", "release"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
-platforms = ["linux-64", "osx-arm64"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [feature.metatomic.pypi-dependencies]
 torch = ">=2.9, <2.10"
