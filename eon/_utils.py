@@ -40,6 +40,26 @@ class ScriptConfig:
         )
 
 
+def normalize_atom_list_str(raw: str) -> str:
+    """Normalize a string of atom indices to comma-separated format.
+
+    Accepts space-separated, comma-separated, or mixed input.
+    Returns a canonical comma-separated string (e.g. "1, 3, 5").
+    """
+    # Split on commas and/or whitespace
+    import re
+    tokens = re.split(r'[,\s]+', raw.strip())
+    tokens = [t for t in tokens if t]
+    return ", ".join(tokens)
+
+
+def parse_atom_list_str(atom_list_str: str) -> list[int]:
+    """Parse a comma-separated atom list string into a list of ints."""
+    if not atom_list_str or not atom_list_str.strip():
+        return []
+    return [int(c.strip()) for c in atom_list_str.split(",") if c.strip()]
+
+
 def gen_ids_from_con(sconf: ScriptConfig, reactant, logger: logging.Logger):
     if not sconf.script_path.is_file():
         logger.error(f"displace_atom_list_script not found: {sconf.script_path}")
@@ -65,8 +85,11 @@ def gen_ids_from_con(sconf: ScriptConfig, reactant, logger: logging.Logger):
                 check=True,
                 cwd=sconf.root_path,
             )
-            atom_list_str = proc.stdout.strip()
-            return atom_list_str
+            raw_output = proc.stdout.strip()
+            if not raw_output:
+                return ""
+            # Normalize to comma-separated format for config.py compatibility
+            return normalize_atom_list_str(raw_output)
         except subprocess.CalledProcessError as e:
             logger.error(f"Error running displace_atom_list_script '{sconf.script_path}':")
             logger.error(f"Stderr: {e.stderr.strip()}")
