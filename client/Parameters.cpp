@@ -10,7 +10,6 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Parameters.h"
-#include <sstream>
 #include "BaseStructures.h"
 #include "BondBoost.h"
 #include "Dynamics.h"
@@ -28,6 +27,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include <errno.h>
 #include <float.h>
+#include <sstream>
 #include <stdexcept>
 #include <time.h>
 
@@ -1332,14 +1332,13 @@ int Parameters::load(FILE *file) {
             EpiCenters::DISP_MIN_COORDINATED &&
         saddle_search_options.displace_type != EpiCenters::DISP_LAST_ATOM &&
         saddle_search_options.displace_type != EpiCenters::DISP_RANDOM &&
-        saddle_search_options.displace_type !=
-            EpiCenters::DISP_LISTED_ATOMS) {
+        saddle_search_options.displace_type != EpiCenters::DISP_LISTED_ATOMS) {
       saddle_search_options.displace_type = EpiCenters::DISP_LOAD;
     }
     // Parse comma-separated atom list for listed_atoms displacement type
     {
-      string atomListStr = ini.GetValue("Saddle Search", "displace_atom_list",
-                                        "");
+      string atomListStr =
+          ini.GetValue("Saddle Search", "displace_atom_list", "");
       if (!atomListStr.empty()) {
         std::stringstream ss(atomListStr);
         string token;
