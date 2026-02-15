@@ -42,7 +42,8 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   // allocate a Matter and Dynamics object for each replica
   std::vector<std::shared_ptr<Matter>> replica;
   replica.resize(params.replica_exchange_options.replicas);
-  Dynamics *replicaDynamics[params.replica_exchange_options.replicas];
+  std::vector<Dynamics *> replicaDynamics(
+      params.replica_exchange_options.replicas);
   for (i = 0; i < params.replica_exchange_options.replicas; i++) {
     replica[i] = std::make_shared<Matter>(pot, params);
     *replica[i] = *pos;
@@ -50,7 +51,8 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   }
 
   // assign temperatures
-  double replicaTemperature[params.replica_exchange_options.replicas];
+  std::vector<double> replicaTemperature(
+      params.replica_exchange_options.replicas);
 
   SPDLOG_LOGGER_DEBUG(log, "Temperature distribution:");
   if (params.replica_exchange_options.temperature_distribution == "linear") {

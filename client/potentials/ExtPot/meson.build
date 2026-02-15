@@ -1,4 +1,4 @@
-extpot = shared_library('extpot',
+extpot = library('extpot',
            'ExtPot.cpp',
            dependencies : _deps,
            cpp_args : _args,

@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Prefactor.h"
+#include "HelperFunctions.h"
 #include "Hessian.h"
 
 int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
@@ -129,8 +130,8 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
         pref2 /= saddleFreqs[i];
       }
     }
-    pref1 = sqrt(pref1) / (2 * M_PI * 10.18e-15);
-    pref2 = sqrt(pref2) / (2 * M_PI * 10.18e-15);
+    pref1 = sqrt(pref1) / (2 * helper_functions::pi * 10.18e-15);
+    pref2 = sqrt(pref2) / (2 * helper_functions::pi * 10.18e-15);
   } else if (parameters.prefactor_options.rate == Prefactor::RATE_QQHTST) {
     float kB_T = parameters.main_options.temperature * 8.617332e-5; // eV
     float h_bar = 6.582119e-16;                                     // eV*s

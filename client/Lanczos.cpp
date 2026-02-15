@@ -15,6 +15,7 @@
 // final states, J. Chem. Phys. 121, 9776-9792 (2004).
 
 #include "Lanczos.h"
+#include "HelperFunctions.h"
 #include "Potential.h"
 
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
@@ -104,7 +105,8 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       // Convert eigenvector of T matrix to eigenvector of full Hessian
       evEst = Q.block(0, 0, size, i + 1) * evT;
       evEst.normalize();
-      statsAngle = acos(fabs(evEst.dot(evOldEst))) * (180 / M_PI);
+      statsAngle =
+          acos(fabs(evEst.dot(evOldEst))) * (180 / helper_functions::pi);
       statsTorque = ewAbsRelErr;
       evOldEst = evEst;
       SPDLOG_LOGGER_INFO(log,

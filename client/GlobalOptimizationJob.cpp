@@ -72,7 +72,7 @@ std::vector<std::string> GlobalOptimizationJob::run(void) {
     } else {
       earrim1 = earr[i - 1];
     }
-    fprintf(earrfile, "%5lu  %15.5f  %15.5f  %15.5f  ", i + 1, earr[i],
+    fprintf(earrfile, "%5zu  %15.5f  %15.5f  %15.5f  ", i + 1, earr[i],
             earr[i] - earr[0], earr[i] - earrim1);
   }
   // globopt.run();
@@ -191,7 +191,7 @@ void GlobalOptimizationJob::report(Matter *matter_hop) {
   double epot_hop = matter_hop->getPotentialEnergy();
   double temp = (2.0 * ekin_p / params.constants.kB);
   double dt = params.dynamics_options.time_step;
-  fprintf(monfile, "%15.5f  %15.5f  %11lu  %12.2f         %c%c  %5ld  %5ld",
+  fprintf(monfile, "%15.5f  %15.5f  %11zu  %12.2f         %c%c  %5ld  %5ld",
           epot_hop, ediff, (size_t)temp, dt, C1, C2, fcallsMove, fcallsRelax);
 }
 

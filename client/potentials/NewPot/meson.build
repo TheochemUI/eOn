@@ -1,4 +1,4 @@
-newpot=shared_library('newpot',
+newpot=library('newpot',
            'NewPot.cpp',
            dependencies : _deps,
            cpp_args : _args,

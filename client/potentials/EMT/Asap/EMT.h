@@ -19,7 +19,7 @@ struct emt_parameters;
 
 /// The Effective Medium Theory (EMT) as originally implemented in Per
 /// Stoltze's ARTwork program, and documented in
-///   - K. W. Jacobsen, P. Stoltze and J. K. Nørskov,
+///   - K. W. Jacobsen, P. Stoltze and J. K. NÃ¸rskov,
 ///     Surf. Sci. vol. 366, p. 394-402 (1996).
 class EMT : public AsapPotential {
 public:

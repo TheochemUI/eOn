@@ -1,5 +1,5 @@
 mta_libdir = meson.current_source_dir()
-metatomic_pot = shared_library(
+metatomic_pot = library(
     'metatomic_pot',
     'MetatomicPotential.cpp',
     dependencies: _deps,

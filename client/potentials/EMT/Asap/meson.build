@@ -1,4 +1,4 @@
-asap = shared_library('asap',
+asap = library('asap',
            'NeighborList.cpp',
            'GhostAtoms.cpp',
            'CellList.cpp',

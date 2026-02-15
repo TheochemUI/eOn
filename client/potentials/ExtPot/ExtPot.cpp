@@ -13,7 +13,6 @@
 #include "ExtPot.h"
 #include <iostream>
 #include <stdio.h>
-#include <unistd.h>
 
 void ExtPot::cleanMemory(void) { return; }
 

@@ -37,6 +37,8 @@
  * and different random number generators */
 namespace helper_functions {
 
+inline constexpr double pi = 3.14159265358979323846;
+
 double
 random(long newSeed = 0);     // random number generator from numerical recipies
 double randomDouble();        // random value between 0 and 1

@@ -1,4 +1,4 @@
-ams = shared_library('ams',
+ams = library('ams',
            'AMS.cpp',
            dependencies : _deps,
            cpp_args : _args,

@@ -120,7 +120,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       //            //debug
 
       if (rotationalForceChange < 0) {
-        rotationAngle = rotationAngle + M_PI / 2.0;
+        rotationAngle = rotationAngle + helper_functions::pi / 2.0;
       }
 
       rotate(rotationAngle);
@@ -130,14 +130,15 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     SPDLOG_LOGGER_DEBUG(log,
                         "[DimerRot]   -----   ---------   ----------------   "
                         "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
-                        curvature, torque, rotationAngle * (180.0 / M_PI));
+                        curvature, torque,
+                        rotationAngle * (180.0 / helper_functions::pi));
   }
 
   statsTorque = torque;
   statsCurvature = curvature;
   direction.normalize();
   statsAngle = acos((direction.array() * initialDirection.array()).sum());
-  statsAngle *= (180.0 / M_PI);
+  statsAngle *= (180.0 / helper_functions::pi);
   statsRotations = rotations;
 
   eigenvalue = curvature;

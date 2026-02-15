@@ -118,7 +118,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   VectorXd g1_prime;
 
   double delta = params.main_options.finiteDifference;
-  double phi_tol = M_PI * (params.dimer_options.converged_angle / 180.0);
+  double phi_tol =
+      helper_functions::pi * (params.dimer_options.converged_angle / 180.0);
   double phi_prime = 0.0;
   double phi_min = 0.0;
 
@@ -211,7 +212,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       double H0 = 1. / 60.;
 
       int loopmax = s.size();
-      double a[loopmax];
+      std::vector<double> a(loopmax);
 
       VectorXd q = -F_R;
 
@@ -232,7 +233,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         vd = 1.0;
       if (vd < -1.0)
         vd = -1.0;
-      double angle = acos(vd) * (180.0 / M_PI);
+      double angle = acos(vd) * (180.0 / helper_functions::pi);
 
       // xph: larger angle is allowed to avoid frequent restart (was 70.0)
       if (angle > 87.0) {
@@ -268,7 +269,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
     double d_C_tau_d_phi = 2.0 * (g1 - g0).dot(theta) / delta;
     phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
-    statsAngle = phi_prime * (180.0 / M_PI);
+    statsAngle = phi_prime * (180.0 / helper_functions::pi);
 
     double alignment = std::abs(tau.dot(referenceMode));
     if (abs(phi_prime) > phi_tol) {
@@ -306,16 +307,16 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       // If the curvature is being maximized, push it over pi/2.
       if (C_tau_min > C_tau) {
-        phi_min += M_PI * 0.5;
+        phi_min += helper_functions::pi * 0.5;
         C_tau_min =
             0.5 * a0 + a1 * cos(2.0 * phi_min) + b1 * sin(2.0 * phi_min);
       }
 
       // xph: for accurate LBFGS
-      if (phi_min > M_PI * 0.5) {
-        phi_min -= M_PI;
+      if (phi_min > helper_functions::pi * 0.5) {
+        phi_min -= helper_functions::pi;
       }
-      statsAngle = phi_min * (180.0 / M_PI);
+      statsAngle = phi_min * (180.0 / helper_functions::pi);
 
       // Update x1, tau, and C_tau.
       // xph: normalize first
