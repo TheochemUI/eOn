@@ -125,12 +125,15 @@ endif
 threads_dep = dependency('threads', required: true)
 _deps += threads_dep
 
-eigen_dep = dependency(
-    'Eigen3',
-    method: 'cmake',
-    modules: ['Eigen3::Eigen'],
-    required: true,
-)
+eigen_dep = dependency('eigen3', required: false)
+if not eigen_dep.found()
+    eigen_dep = dependency(
+        'Eigen3',
+        method: 'cmake',
+        modules: ['Eigen3::Eigen'],
+        required: true,
+    )
+endif
 _deps += [eigen_dep]
 
 spdlog_dep = dependency('spdlog', required: true)
@@ -283,6 +286,7 @@ if get_option('with_water')
 endif
 
 if get_option('with_ams')
+    fmt_dep = dependency('fmt', required: true)
     # Optional, only for AMS
     absl_dep = dependency(
         'absl',
@@ -487,14 +491,25 @@ if get_option('with_metatomic')
         message(
             'If this is flaky, pass pip_metatomic=True with the torch version and let pip handle everything',
         )
-        # XXX(rg): Still needs the includes, setup pkgconf and use dependency() with pkgconf instead
+        # Try system dependency() first (pkg-config / cmake), fall back to find_library
         # xref: https://github.com/metatensor/metatensor/issues/930
-        vesin_dep = cppc.find_library('vesin', required: false)
-        mts_dep = [
-            cppc.find_library('metatensor'),
-            cppc.find_library('metatensor_torch'),
-            cppc.find_library('metatomic_torch'),
-        ]
+        vesin_dep = dependency('vesin', required: false)
+        if not vesin_dep.found()
+            vesin_dep = cppc.find_library('vesin', required: false)
+        endif
+        mts_dep = dependency('metatensor_torch', required: false)
+        if not mts_dep.found()
+            mts_dep = [
+                cppc.find_library('metatensor'),
+                cppc.find_library('metatensor_torch'),
+                cppc.find_library('metatomic_torch'),
+            ]
+        else
+            mts_dep = [
+                mts_dep,
+                dependency('metatomic_torch'),
+            ]
+        endif
     endif
     if not vesin_dep.found()
         vesin_int = library(
