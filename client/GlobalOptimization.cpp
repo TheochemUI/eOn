@@ -12,9 +12,8 @@
 #include "GlobalOptimization.h"
 #include <stdio.h>
 
-GlobalOptimization::GlobalOptimization(Parameters *params) {
-  parameters = params;
-}
+GlobalOptimization::GlobalOptimization(const Parameters &params)
+    : parameters{params} {}
 
 GlobalOptimization::~GlobalOptimization(void) {}
 

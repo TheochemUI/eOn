@@ -24,10 +24,12 @@ pip = ">=25.1.1,<26"
 pipx = ">=1.7.1,<2"
 numpy = ">=2.3.0,<3"
 compilers = ">=1.9.0,<2"
-gfortran = ">=13.3.0,<13.4"
 fmt = ">=12,<13"
 spdlog = ">=1.16,<2"
 pkg-config = ">=0.29.2,<0.30"
+fortran-compiler = ">=1.10.0,<2"
+pyyaml = "*"
+sccache = "*"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
@@ -38,6 +40,7 @@ towncrier = ">=25.8.0, <26"
 # export UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
 # export PIP_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
 extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
+index-strategy = "unsafe-best-match"
 
 [environments]
 # TODO(rg): Flesh out the rest of these
@@ -55,7 +58,8 @@ rel = {features = ["metatomic", "release"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
-platforms = ["linux-64", "osx-arm64"]
+# no torch wheels for 2.9 onwards for non arm macos
+platforms = ["linux-64", "osx-arm64", "win-64"]
 
 [feature.metatomic.pypi-dependencies]
 torch = ">=2.9, <2.10"

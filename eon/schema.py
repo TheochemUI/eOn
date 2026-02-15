@@ -8,6 +8,7 @@ from pydantic import (
 from typing import Optional, Any, Union
 from typing_extensions import Literal
 import math
+import os
 import random
 
 
@@ -322,18 +323,18 @@ class PathsConfig(BaseModel):
     def set_default_paths(cls, values: dict[str, Any]) -> dict[str, Any]:
         main_directory = values.get("main_directory", "./")
         defaults = {
-            "jobs_out": f"{main_directory}/jobs/out/",
-            "jobs_in": f"{main_directory}/jobs/in/",
-            "incomplete": f"{main_directory}/jobs/incomplete/",
-            "states": f"{main_directory}/states/",
+            "jobs_out": os.path.join(main_directory, "jobs", "out", ""),
+            "jobs_in": os.path.join(main_directory, "jobs", "in", ""),
+            "incomplete": os.path.join(main_directory, "jobs", "incomplete", ""),
+            "states": os.path.join(main_directory, "states", ""),
             "results": main_directory,
-            "potential_files": f"{main_directory}/potfiles",
-            "bh_minima": f"{main_directory}/minima",
-            "kdb_scratch": f"{main_directory}/kdbscratch/",
-            "kdb": f"{main_directory}/kdb/",
-            "superbasins": f"{main_directory}/superbasins/",
-            "superbasin_recycling": f"{main_directory}/SB_recycling",
-            "scratch": f"{main_directory}/jobs/scratch/",
+            "potential_files": os.path.join(main_directory, "potfiles"),
+            "bh_minima": os.path.join(main_directory, "minima"),
+            "kdb_scratch": os.path.join(main_directory, "kdbscratch", ""),
+            "kdb": os.path.join(main_directory, "kdb", ""),
+            "superbasins": os.path.join(main_directory, "superbasins", ""),
+            "superbasin_recycling": os.path.join(main_directory, "SB_recycling"),
+            "scratch": os.path.join(main_directory, "jobs", "scratch", ""),
         }
         for field, default in defaults.items():
             if values.get(field) is None:

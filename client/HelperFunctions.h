@@ -37,6 +37,8 @@
  * and different random number generators */
 namespace helper_functions {
 
+inline constexpr double pi = 3.14159265358979323846;
+
 double
 random(long newSeed = 0);     // random number generator from numerical recipies
 double randomDouble();        // random value between 0 and 1
@@ -66,6 +68,7 @@ void makeProjection(double *result, const double *v1, const double *v2,
                     long size); // result = projection of v1 on v2
 RotationMatrix rotationExtract(const AtomMatrix r1, const AtomMatrix r2);
 bool rotationMatch(const Matter &m1, const Matter &m2, const double max_diff);
+void projectOutRotTrans(Eigen::VectorXd &step, const AtomMatrix &positions);
 void rotationRemove(const AtomMatrix r1, std::shared_ptr<Matter> m2);
 void rotationRemove(const std::shared_ptr<Matter> m1,
                     std::shared_ptr<Matter> m2);

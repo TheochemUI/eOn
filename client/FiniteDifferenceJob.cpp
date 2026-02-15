@@ -32,7 +32,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
 
   // Create a random displacement.
   long epicenter = EpiCenters::minCoordinatedEpiCenter(
-      reactant.get(), params->structure_comparison_options.neighbor_cutoff);
+      reactant.get(), params.structure_comparison_options.neighbor_cutoff);
   AtomMatrix displacement;
   displacement.resize(reactant->numberOfAtoms(), 3);
   displacement.setZero();

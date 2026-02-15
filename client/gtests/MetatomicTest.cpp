@@ -10,7 +10,7 @@ namespace tests {
 class PotTest {
 public:
   PotTest()
-      : params{std::make_shared<Parameters>()},
+      : params{},
         m1{nullptr},
         pot_default{nullptr},
         threshold{1e-2} {}
@@ -27,7 +27,7 @@ public:
   void TearDown() {}
 
 protected:
-  std::shared_ptr<Parameters> params;
+  Parameters params;
   std::shared_ptr<Matter> m1;
   std::shared_ptr<Potential> pot_default;
   double threshold;
@@ -52,10 +52,10 @@ TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  params->potential_options.potential = PotType::METATOMIC;
-  params->metatomic_options.model_path = "lennard-jones.pt";
-  auto pot = helper_functions::makePotential(
-      params->potential_options.potential, params);
+  params.potential_options.potential = PotType::METATOMIC;
+  params.metatomic_options.model_path = "lennard-jones.pt";
+  auto pot = helper_functions::makePotential(params.potential_options.potential,
+                                             params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());
@@ -73,13 +73,13 @@ TEST_CASE_METHOD(PotTest,
   // If the model does not provide per-atom energy_uncertainty, the variance
   // should remain untouched (we initialize it to a sentinel and only assert
   // when it changes).
-  params->potential_options.potential = PotType::METATOMIC;
-  params->metatomic_options.model_path = "lennard-jones.pt";
+  params.potential_options.potential = PotType::METATOMIC;
+  params.metatomic_options.model_path = "lennard-jones.pt";
   // request uncertainty checks
-  params->metatomic_options.uncertainty_threshold = 0.1;
+  params.metatomic_options.uncertainty_threshold = 0.1;
 
-  auto pot = helper_functions::makePotential(
-      params->potential_options.potential, params);
+  auto pot = helper_functions::makePotential(params.potential_options.potential,
+                                             params);
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Zero(m1->numberOfAtoms(), 3);
@@ -120,14 +120,14 @@ TEST_CASE_METHOD(PotTest, "Metatomic variant (doubled)", "[PotTest][variant]") {
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  params->potential_options.potential = PotType::METATOMIC;
-  params->metatomic_options.model_path = "lennard-jones.pt";
+  params.potential_options.potential = PotType::METATOMIC;
+  params.metatomic_options.model_path = "lennard-jones.pt";
 
   // Set the variant to 'doubled'
-  params->metatomic_options.variant.base = "doubled";
+  params.metatomic_options.variant.base = "doubled";
 
-  auto pot = helper_functions::makePotential(
-      params->potential_options.potential, params);
+  auto pot = helper_functions::makePotential(params.potential_options.potential,
+                                             params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());

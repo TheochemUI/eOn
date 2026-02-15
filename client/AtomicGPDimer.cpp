@@ -26,12 +26,12 @@ const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
 AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
-                             std::shared_ptr<Parameters> params,
+                             const Parameters &params,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
-  p = helper_functions::eon_parameters_to_gpr(params.get());
+  p = helper_functions::eon_parameters_to_gpr(params);
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = matter->getCell()(i);
   }
@@ -54,7 +54,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   init_middle_point.R = R_init;
   init_observations.clear();
   problem_setup.activateFrozenAtoms(
-      R_init, params->gpr_dimer_options.active_radius, atoms_config);
+      R_init, params.gpr_dimer_options.active_radius, atoms_config);
   orient_init.clear();
   orient_init.resize(matterCenter->getPositionsFree().rows(),
                      matterCenter->getPositionsFree().cols());
@@ -82,9 +82,14 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
 
   // Potential *potential = Potential::getPotential(parameters);
   auto potential = helper_functions::makePotential(params);
+  pot::PotentialWrapper wrapper(
+      [&potential](long N, const double *R, const int *atomicNrs, double *F,
+                   double *U, double *variance, const double *box) {
+        potential->force(N, R, atomicNrs, F, U, variance, box);
+      });
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
-  atomic_dimer.execute(*potential.get());
+  atomic_dimer.execute(wrapper);
   fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
@@ -99,5 +104,7 @@ double AtomicGPDimer::getEigenvalue() {
 }
 
 AtomMatrix AtomicGPDimer::getEigenvector() {
-  return atomic_dimer.getFinalOrientation()->extractEigenMatrix();
+  gpr::Coord *orient = atomic_dimer.getFinalOrientation();
+  long nFree = matterCenter->numberOfFreeAtoms();
+  return Eigen::Map<const AtomMatrix>(orient->data(), nFree, 3);
 }

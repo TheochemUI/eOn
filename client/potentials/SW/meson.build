@@ -1,4 +1,4 @@
-sw=shared_library('sw',
+sw=library('sw',
            'SWFortran.f90',
            'SW.cpp',
            dependencies : _deps,

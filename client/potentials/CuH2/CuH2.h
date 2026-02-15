@@ -21,7 +21,7 @@ class CuH2 : public Potential {
 
 public:
   // Functions
-  CuH2(std::shared_ptr<Parameters> p)
+  CuH2(const Parameters &p)
       : Potential(PotType::CUH2, p) {}
 
   // To satisfy interface

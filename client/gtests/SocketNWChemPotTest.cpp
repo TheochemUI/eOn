@@ -12,16 +12,16 @@ namespace tests {
 class SocketNWChemPotTest {
 public:
   SocketNWChemPotTest()
-      : params{std::make_shared<Parameters>()},
+      : params{},
         matter{nullptr},
         pot_socket{nullptr},
         threshold{1e-5} {
-    params->potential_options.potential = PotType::SocketNWChem;
-    params->socket_nwchem_options.unix_socket_mode = true;
-    params->socket_nwchem_options.unix_socket_path = "eon_nwchem_test_socket";
+    params.potential_options.potential = PotType::SocketNWChem;
+    params.socket_nwchem_options.unix_socket_mode = true;
+    params.socket_nwchem_options.unix_socket_path = "eon_nwchem_test_socket";
 
     pot_socket = helper_functions::makePotential(
-        params->potential_options.potential, params);
+        params.potential_options.potential, params);
     matter = std::make_shared<Matter>(pot_socket, params);
 
     const std::string confile("pos.con");
@@ -33,7 +33,7 @@ public:
   ~SocketNWChemPotTest() = default;
 
 protected:
-  std::shared_ptr<Parameters> params;
+  Parameters params;
   std::shared_ptr<Matter> matter;
   std::shared_ptr<Potential> pot_socket;
   double threshold;

@@ -139,7 +139,7 @@ std::ostream &operator<<(std::ostream &os, const Matter &matter) {
 std::vector<Matter> getMatter() {
   // Return test data for Matter
   // TODO(rg): Add more objects
-  auto params = std::make_shared<Parameters>();
+  auto params = Parameters{};
   auto pot_default = helper_functions::makePotential(PotType::LJ, params);
   auto m1 = Matter(pot_default, params);
   std::string confile("pos.con"); // Sulfolene

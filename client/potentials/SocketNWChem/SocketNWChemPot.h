@@ -26,7 +26,7 @@
  */
 class SocketNWChemPot : public Potential {
 public:
-  explicit SocketNWChemPot(std::shared_ptr<Parameters> p);
+  explicit SocketNWChemPot(const Parameters &p);
   ~SocketNWChemPot() override;
 
   /**

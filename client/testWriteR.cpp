@@ -15,11 +15,10 @@
 
 int main(void) {
   string confile("pos.con");
-  auto parameters = std::make_shared<Parameters>();
+  Parameters parameters;
   auto pot = helper_functions::makePotential(parameters);
-  Matter *matter = new Matter(pot, parameters);
-  matter->con2matter(confile);
-  matter->writeTibble("rSysdat.txt"s);
-  delete matter;
+  Matter matter(pot, parameters);
+  matter.con2matter(confile);
+  matter.writeTibble("rSysdat.txt"s);
   return EXIT_SUCCESS;
 }

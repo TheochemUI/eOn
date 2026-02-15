@@ -1,4 +1,4 @@
-aluminum = shared_library('aluminum',
+aluminum = library('aluminum',
            'fofrhoDblexp.f',
            'dfrhoDblexp.f',
            'potinit.f',
