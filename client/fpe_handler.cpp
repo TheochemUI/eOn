@@ -16,6 +16,8 @@
 #include <iostream>
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <float.h>
 #endif
 
@@ -25,7 +27,38 @@
 
 namespace eonc {
 
-#ifndef _WIN32
+#ifdef _WIN32
+static LONG WINAPI windowsFPEHandler(EXCEPTION_POINTERS *info) {
+  DWORD code = info->ExceptionRecord->ExceptionCode;
+  switch (code) {
+  case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+    std::cerr << "Floating point exception: Division by zero" << std::endl;
+    break;
+  case EXCEPTION_FLT_INVALID_OPERATION:
+    std::cerr << "Floating point exception: Invalid operation" << std::endl;
+    break;
+  case EXCEPTION_FLT_OVERFLOW:
+    std::cerr << "Floating point exception: Overflow" << std::endl;
+    break;
+  case EXCEPTION_FLT_UNDERFLOW:
+    std::cerr << "Floating point exception: Underflow" << std::endl;
+    break;
+  case EXCEPTION_FLT_INEXACT_RESULT:
+    std::cerr << "Floating point exception: Inexact result" << std::endl;
+    break;
+  case EXCEPTION_FLT_DENORMAL_OPERAND:
+    std::cerr << "Floating point exception: Denormal operand" << std::endl;
+    break;
+  case EXCEPTION_FLT_STACK_CHECK:
+    std::cerr << "Floating point exception: Stack check" << std::endl;
+    break;
+  default:
+    return EXCEPTION_CONTINUE_SEARCH;
+  }
+  std::abort();
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+#else
 static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   int fe_code = sip->si_code;
   std::cerr << "Floating point exception: ";
@@ -45,6 +78,8 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
 
 void enableFPE() {
 #ifdef _WIN32
+  // Register Windows SEH handler for FPE reporting
+  SetUnhandledExceptionFilter(windowsFPEHandler);
   // Enable floating-point exceptions on Windows
   _controlfp_s(nullptr, 0, _MCW_EM);
   _controlfp_s(nullptr, ~(_EM_ZERODIVIDE | _EM_INVALID | _EM_OVERFLOW),
@@ -74,6 +109,23 @@ void enableFPE() {
   sigemptyset(&act.sa_mask);
   act.sa_flags = SA_SIGINFO;
   sigaction(SIGFPE, &act, nullptr);
+#endif
+}
+
+void disableFPE() {
+#ifdef _WIN32
+  // Mask all floating-point exceptions (restore default behavior)
+  unsigned int control;
+  _controlfp_s(&control, _MCW_EM, _MCW_EM);
+#elif defined(__unix__)
+  fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+#elif defined(__APPLE__)
+  fenv_t env;
+  fegetenv(&env);
+#if defined(__aarch64__)
+  env.__fpsr |= (FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+#endif
+  fesetenv(&env);
 #endif
 }
 
