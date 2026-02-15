@@ -99,12 +99,12 @@ public:
   getPositionsFree() const; // return coordinates of free atoms in array pos
   VectorXd getPositionsFreeV() const;
   void
-  setPositions(const AtomMatrix &pos); // update Matter with the new positions of
-                                       // the free atoms given in array pos
+  setPositions(const AtomMatrix &pos); // update Matter with the new positions
+                                       // of the free atoms given in array pos
   void setPositionsV(const VectorXd &pos);
   void setPositionsFree(
-      const AtomMatrix &pos); // update Matter with the new positions of the free
-                              // atoms given in array pos
+      const AtomMatrix &pos); // update Matter with the new positions of the
+                              // free atoms given in array pos
   void setPositionsFreeV(const VectorXd &pos);
 
   AtomMatrix getVelocities() const;
@@ -122,13 +122,13 @@ public:
 
   double getMass(long int atom) const; // return the mass of the atom specified
   void setMass(long int atom, double mass); // set the mass of an atom
-  void setMasses(const VectorXd &massesIn);  // set the mass of an atom
+  void setMasses(const VectorXd &massesIn); // set the mass of an atom
   long getAtomicNr(
       long int atom) const; // return the atomic number of the atom specified
   void setAtomicNr(long int atom,
-                   long atomicNr);          // set the atomic number of an atom
-  VectorXi getAtomicNrs() const;            // Get the vector of atomic numbers
-  VectorXi getAtomicNrsFree() const;        // Get the vector of atomic numbers
+                   long atomicNr);           // set the atomic number of an atom
+  VectorXi getAtomicNrs() const;             // Get the vector of atomic numbers
+  VectorXi getAtomicNrsFree() const;         // Get the vector of atomic numbers
   void setAtomicNrs(const VectorXi &atmnrs); // set the vector of atomic numbers
 
   int getFixed(long int atom)
