@@ -20,7 +20,7 @@ class LowestEigenmode {
 protected:
   // make const
   std::shared_ptr<Potential> pot;
-  std::shared_ptr<Parameters> params;
+  const Parameters &params;
 
 public:
   // stats information
@@ -35,7 +35,7 @@ public:
   static const char MINMODE_LANCZOS[];
 
   LowestEigenmode(std::shared_ptr<Potential> potPassed,
-                  std::shared_ptr<Parameters> parameters)
+                  const Parameters &parameters)
       : pot{potPassed},
         params{parameters} {}
   virtual ~LowestEigenmode() {}

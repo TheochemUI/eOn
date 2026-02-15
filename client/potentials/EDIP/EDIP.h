@@ -32,7 +32,7 @@ class EDIP : public Potential {
 public:
   // Functions
   // constructor
-  EDIP(std::shared_ptr<Parameters> params)
+  EDIP(const Parameters &params)
       : Potential(PotType::EDIP, params) {};
 
   // To satisfy interface

@@ -25,11 +25,11 @@ private:
   double cuttOffU;
 
 public:
-  LJ(std::shared_ptr<Parameters> params)
+  LJ(const Parameters &params)
       : LJ(PotType::LJ, params, 1.0, 15.0, 1.0) {}
 
-  LJ(PotType ptype, std::shared_ptr<Parameters> params, double u0,
-     double cuttOffR, double psi)
+  LJ(PotType ptype, const Parameters &params, double u0, double cuttOffR,
+     double psi)
       : Potential(ptype, params),
         u0{u0},
         cuttOffR{cuttOffR},

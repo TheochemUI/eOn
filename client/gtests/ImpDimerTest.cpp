@@ -42,34 +42,27 @@ TEST_F(ImpDimerTest, TestMatter) {
   string reactantFilename("pos.con");
   string displacementFilename("displacement.con");
   string modeFilename("direction.dat");
-  string optimizer("cg");
-  SaddleSearchMethod *saddleSearch;
   AtomMatrix mode;
-  LowestEigenmode *minModeMethod;
-  Parameters *parameters = new Parameters;
-  // parameters->load("matter.ini");
-  parameters->potential_options.potential = PotType::LJ;
-  parameters->optimizer_options.method = optimizer;
-  parameters->optimizer_options.converged_force = optConvergedForce;
-  parameters->dimer_options.converged_angle = 0.001;
-  parameters->saddle_search_options.minmode_method =
+  Parameters parameters;
+  parameters.potential_options.potential = PotType::LJ;
+  parameters.optimizer_options.method = OptType::CG;
+  parameters.optimizer_options.converged_force = optConvergedForce;
+  parameters.dimer_options.converged_angle = 0.001;
+  parameters.saddle_search_options.minmode_method =
       LowestEigenmode::MINMODE_DIMER;
-  Matter *initial = new Matter(parameters);
-  Matter *displacement = new Matter(parameters);
-  Matter *saddle = new Matter(parameters);
+  auto pot = helper_functions::makePotential(parameters);
+  auto initial = std::make_shared<Matter>(pot, parameters);
+  auto displacement = std::make_shared<Matter>(pot, parameters);
+  auto saddle = std::make_shared<Matter>(pot, parameters);
   initial->con2matter(reactantFilename);
   saddle->con2matter(displacementFilename);
   mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
-  saddleSearch = new MinModeSaddleSearch(
-      saddle, mode, initial->getPotentialEnergy(), parameters);
-  minModeMethod = new ImprovedDimer(saddle, parameters, saddle->getPotential());
+  auto saddleSearch = std::make_unique<MinModeSaddleSearch>(
+      saddle, mode, initial->getPotentialEnergy(), parameters, pot);
+  auto minModeMethod = std::make_unique<ImprovedDimer>(saddle, parameters,
+                                                       saddle->getPotential());
   minModeMethod->compute(saddle, mode);
   cout << minModeMethod->getEigenvalue();
-  delete minModeMethod;
-  delete initial;
-  delete displacement;
-  delete saddle;
-  delete parameters;
 }
 
 } /* namespace tests */

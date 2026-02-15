@@ -24,13 +24,13 @@ int BasinHoppingSaddleSearch::run(void) {
   product = std::make_shared<Matter>(pot, params);
   *product = *saddle;
   // accept or reject based on boltzman
-  // exp(-de/(kB*params->main_options.temperature))
+  // exp(-de/(kB*params.main_options.temperature))
   double eproduct, ereactant, de;
   eproduct = product->getPotentialEnergy();
   ereactant = reactant->getPotentialEnergy();
   de = eproduct - ereactant;
-  double kB = params->constants.kB;
-  double Temperature = params->main_options.temperature;
+  double kB = params.constants.kB;
+  double Temperature = params.main_options.temperature;
   double arg = -de / (kB * Temperature);
   double p = exp(arg);
   double r = helper_functions::random();

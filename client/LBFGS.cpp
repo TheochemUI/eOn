@@ -14,7 +14,7 @@
 #include "LBFGS.h"
 
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
-  double H0 = m_params->optimizer_options.lbfgs.inverse_curvature;
+  double H0 = m_params.optimizer_options.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
 
   if (m_iteration > 0) {
@@ -29,18 +29,18 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
       return helper_functions::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
 
-    if (m_params->optimizer_options.lbfgs.auto_scale) {
+    if (m_params.optimizer_options.lbfgs.auto_scale) {
       H0 = 1. / C;
       SPDLOG_LOGGER_DEBUG(m_log, "[LBFGS] Curvature: {:.4e} eV/A^2", C);
     }
   }
 
-  if (m_iteration == 0 && m_params->optimizer_options.lbfgs.auto_scale) {
-    m_objf->setPositions(r + m_params->main_options.finiteDifference *
+  if (m_iteration == 0 && m_params.optimizer_options.lbfgs.auto_scale) {
+    m_objf->setPositions(r + m_params.main_options.finiteDifference *
                                  a_f.normalized());
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
     double C =
-        dg.dot(a_f.normalized()) / m_params->main_options.finiteDifference;
+        dg.dot(a_f.normalized()) / m_params.main_options.finiteDifference;
     H0 = 1.0 / C;
     m_objf->setPositions(r);
     if (H0 < 0) {
@@ -57,7 +57,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   }
 
   int loopmax = m_s.size();
-  double a[loopmax];
+  std::vector<double> a(loopmax);
 
   Eigen::VectorXd q = -a_f;
 
@@ -77,7 +77,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
 
   double distance = helper_functions::maxAtomMotionV(d);
   if (distance >= a_maxMove &&
-      m_params->optimizer_options.lbfgs.distance_reset) {
+      m_params.optimizer_options.lbfgs.distance_reset) {
     SPDLOG_LOGGER_DEBUG(m_log,
                         "[LBFGS] reset memory, proposed step too large: {:.4f}",
                         distance);
@@ -90,8 +90,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     vd = 1.0;
   if (vd < -1.0)
     vd = -1.0;
-  double angle = acos(vd) * (180.0 / M_PI);
-  if (angle > 90.0 && m_params->optimizer_options.lbfgs.angle_reset) {
+  double angle = acos(vd) * (180.0 / helper_functions::pi);
+  if (angle > 90.0 && m_params.optimizer_options.lbfgs.angle_reset) {
     SPDLOG_LOGGER_DEBUG(m_log,
                         "[LBFGS] reset memory, angle between LBFGS angle and "
                         "force too large: {:.4f}",

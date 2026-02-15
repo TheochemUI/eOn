@@ -11,74 +11,73 @@
 */
 #include "GPRHelpers.h"
 
+#include "subprojects/gpr_optim/data_types/EigenHelpers.h"
+
 #include <map>
 #include <set>
 #include <unordered_map>
 
 gpr::InputParameters
-helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
+helper_functions::eon_parameters_to_gpr(const Parameters &parameters) {
   gpr::InputParameters p;
   // Problem parameters
-  p.actdist_fro.value = parameters->gpr_dimer_options.active_radius;
-  p.dimer_sep.value = parameters->gpr_dimer_options.dimer_sep;
-  p.method_rot.value = parameters->gpr_dimer_options.rot_opt_method;
-  p.method_trans.value = parameters->gpr_dimer_options.trans_opt_method;
-  p.param_trans.value[0] = parameters->gpr_dimer_options.conv_step;
-  p.param_trans.value[1] = parameters->gpr_dimer_options.max_step;
+  p.actdist_fro.value = parameters.gpr_dimer_options.active_radius;
+  p.dimer_sep.value = parameters.gpr_dimer_options.dimer_sep;
+  p.method_rot.value = parameters.gpr_dimer_options.rot_opt_method;
+  p.method_trans.value = parameters.gpr_dimer_options.trans_opt_method;
+  p.param_trans.value[0] = parameters.gpr_dimer_options.conv_step;
+  p.param_trans.value[1] = parameters.gpr_dimer_options.max_step;
   // Saddle point convergence parameter
-  p.T_dimer.value = parameters->saddle_search_options.converged_force;
-  p.T_anglerot_init.value = parameters->gpr_dimer_options.converged_angle;
+  p.T_dimer.value = parameters.saddle_search_options.converged_force;
+  p.T_anglerot_init.value = parameters.gpr_dimer_options.converged_angle;
   // ---
-  p.initrot_nogp.value = parameters->gpr_dimer_options.init_rot_gp;
-  p.num_iter_initrot.value = parameters->gpr_dimer_options.init_rotations_max;
+  p.initrot_nogp.value = parameters.gpr_dimer_options.init_rot_gp;
+  p.num_iter_initrot.value = parameters.gpr_dimer_options.init_rotations_max;
   // unused except in the capnp for now
-  // p.inittrans_nogp.value = parameters->gpr_dimer_options.init_trans_gp;
-  p.T_anglerot_gp.value = parameters->gpr_dimer_options.relax_conv_angle;
-  p.num_iter_rot_gp.value = parameters->gpr_dimer_options.relax_rotations_max;
-  p.divisor_T_dimer_gp.value = parameters->gpr_dimer_options.divisor_t_dimer_gp;
-  p.disp_max.value = parameters->gpr_dimer_options.midpoint_max_disp;
-  p.ratio_at_limit.value = parameters->gpr_dimer_options.ratio_at_limit;
-  p.num_bigiter.value = parameters->gpr_dimer_options.max_outer_iterations;
-  p.num_iter.value = parameters->gpr_dimer_options.max_inner_iterations;
-  p.islarge_num_iter.value = parameters->gpr_dimer_options.many_iterations;
+  // p.inittrans_nogp.value = parameters.gpr_dimer_options.init_trans_gp;
+  p.T_anglerot_gp.value = parameters.gpr_dimer_options.relax_conv_angle;
+  p.num_iter_rot_gp.value = parameters.gpr_dimer_options.relax_rotations_max;
+  p.divisor_T_dimer_gp.value = parameters.gpr_dimer_options.divisor_t_dimer_gp;
+  p.disp_max.value = parameters.gpr_dimer_options.midpoint_max_disp;
+  p.ratio_at_limit.value = parameters.gpr_dimer_options.ratio_at_limit;
+  p.num_bigiter.value = parameters.gpr_dimer_options.max_outer_iterations;
+  p.num_iter.value = parameters.gpr_dimer_options.max_inner_iterations;
+  p.islarge_num_iter.value = parameters.gpr_dimer_options.many_iterations;
   // GPR Parameters
-  p.gp_sigma2.value = parameters->gpr_dimer_options.gpr_params.sigma2;
-  p.jitter_sigma2.value =
-      parameters->gpr_dimer_options.gpr_params.jitter_sigma2;
-  p.sigma2.value = parameters->gpr_dimer_options.gpr_params.noise_sigma2;
-  p.prior_mu.value = parameters->gpr_dimer_options.gpr_params.prior_mu;
-  p.prior_nu.value = parameters->gpr_dimer_options.gpr_params.prior_nu;
-  p.prior_s2.value = parameters->gpr_dimer_options.gpr_params.prior_sigma2;
+  p.gp_sigma2.value = parameters.gpr_dimer_options.gpr_params.sigma2;
+  p.jitter_sigma2.value = parameters.gpr_dimer_options.gpr_params.jitter_sigma2;
+  p.sigma2.value = parameters.gpr_dimer_options.gpr_params.noise_sigma2;
+  p.prior_mu.value = parameters.gpr_dimer_options.gpr_params.prior_mu;
+  p.prior_nu.value = parameters.gpr_dimer_options.gpr_params.prior_nu;
+  p.prior_s2.value = parameters.gpr_dimer_options.gpr_params.prior_sigma2;
   p.check_derivative.value =
-      parameters->gpr_dimer_options.opt_params.check_derivatives;
-  p.max_iter.value = parameters->gpr_dimer_options.opt_params.max_iterations;
-  p.tolerance_func.value = parameters->gpr_dimer_options.opt_params.tol_func;
-  p.tolerance_sol.value = parameters->gpr_dimer_options.opt_params.tol_sol;
-  p.lambda_limit.value = parameters->gpr_dimer_options.opt_params.lambda_limit;
-  p.lambda.value = parameters->gpr_dimer_options.opt_params.lambda_init;
+      parameters.gpr_dimer_options.opt_params.check_derivatives;
+  p.max_iter.value = parameters.gpr_dimer_options.opt_params.max_iterations;
+  p.tolerance_func.value = parameters.gpr_dimer_options.opt_params.tol_func;
+  p.tolerance_sol.value = parameters.gpr_dimer_options.opt_params.tol_sol;
+  p.lambda_limit.value = parameters.gpr_dimer_options.opt_params.lambda_limit;
+  p.lambda.value = parameters.gpr_dimer_options.opt_params.lambda_init;
   // Prune
-  p.use_prune.value = parameters->gpr_dimer_options.prune_params.use_prune;
-  p.start_prune_at.value = parameters->gpr_dimer_options.prune_params.begin;
-  p.nprune_vals.value = parameters->gpr_dimer_options.prune_params.n_vals;
-  p.prune_threshold.value =
-      parameters->gpr_dimer_options.prune_params.threshold;
+  p.use_prune.value = parameters.gpr_dimer_options.prune_params.use_prune;
+  p.start_prune_at.value = parameters.gpr_dimer_options.prune_params.begin;
+  p.nprune_vals.value = parameters.gpr_dimer_options.prune_params.n_vals;
+  p.prune_threshold.value = parameters.gpr_dimer_options.prune_params.threshold;
   // Debugging
-  p.report_level.value =
-      parameters->gpr_dimer_options.debug_params.report_level;
-  p.debug_level.value = parameters->gpr_dimer_options.debug_params.debug_level;
-  p.debug_output_dir.value = parameters->gpr_dimer_options.debug_params.out_dir;
+  p.report_level.value = parameters.gpr_dimer_options.debug_params.report_level;
+  p.debug_level.value = parameters.gpr_dimer_options.debug_params.debug_level;
+  p.debug_output_dir.value = parameters.gpr_dimer_options.debug_params.out_dir;
   p.debug_output_file_R.value =
-      parameters->gpr_dimer_options.debug_params.pos_file;
+      parameters.gpr_dimer_options.debug_params.pos_file;
   p.debug_output_file_E.value =
-      parameters->gpr_dimer_options.debug_params.energy_file;
+      parameters.gpr_dimer_options.debug_params.energy_file;
   p.debug_output_file_G.value =
-      parameters->gpr_dimer_options.debug_params.grad_file;
+      parameters.gpr_dimer_options.debug_params.grad_file;
   p.debug_output_file_extension.value =
-      parameters->gpr_dimer_options.debug_params.out_ext;
+      parameters.gpr_dimer_options.debug_params.out_ext;
   p.debug_offset_from_mid_point.value =
-      parameters->gpr_dimer_options.debug_params.offset_mid_point;
-  p.debug_dy.value = parameters->gpr_dimer_options.debug_params.dy;
-  p.debug_dz.value = parameters->gpr_dimer_options.debug_params.dz;
+      parameters.gpr_dimer_options.debug_params.offset_mid_point;
+  p.debug_dy.value = parameters.gpr_dimer_options.debug_params.dy;
+  p.debug_dz.value = parameters.gpr_dimer_options.debug_params.dz;
   return p;
 }
 
@@ -136,12 +135,10 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   int fake_atype;          //!> False "atomtype" for GPR Dimer
 
   atoms_config.clear();
-  atoms_config.positions.resize(matter->getPositions().rows(),
-                                matter->getPositions().cols());
-  atoms_config.is_frozen.resize(matter->numberOfAtoms());
-  atoms_config.id.resize(matter->numberOfAtoms());
-  atoms_config.positions.assignFromEigenMatrix(matter->getPositions());
-  atoms_config.atomicNrs.resize(matter->numberOfAtoms());
+  atoms_config.positions = matter->getPositions();
+  atoms_config.is_frozen.resize(1, matter->numberOfAtoms());
+  atoms_config.id.resize(1, matter->numberOfAtoms());
+  atoms_config.atomicNrs.resize(1, matter->numberOfAtoms());
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
     atomnrs.push_back(matter->getAtomicNr(i));
     atoms_config.atomicNrs[i] = matter->getAtomicNr(i);
@@ -159,7 +156,7 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   }
 
   number_of_mov_atoms = atoms_config.countMovingAtoms();
-  number_of_fro_atoms = atoms_config.is_frozen.getSize() - number_of_mov_atoms;
+  number_of_fro_atoms = atoms_config.is_frozen.size() - number_of_mov_atoms;
 
   if (number_of_fro_atoms > 0 && number_of_mov_atoms > 0) {
     // Resize structures for moving and frozen atoms
@@ -191,19 +188,20 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
     //!> Special case when there's only one atom type, we can now just use the
     //!`set` function of the `Field`. Essentially now we only have one atom type
     else if (atype_to_gprd_atype.size() == 1) {
-      atoms_config.atoms_mov.type.set(atype_to_gprd_atype.at(atomnrs[0]));
-      atoms_config.atoms_froz_inactive.type.set(
+      atoms_config.atoms_mov.type.setConstant(
+          atype_to_gprd_atype.at(atomnrs[0]));
+      atoms_config.atoms_froz_inactive.type.setConstant(
           atype_to_gprd_atype.at(atomnrs[0]));
     }
     // Assign moving and frozen atoms and list all frozen atoms as inactive
     gpr::Index_t counter_f = 0, counter_m = 0;
-    for (gpr::Index_t n = 0; n < atoms_config.is_frozen.getSize(); ++n) {
+    for (gpr::Index_t n = 0; n < atoms_config.is_frozen.size(); ++n) {
       if (atoms_config.is_frozen[n] == MOVING_ATOM)
-        atoms_config.atoms_mov.positions.set(0, counter_m++,
-                                             atoms_config.positions.at(n));
+        gpr::coord::set(atoms_config.atoms_mov.positions, 0, counter_m++,
+                        gpr::coord::at(atoms_config.positions, n));
       else
-        atoms_config.atoms_froz_inactive.positions.set(
-            0, counter_f++, atoms_config.positions.at(n));
+        gpr::coord::set(atoms_config.atoms_froz_inactive.positions, 0,
+                        counter_f++, gpr::coord::at(atoms_config.positions, n));
     }
     //!> End case where we have both nonzero moving and nonzero frozen atoms
   } else {
@@ -230,14 +228,15 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
     //!> Special case when there's only one atom type, we can now just use the
     //!`set` function of the `Field`. Essentially now we only have one atom type
     else if (atype_to_gprd_atype.size() == 1) {
-      atoms_config.atoms_mov.type.set(atype_to_gprd_atype.at(atomnrs[0]));
+      atoms_config.atoms_mov.type.setConstant(
+          atype_to_gprd_atype.at(atomnrs[0]));
     }
   }
   // Pairtype indices for pairs of atomtypes (n_at x n_at)
   // Active pairtypes are indexed as 0,1,...,n_pt-1. Inactive pairtypes are
   // given index EMPTY.
   atoms_config.pairtype.resize(n_at, n_at);
-  atoms_config.pairtype.set(EMPTY);
+  atoms_config.pairtype.setConstant(EMPTY);
 
   // Set pairtype indices for moving+moving atom pairs (and update number of
   // active pairtypes)
@@ -254,11 +253,9 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
 gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
-  o.R.resize(matter->getPositions().rows(), matter->getPositions().cols());
-  o.G.resize(matter->getForces().rows(), matter->getForces().cols());
-  o.E.resize(1);
-  o.E.set(matter->getPotentialEnergy());
-  o.R.assignFromEigenMatrix(matter->getPositions());
-  o.G.assignFromEigenMatrix(-1 * matter->getForces());
+  o.R = matter->getPositions();
+  o.G = -1 * matter->getForces();
+  o.E.resize(1, 1);
+  o.E(0, 0) = matter->getPotentialEnergy();
   return o;
 }

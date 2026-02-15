@@ -20,6 +20,7 @@ namespace eonc {
 // This causes the program to crash on divison by zero,
 // invalid operations, and overflows.
 void enableFPE(void);
+void disableFPE(void);
 
 class FPEHandler {
 public:

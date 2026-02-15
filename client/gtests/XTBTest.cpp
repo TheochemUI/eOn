@@ -11,7 +11,7 @@ namespace tests {
 class PotTest {
 public:
   PotTest()
-      : params{std::make_shared<Parameters>()},
+      : params{},
         m1{nullptr},
         pot_default{nullptr},
         threshold{1e-2} {}
@@ -28,7 +28,7 @@ public:
   void TearDown() {}
 
 protected:
-  std::shared_ptr<Parameters> params;
+  Parameters params;
   std::shared_ptr<Matter> m1;
   std::shared_ptr<Potential> pot_default;
   double threshold;
@@ -59,15 +59,15 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  params->potential_options.potential = PotType::XTB;
-  params->xtb_options.paramset = "GFN2xTB";
-  params->xtb_options.acc = 1.0;
-  params->xtb_options.elec_temperature = 300.0;
-  params->xtb_options.maxiter = 250;
-  params->xtb_options.charge = 0.0;
-  params->xtb_options.uhf = 0;
-  auto pot = helper_functions::makePotential(
-      params->potential_options.potential, params);
+  params.potential_options.potential = PotType::XTB;
+  params.xtb_options.paramset = "GFN2xTB";
+  params.xtb_options.acc = 1.0;
+  params.xtb_options.elec_temperature = 300.0;
+  params.xtb_options.maxiter = 250;
+  params.xtb_options.charge = 0.0;
+  params.xtb_options.uhf = 0;
+  auto pot = helper_functions::makePotential(params.potential_options.potential,
+                                             params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());

@@ -21,14 +21,14 @@
 class Potential {
 protected:
   PotType ptype;
-  std::shared_ptr<Parameters> m_params;
+  const Parameters &m_params;
   std::shared_ptr<spdlog::logger> m_log;
 
 public:
   size_t forceCallCounter;
 
   // Main Constructor
-  Potential(PotType a_ptype, std::shared_ptr<Parameters> a_params)
+  Potential(PotType a_ptype, const Parameters &a_params)
       : ptype{a_ptype},
         m_params{a_params},
         forceCallCounter{0} {
@@ -36,8 +36,8 @@ public:
   }
 
   // Delegating Constructor
-  Potential(std::shared_ptr<Parameters> a_params)
-      : Potential(a_params->potential_options.potential, a_params) {}
+  Potential(const Parameters &a_params)
+      : Potential(a_params.potential_options.potential, a_params) {}
 
   virtual ~Potential() {
     if (m_log) {
@@ -81,7 +81,7 @@ public:
 };
 
 namespace helper_functions {
-std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params);
+std::shared_ptr<Potential> makePotential(const Parameters &params);
 std::shared_ptr<Potential> makePotential(PotType ptype,
-                                         std::shared_ptr<Parameters> params);
+                                         const Parameters &params);
 } // namespace helper_functions

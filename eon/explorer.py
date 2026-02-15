@@ -340,7 +340,9 @@ class ClientMinModeExplorer(MinModeExplorer):
         logger.info("Processed %i results", num_registered)
         if tot_searches != num_registered:
             logger.info("Discarded approximately %i results" % (tot_searches - num_registered))
-        logger.debug("Registered %.1f results per second", (num_registered/(t2-t1)))
+        elapsed = t2 - t1
+        if elapsed > 0:
+            logger.debug("Registered %.1f results per second", num_registered / elapsed)
 
         self.job_table.write()
         return num_registered
@@ -465,7 +467,9 @@ class ServerMinModeExplorer(MinModeExplorer):
         logger.info("Processed %i results", num_registered)
         if tot_searches != num_registered:
             logger.info("Discarded approximately %i results" % (tot_searches - num_registered))
-        logger.debug("Registered %.1f results per second", (num_registered/(t2-t1)))
+        elapsed = t2 - t1
+        if elapsed > 0:
+            logger.debug("Registered %.1f results per second", num_registered / elapsed)
 
         self.save()
         return num_registered

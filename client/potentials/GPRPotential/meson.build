@@ -1,4 +1,4 @@
-gprpot = shared_library('gprpot',
+gprpot = library('gprpot',
            'GPRPotential.cpp',
            dependencies : _deps,
            cpp_args : _args,

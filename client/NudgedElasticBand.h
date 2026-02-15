@@ -34,10 +34,10 @@ public:
   };
   NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                     std::shared_ptr<Matter> finalPassed,
-                    std::shared_ptr<Parameters> parametersPassed,
+                    const Parameters &parametersPassed,
                     std::shared_ptr<Potential> potPassed);
   NudgedElasticBand(std::vector<Matter> initPath,
-                    std::shared_ptr<Parameters> parametersPassed,
+                    const Parameters &parametersPassed,
                     std::shared_ptr<Potential> potPassed);
   ~NudgedElasticBand() = default;
 
@@ -70,7 +70,7 @@ private:
   int runMMFRefinement(double &alignment);
   double current_mmf_threshold{-1.0};
   double baseline_force{-1.0};
-  std::shared_ptr<Parameters> params;
+  Parameters params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;
   std::shared_ptr<spdlog::logger> log;
@@ -81,7 +81,7 @@ private:
 class NEBObjectiveFunction : public ObjectiveFunction {
 public:
   NEBObjectiveFunction(NudgedElasticBand *nebPassed,
-                       std::shared_ptr<Parameters> parametersPassed)
+                       const Parameters &parametersPassed)
       : ObjectiveFunction(nullptr, parametersPassed),
         neb{nebPassed} {}
   // This is the odd one out, doesn't take a Matter so we null it

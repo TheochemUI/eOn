@@ -22,7 +22,7 @@
 class IDPPObjectiveFunction : public ObjectiveFunction {
 public:
   IDPPObjectiveFunction(std::shared_ptr<Matter> matterPassed,
-                        std::shared_ptr<Parameters> paramsPassed,
+                        const Parameters &paramsPassed,
                         const Eigen::MatrixXd &targetDistances)
       : ObjectiveFunction(matterPassed, paramsPassed),
         d_target(targetDistances) {
@@ -53,8 +53,7 @@ public:
   int degreesOfFreedom() override { return 3 * matter->numberOfAtoms(); }
 
   bool isConverged() override {
-    return getConvergence() <
-           params->neb_options.initialization.force_tolerance;
+    return getConvergence() < params.neb_options.initialization.force_tolerance;
   }
 
   double getConvergence() override {
@@ -75,7 +74,7 @@ private:
 class CollectiveIDPPObjectiveFunction : public ObjectiveFunction {
 public:
   CollectiveIDPPObjectiveFunction(std::vector<Matter> &pathRef,
-                                  std::shared_ptr<Parameters> paramsPassed)
+                                  const Parameters &paramsPassed)
       : ObjectiveFunction(
             nullptr, paramsPassed), // We manage a vector, not single Matter
         path(pathRef) {
@@ -119,8 +118,7 @@ public:
 
   // Check convergence of the IDPP-NEB
   bool isConverged() override {
-    return getConvergence() <
-           params->neb_options.initialization.force_tolerance;
+    return getConvergence() < params.neb_options.initialization.force_tolerance;
   }
 
   double getConvergence() override { return lastMaxForce; }
@@ -150,8 +148,7 @@ public:
 
   ZBLRepulsiveIDPPObjective(std::shared_ptr<ObjectiveFunction> idpp,
                             std::shared_ptr<Potential> zbl,
-                            std::vector<Matter> &p,
-                            std::shared_ptr<Parameters> params,
+                            std::vector<Matter> &p, const Parameters &params,
                             double weight = 1.0)
       : ObjectiveFunction(nullptr, params),
         idpp_obj(idpp),

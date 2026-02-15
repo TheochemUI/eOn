@@ -19,7 +19,7 @@
 class Dimer : public LowestEigenmode {
 
 public:
-  Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
+  Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
         std::shared_ptr<Potential> pot);
   ~Dimer() = default;
 

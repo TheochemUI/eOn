@@ -47,7 +47,10 @@ int symbol2atomicNumber(char const *symbol) {
 char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
-GPRPotential::GPRPotential(Parameters *p) { gpr_model = nullptr; }
+GPRPotential::GPRPotential(const Parameters &p)
+    : Potential(PotType::GPR, p) {
+  gpr_model = nullptr;
+}
 
 void GPRPotential::registerGPRObject(
     gpr::GaussianProcessRegression *_gpr_model) {

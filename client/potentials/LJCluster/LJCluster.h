@@ -30,7 +30,7 @@ private:
 public:
   // Functions
   // constructor
-  LJCluster(std::shared_ptr<Parameters> params)
+  LJCluster(const Parameters &params)
       : Potential(params),
         u0{1.0},
         cuttOffR{15.0},

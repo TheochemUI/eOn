@@ -29,7 +29,7 @@ private:
                          // forces and energy
 
 public:
-  ASE(shared_ptr<Parameters> a_params);
+  ASE(const Parameters &a_params);
   virtual ~ASE() { SPDLOG_INFO("[ASE] called potential {} times", counter); }
 
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,

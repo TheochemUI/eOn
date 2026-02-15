@@ -16,7 +16,7 @@
 class VASP : public Potential {
 
 public:
-  VASP(shared_ptr<Parameters> p)
+  VASP(const Parameters &p)
       : Potential(p) {
     vaspRunCount++;
     // deleting leftovers from previous run

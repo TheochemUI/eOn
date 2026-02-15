@@ -8,58 +8,32 @@
 #include <string>
 
 using namespace std::string_literals;
-MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
+
+static torch::optional<std::string> normalize_variant(const std::string &s) {
+  if (s.empty() || s == "off")
+    return torch::nullopt;
+  return s;
+}
+
+MetatomicPotential::MetatomicPotential(const Parameters &params)
     : Potential(PotType::METATOMIC, params),
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {
 
-  m_params = params;
   m_log->info("[MetatomicPotential] Initializing...");
-
-  // Resolve variants
-  this->energy_key_ = "energy";
-  this->energy_uncertainty_key_ = "energy_uncertainty";
-
-  // Apply global variant if present
-  if (!m_params->metatomic_options.variant.base.empty()) {
-    auto variant = m_params->metatomic_options.variant.base;
-    this->energy_key_ += "/" + variant;
-    this->energy_uncertainty_key_ += "/" + variant;
-  }
-
-  // Apply variant/energy override
-  if (!m_params->metatomic_options.variant.energy.empty()) {
-    if (m_params->metatomic_options.variant.energy == "off") {
-      this->energy_key_ = "energy";
-    } else {
-      this->energy_key_ =
-          "energy/" + m_params->metatomic_options.variant.energy;
-    }
-  }
-
-  // Apply variant/energy_uncertainty override
-  if (!m_params->metatomic_options.variant.energy_uncertainty.empty()) {
-    if (m_params->metatomic_options.variant.energy_uncertainty == "off") {
-      this->energy_uncertainty_key_ = "energy_uncertainty";
-    } else {
-      this->energy_uncertainty_key_ =
-          "energy_uncertainty/" +
-          m_params->metatomic_options.variant.energy_uncertainty;
-    }
-  }
 
   // 1. Load the model from the path specified in parameters
   torch::optional<std::string> extensions_directory = torch::nullopt;
-  if (!m_params->metatomic_options.extensions_directory.empty()) {
-    extensions_directory = m_params->metatomic_options.extensions_directory;
+  if (!m_params.metatomic_options.extensions_directory.empty()) {
+    extensions_directory = m_params.metatomic_options.extensions_directory;
   }
 
   try {
     m_log->info("[MetatomicPotential] Loading model from '{}'",
-                m_params->metatomic_options.model_path);
+                m_params.metatomic_options.model_path);
     this->model_ = metatomic_torch::load_atomistic_model(
-        m_params->metatomic_options.model_path, extensions_directory);
+        m_params.metatomic_options.model_path, extensions_directory);
   } catch (const std::exception &e) {
     m_log->error("[MetatomicPotential] Failed to load model: {}", e.what());
     throw;
@@ -81,8 +55,8 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   // TODO(rg):: Eventually switch to upstream selection
   // https://github.com/metatensor/metatomic/issues/21
   torch::optional<std::string> desired = torch::nullopt;
-  if (!m_params->metatomic_options.device.empty()) {
-    desired = m_params->metatomic_options.device;
+  if (!m_params.metatomic_options.device.empty()) {
+    desired = m_params.metatomic_options.device;
   }
   device_type_ = metatomic_torch::pick_device(
       this->capabilities_->supported_devices, desired);
@@ -104,61 +78,47 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
   m_log->info("[MetatomicPotential] Using dtype: {}",
               this->capabilities_->dtype().c_str());
 
-  // 5. Set up evaluation options to request total energy
+  // 5. Resolve variant keys via pick_output
+  auto outputs = this->capabilities_->outputs();
+
+  auto v_base = normalize_variant(m_params.metatomic_options.variant.base);
+  auto v_energy =
+      m_params.metatomic_options.variant.energy.empty()
+          ? v_base
+          : normalize_variant(m_params.metatomic_options.variant.energy);
+  auto v_energy_uq =
+      m_params.metatomic_options.variant.energy_uncertainty.empty()
+          ? v_energy
+          : normalize_variant(
+                m_params.metatomic_options.variant.energy_uncertainty);
+
+  this->energy_key_ = metatomic_torch::pick_output("energy", outputs, v_energy);
+
+  // 6. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
-  evaluations_options_->set_length_unit(
-      m_params->metatomic_options.length_unit);
-
-  auto outputs = this->capabilities_->outputs();
-  if (!outputs.contains(this->energy_key_)) {
-    throw std::runtime_error("Metatomic model must provide an '" +
-                             this->energy_key_ +
-                             "' output to be used as a potential.");
-  }
-  auto energy_output_info = outputs.at(this->energy_key_);
+  evaluations_options_->set_length_unit(m_params.metatomic_options.length_unit);
 
   auto requested_output =
       torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
-  requested_output->per_atom = false; // We want a single total energy value
-  requested_output->explicit_gradients = {}; // Use autograd for forces
-
+  requested_output->per_atom = false;
+  requested_output->explicit_gradients = {};
   evaluations_options_->outputs.insert(this->energy_key_, requested_output);
 
-  // 5b. Optionally request energy uncertainty (per-atom) if the model offers it
-  // and the user didn't disable it. We read a threshold from parameters to know
-  // whether to warn (non-positive threshold disables checking).
-  // Default: if user provided a positive threshold, use it; otherwise keep it
-  // disabled (-1).
-  if (m_params->metatomic_options.uncertainty_threshold > 0) {
+  // 7. Optionally request energy uncertainty if threshold is positive
+  if (m_params.metatomic_options.uncertainty_threshold > 0) {
     this->uncertainty_threshold_ =
-        m_params->metatomic_options.uncertainty_threshold;
-  } else {
-    this->uncertainty_threshold_ = -1.0; // disabled
-  }
-
-  auto uncertainty_it = outputs.find(this->energy_uncertainty_key_);
-  if (uncertainty_it != outputs.end() && this->uncertainty_threshold_ > 0) {
-    // If the model has per-atom uncertainty output, request it for evaluation.
-    // Prefer only per-atom uncertainties for per-atom checking.
+        m_params.metatomic_options.uncertainty_threshold;
     try {
-      // The capabilities entry may provide whether the output is per-atom.
-      // We attempt to detect that; if not per-atom, we do not request it here.
-      auto uncertainty_info = uncertainty_it->value();
-      bool per_atom = false;
-      try {
-        per_atom = uncertainty_info->per_atom;
-      } catch (...) {
-        per_atom = false;
-      }
-
-      if (per_atom) {
+      this->energy_uncertainty_key_ = metatomic_torch::pick_output(
+          "energy_uncertainty", outputs, v_energy_uq);
+      auto uncertainty_info = outputs.at(this->energy_uncertainty_key_);
+      if (uncertainty_info->per_atom) {
         auto requested_uncertainty =
             torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
         requested_uncertainty->per_atom = true;
         requested_uncertainty->explicit_gradients = {};
         requested_uncertainty->set_quantity("energy");
-        // leave unit unset or let metatomic handle unit conversion if available
         evaluations_options_->outputs.insert(this->energy_uncertainty_key_,
                                              requested_uncertainty);
         m_log->info("[MetatomicPotential] Requested per-atom "
@@ -167,18 +127,18 @@ MetatomicPotential::MetatomicPotential(std::shared_ptr<Parameters> params)
                     this->uncertainty_threshold_);
       } else {
         m_log->debug("[MetatomicPotential] Model provides '{}' "
-                     "but not per-atom; skipping per-atom uncertainty checks.",
+                     "but not per-atom; skipping uncertainty checks.",
                      this->energy_uncertainty_key_);
+        this->uncertainty_threshold_ = -1.0;
       }
-    } catch (...) {
-      // If introspection fails, we skip requesting uncertainty
-      m_log->debug("[MetatomicPotential] Could not determine "
-                   "'{}' per-atom capability; skipping.",
-                   this->energy_uncertainty_key_);
+    } catch (const std::exception &e) {
+      m_log->debug("[MetatomicPotential] No uncertainty output available: {}",
+                   e.what());
+      this->uncertainty_threshold_ = -1.0;
     }
   }
 
-  this->check_consistency_ = m_params->metatomic_options.check_consistency;
+  this->check_consistency_ = m_params.metatomic_options.check_consistency;
   m_log->info("[MetatomicPotential] Initialization complete.");
 }
 
@@ -373,7 +333,7 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     metatomic_torch::NeighborListOptions request, long nAtoms,
     const double *positions, const double *box, bool periodic) {
 
-  auto cutoff = request->engine_cutoff(m_params->metatomic_options.length_unit);
+  auto cutoff = request->engine_cutoff(m_params.metatomic_options.length_unit);
 
   VesinOptions options;
   options.cutoff = cutoff;

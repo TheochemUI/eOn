@@ -22,13 +22,12 @@
 class LBFGS final : public Optimizer {
 
 public:
-  LBFGS(std::shared_ptr<ObjectiveFunction> a_objf,
-        std::shared_ptr<Parameters> a_params)
+  LBFGS(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
       : Optimizer(a_objf, OptType::LBFGS, a_params),
         m_iteration{0},
         m_memory{
             min(a_objf->degreesOfFreedom(),
-                static_cast<int>(a_params->optimizer_options.lbfgs.memory))} {
+                static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {
 
     if (spdlog::get("lbfgs")) {
       m_log = spdlog::get("lbfgs");

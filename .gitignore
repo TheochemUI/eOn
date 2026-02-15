@@ -1,6 +1,7 @@
 # Custom, other things are auto-ignored
 subprojects
 eon/version.py
+.asv/
 /docs/source/apidocs/
 # /
 /*.tmp

@@ -23,7 +23,7 @@ University of Iceland
 
 class Tip4p : public Potential, private forcefields::Tip4p {
 public:
-  Tip4p(std::shared_ptr<Parameters> params)
+  Tip4p(const Parameters &params)
       : Potential(params),
         forcefields::Tip4p(8.5, 1.0) {};
   // Functions
@@ -37,7 +37,7 @@ public:
 
 class SpceCcl : public Potential, private forcefields::SpceCcl {
 public:
-  SpceCcl(std::shared_ptr<Parameters> params)
+  SpceCcl(const Parameters &params)
       : Potential(params),
         forcefields::SpceCcl(8.5, 1.0) {}
   // Functions

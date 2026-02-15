@@ -158,7 +158,9 @@ subdir('potentials/LJ')
 subdir('potentials/LJCluster')
 subdir('potentials/Morse')
 subdir('potentials/ZBL')
-subdir('potentials/SocketNWChem')
+if not is_windows
+    subdir('potentials/SocketNWChem')
+endif
 subdir('potentials/NewPot')
 
 potentials = [
@@ -171,8 +173,10 @@ potentials = [
     morse,
     newpot,
     zbl,
-    socket_nwchem,
 ]
+if not is_windows
+    potentials += [socket_nwchem]
+endif
 
 eonclib_sources = [
     'Parameters.cpp',
@@ -586,6 +590,7 @@ if get_option('with_tests')
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
         ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
+        ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
     ]
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]

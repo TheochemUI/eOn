@@ -25,20 +25,20 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       helper_functions::getRelevantFile("product.con");
 
   // Clone and setup "true" params
-  auto true_params = std::make_shared<Parameters>(*params);
-  true_params->main_options.job = params->sub_job;
+  auto true_params = std::make_shared<Parameters>(params);
+  true_params->main_options.job = params.sub_job;
   auto true_job =
       helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
-  auto pyparams = std::make_shared<Parameters>(*params);
+  auto pyparams = std::make_shared<Parameters>(params);
   pyparams->potential_options.potential = PotType::CatLearn;
 
   // Get possible initial data source
-  auto initial = std::make_shared<Matter>(pot, true_params);
+  auto initial = std::make_shared<Matter>(pot, *true_params);
   initial->con2matter(reactantFilename);
-  auto final_state = std::make_shared<Matter>(pot, true_params);
+  auto final_state = std::make_shared<Matter>(pot, *true_params);
   final_state->con2matter(productFilename);
   auto init_path = helper_functions::neb_paths::linearPath(
-      *initial, *final_state, params->neb_options.image_count);
+      *initial, *final_state, params.neb_options.image_count);
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
   auto features = helper_functions::surrogate::get_features(init_data);
   SPDLOG_TRACE("Potential is {}",
@@ -47,10 +47,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
   // Setup a GPR Potential
   auto surpot = helpers::create::makeSurrogatePotential(
-      params->gp_surrogate_options.potential, params);
+      params.gp_surrogate_options.potential, params);
   surpot->train_optimize(features, targets);
-  auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
-                                                 surpot);
+  auto neb = std::make_unique<NudgedElasticBand>(initial, final_state,
+                                                 *pyparams, surpot);
   auto status_neb{neb->compute()};
   bool job_not_finished{true};
   size_t n_gp{0};
@@ -73,16 +73,16 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     surpot->train_optimize(features, targets);
     pyparams->nebClimbingImageMethod = false;
     pyparams->optimizer_options.converged_force =
-        params->optimizer_options.converged_force * 0.8;
+        params.optimizer_options.converged_force * 0.8;
     for (auto &&obj : neb->path) {
       obj->setPotential(surpot);
     }
     if (!(pyparams->gp_linear_path_always)) {
       SPDLOG_TRACE("Using previous path");
-      neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, surpot);
+      neb = std::make_unique<NudgedElasticBand>(neb->path, *pyparams, surpot);
     } else {
       SPDLOG_TRACE("Using linear interpolation");
-      neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
+      neb = std::make_unique<NudgedElasticBand>(initial, final_state, *pyparams,
                                                 surpot);
     }
     status_neb = neb->compute();
@@ -121,7 +121,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
 
   fileResults << static_cast<int>(status) << " termination_reason\n";
   fileResults << magic_enum::enum_name<PotType>(
-                     params->potential_options.potential)
+                     params.potential_options.potential)
               << " potential_type\n";
   fileResults << fmt::format("{:.6f} energy_reference\n",
                              neb->path[0]->getPotentialEnergy());

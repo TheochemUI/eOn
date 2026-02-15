@@ -10,9 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Prefactor.h"
+#include "HelperFunctions.h"
 #include "Hessian.h"
 
-int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
+int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                              Matter *saddle, Matter *min2, double &pref1,
                              double &pref2) {
   VectorXd min1Freqs, saddleFreqs, min2Freqs;
@@ -20,7 +21,7 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
   // determine which atoms moved in the process
   VectorXi atoms;
 
-  if (parameters->prefactor_options.filter_scheme ==
+  if (parameters.prefactor_options.filter_scheme ==
       Prefactor::FILTER_FRACTION) {
     atoms = movedAtomsPct(parameters, min1, saddle, min2);
   } else {
@@ -38,7 +39,7 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
     return -1;
   }
   // remove zero modes
-  if (parameters->structure_comparison_options.check_rotation) {
+  if (parameters.structure_comparison_options.check_rotation) {
     min1Freqs = hessian.removeZeroFreqs(min1Freqs);
   }
 
@@ -49,27 +50,27 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
     return -1;
   }
   // remove zero modes
-  if (parameters->structure_comparison_options.check_rotation) {
+  if (parameters.structure_comparison_options.check_rotation) {
     saddleFreqs = hessian.removeZeroFreqs(saddleFreqs);
   }
 
   // calculate min2 frequencies
   min2Freqs = hessian.getFreqs(min2, atoms);
   if (min2Freqs.size() == 0) {
-    if (!parameters->main_options.quiet) {
+    if (!parameters.main_options.quiet) {
       SPDLOG_ERROR("[Prefactor] Bad hessian: min2");
     }
     return -1;
   }
   // remove zero modes
-  if (parameters->structure_comparison_options.check_rotation) {
+  if (parameters.structure_comparison_options.check_rotation) {
     min2Freqs = hessian.removeZeroFreqs(min2Freqs);
   }
 
   // check Hessian sizes
   if ((min1Freqs.size() != saddleFreqs.size()) ||
       (min1Freqs.size() != saddleFreqs.size())) {
-    if (!parameters->main_options.quiet) {
+    if (!parameters.main_options.quiet) {
       SPDLOG_ERROR("[Prefactor] Bad prefactor: Hessian sizes do not match");
     }
     return -1;
@@ -118,7 +119,7 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
   pref1 = 1.0;
   pref2 = 1.0;
 
-  if (parameters->prefactor_options.rate == Prefactor::RATE_HTST) {
+  if (parameters.prefactor_options.rate == Prefactor::RATE_HTST) {
 
     // products are calculated this way in order to avoid overflow
     for (int i = 0; i < saddleFreqs.size(); i++) {
@@ -129,12 +130,12 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
         pref2 /= saddleFreqs[i];
       }
     }
-    pref1 = sqrt(pref1) / (2 * M_PI * 10.18e-15);
-    pref2 = sqrt(pref2) / (2 * M_PI * 10.18e-15);
-  } else if (parameters->prefactor_options.rate == Prefactor::RATE_QQHTST) {
-    float kB_T = parameters->main_options.temperature * 8.617332e-5; // eV
-    float h_bar = 6.582119e-16;                                      // eV*s
-    float h = 4.135667e-15;                                          // eV*s
+    pref1 = sqrt(pref1) / (2 * helper_functions::pi * 10.18e-15);
+    pref2 = sqrt(pref2) / (2 * helper_functions::pi * 10.18e-15);
+  } else if (parameters.prefactor_options.rate == Prefactor::RATE_QQHTST) {
+    float kB_T = parameters.main_options.temperature * 8.617332e-5; // eV
+    float h_bar = 6.582119e-16;                                     // eV*s
+    float h = 4.135667e-15;                                         // eV*s
     float temp = (h_bar / (2. * kB_T));
 
     for (int i = 0; i < min1Freqs.size(); i++) {
@@ -172,7 +173,7 @@ void Prefactor::logFreqs(VectorXd freqs, char *name) {
   fileLogger.reset();
 }
 
-VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
+VectorXi Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
                                Matter *saddle, Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
 
@@ -190,9 +191,9 @@ VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
   int nMoved = 0;
   for (int i = 0; i < nAtoms; i++) {
     if ((diffMin1.row(i).norm() >
-         parameters->prefactor_options.min_displacement) ||
+         parameters.prefactor_options.min_displacement) ||
         (diffMin2.row(i).norm() >
-         parameters->prefactor_options.min_displacement)) {
+         parameters.prefactor_options.min_displacement)) {
       if (!(moved.array() == i).any()) {
         moved[nMoved] = i;
         nMoved++;
@@ -200,7 +201,7 @@ VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
       for (int j = 0; j < nAtoms; j++) {
         double diffRSaddle = saddle->distance(i, j);
 
-        if (diffRSaddle < parameters->prefactor_options.within_radius &&
+        if (diffRSaddle < parameters.prefactor_options.within_radius &&
             (!saddle->getFixed(j))) {
           if (!(moved.array() == j).any()) {
             moved[nMoved] = j;
@@ -213,7 +214,7 @@ VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
   return (VectorXi)moved.block(0, 0, nMoved, 1);
 }
 
-VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
+VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
                                   Matter *saddle, Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
   long nFree = saddle->numberOfFreeAtoms();
@@ -234,7 +235,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
 
   SPDLOG_DEBUG(
       "[Prefactor] including all atoms that make up {:.3f}% of the motion",
-      parameters->prefactor_options.filter_fraction * 100);
+      parameters.prefactor_options.filter_fraction * 100);
   double sum = 0.0;
   int mini = 0;
   for (int i = 0; i < nAtoms; i++) {
@@ -250,7 +251,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
 
   int nMoved = 0;
   double d = 0.0;
-  while (d / sum <= parameters->prefactor_options.filter_fraction &&
+  while (d / sum <= parameters.prefactor_options.filter_fraction &&
          nMoved < nFree) {
     int maxi = mini;
     for (int i = 0; i < nAtoms; i++) {
@@ -273,7 +274,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters *parameters, Matter *min1,
 
       double diffRSaddle = saddle->distance(moved[i], j);
 
-      if (diffRSaddle < parameters->prefactor_options.within_radius &&
+      if (diffRSaddle < parameters.prefactor_options.within_radius &&
           (!saddle->getFixed(j))) {
 
         if (!(moved.array() == j).any()) {

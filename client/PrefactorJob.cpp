@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "PrefactorJob.h"
+#include "HelperFunctions.h"
 #include "Hessian.h"
 #include "Matter.h"
 #include "Potential.h"
@@ -35,22 +36,22 @@ std::vector<std::string> PrefactorJob::run(void) {
   saddle->con2matter("saddle.con");
   product->con2matter("product.con");
   double pref1, pref2;
-  Prefactor::getPrefactors(params.get(), reactant.get(), saddle.get(),
-                           product.get(), pref1, pref2);
+  Prefactor::getPrefactors(params, reactant.get(), saddle.get(), product.get(),
+                           pref1, pref2);
   // printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
 
   VectorXi atoms;
-  if (params->prefactor_options.all_free_atoms) {
+  if (params.prefactor_options.all_free_atoms) {
     // it is sufficient to pass the configuration
     // for which the frequencies should be determined
     string matterFilename;
-    if (params->prefactor_options.configuration ==
+    if (params.prefactor_options.configuration ==
         PrefactorJob::PREFACTOR_REACTANT) {
       matterFilename = reactantFilename;
-    } else if (params->prefactor_options.configuration ==
+    } else if (params.prefactor_options.configuration ==
                PrefactorJob::PREFACTOR_SADDLE) {
       matterFilename = saddleFilename;
-    } else if (params->prefactor_options.configuration ==
+    } else if (params.prefactor_options.configuration ==
                PrefactorJob::PREFACTOR_PRODUCT) {
       matterFilename = productFilename;
     }
@@ -66,23 +67,23 @@ std::vector<std::string> PrefactorJob::run(void) {
     product->con2matter(productFilename);
 
     // determine which atoms moved in the process
-    atoms = Prefactor::movedAtoms(params.get(), reactant.get(), saddle.get(),
+    atoms = Prefactor::movedAtoms(params, reactant.get(), saddle.get(),
                                   product.get());
   }
   assert(3 * atoms.rows() > 0);
 
   // calculate frequencies
-  if (params->prefactor_options.configuration ==
+  if (params.prefactor_options.configuration ==
       PrefactorJob::PREFACTOR_REACTANT) {
-    Hessian hessian(params.get(), reactant.get());
+    Hessian hessian(params, reactant.get());
     freqs = hessian.getFreqs(reactant.get(), atoms);
-  } else if (params->prefactor_options.configuration ==
+  } else if (params.prefactor_options.configuration ==
              PrefactorJob::PREFACTOR_SADDLE) {
-    Hessian hessian(params.get(), saddle.get());
+    Hessian hessian(params, saddle.get());
     freqs = hessian.getFreqs(saddle.get(), atoms);
-  } else if (params->prefactor_options.configuration ==
+  } else if (params.prefactor_options.configuration ==
              PrefactorJob::PREFACTOR_PRODUCT) {
-    Hessian hessian(params.get(), product.get());
+    Hessian hessian(params, product.get());
     freqs = hessian.getFreqs(product.get(), atoms);
   }
 
@@ -106,9 +107,11 @@ std::vector<std::string> PrefactorJob::run(void) {
   if (!failed) {
     for (int i = 0; i < freqs.size(); i++) {
       if (0. < freqs[i]) {
-        fprintf(fileFreq, "%f\n", sqrt(freqs[i]) / (2 * M_PI * 10.18e-15));
+        fprintf(fileFreq, "%f\n",
+                sqrt(freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
       } else {
-        fprintf(fileFreq, "%f\n", -sqrt(-freqs[i]) / (2 * M_PI * 10.18e-15));
+        fprintf(fileFreq, "%f\n",
+                -sqrt(-freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
       }
     }
   }
