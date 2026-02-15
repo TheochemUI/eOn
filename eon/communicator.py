@@ -403,13 +403,36 @@ class Local(Communicator):
             shutil.rmtree(path_name)
 
     def check_job(self, job):
-        p, jobpath = job
+        p, jobpath = job[0], job[1]
+        # Close the stdout file handle if present so the file can be read
+        if len(job) > 2 and job[2] and not job[2].closed:
+            job[2].close()
         if p.returncode == 0:
             logger.info('Job finished: %s' % jobpath)
             return True
         else:
             stdout, stderr = p.communicate()
-            errmsg = "job failed: %s: %s" % (jobpath, stderr)
+            rc = p.returncode
+            # Read stdout.dat for additional diagnostics
+            stdout_log = ""
+            stdout_path = os.path.join(jobpath, "stdout.dat")
+            try:
+                with open(stdout_path) as f:
+                    stdout_log = f.read().strip()
+            except OSError:
+                pass
+            errmsg = "job failed: %s (return code %s)" % (jobpath, rc)
+            if stderr:
+                errmsg += "\n  stderr: %s" % stderr.decode(errors='replace')
+            if stdout_log:
+                # Show last few lines of stdout for context
+                lines = stdout_log.splitlines()
+                tail = "\n  ".join(lines[-10:])
+                errmsg += "\n  stdout (last lines): %s" % tail
+            if not stderr and not stdout_log:
+                errmsg += "\n  no output captured; client may have failed to start"
+                if os.name == 'nt' and (rc < 0 or rc > 0x80000000):
+                    errmsg += " (Windows error code 0x%X may indicate a missing DLL)" % (rc & 0xFFFFFFFF)
             logger.warning(errmsg)
 
     def submit_jobs(self, data, invariants):
@@ -422,8 +445,7 @@ class Local(Communicator):
             # update jobpath to be in the scratch directory
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
             p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=PIPE)
-            #commands.getoutput("renice -n 20 -p %d" % p.pid)
-            self.joblist.append((p,jobpath))
+            self.joblist.append((p, jobpath, fstdout))
 
             while len(self.joblist) == self.ncpus:
                 for i in range(len(self.joblist)):
