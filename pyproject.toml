@@ -1,6 +1,6 @@
 [project]
 name = "eon"
-version = "2.10.0.dev0"
+version = "2.10.0"
 description = "Server component of eon project"
 authors = [
     {name = "Henkelman Group", email = "contact@henkelmanlab.com"},

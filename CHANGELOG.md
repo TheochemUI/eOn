@@ -1,3 +1,33 @@
+## [v2.10.0](https://github.com/theochemui/eongit/tree/v2.10.0) - 2026-02-15
+
+### Added
+
+- Added ASV benchmark CI workflow with asv-spyglass for PR performance comparison
+- Added adsorbate_region.py example script for identifying adsorbate atoms and nearby surface atoms by element or z-coordinate
+- Added displacement scripts tutorial with worked examples for vacancy diffusion (PTM) and adsorbate-on-surface scenarios
+- Added displacement strategies prose section to saddle search docs explaining epicenters, weight-based selection, and dynamic atom lists
+- Expose gprd_linalg_backend option for selecting GPR-dimer linear algebra backend (eigen, cusolver, kokkos, stdpar)
+
+### Developer
+
+- Added macOS arm64 to metatomic CI matrix using Homebrew gfortran (conda-forge gfortran_osx-arm64 wrapper is broken)
+- Cleanup to build on windows
+- Expanded ASV benchmark suite with point evaluation, LJ minimization, and NEB workloads
+- Use internal pick output helper
+- bld(meson): reduce build times by linking to xtb by default
+
+### Changed
+
+- Eliminated unnecessary Eigen matrix copies in Matter, Potential, and HelperFunctions hot paths
+- Enriched schema descriptions for displace_atom_kmc_state_script, displace_all_listed, displace_atom_list, and client_displace_type
+- Refactored MetatomicPotential variant resolution to use upstream metatomic_torch::pick_output
+- Updated pinned gpr_optim commit with new linear algebra backends and performance improvements
+
+### Fixed
+
+- Use Goswami & Jonsson 2025 for removing rotations through projections
+
+
 ## [v2.9.0](https://github.com/theochemui/eongit/tree/v2.9.0) - 2026-01-27
 
 ### Added

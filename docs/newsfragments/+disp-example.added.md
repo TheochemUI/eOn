@@ -1,1 +1,0 @@
-Added adsorbate_region.py example script for identifying adsorbate atoms and nearby surface atoms by element or z-coordinate
