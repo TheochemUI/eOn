@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2026-01-27T04:40:10+00:00" />
+    <meta property="article:modified_time" content="2026-02-15T21:43:45+00:00" />
     <title>Saddle Search &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="Adaptive Kinetic Monte Carlo" href="akmc.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Jan 27, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 15, 2026"/>
   </head>
   
   
@@ -187,6 +187,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -456,6 +457,14 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#displacement-strategies">Displacement Strategies</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epicenters-and-weight-based-selection">Epicenters and Weight-Based Selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radius-and-magnitude">Radius and Magnitude</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#displacing-all-listed-atoms">Displacing All Listed Atoms</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-atom-lists-via-scripts">Dynamic Atom Lists via Scripts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#client-side-displacement">Client-Side Displacement</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.bowl_active_atoms</span></code></a></li>
@@ -468,6 +477,7 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.confine_positive_scale_ratio"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.confine_positive_scale_ratio</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.converged_force"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.converged_force</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_all_listed"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_all_listed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_atom_kmc_state_script</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_atom_list"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_atom_list</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_least_coordinated_weight"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_least_coordinated_weight</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_listed_atom_weight"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_listed_atom_weight</span></code></a></li>
@@ -522,6 +532,86 @@ option, and the following parameters. If the user knows something about the
 local environment where reactions are likely to take place in the system, this
 information can be used to make saddle searches more efficient by getting them
 started in the right part of configuration space.</p>
+<section id="displacement-strategies">
+<h2>Displacement Strategies<a class="headerlink" href="#displacement-strategies" title="Link to this heading">#</a></h2>
+<section id="epicenters-and-weight-based-selection">
+<h3>Epicenters and Weight-Based Selection<a class="headerlink" href="#epicenters-and-weight-based-selection" title="Link to this heading">#</a></h3>
+<p>Each saddle search begins by choosing an <strong>epicenter</strong> — a single atom around
+which the initial displacement is constructed. The epicenter is selected
+probabilistically from several strategies, each controlled by a relative weight:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Weight parameter</p></th>
+<th class="head"><p>Strategy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">displace_random_weight</span></code></p></td>
+<td><p>Pick any atom at random</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">displace_least_coordinated_weight</span></code></p></td>
+<td><p>Pick an atom with the lowest coordination number</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">displace_not_FCC_HCP_weight</span></code></p></td>
+<td><p>Pick an atom whose local environment is neither FCC nor HCP</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">displace_under_coordinated_weight</span></code></p></td>
+<td><p>Pick an atom with coordination ≤ <code class="docutils literal notranslate"><span class="pre">displace_max_coordination</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">displace_listed_atom_weight</span></code></p></td>
+<td><p>Pick an atom from <code class="docutils literal notranslate"><span class="pre">displace_atom_list</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">displace_listed_type_weight</span></code></p></td>
+<td><p>Pick an atom whose type is in <code class="docutils literal notranslate"><span class="pre">displace_type_list</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The weights do not need to sum to 1 — they are normalised internally. Setting a
+weight to 0 disables that strategy. For example, setting only
+<code class="docutils literal notranslate"><span class="pre">displace_listed_atom_weight</span> <span class="pre">=</span> <span class="pre">1.0</span></code> and all other weights to 0 ensures that
+every saddle search starts from an atom in the explicit list.</p>
+</section>
+<section id="radius-and-magnitude">
+<h3>Radius and Magnitude<a class="headerlink" href="#radius-and-magnitude" title="Link to this heading">#</a></h3>
+<p>Once the epicenter is chosen, all atoms within <code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> of the
+epicenter are displaced. Each displaced atom receives a random perturbation
+drawn from a Gaussian distribution with standard deviation
+<code class="docutils literal notranslate"><span class="pre">displace_magnitude</span></code> (in Ångströms) independently in each Cartesian direction.</p>
+</section>
+<section id="displacing-all-listed-atoms">
+<h3>Displacing All Listed Atoms<a class="headerlink" href="#displacing-all-listed-atoms" title="Link to this heading">#</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">displace_all_listed</span></code> is <strong>true</strong> and a listed-atom strategy is selected,
+<em>every</em> atom in <code class="docutils literal notranslate"><span class="pre">displace_atom_list</span></code> (or <code class="docutils literal notranslate"><span class="pre">displace_type_list</span></code>) is displaced —
+not just one chosen at random. Atoms within <code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> of <em>any</em>
+displaced atom are also included. Set <code class="docutils literal notranslate"><span class="pre">displace_radius</span></code> to 0 to restrict the
+displacement strictly to the listed atoms.</p>
+</section>
+<section id="dynamic-atom-lists-via-scripts">
+<h3>Dynamic Atom Lists via Scripts<a class="headerlink" href="#dynamic-atom-lists-via-scripts" title="Link to this heading">#</a></h3>
+<p>For systems where the relevant atoms change from state to state (e.g. a
+migrating vacancy), a static list is insufficient. The
+<code class="docutils literal notranslate"><span class="pre">displace_atom_kmc_state_script</span></code> option lets you specify a Python script that
+is executed once per new AKMC state to determine the atom list dynamically. See
+the <a class="reference internal" href="../tutorials/displacement_scripts.html"><span class="doc">Targeted Displacement for Saddle Searches</span></a> tutorial for worked examples
+covering vacancy diffusion and adsorbate-on-surface scenarios.</p>
+</section>
+<section id="client-side-displacement">
+<h3>Client-Side Displacement<a class="headerlink" href="#client-side-displacement" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">client_displace_type</span></code> option selects how the <strong>client</strong> (C++ code) picks
+the epicenter when the displacement is performed client-side rather than by the
+server:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">random</span></code> — uniform random atom</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">last_atom</span></code> — the last atom in the configuration</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min_coordinated</span></code> — the atom with the fewest neighbours</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">not_fcc_or_hcp</span></code> — an atom whose local structure is neither FCC nor HCP</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">listed_atoms</span></code> — an atom from <code class="docutils literal notranslate"><span class="pre">displace_atom_list</span></code> (parsed from the INI
+config; no server displacement file needed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load</span></code> — read a displacement vector from a file written by the server</p></li>
+</ul>
+</section>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Saddle Search]</span>
@@ -611,12 +701,18 @@ started in the right part of configuration space.</p>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="mi">-1</span>
 <span class="w">         </span><span class="p">],</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0-based atom indices to use as displacement epicenters, separated by commas. Example: 10, 20, -1 would be atoms 10, 20, and the last atom. When displace_atom_kmc_state_script is set, this list is populated dynamically per AKMC state from the script&#39;s output.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom List&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;displace_atom_kmc_state_script&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to a Python script that determines which atoms to displace. The script receives the path to a .con file as its sole positional argument and must print a comma-separated list of 0-based atom indices to stdout. It is executed once per new AKMC state; the result is cached in state.info. The path can be relative (resolved against the eOn root directory) or absolute. See the displacement scripts tutorial for worked examples.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom Kmc State Script&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;displace_listed_type_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
@@ -635,7 +731,7 @@ started in the right part of configuration space.</p>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;displace_all_listed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This can be disabled by setting `displace_radius` to 0. Otherwise:\n\n- If true, each displacement will include all of the degrees of freedom of all of the listed atoms in `displace_atom_list` or `displace_type_list`.\n- If false, one of the atoms in `displace_atom_list` or `displace_type_list` will be selected at random for each displacement.\n- In either case, all atoms up to `displace_radius` distance away from any displaced atom will be included in the displacement.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, displace all atoms in displace_atom_list (or displace_type_list) simultaneously. If false, one atom is chosen at random from the list per saddle search. In either case, atoms within displace_radius of any displaced atom are also included. Set displace_radius to 0 to restrict displacement strictly to listed atoms.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace All Listed&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
 <span class="w">      </span><span class="p">},</span>
@@ -685,13 +781,14 @@ started in the right part of configuration space.</p>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;client_displace_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type of displacement method used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Epicenter selection method used by the C++ client. &#39;random&#39;: uniform random atom. &#39;last_atom&#39;: the last atom in the configuration. &#39;min_coordinated&#39;: the atom with the fewest neighbours. &#39;not_fcc_or_hcp&#39;: an atom whose local structure is neither FCC nor HCP. &#39;listed_atoms&#39;: an atom from displace_atom_list (parsed from config, no server displacement file needed). &#39;load&#39;: read a displacement vector from a file written by the server.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;load&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;last_atom&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;min_coordinated&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;not_fcc_or_hcp&quot;</span>
+<span class="w">            </span><span class="s2">&quot;not_fcc_or_hcp&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;listed_atoms&quot;</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Client Displace Type&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
@@ -819,7 +916,7 @@ started in the right part of configuration space.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bowl_active_atoms</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_breakout" title="eon.schema.SaddleSearchConfig.bowl_breakout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bowl_breakout</span> <span class="pre">(bool)</span></code></a></p></li>
-<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.client_displace_type" title="eon.schema.SaddleSearchConfig.client_displace_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">client_displace_type</span> <span class="pre">(Literal['load',</span> <span class="pre">'random',</span> <span class="pre">'last_atom',</span> <span class="pre">'min_coordinated',</span> <span class="pre">'not_fcc_or_hcp'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.client_displace_type" title="eon.schema.SaddleSearchConfig.client_displace_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">client_displace_type</span> <span class="pre">(Literal['load',</span> <span class="pre">'random',</span> <span class="pre">'last_atom',</span> <span class="pre">'min_coordinated',</span> <span class="pre">'not_fcc_or_hcp',</span> <span class="pre">'listed_atoms'])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive" title="eon.schema.SaddleSearchConfig.confine_positive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_boost" title="eon.schema.SaddleSearchConfig.confine_positive_boost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_boost</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_min_active" title="eon.schema.SaddleSearchConfig.confine_positive_min_active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_min_active</span> <span class="pre">(int)</span></code></a></p></li>
@@ -827,6 +924,7 @@ started in the right part of configuration space.</p>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_scale_ratio" title="eon.schema.SaddleSearchConfig.confine_positive_scale_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_scale_ratio</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.converged_force" title="eon.schema.SaddleSearchConfig.converged_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_force</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_all_listed" title="eon.schema.SaddleSearchConfig.displace_all_listed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_all_listed</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script" title="eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_atom_kmc_state_script</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_atom_list" title="eon.schema.SaddleSearchConfig.displace_atom_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_atom_list</span> <span class="pre">(list[int])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_least_coordinated_weight" title="eon.schema.SaddleSearchConfig.displace_least_coordinated_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_least_coordinated_weight</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_listed_atom_weight" title="eon.schema.SaddleSearchConfig.displace_listed_atom_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_listed_atom_weight</span> <span class="pre">(float)</span></code></a></p></li>
@@ -874,8 +972,8 @@ To activate, <a class="reference internal" href="#eon.schema.SaddleSearchConfig.
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.client_displace_type">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client_displace_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'load'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'random'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'last_atom'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'min_coordinated'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'not_fcc_or_hcp'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'random'</span></em><a class="headerlink" href="#eon.schema.SaddleSearchConfig.client_displace_type" title="Link to this definition">#</a></dt>
-<dd><p>Type of displacement method used.</p>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client_displace_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'load'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'random'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'last_atom'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'min_coordinated'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'not_fcc_or_hcp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'listed_atoms'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'random'</span></em><a class="headerlink" href="#eon.schema.SaddleSearchConfig.client_displace_type" title="Link to this definition">#</a></dt>
+<dd><p>Epicenter selection method used by the C++ client. ‘random’: uniform random atom. ‘last_atom’: the last atom in the configuration. ‘min_coordinated’: the atom with the fewest neighbours. ‘not_fcc_or_hcp’: an atom whose local structure is neither FCC nor HCP. ‘listed_atoms’: an atom from displace_atom_list (parsed from config, no server displacement file needed). ‘load’: read a displacement vector from a file written by the server.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -923,18 +1021,19 @@ To activate, <a class="reference internal" href="#eon.schema.SaddleSearchConfig.
 <li><p>If false, one of the atoms in <cite>displace_atom_list</cite> or <cite>displace_type_list</cite> will be selected at random for each displacement.</p></li>
 <li><p>In either case, all atoms up to <cite>displace_radius</cite> distance away from any displaced atom will be included in the displacement.</p></li>
 </ul>
-<p>This can be disabled by setting <cite>displace_radius</cite> to 0. Otherwise:</p>
-<ul class="simple">
-<li><p>If true, each displacement will include all of the degrees of freedom of all of the listed atoms in <cite>displace_atom_list</cite> or <cite>displace_type_list</cite>.</p></li>
-<li><p>If false, one of the atoms in <cite>displace_atom_list</cite> or <cite>displace_type_list</cite> will be selected at random for each displacement.</p></li>
-<li><p>In either case, all atoms up to <cite>displace_radius</cite> distance away from any displaced atom will be included in the displacement.</p></li>
-</ul>
+<p>If true, displace all atoms in displace_atom_list (or displace_type_list) simultaneously. If false, one atom is chosen at random from the list per saddle search. In either case, atoms within displace_radius of any displaced atom are also included. Set displace_radius to 0 to restrict displacement strictly to listed atoms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">displace_atom_kmc_state_script</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script" title="Link to this definition">#</a></dt>
+<dd><p>Path to a Python script that determines which atoms to displace. The script receives the path to a .con file as its sole positional argument and must print a comma-separated list of 0-based atom indices to stdout. It is executed once per new AKMC state; the result is cached in state.info. The path can be relative (resolved against the eOn root directory) or absolute. See the displacement scripts tutorial for worked examples.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_atom_list">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">displace_atom_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[-1]</span></em><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_atom_list" title="Link to this definition">#</a></dt>
-<dd><p>The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.</p>
+<dd><p>0-based atom indices to use as displacement epicenters, separated by commas. Example: 10, 20, -1 would be atoms 10, 20, and the last atom. When displace_atom_kmc_state_script is set, this list is populated dynamically per AKMC state from the script’s output.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1203,6 +1302,14 @@ saddle and a dimer calculation to estimate the eigenmode at the saddle.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#displacement-strategies">Displacement Strategies</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#epicenters-and-weight-based-selection">Epicenters and Weight-Based Selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radius-and-magnitude">Radius and Magnitude</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#displacing-all-listed-atoms">Displacing All Listed Atoms</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-atom-lists-via-scripts">Dynamic Atom Lists via Scripts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#client-side-displacement">Client-Side Displacement</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.bowl_active_atoms</span></code></a></li>
@@ -1215,6 +1322,7 @@ saddle and a dimer calculation to estimate the eigenmode at the saddle.</p></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.confine_positive_scale_ratio"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.confine_positive_scale_ratio</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.converged_force"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.converged_force</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_all_listed"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_all_listed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_atom_kmc_state_script</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_atom_list"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_atom_list</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_least_coordinated_weight"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_least_coordinated_weight</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.SaddleSearchConfig.displace_listed_atom_weight"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig.displace_listed_atom_weight</span></code></a></li>
@@ -1282,7 +1390,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Jan 27, 2026.
+  Last updated on Feb 15, 2026.
   <br/>
 </p>
   </div>

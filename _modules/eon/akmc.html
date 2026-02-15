@@ -176,6 +176,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -432,7 +433,6 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">superbasinscheme</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">askmc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">movie</span>
-
 <div class="viewcode-block" id="akmc">
 <a class="viewcode-back" href="../../apidocs/eon/eon.akmc.html#eon.akmc.akmc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">akmc</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -471,6 +471,15 @@ document.write(`
     <span class="c1"># Load metadata, the state list, and the current state.</span>
     <span class="n">start_state_num</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">previous_state_num</span><span class="p">,</span> <span class="n">first_run</span><span class="p">,</span> <span class="n">previous_temperature</span> <span class="o">=</span> <span class="n">get_akmc_metadata</span><span class="p">()</span>
 
+
+    <span class="n">states</span> <span class="o">=</span> <span class="n">get_statelist</span><span class="p">(</span><span class="n">kT</span><span class="p">)</span>
+    <span class="n">current_state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">start_state_num</span><span class="p">)</span>
+
+    <span class="c1"># --- START: DYNAMIC ATOM LIST SCRIPT EXECUTION ---</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">displace_atom_kmc_state_script</span><span class="p">:</span>
+        <span class="n">current_state</span><span class="o">.</span><span class="n">get_displacement_atom_list</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="c1"># --- END: DYNAMIC ATOM LIST SCRIPT EXECUTION ---</span>
+
     <span class="k">if</span> <span class="n">first_run</span><span class="p">:</span>
         <span class="n">previous_temperature</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">main_temperature</span>
 
@@ -489,8 +498,6 @@ document.write(`
         <span class="c1"># Keep the new temperature.</span>
         <span class="n">previous_temperature</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">main_temperature</span>
 
-    <span class="n">states</span> <span class="o">=</span> <span class="n">get_statelist</span><span class="p">(</span><span class="n">kT</span><span class="p">)</span>
-    <span class="n">current_state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">start_state_num</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">previous_state_num</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
         <span class="n">previous_state</span> <span class="o">=</span> <span class="n">current_state</span>
     <span class="k">else</span><span class="p">:</span>

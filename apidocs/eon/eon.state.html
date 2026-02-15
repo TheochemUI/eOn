@@ -14,7 +14,7 @@
     <link href="../../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2025-09-04T00:51:34+00:00" />
+    <meta property="article:modified_time" content="2026-02-15T21:43:45+00:00" />
     <title>eon.state &#8212; eOn</title>
   
   
@@ -68,7 +68,7 @@
     <link rel="prev" title="eon.fileio" href="eon.fileio.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Sep 04, 2025"/>
+    <meta name="docbuild:last-update" content="Feb 15, 2026"/>
   </head>
   
   
@@ -185,6 +185,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -428,6 +429,7 @@ document.write(`
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_previous_state"><code class="docutils literal notranslate"><span class="pre">State.get_previous_state()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_num_procs"><code class="docutils literal notranslate"><span class="pre">State.get_num_procs()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_process_table"><code class="docutils literal notranslate"><span class="pre">State.get_process_table()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_displacement_atom_list"><code class="docutils literal notranslate"><span class="pre">State.get_displacement_atom_list()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -569,6 +571,17 @@ document.write(`
 <span class="sig-name descname"><span class="pre">get_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_process_table" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.state.State.get_displacement_atom_list">
+<span class="sig-name descname"><span class="pre">get_displacement_atom_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/eon/state.html#State.get_displacement_atom_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_displacement_atom_list" title="Link to this definition">#</a></dt>
+<dd><p>Gets the list of atoms for displacement.</p>
+<p>If the list has already been generated and stored in this state’s
+info file, it is read from there. Otherwise, the displacement
+script is run, and the result is saved to the info file for future use.</p>
+<p>Returns:
+A string of atom indices for displacement.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -642,6 +655,7 @@ document.write(`
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_previous_state"><code class="docutils literal notranslate"><span class="pre">State.get_previous_state()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_num_procs"><code class="docutils literal notranslate"><span class="pre">State.get_num_procs()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_process_table"><code class="docutils literal notranslate"><span class="pre">State.get_process_table()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.state.State.get_displacement_atom_list"><code class="docutils literal notranslate"><span class="pre">State.get_displacement_atom_list()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -681,7 +695,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Sep 04, 2025.
+  Last updated on Feb 15, 2026.
   <br/>
 </p>
   </div>
