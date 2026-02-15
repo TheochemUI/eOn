@@ -44,7 +44,8 @@ std::vector<std::string> PrefactorJob::run(void) {
     // it is sufficient to pass the configuration
     // for which the frequencies should be determined
     string matterFilename;
-    if (params->prefactor_options.configuration == PrefactorJob::PREFACTOR_REACTANT) {
+    if (params->prefactor_options.configuration ==
+        PrefactorJob::PREFACTOR_REACTANT) {
       matterFilename = reactantFilename;
     } else if (params->prefactor_options.configuration ==
                PrefactorJob::PREFACTOR_SADDLE) {
@@ -71,10 +72,12 @@ std::vector<std::string> PrefactorJob::run(void) {
   assert(3 * atoms.rows() > 0);
 
   // calculate frequencies
-  if (params->prefactor_options.configuration == PrefactorJob::PREFACTOR_REACTANT) {
+  if (params->prefactor_options.configuration ==
+      PrefactorJob::PREFACTOR_REACTANT) {
     Hessian hessian(params.get(), reactant.get());
     freqs = hessian.getFreqs(reactant.get(), atoms);
-  } else if (params->prefactor_options.configuration == PrefactorJob::PREFACTOR_SADDLE) {
+  } else if (params->prefactor_options.configuration ==
+             PrefactorJob::PREFACTOR_SADDLE) {
     Hessian hessian(params.get(), saddle.get());
     freqs = hessian.getFreqs(saddle.get(), atoms);
   } else if (params->prefactor_options.configuration ==

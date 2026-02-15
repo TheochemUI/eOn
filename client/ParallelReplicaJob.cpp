@@ -21,7 +21,8 @@
 std::vector<std::string> ParallelReplicaJob::run(void) {
   // load pos.con
   reactant = new Matter(pot, params);
-  reactant->con2matter(helper_functions::getRelevantFile(params->main_options.conFilename));
+  reactant->con2matter(
+      helper_functions::getRelevantFile(params->main_options.conFilename));
 
   // minimize the initial reactant
   SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Minimizing initial position");
@@ -34,7 +35,8 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   Dynamics dynamics(trajectory, params.get());
   BondBoost bondBoost(trajectory, params.get());
 
-  if (params->hyperdynamics_options.bias_potential == Hyperdynamics::BOND_BOOST) {
+  if (params->hyperdynamics_options.bias_potential ==
+      Hyperdynamics::BOND_BOOST) {
     bondBoost.initialize();
     trajectory->setBiasPotential(&bondBoost);
   }
@@ -43,9 +45,13 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
   // convert from simulation times to number of steps
   int stateCheckInterval =
-      int(floor(params->parallel_replica_options.state_check_interval / params->dynamics_options.time_step + 0.5));
+      int(floor(params->parallel_replica_options.state_check_interval /
+                    params->dynamics_options.time_step +
+                0.5));
   int recordInterval =
-      int(floor(params->parallel_replica_options.record_interval / params->dynamics_options.time_step + 0.5));
+      int(floor(params->parallel_replica_options.record_interval /
+                    params->dynamics_options.time_step +
+                0.5));
 
   std::vector<Matter *> MDSnapshots;
   std::vector<double> MDTimes;
@@ -68,7 +74,8 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   for (int step = 1; step <= params->dynamics_options.steps; step++) {
     dynamics.oneStep();
     double boost = 1.0;
-    if (params->hyperdynamics_options.bias_potential == Hyperdynamics::BOND_BOOST) {
+    if (params->hyperdynamics_options.bias_potential ==
+        Hyperdynamics::BOND_BOOST) {
       double boostPotential = bondBoost.boost();
       double kB = params->constants.kB;
       boost = exp(boostPotential / kB / params->main_options.temperature);
@@ -80,29 +87,31 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
     double kinE = trajectory->getKineticEnergy();
     double potE = trajectory->getPotentialEnergy();
-    double kinT =
-        (2.0 * kinE / (trajectory->numberOfFreeAtoms() * 3) / params->constants.kB);
+    double kinT = (2.0 * kinE / (trajectory->numberOfFreeAtoms() * 3) /
+                   params->constants.kB);
 
     if (step % params->debug_options.write_movies_interval == 0) {
       if (params->hyperdynamics_options.bias_potential == Hyperdynamics::NONE) {
         SPDLOG_LOGGER_DEBUG(log,
                             "[ParallelReplica] {:>8} {:>12.4e} {:>10.4f} "
                             "{:>12.4f} {:>12.4f} {:>10.2f}",
-                            step, simulationTime * params->constants.timeUnit * 1e-15,
+                            step,
+                            simulationTime * params->constants.timeUnit * 1e-15,
                             kinE, potE, kinE + potE, kinT);
       } else {
         double boostPotential = bondBoost.boost();
-        SPDLOG_LOGGER_DEBUG(log,
-                            "[ParallelReplica] {:>8} {:>12.4e} {:>10.3e} "
-                            "{:>10.4f} {:>12.4f} {:>12.4f} {:>10.2f}",
-                            step, simulationTime * params->constants.timeUnit * 1e-15,
-                            boost, kinE, potE + boostPotential,
-                            kinE + potE + boostPotential, kinT);
+        SPDLOG_LOGGER_DEBUG(
+            log,
+            "[ParallelReplica] {:>8} {:>12.4e} {:>10.3e} "
+            "{:>10.4f} {:>12.4f} {:>12.4f} {:>10.2f}",
+            step, simulationTime * params->constants.timeUnit * 1e-15, boost,
+            kinE, potE + boostPotential, kinE + potE + boostPotential, kinT);
       }
     }
 
     // Snapshots of the trajectory used for the refinement
-    if (step % recordInterval == 0 && params->parallel_replica_options.refine_transition) {
+    if (step % recordInterval == 0 &&
+        params->parallel_replica_options.refine_transition) {
       Matter *tmp = new Matter(pot, params);
       *tmp = *trajectory;
       MDSnapshots.push_back(tmp);
@@ -111,7 +120,8 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
     // check for a transition every stateCheckInterval or at the end of the
     // simulation
-    if (step % stateCheckInterval == 0 || step == params->dynamics_options.steps) {
+    if (step % stateCheckInterval == 0 ||
+        step == params->dynamics_options.steps) {
       SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Checking for transition");
 
       Matter min(pot, params);
@@ -141,12 +151,14 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
           transitionTime = simulationTime;
         }
         SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Transition time: {:.3e} s",
-                            transitionTime * params->constants.timeUnit * 1e-15);
+                            transitionTime * params->constants.timeUnit *
+                                1e-15);
 
         // at the end of the simulation perform the refinement if it hasn't
         // happened yet this ensures that if a transition isn't seen that the
         // same number of force calls will be performed on average
-      } else if (step + 1 == params->dynamics_options.steps && transitionTime == 0) {
+      } else if (step + 1 == params->dynamics_options.steps &&
+                 transitionTime == 0) {
 
         // fake refinement
         if (params->parallel_replica_options.refine_transition) {
@@ -172,7 +184,9 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
   // start the decorrelation dynamics from the transition structure
   int decorrelationSteps =
-      int(floor(params->parallel_replica_options.corr_time / params->dynamics_options.time_step + 0.5));
+      int(floor(params->parallel_replica_options.corr_time /
+                    params->dynamics_options.time_step +
+                0.5));
   SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Decorrelating: {} steps",
                       decorrelationSteps);
   for (int step = 1; step <= decorrelationSteps; step++) {
@@ -191,9 +205,10 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
   fileResults = fopen(resultsFilename.c_str(), "wb");
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->potential_options.potential)}.c_str());
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(
+                          params->potential_options.potential)}
+              .c_str());
   fprintf(fileResults, "%ld random_seed\n", params->main_options.randomSeed);
   fprintf(fileResults, "%f potential_energy_reactant\n",
           reactant->getPotentialEnergy());
@@ -209,12 +224,14 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
     fprintf(fileResults, "%e transition_time_s\n",
             transitionTime * params->constants.timeUnit * 1.0e-15);
     fprintf(fileResults, "%e correlation_time_s\n",
-            params->parallel_replica_options.corr_time * params->constants.timeUnit * 1.0e-15);
+            params->parallel_replica_options.corr_time *
+                params->constants.timeUnit * 1.0e-15);
     fprintf(fileResults, "%lf potential_energy_product\n",
             product.getPotentialEnergy());
   }
   fprintf(fileResults, "%lf speedup\n",
-          simulationTime / (params->dynamics_options.steps * params->dynamics_options.time_step));
+          simulationTime / (params->dynamics_options.steps *
+                            params->dynamics_options.time_step));
 
   fclose(fileResults);
 
@@ -229,8 +246,9 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 void ParallelReplicaJob::dephase(Matter *trajectory) {
   Dynamics dynamics(trajectory, params.get());
 
-  int dephaseSteps =
-      int(floor(params->parallel_replica_options.dephase_time / params->dynamics_options.time_step + 0.5));
+  int dephaseSteps = int(floor(params->parallel_replica_options.dephase_time /
+                                   params->dynamics_options.time_step +
+                               0.5));
   SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Dephasing: {} steps",
                       dephaseSteps);
 

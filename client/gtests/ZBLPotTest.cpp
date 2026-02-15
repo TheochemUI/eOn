@@ -20,7 +20,8 @@ public:
     params->zbl_options.cut_inner = 2.0;
     params->zbl_options.cut_global = 2.5;
 
-    pot_zbl = helper_functions::makePotential(params->potential_options.potential, params);
+    pot_zbl = helper_functions::makePotential(
+        params->potential_options.potential, params);
     matter = std::make_shared<Matter>(pot_zbl, params);
 
     const std::string confile("pos.con");

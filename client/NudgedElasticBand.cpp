@@ -253,7 +253,8 @@ NudgedElasticBand::NudgedElasticBand(
       if (params->debug_options.neb_mmf == LowestEigenmode::MINMODE_DIMER) {
         eigenmode_solvers[i] =
             std::make_shared<ImprovedDimer>(path[i], parametersPassed, pot);
-      } else if (params->debug_options.neb_mmf == LowestEigenmode::MINMODE_LANCZOS) {
+      } else if (params->debug_options.neb_mmf ==
+                 LowestEigenmode::MINMODE_LANCZOS) {
         eigenmode_solvers[i] =
             std::make_shared<Lanczos>(path[i], parametersPassed, pot);
       } else {
@@ -298,8 +299,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       helpers::create::mkOptim(objf, params->neb_options.opt_method, params);
   std::unique_ptr<Optimizer> refine_optim{nullptr};
   if (params->optimizer_options.refine.method != OptType::None) {
-    refine_optim =
-        helpers::create::mkOptim(objf, params->optimizer_options.refine.method, params);
+    refine_optim = helpers::create::mkOptim(
+        objf, params->optimizer_options.refine.method, params);
   }
   while (this->status != NEBStatus::GOOD) {
     if (params->debug_options.write_movies) {
@@ -394,8 +395,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     if (iteration == 0) {
 
       SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
-                   "step size", params->optimizer_options.convergence_metric_label, "max image",
-                   "max energy");
+                   "step size",
+                   params->optimizer_options.convergence_metric_label,
+                   "max image", "max energy");
       SPDLOG_DEBUG(
           "---------------------------------------------------------------\n");
     }
@@ -509,7 +511,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           // }
         }
         if ((savedPositions - path[climbingImage]->getPositions()).norm() >
-            params->optimizer_options.max_move * params->neb_options.image_count) {
+            params->optimizer_options.max_move *
+                params->neb_options.image_count) {
           // Reset optimizer after MMF - history is stale
           SPDLOG_LOGGER_DEBUG(log, "Resetting optimization history.");
           optim = helpers::create::mkOptim(objf, params->neb_options.opt_method,
@@ -535,8 +538,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         } else {
           if (!switched) {
             switched = true;
-            SPDLOG_DEBUG("Switched to {}", magic_enum::enum_name<OptType>(
-                                               params->optimizer_options.refine.method));
+            SPDLOG_DEBUG("Switched to {}",
+                         magic_enum::enum_name<OptType>(
+                             params->optimizer_options.refine.method));
           }
           refine_optim->step(params->optimizer_options.max_move);
         }
@@ -604,7 +608,8 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
       path[climbingImage]->getPotentialEnergy(), params, pot);
 
   // Save and override saddle search parameters
-  auto originalSaddleMaxIterations = params->saddle_search_options.max_iterations;
+  auto originalSaddleMaxIterations =
+      params->saddle_search_options.max_iterations;
 
   params->saddle_search_options.max_iterations =
       params->neb_options.climbing_image.roneb.max_steps;
@@ -686,7 +691,8 @@ double NudgedElasticBand::convergenceForce(void) {
           continue;
         fmax = max(fmax, projectedForce[i]->row(j).norm());
       }
-    } else if (params->optimizer_options.convergence_metric == "max_component") {
+    } else if (params->optimizer_options.convergence_metric ==
+               "max_component") {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
       log = spdlog::get("_traceback");

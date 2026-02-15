@@ -175,7 +175,8 @@ int main(int argc, char **argv) {
     printf("Loading parameter file %s\n", config_file.c_str());
     error = parameters.load(config_file);
   } else {
-    printf("Loading parameter file %s\n", parameters.main_options.iniFilename.c_str());
+    printf("Loading parameter file %s\n",
+           parameters.main_options.iniFilename.c_str());
     error = parameters.load(parameters.main_options.iniFilename);
   }
   if (error) {
@@ -382,8 +383,8 @@ int main(int argc, char **argv) {
 
       // check to see if parameters file exists before loading
       int error = 0;
-      string config_file =
-          helper_functions::getRelevantFile(parameters.main_options.iniFilename);
+      string config_file = helper_functions::getRelevantFile(
+          parameters.main_options.iniFilename);
       printf("Loading parameter file %s\n", config_file.c_str());
       error = parameters.load(config_file);
 
@@ -399,7 +400,8 @@ int main(int argc, char **argv) {
           helper_functions::makeJob(std::make_unique<Parameters>(parameters));
       if (job == nullptr) {
         printf("error: Unknown job: %s\n",
-               std::string{magic_enum::enum_name<JobType>(parameters.main_options.job)}
+               std::string{
+                   magic_enum::enum_name<JobType>(parameters.main_options.job)}
                    .c_str());
         return 1;
       }

@@ -72,7 +72,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     helper_functions::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
     pyparams->nebClimbingImageMethod = false;
-    pyparams->optimizer_options.converged_force = params->optimizer_options.converged_force * 0.8;
+    pyparams->optimizer_options.converged_force =
+        params->optimizer_options.converged_force * 0.8;
     for (auto &&obj : neb->path) {
       obj->setPotential(surpot);
     }
@@ -119,7 +120,8 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   }
 
   fileResults << static_cast<int>(status) << " termination_reason\n";
-  fileResults << magic_enum::enum_name<PotType>(params->potential_options.potential)
+  fileResults << magic_enum::enum_name<PotType>(
+                     params->potential_options.potential)
               << " potential_type\n";
   fileResults << fmt::format("{:.6f} energy_reference\n",
                              neb->path[0]->getPotentialEnergy());

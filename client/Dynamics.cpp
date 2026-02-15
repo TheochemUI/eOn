@@ -94,8 +94,10 @@ void Dynamics::run() {
     SPDLOG_LOGGER_DEBUG(log,
                         "{} Running NVT molecular dynamics: {:8.2lf} K for {} "
                         "steps ({:.4e} s)\n",
-                        "[Dynamics]", temperature, parameters->dynamics_options.steps,
-                        1e-15 * parameters->dynamics_options.time_step * parameters->constants.timeUnit *
+                        "[Dynamics]", temperature,
+                        parameters->dynamics_options.steps,
+                        1e-15 * parameters->dynamics_options.time_step *
+                            parameters->constants.timeUnit *
                             parameters->dynamics_options.steps);
   } else {
     SPDLOG_LOGGER_DEBUG(log, "{} Running NVE molecular dynamics: {} steps\n",
@@ -146,8 +148,9 @@ void Dynamics::andersenCollision() {
   AtomMatrix velocity;
 
   alpha = parameters->thermostat_options.andersen_alpha; // collision strength
-  tCol = parameters->thermostat_options.andersen_tcol; // average time between collisions, in
-                                         // unit of fs
+  tCol =
+      parameters->thermostat_options.andersen_tcol; // average time between
+                                                    // collisions, in unit of fs
   pCol = 1.0 - exp(-parameters->dynamics_options.time_step / tCol);
 
   velocity = matter->getVelocities();

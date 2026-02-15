@@ -43,8 +43,9 @@ std::vector<std::string> GlobalOptimizationJob::run(void) {
   // matter_cur->getForceCalls()); SPDLOG_LOGGER_DEBUG(log, "epot= {:24.15E}",
   // matter_cur->getPotentialEnergy()); SPDLOG_LOGGER_DEBUG(log, "fcalls= {}",
   // matter_cur->getForceCalls());
-  converged = matter_cur->relax(false, params->debug_options.write_movies, params->main_options.checkpoint,
-                                "min", "matter_cur");
+  converged =
+      matter_cur->relax(false, params->debug_options.write_movies,
+                        params->main_options.checkpoint, "min", "matter_cur");
   SPDLOG_LOGGER_DEBUG(log, "converged {}", (converged) ? "TRUE" : "FALSE");
   // nlmin=0;
   // if(nlmin==0)
@@ -87,7 +88,8 @@ void GlobalOptimizationJob::analyze(Matter *matter_cur, Matter *matter_hop) {
   double epot = matter_hop->getPotentialEnergy();
   size_t jlo = hunt(epot);
   // SPDLOG_LOGGER_DEBUG(log, "REZA: {}", jlo);
-  if (abs(epot - earr[jlo]) < params->structure_comparison_options.energy_difference) {
+  if (abs(epot - earr[jlo]) <
+      params->structure_comparison_options.energy_difference) {
     hoppingResult = "already_visited";
   } else {
     hoppingResult = "new";
@@ -124,7 +126,8 @@ void GlobalOptimizationJob::examineEscape(Matter *matter_cur,
   double epot, epot_hop;
   epot = matter_cur->getPotentialEnergy();
   epot_hop = matter_hop->getPotentialEnergy();
-  if (abs(epot_hop - epot) < params->structure_comparison_options.energy_difference) {
+  if (abs(epot_hop - epot) <
+      params->structure_comparison_options.energy_difference) {
     escapeResult = "failure";
   } else {
     escapeResult = "success";
@@ -203,7 +206,8 @@ void GlobalOptimizationJob::decisionStep(Matter *matter_cur,
   if (params->global_optimization_options.decision_method == "npew") {
     acceptRejectNPEW(matter_cur, matter_hop);
     // GlobalOptimizationJob::update_minhop_param(matter_hop);
-  } else if (params->global_optimization_options.decision_method == "boltzmann") {
+  } else if (params->global_optimization_options.decision_method ==
+             "boltzmann") {
     acceptRejectBoltzmann(matter_cur, matter_hop);
   } else {
     log = spdlog::get("_traceback");
@@ -260,8 +264,9 @@ void GlobalOptimizationJob::hoppingStep(long istep, Matter *matter_cur,
   }
   long fcalls2 = matter_hop->getForceCalls();
   hoppingResult = "unknown";
-  converged = matter_hop->relax(true, params->debug_options.write_movies, params->main_options.checkpoint,
-                                "min", "matter_hop");
+  converged =
+      matter_hop->relax(true, params->debug_options.write_movies,
+                        params->main_options.checkpoint, "min", "matter_hop");
   SPDLOG_LOGGER_DEBUG(log, "converged {}", (converged) ? "TRUE" : "FALSE");
   long fcalls3 = matter_hop->getForceCalls();
   fcallsMove = fcalls2 - fcalls1;
@@ -279,9 +284,11 @@ void GlobalOptimizationJob::randomMove(Matter *matter) {
     double disp = params->basin_hopping_options.displacement;
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
-        if (params->basin_hopping_options.displacement_distribution == "uniform") {
+        if (params->basin_hopping_options.displacement_distribution ==
+            "uniform") {
           displacement(i, j) = randomDouble(2 * disp) - disp;
-        } else if (params->basin_hopping_options.displacement_distribution == "gaussian") {
+        } else if (params->basin_hopping_options.displacement_distribution ==
+                   "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
           log = spdlog::get("_traceback");
@@ -408,7 +415,8 @@ void GlobalOptimizationJob::insert(Matter *matter) {
                       std::abs(epot - earr[jlo]));
   // it=earr.begin()+jlo;
   // epot_hop.push_back(epot);
-  if (!(abs(epot - earr[jlo]) < params->structure_comparison_options.energy_difference)) {
+  if (!(abs(epot - earr[jlo]) <
+        params->structure_comparison_options.energy_difference)) {
     // earr.insert(it,epot_hop.begin(),epot_hop.end());
     jlo_insert = jlo;
     if (epot > earr[jlo])
@@ -431,7 +439,8 @@ size_t GlobalOptimizationJob::hunt(double epot) {
   if (jlo > 0)
     if (abs(epot - earr[jlo - 1]) < de)
       jlo--; //{jlo--;de=abs(epot-earr[jlo]);}
-  // if(jlo!=earr.size()-1) if(abs(epot-earr[jlo+1])<params->structure_comparison_options.energy_difference)
+  // if(jlo!=earr.size()-1)
+  // if(abs(epot-earr[jlo+1])<params->structure_comparison_options.energy_difference)
   // jlo++;
   return jlo;
 }

@@ -41,7 +41,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   // Sanity Check
   vector<long> Elements;
   Elements = getElements(current.get());
-  if (params->basin_hopping_options.swap_probability > 0 && Elements.size() == 1) {
+  if (params->basin_hopping_options.swap_probability > 0 &&
+      Elements.size() == 1) {
     log = spdlog::get("_traceback");
     SPDLOG_LOGGER_CRITICAL(
         log, "error: [Basin Hopping] swap move probability must be "
@@ -49,7 +50,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     std::exit(1);
   }
 
-  double randomProb = params->basin_hopping_options.initial_random_structure_probability;
+  double randomProb =
+      params->basin_hopping_options.initial_random_structure_probability;
   if (randomProb > 0.0) {
     SPDLOG_LOGGER_DEBUG(
         log, "generating random structure with probability {:.4f}", randomProb);
@@ -78,7 +80,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
   auto minimumEnergyStructure = std::make_shared<Matter>(pot, params);
   *minimumEnergyStructure = *current;
-  int nsteps = params->basin_hopping_options.steps + params->basin_hopping_options.quenching_steps;
+  int nsteps = params->basin_hopping_options.steps +
+               params->basin_hopping_options.quenching_steps;
   long totalfc;
   FILE *pFile;
   pFile = fopen("bh.dat", "w");
@@ -167,7 +170,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
           if (fabs(currentEnergy - uniqueEnergies[i]) <
               params->structure_comparison_options.energy_difference) {
             if (current->compare(*uniqueStructures[i],
-                                 params->structure_comparison_options.indistinguishable_atoms) == true) {
+                                 params->structure_comparison_options
+                                     .indistinguishable_atoms) == true) {
               newStructure = false;
             }
           }
@@ -282,7 +286,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
             swap_accept / double(swap_count));
   }
   fprintf(fileResults, "%ld total_normal_displacement_steps\n",
-          disp_count - jump_count - params->basin_hopping_options.quenching_steps);
+          disp_count - jump_count -
+              params->basin_hopping_options.quenching_steps);
   fprintf(fileResults, "%d total_jump_steps\n", jump_count);
   fprintf(fileResults, "%d total_swap_steps\n", swap_count);
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
@@ -325,12 +330,14 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
         disp = curDisplacement;
       }
       // scale displacement linearly with the particle radius
-      else if (params->basin_hopping_options.displacement_algorithm == "linear") {
+      else if (params->basin_hopping_options.displacement_algorithm ==
+               "linear") {
         double Cs = curDisplacement / distvec.maxCoeff();
         disp = Cs * dist;
       }
       // scale displacement quadratically with the particle radius
-      else if (params->basin_hopping_options.displacement_algorithm == "quadratic") {
+      else if (params->basin_hopping_options.displacement_algorithm ==
+               "quadratic") {
         double Cq = curDisplacement / (distvec.maxCoeff() * distvec.maxCoeff());
         disp = Cq * dist * dist;
       } else {
@@ -339,9 +346,11 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
         std::exit(1);
       }
       for (int j = 0; j < 3; j++) {
-        if (params->basin_hopping_options.displacement_distribution == "uniform") {
+        if (params->basin_hopping_options.displacement_distribution ==
+            "uniform") {
           displacement(i, j) = randomDouble(2 * disp) - disp;
-        } else if (params->basin_hopping_options.displacement_distribution == "gaussian") {
+        } else if (params->basin_hopping_options.displacement_distribution ==
+                   "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
           log = spdlog::get("_traceback");

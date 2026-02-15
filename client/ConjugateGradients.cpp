@@ -102,8 +102,9 @@ int ConjugateGradients::line_search(double a_maxMove) {
     // Line search considered converged based in the ratio between the projected
     // force and the norm of the true force
   } while (m_params->optimizer_options.cg.line_converged <
-               fabs(projectedForce) / (sqrt(m_force.dot(m_force) +
-                                            m_params->optimizer_options.cg.line_converged)) and
+               fabs(projectedForce) /
+                   (sqrt(m_force.dot(m_force) +
+                         m_params->optimizer_options.cg.line_converged)) and
            (line_i < m_params->optimizer_options.cg.line_search_max_iter));
   //    return objf->isConverged();
   if (m_objf->isConverged())
@@ -129,8 +130,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
   // Determine curvature
   double projectedForce1 = m_force.dot(m_directionNorm);
   double projectedForce2 = forceAfterStep.dot(m_directionNorm);
-  double curvature =
-      (projectedForce1 - projectedForce2) / m_params->main_options.finiteDifference;
+  double curvature = (projectedForce1 - projectedForce2) /
+                     m_params->main_options.finiteDifference;
 
   double stepSize = a_maxMove;
 
@@ -138,7 +139,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
     stepSize = projectedForce1 / curvature;
   }
 
-  if (m_params->saddle_search_options.confine_positive.bowl_breakout and a_maxMove < 0.0) {
+  if (m_params->saddle_search_options.confine_positive.bowl_breakout and
+      a_maxMove < 0.0) {
     stepSize = -a_maxMove;
     a_maxMove = -a_maxMove;
   }

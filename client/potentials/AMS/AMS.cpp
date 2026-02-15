@@ -29,8 +29,11 @@ AMS::AMS(std::shared_ptr<Parameters> p)
   this->engine_setup = generate_run(p);
   // Environment
   // TODO: Add more checks for how this can be set
-  if (p->ams_options.env.amshome.empty() && p->ams_options.env.scm_tmpdir.empty() && p->ams_options.env.scmlicense.empty() &&
-      p->ams_options.env.scm_pythondir.empty() && p->ams_options.env.amsbin.empty() &&
+  if (p->ams_options.env.amshome.empty() &&
+      p->ams_options.env.scm_tmpdir.empty() &&
+      p->ams_options.env.scmlicense.empty() &&
+      p->ams_options.env.scm_pythondir.empty() &&
+      p->ams_options.env.amsbin.empty() &&
       p->ams_options.env.amsresources.empty()) {
     nativenv = boost::this_process::environment();
   } else {

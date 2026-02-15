@@ -82,8 +82,8 @@ TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
       209.073, -38.7473, -50.0734;
 
   params->potential_options.potential = PotType::LJ;
-  std::shared_ptr<Potential> pot =
-      helper_functions::makePotential(params->potential_options.potential, params);
+  std::shared_ptr<Potential> pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
   double e_lj{0};
   AtomMatrix f_lj = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
 
@@ -96,8 +96,8 @@ TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
   double e_morse{0};
   AtomMatrix f_morse = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params->potential_options.potential = PotType::MORSE_PT;
-  std::shared_ptr<Potential> pot2 =
-      helper_functions::makePotential(params->potential_options.potential, params);
+  std::shared_ptr<Potential> pot2 = helper_functions::makePotential(
+      params->potential_options.potential, params);
   REQUIRE(pot2 != pot);
 
   pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),

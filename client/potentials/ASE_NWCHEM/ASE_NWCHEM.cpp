@@ -46,9 +46,10 @@ ASENwchemPot::ASENwchemPot(std::shared_ptr<Parameters> a_params)
       "command"_a = py::str(fmt::format(
           "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
       "memory"_a = py::str("2 gb"),
-      "scf"_a = py::dict("nopen"_a = mult - 1,
-                         "thresh"_a = a_params->ase_nwchem_options.scf_thresh,
-                         "maxiter"_a = a_params->ase_nwchem_options.scf_maxiter),
+      "scf"_a =
+          py::dict("nopen"_a = mult - 1,
+                   "thresh"_a = a_params->ase_nwchem_options.scf_thresh,
+                   "maxiter"_a = a_params->ase_nwchem_options.scf_maxiter),
       "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
       "directory"_a = ".");
 
