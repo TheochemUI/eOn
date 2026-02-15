@@ -176,6 +176,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -1321,7 +1322,19 @@ document.write(`
     <span class="p">)</span>
     <span class="n">displace_atom_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;0-based atom indices to use as displacement epicenters, separated by commas. &quot;</span>
+        <span class="s2">&quot;Example: 10, 20, -1 would be atoms 10, 20, and the last atom. &quot;</span>
+        <span class="s2">&quot;When displace_atom_kmc_state_script is set, this list is populated dynamically &quot;</span>
+        <span class="s2">&quot;per AKMC state from the script&#39;s output.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">displace_atom_kmc_state_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to a Python script that determines which atoms to displace. &quot;</span>
+        <span class="s2">&quot;The script receives the path to a .con file as its sole positional argument &quot;</span>
+        <span class="s2">&quot;and must print a comma-separated list of 0-based atom indices to stdout. &quot;</span>
+        <span class="s2">&quot;It is executed once per new AKMC state; the result is cached in state.info. &quot;</span>
+        <span class="s2">&quot;The path can be relative (resolved against the eOn root directory) or absolute. &quot;</span>
+        <span class="s2">&quot;See the displacement scripts tutorial for worked examples.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">displace_listed_type_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
@@ -1332,6 +1345,10 @@ document.write(`
     <span class="p">)</span>
     <span class="n">displace_all_listed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If true, displace all atoms in displace_atom_list (or displace_type_list) &quot;</span>
+        <span class="s2">&quot;simultaneously. If false, one atom is chosen at random from the list per saddle search. &quot;</span>
+        <span class="s2">&quot;In either case, atoms within displace_radius of any displaced atom are also included. &quot;</span>
+        <span class="s2">&quot;Set displace_radius to 0 to restrict displacement strictly to listed atoms.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This can be disabled by setting `displace_radius` to 0. Otherwise:</span>
@@ -1360,8 +1377,18 @@ document.write(`
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">client_displace_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
-        <span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="s2">&quot;last_atom&quot;</span><span class="p">,</span> <span class="s2">&quot;min_coordinated&quot;</span><span class="p">,</span> <span class="s2">&quot;not_fcc_or_hcp&quot;</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of displacement method used.&quot;</span><span class="p">)</span>
+        <span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="s2">&quot;last_atom&quot;</span><span class="p">,</span> <span class="s2">&quot;min_coordinated&quot;</span><span class="p">,</span> <span class="s2">&quot;not_fcc_or_hcp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;listed_atoms&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Epicenter selection method used by the C++ client. &quot;</span>
+        <span class="s2">&quot;&#39;random&#39;: uniform random atom. &quot;</span>
+        <span class="s2">&quot;&#39;last_atom&#39;: the last atom in the configuration. &quot;</span>
+        <span class="s2">&quot;&#39;min_coordinated&#39;: the atom with the fewest neighbours. &quot;</span>
+        <span class="s2">&quot;&#39;not_fcc_or_hcp&#39;: an atom whose local structure is neither FCC nor HCP. &quot;</span>
+        <span class="s2">&quot;&#39;listed_atoms&#39;: an atom from displace_atom_list (parsed from config, no server displacement file needed). &quot;</span>
+        <span class="s2">&quot;&#39;load&#39;: read a displacement vector from a file written by the server.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">zero_mode_abort_curvature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The saddle search will abort when the magnitude of the minmode curvature is less than this value.&quot;</span><span class="p">,</span>

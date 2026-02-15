@@ -176,6 +176,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -707,7 +708,11 @@ document.write(`
         <span class="n">end_statelist</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_statelist</span><span class="p">(</span><span class="n">end_state</span><span class="p">)</span>
 
         <span class="n">e_min</span>        <span class="o">=</span> <span class="nb">min</span> <span class="p">(</span> <span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">end_statelist</span> <span class="p">)</span>
-        <span class="n">e_global_min</span> <span class="o">=</span> <span class="nb">min</span> <span class="p">(</span> <span class="n">e_min</span> <span class="p">,</span> <span class="p">(</span> <span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">start_statelist</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="c1"># First, find the minimum energy in the start_statelist.</span>
+        <span class="n">min_start_energy</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">start_statelist</span><span class="p">)</span>
+        <span class="c1"># Then, find the global minimum by comparing the two basin minimums.</span>
+        <span class="c1"># XXX(rg): This isn&#39;t really the &quot;global&quot; minima in any sense, for that we need a counter on the class object itself</span>
+        <span class="n">e_global_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">e_min</span><span class="p">,</span> <span class="n">min_start_energy</span><span class="p">)</span>
 
         <span class="c1"># determine the barrier</span>
         <span class="c1"># (LJ: What happens if there is more then one path between start_state and end_state???)</span>

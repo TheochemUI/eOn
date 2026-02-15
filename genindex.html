@@ -176,6 +176,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -739,6 +740,8 @@ document.write(`
 </li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.displace_all_listed">displace_all_listed (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
+      <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script">displace_atom_kmc_state_script (eon.schema.SaddleSearchConfig attribute)</a>
+</li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.displace_atom_list">displace_atom_list (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.displace_least_coordinated_weight">displace_least_coordinated_weight (eon.schema.SaddleSearchConfig attribute)</a>
@@ -826,6 +829,13 @@ document.write(`
 
       <ul>
         <li><a href="apidocs/eon/eon.html#module-eon">module</a>
+</li>
+      </ul></li>
+      <li>
+    eon._utils
+
+      <ul>
+        <li><a href="apidocs/eon/eon._utils.html#module-eon._utils">module</a>
 </li>
       </ul></li>
       <li>
@@ -1090,12 +1100,16 @@ document.write(`
       </ul></li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.Atoms.free_r">free_r() (eon.atoms.Atoms method)</a>
 </li>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.ScriptConfig.from_eon_config">from_eon_config() (eon._utils.ScriptConfig class method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.gen_ids_from_con">gen_ids_from_con() (in module eon._utils)</a>
+</li>
       <li><a href="apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling.generate_corresponding_states">generate_corresponding_states() (eon.recycling.SB_Recycling method)</a>
 </li>
       <li><a href="apidocs/eon/eon.explorer.html#eon.explorer.MinModeExplorer.generate_displacement">generate_displacement() (eon.explorer.MinModeExplorer method)</a>
@@ -1134,6 +1148,8 @@ document.write(`
         <li><a href="apidocs/eon/eon.displace.html#eon.displace.Water.get_displacement">(eon.displace.Water method)</a>
 </li>
       </ul></li>
+      <li><a href="apidocs/eon/eon.state.html#eon.state.State.get_displacement_atom_list">get_displacement_atom_list() (eon.state.State method)</a>
+</li>
       <li><a href="apidocs/eon/eon.state.html#eon.state.State.get_energy">get_energy() (eon.state.State method)</a>
 </li>
       <li><a href="apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.EnergyLevel.get_energy_increment">get_energy_increment() (eon.superbasinscheme.EnergyLevel method)</a>
@@ -1198,14 +1214,14 @@ document.write(`
 </li>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_mode">get_process_mode() (eon.akmcstate.AKMCState method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_product">get_process_product() (eon.akmcstate.AKMCState method)</a>
 
       <ul>
         <li><a href="apidocs/eon/eon.state.html#eon.state.State.get_process_product">(eon.state.State method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_reactant">get_process_reactant() (eon.akmcstate.AKMCState method)</a>
 
       <ul>
@@ -1666,10 +1682,10 @@ document.write(`
 </li>
       <li><a href="user_guide/prefactor.html#eon.schema.PrefactorConfig.min_displacement">min_displacement (eon.schema.PrefactorConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.min_mode_method">min_mode_method (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.Table.min_row">min_row() (eon.fileio.Table method)</a>
 </li>
       <li><a href="user_guide/prefactor.html#eon.schema.PrefactorConfig.min_value">min_value (eon.schema.PrefactorConfig attribute)</a>
@@ -1711,6 +1727,8 @@ document.write(`
 
       <ul>
         <li><a href="apidocs/eon/eon.html#module-eon">eon</a>
+</li>
+        <li><a href="apidocs/eon/eon._utils.html#module-eon._utils">eon._utils</a>
 </li>
         <li><a href="apidocs/eon/eon.akmc.html#module-eon.akmc">eon.akmc</a>
 </li>
@@ -1815,10 +1833,12 @@ document.write(`
 </li>
       <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.nonnegative_displacement_abort">nonnegative_displacement_abort (eon.schema.SaddleSearchConfig attribute)</a>
 </li>
-      <li><a href="user_guide/dynamics.html#eon.schema.DynamicsConfig.nose_mass">nose_mass (eon.schema.DynamicsConfig attribute)</a>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.normalize_atom_list_str">normalize_atom_list_str() (in module eon._utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user_guide/dynamics.html#eon.schema.DynamicsConfig.nose_mass">nose_mass (eon.schema.DynamicsConfig attribute)</a>
+</li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.not_HCP_or_FCC">not_HCP_or_FCC() (in module eon.atoms)</a>
 </li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.not_TCP">not_TCP() (in module eon.atoms)</a>
@@ -1895,6 +1915,8 @@ document.write(`
       </ul></li>
       <li><a href="user_guide/potential.html#eon.schema.XTBPot.paramset">paramset (eon.schema.XTBPot attribute)</a>
 </li>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.parse_atom_list_str">parse_atom_list_str() (in module eon._utils)</a>
+</li>
       <li><a href="apidocs/eon/eon.fileio.html#eon.fileio.parse_results">parse_results() (in module eon.fileio)</a>
 </li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.pbc">pbc() (in module eon.atoms)</a>
@@ -1923,10 +1945,10 @@ document.write(`
 </li>
       <li><a href="apidocs/eon/eon.state.html#eon.state.State.proc_product_path">proc_product_path() (eon.state.State method)</a>
 </li>
-      <li><a href="apidocs/eon/eon.state.html#eon.state.State.proc_reactant_path">proc_reactant_path() (eon.state.State method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/eon/eon.state.html#eon.state.State.proc_reactant_path">proc_reactant_path() (eon.state.State method)</a>
+</li>
       <li><a href="apidocs/eon/eon.state.html#eon.state.State.proc_results_path">proc_results_path() (eon.state.State method)</a>
 </li>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.proc_saddle_path">proc_saddle_path() (eon.akmcstate.AKMCState method)</a>
@@ -2051,8 +2073,6 @@ document.write(`
         <li><a href="apidocs/eon/eon.prstatelist.html#eon.prstatelist.PRStateList.register_process">(eon.prstatelist.PRStateList method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.explorer.html#eon.explorer.ClientMinModeExplorer.register_results">register_results() (eon.explorer.ClientMinModeExplorer method)</a>
 
       <ul>
@@ -2065,6 +2085,8 @@ document.write(`
         <li><a href="apidocs/eon/eon.parallelreplica.html#eon.parallelreplica.register_results">(in module eon.parallelreplica)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/eon/eon.askmc.html#eon.askmc.ASKMC.register_transition">register_transition() (eon.askmc.ASKMC method)</a>
 
       <ul>
@@ -2094,6 +2116,8 @@ document.write(`
       <li><a href="user_guide/debug.html#eon.schema.DebugConfig.result_files_path">result_files_path (eon.schema.DebugConfig attribute)</a>
 </li>
       <li><a href="user_guide/paths.html#eon.schema.PathsConfig.results">results (eon.schema.PathsConfig attribute)</a>
+</li>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.ScriptConfig.root_path">root_path (eon._utils.ScriptConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.rot_match">rot_match() (in module eon.atoms)</a>
 </li>
@@ -2161,9 +2185,17 @@ document.write(`
 </li>
       <li><a href="user_guide/paths.html#eon.schema.PathsConfig.scratch">scratch (eon.schema.PathsConfig attribute)</a>
 </li>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.ScriptConfig.scratch_path">scratch_path (eon._utils.ScriptConfig attribute)</a>
+</li>
       <li><a href="apidocs/eon/eon.communicator.html#eon.communicator.Script">Script (class in eon.communicator)</a>
 </li>
-      <li><a href="user_guide/communicator.html#eon.schema.CommunicatorConfig.script_path">script_path (eon.schema.CommunicatorConfig attribute)</a>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.ScriptConfig.script_path">script_path (eon._utils.ScriptConfig attribute)</a>
+
+      <ul>
+        <li><a href="user_guide/communicator.html#eon.schema.CommunicatorConfig.script_path">(eon.schema.CommunicatorConfig attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apidocs/eon/eon._utils.html#eon._utils.ScriptConfig">ScriptConfig (class in eon._utils)</a>
 </li>
       <li><a href="user_guide/optimizer.html#eon.schema.SDConfig.sd_alpha">sd_alpha (eon.schema.SDConfig attribute)</a>
 </li>
@@ -2191,10 +2223,10 @@ document.write(`
 </li>
       <li><a href="user_guide/potential.html#eon.schema.PotentialConfig.set_log_potential">set_log_potential() (eon.schema.PotentialConfig class method)</a>
 </li>
-      <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.set_max_iterations">set_max_iterations() (eon.schema.SaddleSearchConfig class method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user_guide/saddle_search.html#eon.schema.SaddleSearchConfig.set_max_iterations">set_max_iterations() (eon.schema.SaddleSearchConfig class method)</a>
+</li>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.set_unique_saddle_count">set_unique_saddle_count() (eon.akmcstate.AKMCState method)</a>
 </li>
       <li><a href="apidocs/eon/eon.movie.html#eon.movie.priorityDictionary.setdefault">setdefault() (eon.movie.priorityDictionary method)</a>
