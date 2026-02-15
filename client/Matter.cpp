@@ -173,7 +173,7 @@ double Matter::distanceTo(const Matter &matter) {
   return pbc(positions - matter.positions).norm();
 }
 
-AtomMatrix Matter::pbc(AtomMatrix diff) const {
+AtomMatrix Matter::pbc(const AtomMatrix &diff) const {
   AtomMatrix ddiff = diff * cellInverse;
 
   int i, j;
@@ -186,7 +186,7 @@ AtomMatrix Matter::pbc(AtomMatrix diff) const {
   return ddiff * cell;
 }
 
-VectorXd Matter::pbcV(VectorXd diffVector) const {
+VectorXd Matter::pbcV(const VectorXd &diffVector) const {
   AtomMatrix pbcMatrix =
       pbc(AtomMatrix::Map(diffVector.data(), diffVector.size() / 3, 3));
   return VectorXd::Map(pbcMatrix.data(), diffVector.size());
@@ -237,7 +237,7 @@ long int Matter::numberOfAtoms() const { return (nAtoms); }
 
 Matrix3d Matter::getCell() const { return cell; }
 
-void Matter::setCell(Matrix3d newCell) { cell = newCell; }
+void Matter::setCell(const Matrix3d &newCell) { cell = newCell; }
 
 double Matter::getPosition(long int indexAtom, int axis) const {
   return positions(indexAtom, axis);
@@ -255,8 +255,10 @@ void Matter::setVelocity(long int indexAtom, int axis, double vel) {
   velocities(indexAtom, axis) = vel;
 }
 
-// return coordinates of atoms in array 'pos'
-AtomMatrix Matter::getPositions() const { return positions; }
+// return coordinates of atoms by const reference (zero-copy)
+const AtomMatrix &Matter::getPositions() const { return positions; }
+// return a modifiable copy of positions
+AtomMatrix Matter::getPositionsCopy() const { return positions; }
 
 VectorXd Matter::getPositionsV() const {
   return VectorXd::Map(positions.data(), 3 * numberOfAtoms());
@@ -349,7 +351,7 @@ VectorXd Matter::getPositionsFreeV() const {
 }
 
 // update Matter with the new positions of the free atoms given in array 'pos'
-void Matter::setPositions(const AtomMatrix pos) {
+void Matter::setPositions(const AtomMatrix &pos) {
   positions = pos;
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
@@ -358,11 +360,11 @@ void Matter::setPositions(const AtomMatrix pos) {
 }
 
 // Same but takes vector instead of n x 3 matrix
-void Matter::setPositionsV(const VectorXd pos) {
+void Matter::setPositionsV(const VectorXd &pos) {
   setPositions(AtomMatrix::Map(pos.data(), numberOfAtoms(), 3));
 }
 
-void Matter::setPositionsFree(const AtomMatrix pos) {
+void Matter::setPositionsFree(const AtomMatrix &pos) {
   // FIXME: Ensure pos and existing data are in the same form with atom ids
   int i, j = 0;
   for (i = 0; i < nAtoms; i++) {
@@ -374,7 +376,7 @@ void Matter::setPositionsFree(const AtomMatrix pos) {
   recomputePotential = true;
 }
 
-void Matter::setPositionsFreeV(const VectorXd pos) {
+void Matter::setPositionsFreeV(const VectorXd &pos) {
   setPositionsFree(AtomMatrix::Map(pos.data(), numberOfFreeAtoms(), 3));
 }
 
@@ -389,7 +391,7 @@ void Matter::setBiasPotential(BondBoost *bondBoost) {
   biasPotential = bondBoost;
 }
 
-void Matter::setBiasForces(const AtomMatrix bf) {
+void Matter::setBiasForces(const AtomMatrix &bf) {
   biasForces = bf.array() * getFree().array();
 }
 // return forces applied on all atoms in array 'force'
@@ -453,7 +455,7 @@ void Matter::setMass(long int indexAtom, double mass) {
   masses[indexAtom] = mass;
 }
 
-void Matter::setMasses(VectorXd massesIn) {
+void Matter::setMasses(const VectorXd &massesIn) {
   for (int i = 0; i < nAtoms; i++) {
     masses[i] = massesIn[i];
   }
@@ -894,7 +896,7 @@ double Matter::maxForce(void) {
 
 VectorXi Matter::getAtomicNrs() const { return this->atomicNrs; }
 
-void Matter::setAtomicNrs(const VectorXi atmnrs) {
+void Matter::setAtomicNrs(const VectorXi &atmnrs) {
   if (atmnrs.size() != this->nAtoms) {
     throw std::invalid_argument(
         "Vector of atomic numbers not equal to the number of atoms");
@@ -922,11 +924,11 @@ AtomMatrix Matter::getVelocities() const {
   return velocities.array() * getFree().array();
 }
 
-void Matter::setVelocities(const AtomMatrix v) {
+void Matter::setVelocities(const AtomMatrix &v) {
   velocities = v.array() * getFree().array();
 }
 
-void Matter::setForces(const AtomMatrix f) {
+void Matter::setForces(const AtomMatrix &f) {
   forces = f.array() * getFree().array();
 }
 
