@@ -19,8 +19,7 @@
 class MonteCarlo {
 
 public:
-  MonteCarlo(std::shared_ptr<Matter> const matterIn,
-             std::shared_ptr<Parameters> paramsIn)
+  MonteCarlo(std::shared_ptr<Matter> const matterIn, const Parameters &paramsIn)
       : matter{matterIn},
         params{paramsIn} {
     log = spdlog::get("combi");
@@ -31,6 +30,6 @@ public:
 
 private:
   std::shared_ptr<Matter> matter;
-  std::shared_ptr<Parameters> params;
+  const Parameters &params;
   shared_ptr<spdlog::logger> log;
 };

@@ -39,36 +39,23 @@ GPRDimerTest::~GPRDimerTest() {
 }
 
 TEST_F(GPRDimerTest, TestMatter) {
-  double optConvergedForce = 0.001;
-  string potential("morse_pt");
   string reactantFilename("pos.con");
   string displacementFilename("displacement.con");
   string modeFilename("direction.dat");
-  string optimizer("lbfgs");
-  SaddleSearchMethod *saddleSearch;
   AtomMatrix mode;
-  LowestEigenmode *minModeMethod;
-  Parameters *parameters = new Parameters;
-  parameters->load("config.ini");
-  // parameters->potential_options.potential = potential;
-  // parameters->optimizer_options.method = optimizer;
-  // parameters->optimizer_options.converged_force = optConvergedForce;
-  // parameters->dimer_options.converged_angle = 0.0873;
-  // parameters->saddleMinmodeMethod = LowestEigenmode::MINMODE_GPRDIMER;
-  Matter *initial = new Matter(parameters);
-  Matter *saddle = new Matter(parameters);
+  Parameters parameters;
+  parameters.load("config.ini");
+  auto pot = helper_functions::makePotential(parameters);
+  auto initial = std::make_shared<Matter>(pot, parameters);
+  auto saddle = std::make_shared<Matter>(pot, parameters);
   initial->con2matter(reactantFilename);
   saddle->con2matter(displacementFilename);
   mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
-  saddleSearch = new MinModeSaddleSearch(
-      saddle, mode, initial->getPotentialEnergy(), parameters);
-  minModeMethod = new AtomicGPDimer(saddle, parameters);
+  auto saddleSearch = std::make_unique<MinModeSaddleSearch>(
+      saddle, mode, initial->getPotentialEnergy(), parameters, pot);
+  auto minModeMethod = std::make_unique<AtomicGPDimer>(saddle, parameters, pot);
   minModeMethod->compute(saddle, mode);
   cout << minModeMethod->getEigenvalue();
-  delete minModeMethod;
-  delete initial;
-  delete saddle;
-  delete parameters;
 }
 
 } /* namespace tests */

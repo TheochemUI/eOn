@@ -16,7 +16,7 @@
 class IMD : public Potential {
 
 public:
-  IMD(std::shared_ptr<Parameters> params)
+  IMD(const Parameters &params)
       : Potential(params) {};
   ~IMD();
   void cleanMemory(void);

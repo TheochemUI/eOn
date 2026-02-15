@@ -138,11 +138,11 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix pos,
 };
 
 namespace helper_functions {
-std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params) {
-  return makePotential(params->potential_options.potential, params);
+std::shared_ptr<Potential> makePotential(const Parameters &params) {
+  return makePotential(params.potential_options.potential, params);
 }
 std::shared_ptr<Potential> makePotential(PotType ptype,
-                                         std::shared_ptr<Parameters> params) {
+                                         const Parameters &params) {
   switch (ptype) {
   // TODO: Every potential must know their own type
   case PotType::EMT: {

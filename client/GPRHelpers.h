@@ -24,7 +24,7 @@ namespace helper_functions {
  *
  * @param *parameters An EON parameters object
  */
-gpr::InputParameters eon_parameters_to_gpr(Parameters *parameters);
+gpr::InputParameters eon_parameters_to_gpr(const Parameters &parameters);
 
 /**
  * \brief Create a configuration of atoms for gpr_dimer

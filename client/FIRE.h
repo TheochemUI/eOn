@@ -16,12 +16,11 @@
 class FIRE : public Optimizer {
 
 public:
-  FIRE(std::shared_ptr<ObjectiveFunction> a_objf,
-       std::shared_ptr<Parameters> a_params)
+  FIRE(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
       : Optimizer(a_objf, OptType::FIRE, a_params),
-        m_dt{a_params->optimizer_options.time_step},
-        m_dt_max{a_params->optimizer_options.max_time_step},
-        m_max_move{a_params->optimizer_options.max_move},
+        m_dt{a_params.optimizer_options.time_step},
+        m_dt_max{a_params.optimizer_options.max_time_step},
+        m_max_move{a_params.optimizer_options.max_move},
         m_N_min{5},
         m_N{0},
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},

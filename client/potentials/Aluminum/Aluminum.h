@@ -34,7 +34,7 @@ void potinit_();
 /** Aluminum potential.*/
 class Aluminum : public Potential {
 public:
-  Aluminum(std::shared_ptr<Parameters> params)
+  Aluminum(const Parameters &params)
       : Potential(PotType::EAM_AL, params) {
     potinit_();
   };

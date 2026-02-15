@@ -32,12 +32,12 @@ class BondBoost;
 class Matter {
 public:
   ~Matter() = default;
-  Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
+  Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       : potential{pot},
         usePeriodicBoundaries{true},
         recomputePotential{true},
         forceCalls{0},
-        parameters{params},
+        parameters{&params},
         nAtoms{0},
         positions{Eigen::MatrixXd::Zero(0, 3)},
         velocities{Eigen::MatrixXd::Zero(0, 3)},
@@ -55,10 +55,6 @@ public:
     m_log = spdlog::get("combi");
   } // the number of atoms shall be set later
     // using resize()
-  // TODO: This is a placeholder, it delegates to the standard constructor
-  // Matter(std::shared_ptr<Parameters> parameters)
-  //     : Matter(parameters.get()) {
-  // } // the number of atoms shall be set later using resize()
   // Matter(Parameters *parameters,
   //        long int nAtoms);      // prepare the object for use with nAtoms
   //        atoms
@@ -206,13 +202,12 @@ private:
   char headerCon6[512];
 
   void computePotential();
-  void initializeDataMembers(std::shared_ptr<Parameters> parameters);
   void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
 
   // Stuff which used to be in MatterPrivateData
-  std::shared_ptr<Parameters> parameters;
+  const Parameters *parameters;
   long nAtoms;
   AtomMatrix positions;
   AtomMatrix velocities;

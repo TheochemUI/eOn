@@ -14,10 +14,10 @@
 
 class GlobalOptimization {
 public:
-  GlobalOptimization(Parameters *params);
+  GlobalOptimization(const Parameters &params);
   ~GlobalOptimization(void);
   void run(void);
 
 private:
-  Parameters *parameters;
+  const Parameters &parameters;
 };

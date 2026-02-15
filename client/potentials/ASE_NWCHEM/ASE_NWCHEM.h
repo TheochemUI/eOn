@@ -29,7 +29,7 @@ private:
   size_t counter;
 
 public:
-  ASENwchemPot(shared_ptr<Parameters> a_params);
+  ASENwchemPot(const Parameters &a_params);
   virtual ~ASENwchemPot() {
     SPDLOG_INFO("[ASENwchem] called potential {} times", counter);
   }
