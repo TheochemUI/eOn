@@ -44,56 +44,70 @@ public:
   // jobs //
 
   // Physical Constants
-  double kB;
-  double timeUnit;
+  struct constants_t {
+    double kB;
+    double timeUnit;
+  } constants;
 
   /** input parameters **/
 
   // [Main] //
-  JobType job;
-  long randomSeed;
-  double temperature;
-  bool quiet;
-  bool writeLog;
-  bool checkpoint;
-  string iniFilename;
-  string conFilename;
-  double finiteDifference;
-  long maxForceCalls;
-  bool removeNetForce;
+  struct main_options_t {
+    JobType job;
+    long randomSeed;
+    double temperature;
+    bool quiet;
+    bool writeLog;
+    bool checkpoint;
+    string iniFilename;
+    string conFilename;
+    double finiteDifference;
+    long maxForceCalls;
+    bool removeNetForce;
+  } main_options;
 
   // [Potential] //
-  PotType potential;
-  double MPIPollPeriod;
-  bool LAMMPSLogging;
-  int LAMMPSThreads;
-  bool EMTRasmussen;
-  bool LogPotential;
-  string extPotPath;
+  struct potential_options_t {
+    PotType potential;
+    double MPIPollPeriod;
+    bool LAMMPSLogging;
+    int LAMMPSThreads;
+    bool EMTRasmussen;
+    bool LogPotential;
+    string extPotPath;
+    int MPIPotentialRank;
+#ifdef EONMPI
+    MPI_Comm MPIClientComm;
+#endif
+  } potential_options;
 
   // [AMS] and [AMS_IO] //
-  string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
-  string forcefield; // OPt.ff etc. (REAXFF)
-  string model;      // Model hamiltonian (MOPAC)
-  string resources;  // DFTB
-  string xc;         // Exchange (BAND, ADF)
-  string basis;      // Basis (BAND, ADF)
-
-  // [AMS_ENV] //
-  string amshome;
-  string scm_tmpdir;
-  string scmlicense;
-  string scm_pythondir;
-  string amsbin;
-  string amsresources;
+  struct ams_options_t {
+    string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
+    string forcefield; // OPt.ff etc. (REAXFF)
+    string model;      // Model hamiltonian (MOPAC)
+    string resources;  // DFTB
+    string xc;         // Exchange (BAND, ADF)
+    string basis;      // Basis (BAND, ADF)
+    struct env_t {
+      string amshome;
+      string scm_tmpdir;
+      string scmlicense;
+      string scm_pythondir;
+      string amsbin;
+      string amsresources;
+    } env;
+  } ams_options;
 
   // [XTBPot] //
-  string xtb_paramset;
-  double xtb_elec_temperature;
-  size_t xtb_maxiter;
-  double xtb_acc;
-  double xtb_charge;
-  int xtb_uhf;
+  struct xtb_options_t {
+    string paramset;
+    double elec_temperature;
+    size_t maxiter;
+    double acc;
+    double charge;
+    int uhf;
+  } xtb_options;
 
   // [ZBLPot] //
   struct zbl_options_t {
@@ -113,217 +127,206 @@ public:
   } socket_nwchem_options;
 
   // [Structure Comparison] //
-  double distanceDifference; // The distance criterion for comparing geometries
-  double neighborCutoff; // radius used in the local atomic structure analysis
-  bool checkRotation;
-  bool indistinguishableAtoms;
-  double energyDifference;
-  bool removeTranslation;
+  struct structure_comparison_options_t {
+    double distance_difference;
+    double neighbor_cutoff;
+    bool check_rotation;
+    bool indistinguishable_atoms;
+    double energy_difference;
+    bool remove_translation;
+  } structure_comparison_options;
 
   // [Process Search] //
-  bool processSearchMinimizeFirst;
-  double processSearchMinimizationOffset; // how far from the saddle to displace
-                                          // the minimization images
+  struct process_search_options_t {
+    bool minimize_first;
+    double minimization_offset;
+  } process_search_options;
 
   // [Saddle Search] //
-  long saddleMaxJumpAttempts; // number of displacements to reach a convex
-                              // region;  if 0, a search is started after the
-                              // displacement
-                              // TODO(rg): Not used
-  long saddleMaxIterations;   // max iterations for saddle point searches and
-                              // minimization
-  string saddleMethod;
-  string saddleMinmodeMethod;     // algorithm to be used for lowest eigenmode
-                                  // determination
-  string saddleDisplaceType;      // displacement type to use
-  double saddleMaxEnergy;         // energy above product state that will cause
-                                  // termination of the saddle point search
-  double saddleDisplaceMagnitude; // norm of the displacement vector
-  double saddleMaxSingleDisplace; // maximum value of displacement in x, y and z
-                                  // direction for atoms being displaced
-  double saddleDisplaceRadius; // atoms within this radius of the displacement
-                               // atoms are also displaced
-  double saddleConvergedForce; // force convergence criterion required for a
-                               // saddle point search
-  double saddlePerpForceRatio; // proportion to keep of the perpendicular force
-                               // when the lowest eigenvalue is positive
-  bool saddleNonnegativeDisplacementAbort; // abort the saddle search if the
-                                           // displacement does not have a
-                                           // negative mode
-  long saddleNonlocalCountAbort; // abort the search if this many atoms move
-                                 // more than NonlocalDistanceAbort
-  double saddleNonlocalDistanceAbort; // abort the search if NonlocalCountAbort
-                                      // atoms move more than this distance
-  bool saddleRemoveRotation; // remove dominant rotational component when system
-                             // is translated
-
-  double saddleDynamicsTemperature; // temperature for dynamics saddle search
-                                    // method
-  double saddleDynamicsStateCheckIntervalInput;
-  double saddleDynamicsStateCheckInterval; // how often to minimize
-  double saddleDynamicsRecordIntervalInput;
-  double saddleDynamicsRecordInterval;
-  bool saddleDynamicsLinearInterpolation;
-  double saddleDynamicsMaxInitCurvature;
-
-  bool saddleConfinePositive;             // undocumented
-  bool saddleBowlBreakout;                // undocumented
-  long saddleBowlActive;                  // undocumented
-  double saddleConfinePositiveMinForce;   // undocumented
-  double saddleConfinePositiveScaleRatio; // undocumented
-  double saddleConfinePositiveBoost;      // undocumented
-  long saddleConfinePositiveMinActive;    // undocumented
-  double saddleZeroModeAbortCurvature;
+  struct saddle_search_options_t {
+    long max_jump_attempts;
+    long max_iterations;
+    string method;
+    string minmode_method;
+    string displace_type;
+    double max_energy;
+    double displace_magnitude;
+    double max_single_displace;
+    double displace_radius;
+    double converged_force;
+    double perp_force_ratio;
+    bool nonnegative_displacement_abort;
+    long nonlocal_count_abort;
+    double nonlocal_distance_abort;
+    bool remove_rotation;
+    double zero_mode_abort_curvature;
+    struct dynamics_t {
+      double temperature;
+      double state_check_interval_input;
+      double state_check_interval;
+      double record_interval_input;
+      double record_interval;
+      bool linear_interpolation;
+      double max_init_curvature;
+    } dynamics;
+    struct confine_positive_t {
+      bool enabled;
+      bool bowl_breakout;
+      long bowl_active;
+      double min_force;
+      double scale_ratio;
+      double boost;
+      long min_active;
+    } confine_positive;
+  } saddle_search_options;
 
   // [Optimizer] //
-  OptType optMethod;
-  OptType refineOptMethod;     // used below refine threshold
-  double refineThreshold;      // threshold to switch opt_method
-  string optConvergenceMetric; // norm, max_atom, max_component
-  string optConvergenceMetricLabel;
-  size_t optMaxIterations; // maximum iterations for saddle point searches and
-                           // minimization
-  double
-      optMaxMove; // maximum displacement vector for a step during optimization
-  double optConvergedForce; // force convergence criterion required for an
-                            // optimization
-  double optTimeStepInput;
-  double optTimeStep;         // time step size used in quickmin
-  double optMaxTimeStepInput; // maximum time step for FIRE.
-  double optMaxTimeStep;      // maximum time step for FIRE.
-  long optLBFGSMemory; // number of previous forces to keep in the bfgs memory
-  double optLBFGSInverseCurvature;
-  double optLBFGSMaxInverseCurvature;
-  bool optLBFGSAutoScale;
-  bool optLBFGSAngleReset;
-  bool optLBFGSDistanceReset;
-  bool optQMSteepestDecent; // if set the velocity will always be set to zero in
-                            // quickmin
-  bool optCGNoOvershooting; // if set it is ensured that the approximate line
-                            // search in conjugate gradients never overshoot the
-                            // minimum along the search line
-  bool
-      optCGKnockOutMaxMove; // if set the old search direction is nullified when
-                            // steps larger than the optMaxMove are conducted
-  bool optCGLineSearch;     // if set full line search is conducted
-  double optCGLineConverged;    // convergence criteria for line search, ratio
-                                // between force component along search line and
-                                // the orthogonal part
-  long optCGLineSearchMaxIter;  // maximal nr of iterations during line search
-  long optCGMaxIterBeforeReset; // max nr of cg steps before reset, if 0 no
-                                // resetting is done
-  double optSDAlpha;
-  bool optSDTwoPoint;
+  struct optimizer_options_t {
+    OptType method;
+    string convergence_metric; // norm, max_atom, max_component
+    string convergence_metric_label;
+    size_t max_iterations;
+    double max_move;
+    double converged_force;
+    double time_step_input;
+    double time_step;
+    double max_time_step_input;
+    double max_time_step;
+    struct refine_t {
+      OptType method;
+      double threshold;
+    } refine;
+    struct lbfgs_t {
+      long memory;
+      double inverse_curvature;
+      double max_inverse_curvature;
+      bool auto_scale;
+      bool angle_reset;
+      bool distance_reset;
+    } lbfgs;
+    struct cg_t {
+      bool no_overshooting;
+      bool knock_out_max_move;
+      bool line_search;
+      double line_converged;
+      long line_search_max_iter;
+      long max_iter_before_reset;
+    } cg;
+    struct quickmin_t {
+      bool steepest_descent;
+    } quickmin;
+    struct sd_t {
+      double alpha;
+      bool two_point;
+    } sd;
+  } optimizer_options;
 
   // [Dimer] //
-  double dimerRotationAngle;  // finite difference rotation angle
-  bool dimerImproved;         // turn on the improved dimer method
-  double dimerConvergedAngle; // stop rotating when angle drops below this value
-  long dimerMaxIterations;    // maximum number of rotation iterations
-  string dimerOptMethod;      // method to determine the next rotation direction
-  long dimerRotationsMax;     // old
-  long dimerRotationsMin;     // old
-  double dimerTorqueMax;      // old
-  double dimerTorqueMin;      // old
-  bool dimerRemoveRotation;   // remove dominant rotational component when
-                              // estimating the eigenmode
+  struct dimer_options_t {
+    double rotation_angle;
+    bool improved;
+    double converged_angle;
+    long max_iterations;
+    string opt_method;
+    long rotations_max;
+    long rotations_min;
+    double torque_max;
+    double torque_min;
+    bool remove_rotation;
+  } dimer_options;
 
   // [GPR Dimer] //
-  double gprDimerRotationAngle;    // finite difference rotation angle
-  double gprDimerConvergedAngle;   // stop rotating when angle drops below this
-                                   // value {T_anglerot_init}
-  double gprDimerRelaxConvAngle;   // stop rotating when angle drops below this
-                                   // value during relaxation {T_anglerot_gp}
-  long gprDimerInitRotationsMax;   // {num_iter_initrot}
-  long gprDimerRelaxRotationsMax;  // {num_iter_rot_gp}
-  long gprDimerDivisorTdimerGP;    // {divisor_T_dimer_gp}
-  long gprDimerMaxOuterIterations; // maximum number of outer iterations or new
-                                   // sets of observations {num_bigiter}
-  long gprDimerMaxInnerIterations; // maximum number of steps during the
-                                   // relaxation phase {num_iter}
-  double gprDimerMidpointMaxDisp;  // {disp_max}
-  string gprDimerRotOptMethod;     // method to determine the next rotation
-                                   // direction {method_rot}
-  string gprDimerTransOptMethod;   // method to determine the next rotation
-                                   // direction {method_trans}
-  double gprActiveRadius; // activation radius for inclusion in covariance
-                          // matrix {actdist_fro}
-  double gprDimerSep; // distance from the middle point of the dimer to the two
-                      // images {dimer_sep}
-  double gprDimerConvStep; // step length for convex regions {param_trans[0]}
-  double gprDimerMaxStep;  // maximum step length {param_trans[1]}
-  double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the
-                               // ratio of inter-atomic distances between the
-                               // image and its "nearest observed data point"
-  bool gprDimerInitRotGP;   // initial rotations without GP (1) or with GP (0)
-                            // {initrot_nogp}
-  bool gprDimerInitTransGP; // initial translations without GP (1) or with GP
-                            // (0) {inittrans_nogp}
-  bool gprDimerManyIterations; // indicates of the number of iterations is
-                               // larger than required for dimer convergence on
-                               // the accurate energy surface (1), otherwise (0)
-                               // the relaxation phase is continued from the
-                               // current dimer if the maximum iterations in the
-                               // relaxation phase is reached {islarge_num_iter}
-  // GPR Params
-  string gprDimerHyperOptMethod; // method to optimize hyperparameters
-                                 // {optimization_alg}
-  double gprDimerSigma2;         // GPR variance {gp_sigma2}
-  double gprDimerJitterSigma2;   // GPR jitter variance {jitter_sigma2}
-  double gprDimerNoiseSigma2;    // noise Variance {sigma2}
-  double gprDimerPriorMu;        // prior mean {prior_mu}
-  double gprDimerPriorSigma2;    // prior variance {prior_s2}
-  long gprDimerPriorNu;          // prior degrees of freedom {prior_nu}
-  // GPR Optimization Parameters
-  bool gprOptCheckDerivatives; // {check_derivative}
-  int gprOptMaxIterations;     // {max_iter}
-  double gprOptTolFunc;        // {tolerance_func}
-  double gprOptTolSol;         // {tolerance_sol}
-  long gprOptLambdaLimit;      // {lambda_limit}
-  long gprOptLambdaInit;       // {lambda}
-  bool gprUsePrune;            // {use_prune}
-  int gprPruneBegin;           // {start_prune_at}
-  int gprPruneNVals;           // {nprune_vals}
-  double gprPruneThreshold;    // {prune_threshold}
+  struct gpr_dimer_options_t {
+    double rotation_angle;
+    double converged_angle;
+    double relax_conv_angle;
+    long init_rotations_max;
+    long relax_rotations_max;
+    long divisor_t_dimer_gp;
+    long max_outer_iterations;
+    long max_inner_iterations;
+    double midpoint_max_disp;
+    string rot_opt_method;
+    string trans_opt_method;
+    double active_radius;
+    double dimer_sep;
+    double conv_step;
+    double max_step;
+    double ratio_at_limit;
+    bool init_rot_gp;
+    bool init_trans_gp;
+    bool many_iterations;
+    struct gpr_params_t {
+      string hyper_opt_method;
+      double sigma2;
+      double jitter_sigma2;
+      double noise_sigma2;
+      double prior_mu;
+      double prior_sigma2;
+      long prior_nu;
+    } gpr_params;
+    struct opt_params_t {
+      bool check_derivatives;
+      int max_iterations;
+      double tol_func;
+      double tol_sol;
+      long lambda_limit;
+      long lambda_init;
+    } opt_params;
+    struct prune_params_t {
+      bool use_prune;
+      int begin;
+      int n_vals;
+      double threshold;
+    } prune_params;
+    struct debug_params_t {
+      int report_level;
+      int debug_level;
+      string out_dir;
+      string pos_file;
+      string energy_file;
+      string grad_file;
+      string out_ext;
+      double offset_mid_point;
+      double dy;
+      double dz;
+    } debug_params;
+  } gpr_dimer_options;
 
-  // GPR Debugging Parameters
-  int gprReportLevel;            // {report_level}
-  int gprDebugLevel;             // {debug_level}
-  string gprDebugOutDir;         // {debug_output_dir}
-  string gprDebugPosFile;        // {debug_output_file_R}
-  string gprDebugEnergyFile;     // {debug_output_file_E}
-  string gprDebugGradFile;       // {debug_output_file_G}
-  string gprDebugOutExt;         // {debug_output_file_extension}
-  double gprDebugOffsetMidPoint; // {debug_offset_from_mid_point}
-  double gprDebugDy;             // {debug_dy}
-  double gprDebugDz;             // {debug_dz}
+  // [GP Surrogate] //
+  struct gp_surrogate_options_t {
+    bool enabled;
+    JobType sub_job;
+    double uncertainty;
+    bool linear_path_always;
+    PotType potential;
+  } gp_surrogate_options;
 
-  // GP Surrogate Parameters
-  bool use_surrogate;
-  JobType sub_job;
-  double gp_uncertainty;
-  bool gp_linear_path_always;
-  PotType surrogatePotential; // ONLY: catlearn for now
-
-  // [CatLearn]
-  std::string catl_path;
-  std::string catl_model;
-  std::string catl_prior;
-  bool catl_use_deriv;
-  bool catl_use_fingerprint;
-  bool catl_parallel;
+  // [CatLearn] //
+  struct catlearn_options_t {
+    std::string path;
+    std::string model;
+    std::string prior;
+    bool use_deriv;
+    bool use_fingerprint;
+    bool parallel;
+  } catlearn_options;
 
   // [ASE_ORCA] //
-  std::string orca_path;
-  std::string orca_nproc;
-  std::string orca_sline; // Other catchall values
+  struct ase_orca_options_t {
+    std::string path;
+    std::string nproc;
+    std::string simpleinput;
+  } ase_orca_options;
 
   // [ASE_NWCHEM] //
-  std::string nwchem_path;
-  std::string nwchem_nproc;
-  std::string nwchem_multiplicity; // 1 for singlet, 2 for doublet
-  double nwchem_scf_thresh;
-  long nwchem_scf_maxiter;
+  struct ase_nwchem_options_t {
+    std::string path;
+    std::string nproc;
+    std::string multiplicity;
+    double scf_thresh;
+    long scf_maxiter;
+  } ase_nwchem_options;
 
   // [Metatomic] //
   struct metatomic_options_t {
@@ -345,38 +348,31 @@ public:
   } metatomic_options;
 
   // [Lanczos] //
-  double lanczosTolerance;   // difference between the lowest eigenvalues of two
-                             // successive iterations
-  long lanczosMaxIterations; // maximum number of iterations
-  bool lanczosQuitEarly;
+  struct lanczos_options_t {
+    double tolerance;
+    long max_iterations;
+    bool quit_early;
+  } lanczos_options;
 
   // [Prefactor] //
-  double
-      prefactorDefaultValue; // default prefactor; calculate explicitly if zero
-  double prefactorMaxValue;  // max prefactor allowed
-  double prefactorMinValue;  // min prefactor allowed
-  double prefactorWithinRadius; // atoms within this radius of the displaced
-                                // atoms are put in the Hessian, unless
-                                // filterMode is fraction
-  double
-      prefactorMinDisplacement;  // atoms with displacement between min1 or min2
-                                 // and the saddle point are put in the Hessian
-  string prefactorRate;          // method to estimate prefactor
-  string prefactorConfiguration; // configuration for which the frequencies
-                                 // should be determined
-  bool
-      prefactorAllFreeAtoms; // use all free atom when determining the prefactor
-  string prefactorFilterScheme;   // "cutoff" or "fraction", which use
-                                  // prefactorMinDisplacement or
-                                  // prefactorFilterFraction, respectively.
-  double prefactorFilterFraction; // Include atoms whose summed motion comprise
-                                  // more than prefactorFilterFraction in the
-                                  // prefactor calculation. Prioritizes atoms
-                                  // that move more.
+  struct prefactor_options_t {
+    double default_value;
+    double max_value;
+    double min_value;
+    double within_radius;
+    double min_displacement;
+    string rate;
+    string configuration;
+    bool all_free_atoms;
+    string filter_scheme;
+    double filter_fraction;
+  } prefactor_options;
 
   // [Hessian] //
-  string hessianAtomList;
-  double hessianZeroFreqValue;
+  struct hessian_options_t {
+    string atom_list;
+    double zero_freq_value;
+  } hessian_options;
 
   // [Nudged Elastic Band] //
   struct neb_options_t {
@@ -469,116 +465,129 @@ public:
   } neb_options;
 
   // [Molecular Dynamics] //
-  double mdTimeStepInput;
-  double mdTimeStep;
-  double mdTimeInput;
-  double mdTime;
-  long mdSteps;
+  struct dynamics_options_t {
+    double time_step_input;
+    double time_step;
+    double time_input;
+    double time;
+    long steps;
+  } dynamics_options;
 
   // [Parallel Replica] //
-  bool parrepRefineTransition;
-  bool parrepAutoStop;
-  bool parrepDephaseLoopStop;
-  double parrepDephaseTimeInput;
-  double parrepDephaseTime;
-  long parrepDephaseLoopMax;
-  double parrepStateCheckIntervalInput;
-  double parrepStateCheckInterval;
-  double parrepRecordIntervalInput;
-  double parrepRecordInterval;
-  double parrepCorrTimeInput;
-  double parrepCorrTime;
+  struct parallel_replica_options_t {
+    bool refine_transition;
+    bool auto_stop;
+    bool dephase_loop_stop;
+    double dephase_time_input;
+    double dephase_time;
+    long dephase_loop_max;
+    double state_check_interval_input;
+    double state_check_interval;
+    double record_interval_input;
+    double record_interval;
+    double corr_time_input;
+    double corr_time;
+  } parallel_replica_options;
 
   // [Temperature Accelerated Dynamics] //
-  double tadLowT;
-  double tadMinPrefactor;
-  double tadConfidence;
+  struct tad_options_t {
+    double low_temperature;
+    double min_prefactor;
+    double confidence;
+  } tad_options;
 
   // [Thermostat] //
-  string thermostat;
-  double thermoAndersenAlpha;
-  double thermoAndersenTcolInput;
-  double thermoAndersenTcol;
-  double thermoNoseMass;
-  double thermoLangevinFrictionInput;
-  double thermoLangevinFriction;
-  // std::vector<int> thermoAtoms;
+  struct thermostat_options_t {
+    string kind;
+    double andersen_alpha;
+    double andersen_tcol_input;
+    double andersen_tcol;
+    double nose_mass;
+    double langevin_friction_input;
+    double langevin_friction;
+  } thermostat_options;
 
   // [Replica Exchange] //
-  string repexcTemperatureDistribution;
-  long repexcReplicas;
-  long repexcExchangeTrials;
-  double repexcSamplingTimeInput;
-  double repexcSamplingTime;
-  double repexcTemperatureHigh;
-  double repexcTemperatureLow;
-  double repexcExchangePeriodInput;
-  double repexcExchangePeriod;
+  struct replica_exchange_options_t {
+    string temperature_distribution;
+    long replicas;
+    long exchange_trials;
+    double sampling_time_input;
+    double sampling_time;
+    double temperature_high;
+    double temperature_low;
+    double exchange_period_input;
+    double exchange_period;
+  } replica_exchange_options;
 
-  // [Bond Boost] //
-  string biasPotential;
-  string bondBoostBALS;
-  double bondBoostRMDTimeInput;
-  double bondBoostRMDTime;
-  double bondBoostDVMAX;
-  double bondBoostQRR;
-  double bondBoostPRR;
-  double bondBoostQcut;
+  // [Bond Boost / Hyperdynamics] //
+  struct hyperdynamics_options_t {
+    string bias_potential;
+    string boost_atom_list;
+    double rmd_time_input;
+    double rmd_time;
+    double dvmax;
+    double qrr;
+    double prr;
+    double qcut;
+  } hyperdynamics_options;
 
   // [Basin Hopping] //
-  double basinHoppingDisplacement;
-  double basinHoppingInitialRandomStructureProbability;
-  double basinHoppingPushApartDistance;
-  long basinHoppingSteps;
-  long basinHoppingQuenchingSteps;
-  bool basinHoppingSignificantStructure;
-  bool basinHoppingSingleAtomDisplace;
-  string basinHoppingDisplacementAlgorithm;
-  string basinHoppingDisplacementDistribution;
-  double basinHoppingSwapProbability;
-  long basinHoppingJumpMax;
-  long basinHoppingJumpSteps;
-  bool basinHoppingAdjustDisplacement;
-  long basinHoppingAdjustPeriod;
-  double basinHoppingAdjustFraction;
-  double basinHoppingTargetRatio;
-  bool basinHoppingWriteUnique;
-  double basinHoppingStopEnergy;
+  struct basin_hopping_options_t {
+    double displacement;
+    double initial_random_structure_probability;
+    double push_apart_distance;
+    long steps;
+    long quenching_steps;
+    bool significant_structure;
+    bool single_atom_displace;
+    string displacement_algorithm;
+    string displacement_distribution;
+    double swap_probability;
+    long jump_max;
+    long jump_steps;
+    bool adjust_displacement;
+    long adjust_period;
+    double adjust_fraction;
+    double target_ratio;
+    bool write_unique;
+    double stop_energy;
+  } basin_hopping_options;
 
   // [Global Optimization] //
-  string globalOptimizationMoveMethod;
-  string globalOptimizationDecisionMethod;
-  long globalOptimizationSteps;
-  double globalOptimizationBeta;
-  double globalOptimizationAlpha;
-  long globalOptimizationMdmin;
-  double globalOptimizationTargetEnergy;
+  struct global_optimization_options_t {
+    string move_method;
+    string decision_method;
+    long steps;
+    double beta;
+    double alpha;
+    long mdmin;
+    double target_energy;
+  } global_optimization_options;
 
   // [Monte Carlo] //
-  double monteCarloStepSize;
-  int monteCarloSteps;
+  struct monte_carlo_options_t {
+    double step_size;
+    int steps;
+  } monte_carlo_options;
 
   // [BGSD] //
-
-  double alpha;
-  double beta;
-  double gradientfinitedifference;
-  double Hforceconvergence;
-  double grad2energyconvergence;
-  double grad2forceconvergence;
-
-  // MPI stuff, not actually specified in config file
-  // it is used to pass information to the GPAW MPI potential.
-  int MPIPotentialRank;
-#ifdef EONMPI
-  MPI_Comm MPIClientComm;
-#endif
+  struct bgsd_options_t {
+    double alpha;
+    double beta;
+    double gradient_finite_difference;
+    double h_force_convergence;
+    double grad2energy_convergence;
+    double grad2force_convergence;
+  } bgsd_options;
 
   // [Debug] //
-  bool writeMovies;
-  long writeMoviesInterval;
-  bool estNEBeig;
-  string nebMMF;
+  struct debug_options_t {
+    bool write_movies;
+    long write_movies_interval;
+    bool estimate_neb_eigenvalues;
+    string neb_mmf;
+  } debug_options;
 
 private:
   string toLowerCase(string s);

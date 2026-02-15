@@ -175,8 +175,9 @@ int main(int argc, char **argv) {
     printf("Loading parameter file %s\n", config_file.c_str());
     error = parameters.load(config_file);
   } else {
-    printf("Loading parameter file %s\n", parameters.iniFilename.c_str());
-    error = parameters.load(parameters.iniFilename);
+    printf("Loading parameter file %s\n",
+           parameters.main_options.iniFilename.c_str());
+    error = parameters.load(parameters.main_options.iniFilename);
   }
   if (error) {
     fprintf(stderr, "\nproblem loading parameter file\n");
@@ -227,7 +228,7 @@ int main(int argc, char **argv) {
   }
   clients = number_of_clients;
 
-  if (parameters.potential == "mpi") {
+  if (parameters.potential_options.potential == "mpi") {
     int *potential_ranks = new int[potentials];
     int j;
     for (i = 0, j = 0; i < isize; i++) {
@@ -248,7 +249,7 @@ int main(int argc, char **argv) {
     }
 
     if (my_client_number < number_of_clients) {
-      parameters.MPIPotentialRank =
+      parameters.potential_options.MPIPotentialRank =
           potential_ranks[my_client_number * potential_group_size];
     }
   }
@@ -262,7 +263,7 @@ int main(int argc, char **argv) {
     MPI_Comm new_comm;
     MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
     if (new_comm != MPI_COMM_NULL) {
-      parameters.MPIClientComm = new_comm;
+      parameters.potential_options.MPIClientComm = new_comm;
     }
     printf("creating group with ranks: %i\n", r);
   }
@@ -382,8 +383,8 @@ int main(int argc, char **argv) {
 
       // check to see if parameters file exists before loading
       int error = 0;
-      string config_file =
-          helper_functions::getRelevantFile(parameters.iniFilename);
+      string config_file = helper_functions::getRelevantFile(
+          parameters.main_options.iniFilename);
       printf("Loading parameter file %s\n", config_file.c_str());
       error = parameters.load(config_file);
 
@@ -399,7 +400,8 @@ int main(int argc, char **argv) {
           helper_functions::makeJob(std::make_unique<Parameters>(parameters));
       if (job == nullptr) {
         printf("error: Unknown job: %s\n",
-               std::string{magic_enum::enum_name<JobType>(parameters.job)}
+               std::string{
+                   magic_enum::enum_name<JobType>(parameters.main_options.job)}
                    .c_str());
         return 1;
       }

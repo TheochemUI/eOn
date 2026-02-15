@@ -26,7 +26,7 @@ ASEOrcaPot::ASEOrcaPot(std::shared_ptr<Parameters> a_params)
     : Potential(PotType::ASE_ORCA, a_params),
       guard{} {
   counter = 1;
-  std::string py_file = a_params->extPotPath;
+  std::string py_file = a_params->potential_options.extPotPath;
 
   // import
   try {
