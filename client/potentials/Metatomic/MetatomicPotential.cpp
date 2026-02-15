@@ -21,47 +21,47 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   this->energy_uncertainty_key_ = "energy_uncertainty";
 
   // Apply global variant if present
-  if (!m_metatomic_params.metatomic_options.variant.base.empty()) {
-    auto variant = m_metatomic_params.metatomic_options.variant.base;
+  if (!m_params.metatomic_options.variant.base.empty()) {
+    auto variant = m_params.metatomic_options.variant.base;
     this->energy_key_ += "/" + variant;
     this->energy_uncertainty_key_ += "/" + variant;
   }
 
   // Apply variant/energy override
-  if (!m_metatomic_params.metatomic_options.variant.energy.empty()) {
-    if (m_metatomic_params.metatomic_options.variant.energy == "off") {
+  if (!m_params.metatomic_options.variant.energy.empty()) {
+    if (m_params.metatomic_options.variant.energy == "off") {
       this->energy_key_ = "energy";
     } else {
       this->energy_key_ =
-          "energy/" + m_metatomic_params.metatomic_options.variant.energy;
+          "energy/" + m_params.metatomic_options.variant.energy;
     }
   }
 
   // Apply variant/energy_uncertainty override
-  if (!m_metatomic_params.metatomic_options.variant.energy_uncertainty
+  if (!m_params.metatomic_options.variant.energy_uncertainty
            .empty()) {
-    if (m_metatomic_params.metatomic_options.variant.energy_uncertainty ==
+    if (m_params.metatomic_options.variant.energy_uncertainty ==
         "off") {
       this->energy_uncertainty_key_ = "energy_uncertainty";
     } else {
       this->energy_uncertainty_key_ =
           "energy_uncertainty/" +
-          m_metatomic_params.metatomic_options.variant.energy_uncertainty;
+          m_params.metatomic_options.variant.energy_uncertainty;
     }
   }
 
   // 1. Load the model from the path specified in parameters
   torch::optional<std::string> extensions_directory = torch::nullopt;
-  if (!m_metatomic_params.metatomic_options.extensions_directory.empty()) {
+  if (!m_params.metatomic_options.extensions_directory.empty()) {
     extensions_directory =
-        m_metatomic_params.metatomic_options.extensions_directory;
+        m_params.metatomic_options.extensions_directory;
   }
 
   try {
     m_log->info("[MetatomicPotential] Loading model from '{}'",
-                m_metatomic_params.metatomic_options.model_path);
+                m_params.metatomic_options.model_path);
     this->model_ = metatomic_torch::load_atomistic_model(
-        m_metatomic_params.metatomic_options.model_path, extensions_directory);
+        m_params.metatomic_options.model_path, extensions_directory);
   } catch (const std::exception &e) {
     m_log->error("[MetatomicPotential] Failed to load model: {}", e.what());
     throw;
@@ -83,8 +83,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // TODO(rg):: Eventually switch to upstream selection
   // https://github.com/metatensor/metatomic/issues/21
   torch::optional<std::string> desired = torch::nullopt;
-  if (!m_metatomic_params.metatomic_options.device.empty()) {
-    desired = m_metatomic_params.metatomic_options.device;
+  if (!m_params.metatomic_options.device.empty()) {
+    desired = m_params.metatomic_options.device;
   }
   device_type_ = metatomic_torch::pick_device(
       this->capabilities_->supported_devices, desired);
@@ -110,7 +110,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
   evaluations_options_->set_length_unit(
-      m_metatomic_params.metatomic_options.length_unit);
+      m_params.metatomic_options.length_unit);
 
   auto outputs = this->capabilities_->outputs();
   if (!outputs.contains(this->energy_key_)) {
@@ -132,9 +132,9 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // whether to warn (non-positive threshold disables checking).
   // Default: if user provided a positive threshold, use it; otherwise keep it
   // disabled (-1).
-  if (m_metatomic_params.metatomic_options.uncertainty_threshold > 0) {
+  if (m_params.metatomic_options.uncertainty_threshold > 0) {
     this->uncertainty_threshold_ =
-        m_metatomic_params.metatomic_options.uncertainty_threshold;
+        m_params.metatomic_options.uncertainty_threshold;
   } else {
     this->uncertainty_threshold_ = -1.0; // disabled
   }
@@ -181,7 +181,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   }
 
   this->check_consistency_ =
-      m_metatomic_params.metatomic_options.check_consistency;
+      m_params.metatomic_options.check_consistency;
   m_log->info("[MetatomicPotential] Initialization complete.");
 }
 
@@ -377,7 +377,7 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     const double *positions, const double *box, bool periodic) {
 
   auto cutoff =
-      request->engine_cutoff(m_metatomic_params.metatomic_options.length_unit);
+      request->engine_cutoff(m_params.metatomic_options.length_unit);
 
   VesinOptions options;
   options.cutoff = cutoff;
