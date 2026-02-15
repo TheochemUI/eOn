@@ -30,8 +30,6 @@ from eon import atoms
 from eon import superbasinscheme
 from eon import askmc
 from eon import movie
-from eon import _utils as utl
-
 def akmc(config: ConfigClass = EON_CONFIG, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.
 
@@ -74,9 +72,7 @@ def akmc(config: ConfigClass = EON_CONFIG, steps=0):
 
     # --- START: DYNAMIC ATOM LIST SCRIPT EXECUTION ---
     if config.displace_atom_kmc_state_script:
-        atom_list = current_state.get_displacement_atom_list(config)
-        # Overwrite the global config value with the list specific to this state.
-        config.displace_atom_list = atom_list
+        current_state.get_displacement_atom_list(config)
     # --- END: DYNAMIC ATOM LIST SCRIPT EXECUTION ---
 
     if first_run:

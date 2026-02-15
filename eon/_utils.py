@@ -1,5 +1,4 @@
 from pathlib import Path
-from enum import Enum
 import sys
 import subprocess
 import tempfile
@@ -8,56 +7,43 @@ import typing as typ
 from dataclasses import dataclass
 
 from eon import fileio as eio
-from eon import atoms as eatm
 from eon import config as econf
 
-
-class ScriptType(Enum):
-    STATE = 0
-    DISP = 1
 
 @dataclass
 class ScriptConfig:
     """Configuration for running an external atom list script."""
 
-    script_path: str
-    scratch_path: str
-    root_path: str
+    script_path: Path
+    scratch_path: Path
+    root_path: Path
 
     def __post_init__(self):
         """
         Post-initialization processing to validate and resolve paths.
         This method is automatically called by the dataclass constructor.
         """
-        for pth in (self.script_path, self.scratch_path):
-            if not pth.is_absolute():
-                pth = self.root_path / pth
+        if not self.script_path.is_absolute():
+            self.script_path = self.root_path / self.script_path
+        if not self.scratch_path.is_absolute():
+            self.scratch_path = self.root_path / self.scratch_path
 
     @classmethod
-    def from_eon_config(cls, config: econf.ConfigClass, stype: ScriptType) -> typ.Self:
+    def from_eon_config(cls, config: econf.ConfigClass) -> typ.Self:
         """
         Factory method to create a ScriptConfig instance from the main EON config.
         """
-        if stype == ScriptType.STATE:
-            script_path = Path(config.displace_atom_kmc_state_script)
-        elif stype == ScriptType.DISP:
-            script_path = Path(config.displace_atom_kmc_step_script)
-
         return cls(
-            script_path=script_path,
+            script_path=Path(config.displace_atom_kmc_state_script),
             scratch_path=Path(config.path_scratch),
             root_path=Path(config.path_root),
         )
 
 
-def gen_ids_from_con(sconf: ScriptConfig, reactant: eatm.Atoms, logger: logging.Logger):
-    script_path = Path(sconf.script_path)
-    if not script_path.is_absolute():
-        script_path = sconf.root_path / sconf.script_path
-
-    if not script_path.is_file():
-        logger.error(f"displace_atom_list_script not found: {script_path}")
-        return []
+def gen_ids_from_con(sconf: ScriptConfig, reactant, logger: logging.Logger):
+    if not sconf.script_path.is_file():
+        logger.error(f"displace_atom_list_script not found: {sconf.script_path}")
+        return ""
 
     # Use a secure temporary file to pass the structure to the script
     # The file is automatically deleted when the 'with' block is exited.
@@ -73,7 +59,7 @@ def gen_ids_from_con(sconf: ScriptConfig, reactant: eatm.Atoms, logger: logging.
         try:
             # Execute the script, passing the temporary filename as an argument
             proc = subprocess.run(
-                [sys.executable, str(script_path), tmpf.name],  # Pass filename
+                [sys.executable, str(sconf.script_path), tmpf.name],
                 capture_output=True,
                 text=True,
                 check=True,
@@ -82,7 +68,7 @@ def gen_ids_from_con(sconf: ScriptConfig, reactant: eatm.Atoms, logger: logging.
             atom_list_str = proc.stdout.strip()
             return atom_list_str
         except subprocess.CalledProcessError as e:
-            logger.error(f"Error running displace_atom_list_script '{script_path}':")
+            logger.error(f"Error running displace_atom_list_script '{sconf.script_path}':")
             logger.error(f"Stderr: {e.stderr.strip()}")
             sys.exit(1)
         except Exception as e:
