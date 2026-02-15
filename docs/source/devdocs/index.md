@@ -17,6 +17,7 @@ Pull requests and documentation contributions are all highly appreciated.
 :caption: Tasks
 
 testing
+benchmarks
 docbuild
 svn
 svn-migration
