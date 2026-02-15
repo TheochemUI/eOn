@@ -11,6 +11,8 @@
 */
 #include "GPRHelpers.h"
 
+#include "subprojects/gpr_optim/data_types/EigenHelpers.h"
+
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -133,12 +135,10 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   int fake_atype;          //!> False "atomtype" for GPR Dimer
 
   atoms_config.clear();
-  atoms_config.positions.resize(matter->getPositions().rows(),
-                                matter->getPositions().cols());
-  atoms_config.is_frozen.resize(matter->numberOfAtoms());
-  atoms_config.id.resize(matter->numberOfAtoms());
-  atoms_config.positions.assignFromEigenMatrix(matter->getPositions());
-  atoms_config.atomicNrs.resize(matter->numberOfAtoms());
+  atoms_config.positions = matter->getPositions();
+  atoms_config.is_frozen.resize(1, matter->numberOfAtoms());
+  atoms_config.id.resize(1, matter->numberOfAtoms());
+  atoms_config.atomicNrs.resize(1, matter->numberOfAtoms());
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
     atomnrs.push_back(matter->getAtomicNr(i));
     atoms_config.atomicNrs[i] = matter->getAtomicNr(i);
@@ -156,7 +156,7 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   }
 
   number_of_mov_atoms = atoms_config.countMovingAtoms();
-  number_of_fro_atoms = atoms_config.is_frozen.getSize() - number_of_mov_atoms;
+  number_of_fro_atoms = atoms_config.is_frozen.size() - number_of_mov_atoms;
 
   if (number_of_fro_atoms > 0 && number_of_mov_atoms > 0) {
     // Resize structures for moving and frozen atoms
@@ -188,19 +188,20 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
     //!> Special case when there's only one atom type, we can now just use the
     //!`set` function of the `Field`. Essentially now we only have one atom type
     else if (atype_to_gprd_atype.size() == 1) {
-      atoms_config.atoms_mov.type.set(atype_to_gprd_atype.at(atomnrs[0]));
-      atoms_config.atoms_froz_inactive.type.set(
+      atoms_config.atoms_mov.type.setConstant(
+          atype_to_gprd_atype.at(atomnrs[0]));
+      atoms_config.atoms_froz_inactive.type.setConstant(
           atype_to_gprd_atype.at(atomnrs[0]));
     }
     // Assign moving and frozen atoms and list all frozen atoms as inactive
     gpr::Index_t counter_f = 0, counter_m = 0;
-    for (gpr::Index_t n = 0; n < atoms_config.is_frozen.getSize(); ++n) {
+    for (gpr::Index_t n = 0; n < atoms_config.is_frozen.size(); ++n) {
       if (atoms_config.is_frozen[n] == MOVING_ATOM)
-        atoms_config.atoms_mov.positions.set(0, counter_m++,
-                                             atoms_config.positions.at(n));
+        gpr::coord::set(atoms_config.atoms_mov.positions, 0, counter_m++,
+                        gpr::coord::at(atoms_config.positions, n));
       else
-        atoms_config.atoms_froz_inactive.positions.set(
-            0, counter_f++, atoms_config.positions.at(n));
+        gpr::coord::set(atoms_config.atoms_froz_inactive.positions, 0,
+                        counter_f++, gpr::coord::at(atoms_config.positions, n));
     }
     //!> End case where we have both nonzero moving and nonzero frozen atoms
   } else {
@@ -227,14 +228,15 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
     //!> Special case when there's only one atom type, we can now just use the
     //!`set` function of the `Field`. Essentially now we only have one atom type
     else if (atype_to_gprd_atype.size() == 1) {
-      atoms_config.atoms_mov.type.set(atype_to_gprd_atype.at(atomnrs[0]));
+      atoms_config.atoms_mov.type.setConstant(
+          atype_to_gprd_atype.at(atomnrs[0]));
     }
   }
   // Pairtype indices for pairs of atomtypes (n_at x n_at)
   // Active pairtypes are indexed as 0,1,...,n_pt-1. Inactive pairtypes are
   // given index EMPTY.
   atoms_config.pairtype.resize(n_at, n_at);
-  atoms_config.pairtype.set(EMPTY);
+  atoms_config.pairtype.setConstant(EMPTY);
 
   // Set pairtype indices for moving+moving atom pairs (and update number of
   // active pairtypes)
@@ -251,11 +253,9 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
 gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
-  o.R.resize(matter->getPositions().rows(), matter->getPositions().cols());
-  o.G.resize(matter->getForces().rows(), matter->getForces().cols());
-  o.E.resize(1);
-  o.E.set(matter->getPotentialEnergy());
-  o.R.assignFromEigenMatrix(matter->getPositions());
-  o.G.assignFromEigenMatrix(-1 * matter->getForces());
+  o.R = matter->getPositions();
+  o.G = -1 * matter->getForces();
+  o.E.resize(1, 1);
+  o.E(0, 0) = matter->getPotentialEnergy();
   return o;
 }
