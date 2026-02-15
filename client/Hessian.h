@@ -17,7 +17,7 @@
 
 class Hessian {
 public:
-  Hessian(Parameters *params, Matter *matter);
+  Hessian(const Parameters &params, Matter *matter);
   ~Hessian();
 
   Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(Matter *matterIn,
@@ -28,7 +28,7 @@ public:
 
 private:
   Matter *matter;
-  Parameters *parameters;
+  const Parameters &parameters;
 
   Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
   //    VectorXd modes;

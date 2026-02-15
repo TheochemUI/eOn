@@ -24,7 +24,8 @@ using namespace std::string_literals; // For ""s
 namespace tests {
 class NEBTest : public ::testing::Test {
 protected:
-  Parameters *params;
+  Parameters params;
+  std::shared_ptr<Potential> pot;
   Matter *m1;
   Matter *m2;
   double threshold;

@@ -28,27 +28,27 @@ const char *elementArray[] = {
 char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
-SocketNWChemPot::SocketNWChemPot(std::shared_ptr<Parameters> p)
+SocketNWChemPot::SocketNWChemPot(const Parameters &p)
     : Potential(PotType::SocketNWChem, p),
       listen_fd(-1),
       conn_fd(-1),
       is_connected(false) {
 
-  unix_socket_mode = p->socket_nwchem_options.unix_socket_mode;
-  nwchem_settings = p->socket_nwchem_options.nwchem_settings;
-  mem_in_gb = p->socket_nwchem_options.mem_in_gb;
-  make_template_input = p->socket_nwchem_options.make_template_input;
+  unix_socket_mode = p.socket_nwchem_options.unix_socket_mode;
+  nwchem_settings = p.socket_nwchem_options.nwchem_settings;
+  mem_in_gb = p.socket_nwchem_options.mem_in_gb;
+  make_template_input = p.socket_nwchem_options.make_template_input;
 
   if (unix_socket_mode) {
-    unix_socket_basename = p->socket_nwchem_options.unix_socket_path;
+    unix_socket_basename = p.socket_nwchem_options.unix_socket_path;
     // NWChem client hardcodes this prefix
     server_address = "/tmp/ipi_" + unix_socket_basename;
     port = -1;
     std::cout << "SocketNWChemPot: Initializing in UNIX mode." << std::endl;
     std::cout << "Listening on socket file: " << server_address << std::endl;
   } else {
-    server_address = p->socket_nwchem_options.host;
-    port = p->socket_nwchem_options.port;
+    server_address = p.socket_nwchem_options.host;
+    port = p.socket_nwchem_options.port;
     std::cout << "SocketNWChemPot: Initializing in TCP mode." << std::endl;
     std::cout << "Listening on: " << server_address << ":" << port << std::endl;
   }

@@ -19,7 +19,7 @@
 class Lanczos : public LowestEigenmode {
 
 public:
-  Lanczos(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
+  Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
           std::shared_ptr<Potential> pot);
   ~Lanczos() = default;
   void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);

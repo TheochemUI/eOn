@@ -24,11 +24,11 @@
 class ObjectiveFunction {
 protected:
   std::shared_ptr<Matter> matter;
-  std::shared_ptr<Parameters> params;
+  const Parameters &params;
 
 public:
   ObjectiveFunction(std::shared_ptr<Matter> matterPassed,
-                    std::shared_ptr<Parameters> paramsPassed)
+                    const Parameters &paramsPassed)
       : matter{matterPassed},
         params{paramsPassed} {}
   virtual ~ObjectiveFunction() {}

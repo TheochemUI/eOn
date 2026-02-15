@@ -22,9 +22,9 @@ class BondBoost {
 public:
   /** Constructor to be used when a structure is minimized.
   @param[in]   *matter        Pointer to the Matter object to be relaxed.
-  @param[in]   *parameters    Pointer to the Parameter object containing the
+  @param[in]   parameters     Reference to the Parameter object containing the
   runtime parameters.*/
-  BondBoost(Matter *matt, Parameters *params);
+  BondBoost(Matter *matt, const Parameters &params);
   ~BondBoost(); ///< Destructor.
 
   void initialize();
@@ -36,8 +36,8 @@ private:
   double Booststeps();
   long nAtoms;    ///< Number of free coordinates.
   Matter *matter; ///< Pointer to atom object \b outside the scope of the class.
-  Parameters *parameters; ///< Pointer to a structure outside the scope of the
-                          ///< class containing runtime parameters.
+  const Parameters &parameters; ///< Reference to a structure outside the scope
+                                ///< of the class containing runtime parameters.
   long *BAList;
   long *RAList;
   long *TABAList;

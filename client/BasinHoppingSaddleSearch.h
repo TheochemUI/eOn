@@ -21,7 +21,7 @@ public:
   BasinHoppingSaddleSearch(std::shared_ptr<Matter> reactant,
                            std::shared_ptr<Matter> displacement,
                            std::shared_ptr<Potential> potPassed,
-                           std::shared_ptr<Parameters> parametersPassed)
+                           const Parameters &parametersPassed)
       : SaddleSearchMethod(potPassed, parametersPassed),
         reactant{std::make_shared<Matter>(*reactant)},
         saddle{displacement} {

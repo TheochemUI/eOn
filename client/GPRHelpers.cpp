@@ -16,69 +16,66 @@
 #include <unordered_map>
 
 gpr::InputParameters
-helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
+helper_functions::eon_parameters_to_gpr(const Parameters &parameters) {
   gpr::InputParameters p;
   // Problem parameters
-  p.actdist_fro.value = parameters->gpr_dimer_options.active_radius;
-  p.dimer_sep.value = parameters->gpr_dimer_options.dimer_sep;
-  p.method_rot.value = parameters->gpr_dimer_options.rot_opt_method;
-  p.method_trans.value = parameters->gpr_dimer_options.trans_opt_method;
-  p.param_trans.value[0] = parameters->gpr_dimer_options.conv_step;
-  p.param_trans.value[1] = parameters->gpr_dimer_options.max_step;
+  p.actdist_fro.value = parameters.gpr_dimer_options.active_radius;
+  p.dimer_sep.value = parameters.gpr_dimer_options.dimer_sep;
+  p.method_rot.value = parameters.gpr_dimer_options.rot_opt_method;
+  p.method_trans.value = parameters.gpr_dimer_options.trans_opt_method;
+  p.param_trans.value[0] = parameters.gpr_dimer_options.conv_step;
+  p.param_trans.value[1] = parameters.gpr_dimer_options.max_step;
   // Saddle point convergence parameter
-  p.T_dimer.value = parameters->saddle_search_options.converged_force;
-  p.T_anglerot_init.value = parameters->gpr_dimer_options.converged_angle;
+  p.T_dimer.value = parameters.saddle_search_options.converged_force;
+  p.T_anglerot_init.value = parameters.gpr_dimer_options.converged_angle;
   // ---
-  p.initrot_nogp.value = parameters->gpr_dimer_options.init_rot_gp;
-  p.num_iter_initrot.value = parameters->gpr_dimer_options.init_rotations_max;
+  p.initrot_nogp.value = parameters.gpr_dimer_options.init_rot_gp;
+  p.num_iter_initrot.value = parameters.gpr_dimer_options.init_rotations_max;
   // unused except in the capnp for now
-  // p.inittrans_nogp.value = parameters->gpr_dimer_options.init_trans_gp;
-  p.T_anglerot_gp.value = parameters->gpr_dimer_options.relax_conv_angle;
-  p.num_iter_rot_gp.value = parameters->gpr_dimer_options.relax_rotations_max;
-  p.divisor_T_dimer_gp.value = parameters->gpr_dimer_options.divisor_t_dimer_gp;
-  p.disp_max.value = parameters->gpr_dimer_options.midpoint_max_disp;
-  p.ratio_at_limit.value = parameters->gpr_dimer_options.ratio_at_limit;
-  p.num_bigiter.value = parameters->gpr_dimer_options.max_outer_iterations;
-  p.num_iter.value = parameters->gpr_dimer_options.max_inner_iterations;
-  p.islarge_num_iter.value = parameters->gpr_dimer_options.many_iterations;
+  // p.inittrans_nogp.value = parameters.gpr_dimer_options.init_trans_gp;
+  p.T_anglerot_gp.value = parameters.gpr_dimer_options.relax_conv_angle;
+  p.num_iter_rot_gp.value = parameters.gpr_dimer_options.relax_rotations_max;
+  p.divisor_T_dimer_gp.value = parameters.gpr_dimer_options.divisor_t_dimer_gp;
+  p.disp_max.value = parameters.gpr_dimer_options.midpoint_max_disp;
+  p.ratio_at_limit.value = parameters.gpr_dimer_options.ratio_at_limit;
+  p.num_bigiter.value = parameters.gpr_dimer_options.max_outer_iterations;
+  p.num_iter.value = parameters.gpr_dimer_options.max_inner_iterations;
+  p.islarge_num_iter.value = parameters.gpr_dimer_options.many_iterations;
   // GPR Parameters
-  p.gp_sigma2.value = parameters->gpr_dimer_options.gpr_params.sigma2;
-  p.jitter_sigma2.value =
-      parameters->gpr_dimer_options.gpr_params.jitter_sigma2;
-  p.sigma2.value = parameters->gpr_dimer_options.gpr_params.noise_sigma2;
-  p.prior_mu.value = parameters->gpr_dimer_options.gpr_params.prior_mu;
-  p.prior_nu.value = parameters->gpr_dimer_options.gpr_params.prior_nu;
-  p.prior_s2.value = parameters->gpr_dimer_options.gpr_params.prior_sigma2;
+  p.gp_sigma2.value = parameters.gpr_dimer_options.gpr_params.sigma2;
+  p.jitter_sigma2.value = parameters.gpr_dimer_options.gpr_params.jitter_sigma2;
+  p.sigma2.value = parameters.gpr_dimer_options.gpr_params.noise_sigma2;
+  p.prior_mu.value = parameters.gpr_dimer_options.gpr_params.prior_mu;
+  p.prior_nu.value = parameters.gpr_dimer_options.gpr_params.prior_nu;
+  p.prior_s2.value = parameters.gpr_dimer_options.gpr_params.prior_sigma2;
   p.check_derivative.value =
-      parameters->gpr_dimer_options.opt_params.check_derivatives;
-  p.max_iter.value = parameters->gpr_dimer_options.opt_params.max_iterations;
-  p.tolerance_func.value = parameters->gpr_dimer_options.opt_params.tol_func;
-  p.tolerance_sol.value = parameters->gpr_dimer_options.opt_params.tol_sol;
-  p.lambda_limit.value = parameters->gpr_dimer_options.opt_params.lambda_limit;
-  p.lambda.value = parameters->gpr_dimer_options.opt_params.lambda_init;
+      parameters.gpr_dimer_options.opt_params.check_derivatives;
+  p.max_iter.value = parameters.gpr_dimer_options.opt_params.max_iterations;
+  p.tolerance_func.value = parameters.gpr_dimer_options.opt_params.tol_func;
+  p.tolerance_sol.value = parameters.gpr_dimer_options.opt_params.tol_sol;
+  p.lambda_limit.value = parameters.gpr_dimer_options.opt_params.lambda_limit;
+  p.lambda.value = parameters.gpr_dimer_options.opt_params.lambda_init;
   // Prune
-  p.use_prune.value = parameters->gpr_dimer_options.prune_params.use_prune;
-  p.start_prune_at.value = parameters->gpr_dimer_options.prune_params.begin;
-  p.nprune_vals.value = parameters->gpr_dimer_options.prune_params.n_vals;
-  p.prune_threshold.value =
-      parameters->gpr_dimer_options.prune_params.threshold;
+  p.use_prune.value = parameters.gpr_dimer_options.prune_params.use_prune;
+  p.start_prune_at.value = parameters.gpr_dimer_options.prune_params.begin;
+  p.nprune_vals.value = parameters.gpr_dimer_options.prune_params.n_vals;
+  p.prune_threshold.value = parameters.gpr_dimer_options.prune_params.threshold;
   // Debugging
-  p.report_level.value =
-      parameters->gpr_dimer_options.debug_params.report_level;
-  p.debug_level.value = parameters->gpr_dimer_options.debug_params.debug_level;
-  p.debug_output_dir.value = parameters->gpr_dimer_options.debug_params.out_dir;
+  p.report_level.value = parameters.gpr_dimer_options.debug_params.report_level;
+  p.debug_level.value = parameters.gpr_dimer_options.debug_params.debug_level;
+  p.debug_output_dir.value = parameters.gpr_dimer_options.debug_params.out_dir;
   p.debug_output_file_R.value =
-      parameters->gpr_dimer_options.debug_params.pos_file;
+      parameters.gpr_dimer_options.debug_params.pos_file;
   p.debug_output_file_E.value =
-      parameters->gpr_dimer_options.debug_params.energy_file;
+      parameters.gpr_dimer_options.debug_params.energy_file;
   p.debug_output_file_G.value =
-      parameters->gpr_dimer_options.debug_params.grad_file;
+      parameters.gpr_dimer_options.debug_params.grad_file;
   p.debug_output_file_extension.value =
-      parameters->gpr_dimer_options.debug_params.out_ext;
+      parameters.gpr_dimer_options.debug_params.out_ext;
   p.debug_offset_from_mid_point.value =
-      parameters->gpr_dimer_options.debug_params.offset_mid_point;
-  p.debug_dy.value = parameters->gpr_dimer_options.debug_params.dy;
-  p.debug_dz.value = parameters->gpr_dimer_options.debug_params.dz;
+      parameters.gpr_dimer_options.debug_params.offset_mid_point;
+  p.debug_dy.value = parameters.gpr_dimer_options.debug_params.dy;
+  p.debug_dz.value = parameters.gpr_dimer_options.debug_params.dz;
   return p;
 }
 

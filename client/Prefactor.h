@@ -22,13 +22,13 @@ const char RATE_QQHTST[] = "qqhtst";
 const char FILTER_CUTOFF[] = "cutoff";
 const char FILTER_FRACTION[] = "fraction";
 
-int getPrefactors(Parameters *parameters, Matter *min1, Matter *saddle,
+int getPrefactors(const Parameters &parameters, Matter *min1, Matter *saddle,
                   Matter *min2, double &pref1, double &pref2);
-VectorXi movedAtoms(Parameters *parameters, Matter *min1, Matter *saddle,
+VectorXi movedAtoms(const Parameters &parameters, Matter *min1, Matter *saddle,
                     Matter *min2);
-VectorXi movedAtomsPct(Parameters *parameters, Matter *min1, Matter *saddle,
-                       Matter *min2);
+VectorXi movedAtomsPct(const Parameters &parameters, Matter *min1,
+                       Matter *saddle, Matter *min2);
 VectorXi allFreeAtoms(Matter *matter);
-VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
+VectorXd removeZeroFreqs(const Parameters &parameters, VectorXd freqs);
 void logFreqs(VectorXd freqs, char *name);
 } // namespace Prefactor
