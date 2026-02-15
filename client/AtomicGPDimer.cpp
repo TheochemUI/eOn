@@ -82,9 +82,14 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
 
   // Potential *potential = Potential::getPotential(parameters);
   auto potential = helper_functions::makePotential(params);
+  pot::PotentialWrapper wrapper(
+      [&potential](long N, const double *R, const int *atomicNrs, double *F,
+                   double *U, double *variance, const double *box) {
+        potential->force(N, R, atomicNrs, F, U, variance, box);
+      });
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
-  atomic_dimer.execute(*potential.get());
+  atomic_dimer.execute(wrapper);
   fpeh.restore_fpe();
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
@@ -99,5 +104,7 @@ double AtomicGPDimer::getEigenvalue() {
 }
 
 AtomMatrix AtomicGPDimer::getEigenvector() {
-  return atomic_dimer.getFinalOrientation()->extractEigenMatrix();
+  gpr::Coord *orient = atomic_dimer.getFinalOrientation();
+  long nFree = matterCenter->numberOfFreeAtoms();
+  return Eigen::Map<const AtomMatrix>(orient->data(), nFree, 3);
 }
