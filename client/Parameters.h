@@ -149,6 +149,7 @@ public:
     string method;
     string minmode_method;
     string displace_type;
+    std::vector<long> displace_atom_list;
     double max_energy;
     double displace_magnitude;
     double max_single_displace;

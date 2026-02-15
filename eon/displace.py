@@ -362,7 +362,6 @@ class ListedAtoms(Displace):
             epicenter = self.listed_atoms
         else:
             epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
-        logger.debug("Listed atom displacement epicenters: %s", epicenter)
         return self.get_displacement(epicenter)
 
 class ListedTypes(Displace):
