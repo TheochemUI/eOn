@@ -68,6 +68,7 @@ void makeProjection(double *result, const double *v1, const double *v2,
                     long size); // result = projection of v1 on v2
 RotationMatrix rotationExtract(const AtomMatrix r1, const AtomMatrix r2);
 bool rotationMatch(const Matter &m1, const Matter &m2, const double max_diff);
+void projectOutRotTrans(Eigen::VectorXd &step, const AtomMatrix &positions);
 void rotationRemove(const AtomMatrix r1, std::shared_ptr<Matter> m2);
 void rotationRemove(const std::shared_ptr<Matter> m1,
                     std::shared_ptr<Matter> m2);
