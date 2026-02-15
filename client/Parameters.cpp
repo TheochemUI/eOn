@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Parameters.h"
+#include <sstream>
 #include "BaseStructures.h"
 #include "BondBoost.h"
 #include "Dynamics.h"
@@ -1330,8 +1331,28 @@ int Parameters::load(FILE *file) {
         saddle_search_options.displace_type !=
             EpiCenters::DISP_MIN_COORDINATED &&
         saddle_search_options.displace_type != EpiCenters::DISP_LAST_ATOM &&
-        saddle_search_options.displace_type != EpiCenters::DISP_RANDOM) {
+        saddle_search_options.displace_type != EpiCenters::DISP_RANDOM &&
+        saddle_search_options.displace_type !=
+            EpiCenters::DISP_LISTED_ATOMS) {
       saddle_search_options.displace_type = EpiCenters::DISP_LOAD;
+    }
+    // Parse comma-separated atom list for listed_atoms displacement type
+    {
+      string atomListStr = ini.GetValue("Saddle Search", "displace_atom_list",
+                                        "");
+      if (!atomListStr.empty()) {
+        std::stringstream ss(atomListStr);
+        string token;
+        while (std::getline(ss, token, ',')) {
+          // Trim whitespace
+          size_t start = token.find_first_not_of(" \t");
+          size_t end = token.find_last_not_of(" \t");
+          if (start != string::npos) {
+            saddle_search_options.displace_atom_list.push_back(
+                std::stol(token.substr(start, end - start + 1)));
+          }
+        }
+      }
     }
     saddle_search_options.confine_positive.enabled =
         ini.GetValueB("Saddle Search", "confine_positive",
