@@ -17,7 +17,6 @@ from eon import fileio as io
 #import kdb
 from eon import recycling
 from eon import eon_kdb as kdb
-from eon import _utils as utl
 
 from eon.config import config as EON_CONFIG
 from eon.config import ConfigClass # Typing
