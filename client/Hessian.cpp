@@ -59,7 +59,7 @@ bool Hessian::calculate(void) {
 
   // Build the hessian
   Matter matterTemp(*matter);
-  double dr = parameters->finiteDifference;
+  double dr = parameters->main_options.finiteDifference;
 
   AtomMatrix pos = matter->getPositions();
   AtomMatrix posDisplace(nAtoms, 3);
@@ -116,7 +116,7 @@ bool Hessian::calculate(void) {
     }
   }
 
-  if (!parameters->quiet) {
+  if (!parameters->main_options.quiet) {
     SPDLOG_LOGGER_DEBUG(log, "[Hessian] writing hessian\n");
     ofstream hessfile;
     hessfile.open("hessian.dat");
@@ -155,7 +155,7 @@ VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
   newfreqs.resize(size);
   int nremoved = 0;
   for (int i = 0; i < size; i++) {
-    if (abs(freqs(i)) > parameters->hessianZeroFreqValue) {
+    if (abs(freqs(i)) > parameters->hessian_options.zero_freq_value) {
       newfreqs(i - nremoved) = freqs(i);
     } else {
       nremoved++;

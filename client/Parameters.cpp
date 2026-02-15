@@ -32,69 +32,67 @@
 
 Parameters::Parameters() {
 
-  kB = 8.6173324e-5;     // eV/K
-  timeUnit = 10.1805055; // fs
+  constants.kB = 8.6173324e-5;     // eV/K
+  constants.timeUnit = 10.1805055; // fs
 
   // [Main] //
-  job = JobType::Process_Search;
-  randomSeed = -1;
-  temperature = 300.0;
-  checkpoint = false;
-  quiet = false;
-  writeLog = true;
-  iniFilename = "config.ini";
-  conFilename = "pos.con";
-  finiteDifference = 0.01;
-  maxForceCalls = 0;
-  removeNetForce = true;
+  main_options.job = JobType::Process_Search;
+  main_options.randomSeed = -1;
+  main_options.temperature = 300.0;
+  main_options.checkpoint = false;
+  main_options.quiet = false;
+  main_options.writeLog = true;
+  main_options.iniFilename = "config.ini";
+  main_options.conFilename = "pos.con";
+  main_options.finiteDifference = 0.01;
+  main_options.maxForceCalls = 0;
+  main_options.removeNetForce = true;
 
   // [Prefactor] //
-  prefactorDefaultValue = 0.0;
-  prefactorMaxValue = 1e+21;
-  prefactorMinValue = 1e+9;
-  prefactorWithinRadius = 3.3;
-  prefactorMinDisplacement = 0.25;
-  prefactorRate = Prefactor::RATE_HTST;
-  prefactorConfiguration = PrefactorJob::PREFACTOR_REACTANT;
-  prefactorAllFreeAtoms = false;
-  prefactorFilterScheme = Prefactor::FILTER_FRACTION;
-  prefactorFilterFraction = 0.90;
+  prefactor_options.default_value = 0.0;
+  prefactor_options.max_value = 1e+21;
+  prefactor_options.min_value = 1e+9;
+  prefactor_options.within_radius = 3.3;
+  prefactor_options.min_displacement = 0.25;
+  prefactor_options.rate = Prefactor::RATE_HTST;
+  prefactor_options.configuration = PrefactorJob::PREFACTOR_REACTANT;
+  prefactor_options.all_free_atoms = false;
+  prefactor_options.filter_scheme = Prefactor::FILTER_FRACTION;
+  prefactor_options.filter_fraction = 0.90;
 
   // [Potential] //
-  potential = PotType::LJ;
-  MPIPollPeriod = 0.25; // seconds
-  MPIPotentialRank = -1;
-  LogPotential = false;
-  LAMMPSLogging = false;
-  LAMMPSThreads = 0;
-  EMTRasmussen = false;
-  extPotPath = "./ext_pot";
+  potential_options.potential = PotType::LJ;
+  potential_options.MPIPollPeriod = 0.25; // seconds
+  potential_options.MPIPotentialRank = -1;
+  potential_options.LogPotential = false;
+  potential_options.LAMMPSLogging = false;
+  potential_options.LAMMPSThreads = 0;
+  potential_options.EMTRasmussen = false;
+  potential_options.extPotPath = "./ext_pot";
 
   // [AMS] //
-  engine = "";     // One of REAXFF MOPAC
-  forcefield = ""; // OPt.ff or something else
-  model = "";      // PM7 PM3 or something
-  xc = "";         // exchange-correlation functional
-  basis = "";      // with xc
-  resources = "";  // For DFTB
+  ams_options.engine = "";
+  ams_options.forcefield = "";
+  ams_options.model = "";
+  ams_options.xc = "";
+  ams_options.basis = "";
+  ams_options.resources = "";
 
   // [AMS_ENV] //
-  // Horrid little section to mimic amsrc.sh
-  // Assumes the entire thing is going to be set
-  amshome = "";       // "/some/path/to/amshome/";
-  scm_tmpdir = "";    // "/tmp";
-  scm_pythondir = ""; // "/.scm/python";
-  amsbin = "";        // amshome.append("/bin");
-  scmlicense = "";    // amshome.append("license.txt");
-  amsresources = "";  // amshome.append("/atomicdata");
+  ams_options.env.amshome = "";
+  ams_options.env.scm_tmpdir = "";
+  ams_options.env.scm_pythondir = "";
+  ams_options.env.amsbin = "";
+  ams_options.env.scmlicense = "";
+  ams_options.env.amsresources = "";
 
   // [XTBPot] //
-  xtb_paramset = "GFNFF";
-  xtb_acc = 1.0;
-  xtb_elec_temperature = 0.0;
-  xtb_maxiter = 250;
-  xtb_charge = 0.0;
-  xtb_uhf = 0;
+  xtb_options.paramset = "GFNFF";
+  xtb_options.acc = 1.0;
+  xtb_options.elec_temperature = 0.0;
+  xtb_options.maxiter = 250;
+  xtb_options.charge = 0.0;
+  xtb_options.uhf = 0;
 
   // [ZBLPot] //
   // NOTE(rg): No good defaults TBH
@@ -112,106 +110,104 @@ Parameters::Parameters() {
   socket_nwchem_options.make_template_input = true;
 
   // [Structure Comparison] //
-  distanceDifference = 0.1;
-  neighborCutoff = 3.3;
-  checkRotation = false;
-  indistinguishableAtoms = true;
-  energyDifference = 0.01;
-  removeTranslation = true;
+  structure_comparison_options.distance_difference = 0.1;
+  structure_comparison_options.neighbor_cutoff = 3.3;
+  structure_comparison_options.check_rotation = false;
+  structure_comparison_options.indistinguishable_atoms = true;
+  structure_comparison_options.energy_difference = 0.01;
+  structure_comparison_options.remove_translation = true;
 
   // [Debug] //
-  writeMovies = false;
-  writeMoviesInterval = 1;
-  estNEBeig = false;
-  nebMMF = LowestEigenmode::MINMODE_DIMER;
+  debug_options.write_movies = false;
+  debug_options.write_movies_interval = 1;
+  debug_options.estimate_neb_eigenvalues = false;
+  debug_options.neb_mmf = LowestEigenmode::MINMODE_DIMER;
 
   // [Saddle Search] //
-  saddleDisplaceType = EpiCenters::DISP_LOAD;
-  saddleMethod = "min_mode";
-  saddleMinmodeMethod = LowestEigenmode::MINMODE_DIMER;
-  saddleMaxEnergy = 20.0;
-  saddleMaxIterations = 1000;
-  saddleDisplaceRadius = 4.0;
-  saddleDisplaceMagnitude = 0.1;
-  saddleMaxSingleDisplace = 10.;
-  //    saddleConvergedForce = optConvergedForce; default value is set after the
-  //    value of optConvergedForce is loaded
-  saddleNonnegativeDisplacementAbort = false;
-  saddleNonlocalCountAbort = 0;
-  saddleNonlocalDistanceAbort = 0.0;
-  saddleRemoveRotation = false;
-  saddlePerpForceRatio = 0.0;    // undocumented
-  saddleConfinePositive = false; // undocumented
-  saddleBowlBreakout = false;    // undocumented
-  saddleBowlActive = 20;
-  saddleConfinePositiveMinForce = 0.5;           // undocumented
-  saddleConfinePositiveScaleRatio = 0.9;         // undocumented
-  saddleConfinePositiveBoost = 10.;              // undocumented
-  saddleConfinePositiveMinActive = 30;           // undocumented
-  saddleDynamicsTemperature = 0.0;               // defaults to temperature
-  saddleDynamicsStateCheckIntervalInput = 100.0; // fs
-  saddleDynamicsStateCheckInterval =
-      saddleDynamicsStateCheckIntervalInput / timeUnit;
-  saddleDynamicsRecordIntervalInput = 10.0; // fs
-  saddleDynamicsLinearInterpolation = true;
-  saddleDynamicsMaxInitCurvature = 0.0; // eV/Ang^2
-  saddleZeroModeAbortCurvature = 0.0;   // eV/Ang^2
+  saddle_search_options.displace_type = EpiCenters::DISP_LOAD;
+  saddle_search_options.method = "min_mode";
+  saddle_search_options.minmode_method = LowestEigenmode::MINMODE_DIMER;
+  saddle_search_options.max_energy = 20.0;
+  saddle_search_options.max_iterations = 1000;
+  saddle_search_options.displace_radius = 4.0;
+  saddle_search_options.displace_magnitude = 0.1;
+  saddle_search_options.max_single_displace = 10.;
+  saddle_search_options.nonnegative_displacement_abort = false;
+  saddle_search_options.nonlocal_count_abort = 0;
+  saddle_search_options.nonlocal_distance_abort = 0.0;
+  saddle_search_options.remove_rotation = false;
+  saddle_search_options.perp_force_ratio = 0.0;
+  saddle_search_options.confine_positive.enabled = false;
+  saddle_search_options.confine_positive.bowl_breakout = false;
+  saddle_search_options.confine_positive.bowl_active = 20;
+  saddle_search_options.confine_positive.min_force = 0.5;
+  saddle_search_options.confine_positive.scale_ratio = 0.9;
+  saddle_search_options.confine_positive.boost = 10.;
+  saddle_search_options.confine_positive.min_active = 30;
+  saddle_search_options.dynamics.temperature = 0.0;
+  saddle_search_options.dynamics.state_check_interval_input = 100.0;
+  saddle_search_options.dynamics.state_check_interval =
+      saddle_search_options.dynamics.state_check_interval_input / constants.timeUnit;
+  saddle_search_options.dynamics.record_interval_input = 10.0;
+  saddle_search_options.dynamics.linear_interpolation = true;
+  saddle_search_options.dynamics.max_init_curvature = 0.0;
+  saddle_search_options.zero_mode_abort_curvature = 0.0;
 
   // [Optimizers] //
-  optMethod = OptType::CG;
-  optConvergenceMetric = "norm"s;
-  refineOptMethod = OptType::None;
-  refineThreshold = 0.5;
-  optMaxIterations = 1000;
-  optConvergedForce = 0.01;
-  optMaxMove = 0.2;
-  optTimeStepInput = 1.0;
-  optMaxTimeStepInput = 2.5;
-  optMaxTimeStep = optMaxTimeStepInput / timeUnit;
+  optimizer_options.method = OptType::CG;
+  optimizer_options.convergence_metric = "norm"s;
+  optimizer_options.refine.method = OptType::None;
+  optimizer_options.refine.threshold = 0.5;
+  optimizer_options.max_iterations = 1000;
+  optimizer_options.converged_force = 0.01;
+  optimizer_options.max_move = 0.2;
+  optimizer_options.time_step_input = 1.0;
+  optimizer_options.max_time_step_input = 2.5;
+  optimizer_options.max_time_step = optimizer_options.max_time_step_input / constants.timeUnit;
 
-  optLBFGSMemory = 20;
-  optLBFGSInverseCurvature =
+  optimizer_options.lbfgs.memory = 20;
+  optimizer_options.lbfgs.inverse_curvature =
       0.01; // assumes stiffest curvature at minimum is 100 eV/A^2
-  optLBFGSAutoScale = true;
-  optLBFGSAngleReset = true;
-  optLBFGSDistanceReset = true;
+  optimizer_options.lbfgs.auto_scale = true;
+  optimizer_options.lbfgs.angle_reset = true;
+  optimizer_options.lbfgs.distance_reset = true;
 
-  optQMSteepestDecent = false;
-  optCGNoOvershooting = false;
-  optCGKnockOutMaxMove = false;
-  optCGLineConverged = 0.1;
-  optCGLineSearch = false;
-  optCGMaxIterBeforeReset = 0;
-  optCGLineSearchMaxIter = 10;
-  optSDAlpha = 0.1;
-  optSDTwoPoint = false;
+  optimizer_options.quickmin.steepest_descent = false;
+  optimizer_options.cg.no_overshooting = false;
+  optimizer_options.cg.knock_out_max_move = false;
+  optimizer_options.cg.line_converged = 0.1;
+  optimizer_options.cg.line_search = false;
+  optimizer_options.cg.max_iter_before_reset = 0;
+  optimizer_options.cg.line_search_max_iter = 10;
+  optimizer_options.sd.alpha = 0.1;
+  optimizer_options.sd.two_point = false;
 
   // [Process Search] //
-  processSearchMinimizeFirst = true;
-  processSearchMinimizationOffset = optMaxMove;
+  process_search_options.minimize_first = true;
+  process_search_options.minimization_offset = optimizer_options.max_move;
 
   // [Dimer] //
-  dimerRotationAngle = 0.005;
-  dimerImproved = true;
-  dimerConvergedAngle = 5.0; // degrees
-  dimerMaxIterations = 1000;
-  dimerOptMethod = ImprovedDimer::OPT_CG;
-  dimerTorqueMin = 0.1;   // old dimer
-  dimerTorqueMax = 1.0;   // old dimer
-  dimerRotationsMin = 1;  // old dimer
-  dimerRotationsMax = 10; // old dimer and new dimer
-  dimerRemoveRotation = false;
+  dimer_options.rotation_angle = 0.005;
+  dimer_options.improved = true;
+  dimer_options.converged_angle = 5.0;
+  dimer_options.max_iterations = 1000;
+  dimer_options.opt_method = ImprovedDimer::OPT_CG;
+  dimer_options.torque_min = 0.1;
+  dimer_options.torque_max = 1.0;
+  dimer_options.rotations_min = 1;
+  dimer_options.rotations_max = 10;
+  dimer_options.remove_rotation = false;
 
   // [ASE_ORCA] //
-  orca_path = ""s;
-  orca_nproc = "1"s;
+  ase_orca_options.path = ""s;
+  ase_orca_options.nproc = "1"s;
 
   // [ASE_NWCHEM] //
-  nwchem_path = ""s;
-  nwchem_nproc = "1"s;
-  nwchem_multiplicity = ""s;
-  nwchem_scf_thresh = 1e-5;
-  nwchem_scf_maxiter = 200;
+  ase_nwchem_options.path = ""s;
+  ase_nwchem_options.nproc = "1"s;
+  ase_nwchem_options.multiplicity = ""s;
+  ase_nwchem_options.scf_thresh = 1e-5;
+  ase_nwchem_options.scf_maxiter = 200;
 
   // [Metatomic] //
   metatomic_options.model_path = ""s;
@@ -225,79 +221,79 @@ Parameters::Parameters() {
   metatomic_options.variant.energy_uncertainty = ""s;
 
   // [Lanczos] //
-  lanczosTolerance = 0.01;
-  lanczosMaxIterations = 20;
-  lanczosQuitEarly = true;
+  lanczos_options.tolerance = 0.01;
+  lanczos_options.max_iterations = 20;
+  lanczos_options.quit_early = true;
 
   // [GPR Dimer] //
-  gprDimerRotationAngle = 0.005;
-  gprDimerConvergedAngle = 0.08;     // T_anglerot_init
-  gprDimerRelaxConvAngle = 0.001;    // T_anglerot_gp
-  gprDimerInitRotationsMax = 6;      // num_iter_initrot; should be DoF
-  gprDimerRelaxRotationsMax = 10;    // num_iter_rot_gp
-  gprDimerDivisorTdimerGP = 10;      // divisor_T_dimer_gp
-  gprDimerMaxOuterIterations = 300;  // num_bigiter
-  gprDimerMaxInnerIterations = 1000; // num_iter
-  gprDimerMidpointMaxDisp = 0.5;     // disp_max
-  gprDimerRotOptMethod = "lbfgs";    // method_rot
-  gprDimerTransOptMethod = "lbfgs";  // method_trans
-  gprActiveRadius = 5.0;             // actidst_fro
-  gprDimerSep = 0.01;                // dimer_sep
-  gprDimerConvStep = 0.1;            // param_trans[0]
-  gprDimerMaxStep = 0.1;             // param_trans[1]
-  gprDimerRatioAtLimit = 0.66667;    // ratio_at_limit
-  gprDimerInitRotGP = 0;             // initrot_nogp
-  gprDimerInitTransGP = 0;           // inittrans_nogp
-  gprDimerManyIterations = true;     // islarge_num_iter
+  gpr_dimer_options.rotation_angle = 0.005;
+  gpr_dimer_options.converged_angle = 0.08;
+  gpr_dimer_options.relax_conv_angle = 0.001;
+  gpr_dimer_options.init_rotations_max = 6;
+  gpr_dimer_options.relax_rotations_max = 10;
+  gpr_dimer_options.divisor_t_dimer_gp = 10;
+  gpr_dimer_options.max_outer_iterations = 300;
+  gpr_dimer_options.max_inner_iterations = 1000;
+  gpr_dimer_options.midpoint_max_disp = 0.5;
+  gpr_dimer_options.rot_opt_method = "lbfgs";
+  gpr_dimer_options.trans_opt_method = "lbfgs";
+  gpr_dimer_options.active_radius = 5.0;
+  gpr_dimer_options.dimer_sep = 0.01;
+  gpr_dimer_options.conv_step = 0.1;
+  gpr_dimer_options.max_step = 0.1;
+  gpr_dimer_options.ratio_at_limit = 0.66667;
+  gpr_dimer_options.init_rot_gp = 0;
+  gpr_dimer_options.init_trans_gp = 0;
+  gpr_dimer_options.many_iterations = true;
   // GPR Params
-  gprDimerHyperOptMethod = "scg"; // optimization_alg
-  gprDimerSigma2 = 1e-8;          // gp_sigma2
-  gprDimerJitterSigma2 = 0;       // jitter_sigma2
-  gprDimerNoiseSigma2 = 1e-8;     // sigma2
-  gprDimerPriorMu = 0;            // prior_mu
-  gprDimerPriorSigma2 = 1;        // prior_s2
-  gprDimerPriorNu = 20;           // prior_nu
+  gpr_dimer_options.gpr_params.hyper_opt_method = "scg";
+  gpr_dimer_options.gpr_params.sigma2 = 1e-8;
+  gpr_dimer_options.gpr_params.jitter_sigma2 = 0;
+  gpr_dimer_options.gpr_params.noise_sigma2 = 1e-8;
+  gpr_dimer_options.gpr_params.prior_mu = 0;
+  gpr_dimer_options.gpr_params.prior_sigma2 = 1;
+  gpr_dimer_options.gpr_params.prior_nu = 20;
   // GPR Optimization Parameters
-  gprOptCheckDerivatives = false; // check_derivative
-  gprOptMaxIterations = 400;      // max_iter
-  gprOptTolFunc = 1e-4;           // tolerance_func
-  gprOptTolSol = 1e-4;            // tolerance_sol
-  gprOptLambdaLimit = 1e17;       // lambda_limit
-  gprOptLambdaInit = 10.0;        // lambda
+  gpr_dimer_options.opt_params.check_derivatives = false;
+  gpr_dimer_options.opt_params.max_iterations = 400;
+  gpr_dimer_options.opt_params.tol_func = 1e-4;
+  gpr_dimer_options.opt_params.tol_sol = 1e-4;
+  gpr_dimer_options.opt_params.lambda_limit = 1e17;
+  gpr_dimer_options.opt_params.lambda_init = 10.0;
   // GPR Prune Parameters
-  gprUsePrune = false;     // use_prune
-  gprPruneBegin = 8;       // start_prune_at
-  gprPruneNVals = 3;       // nprune_vals
-  gprPruneThreshold = 0.5; // prune_threshold
+  gpr_dimer_options.prune_params.use_prune = false;
+  gpr_dimer_options.prune_params.begin = 8;
+  gpr_dimer_options.prune_params.n_vals = 3;
+  gpr_dimer_options.prune_params.threshold = 0.5;
   // GPR Debugging Parameters
-  gprReportLevel = 1;            // report_level
-  gprDebugLevel = 2;             // debug_level
-  gprDebugOutDir = "output";     // debug_output_dir
-  gprDebugPosFile = "position";  // debug_output_file_R
-  gprDebugEnergyFile = "energy"; // debug_output_file_E
-  gprDebugGradFile = "gradient"; // debug_output_file_G
-  gprDebugOutExt = "dat";        // debug_output_file_extension
-  gprDebugOffsetMidPoint = 3.;   // debug_offset_from_mid_point
-  gprDebugDy = 0.1;              // debug_dy
-  gprDebugDz = 0.1;              // debug_dz
+  gpr_dimer_options.debug_params.report_level = 1;
+  gpr_dimer_options.debug_params.debug_level = 2;
+  gpr_dimer_options.debug_params.out_dir = "output";
+  gpr_dimer_options.debug_params.pos_file = "position";
+  gpr_dimer_options.debug_params.energy_file = "energy";
+  gpr_dimer_options.debug_params.grad_file = "gradient";
+  gpr_dimer_options.debug_params.out_ext = "dat";
+  gpr_dimer_options.debug_params.offset_mid_point = 3.;
+  gpr_dimer_options.debug_params.dy = 0.1;
+  gpr_dimer_options.debug_params.dz = 0.1;
 
   // GP Surrogate Parameters
-  use_surrogate = false;
-  sub_job = JobType::Unknown;
-  gp_uncertainty = 0.05;
-  gp_linear_path_always = false;
-  surrogatePotential = PotType::CatLearn;
+  gp_surrogate_options.enabled = false;
+  gp_surrogate_options.sub_job = JobType::Unknown;
+  gp_surrogate_options.uncertainty = 0.05;
+  gp_surrogate_options.linear_path_always = false;
+  gp_surrogate_options.potential = PotType::CatLearn;
 
   // [Hessian] //
-  hessianAtomList = string("All");
-  hessianZeroFreqValue = 1e-6;
+  hessian_options.atom_list = string("All");
+  hessian_options.zero_freq_value = 1e-6;
 
   // [Nudged Elastic Band] //
   // General optimization and path parameters
   neb_options.image_count = 5;
   neb_options.max_iterations = 1000;
   neb_options.opt_method = OptType::LBFGS;
-  neb_options.force_tolerance = optConvergedForce;
+  neb_options.force_tolerance = optimizer_options.converged_force;
   // Post-run peak handling
   neb_options.mmf_peaks.enabled = true;
   neb_options.mmf_peaks.tolerance = 0.05;
@@ -317,8 +313,6 @@ Parameters::Parameters() {
   // Onsager-Machlup settings
   neb_options.spring.om.enabled = false;
   neb_options.spring.om.optimize_k = true;
-  // > 1 (stiff) provides a smoother path but may "cut corners" near the saddle
-  // < 1 (softer) hugs valleys but paths may become jagged/noisy
   neb_options.spring.om.k_scale = 1.0;
   neb_options.spring.om.k_min = 0.1;
   neb_options.spring.om.k_max = 100;
@@ -359,107 +353,115 @@ Parameters::Parameters() {
   neb_options.endpoints.use_path_file = false;
 
   // [Dynamics] //
-  mdTimeStepInput = 1.0;
-  mdTimeInput = 1000.0;
-  mdTimeStep = mdTimeStepInput / timeUnit;
-  mdTime = mdTimeInput / timeUnit;
-  mdSteps = long(floor(mdTime / mdTimeStep + 0.5));
+  dynamics_options.time_step_input = 1.0;
+  dynamics_options.time_input = 1000.0;
+  dynamics_options.time_step = dynamics_options.time_step_input / constants.timeUnit;
+  dynamics_options.time = dynamics_options.time_input / constants.timeUnit;
+  dynamics_options.steps =
+      long(floor(dynamics_options.time / dynamics_options.time_step + 0.5));
 
   // [Thermostat] //
-  thermostat = Dynamics::NONE;
-  thermoAndersenAlpha = 1.0;       // collision strength
-  thermoAndersenTcolInput = 100.0; // collision frequency in unit of fs
-  thermoNoseMass = 1.0;
-  thermoLangevinFrictionInput = 0.01;
-  thermoLangevinFriction = thermoLangevinFrictionInput * timeUnit;
+  thermostat_options.kind = Dynamics::NONE;
+  thermostat_options.andersen_alpha = 1.0;
+  thermostat_options.andersen_tcol_input = 100.0;
+  thermostat_options.nose_mass = 1.0;
+  thermostat_options.langevin_friction_input = 0.01;
+  thermostat_options.langevin_friction =
+      thermostat_options.langevin_friction_input * constants.timeUnit;
 
   // [Parallel Replica] //
-  parrepRefineTransition = true;
-  parrepAutoStop = false;
-  parrepDephaseLoopStop = false;
-  parrepDephaseTimeInput = 1000.0;
-  parrepDephaseLoopMax = 5;
-  parrepStateCheckIntervalInput = 1000.0;
-  parrepRecordIntervalInput = 50.0;
-  parrepCorrTimeInput = 1000.0;
-  parrepDephaseTime = parrepDephaseTimeInput / timeUnit;
-  parrepStateCheckInterval = parrepStateCheckIntervalInput / timeUnit;
-  parrepRecordInterval = parrepRecordIntervalInput / timeUnit;
-  parrepCorrTime = parrepCorrTimeInput / timeUnit;
+  parallel_replica_options.refine_transition = true;
+  parallel_replica_options.auto_stop = false;
+  parallel_replica_options.dephase_loop_stop = false;
+  parallel_replica_options.dephase_time_input = 1000.0;
+  parallel_replica_options.dephase_loop_max = 5;
+  parallel_replica_options.state_check_interval_input = 1000.0;
+  parallel_replica_options.record_interval_input = 50.0;
+  parallel_replica_options.corr_time_input = 1000.0;
+  parallel_replica_options.dephase_time =
+      parallel_replica_options.dephase_time_input / constants.timeUnit;
+  parallel_replica_options.state_check_interval =
+      parallel_replica_options.state_check_interval_input / constants.timeUnit;
+  parallel_replica_options.record_interval =
+      parallel_replica_options.record_interval_input / constants.timeUnit;
+  parallel_replica_options.corr_time =
+      parallel_replica_options.corr_time_input / constants.timeUnit;
 
   // [Temperature Accelerated Dynamics] //
-  tadLowT = 300.0;
-  tadMinPrefactor = 0.001; // in unit of fs-1
-  tadConfidence = 0.001;
+  tad_options.low_temperature = 300.0;
+  tad_options.min_prefactor = 0.001;
+  tad_options.confidence = 0.001;
 
   // [Replica Exchange] //
-  repexcTemperatureDistribution = "exponential";
-  repexcReplicas = 10;
-  repexcExchangeTrials = repexcReplicas;
-  repexcSamplingTimeInput = 1000.0;
-  repexcSamplingTime = repexcSamplingTimeInput / timeUnit;
-  repexcTemperatureLow = 0.0;
-  repexcTemperatureHigh = 0.0;
-  repexcExchangePeriod = 100.0;
+  replica_exchange_options.temperature_distribution = "exponential";
+  replica_exchange_options.replicas = 10;
+  replica_exchange_options.exchange_trials = replica_exchange_options.replicas;
+  replica_exchange_options.sampling_time_input = 1000.0;
+  replica_exchange_options.sampling_time =
+      replica_exchange_options.sampling_time_input / constants.timeUnit;
+  replica_exchange_options.temperature_low = 0.0;
+  replica_exchange_options.temperature_high = 0.0;
+  replica_exchange_options.exchange_period = 100.0;
 
   // [Hyperdynamics] //
-  biasPotential = Hyperdynamics::NONE;
-  bondBoostBALS = string("All"); // boosted atom list string
-  bondBoostDVMAX = 0.0;
-  bondBoostQRR = 0.2; // can not be set to 0
-  bondBoostPRR = 0.95;
-  bondBoostQcut = 3.0;
-  bondBoostRMDTimeInput = 100.0;
-  bondBoostRMDTime = bondBoostRMDTimeInput / timeUnit;
+  hyperdynamics_options.bias_potential = Hyperdynamics::NONE;
+  hyperdynamics_options.boost_atom_list = string("All");
+  hyperdynamics_options.dvmax = 0.0;
+  hyperdynamics_options.qrr = 0.2;
+  hyperdynamics_options.prr = 0.95;
+  hyperdynamics_options.qcut = 3.0;
+  hyperdynamics_options.rmd_time_input = 100.0;
+  hyperdynamics_options.rmd_time =
+      hyperdynamics_options.rmd_time_input / constants.timeUnit;
 
   // [Basin Hopping] //
-  basinHoppingDisplacement = 0.5;
-  basinHoppingPushApartDistance = 0.4;
-  basinHoppingInitialRandomStructureProbability = 0.0;
-  basinHoppingSteps = 10000;
-  basinHoppingQuenchingSteps = 0;
-  basinHoppingSingleAtomDisplace = false;
-  basinHoppingSignificantStructure = true;
-  basinHoppingDisplacementAlgorithm = "standard";
-  basinHoppingDisplacementDistribution = "uniform";
-  basinHoppingSwapProbability = 0.0;
-  basinHoppingJumpMax = 10;
-  basinHoppingJumpSteps = 0;
-  basinHoppingAdjustDisplacement = true;
-  basinHoppingAdjustPeriod = 10;
-  basinHoppingAdjustFraction = 0.05;
-  basinHoppingTargetRatio = 0.5;
-  basinHoppingWriteUnique = false;
-  basinHoppingStopEnergy = -DBL_MAX;
+  basin_hopping_options.displacement = 0.5;
+  basin_hopping_options.push_apart_distance = 0.4;
+  basin_hopping_options.initial_random_structure_probability = 0.0;
+  basin_hopping_options.steps = 10000;
+  basin_hopping_options.quenching_steps = 0;
+  basin_hopping_options.single_atom_displace = false;
+  basin_hopping_options.significant_structure = true;
+  basin_hopping_options.displacement_algorithm = "standard";
+  basin_hopping_options.displacement_distribution = "uniform";
+  basin_hopping_options.swap_probability = 0.0;
+  basin_hopping_options.jump_max = 10;
+  basin_hopping_options.jump_steps = 0;
+  basin_hopping_options.adjust_displacement = true;
+  basin_hopping_options.adjust_period = 10;
+  basin_hopping_options.adjust_fraction = 0.05;
+  basin_hopping_options.target_ratio = 0.5;
+  basin_hopping_options.write_unique = false;
+  basin_hopping_options.stop_energy = -DBL_MAX;
 
   // [Global Optimization] //
-  globalOptimizationMoveMethod = "md";
-  globalOptimizationDecisionMethod = "npew";
-  globalOptimizationSteps = 10000;
-  globalOptimizationBeta = 1.05;
-  globalOptimizationAlpha = 1.02;
-  globalOptimizationMdmin = 3;
-  globalOptimizationTargetEnergy = -1.E50;
+  global_optimization_options.move_method = "md";
+  global_optimization_options.decision_method = "npew";
+  global_optimization_options.steps = 10000;
+  global_optimization_options.beta = 1.05;
+  global_optimization_options.alpha = 1.02;
+  global_optimization_options.mdmin = 3;
+  global_optimization_options.target_energy = -1.E50;
 
   // [Monte Carlo] //
-  monteCarloStepSize = 0.005;
-  monteCarloSteps = 1000;
+  monte_carlo_options.step_size = 0.005;
+  monte_carlo_options.steps = 1000;
 
   // [BGSD] //
-  alpha = 10.0;
-  beta = 0.2;
-  gradientfinitedifference = 0.000001;
-  Hforceconvergence = 0.01;
-  grad2energyconvergence = 0.000001;
-  grad2forceconvergence = 0.0001;
+  bgsd_options.alpha = 10.0;
+  bgsd_options.beta = 0.2;
+  bgsd_options.gradient_finite_difference = 0.000001;
+  bgsd_options.h_force_convergence = 0.01;
+  bgsd_options.grad2energy_convergence = 0.000001;
+  bgsd_options.grad2force_convergence = 0.0001;
 
   // [CatLearn] //
-  // No reasonable default for catl_path
-  catl_model = "gp";
-  catl_prior = "median";
-  catl_use_deriv = true;
-  catl_use_fingerprint = false;
-  catl_parallel = false;
+  // No reasonable default for catlearn_options.path
+  catlearn_options.model = "gp";
+  catlearn_options.prior = "median";
+  catlearn_options.use_deriv = true;
+  catlearn_options.use_fingerprint = false;
+  catlearn_options.parallel = false;
 }
 
 string Parameters::toLowerCase(string s) {
@@ -492,88 +494,101 @@ int Parameters::load(FILE *file) {
 
     // [Main] //
 
-    job = magic_enum::enum_cast<JobType>(ini.GetValue("Main", "job"),
+    main_options.job = magic_enum::enum_cast<JobType>(ini.GetValue("Main", "job"),
                                          magic_enum::case_insensitive)
               .value_or(JobType::Unknown);
-    temperature = ini.GetValueF("Main", "temperature", temperature);
-    randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
-    checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
-    quiet = ini.GetValueB("Main", "quiet", quiet);
-    writeLog = ini.GetValueB("Main", "write_log", writeLog);
-    finiteDifference =
-        ini.GetValueF("Main", "finite_difference", finiteDifference);
+    main_options.temperature = ini.GetValueF("Main", "temperature", main_options.temperature);
+    main_options.randomSeed = ini.GetValueL("Main", "random_seed", main_options.randomSeed);
+    main_options.checkpoint = ini.GetValueB("Main", "checkpoint", main_options.checkpoint);
+    main_options.quiet = ini.GetValueB("Main", "quiet", main_options.quiet);
+    main_options.writeLog = ini.GetValueB("Main", "write_log", main_options.writeLog);
+    main_options.finiteDifference =
+        ini.GetValueF("Main", "finite_difference", main_options.finiteDifference);
     // Initialize random generator
-    if (randomSeed < 0) {
+    if (main_options.randomSeed < 0) {
       unsigned i = time(NULL);
-      randomSeed = i;
+      main_options.randomSeed = i;
       helper_functions::random(i);
     } else {
-      helper_functions::random(randomSeed);
+      helper_functions::random(main_options.randomSeed);
     }
-    maxForceCalls = ini.GetValueL("Main", "max_force_calls", maxForceCalls);
-    removeNetForce = ini.GetValueB("Main", "remove_net_force", removeNetForce);
+    main_options.maxForceCalls = ini.GetValueL("Main", "max_force_calls", main_options.maxForceCalls);
+    main_options.removeNetForce = ini.GetValueB("Main", "remove_net_force", main_options.removeNetForce);
 
     // [Potential] //
 
-    potential =
+    potential_options.potential =
         magic_enum::enum_cast<PotType>(ini.GetValue("Potential", "potential"),
                                        magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
-    MPIPollPeriod =
-        ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
-    LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
-    LAMMPSThreads =
-        (int)ini.GetValueL("Potential", "lammps_threads", LAMMPSThreads);
-    EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
-    extPotPath = ini.GetValue("Potential", "ext_pot_path", extPotPath);
+    potential_options.MPIPollPeriod =
+        ini.GetValueF("Potential", "mpi_poll_period", potential_options.MPIPollPeriod);
+    potential_options.LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", potential_options.LAMMPSLogging);
+    potential_options.LAMMPSThreads =
+        (int)ini.GetValueL("Potential", "lammps_threads", potential_options.LAMMPSThreads);
+    potential_options.EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", potential_options.EMTRasmussen);
+    potential_options.extPotPath = ini.GetValue("Potential", "ext_pot_path", potential_options.extPotPath);
 
-    if (potential == PotType::MPI || potential == PotType::VASP ||
-        potential == PotType::BOPFOX || potential == PotType::BOP) {
-      LogPotential = true;
+    if (potential_options.potential == PotType::MPI || potential_options.potential == PotType::VASP ||
+        potential_options.potential == PotType::BOPFOX || potential_options.potential == PotType::BOP) {
+      potential_options.LogPotential = true;
     } else {
-      LogPotential = false;
+      potential_options.LogPotential = false;
     }
-    LogPotential = ini.GetValueB("Potential", "log_potential", LogPotential);
+    potential_options.LogPotential = ini.GetValueB("Potential", "log_potential", potential_options.LogPotential);
 
     // [AMS]
-    if (potential == PotType::AMS) {
-      engine = ini.GetValue("AMS", "engine", engine);
-      forcefield = ini.GetValue("AMS", "forcefield", forcefield);
-      resources = ini.GetValue("AMS", "resources", resources);
-      model = ini.GetValue("AMS", "model", model);
-      xc = ini.GetValue("AMS", "xc", xc);
-      basis = ini.GetValue("AMS", "basis", basis);
+    if (potential_options.potential == PotType::AMS) {
+      ams_options.engine = ini.GetValue("AMS", "engine", ams_options.engine);
+      ams_options.forcefield =
+          ini.GetValue("AMS", "forcefield", ams_options.forcefield);
+      ams_options.resources =
+          ini.GetValue("AMS", "resources", ams_options.resources);
+      ams_options.model = ini.GetValue("AMS", "model", ams_options.model);
+      ams_options.xc = ini.GetValue("AMS", "xc", ams_options.xc);
+      ams_options.basis = ini.GetValue("AMS", "basis", ams_options.basis);
     }
     // [AMS_IO]
-    if (potential == PotType::AMS_IO) {
-      engine = ini.GetValue("AMS_IO", "engine", engine);
-      forcefield = ini.GetValue("AMS_IO", "forcefield", forcefield);
-      model = ini.GetValue("AMS_IO", "model", model);
-      xc = ini.GetValue("AMS_IO", "xc", xc);
+    if (potential_options.potential == PotType::AMS_IO) {
+      ams_options.engine =
+          ini.GetValue("AMS_IO", "engine", ams_options.engine);
+      ams_options.forcefield =
+          ini.GetValue("AMS_IO", "forcefield", ams_options.forcefield);
+      ams_options.model = ini.GetValue("AMS_IO", "model", ams_options.model);
+      ams_options.xc = ini.GetValue("AMS_IO", "xc", ams_options.xc);
     }
     // [AMS_ENV]
     // This is only needed if the regular calls do not work
     // e.g. on a MacOS machine
-    if (potential == PotType::AMS_IO || potential == PotType::AMS) {
-      amshome = ini.GetValue("AMS_ENV", "amshome", amshome);
-      scm_tmpdir = ini.GetValue("AMS_ENV", "scm_tmpdir", scm_tmpdir);
-      scmlicense = ini.GetValue("AMS_ENV", "scmlicense", scmlicense);
-      scm_pythondir = ini.GetValue("AMS_ENV", "scm_pythondir", scm_pythondir);
-      amsbin = ini.GetValue("AMS_ENV", "amsbin", amsbin);
-      amsresources = ini.GetValue("AMS_ENV", "amsresources", amsresources);
+    if (potential_options.potential == PotType::AMS_IO || potential_options.potential == PotType::AMS) {
+      ams_options.env.amshome =
+          ini.GetValue("AMS_ENV", "amshome", ams_options.env.amshome);
+      ams_options.env.scm_tmpdir =
+          ini.GetValue("AMS_ENV", "scm_tmpdir", ams_options.env.scm_tmpdir);
+      ams_options.env.scmlicense =
+          ini.GetValue("AMS_ENV", "scmlicense", ams_options.env.scmlicense);
+      ams_options.env.scm_pythondir = ini.GetValue(
+          "AMS_ENV", "scm_pythondir", ams_options.env.scm_pythondir);
+      ams_options.env.amsbin =
+          ini.GetValue("AMS_ENV", "amsbin", ams_options.env.amsbin);
+      ams_options.env.amsresources =
+          ini.GetValue("AMS_ENV", "amsresources", ams_options.env.amsresources);
     }
     // [XTBPot]
-    if (potential == PotType::XTB) {
-      xtb_paramset = ini.GetValue("XTBPot", "paramset", xtb_paramset);
-      xtb_acc = ini.GetValueF("XTBPot", "accuracy", xtb_acc);
-      xtb_elec_temperature = ini.GetValueF("XTBPot", "electronic_temperature",
-                                           xtb_elec_temperature);
-      xtb_maxiter = ini.GetValueL("XTBPot", "max_iterations", xtb_maxiter);
-      xtb_uhf = ini.GetValueL("XTBPot", "uhf", xtb_uhf);
-      xtb_charge = ini.GetValueF("XTBPot", "charge", xtb_charge);
+    if (potential_options.potential == PotType::XTB) {
+      xtb_options.paramset =
+          ini.GetValue("XTBPot", "paramset", xtb_options.paramset);
+      xtb_options.acc = ini.GetValueF("XTBPot", "accuracy", xtb_options.acc);
+      xtb_options.elec_temperature = ini.GetValueF(
+          "XTBPot", "electronic_temperature", xtb_options.elec_temperature);
+      xtb_options.maxiter =
+          ini.GetValueL("XTBPot", "max_iterations", xtb_options.maxiter);
+      xtb_options.uhf = ini.GetValueL("XTBPot", "uhf", xtb_options.uhf);
+      xtb_options.charge =
+          ini.GetValueF("XTBPot", "charge", xtb_options.charge);
     }
     // [ZBLPot]
-    if (potential == PotType::ZBL) {
+    if (potential_options.potential == PotType::ZBL) {
       zbl_options.cut_inner =
           ini.GetValueF("ZBLPot", "cut_inner", zbl_options.cut_inner);
       zbl_options.cut_global =
@@ -584,7 +599,7 @@ int Parameters::load(FILE *file) {
       }
     }
     // [SocketNWChemPot]
-    if (potential == PotType::SocketNWChem) {
+    if (potential_options.potential == PotType::SocketNWChem) {
       socket_nwchem_options.host =
           ini.GetValue("SocketNWChemPot", "host", socket_nwchem_options.host);
       socket_nwchem_options.port =
@@ -607,35 +622,45 @@ int Parameters::load(FILE *file) {
 
     // [Debug] //
 
-    writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
-    writeMoviesInterval =
-        ini.GetValueL("Debug", "write_movies_interval", writeMoviesInterval);
-    estNEBeig = ini.GetValueB("Debug", "estimate_neb_eigenvalues", estNEBeig);
-    nebMMF = toLowerCase(ini.GetValue("Debug", "neb_mmf_estimator", nebMMF));
+    debug_options.write_movies =
+        ini.GetValueB("Debug", "write_movies", debug_options.write_movies);
+    debug_options.write_movies_interval = ini.GetValueL(
+        "Debug", "write_movies_interval", debug_options.write_movies_interval);
+    debug_options.estimate_neb_eigenvalues = ini.GetValueB(
+        "Debug", "estimate_neb_eigenvalues",
+        debug_options.estimate_neb_eigenvalues);
+    debug_options.neb_mmf = toLowerCase(
+        ini.GetValue("Debug", "neb_mmf_estimator", debug_options.neb_mmf));
 
     // [Structure Comparison] //
 
-    distanceDifference = ini.GetValueF(
-        "Structure Comparison", "distance_difference", distanceDifference);
-    neighborCutoff = ini.GetValueF("Structure Comparison", "neighbor_cutoff",
-                                   neighborCutoff);
-    checkRotation =
-        ini.GetValueB("Structure Comparison", "check_rotation", checkRotation);
-    energyDifference = ini.GetValueF("Structure Comparison",
-                                     "energy_difference", energyDifference);
-    indistinguishableAtoms =
+    structure_comparison_options.distance_difference =
+        ini.GetValueF("Structure Comparison", "distance_difference",
+                      structure_comparison_options.distance_difference);
+    structure_comparison_options.neighbor_cutoff =
+        ini.GetValueF("Structure Comparison", "neighbor_cutoff",
+                      structure_comparison_options.neighbor_cutoff);
+    structure_comparison_options.check_rotation =
+        ini.GetValueB("Structure Comparison", "check_rotation",
+                      structure_comparison_options.check_rotation);
+    structure_comparison_options.energy_difference =
+        ini.GetValueF("Structure Comparison", "energy_difference",
+                      structure_comparison_options.energy_difference);
+    structure_comparison_options.indistinguishable_atoms =
         ini.GetValueB("Structure Comparison", "indistinguishable_atoms",
-                      indistinguishableAtoms);
-    removeTranslation = ini.GetValueB("Structure Comparison",
-                                      "remove_translation", removeTranslation);
+                      structure_comparison_options.indistinguishable_atoms);
+    structure_comparison_options.remove_translation =
+        ini.GetValueB("Structure Comparison", "remove_translation",
+                      structure_comparison_options.remove_translation);
 
     // [Process Search] //
 
-    processSearchMinimizeFirst = ini.GetValueB(
-        "Process Search", "minimize_first", processSearchMinimizeFirst);
-    processSearchMinimizationOffset =
+    process_search_options.minimize_first = ini.GetValueB(
+        "Process Search", "minimize_first",
+        process_search_options.minimize_first);
+    process_search_options.minimization_offset =
         ini.GetValueF("Process Search", "minimization_offset",
-                      processSearchMinimizationOffset);
+                      process_search_options.minimization_offset);
 
     // [Optimizers] //
     auto inp_optMethod = magic_enum::enum_cast<OptType>(
@@ -643,158 +668,164 @@ int Parameters::load(FILE *file) {
                              magic_enum::case_insensitive)
                              .value_or(OptType::Unknown);
     if (inp_optMethod != OptType::None) {
-      optMethod = inp_optMethod;
+      optimizer_options.method = inp_optMethod;
     }
 
-    optConvergenceMetric = toLowerCase(
-        ini.GetValue("Optimizer", "convergence_metric", optConvergenceMetric));
-    if (optConvergenceMetric == "max_atom") {
-      optConvergenceMetricLabel = "Max atom force";
-    } else if (optConvergenceMetric == "max_component") {
-      optConvergenceMetricLabel = "Max force comp";
-    } else if (optConvergenceMetric == "norm") {
-      // optConvergenceMetricLabel = "\u2016Force\u2016";
-      optConvergenceMetricLabel = "||Force||";
+    optimizer_options.convergence_metric = toLowerCase(
+        ini.GetValue("Optimizer", "convergence_metric", optimizer_options.convergence_metric));
+    if (optimizer_options.convergence_metric == "max_atom") {
+      optimizer_options.convergence_metric_label = "Max atom force";
+    } else if (optimizer_options.convergence_metric == "max_component") {
+      optimizer_options.convergence_metric_label = "Max force comp";
+    } else if (optimizer_options.convergence_metric == "norm") {
+      // optimizer_options.convergence_metric_label = "\u2016Force\u2016";
+      optimizer_options.convergence_metric_label = "||Force||";
     } else {
       fprintf(stderr, "unknown convergence_metric %s\n",
-              optConvergenceMetric.c_str());
+              optimizer_options.convergence_metric.c_str());
       exit(1);
     }
 
     if (ini.FindKey("Refine") != -1) {
-      refineOptMethod =
+      optimizer_options.refine.method =
           magic_enum::enum_cast<OptType>(ini.GetValue("Refine", "opt_method"),
                                          magic_enum::case_insensitive)
               .value_or(OptType::None);
-      refineThreshold = ini.GetValueF("Refine", "threshold", refineThreshold);
+      optimizer_options.refine.threshold = ini.GetValueF("Refine", "threshold", optimizer_options.refine.threshold);
     }
 
-    optConvergedForce =
-        ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
-    optMaxIterations = static_cast<size_t>(
-        ini.GetValueL("Optimizer", "max_iterations", optMaxIterations));
-    optMaxMove = ini.GetValueF("Optimizer", "max_move", optMaxMove);
-    processSearchMinimizationOffset = optMaxMove;
+    optimizer_options.converged_force =
+        ini.GetValueF("Optimizer", "converged_force", optimizer_options.converged_force);
+    optimizer_options.max_iterations = static_cast<size_t>(
+        ini.GetValueL("Optimizer", "max_iterations", optimizer_options.max_iterations));
+    optimizer_options.max_move = ini.GetValueF("Optimizer", "max_move", optimizer_options.max_move);
+    process_search_options.minimization_offset = optimizer_options.max_move;
     // Handle each optimizer separately
     if (ini.FindKey("QuickMin") != -1) {
-      optTimeStepInput =
-          ini.GetValueF("QuickMin", "time_step", optTimeStepInput);
-      optTimeStep = optTimeStepInput / timeUnit;
-      optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent",
-                                          optQMSteepestDecent);
+      optimizer_options.time_step_input =
+          ini.GetValueF("QuickMin", "time_step", optimizer_options.time_step_input);
+      optimizer_options.time_step = optimizer_options.time_step_input / constants.timeUnit;
+      optimizer_options.quickmin.steepest_descent = ini.GetValueB("Optimizer", "qm_steepest_descent",
+                                          optimizer_options.quickmin.steepest_descent);
     }
     if (ini.FindKey("FIRE") != -1) {
       SPDLOG_WARN("Overwriting QuickMin timestep with Fire timestep!!");
-      optTimeStepInput = ini.GetValueF("FIRE", "time_step", optTimeStepInput);
-      optTimeStep = optTimeStepInput / timeUnit;
-      optMaxTimeStepInput =
-          ini.GetValueF("FIRE", "time_step_max", optMaxTimeStepInput);
-      optMaxTimeStep = optMaxTimeStepInput / timeUnit;
+      optimizer_options.time_step_input = ini.GetValueF("FIRE", "time_step", optimizer_options.time_step_input);
+      optimizer_options.time_step = optimizer_options.time_step_input / constants.timeUnit;
+      optimizer_options.max_time_step_input =
+          ini.GetValueF("FIRE", "time_step_max", optimizer_options.max_time_step_input);
+      optimizer_options.max_time_step = optimizer_options.max_time_step_input / constants.timeUnit;
     }
     if (ini.FindKey("LBFGS") != -1) {
-      optLBFGSMemory = ini.GetValueL("LBFGS", "lbfgs_memory", optLBFGSMemory);
-      optLBFGSInverseCurvature = ini.GetValueF(
-          "LBFGS", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
-      optLBFGSMaxInverseCurvature = ini.GetValueF(
-          "LBFGS", "lbfgs_max_inverse_curvature", optLBFGSMaxInverseCurvature);
-      optLBFGSAutoScale =
-          ini.GetValueB("LBFGS", "lbfgs_auto_scale", optLBFGSAutoScale);
-      optLBFGSAngleReset =
-          ini.GetValueB("LBFGS", "lbfgs_angle_reset", optLBFGSAngleReset);
-      optLBFGSDistanceReset =
-          ini.GetValueB("LBFGS", "lbfgs_distance_reset", optLBFGSDistanceReset);
+      optimizer_options.lbfgs.memory = ini.GetValueL("LBFGS", "lbfgs_memory", optimizer_options.lbfgs.memory);
+      optimizer_options.lbfgs.inverse_curvature = ini.GetValueF(
+          "LBFGS", "lbfgs_inverse_curvature", optimizer_options.lbfgs.inverse_curvature);
+      optimizer_options.lbfgs.max_inverse_curvature = ini.GetValueF(
+          "LBFGS", "lbfgs_max_inverse_curvature", optimizer_options.lbfgs.max_inverse_curvature);
+      optimizer_options.lbfgs.auto_scale =
+          ini.GetValueB("LBFGS", "lbfgs_auto_scale", optimizer_options.lbfgs.auto_scale);
+      optimizer_options.lbfgs.angle_reset =
+          ini.GetValueB("LBFGS", "lbfgs_angle_reset", optimizer_options.lbfgs.angle_reset);
+      optimizer_options.lbfgs.distance_reset =
+          ini.GetValueB("LBFGS", "lbfgs_distance_reset", optimizer_options.lbfgs.distance_reset);
     }
     if (ini.FindKey("CG") != -1) {
-      optCGNoOvershooting =
-          ini.GetValueB("CG", "cg_no_overshooting", optCGNoOvershooting);
-      optCGKnockOutMaxMove =
-          ini.GetValueB("CG", "cg_knock_out_max_move", optCGKnockOutMaxMove);
-      optCGLineSearch = ini.GetValueB("CG", "cg_line_search", optCGLineSearch);
-      optCGLineConverged =
-          ini.GetValueF("CG", "cg_line_converged", optCGLineConverged);
-      optCGMaxIterBeforeReset = ini.GetValueL("CG", "cg_max_iter_before_reset",
-                                              optCGMaxIterBeforeReset);
-      optCGLineSearchMaxIter = ini.GetValueL("CG", "cg_max_iter_line_search",
-                                             optCGLineSearchMaxIter);
+      optimizer_options.cg.no_overshooting =
+          ini.GetValueB("CG", "cg_no_overshooting", optimizer_options.cg.no_overshooting);
+      optimizer_options.cg.knock_out_max_move =
+          ini.GetValueB("CG", "cg_knock_out_max_move", optimizer_options.cg.knock_out_max_move);
+      optimizer_options.cg.line_search = ini.GetValueB("CG", "cg_line_search", optimizer_options.cg.line_search);
+      optimizer_options.cg.line_converged =
+          ini.GetValueF("CG", "cg_line_converged", optimizer_options.cg.line_converged);
+      optimizer_options.cg.max_iter_before_reset = ini.GetValueL("CG", "cg_max_iter_before_reset",
+                                              optimizer_options.cg.max_iter_before_reset);
+      optimizer_options.cg.line_search_max_iter = ini.GetValueL("CG", "cg_max_iter_line_search",
+                                             optimizer_options.cg.line_search_max_iter);
     }
     if (ini.FindKey("SD") != -1) {
-      optSDAlpha = ini.GetValueF("SD", "sd_alpha", optSDAlpha);
-      optSDTwoPoint = ini.GetValueB("SD", "sd_twopoint", optSDTwoPoint);
+      optimizer_options.sd.alpha = ini.GetValueF("SD", "sd_alpha", optimizer_options.sd.alpha);
+      optimizer_options.sd.two_point = ini.GetValueB("SD", "sd_twopoint", optimizer_options.sd.two_point);
     }
 
     // [Dimer] //
 
-    dimerRotationAngle =
-        ini.GetValueF("Dimer", "finite_angle", dimerRotationAngle);
-    dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
-    dimerConvergedAngle =
-        ini.GetValueF("Dimer", "converged_angle", dimerConvergedAngle);
-    dimerMaxIterations =
-        ini.GetValueL("Dimer", "max_iterations", dimerMaxIterations);
-    dimerOptMethod =
-        toLowerCase(ini.GetValue("Dimer", "opt_method", dimerOptMethod));
-    dimerRotationsMin =
-        ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin); // old
-    dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max",
-                                      dimerRotationsMax); // old & new
-    dimerTorqueMin =
-        ini.GetValueF("Dimer", "torque_min", dimerTorqueMin); // old
-    dimerTorqueMax =
-        ini.GetValueF("Dimer", "torque_max", dimerTorqueMax); // old
-    dimerRemoveRotation =
-        ini.GetValueB("Dimer", "remove_rotation", dimerRemoveRotation);
+    dimer_options.rotation_angle =
+        ini.GetValueF("Dimer", "finite_angle", dimer_options.rotation_angle);
+    dimer_options.improved =
+        ini.GetValueB("Dimer", "improved", dimer_options.improved);
+    dimer_options.converged_angle =
+        ini.GetValueF("Dimer", "converged_angle", dimer_options.converged_angle);
+    dimer_options.max_iterations =
+        ini.GetValueL("Dimer", "max_iterations", dimer_options.max_iterations);
+    dimer_options.opt_method = toLowerCase(
+        ini.GetValue("Dimer", "opt_method", dimer_options.opt_method));
+    dimer_options.rotations_min = ini.GetValueL("Dimer", "rotations_min",
+                                                dimer_options.rotations_min);
+    dimer_options.rotations_max = ini.GetValueL("Dimer", "rotations_max",
+                                                dimer_options.rotations_max);
+    dimer_options.torque_min =
+        ini.GetValueF("Dimer", "torque_min", dimer_options.torque_min);
+    dimer_options.torque_max =
+        ini.GetValueF("Dimer", "torque_max", dimer_options.torque_max);
+    dimer_options.remove_rotation = ini.GetValueB(
+        "Dimer", "remove_rotation", dimer_options.remove_rotation);
 
     // GP Surrogate Parameters
-    use_surrogate = ini.GetValueB("Surrogate", "use_surrogate", false);
+    gp_surrogate_options.enabled =
+        ini.GetValueB("Surrogate", "use_surrogate", false);
     // If use_surrogate is true, job -> gp_surrogate and sub_job->job
-    if (use_surrogate) {
+    if (gp_surrogate_options.enabled) {
       // TODO: What about other jobs
-      sub_job = job;
-      job = JobType::GP_Surrogate;
+      gp_surrogate_options.sub_job = main_options.job;
+      main_options.job = JobType::GP_Surrogate;
     }
-    gp_uncertainty =
-        ini.GetValueF("Surrogate", "gp_uncertainty", gp_uncertainty);
+    gp_surrogate_options.uncertainty = ini.GetValueF(
+        "Surrogate", "gp_uncertainty", gp_surrogate_options.uncertainty);
     if (ini.FindKey("Surrogate") != -1) {
-      surrogatePotential =
+      gp_surrogate_options.potential =
           magic_enum::enum_cast<PotType>(ini.GetValue("Surrogate", "potential"),
                                          magic_enum::case_insensitive)
               .value_or(PotType::UNKNOWN);
-      if (surrogatePotential != PotType::CatLearn) {
+      if (gp_surrogate_options.potential != PotType::CatLearn) {
         throw std::runtime_error("We only support catlearn for GP right now");
       }
     }
     // [CatLearn]
     if (ini.FindKey("CatLearn") != -1) {
       // Case sensitive!!
-      catl_path = ini.GetValue("CatLearn", "catl_path");
-      catl_model = ini.GetValue("CatLearn", "model", "catl_model");
-      catl_prior = ini.GetValue("CatLearn", "prior", "catl_prior");
-      catl_use_deriv =
+      catlearn_options.path = ini.GetValue("CatLearn", "catl_path");
+      catlearn_options.model = ini.GetValue("CatLearn", "model", "catl_model");
+      catlearn_options.prior = ini.GetValue("CatLearn", "prior", "catl_prior");
+      catlearn_options.use_deriv =
           ini.GetValueB("CatLearn", "use_derivatives", "catl_deriv");
-      catl_use_fingerprint =
+      catlearn_options.use_fingerprint =
           ini.GetValueB("CatLearn", "use_fingerprint", "catl_fingerprint");
-      catl_parallel = ini.GetValueB("CatLearn", "parallel_hyperparameter_opt",
-                                    "catl_parallel");
+      catlearn_options.parallel = ini.GetValueB(
+          "CatLearn", "parallel_hyperparameter_opt", "catl_parallel");
     }
     // [ASE_ORCA]
     if (ini.FindKey("ASE_ORCA") != -1) {
       // Case sensitive!!
       // TODO: This should be handled in clienteon so you can still call
       // eonclient for single point calculations easily
-      orca_path = ini.GetValue("ASE_ORCA", "orca_path", "");
-      orca_nproc = ini.GetValue("ASE_ORCA", "nproc");
-      orca_sline = ini.GetValue("ASE_ORCA", "simpleinput", "");
+      ase_orca_options.path = ini.GetValue("ASE_ORCA", "orca_path", "");
+      ase_orca_options.nproc = ini.GetValue("ASE_ORCA", "nproc");
+      ase_orca_options.simpleinput =
+          ini.GetValue("ASE_ORCA", "simpleinput", "");
     }
     // [ASE_NWCHEM]
     if (ini.FindKey("ASE_NWCHEM") != -1) {
       // Case sensitive!!
       // TODO: This should be handled in clienteon so you can still call
       // eonclient for single point calculations easily
-      nwchem_path = ini.GetValue("ASE_NWCHEM", "nwchem_path", "");
-      nwchem_nproc = ini.GetValue("ASE_NWCHEM", "nproc");
-      nwchem_multiplicity = ini.GetValue("ASE_NWCHEM", "multiplicity");
-      nwchem_scf_thresh = ini.GetValueF("ASE_NWCHEM", "scf_thresh", 1e-5);
-      nwchem_scf_maxiter = ini.GetValueL("ASE_NWCHEM", "scf_maxiter", 200);
+      ase_nwchem_options.path = ini.GetValue("ASE_NWCHEM", "nwchem_path", "");
+      ase_nwchem_options.nproc = ini.GetValue("ASE_NWCHEM", "nproc");
+      ase_nwchem_options.multiplicity =
+          ini.GetValue("ASE_NWCHEM", "multiplicity");
+      ase_nwchem_options.scf_thresh =
+          ini.GetValueF("ASE_NWCHEM", "scf_thresh", 1e-5);
+      ase_nwchem_options.scf_maxiter =
+          ini.GetValueL("ASE_NWCHEM", "scf_maxiter", 200);
     }
     // [Metatomic]
     if (ini.FindKey("Metatomic") != -1) {
@@ -819,138 +850,170 @@ int Parameters::load(FILE *file) {
           ini.GetValue("Metatomic", "variant_energy_uncertainty", "");
     }
     // GP_NEB only
-    gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
-                                          gp_linear_path_always);
+    gp_surrogate_options.linear_path_always = ini.GetValueB(
+        "Surrogate", "gp_linear_path_always",
+        gp_surrogate_options.linear_path_always);
     // [Lanczos] //
 
-    lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
-    lanczosMaxIterations =
-        ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
-    lanczosQuitEarly = ini.GetValueB("Lanczos", "quit_early", lanczosQuitEarly);
+    lanczos_options.tolerance =
+        ini.GetValueF("Lanczos", "tolerance", lanczos_options.tolerance);
+    lanczos_options.max_iterations = ini.GetValueL(
+        "Lanczos", "max_iterations", lanczos_options.max_iterations);
+    lanczos_options.quit_early =
+        ini.GetValueB("Lanczos", "quit_early", lanczos_options.quit_early);
 
     // [GPR Dimer] //
-    gprDimerRotationAngle =
-        ini.GetValueF("GPR Dimer", "finite_angle", gprDimerRotationAngle);
-    gprDimerConvergedAngle =
-        ini.GetValueF("GPR Dimer", "converged_angle", gprDimerConvergedAngle);
-    gprDimerRelaxConvAngle = ini.GetValueF(
-        "GPR Dimer", "relaxation_converged_angle", gprDimerRelaxConvAngle);
-    gprDimerInitRotationsMax =
+    gpr_dimer_options.rotation_angle = ini.GetValueF(
+        "GPR Dimer", "finite_angle", gpr_dimer_options.rotation_angle);
+    gpr_dimer_options.converged_angle = ini.GetValueF(
+        "GPR Dimer", "converged_angle", gpr_dimer_options.converged_angle);
+    gpr_dimer_options.relax_conv_angle =
+        ini.GetValueF("GPR Dimer", "relaxation_converged_angle",
+                      gpr_dimer_options.relax_conv_angle);
+    gpr_dimer_options.init_rotations_max =
         (int)ini.GetValueL("GPR Dimer", "max_initial_rotation_iterations",
-                           gprDimerInitRotationsMax);
-    gprDimerRelaxRotationsMax =
+                           gpr_dimer_options.init_rotations_max);
+    gpr_dimer_options.relax_rotations_max =
         (int)ini.GetValueL("GPR Dimer", "max_relaxation_rotation_iterations",
-                           gprDimerRelaxRotationsMax);
-    gprDimerDivisorTdimerGP = (int)ini.GetValueL("GPR Dimer", "divisor_t_dimer",
-                                                 gprDimerDivisorTdimerGP);
-    gprDimerMaxOuterIterations = (int)ini.GetValueL(
-        "GPR Dimer", "max_outer_iterations", gprDimerMaxOuterIterations);
-    gprDimerMaxInnerIterations = (int)ini.GetValueL(
-        "GPR Dimer", "max_inner_iterations", gprDimerMaxInnerIterations);
-    gprDimerMidpointMaxDisp = ini.GetValueF(
-        "GPR Dimer", "max_midpoint_displacement", gprDimerMidpointMaxDisp);
-    gprDimerRotOptMethod =
-        ini.GetValue("GPR Dimer", "rotation_opt_method", gprDimerRotOptMethod);
-    gprDimerTransOptMethod = ini.GetValue("GPR Dimer", "translation_opt_method",
-                                          gprDimerTransOptMethod);
-    gprActiveRadius =
-        ini.GetValueF("GPR Dimer", "active_radius", gprActiveRadius);
-    gprDimerSep = ini.GetValueF("GPR Dimer", "dimer_separation", gprDimerSep);
-    gprDimerConvStep =
-        ini.GetValueF("GPR Dimer", "convex_region_step_size", gprDimerConvStep);
-    gprDimerMaxStep =
-        ini.GetValueF("GPR Dimer", "max_step_size", gprDimerMaxStep);
-    gprDimerRatioAtLimit =
-        ini.GetValueF("GPR Dimer", "ratio_at_limit", gprDimerRatioAtLimit);
-    gprDimerInitRotGP =
-        ini.GetValueB("GPR Dimer", "nogp_initial_rotations", gprDimerInitRotGP);
-    gprDimerInitTransGP = ini.GetValueB("GPR Dimer", "nogp_init_translations",
-                                        gprDimerInitTransGP);
-    gprDimerManyIterations = ini.GetValueB("GPR Dimer", "has_many_iterations",
-                                           gprDimerManyIterations);
+                           gpr_dimer_options.relax_rotations_max);
+    gpr_dimer_options.divisor_t_dimer_gp =
+        (int)ini.GetValueL("GPR Dimer", "divisor_t_dimer",
+                           gpr_dimer_options.divisor_t_dimer_gp);
+    gpr_dimer_options.max_outer_iterations =
+        (int)ini.GetValueL("GPR Dimer", "max_outer_iterations",
+                           gpr_dimer_options.max_outer_iterations);
+    gpr_dimer_options.max_inner_iterations =
+        (int)ini.GetValueL("GPR Dimer", "max_inner_iterations",
+                           gpr_dimer_options.max_inner_iterations);
+    gpr_dimer_options.midpoint_max_disp =
+        ini.GetValueF("GPR Dimer", "max_midpoint_displacement",
+                      gpr_dimer_options.midpoint_max_disp);
+    gpr_dimer_options.rot_opt_method = ini.GetValue(
+        "GPR Dimer", "rotation_opt_method", gpr_dimer_options.rot_opt_method);
+    gpr_dimer_options.trans_opt_method =
+        ini.GetValue("GPR Dimer", "translation_opt_method",
+                     gpr_dimer_options.trans_opt_method);
+    gpr_dimer_options.active_radius = ini.GetValueF(
+        "GPR Dimer", "active_radius", gpr_dimer_options.active_radius);
+    gpr_dimer_options.dimer_sep = ini.GetValueF("GPR Dimer", "dimer_separation",
+                                                gpr_dimer_options.dimer_sep);
+    gpr_dimer_options.conv_step = ini.GetValueF(
+        "GPR Dimer", "convex_region_step_size", gpr_dimer_options.conv_step);
+    gpr_dimer_options.max_step = ini.GetValueF("GPR Dimer", "max_step_size",
+                                               gpr_dimer_options.max_step);
+    gpr_dimer_options.ratio_at_limit = ini.GetValueF(
+        "GPR Dimer", "ratio_at_limit", gpr_dimer_options.ratio_at_limit);
+    gpr_dimer_options.init_rot_gp = ini.GetValueB(
+        "GPR Dimer", "nogp_initial_rotations", gpr_dimer_options.init_rot_gp);
+    gpr_dimer_options.init_trans_gp = ini.GetValueB(
+        "GPR Dimer", "nogp_init_translations", gpr_dimer_options.init_trans_gp);
+    gpr_dimer_options.many_iterations = ini.GetValueB(
+        "GPR Dimer", "has_many_iterations", gpr_dimer_options.many_iterations);
     // GPR Params
-    gprDimerHyperOptMethod = ini.GetValue(
-        "GPR Dimer", "hyperparameter_opt_method", gprDimerHyperOptMethod);
-    gprDimerSigma2 = ini.GetValueF("GPR Dimer", "gpr_variance", gprDimerSigma2);
-    gprDimerJitterSigma2 =
-        ini.GetValueF("GPR Dimer", "gpr_jitter_variance", gprDimerJitterSigma2);
-    gprDimerNoiseSigma2 =
-        ini.GetValueF("GPR Dimer", "gpr_noise_variance", gprDimerNoiseSigma2);
-    gprDimerPriorMu = ini.GetValueF("GPR Dimer", "prior_mean", gprDimerPriorMu);
-    gprDimerPriorSigma2 =
-        ini.GetValueF("GPR Dimer", "prior_variance", gprDimerPriorSigma2);
-    gprDimerPriorNu =
-        ini.GetValueF("GPR Dimer", "prior_degrees_of_freedom", gprDimerPriorNu);
+    gpr_dimer_options.gpr_params.hyper_opt_method =
+        ini.GetValue("GPR Dimer", "hyperparameter_opt_method",
+                     gpr_dimer_options.gpr_params.hyper_opt_method);
+    gpr_dimer_options.gpr_params.sigma2 = ini.GetValueF(
+        "GPR Dimer", "gpr_variance", gpr_dimer_options.gpr_params.sigma2);
+    gpr_dimer_options.gpr_params.jitter_sigma2 =
+        ini.GetValueF("GPR Dimer", "gpr_jitter_variance",
+                      gpr_dimer_options.gpr_params.jitter_sigma2);
+    gpr_dimer_options.gpr_params.noise_sigma2 =
+        ini.GetValueF("GPR Dimer", "gpr_noise_variance",
+                      gpr_dimer_options.gpr_params.noise_sigma2);
+    gpr_dimer_options.gpr_params.prior_mu = ini.GetValueF(
+        "GPR Dimer", "prior_mean", gpr_dimer_options.gpr_params.prior_mu);
+    gpr_dimer_options.gpr_params.prior_sigma2 =
+        ini.GetValueF("GPR Dimer", "prior_variance",
+                      gpr_dimer_options.gpr_params.prior_sigma2);
+    gpr_dimer_options.gpr_params.prior_nu =
+        ini.GetValueF("GPR Dimer", "prior_degrees_of_freedom",
+                      gpr_dimer_options.gpr_params.prior_nu);
     // GPR Optimization Parameters
-    gprOptCheckDerivatives =
-        ini.GetValueB("GPR Dimer", "check_derivatives", gprOptCheckDerivatives);
-    gprOptMaxIterations = (int)ini.GetValueL("GPR Dimer", "opt_max_iterations",
-                                             gprOptMaxIterations);
-    gprOptTolFunc = ini.GetValueF("GPR Dimer", "opt_tol_func", gprOptTolFunc);
-    gprOptTolSol = ini.GetValueF("GPR Dimer", "opt_tol_sol", gprOptTolSol);
-    gprOptLambdaLimit =
-        ini.GetValueF("GPR Dimer", "opt_lambda_limit", gprOptLambdaLimit);
-    gprOptLambdaInit =
-        ini.GetValueF("GPR Dimer", "opt_lambda_init", gprOptLambdaInit);
+    gpr_dimer_options.opt_params.check_derivatives =
+        ini.GetValueB("GPR Dimer", "check_derivatives",
+                      gpr_dimer_options.opt_params.check_derivatives);
+    gpr_dimer_options.opt_params.max_iterations =
+        (int)ini.GetValueL("GPR Dimer", "opt_max_iterations",
+                           gpr_dimer_options.opt_params.max_iterations);
+    gpr_dimer_options.opt_params.tol_func = ini.GetValueF(
+        "GPR Dimer", "opt_tol_func", gpr_dimer_options.opt_params.tol_func);
+    gpr_dimer_options.opt_params.tol_sol = ini.GetValueF(
+        "GPR Dimer", "opt_tol_sol", gpr_dimer_options.opt_params.tol_sol);
+    gpr_dimer_options.opt_params.lambda_limit =
+        ini.GetValueF("GPR Dimer", "opt_lambda_limit",
+                      gpr_dimer_options.opt_params.lambda_limit);
+    gpr_dimer_options.opt_params.lambda_init =
+        ini.GetValueF("GPR Dimer", "opt_lambda_init",
+                      gpr_dimer_options.opt_params.lambda_init);
     // GPR Debugging Parameters
-    gprReportLevel =
-        (int)ini.GetValueL("GPR Dimer", "report_level", gprReportLevel);
-    gprDebugLevel =
-        (int)ini.GetValueL("GPR Dimer", "debug_level", gprDebugLevel);
-    gprDebugOutDir =
-        ini.GetValue("GPR Dimer", "debug_output_directory", gprDebugOutDir);
-    ;
-    gprDebugPosFile =
-        ini.GetValue("GPR Dimer", "debug_position_basename", gprDebugPosFile);
-    ;
-    gprDebugEnergyFile =
-        ini.GetValue("GPR Dimer", "debug_energy_basename", gprDebugEnergyFile);
-    ;
-    gprDebugGradFile =
-        ini.GetValue("GPR Dimer", "debug_gradient_basename", gprDebugGradFile);
-    ;
-    gprDebugOffsetMidPoint = ini.GetValueF("GPR Dimer", "debug_midpoint_offset",
-                                           gprDebugOffsetMidPoint);
-    gprDebugDy = ini.GetValueF("GPR Dimer", "debug_y_step", gprDebugDy);
-    gprDebugDz = ini.GetValueF("GPR Dimer", "debug_z_step", gprDebugDz);
+    gpr_dimer_options.debug_params.report_level =
+        (int)ini.GetValueL("GPR Dimer", "report_level",
+                           gpr_dimer_options.debug_params.report_level);
+    gpr_dimer_options.debug_params.debug_level =
+        (int)ini.GetValueL("GPR Dimer", "debug_level",
+                           gpr_dimer_options.debug_params.debug_level);
+    gpr_dimer_options.debug_params.out_dir =
+        ini.GetValue("GPR Dimer", "debug_output_directory",
+                     gpr_dimer_options.debug_params.out_dir);
+    gpr_dimer_options.debug_params.pos_file =
+        ini.GetValue("GPR Dimer", "debug_position_basename",
+                     gpr_dimer_options.debug_params.pos_file);
+    gpr_dimer_options.debug_params.energy_file =
+        ini.GetValue("GPR Dimer", "debug_energy_basename",
+                     gpr_dimer_options.debug_params.energy_file);
+    gpr_dimer_options.debug_params.grad_file =
+        ini.GetValue("GPR Dimer", "debug_gradient_basename",
+                     gpr_dimer_options.debug_params.grad_file);
+    gpr_dimer_options.debug_params.offset_mid_point =
+        ini.GetValueF("GPR Dimer", "debug_midpoint_offset",
+                      gpr_dimer_options.debug_params.offset_mid_point);
+    gpr_dimer_options.debug_params.dy = ini.GetValueF(
+        "GPR Dimer", "debug_y_step", gpr_dimer_options.debug_params.dy);
+    gpr_dimer_options.debug_params.dz = ini.GetValueF(
+        "GPR Dimer", "debug_z_step", gpr_dimer_options.debug_params.dz);
     // GPR Prune
-    gprUsePrune = ini.GetValueB("GPR Dimer", "use_prune", gprUsePrune);
-    gprPruneBegin =
-        (int)ini.GetValueL("GPR Dimer", "start_prune_at", gprPruneBegin);
-    gprPruneNVals =
-        (int)ini.GetValueL("GPR Dimer", "nprune_vals", gprPruneNVals);
-    gprPruneThreshold =
-        ini.GetValueF("GPR Dimer", "prune_threshold", gprPruneThreshold);
+    gpr_dimer_options.prune_params.use_prune = ini.GetValueB(
+        "GPR Dimer", "use_prune", gpr_dimer_options.prune_params.use_prune);
+    gpr_dimer_options.prune_params.begin =
+        (int)ini.GetValueL("GPR Dimer", "start_prune_at",
+                           gpr_dimer_options.prune_params.begin);
+    gpr_dimer_options.prune_params.n_vals =
+        (int)ini.GetValueL("GPR Dimer", "nprune_vals",
+                           gpr_dimer_options.prune_params.n_vals);
+    gpr_dimer_options.prune_params.threshold =
+        ini.GetValueF("GPR Dimer", "prune_threshold",
+                      gpr_dimer_options.prune_params.threshold);
 
     // [Prefactor] //
 
-    prefactorDefaultValue =
-        ini.GetValueF("Prefactor", "default_value", prefactorDefaultValue);
-    prefactorMaxValue =
-        ini.GetValueF("Prefactor", "max_value", prefactorMaxValue);
-    prefactorMinValue =
-        ini.GetValueF("Prefactor", "min_value", prefactorMinValue);
-    prefactorWithinRadius =
-        ini.GetValueF("Prefactor", "within_radius", prefactorWithinRadius);
-    prefactorMinDisplacement = ini.GetValueF("Prefactor", "min_displacement",
-                                             prefactorMinDisplacement);
-    prefactorRate = toLowerCase(
-        ini.GetValue("Prefactor", "rate_estimation", prefactorRate));
-    prefactorConfiguration = toLowerCase(
-        ini.GetValue("Prefactor", "configuration", prefactorConfiguration));
-    prefactorAllFreeAtoms =
-        ini.GetValueB("Prefactor", "all_free_atoms", prefactorAllFreeAtoms);
-    prefactorFilterScheme = toLowerCase(
-        ini.GetValue("Prefactor", "filter_scheme", prefactorFilterScheme));
-    prefactorFilterFraction =
-        ini.GetValueF("Prefactor", "filter_fraction", prefactorFilterFraction);
+    prefactor_options.default_value = ini.GetValueF(
+        "Prefactor", "default_value", prefactor_options.default_value);
+    prefactor_options.max_value =
+        ini.GetValueF("Prefactor", "max_value", prefactor_options.max_value);
+    prefactor_options.min_value =
+        ini.GetValueF("Prefactor", "min_value", prefactor_options.min_value);
+    prefactor_options.within_radius = ini.GetValueF(
+        "Prefactor", "within_radius", prefactor_options.within_radius);
+    prefactor_options.min_displacement = ini.GetValueF(
+        "Prefactor", "min_displacement", prefactor_options.min_displacement);
+    prefactor_options.rate = toLowerCase(
+        ini.GetValue("Prefactor", "rate_estimation", prefactor_options.rate));
+    prefactor_options.configuration = toLowerCase(ini.GetValue(
+        "Prefactor", "configuration", prefactor_options.configuration));
+    prefactor_options.all_free_atoms = ini.GetValueB(
+        "Prefactor", "all_free_atoms", prefactor_options.all_free_atoms);
+    prefactor_options.filter_scheme = toLowerCase(ini.GetValue(
+        "Prefactor", "filter_scheme", prefactor_options.filter_scheme));
+    prefactor_options.filter_fraction = ini.GetValueF(
+        "Prefactor", "filter_fraction", prefactor_options.filter_fraction);
 
     // [Hessian] //
 
-    hessianAtomList =
-        toLowerCase(ini.GetValue("Hessian", "atom_list", hessianAtomList));
-    hessianZeroFreqValue =
-        ini.GetValueF("Hessian", "zero_freq_value", hessianZeroFreqValue);
+    hessian_options.atom_list = toLowerCase(
+        ini.GetValue("Hessian", "atom_list", hessian_options.atom_list));
+    hessian_options.zero_freq_value = ini.GetValueF(
+        "Hessian", "zero_freq_value", hessian_options.zero_freq_value);
 
     // [Nudged Elastic Band] //
     const std::string neb_section = "Nudged Elastic Band";
@@ -959,9 +1022,9 @@ int Parameters::load(FILE *file) {
     neb_options.image_count =
         ini.GetValueL(neb_section, "images", neb_options.image_count);
     neb_options.max_iterations =
-        ini.GetValueL(neb_section, "max_iterations", optMaxIterations);
+        ini.GetValueL(neb_section, "max_iterations", optimizer_options.max_iterations);
     neb_options.force_tolerance =
-        ini.GetValueF(neb_section, "converged_force", optConvergedForce);
+        ini.GetValueF(neb_section, "converged_force", optimizer_options.converged_force);
     auto neb_optMethod = magic_enum::enum_cast<OptType>(
                              ini.GetValue(neb_section, "opt_method", "none"),
                              magic_enum::case_insensitive)
@@ -1077,257 +1140,326 @@ int Parameters::load(FILE *file) {
 
     // [Dynamics] //
 
-    mdTimeStepInput = ini.GetValueF("Dynamics", "time_step", mdTimeStepInput);
-    mdTimeStep = mdTimeStepInput / timeUnit;
-    mdTimeInput = ini.GetValueF("Dynamics", "time", mdTimeInput);
-    mdTime = mdTimeInput / timeUnit;
-    mdSteps = long(floor(mdTime / mdTimeStep + 0.5));
-    thermostat =
+    dynamics_options.time_step_input = ini.GetValueF(
+        "Dynamics", "time_step", dynamics_options.time_step_input);
+    dynamics_options.time_step = dynamics_options.time_step_input / constants.timeUnit;
+    dynamics_options.time_input =
+        ini.GetValueF("Dynamics", "time", dynamics_options.time_input);
+    dynamics_options.time = dynamics_options.time_input / constants.timeUnit;
+    dynamics_options.steps = long(
+        floor(dynamics_options.time / dynamics_options.time_step + 0.5));
+    thermostat_options.kind =
         toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
-    thermoAndersenAlpha =
-        ini.GetValueF("Dynamics", "andersen_alpha", thermoAndersenAlpha);
-    thermoAndersenTcolInput = ini.GetValueF(
-        "Dynamics", "andersen_collision_period", thermoAndersenTcolInput);
-    thermoAndersenTcol = thermoAndersenTcolInput / timeUnit;
-    thermoNoseMass = ini.GetValueF("Dynamics", "nose_mass", thermoNoseMass);
-    thermoLangevinFrictionInput = ini.GetValueF("Dynamics", "langevin_friction",
-                                                thermoLangevinFrictionInput);
-    thermoLangevinFriction = thermoLangevinFrictionInput * timeUnit;
-    // thermoAtoms =
-    // helper_functions::split_string_int(ini.GetValue("Dynamics",
-    // "thermo_atoms", ""), ",");
+    thermostat_options.andersen_alpha = ini.GetValueF(
+        "Dynamics", "andersen_alpha", thermostat_options.andersen_alpha);
+    thermostat_options.andersen_tcol_input =
+        ini.GetValueF("Dynamics", "andersen_collision_period",
+                      thermostat_options.andersen_tcol_input);
+    thermostat_options.andersen_tcol =
+        thermostat_options.andersen_tcol_input / constants.timeUnit;
+    thermostat_options.nose_mass =
+        ini.GetValueF("Dynamics", "nose_mass", thermostat_options.nose_mass);
+    thermostat_options.langevin_friction_input =
+        ini.GetValueF("Dynamics", "langevin_friction",
+                      thermostat_options.langevin_friction_input);
+    thermostat_options.langevin_friction =
+        thermostat_options.langevin_friction_input * constants.timeUnit;
 
     // [Parallel Replica]
 
-    parrepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition",
-                                   parrepAutoStop);
-    parrepRefineTransition = ini.GetValueB(
-        "Parallel Replica", "refine_transition", parrepRefineTransition);
-    parrepDephaseLoopStop = ini.GetValueB(
-        "Parallel Replica", "dephase_loop_stop", parrepDephaseLoopStop);
-    parrepDephaseTimeInput = ini.GetValueF("Parallel Replica", "dephase_time",
-                                           parrepDephaseTimeInput);
-    parrepDephaseTime = parrepDephaseTimeInput / timeUnit;
-    parrepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max",
-                                         parrepDephaseLoopMax);
-    parrepStateCheckIntervalInput =
+    parallel_replica_options.auto_stop =
+        ini.GetValueB("Parallel Replica", "stop_after_transition",
+                      parallel_replica_options.auto_stop);
+    parallel_replica_options.refine_transition =
+        ini.GetValueB("Parallel Replica", "refine_transition",
+                      parallel_replica_options.refine_transition);
+    parallel_replica_options.dephase_loop_stop =
+        ini.GetValueB("Parallel Replica", "dephase_loop_stop",
+                      parallel_replica_options.dephase_loop_stop);
+    parallel_replica_options.dephase_time_input =
+        ini.GetValueF("Parallel Replica", "dephase_time",
+                      parallel_replica_options.dephase_time_input);
+    parallel_replica_options.dephase_time =
+        parallel_replica_options.dephase_time_input / constants.timeUnit;
+    parallel_replica_options.dephase_loop_max =
+        ini.GetValueL("Parallel Replica", "dephase_loop_max",
+                      parallel_replica_options.dephase_loop_max);
+    parallel_replica_options.state_check_interval_input =
         ini.GetValueF("Parallel Replica", "state_check_interval",
-                      parrepStateCheckIntervalInput);
-    parrepStateCheckInterval = parrepStateCheckIntervalInput / timeUnit;
-    parrepRecordIntervalInput =
+                      parallel_replica_options.state_check_interval_input);
+    parallel_replica_options.state_check_interval =
+        parallel_replica_options.state_check_interval_input / constants.timeUnit;
+    parallel_replica_options.record_interval_input =
         ini.GetValueF("Parallel Replica", "state_save_interval",
-                      0.1 * parrepStateCheckIntervalInput);
-    parrepRecordInterval = parrepRecordIntervalInput / timeUnit;
-    parrepCorrTimeInput = ini.GetValueF(
-        "Parallel Replica", "post_transition_time", parrepCorrTimeInput);
-    parrepCorrTime = parrepCorrTimeInput / timeUnit;
+                      0.1 * parallel_replica_options
+                                .state_check_interval_input);
+    parallel_replica_options.record_interval =
+        parallel_replica_options.record_interval_input / constants.timeUnit;
+    parallel_replica_options.corr_time_input =
+        ini.GetValueF("Parallel Replica", "post_transition_time",
+                      parallel_replica_options.corr_time_input);
+    parallel_replica_options.corr_time =
+        parallel_replica_options.corr_time_input / constants.timeUnit;
 
     //[Temperature Accelerated Dynamics] //
 
-    tadLowT = ini.GetValueF("TAD", "low_temperature", tadLowT);
-    tadMinPrefactor = ini.GetValueF("TAD", "min_prefactor", tadMinPrefactor);
-    tadConfidence = ini.GetValueF("TAD", "confidence", tadConfidence);
+    tad_options.low_temperature =
+        ini.GetValueF("TAD", "low_temperature", tad_options.low_temperature);
+    tad_options.min_prefactor =
+        ini.GetValueF("TAD", "min_prefactor", tad_options.min_prefactor);
+    tad_options.confidence =
+        ini.GetValueF("TAD", "confidence", tad_options.confidence);
 
     // [Replica Exchange] //
 
-    repexcTemperatureDistribution =
+    replica_exchange_options.temperature_distribution =
         toLowerCase(ini.GetValue("Replica Exchange", "temperature_distribution",
-                                 repexcTemperatureDistribution));
-    repexcReplicas =
-        ini.GetValueL("Replica Exchange", "replicas", repexcReplicas);
-    repexcExchangeTrials = ini.GetValueL("Replica Exchange", "exchange_trials",
-                                         repexcExchangeTrials);
-    repexcSamplingTimeInput = ini.GetValueF("Replica Exchange", "sampling_time",
-                                            repexcSamplingTimeInput);
-    repexcSamplingTime = repexcSamplingTimeInput / timeUnit;
-    repexcTemperatureLow =
-        ini.GetValueF("Replica Exchange", "temperature_low", temperature);
-    repexcTemperatureHigh = ini.GetValueF(
-        "Replica Exchange", "temperature_high", repexcTemperatureHigh);
-    repexcExchangePeriodInput = ini.GetValueF(
-        "Replica Exchange", "exchange_period", repexcExchangePeriodInput);
-    repexcExchangePeriod = repexcExchangePeriodInput / timeUnit;
+                                 replica_exchange_options
+                                     .temperature_distribution));
+    replica_exchange_options.replicas = ini.GetValueL(
+        "Replica Exchange", "replicas", replica_exchange_options.replicas);
+    replica_exchange_options.exchange_trials =
+        ini.GetValueL("Replica Exchange", "exchange_trials",
+                      replica_exchange_options.exchange_trials);
+    replica_exchange_options.sampling_time_input =
+        ini.GetValueF("Replica Exchange", "sampling_time",
+                      replica_exchange_options.sampling_time_input);
+    replica_exchange_options.sampling_time =
+        replica_exchange_options.sampling_time_input / constants.timeUnit;
+    replica_exchange_options.temperature_low = ini.GetValueF(
+        "Replica Exchange", "temperature_low", main_options.temperature);
+    replica_exchange_options.temperature_high =
+        ini.GetValueF("Replica Exchange", "temperature_high",
+                      replica_exchange_options.temperature_high);
+    replica_exchange_options.exchange_period_input =
+        ini.GetValueF("Replica Exchange", "exchange_period",
+                      replica_exchange_options.exchange_period_input);
+    replica_exchange_options.exchange_period =
+        replica_exchange_options.exchange_period_input / constants.timeUnit;
 
     // [Hyperdynamics] //
 
-    bondBoostRMDTimeInput =
-        ini.GetValueF("Hyperdynamics", "bb_rmd_time", bondBoostRMDTimeInput);
-    bondBoostRMDTime = bondBoostRMDTimeInput / timeUnit;
-    bondBoostBALS = toLowerCase(
-        ini.GetValue("Hyperdynamics", "bb_boost_atomlist", bondBoostBALS));
-    bondBoostDVMAX = ini.GetValueF("Hyperdynamics", "bb_dvmax", bondBoostDVMAX);
-    bondBoostQRR =
-        ini.GetValueF("Hyperdynamics", "bb_stretch_threshold", bondBoostQRR);
-    bondBoostPRR =
-        ini.GetValueF("Hyperdynamics", "bb_ds_curvature", bondBoostPRR);
-    bondBoostQcut = ini.GetValueF("Hyperdynamics", "bb_rcut", bondBoostQcut);
-    biasPotential = toLowerCase(
-        ini.GetValue("Hyperdynamics", "bias_potential", biasPotential));
+    hyperdynamics_options.rmd_time_input =
+        ini.GetValueF("Hyperdynamics", "bb_rmd_time",
+                      hyperdynamics_options.rmd_time_input);
+    hyperdynamics_options.rmd_time =
+        hyperdynamics_options.rmd_time_input / constants.timeUnit;
+    hyperdynamics_options.boost_atom_list =
+        toLowerCase(ini.GetValue("Hyperdynamics", "bb_boost_atomlist",
+                                 hyperdynamics_options.boost_atom_list));
+    hyperdynamics_options.dvmax = ini.GetValueF("Hyperdynamics", "bb_dvmax",
+                                                hyperdynamics_options.dvmax);
+    hyperdynamics_options.qrr =
+        ini.GetValueF("Hyperdynamics", "bb_stretch_threshold",
+                      hyperdynamics_options.qrr);
+    hyperdynamics_options.prr = ini.GetValueF("Hyperdynamics", "bb_ds_curvature",
+                                              hyperdynamics_options.prr);
+    hyperdynamics_options.qcut =
+        ini.GetValueF("Hyperdynamics", "bb_rcut", hyperdynamics_options.qcut);
+    hyperdynamics_options.bias_potential =
+        toLowerCase(ini.GetValue("Hyperdynamics", "bias_potential",
+                                 hyperdynamics_options.bias_potential));
 
     // [Saddle Search] //
 
-    saddleMethod =
-        toLowerCase(ini.GetValue("Saddle Search", "method", saddleMethod));
-    saddleMinmodeMethod = toLowerCase(
-        ini.GetValue("Saddle Search", "min_mode_method", saddleMinmodeMethod));
-    saddleDisplaceMagnitude = ini.GetValueF(
-        "Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
-    saddleDisplaceRadius =
-        ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
-    saddleMaxEnergy =
-        ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
-    saddleMaxIterations =
-        ini.GetValueL("Saddle Search", "max_iterations", optMaxIterations);
-    saddleNonnegativeDisplacementAbort =
+    saddle_search_options.method = toLowerCase(
+        ini.GetValue("Saddle Search", "method", saddle_search_options.method));
+    saddle_search_options.minmode_method =
+        toLowerCase(ini.GetValue("Saddle Search", "min_mode_method",
+                                 saddle_search_options.minmode_method));
+    saddle_search_options.displace_magnitude =
+        ini.GetValueF("Saddle Search", "displace_magnitude",
+                      saddle_search_options.displace_magnitude);
+    saddle_search_options.displace_radius =
+        ini.GetValueF("Saddle Search", "displace_radius",
+                      saddle_search_options.displace_radius);
+    saddle_search_options.max_energy = ini.GetValueF(
+        "Saddle Search", "max_energy", saddle_search_options.max_energy);
+    saddle_search_options.max_iterations = ini.GetValueL(
+        "Saddle Search", "max_iterations", optimizer_options.max_iterations);
+    saddle_search_options.nonnegative_displacement_abort =
         ini.GetValueB("Saddle Search", "nonnegative_displacement_abort",
-                      saddleNonnegativeDisplacementAbort);
-    saddleMaxSingleDisplace = ini.GetValueF(
-        "Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
-    // must be loaded after optConvergedForce
-    saddleConvergedForce =
-        ini.GetValueF("Saddle Search", "converged_force", optConvergedForce);
-    saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio",
-                                         saddlePerpForceRatio); // undocumented
-    saddleDisplaceType = toLowerCase(ini.GetValue(
+                      saddle_search_options.nonnegative_displacement_abort);
+    saddle_search_options.max_single_displace =
+        ini.GetValueF("Saddle Search", "max_single_displace",
+                      saddle_search_options.max_single_displace);
+    // must be loaded after optimizer_options.converged_force
+    saddle_search_options.converged_force = ini.GetValueF(
+        "Saddle Search", "converged_force", optimizer_options.converged_force);
+    saddle_search_options.perp_force_ratio =
+        ini.GetValueF("Saddle Search", "perp_force_ratio",
+                      saddle_search_options.perp_force_ratio);
+    saddle_search_options.displace_type = toLowerCase(ini.GetValue(
         "Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
-    saddleNonlocalCountAbort =
+    saddle_search_options.nonlocal_count_abort =
         ini.GetValueL("Saddle Search", "nonlocal_count_abort",
-                      saddleNonlocalCountAbort); // undocumented
-    saddleNonlocalDistanceAbort =
+                      saddle_search_options.nonlocal_count_abort);
+    saddle_search_options.nonlocal_distance_abort =
         ini.GetValueF("Saddle Search", "nonlocal_distance_abort",
-                      saddleNonlocalDistanceAbort); // undocumented
-    if (saddleDisplaceType != EpiCenters::DISP_NOT_FCC_OR_HCP &&
-        saddleDisplaceType != EpiCenters::DISP_MIN_COORDINATED &&
-        saddleDisplaceType != EpiCenters::DISP_LAST_ATOM &&
-        saddleDisplaceType != EpiCenters::DISP_RANDOM) {
-      saddleDisplaceType = EpiCenters::DISP_LOAD;
+                      saddle_search_options.nonlocal_distance_abort);
+    if (saddle_search_options.displace_type !=
+            EpiCenters::DISP_NOT_FCC_OR_HCP &&
+        saddle_search_options.displace_type !=
+            EpiCenters::DISP_MIN_COORDINATED &&
+        saddle_search_options.displace_type != EpiCenters::DISP_LAST_ATOM &&
+        saddle_search_options.displace_type != EpiCenters::DISP_RANDOM) {
+      saddle_search_options.displace_type = EpiCenters::DISP_LOAD;
     }
-    saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive",
-                                          saddleConfinePositive);
-    if (saddleConfinePositive) {
-      saddleBowlBreakout =
-          ini.GetValueB("Saddle Search", "bowl_breakout", saddleBowlBreakout);
-      saddleBowlActive =
-          ini.GetValueL("Saddle Search", "bowl_active_atoms", saddleBowlActive);
-      saddleConfinePositiveMinForce =
+    saddle_search_options.confine_positive.enabled =
+        ini.GetValueB("Saddle Search", "confine_positive",
+                      saddle_search_options.confine_positive.enabled);
+    if (saddle_search_options.confine_positive.enabled) {
+      saddle_search_options.confine_positive.bowl_breakout =
+          ini.GetValueB("Saddle Search", "bowl_breakout",
+                        saddle_search_options.confine_positive.bowl_breakout);
+      saddle_search_options.confine_positive.bowl_active =
+          ini.GetValueL("Saddle Search", "bowl_active_atoms",
+                        saddle_search_options.confine_positive.bowl_active);
+      saddle_search_options.confine_positive.min_force =
           ini.GetValueF("Saddle Search", "confine_positive_min_move",
-                        saddleConfinePositiveMinForce);
-      saddleConfinePositiveScaleRatio =
+                        saddle_search_options.confine_positive.min_force);
+      saddle_search_options.confine_positive.scale_ratio =
           ini.GetValueF("Saddle Search", "confine_positive_scale_ratio",
-                        saddleConfinePositiveScaleRatio);
-      saddleConfinePositiveBoost =
+                        saddle_search_options.confine_positive.scale_ratio);
+      saddle_search_options.confine_positive.boost =
           ini.GetValueF("Saddle Search", "confine_positive_boost",
-                        saddleConfinePositiveBoost);
-      saddleConfinePositiveMinActive =
+                        saddle_search_options.confine_positive.boost);
+      saddle_search_options.confine_positive.min_active =
           ini.GetValueL("Saddle Search", "confine_positive_min_active",
-                        saddleConfinePositiveMinActive);
+                        saddle_search_options.confine_positive.min_active);
     }
-    saddleDynamicsTemperature = temperature;
-    saddleDynamicsTemperature = ini.GetValueF(
-        "Saddle Search", "dynamics_temperature", saddleDynamicsTemperature);
-    saddleDynamicsStateCheckIntervalInput =
+    saddle_search_options.dynamics.temperature = main_options.temperature;
+    saddle_search_options.dynamics.temperature =
+        ini.GetValueF("Saddle Search", "dynamics_temperature",
+                      saddle_search_options.dynamics.temperature);
+    saddle_search_options.dynamics.state_check_interval_input =
         ini.GetValueF("Saddle Search", "dynamics_state_check_interval",
-                      saddleDynamicsStateCheckIntervalInput);
-    saddleDynamicsStateCheckInterval =
-        saddleDynamicsStateCheckIntervalInput / timeUnit;
-    saddleDynamicsRecordIntervalInput =
+                      saddle_search_options.dynamics
+                          .state_check_interval_input);
+    saddle_search_options.dynamics.state_check_interval =
+        saddle_search_options.dynamics.state_check_interval_input / constants.timeUnit;
+    saddle_search_options.dynamics.record_interval_input =
         ini.GetValueF("Saddle Search", "dynamics_record_interval",
-                      saddleDynamicsRecordIntervalInput);
-    saddleDynamicsRecordInterval = saddleDynamicsRecordIntervalInput / timeUnit;
-    saddleDynamicsLinearInterpolation =
+                      saddle_search_options.dynamics.record_interval_input);
+    saddle_search_options.dynamics.record_interval =
+        saddle_search_options.dynamics.record_interval_input / constants.timeUnit;
+    saddle_search_options.dynamics.linear_interpolation =
         ini.GetValueB("Saddle Search", "dynamics_linear_interpolation",
-                      saddleDynamicsLinearInterpolation);
-    saddleRemoveRotation =
-        ini.GetValueB("Saddle Search", "remove_rotation", saddleRemoveRotation);
-    saddleDynamicsMaxInitCurvature =
+                      saddle_search_options.dynamics.linear_interpolation);
+    saddle_search_options.remove_rotation =
+        ini.GetValueB("Saddle Search", "remove_rotation",
+                      saddle_search_options.remove_rotation);
+    saddle_search_options.dynamics.max_init_curvature =
         ini.GetValueF("Saddle Search", "dynamics_max_init_curvature",
-                      saddleDynamicsMaxInitCurvature);
-    saddleZeroModeAbortCurvature =
+                      saddle_search_options.dynamics.max_init_curvature);
+    saddle_search_options.zero_mode_abort_curvature =
         ini.GetValueF("Saddle Search", "zero_mode_abort_curvature",
-                      saddleZeroModeAbortCurvature);
+                      saddle_search_options.zero_mode_abort_curvature);
 
     // [Basin Hopping] //
 
-    basinHoppingDisplacement = ini.GetValueF("Basin Hopping", "displacement",
-                                             basinHoppingDisplacement);
-    basinHoppingPushApartDistance = ini.GetValueF(
-        "Basin Hopping", "push_apart_distance", basinHoppingPushApartDistance);
-    basinHoppingInitialRandomStructureProbability =
+    basin_hopping_options.displacement = ini.GetValueF(
+        "Basin Hopping", "displacement", basin_hopping_options.displacement);
+    basin_hopping_options.push_apart_distance =
+        ini.GetValueF("Basin Hopping", "push_apart_distance",
+                      basin_hopping_options.push_apart_distance);
+    basin_hopping_options.initial_random_structure_probability =
         ini.GetValueF("Basin Hopping", "initial_random_structure_probability",
-                      basinHoppingInitialRandomStructureProbability);
-    basinHoppingSteps =
-        ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
-    basinHoppingQuenchingSteps = ini.GetValueL(
-        "Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
-    basinHoppingSingleAtomDisplace =
+                      basin_hopping_options
+                          .initial_random_structure_probability);
+    basin_hopping_options.steps =
+        ini.GetValueL("Basin Hopping", "steps", basin_hopping_options.steps);
+    basin_hopping_options.quenching_steps =
+        ini.GetValueL("Basin Hopping", "quenching_steps",
+                      basin_hopping_options.quenching_steps);
+    basin_hopping_options.single_atom_displace =
         ini.GetValueB("Basin Hopping", "single_atom_displace",
-                      basinHoppingSingleAtomDisplace);
-    basinHoppingSignificantStructure =
+                      basin_hopping_options.single_atom_displace);
+    basin_hopping_options.significant_structure =
         ini.GetValueB("Basin Hopping", "significant_structure",
-                      basinHoppingSignificantStructure);
-    basinHoppingDisplacementAlgorithm =
+                      basin_hopping_options.significant_structure);
+    basin_hopping_options.displacement_algorithm =
         toLowerCase(ini.GetValue("Basin Hopping", "displacement_algorithm",
-                                 basinHoppingDisplacementAlgorithm));
-    basinHoppingDisplacementDistribution =
+                                 basin_hopping_options
+                                     .displacement_algorithm));
+    basin_hopping_options.displacement_distribution =
         toLowerCase(ini.GetValue("Basin Hopping", "displacement_distribution",
-                                 basinHoppingDisplacementDistribution));
-    basinHoppingSwapProbability = ini.GetValueF(
-        "Basin Hopping", "swap_probability", basinHoppingSwapProbability);
-    basinHoppingJumpMax =
-        ini.GetValueL("Basin Hopping", "jump_max", basinHoppingJumpMax);
-    basinHoppingJumpSteps =
-        ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
-    basinHoppingAdjustDisplacement = ini.GetValueB(
-        "Basin Hopping", "adjust_displacement", basinHoppingAdjustDisplacement);
-    basinHoppingAdjustPeriod = ini.GetValueL("Basin Hopping", "adjust_period",
-                                             basinHoppingAdjustPeriod);
-    basinHoppingAdjustFraction = ini.GetValueF(
-        "Basin Hopping", "adjust_fraction", basinHoppingAdjustFraction);
-    basinHoppingTargetRatio =
-        ini.GetValueF("Basin Hopping", "target_ratio", basinHoppingTargetRatio);
-    basinHoppingWriteUnique =
-        ini.GetValueB("Basin Hopping", "write_unique", basinHoppingWriteUnique);
-    basinHoppingStopEnergy =
-        ini.GetValueF("Basin Hopping", "stop_energy", basinHoppingStopEnergy);
+                                 basin_hopping_options
+                                     .displacement_distribution));
+    basin_hopping_options.swap_probability =
+        ini.GetValueF("Basin Hopping", "swap_probability",
+                      basin_hopping_options.swap_probability);
+    basin_hopping_options.jump_max = ini.GetValueL(
+        "Basin Hopping", "jump_max", basin_hopping_options.jump_max);
+    basin_hopping_options.jump_steps = ini.GetValueL(
+        "Basin Hopping", "jump_steps", basin_hopping_options.jump_steps);
+    basin_hopping_options.adjust_displacement =
+        ini.GetValueB("Basin Hopping", "adjust_displacement",
+                      basin_hopping_options.adjust_displacement);
+    basin_hopping_options.adjust_period =
+        ini.GetValueL("Basin Hopping", "adjust_period",
+                      basin_hopping_options.adjust_period);
+    basin_hopping_options.adjust_fraction =
+        ini.GetValueF("Basin Hopping", "adjust_fraction",
+                      basin_hopping_options.adjust_fraction);
+    basin_hopping_options.target_ratio =
+        ini.GetValueF("Basin Hopping", "target_ratio",
+                      basin_hopping_options.target_ratio);
+    basin_hopping_options.write_unique =
+        ini.GetValueB("Basin Hopping", "write_unique",
+                      basin_hopping_options.write_unique);
+    basin_hopping_options.stop_energy = ini.GetValueF(
+        "Basin Hopping", "stop_energy", basin_hopping_options.stop_energy);
 
     // [Global Optimization] //
 
-    globalOptimizationMoveMethod = toLowerCase(ini.GetValue(
-        "Global Optimization", "move_method", globalOptimizationMoveMethod));
-    globalOptimizationDecisionMethod =
+    global_optimization_options.move_method =
+        toLowerCase(ini.GetValue("Global Optimization", "move_method",
+                                 global_optimization_options.move_method));
+    global_optimization_options.decision_method =
         toLowerCase(ini.GetValue("Global Optimization", "decision_method",
-                                 globalOptimizationDecisionMethod));
-    globalOptimizationSteps =
-        ini.GetValueL("Global Optimization", "steps", globalOptimizationSteps);
-    globalOptimizationBeta =
-        ini.GetValueF("Global Optimization", "beta", globalOptimizationBeta);
-    globalOptimizationAlpha =
-        ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
-    globalOptimizationMdmin =
-        ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
-    globalOptimizationTargetEnergy = ini.GetValueF(
-        "Global Optimization", "target_energy", globalOptimizationTargetEnergy);
+                                 global_optimization_options
+                                     .decision_method));
+    global_optimization_options.steps =
+        ini.GetValueL("Global Optimization", "steps",
+                      global_optimization_options.steps);
+    global_optimization_options.beta =
+        ini.GetValueF("Global Optimization", "beta",
+                      global_optimization_options.beta);
+    global_optimization_options.alpha =
+        ini.GetValueF("Global Optimization", "alpha",
+                      global_optimization_options.alpha);
+    global_optimization_options.mdmin =
+        ini.GetValueL("Global Optimization", "mdmin",
+                      global_optimization_options.mdmin);
+    global_optimization_options.target_energy =
+        ini.GetValueF("Global Optimization", "target_energy",
+                      global_optimization_options.target_energy);
 
     // [BGSD] //
 
-    alpha = ini.GetValueF("BGSD", "alpha", alpha);
-    beta = ini.GetValueF("BGSD", "beta", beta);
-    gradientfinitedifference = ini.GetValueF("BGSD", "gradientfinitedifference",
-                                             gradientfinitedifference);
-    grad2energyconvergence =
-        ini.GetValueF("BGSD", "grad2energyconvergence", grad2energyconvergence);
-    grad2forceconvergence =
-        ini.GetValueF("BGSD", "grad2forceconvergence", grad2forceconvergence);
+    bgsd_options.alpha = ini.GetValueF("BGSD", "alpha", bgsd_options.alpha);
+    bgsd_options.beta = ini.GetValueF("BGSD", "beta", bgsd_options.beta);
+    bgsd_options.gradient_finite_difference = ini.GetValueF(
+        "BGSD", "gradientfinitedifference",
+        bgsd_options.gradient_finite_difference);
+    bgsd_options.grad2energy_convergence = ini.GetValueF(
+        "BGSD", "grad2energyconvergence",
+        bgsd_options.grad2energy_convergence);
+    bgsd_options.grad2force_convergence = ini.GetValueF(
+        "BGSD", "grad2forceconvergence",
+        bgsd_options.grad2force_convergence);
 
     // [Monte Carlo] //
 
-    monteCarloStepSize =
-        ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
-    monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
+    monte_carlo_options.step_size = ini.GetValueF("Monte Carlo", "step_size",
+                                                  monte_carlo_options.step_size);
+    monte_carlo_options.steps =
+        ini.GetValueI("Monte Carlo", "steps", monte_carlo_options.steps);
 
     // Sanity Checks
-    if (parrepStateCheckInterval > mdTime &&
-        magic_enum::enum_name<JobType>(job) == "parallel_replica") {
+    if (parallel_replica_options.state_check_interval > dynamics_options.time &&
+        magic_enum::enum_name<JobType>(main_options.job) == "parallel_replica") {
       SPDLOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
       error = 1;
     }
@@ -1341,20 +1473,22 @@ int Parameters::load(FILE *file) {
                   "used without initializer set to file.");
     }
 
-    if (saddleDynamicsRecordIntervalInput >
-        saddleDynamicsStateCheckIntervalInput) {
+    if (saddle_search_options.dynamics.record_interval_input >
+        saddle_search_options.dynamics.state_check_interval_input) {
       SPDLOG_ERROR("[Saddle Search] dynamics_record_interval must be <= "
                    "dynamics_state_check_interval");
       error = 1;
     }
 
-    if (potential == PotType::AMS || potential == PotType::AMS_IO) {
-      if (forcefield.empty() && model.empty() && xc.empty()) {
+    if (potential_options.potential == PotType::AMS || potential_options.potential == PotType::AMS_IO) {
+      if (ams_options.forcefield.empty() && ams_options.model.empty() &&
+          ams_options.xc.empty()) {
         SPDLOG_ERROR("[AMS] Must provide atleast forcefield or model or xc");
         error = 1;
       }
 
-      if (!forcefield.empty() && !model.empty() && !xc.empty()) {
+      if (!ams_options.forcefield.empty() && !ams_options.model.empty() &&
+          !ams_options.xc.empty()) {
         SPDLOG_ERROR("[AMS] Must provide either forcefield or model");
         error = 1;
       }

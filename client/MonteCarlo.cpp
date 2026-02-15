@@ -45,7 +45,7 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
       continue;
     }
     double r = randomDouble();
-    double kB = params->kB;
+    double kB = params->constants.kB;
     double arg = -de / (kB * T);
     SPDLOG_LOGGER_DEBUG(log, "arg: {}\n", arg);
     if (arg < -50.0) {

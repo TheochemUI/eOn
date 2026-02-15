@@ -42,9 +42,9 @@ public:
     double Henergy =
         0.5 * Vforce.dot(Vforce) + 0.5 * bgsdAlpha *
                                        (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->beta)) *
+                                        (reactantEnergy + parameters->bgsd_options.beta)) *
                                        (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->beta));
+                                        (reactantEnergy + parameters->bgsd_options.beta));
     return Henergy;
   }
 
@@ -55,14 +55,14 @@ public:
     VectorXd Vpositions = matter->getPositionsFreeV();
     matter->setPositionsFreeV(matter->getPositionsFreeV() -
                               normVforce *
-                                  parameters->gradientfinitedifference);
+                                  parameters->bgsd_options.gradient_finite_difference);
     VectorXd Vforcenew = matter->getForcesFreeV();
     matter->setPositionsFreeV(Vpositions);
     VectorXd Hforce = magVforce * (Vforcenew - Vforce) /
-                          parameters->gradientfinitedifference +
+                          parameters->bgsd_options.gradient_finite_difference +
                       bgsdAlpha *
                           (matter->getPotentialEnergy() -
-                           (reactantEnergy + parameters->beta)) *
+                           (reactantEnergy + parameters->bgsd_options.beta)) *
                           Vforce;
     return -Hforce;
   }
@@ -78,13 +78,13 @@ public:
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
   bool isConverged() { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
-    return getConvergenceH() < parameters->Hforceconvergence;
+    return getConvergenceH() < parameters->bgsd_options.h_force_convergence;
   }
   bool isConvergedV() {
-    return getConvergenceV() < parameters->grad2energyconvergence;
+    return getConvergenceV() < parameters->bgsd_options.grad2energy_convergence;
   }
   bool isConvergedIP() {
-    return getConvergenceH() < parameters->grad2forceconvergence;
+    return getConvergenceH() < parameters->bgsd_options.grad2force_convergence;
   }
 
   double getConvergence() { return getEnergy() && getGradient().norm(); }
@@ -101,15 +101,15 @@ private:
 
 int BiasedGradientSquaredDescent::run() {
   auto objf = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
-                                                      params->alpha, params);
-  auto optim = helpers::create::mkOptim(objf, params->optMethod, params);
+                                                      params->bgsd_options.alpha, params);
+  auto optim = helpers::create::mkOptim(objf, params->optimizer_options.method, params);
   int iteration = 0;
   SPDLOG_LOGGER_DEBUG(
       log,
       "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
-      params->alpha, params->beta);
+      params->bgsd_options.alpha, params->bgsd_options.beta);
   while (!objf->isConvergedH() || iteration == 0) {
-    optim->step(params->optMaxMove);
+    optim->step(params->optimizer_options.max_move);
     SPDLOG_LOGGER_DEBUG(log,
                         "iteration {} Henergy, gradientHnorm, and Venergy: "
                         "{:.8f} {:.8f} {:.8f}",
@@ -119,12 +119,12 @@ int BiasedGradientSquaredDescent::run() {
   }
   auto objf2 = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
                                                        0.0, params);
-  auto optim2 = helpers::create::mkOptim(objf2, params->optMethod, params);
+  auto optim2 = helpers::create::mkOptim(objf2, params->optimizer_options.method, params);
   while (!objf2->isConvergedV() || iteration == 0) {
     if (objf2->isConvergedIP()) {
       break;
     };
-    optim2->step(params->optMaxMove);
+    optim2->step(params->optimizer_options.max_move);
     SPDLOG_LOGGER_DEBUG(log,
                         "gradient squared iteration {} Henergy, gradientHnorm, "
                         "and Venergy: {:.8f} {:.8f} {:.8f}",
@@ -134,13 +134,13 @@ int BiasedGradientSquaredDescent::run() {
   }
 
   LowestEigenmode *minModeMethod;
-  if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-    if (params->dimerImproved) {
+  if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_DIMER) {
+    if (params->dimer_options.improved) {
       minModeMethod = new ImprovedDimer(saddle, params, pot);
     } else {
       minModeMethod = new Dimer(saddle, params, pot);
     }
-  } else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = new Lanczos(saddle, params, pot);
   }
 

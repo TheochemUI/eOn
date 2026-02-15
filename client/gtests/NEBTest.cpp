@@ -44,7 +44,7 @@ void NEBTest::SetUp() {
   m1->con2matter(confile);
   m2->con2matter(confile);
   m2->setPositions(m1->getPositions() * 0.7);
-  params->optMaxIterations = 100000;
+  params->optimizer_options.max_iterations = 100000;
 }
 
 void NEBTest::TearDown() {}
