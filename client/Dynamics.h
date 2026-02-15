@@ -26,7 +26,7 @@ public:
   static const char LANGEVIN[];
   static const char NONE[];
 
-  Dynamics(Matter *matter, Parameters *parameters);
+  Dynamics(Matter *matter, const Parameters &parameters);
 
   ~Dynamics();
 
@@ -44,7 +44,7 @@ private:
   long nAtoms, nFreeCoords;
 
   Matter *matter;
-  Parameters *parameters;
+  const Parameters &parameters;
 
   double dt;
   double kB;

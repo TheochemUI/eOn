@@ -12,16 +12,16 @@ namespace tests {
 class ZBLPotTest {
 public:
   ZBLPotTest()
-      : params{std::make_shared<Parameters>()},
+      : params{},
         matter{nullptr},
         pot_zbl{nullptr},
         threshold{1e-6} {
-    params->potential_options.potential = PotType::ZBL;
-    params->zbl_options.cut_inner = 2.0;
-    params->zbl_options.cut_global = 2.5;
+    params.potential_options.potential = PotType::ZBL;
+    params.zbl_options.cut_inner = 2.0;
+    params.zbl_options.cut_global = 2.5;
 
     pot_zbl = helper_functions::makePotential(
-        params->potential_options.potential, params);
+        params.potential_options.potential, params);
     matter = std::make_shared<Matter>(pot_zbl, params);
 
     const std::string confile("pos.con");
@@ -32,7 +32,7 @@ public:
   ~ZBLPotTest() = default;
 
 protected:
-  std::shared_ptr<Parameters> params;
+  Parameters params;
   std::shared_ptr<Matter> matter;
   std::shared_ptr<Potential> pot_zbl;
   double threshold;

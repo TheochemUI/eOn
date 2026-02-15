@@ -37,7 +37,7 @@ void TestJob::checkFullSearch(void) {
   string displacementFilename("displacement_test.con");
   string modeFilename("mode_test.dat");
 
-  params->potential_options.potential = "emt";
+  params.potential_options.potential = "emt";
 
   auto initial = std::make_unique<Matter>(pot, params);
   //    displacement = std::make_unique<Matter>(pot, params);
@@ -155,7 +155,7 @@ void TestJob::checkFullSearch(void) {
 void TestJob::checkMode(void){
 
     string reactant_passed("reactant_test.con");
-    params->potential_options.potential = 1;  // always LJ in test
+    params.potential_options.potential = 1;  // always LJ in test
     Matter *saddle = std::make_unique<Matter>(pot, params);
     saddle->con2matter(reactant_passed);
 
@@ -282,7 +282,7 @@ void TestJob::checkPotentials(void) {
 
 double TestJob::getEnergyDiff(string pot, double refEnergy) {
   string posFilename("pos_test.con");
-  params->potential_options.potential = pot;
+  params.potential_options.potential = pot;
   Matter *pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posFilename);
   //    printf("Energy: %f\n", pos->getPotentialEnergy());
@@ -291,7 +291,7 @@ double TestJob::getEnergyDiff(string pot, double refEnergy) {
 
 double TestJob::getForceDiff(string pot, double refForce) {
   string posFilename("pos_test.con");
-  params->potential_options.potential = pot;
+  params.potential_options.potential = pot;
   Matter *pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posFilename);
   //    printf("Force: %f\n", pos->maxForce());

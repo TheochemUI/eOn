@@ -26,12 +26,12 @@ const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
 AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
-                             std::shared_ptr<Parameters> params,
+                             const Parameters &params,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
-  p = helper_functions::eon_parameters_to_gpr(params.get());
+  p = helper_functions::eon_parameters_to_gpr(params);
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = matter->getCell()(i);
   }
@@ -54,7 +54,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   init_middle_point.R = R_init;
   init_observations.clear();
   problem_setup.activateFrozenAtoms(
-      R_init, params->gpr_dimer_options.active_radius, atoms_config);
+      R_init, params.gpr_dimer_options.active_radius, atoms_config);
   orient_init.clear();
   orient_init.resize(matterCenter->getPositionsFree().rows(),
                      matterCenter->getPositionsFree().cols());

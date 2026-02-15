@@ -32,7 +32,7 @@ class Lenosky : public Potential {
 public:
   // Functions
   // constructor
-  Lenosky(std::shared_ptr<Parameters> params)
+  Lenosky(const Parameters &params)
       : Potential(params) {};
 
   // To satisfy interface

@@ -19,13 +19,13 @@ int SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd f = -m_objf->getGradient();
 
   Eigen::VectorXd dr;
-  double alpha = m_params->optimizer_options.sd.alpha;
-  if (m_params->optimizer_options.sd.two_point == true && iteration > 0) {
+  double alpha = m_params.optimizer_options.sd.alpha;
+  if (m_params.optimizer_options.sd.two_point == true && iteration > 0) {
     Eigen::VectorXd dx = r - m_rPrev;
     Eigen::VectorXd dg = -f + m_fPrev;
     alpha = dx.dot(dx) / dx.dot(dg);
     if (alpha < 0) {
-      alpha = m_params->optimizer_options.sd.alpha;
+      alpha = m_params.optimizer_options.sd.alpha;
     }
     SPDLOG_LOGGER_DEBUG(m_log, "[SD] alpha: {:.4e}", alpha);
   }

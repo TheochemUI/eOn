@@ -19,7 +19,7 @@
 class DynamicsSaddleSearch : public SaddleSearchMethod {
 public:
   DynamicsSaddleSearch(std::shared_ptr<Matter> matterPassed,
-                       std::shared_ptr<Parameters> parametersPassed)
+                       const Parameters &parametersPassed)
       : SaddleSearchMethod(nullptr, parametersPassed),
         product{std::make_shared<Matter>(*matterPassed)},
         reactant{std::make_shared<Matter>(*matterPassed)},

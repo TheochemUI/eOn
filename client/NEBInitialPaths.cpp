@@ -13,12 +13,12 @@ namespace helper_functions::neb_paths {
 
 // Forward declaration of ZBL setup helper to keep code clean
 std::shared_ptr<Potential> createZBLPotential() {
-  auto zbl_params = std::make_shared<Parameters>();
-  zbl_params->potential_options.potential = PotType::ZBL;
+  auto zbl_params = Parameters{};
+  zbl_params.potential_options.potential = PotType::ZBL;
   // Strong short-range repulsion
-  zbl_params->zbl_options.cut_inner = 0.5;
+  zbl_params.zbl_options.cut_inner = 0.5;
   // Cutoff sufficient to push overlapping atoms apart
-  zbl_params->zbl_options.cut_global = 3.0;
+  zbl_params.zbl_options.cut_global = 3.0;
   return helper_functions::makePotential(PotType::ZBL, zbl_params);
 }
 
@@ -96,8 +96,8 @@ Eigen::MatrixXd getDistanceMatrix(const Matter &m) {
 }
 
 std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
-                             const size_t nimgs,
-                             std::shared_ptr<Parameters> params, bool use_zbl) {
+                             const size_t nimgs, const Parameters &params,
+                             bool use_zbl) {
 
   auto log = spdlog::get("combi");
   SPDLOG_LOGGER_INFO(log, "Generating initial path using IDPP...");
@@ -131,12 +131,12 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
     // Create an Optimizer
     // Defaults to taking the same one as optimizer
     auto idpp_optim = helpers::create::mkOptim(
-        idpp_objf, params->neb_options.opt_method, params);
+        idpp_objf, params.neb_options.opt_method, params);
 
     // Run the optimization
     int status =
-        idpp_optim->run(params->neb_options.initialization.max_iterations,
-                        params->neb_options.initialization.max_move);
+        idpp_optim->run(params.neb_options.initialization.max_iterations,
+                        params.neb_options.initialization.max_move);
 
     // Log progress
     double residual = idpp_objf->getConvergence();
@@ -155,8 +155,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
 std::vector<Matter> idppCollectivePath(const Matter &initImg,
                                        const Matter &finalImg, size_t nimgs,
-                                       std::shared_ptr<Parameters> params,
-                                       bool use_zbl) {
+                                       const Parameters &params, bool use_zbl) {
   auto log = spdlog::get("combi");
   SPDLOG_LOGGER_INFO(log,
                      "Generating initial path using Collective IDPP-NEB...");
@@ -177,14 +176,14 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
   }
 
   auto optim = helpers::create::mkOptim(
-      idpp_objf, params->neb_options.initialization.opt_method, params);
+      idpp_objf, params.neb_options.initialization.opt_method, params);
 
-  int maxSteps = params->neb_options.initialization.max_iterations;
+  int maxSteps = params.neb_options.initialization.max_iterations;
   int currentStep = 0;
   int checkInterval = 40;
 
   while (currentStep < maxSteps) {
-    optim->run(checkInterval, params->optimizer_options.max_move);
+    optim->run(checkInterval, params.optimizer_options.max_move);
     currentStep += checkInterval;
 
     if (idpp_objf->isConverged()) {
@@ -214,8 +213,7 @@ Matter interpolateImage(const Matter &A, const Matter &B, double fraction) {
 }
 
 std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
-                              size_t target_nimgs,
-                              std::shared_ptr<Parameters> params,
+                              size_t target_nimgs, const Parameters &params,
                               bool use_zbl) {
 
   auto log = spdlog::get("combi");
@@ -264,7 +262,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
       Matter frontier = path[nLeft];
       Matter next = path[nLeft + 1];
       Matter newImg = interpolateImage(
-          frontier, next, params->neb_options.initialization.sidpp_alpha);
+          frontier, next, params.neb_options.initialization.sidpp_alpha);
 
       path.insert(path.begin() + nLeft + 1, newImg);
       nLeft++;
@@ -285,7 +283,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
       // Grow backwards from product
       Matter newImg = interpolateImage(
-          frontier, prev, params->neb_options.initialization.sidpp_alpha);
+          frontier, prev, params.neb_options.initialization.sidpp_alpha);
 
       path.insert(path.begin() + rightFrontierIdx, newImg);
       nRight++;
@@ -295,7 +293,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
     }
 
     // --- STEP B: OPTIMIZE CURRENT SET ---
-    int steps = params->neb_options.initialization.nsteps;
+    int steps = params.neb_options.initialization.nsteps;
 
     // Create Base IDPP Objective
     std::shared_ptr<ObjectiveFunction> idpp_objf =
@@ -310,13 +308,13 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
     // TODO(rg): this is a headache, since it uses the optimizer stanza but with
     // the NEB OptType
     auto optim = helpers::create::mkOptim(
-        idpp_objf, params->neb_options.initialization.opt_method, params);
+        idpp_objf, params.neb_options.initialization.opt_method, params);
 
     // Relax the current intermediate path until it meets the tolerance
-    int growthRelaxSteps = params->neb_options.initialization.max_iterations;
+    int growthRelaxSteps = params.neb_options.initialization.max_iterations;
     int step = 0;
     while (step < growthRelaxSteps) {
-      optim->run(5, params->optimizer_options.max_move); // Run small batches
+      optim->run(5, params.optimizer_options.max_move); // Run small batches
       step += 5;
       if (idpp_objf->isConverged())
         break;
@@ -350,7 +348,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
   auto final_optim =
       helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
-  final_optim->run(500, params->optimizer_options.max_move);
+  final_optim->run(500, params.optimizer_options.max_move);
 
   return path;
 }

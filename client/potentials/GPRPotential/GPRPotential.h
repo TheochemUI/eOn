@@ -23,7 +23,7 @@ private:
 public:
   // Functions
   // constructor and destructor
-  GPRPotential(Parameters *p);
+  GPRPotential(const Parameters &p);
 
   void registerGPRObject(gpr::GaussianProcessRegression *_gpr_model);
 

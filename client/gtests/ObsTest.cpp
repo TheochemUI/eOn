@@ -37,19 +37,18 @@ ObsTest::~ObsTest() {
 
 TEST_F(ObsTest, TestMatter) {
   string confile("pos.con");
-  Parameters *parameters = new Parameters;
-  parameters->potential_options.potential = "morse_pt";
-  Matter *matter = new Matter(parameters);
+  Parameters parameters;
+  parameters.potential_options.potential = PotType::MORSE_PT;
+  auto pot = helper_functions::makePotential(parameters);
+  auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter(confile);
-  gpr::Observation o = helper_functions::eon_matter_to_init_obs(matter);
+  gpr::Observation o = helper_functions::eon_matter_to_init_obs(matter.get());
   EXPECT_EQ(o.R.extractEigenMatrix(), matter->getPositions())
       << "Positions do not match";
   EXPECT_EQ(o.G.extractEigenMatrix() * -1, matter->getForces())
       << "Forces do not match";
   EXPECT_EQ(o.E[0], matter->getPotentialEnergy())
       << "Potential energy does not match";
-  delete matter;
-  delete parameters;
 }
 
 } /* namespace tests */

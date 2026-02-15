@@ -19,7 +19,7 @@
 class LAMMPSPot : public Potential {
 
 public:
-  LAMMPSPot(std::shared_ptr<Parameters> p);
+  LAMMPSPot(const Parameters &p);
   ~LAMMPSPot(void);
   void initialize() {};
   void cleanMemory(void);

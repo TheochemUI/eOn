@@ -49,22 +49,22 @@ private:
 
 protected:
   //! Parameters set by the config.init file
-  std::shared_ptr<Parameters> m_params;
+  const Parameters &m_params;
   //! An objective function relating a certain job method to the conjugate
   //! gradient optimizer
   std::shared_ptr<ObjectiveFunction> m_objf;
 
 public:
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf,
-            std::shared_ptr<Parameters> a_params)
-      : m_otype{a_params->optimizer_options.method},
+            const Parameters &a_params)
+      : m_otype{a_params.optimizer_options.method},
         m_params{a_params},
         m_objf{a_objf} {
     SPDLOG_WARN("You should explicitly set an optimizer while constructing the "
                 "optimizer!!\n Defaulting to opt_method from the parameters");
   }
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
-            std::shared_ptr<Parameters> a_params)
+            const Parameters &a_params)
       : m_otype{a_optype},
         m_params{a_params},
         m_objf{a_objf} {}
@@ -79,6 +79,5 @@ public:
 
 namespace helpers::create {
 std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
-                                   OptType a_otype,
-                                   std::shared_ptr<Parameters> a_params);
+                                   OptType a_otype, const Parameters &a_params);
 }

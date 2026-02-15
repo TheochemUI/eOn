@@ -37,11 +37,11 @@ public:
   //! Conjugate Gradients optimizer constructor
   /*!
    * \param std::shared_ptr<ObjectiveFunction> m_objf that tells the optimizer
-   * how to run \param std::shared_ptr<Parameters> m_params defined by the
-   * config.init file
+   * how to run \param const Parameters& m_params defined by the config.init
+   * file
    */
   ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
-                     std::shared_ptr<Parameters> a_params)
+                     const Parameters &a_params)
       : Optimizer(a_objf, OptType::CG, a_params),
         m_directionOld{(a_objf->getPositions()).setZero()},
         m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead

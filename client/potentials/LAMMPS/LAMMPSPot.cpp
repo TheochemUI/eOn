@@ -23,7 +23,7 @@
 #endif
 #include "library.h"
 
-LAMMPSPot::LAMMPSPot(std::shared_ptr<Parameters> p)
+LAMMPSPot::LAMMPSPot(const Parameters &p)
     : Potential(p) {
   numberOfAtoms = 0;
   LAMMPSObj = nullptr;
@@ -114,7 +114,7 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                            "-screen",   "none", "-suffix", "omp"};
   int lmpargc = sizeof(lmpargv) / sizeof(const char *);
   LAMMPSObj = lammps_open(lmpargc, (char **)lmpargv,
-                          m_params->potential_options.MPIClientComm, nullptr);
+                          m_params.potential_options.MPIClientComm, nullptr);
 #else
   const char *lmpargv[] = {"liblammps", "-log",    "none", "-echo",
                            "log",       "-screen", "none"};
@@ -124,9 +124,9 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
 
   char cmd[200];
 
-  if (m_params->potential_options.LAMMPSThreads > 0) {
+  if (m_params.potential_options.LAMMPSThreads > 0) {
     snprintf(cmd, 200, "package omp %i force/neigh",
-             m_params->potential_options.LAMMPSThreads);
+             m_params.potential_options.LAMMPSThreads);
     lammps_command(LAMMPSObj, cmd);
   }
 

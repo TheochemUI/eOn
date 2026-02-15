@@ -28,8 +28,7 @@ public:
   static const char OPT_SCG[];
   static const char OPT_LBFGS[];
 
-  AtomicGPDimer(std::shared_ptr<Matter> matter,
-                std::shared_ptr<Parameters> params,
+  AtomicGPDimer(std::shared_ptr<Matter> matter, const Parameters &params,
                 std::shared_ptr<Potential> pot);
   ~AtomicGPDimer() = default;
 

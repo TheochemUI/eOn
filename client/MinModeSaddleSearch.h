@@ -50,7 +50,7 @@ public:
 
   MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
                       AtomMatrix modePassed, double reactantEnergyPassed,
-                      std::shared_ptr<Parameters> parametersPassed,
+                      const Parameters &parametersPassed,
                       std::shared_ptr<Potential> potPassed);
   ~MinModeSaddleSearch() = default;
   AtomMatrix getEigenvector(); // lowest eigenmode

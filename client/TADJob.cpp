@@ -29,7 +29,7 @@ std::vector<std::string> TADJob::run(void) {
   minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
   time = 0.0;
   string reactantFilename =
-      helper_functions::getRelevantFile(params->main_options.conFilename);
+      helper_functions::getRelevantFile(params.main_options.conFilename);
   current->con2matter(reactantFilename);
 
   SPDLOG_LOGGER_DEBUG(log, "Minimizing initial reactant");
@@ -42,8 +42,8 @@ std::vector<std::string> TADJob::run(void) {
   SPDLOG_LOGGER_DEBUG(log,
                       "High temperature MD simulation running at {:.2f} K to "
                       "simulate dynamics at {:.2f} K",
-                      params->main_options.temperature,
-                      params->tad_options.low_temperature);
+                      params.main_options.temperature,
+                      params.tad_options.low_temperature);
 
   int status = dynamics();
 
@@ -51,13 +51,12 @@ std::vector<std::string> TADJob::run(void) {
 
   if (newStateFlag) {
     SPDLOG_LOGGER_DEBUG(log, "Transition time: {:.2e} s",
-                        minCorrectedTime * 1.0e-15 *
-                            params->constants.timeUnit);
+                        minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
   } else {
     SPDLOG_LOGGER_DEBUG(
         log, "No new state was found in {} dynamics steps ({:.3e} s)",
-        params->dynamics_options.steps,
-        time * 1.0e-15 * params->constants.timeUnit);
+        params.dynamics_options.steps,
+        time * 1.0e-15 * params.constants.timeUnit);
   }
 
   return returnFiles;
@@ -73,7 +72,7 @@ int TADJob::dynamics() {
   long nCheck = 0, nRecord = 0, nState = 0;
   long StateCheckInterval, RecordInterval;
   double kinE, kinT, avgT, varT;
-  double kB = params->constants.kB;
+  double kB = params.constants.kB;
   double correctedTime = 0.0;
   double stopTime = 0.0, sumSimulatedTime = 0.0;
   double Temp = 0.0, sumT = 0.0, sumT2 = 0.0;
@@ -85,17 +84,17 @@ int TADJob::dynamics() {
   AtomMatrix reducedForces;
 
   minCorrectedTime = 1.0e200;
-  lowT = params->tad_options.low_temperature;
-  highT = params->main_options.temperature;
-  delta = params->tad_options.confidence;
-  minmu = params->tad_options.min_prefactor;
+  lowT = params.tad_options.low_temperature;
+  highT = params.main_options.temperature;
+  delta = params.tad_options.confidence;
+  minmu = params.tad_options.min_prefactor;
   factor = std::log(1.0 / delta) / minmu;
   StateCheckInterval =
-      int(params->parallel_replica_options.state_check_interval /
-          params->dynamics_options.time_step);
-  RecordInterval = int(params->parallel_replica_options.record_interval /
-                       params->dynamics_options.time_step);
-  Temp = params->main_options.temperature;
+      int(params.parallel_replica_options.state_check_interval /
+          params.dynamics_options.time_step);
+  RecordInterval = int(params.parallel_replica_options.record_interval /
+                       params.dynamics_options.time_step);
+  Temp = params.main_options.temperature;
   newStateFlag = metaStateFlag = false;
 
   mdBufferLength = long(StateCheckInterval / RecordInterval);
@@ -106,7 +105,7 @@ int TADJob::dynamics() {
   }
   timeBuffer = new double[mdBufferLength];
 
-  Dynamics TAD(current.get(), params.get());
+  Dynamics TAD(current.get(), params);
   TAD.setThermalVelocity();
 
   // dephase the trajectory so that it is thermal and independent of others
@@ -120,16 +119,16 @@ int TADJob::dynamics() {
       "Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: "
       "{}\n",
       Temp,
-      params->dynamics_options.steps * params->dynamics_options.time_step *
-          params->constants.timeUnit,
-      params->dynamics_options.time_step * params->constants.timeUnit,
-      params->dynamics_options.steps);
+      params.dynamics_options.steps * params.dynamics_options.time_step *
+          params.constants.timeUnit,
+      params.dynamics_options.time_step * params.constants.timeUnit,
+      params.dynamics_options.steps);
   SPDLOG_LOGGER_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
-  long tenthSteps = params->dynamics_options.steps / 10;
+  long tenthSteps = params.dynamics_options.steps / 10;
   // This prevents and edge case division by zero if mdSteps is < 10
   if (tenthSteps == 0) {
-    tenthSteps = params->dynamics_options.steps;
+    tenthSteps = params.dynamics_options.steps;
   }
 
   // loop dynamics iterations until some condition tells us to stop
@@ -144,13 +143,13 @@ int TADJob::dynamics() {
     TAD.oneStep();
     mdFCalls++;
 
-    time += params->dynamics_options.time_step;
-    nCheck++; // count up to params->parrepStateCheckInterval before checking
+    time += params.dynamics_options.time_step;
+    nCheck++; // count up to params.parrepStateCheckInterval before checking
               // for a transition
     step++;
     // SPDLOG_LOGGER_DEBUG(log, "step = {:4d}, time= {:10.4f}", step, time);
     //  standard conditions; record mater object in the transition buffer
-    if (params->parallel_replica_options.refine_transition && recordFlag &&
+    if (params.parallel_replica_options.refine_transition && recordFlag &&
         !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
         *mdBuffer[nRecord] = *current;
@@ -214,11 +213,11 @@ int TADJob::dynamics() {
           "tranisitonTime= {:.3e} s, Barrier= {:.3f} eV, correctedTime= {:.3e} "
           "s, "
           "SimulatedTime= {:.3e} s, minCorTime= {:.3e} s, stopTime= {:.3e} s",
-          transitionTime * 1e-15 * params->constants.timeUnit, barrier,
-          correctedTime * 1e-15 * params->constants.timeUnit,
-          sumSimulatedTime * 1e-15 * params->constants.timeUnit,
-          minCorrectedTime * 1.0e-15 * params->constants.timeUnit,
-          stopTime * 1.0e-15 * params->constants.timeUnit);
+          transitionTime * 1e-15 * params.constants.timeUnit, barrier,
+          correctedTime * 1e-15 * params.constants.timeUnit,
+          sumSimulatedTime * 1e-15 * params.constants.timeUnit,
+          minCorrectedTime * 1.0e-15 * params.constants.timeUnit,
+          stopTime * 1.0e-15 * params.constants.timeUnit);
 
       // refineFCalls += Potential::fcalls - refFCalls;
       transitionFlag = false;
@@ -231,15 +230,15 @@ int TADJob::dynamics() {
     }
 
     // stdout Progress
-    if ((step % tenthSteps == 0) || (step == params->dynamics_options.steps)) {
+    if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
       SPDLOG_LOGGER_DEBUG(
           log, "progress: {:.0f}%, max displacement: {:.3lf}, step {:7d}/{:d}",
-          (double)100.0 * step / params->dynamics_options.steps,
-          maxAtomDistance, step, params->dynamics_options.steps);
+          (double)100.0 * step / params.dynamics_options.steps, maxAtomDistance,
+          step, params.dynamics_options.steps);
     }
 
-    if (step == params->dynamics_options.steps) {
+    if (step == params.dynamics_options.steps) {
       stopFlag = true;
       if (firstTransitFlag) {
         SPDLOG_LOGGER_DEBUG(log, "Detected one transition");
@@ -258,7 +257,7 @@ int TADJob::dynamics() {
       "Temperature : Average = %lf ; Stddev = %lf ; Factor = %lf; "
       "Average_Boost = %lf",
       avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
-      minCorrectedTime / step / params->dynamics_options.time_step);
+      minCorrectedTime / step / params.dynamics_options.time_step);
   if (isfinite(avgT) == 0) {
     SPDLOG_LOGGER_DEBUG(log,
                         "Infinite average temperature, something went wrong!");
@@ -288,9 +287,9 @@ void TADJob::saveData(int status) {
 
   fprintf(fileResults, "%s potential_type\n",
           std::string{magic_enum::enum_name<PotType>(
-                          params->potential_options.potential)}
+                          params.potential_options.potential)}
               .c_str());
-  fprintf(fileResults, "%ld random_seed\n", params->main_options.randomSeed);
+  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
   fprintf(fileResults, "%lf potential_energy_reactant\n",
           reactant->getPotentialEnergy());
   // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
@@ -304,7 +303,7 @@ void TADJob::saveData(int status) {
 
   if (newStateFlag) {
     fprintf(fileResults, "%e transition_time_s\n",
-            minCorrectedTime * 1.0e-15 * params->constants.timeUnit);
+            minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
     fprintf(fileResults, "%lf potential_energy_product\n",
             product->getPotentialEnergy());
     fprintf(fileResults, "%lf moved_distance\n",
@@ -312,10 +311,10 @@ void TADJob::saveData(int status) {
   }
 
   fprintf(fileResults, "%e simulation_time_s\n",
-          time * 1.0e-15 * params->constants.timeUnit);
+          time * 1.0e-15 * params.constants.timeUnit);
   fprintf(fileResults, "%lf speedup\n",
-          time / params->dynamics_options.steps /
-              params->dynamics_options.time_step);
+          time / params.dynamics_options.steps /
+              params.dynamics_options.time_step);
 
   fclose(fileResults);
 
@@ -334,7 +333,7 @@ void TADJob::saveData(int status) {
     product->matter2con(fileProduct);
     fclose(fileProduct);
 
-    if (params->parallel_replica_options.refine_transition) {
+    if (params.parallel_replica_options.refine_transition) {
       FILE *fileSaddle;
       std::string saddleFilename("saddle.con");
       returnFiles.push_back(saddleFilename);
@@ -354,12 +353,12 @@ void TADJob::dephase() {
   long dephaseBufferLength, dephaseRefineStep;
   AtomMatrix velocity;
 
-  DephaseSteps = int(params->parallel_replica_options.dephase_time /
-                     params->dynamics_options.time_step);
-  Dynamics dephaseDynamics(current.get(), params.get());
+  DephaseSteps = int(params.parallel_replica_options.dephase_time /
+                     params.dynamics_options.time_step);
+  Dynamics dephaseDynamics(current.get(), params);
   SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs",
-                      params->parallel_replica_options.dephase_time *
-                          params->constants.timeUnit);
+                      params.parallel_replica_options.dephase_time *
+                          params.constants.timeUnit);
 
   step = stepNew = loop = 0;
 
@@ -400,8 +399,8 @@ void TADJob::dephase() {
       // step);
     }
 
-    if ((params->parallel_replica_options.dephase_loop_stop) &&
-        (loop > params->parallel_replica_options.dephase_loop_max)) {
+    if ((params.parallel_replica_options.dephase_loop_stop) &&
+        (loop > params.parallel_replica_options.dephase_loop_max)) {
       SPDLOG_LOGGER_DEBUG(
           log,
           "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",
@@ -409,8 +408,8 @@ void TADJob::dephase() {
       break;
     }
     SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs",
-                        step * params->dynamics_options.time_step *
-                            params->constants.timeUnit);
+                        step * params.dynamics_options.time_step *
+                            params.constants.timeUnit);
   }
 }
 
