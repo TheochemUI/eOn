@@ -22,12 +22,12 @@ public:
   Quickmin(std::shared_ptr<ObjectiveFunction> a_objf,
            std::shared_ptr<Parameters> a_params)
       : Optimizer(a_objf, OptType::QM, a_params),
-        m_dt{a_params->optTimeStep},
-        m_dt_max{a_params->optMaxTimeStep},
-        m_max_move{a_params->optMaxMove},
+        m_dt{a_params->optimizer_options.time_step},
+        m_dt_max{a_params->optimizer_options.max_time_step},
+        m_max_move{a_params->optimizer_options.max_move},
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_iteration{0},
-        m_max_iter{a_params->optMaxIterations} {
+        m_max_iter{a_params->optimizer_options.max_iterations} {
     if (spdlog::get("qm")) {
       m_log = spdlog::get("qm");
     } else {

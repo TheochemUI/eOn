@@ -36,7 +36,7 @@ CuH2Test::~CuH2Test() {
 TEST_F(CuH2Test, TestMatter) {
   string confile("pos.con");
   Parameters *parameters = new Parameters;
-  parameters->potential = "cuh2_pot";
+  parameters->potential_options.potential = "cuh2_pot";
   Matter *matter = new Matter(parameters);
   matter->con2matter(confile);
   std::cout << matter->getPotentialEnergy();
