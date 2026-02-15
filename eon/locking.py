@@ -16,11 +16,22 @@ class LockFile:
             f.close()
 
             # check and see if process is still alive
-            try:
-                os.kill(self.pid, 0)
-                alive = True
-            except OSError:
-                alive = False
+            import sys
+            if sys.platform == 'win32':
+                import ctypes
+                kernel32 = ctypes.windll.kernel32
+                handle = kernel32.OpenProcess(0x100000, False, self.pid)  # SYNCHRONIZE
+                if handle:
+                    kernel32.CloseHandle(handle)
+                    alive = True
+                else:
+                    alive = False
+            else:
+                try:
+                    os.kill(self.pid, 0)
+                    alive = True
+                except OSError:
+                    alive = False
 
             # clean up a stale lock
             if not alive:
