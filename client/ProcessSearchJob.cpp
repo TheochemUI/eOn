@@ -126,13 +126,15 @@ int ProcessSearchJob::doProcessSearch(void) {
 
   *min1 = *saddle;
 
-  displacedPos = posSaddle - saddleSearch->getEigenvector() *
-                                 params->process_search_options.minimization_offset;
+  displacedPos =
+      posSaddle - saddleSearch->getEigenvector() *
+                      params->process_search_options.minimization_offset;
   min1->setPositions(displacedPos);
 
   SPDLOG_LOGGER_DEBUG(log, "Starting Minimization 1");
   fctmp = min1->getPotentialCalls();
-  bool converged = min1->relax(false, params->debug_options.write_movies, false, "min1");
+  bool converged =
+      min1->relax(false, params->debug_options.write_movies, false, "min1");
   fCallsMin += min1->getPotentialCalls() - fctmp;
   SPDLOG_LOGGER_DEBUG(log, "Min1 minimization took {} fcalls",
                       min1->getPotentialCalls() - fctmp);
@@ -142,13 +144,15 @@ int ProcessSearchJob::doProcessSearch(void) {
   }
 
   *min2 = *saddle;
-  displacedPos = posSaddle + saddleSearch->getEigenvector() *
-                                 params->process_search_options.minimization_offset;
+  displacedPos =
+      posSaddle + saddleSearch->getEigenvector() *
+                      params->process_search_options.minimization_offset;
   min2->setPositions(displacedPos);
 
   SPDLOG_LOGGER_DEBUG(log, "Starting Minimization 2");
   fctmp = min2->getPotentialCalls();
-  converged = min2->relax(false, params->debug_options.write_movies, false, "min2");
+  converged =
+      min2->relax(false, params->debug_options.write_movies, false, "min2");
   fCallsMin += min2->getPotentialCalls() - fctmp;
   SPDLOG_LOGGER_DEBUG(log, "Min2 minimization took {} fcalls",
                       min2->getPotentialCalls() - fctmp);
@@ -242,9 +246,10 @@ void ProcessSearchJob::saveData(int status) {
 
   fprintf(fileResults, "%d termination_reason\n", status);
   fprintf(fileResults, "%ld random_seed\n", params->main_options.randomSeed);
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->potential_options.potential)}.c_str());
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(
+                          params->potential_options.potential)}
+              .c_str());
   fprintf(fileResults, "%ld total_force_calls\n",
           fCallsMin + fCallsSaddle + fCallsPrefactors);
   fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
@@ -269,7 +274,8 @@ void ProcessSearchJob::saveData(int status) {
   }
   if (params->saddle_search_options.method == "dynamics") {
     auto ds = dynamic_cast<DynamicsSaddleSearch &>(*saddleSearch);
-    fprintf(fileResults, "%.12e simulation_time\n", ds.time * params->constants.timeUnit);
+    fprintf(fileResults, "%.12e simulation_time\n",
+            ds.time * params->constants.timeUnit);
     fprintf(fileResults, "%.12e md_temperature\n",
             params->saddle_search_options.dynamics.temperature);
   }

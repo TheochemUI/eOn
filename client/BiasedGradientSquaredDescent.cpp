@@ -39,12 +39,12 @@ public:
 
   double getEnergy() {
     VectorXd Vforce = matter->getForcesFreeV();
-    double Henergy =
-        0.5 * Vforce.dot(Vforce) + 0.5 * bgsdAlpha *
-                                       (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->bgsd_options.beta)) *
-                                       (matter->getPotentialEnergy() -
-                                        (reactantEnergy + parameters->bgsd_options.beta));
+    double Henergy = 0.5 * Vforce.dot(Vforce) +
+                     0.5 * bgsdAlpha *
+                         (matter->getPotentialEnergy() -
+                          (reactantEnergy + parameters->bgsd_options.beta)) *
+                         (matter->getPotentialEnergy() -
+                          (reactantEnergy + parameters->bgsd_options.beta));
     return Henergy;
   }
 
@@ -53,9 +53,9 @@ public:
     double magVforce = Vforce.norm();
     VectorXd normVforce = Vforce / magVforce;
     VectorXd Vpositions = matter->getPositionsFreeV();
-    matter->setPositionsFreeV(matter->getPositionsFreeV() -
-                              normVforce *
-                                  parameters->bgsd_options.gradient_finite_difference);
+    matter->setPositionsFreeV(
+        matter->getPositionsFreeV() -
+        normVforce * parameters->bgsd_options.gradient_finite_difference);
     VectorXd Vforcenew = matter->getForcesFreeV();
     matter->setPositionsFreeV(Vpositions);
     VectorXd Hforce = magVforce * (Vforcenew - Vforce) /
@@ -100,9 +100,10 @@ private:
 };
 
 int BiasedGradientSquaredDescent::run() {
-  auto objf = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
-                                                      params->bgsd_options.alpha, params);
-  auto optim = helpers::create::mkOptim(objf, params->optimizer_options.method, params);
+  auto objf = std::make_shared<BGSDObjectiveFunction>(
+      saddle, reactantEnergy, params->bgsd_options.alpha, params);
+  auto optim =
+      helpers::create::mkOptim(objf, params->optimizer_options.method, params);
   int iteration = 0;
   SPDLOG_LOGGER_DEBUG(
       log,
@@ -119,7 +120,8 @@ int BiasedGradientSquaredDescent::run() {
   }
   auto objf2 = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
                                                        0.0, params);
-  auto optim2 = helpers::create::mkOptim(objf2, params->optimizer_options.method, params);
+  auto optim2 =
+      helpers::create::mkOptim(objf2, params->optimizer_options.method, params);
   while (!objf2->isConvergedV() || iteration == 0) {
     if (objf2->isConvergedIP()) {
       break;
@@ -134,13 +136,15 @@ int BiasedGradientSquaredDescent::run() {
   }
 
   LowestEigenmode *minModeMethod;
-  if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_DIMER) {
+  if (params->saddle_search_options.minmode_method ==
+      LowestEigenmode::MINMODE_DIMER) {
     if (params->dimer_options.improved) {
       minModeMethod = new ImprovedDimer(saddle, params, pot);
     } else {
       minModeMethod = new Dimer(saddle, params, pot);
     }
-  } else if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddle_search_options.minmode_method ==
+             LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = new Lanczos(saddle, params, pot);
   }
 

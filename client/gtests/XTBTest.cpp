@@ -66,7 +66,8 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   params->xtb_options.maxiter = 250;
   params->xtb_options.charge = 0.0;
   params->xtb_options.uhf = 0;
-  auto pot = helper_functions::makePotential(params->potential_options.potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());

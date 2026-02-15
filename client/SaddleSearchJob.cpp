@@ -84,7 +84,8 @@ int SaddleSearchJob::doSaddleSearch() {
     }
   }
 
-  if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_GPRDIMER) {
+  if (params->saddle_search_options.minmode_method ==
+      LowestEigenmode::MINMODE_GPRDIMER) {
     fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this
     // works
   } else {
@@ -107,10 +108,12 @@ void SaddleSearchJob::saveData(int status) {
   fprintf(fileResults, "%d termination_reason\n", status);
   fprintf(fileResults, "saddle_search job_type\n");
   fprintf(fileResults, "%ld random_seed\n", params->main_options.randomSeed);
-  fprintf(
-      fileResults, "%s potential_type\n",
-      std::string{magic_enum::enum_name<PotType>(params->potential_options.potential)}.c_str());
-  if (params->saddle_search_options.minmode_method == LowestEigenmode::MINMODE_GPRDIMER) {
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(
+                          params->potential_options.potential)}
+              .c_str());
+  if (params->saddle_search_options.minmode_method ==
+      LowestEigenmode::MINMODE_GPRDIMER) {
     fprintf(fileResults, "%li total_force_calls\n",
             this->pot->forceCallCounter);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);

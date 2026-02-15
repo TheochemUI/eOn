@@ -54,7 +54,8 @@ TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
   AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params->potential_options.potential = PotType::METATOMIC;
   params->metatomic_options.model_path = "lennard-jones.pt";
-  auto pot = helper_functions::makePotential(params->potential_options.potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());
@@ -77,7 +78,8 @@ TEST_CASE_METHOD(PotTest,
   // request uncertainty checks
   params->metatomic_options.uncertainty_threshold = 0.1;
 
-  auto pot = helper_functions::makePotential(params->potential_options.potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
 
   double e_mta{0};
   AtomMatrix f_mta = Eigen::MatrixXd::Zero(m1->numberOfAtoms(), 3);
@@ -124,7 +126,8 @@ TEST_CASE_METHOD(PotTest, "Metatomic variant (doubled)", "[PotTest][variant]") {
   // Set the variant to 'doubled'
   params->metatomic_options.variant.base = "doubled";
 
-  auto pot = helper_functions::makePotential(params->potential_options.potential, params);
+  auto pot = helper_functions::makePotential(
+      params->potential_options.potential, params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());
