@@ -57,8 +57,6 @@ private:
   c10::DeviceType device_type_;
   torch::Device device_;
   bool check_consistency_;
-  const Parameters &m_metatomic_params;
-
   // --- Cached Tensors and Data for Performance ---
   torch::Tensor atomic_types_;
   std::vector<int> last_atomic_nrs_;
