@@ -857,11 +857,19 @@ class SaddleSearchConfig(BaseModel):
     )
     displace_atom_list: list[int] = Field(
         default=[-1],
-        description="The individual index should be separated by a comma. Example: 10, 20, -1 would be the 10, 20, and the last atom.",
+        description="0-based atom indices to use as displacement epicenters, separated by commas. "
+        "Example: 10, 20, -1 would be atoms 10, 20, and the last atom. "
+        "When displace_atom_kmc_state_script is set, this list is populated dynamically "
+        "per AKMC state from the script's output.",
     )
     displace_atom_kmc_state_script: str = Field(
         default="",
-        description="A Python script which returns a string of atoms to be displaced. This is run once for each new AKMC state.",
+        description="Path to a Python script that determines which atoms to displace. "
+        "The script receives the path to a .con file as its sole positional argument "
+        "and must print a comma-separated list of 0-based atom indices to stdout. "
+        "It is executed once per new AKMC state; the result is cached in state.info. "
+        "The path can be relative (resolved against the eOn root directory) or absolute. "
+        "See the displacement scripts tutorial for worked examples.",
     )
     displace_listed_type_weight: float = Field(
         default=0.0,
@@ -872,6 +880,10 @@ class SaddleSearchConfig(BaseModel):
     )
     displace_all_listed: bool = Field(
         default=False,
+        description="If true, displace all atoms in displace_atom_list (or displace_type_list) "
+        "simultaneously. If false, one atom is chosen at random from the list per saddle search. "
+        "In either case, atoms within displace_radius of any displaced atom are also included. "
+        "Set displace_radius to 0 to restrict displacement strictly to listed atoms.",
     )
     """
     This can be disabled by setting `displace_radius` to 0. Otherwise:
@@ -902,7 +914,16 @@ class SaddleSearchConfig(BaseModel):
     client_displace_type: Literal[
         "load", "random", "last_atom", "min_coordinated", "not_fcc_or_hcp",
         "listed_atoms"
-    ] = Field(default="random", description="Type of displacement method used.")
+    ] = Field(
+        default="random",
+        description="Epicenter selection method used by the C++ client. "
+        "'random': uniform random atom. "
+        "'last_atom': the last atom in the configuration. "
+        "'min_coordinated': the atom with the fewest neighbours. "
+        "'not_fcc_or_hcp': an atom whose local structure is neither FCC nor HCP. "
+        "'listed_atoms': an atom from displace_atom_list (parsed from config, no server displacement file needed). "
+        "'load': read a displacement vector from a file written by the server.",
+    )
     zero_mode_abort_curvature: float = Field(
         default=0.0,
         description="The saddle search will abort when the magnitude of the minmode curvature is less than this value.",

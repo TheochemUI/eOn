@@ -35,8 +35,8 @@ public:
         pot{nullptr},
         matter{nullptr} {
     params.potential_options.potential = PotType::LJ;
-    pot = helper_functions::makePotential(
-        params.potential_options.potential, params);
+    pot = helper_functions::makePotential(params.potential_options.potential,
+                                          params);
     matter = std::make_shared<Matter>(pot, params);
     const std::string confile("pos.con");
     const bool ok = matter->con2matter(confile);
@@ -65,8 +65,7 @@ TEST_CASE_METHOD(EpiCentersFixture,
   for (int trial = 0; trial < 200; ++trial) {
     long idx = EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
     // Result must be one of the atoms in the list
-    REQUIRE(std::find(atomList.begin(), atomList.end(), idx) !=
-            atomList.end());
+    REQUIRE(std::find(atomList.begin(), atomList.end(), idx) != atomList.end());
     selected.insert(idx);
   }
 
@@ -131,10 +130,9 @@ TEST_CASE("Parameters default displace_type is load",
 TEST_CASE("Parameters parses comma-separated displace_atom_list from INI",
           "[Parameters][displace_atom_list]") {
   // Write a temporary config.ini with displace_atom_list
-  const std::string ini_content =
-      "[Saddle Search]\n"
-      "client_displace_type = listed_atoms\n"
-      "displace_atom_list = 10, 20, 30\n";
+  const std::string ini_content = "[Saddle Search]\n"
+                                  "client_displace_type = listed_atoms\n"
+                                  "displace_atom_list = 10, 20, 30\n";
 
   FILE *tmpf = tmpfile();
   REQUIRE(tmpf != nullptr);
@@ -156,10 +154,9 @@ TEST_CASE("Parameters parses comma-separated displace_atom_list from INI",
 
 TEST_CASE("Parameters handles single-element displace_atom_list",
           "[Parameters][displace_atom_list]") {
-  const std::string ini_content =
-      "[Saddle Search]\n"
-      "client_displace_type = listed_atoms\n"
-      "displace_atom_list = 42\n";
+  const std::string ini_content = "[Saddle Search]\n"
+                                  "client_displace_type = listed_atoms\n"
+                                  "displace_atom_list = 42\n";
 
   FILE *tmpf = tmpfile();
   REQUIRE(tmpf != nullptr);
@@ -177,9 +174,8 @@ TEST_CASE("Parameters handles single-element displace_atom_list",
 
 TEST_CASE("Parameters handles negative indices in displace_atom_list",
           "[Parameters][displace_atom_list]") {
-  const std::string ini_content =
-      "[Saddle Search]\n"
-      "displace_atom_list = 5, -1, 10\n";
+  const std::string ini_content = "[Saddle Search]\n"
+                                  "displace_atom_list = 5, -1, 10\n";
 
   FILE *tmpf = tmpfile();
   REQUIRE(tmpf != nullptr);
@@ -199,9 +195,8 @@ TEST_CASE("Parameters handles negative indices in displace_atom_list",
 
 TEST_CASE("Parameters empty displace_atom_list stays empty",
           "[Parameters][displace_atom_list]") {
-  const std::string ini_content =
-      "[Saddle Search]\n"
-      "client_displace_type = listed_atoms\n";
+  const std::string ini_content = "[Saddle Search]\n"
+                                  "client_displace_type = listed_atoms\n";
 
   FILE *tmpf = tmpfile();
   REQUIRE(tmpf != nullptr);
@@ -218,9 +213,8 @@ TEST_CASE("Parameters empty displace_atom_list stays empty",
 
 TEST_CASE("Parameters listed_atoms is whitelisted in displace_type",
           "[Parameters][displace_type]") {
-  const std::string ini_content =
-      "[Saddle Search]\n"
-      "client_displace_type = listed_atoms\n";
+  const std::string ini_content = "[Saddle Search]\n"
+                                  "client_displace_type = listed_atoms\n";
 
   FILE *tmpf = tmpfile();
   REQUIRE(tmpf != nullptr);
@@ -239,9 +233,8 @@ TEST_CASE("Parameters listed_atoms is whitelisted in displace_type",
 
 TEST_CASE("Parameters unknown displace_type falls back to load",
           "[Parameters][displace_type]") {
-  const std::string ini_content =
-      "[Saddle Search]\n"
-      "client_displace_type = bogus_type\n";
+  const std::string ini_content = "[Saddle Search]\n"
+                                  "client_displace_type = bogus_type\n";
 
   FILE *tmpf = tmpfile();
   REQUIRE(tmpf != nullptr);
