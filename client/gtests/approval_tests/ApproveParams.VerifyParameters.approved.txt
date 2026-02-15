@@ -93,6 +93,7 @@ saddleConfinePositiveScaleRatio: 0.900000000000000022
 saddleConfinePositiveBoost: 10
 saddleConfinePositiveMinActive: 30
 saddleZeroModeAbortCurvature: 0
+saddleDisplaceAtomList: []
 
 [Optimizers]
 optMethod: CG
