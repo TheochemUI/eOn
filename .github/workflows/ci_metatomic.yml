@@ -3,6 +3,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 on: [push, pull_request]
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+
 jobs:
   build_eon:
     runs-on: ${{ matrix.os }}
@@ -21,6 +25,19 @@ jobs:
           activate-environment: true
           environments: >-
             dev-mta
+      - name: Configure sccache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Use Homebrew gfortran (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install gcc
+          FC=$(find "$(brew --prefix gcc)/bin" -name 'gfortran-*' | head -1)
+          echo "FC=$FC" >> "$GITHUB_ENV"
+          echo "SDKROOT=$(xcrun --show-sdk-path)" >> "$GITHUB_ENV"
       - name: Install eon
         shell: pixi run bash -e {0}
         run: |
@@ -31,9 +48,7 @@ jobs:
           -Dwith_metatomic=True            \
           -Dtorch_version=2.9              \
           -Dwith_tests=True                \
-          -Dpip_metatomic=True             \
-          -Dwith_fortran=False             \
-          -Dwith_cuh2=False
+          -Dpip_metatomic=True
           meson install -C bbdir
       - name: Run tests
         shell: bash -el {0}

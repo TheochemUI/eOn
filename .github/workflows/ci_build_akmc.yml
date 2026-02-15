@@ -3,6 +3,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 on: [push, pull_request]
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+
 jobs:
   build_eon:
     runs-on: ${{ matrix.os }}
@@ -10,51 +14,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO(rg): Handle the windows-2022 later, issues linking fmt
-        # TODO(rg): Macos 12 seems to hang a lot, macos-12
-        os: [ubuntu-22.04, macos-14]
+        os: [ubuntu-22.04, macos-14, windows-2022]
     steps:
       - uses: actions/checkout@v4
-
-      - uses: mamba-org/setup-micromamba@v1
-        if: matrix.os != 'windows-2022'
+      - uses: prefix-dev/setup-pixi@v0.8.10
         with:
-          environment-file: conda-lock.yml
-          environment-name: ci
-          init-shell: >-
-            bash
-          cache-environment: true
-          cache-environment-key: environment-${{ matrix.os }}
-          post-cleanup: 'all'
-      - name: Compile and install [nix]
-        if: matrix.os != 'windows-2022'
-        shell: bash -el {0}
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+      - name: Configure sccache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Use Homebrew gfortran (macOS)
+        if: runner.os == 'macOS'
         run: |
-          meson setup bbdir --prefix $CONDA_PREFIX --libdir=lib
+          brew install gcc
+          FC=$(find "$(brew --prefix gcc)/bin" -name 'gfortran-*' | head -1)
+          echo "FC=$FC" >> "$GITHUB_ENV"
+          echo "SDKROOT=$(xcrun --show-sdk-path)" >> "$GITHUB_ENV"
+
+      - name: Compile and install [unix]
+        if: runner.os != 'Windows'
+        shell: pixi run bash -e {0}
+        run: |
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib
           meson install -C bbdir
 
-      - uses: mamba-org/setup-micromamba@v1
-        if: matrix.os == 'windows-2022'
-        with:
-          environment-file: env_win.yml
-          init-shell: >-
-            powershell
-          cache-environment: true
-          cache-downloads: true
-          cache-environment-key: environment-${{ matrix.os }}
-          cache-downloads-key: downloads-${{ matrix.os }}
-          post-cleanup: 'all'
       - name: Compile and install [windows]
-        if: matrix.os == 'windows-2022'
-        shell: pwsh
+        if: runner.os == 'Windows'
+        shell: pixi run bash -e {0}
         run: |
-          # Windows gfortran can't handle iso_c_binding...
-          meson wrap install fmt
-          meson setup bbdir --prefix $env:CONDA_PREFIX --libdir=lib -Dwith_cuh2=false
+          # Git Bash puts GNU link.exe on PATH which shadows MSVC link.exe
+          export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '^/usr/bin$' | paste -sd:)
+          # Windows gfortran can't handle iso_c_binding
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib -Dwith_cuh2=false
           meson install -C bbdir
 
       - name: Run tests
-        shell: bash -el {0}
+        shell: pixi run bash -e {0}
         run: |
           cd examples/akmc-al
           python -m eon.server

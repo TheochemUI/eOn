@@ -7,7 +7,11 @@ on:
     branches: [main]
 
 permissions:
+  issues: write
   pull-requests: write
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
 
 jobs:
   benchmark:
@@ -23,6 +27,13 @@ jobs:
           cache-write: false
           activate-environment: true
 
+      - name: Configure sccache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
       - name: Install ASV and spyglass
         shell: pixi run bash -e {0}
         run: pip install asv asv-spyglass
@@ -37,6 +48,13 @@ jobs:
           echo "pr=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
           echo "main=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
 
+      # Save benchmark files from the PR before switching branches.
+      # These don't exist on main yet, so we can't git-checkout them later.
+      - name: Stash benchmark suite
+        run: |
+          cp -r benchmarks /tmp/benchmarks
+          cp asv.conf.json /tmp/asv.conf.json
+
       # ── Benchmark main ──────────────────────────────────────────
       - name: Build eonclient (main)
         shell: pixi run bash -e {0}
@@ -49,13 +67,17 @@ jobs:
       - name: Benchmark main
         shell: pixi run bash -e {0}
         run: |
-          git checkout ${{ github.event.pull_request.head.sha }} -- benchmarks asv.conf.json
-          asv run --python=same --set-commit-hash ${{ steps.shas.outputs.main }} --quick
+          cp -r /tmp/benchmarks benchmarks
+          cp /tmp/asv.conf.json asv.conf.json
+          asv run -E "existing:$(which python)" \
+            --set-commit-hash ${{ steps.shas.outputs.main }} \
+            --record-samples --quick
 
       # ── Benchmark PR HEAD ───────────────────────────────────────
       - name: Build eonclient (PR)
         shell: pixi run bash -e {0}
         run: |
+          rm -rf benchmarks asv.conf.json
           git checkout ${{ steps.shas.outputs.pr }}
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release --wipe 2>/dev/null \
             || meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
@@ -63,7 +85,10 @@ jobs:
 
       - name: Benchmark PR
         shell: pixi run bash -e {0}
-        run: asv run --python=same --set-commit-hash ${{ steps.shas.outputs.pr }} --quick
+        run: |
+          asv run -E "existing:$(which python)" \
+            --set-commit-hash ${{ steps.shas.outputs.pr }} \
+            --record-samples --quick
 
       # ── Compare & comment ───────────────────────────────────────
       - name: Locate result files
@@ -71,10 +96,15 @@ jobs:
         shell: pixi run bash -e {0}
         run: |
           MACHINE=$(ls .asv/results/ | grep -v benchmarks.json | head -1)
-          echo "machine=$MACHINE" >> "$GITHUB_OUTPUT"
-          echo "before=.asv/results/$MACHINE/${{ steps.shas.outputs.main }}.json" >> "$GITHUB_OUTPUT"
-          echo "after=.asv/results/$MACHINE/${{ steps.shas.outputs.pr }}.json" >> "$GITHUB_OUTPUT"
+          MAIN_SHORT="${{ steps.shas.outputs.main }}"
+          PR_SHORT="${{ steps.shas.outputs.pr }}"
+          # ASV names files <hash>-<env>.json when using -E existing:
+          BEFORE=$(ls .asv/results/$MACHINE/${MAIN_SHORT:0:8}* 2>/dev/null | head -1)
+          AFTER=$(ls .asv/results/$MACHINE/${PR_SHORT:0:8}* 2>/dev/null | head -1)
+          echo "before=$BEFORE" >> "$GITHUB_OUTPUT"
+          echo "after=$AFTER" >> "$GITHUB_OUTPUT"
           echo "benchmarks=.asv/results/benchmarks.json" >> "$GITHUB_OUTPUT"
+          echo "Found: before=$BEFORE after=$AFTER"
 
       - name: Compare results
         id: compare
@@ -108,27 +138,33 @@ jobs:
               '</details>',
             ].join('\n');
 
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const existing = comments.find(c => c.body.includes(marker));
-
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
+            try {
+              const { data: comments } = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                body,
               });
+              const existing = comments.find(c => c.body.includes(marker));
+
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body,
+                });
+              }
+            } catch (err) {
+              core.warning(`Could not post PR comment (fork PR?): ${err.message}`);
+              core.info('--- Benchmark Results ---');
+              core.info(body);
             }
         env:
           TABLE: ${{ steps.compare.outputs.table }}

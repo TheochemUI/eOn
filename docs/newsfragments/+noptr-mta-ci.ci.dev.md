@@ -1,1 +1,1 @@
-Added macOS arm64 to metatomic CI matrix, disabled unneeded Fortran potentials for Windows
+Added macOS arm64 to metatomic CI matrix using Homebrew gfortran (conda-forge gfortran_osx-arm64 wrapper is broken)
