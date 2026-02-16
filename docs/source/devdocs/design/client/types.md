@@ -8,11 +8,15 @@ myst:
 # Type system
 
 `eOn` was written to use `Eigen` as the matrix multiplication library.
-*However*, we define `EIGEN_DEFAULT_TO_ROW_MAJOR` which makes the Eigen
-constructs of `eOn` not directly interoperable with those from other libraries.
+Row-major storage is specified via the `eOnStorageOrder` constant in
+`client/Eigen.h`, which the `AtomMatrix` and `RotationMatrix` typedefs use.
+This keeps the layout explicit and in one place, without the old
+`EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro that silently changed every
+Eigen type.
 
 ```{versionchanged} 2.x
-Generic type interfaces were setup, to eventually transition away from the preprocessor macro.
+Replaced the `EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro with an explicit
+`eOnStorageOrder` constant used by the project typedefs.
 ```
 
 ## Header conventions
