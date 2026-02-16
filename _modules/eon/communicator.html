@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=cce08ab1"></script>
+    <script src="../../_static/documentation_options.js?v=aaab38f9"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -262,6 +262,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.10.0/index.html">[v2.10.0] - 2026-02-15</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.0/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.9.0/release-notes.html">Release notes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.9.0/publications.html">Related Publications</a></li>
@@ -885,13 +889,36 @@ document.write(`
 <div class="viewcode-block" id="Local.check_job">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator.html#eon.communicator.Local.check_job">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
-        <span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span> <span class="o">=</span> <span class="n">job</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">job</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Close the stdout file handle if present so the file can be read</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">job</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">job</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">job</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="n">job</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Job finished: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">jobpath</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
-            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;job failed: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span>
+            <span class="n">rc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+            <span class="c1"># Read stdout.dat for additional diagnostics</span>
+            <span class="n">stdout_log</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">stdout_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="s2">&quot;stdout.dat&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdout_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">stdout_log</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;job failed: </span><span class="si">%s</span><span class="s2"> (return code </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stderr</span><span class="p">:</span>
+                <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  stderr: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stdout_log</span><span class="p">:</span>
+                <span class="c1"># Show last few lines of stdout for context</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">stdout_log</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:])</span>
+                <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  stdout (last lines): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tail</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">stderr</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">stdout_log</span><span class="p">:</span>
+                <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  no output captured; client may have failed to start&quot;</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">rc</span> <span class="o">&gt;</span> <span class="mh">0x80000000</span><span class="p">):</span>
+                    <span class="n">errmsg</span> <span class="o">+=</span> <span class="s2">&quot; (Windows error code 0x</span><span class="si">%X</span><span class="s2"> may indicate a missing DLL)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rc</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span></div>
 
 
@@ -907,8 +934,7 @@ document.write(`
             <span class="c1"># update jobpath to be in the scratch directory</span>
             <span class="n">fstdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jobpath</span><span class="p">,</span> <span class="s2">&quot;stdout.dat&quot;</span><span class="p">),</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">jobpath</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">fstdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
-            <span class="c1">#commands.getoutput(&quot;renice -n 20 -p %d&quot; % p.pid)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span><span class="n">jobpath</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">jobpath</span><span class="p">,</span> <span class="n">fstdout</span><span class="p">))</span>
 
             <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncpus</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joblist</span><span class="p">)):</span>
