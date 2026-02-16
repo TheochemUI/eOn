@@ -345,7 +345,8 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                     sb.get_confidence())
     t2 = unix_time.time()
     logger.debug("KMC finished in %.4f seconds", (t2-t1))
-    logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
+    if t2 - t1 > 0:
+        logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
     return current_state, previous_state, time, steps
 
 
