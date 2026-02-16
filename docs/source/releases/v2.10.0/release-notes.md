@@ -71,4 +71,11 @@ tables.
 
 ### Bug Fixes
 
+- Fixed Windows `STATUS_STACK_OVERFLOW` (`0xC00000FD`) crash in the EAM Al
+  potential.  The Fortran subroutine `gagafeDblexp` allocates ~3.6 MB of local
+  arrays (`phi`/`phivirst` dimensioned at `MAXPRS=200000`), exceeding the 1 MB
+  Windows default stack.  The linker now requests a 16 MB stack on Windows.
+- Fixed silent client failure on Windows when stdout is redirected by the Python
+  server, by switching spdlog from `stdout_color_sink_mt` (which uses
+  `WriteConsole`) to the plain `stdout_sink_mt`.
 - Use Goswami & Jonsson 2025 for removing rotations through projections.
