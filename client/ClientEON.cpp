@@ -27,7 +27,9 @@
 #include <chrono>
 #include <errno.h>
 #include <filesystem>
+#include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
 #include <string.h>
 #include <time.h>
@@ -121,9 +123,15 @@ void printSystemInfo() {
 
 int main(int argc, char **argv) {
   // --- Start Logging setup
-  // Sinks
+  // Use non-color stdout sink on Windows to avoid WriteConsole failures
+  // when stdout is redirected to a file by the Python server.
+  // See: https://github.com/gabime/spdlog/issues/1147
   spdlog::flush_every(std::chrono::seconds(3));
+#ifdef _WIN32
+  auto console_sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+#else
   auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+#endif
   auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
       "client_spdlog.log", true); // Overwrite existing
   auto logger = std::make_shared<spdlog::logger>(
@@ -133,7 +141,11 @@ int main(int argc, char **argv) {
   spdlog::set_default_logger(logger);
   // Traceback logger
   spdlog::set_level(spdlog::level::trace);
+#ifdef _WIN32
+  auto trace_csink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+#else
   auto trace_csink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+#endif
   auto trace_fsink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
       "client_traceback.log", true); // Overwrite existing
   auto _traceback = std::make_shared<spdlog::logger>(

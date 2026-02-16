@@ -40,6 +40,15 @@ if host_system == 'darwin'
 endif
 if is_windows
     _args += ['-DIS_WINDOWS']
+    # The EAM Al Fortran potential (gagafeDblexp.f) allocates ~3.6 MB of local
+    # arrays on the stack (phi/phivirst dimensioned at MAXPRS=200000).  The
+    # Windows default stack is only 1 MB, causing STATUS_STACK_OVERFLOW.
+    # Request 16 MB to match typical Linux ulimit defaults.
+    if is_mingw
+        _linkargs += ['-Wl,--stack,16777216']
+    elif cppc.get_id() == 'msvc'
+        _linkargs += ['/STACK:16777216']
+    endif
     # Workaround used in INIFile.cpp
     # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
 endif
@@ -245,10 +254,11 @@ if get_option('with_gprd')
         'use_hdf5': true,
         'do_install': true,
         'buildtype': 'release',
+        'linalg_backend': get_option('gprd_linalg_backend'),
     }
     libgprd_proj = subproject('gpr_optim', default_options: gprd_opts)
-    libgprd = libgprd_proj.get_variable('libgprd_dep')
-    gprd_deps = libgprd_proj.get_variable('gprd_deps')
+    libgprd = libgprd_proj.get_variable('gpr_optim_dep')
+    gprd_deps = libgprd_proj.get_variable('gpr_optim_deps')
     # subdir('potentials/GPRPotential')
     # potentials += [ gprpot ]
     _args += ['-DWITH_GPRD']
