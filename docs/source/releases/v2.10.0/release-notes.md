@@ -56,6 +56,9 @@ tables.
 
 - Eliminated unnecessary Eigen matrix copies in `Matter`, `Potential`, and
   `HelperFunctions` hot paths by using const references and move semantics.
+- Replaced per-typedef `Eigen::RowMajor` with a single `eOnStorageOrder`
+  constant in `client/Eigen.h`, making the storage order explicit and
+  configurable in one place.  Also removed the dead `EIGEN2_SUPPORT` comment.
 
 ### Developer
 

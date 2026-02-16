@@ -19,6 +19,7 @@
 ### Changed
 
 - Eliminated unnecessary Eigen matrix copies in Matter, Potential, and HelperFunctions hot paths
+- Replace per-typedef `Eigen::RowMajor` with a single `eOnStorageOrder` constant in `client/Eigen.h`
 - Enriched schema descriptions for displace_atom_kmc_state_script, displace_all_listed, displace_atom_list, and client_displace_type
 - Refactored MetatomicPotential variant resolution to use upstream metatomic_torch::pick_output
 - Updated pinned gpr_optim commit with new linear algebra backends and performance improvements
