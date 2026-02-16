@@ -25,6 +25,8 @@
 
 ### Fixed
 
+- Fix Windows `STATUS_STACK_OVERFLOW` crash caused by large Fortran local arrays in the EAM Al potential (`gagafeDblexp.f`) exceeding the 1 MB default stack; request 16 MB via linker flags
+- Fix Windows silent client failure by using non-color spdlog sink when stdout is redirected
 - Use Goswami & Jonsson 2025 for removing rotations through projections
 
 
