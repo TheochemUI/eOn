@@ -58,7 +58,7 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   // clang-format on
 
   double e_mta{0};
-  AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
+  AtomMatrix f_mta = MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params.potential_options.potential = PotType::XTB;
   params.xtb_options.paramset = "GFN2xTB";
   params.xtb_options.acc = 1.0;

@@ -128,7 +128,7 @@ std::ostream &operator<<(std::ostream &os, const Matter &matter) {
   os << "Distance between same atom in two configurations: \n"
      << matter.distance(matter, 0) << std::endl;
 
-  AtomMatrix placeholderMatrix = Eigen::MatrixXd::Zero(0, 3);
+  AtomMatrix placeholderMatrix = MatrixXd::Zero(0, 3);
   Eigen::VectorXd placeholderVector = Eigen::VectorXd::Zero(0);
   os << "PBC Matrix: \n" << matter.pbc(placeholderMatrix) << std::endl;
   os << "PBC Vector: \n" << matter.pbcV(placeholderVector) << std::endl;
