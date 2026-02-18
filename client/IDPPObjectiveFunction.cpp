@@ -76,8 +76,7 @@ VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
   return VectorXd::Map(forces.data(), 3 * natoms) * -1.0;
 }
 
-MatrixXd
-CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
+MatrixXd CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
   int natoms = m.numberOfAtoms();
   MatrixXd d(natoms, natoms);
   auto pos = m.getPositions();

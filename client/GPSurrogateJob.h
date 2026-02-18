@@ -51,12 +51,11 @@ private:
 
 namespace helper_functions::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs);
-MatrixXd
-get_features(const std::vector<std::shared_ptr<Matter>> &matobjs);
+MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs);
 MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
-                            std::shared_ptr<Potential> true_pot);
+                     std::shared_ptr<Potential> true_pot);
 MatrixXd get_targets(std::vector<Matter> &matobjs,
-                            std::shared_ptr<Potential> true_pot);
+                     std::shared_ptr<Potential> true_pot);
 Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot);
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,

@@ -33,7 +33,8 @@ static LoggerSetup _logger_setup;
 // Regression test: CI-NEB with XTB on a small (9-atom) molecule.
 // Reproduces a bug where removing EIGEN_DEFAULT_TO_ROW_MAJOR silently changed
 // the storage order of bare MatrixXd types, corrupting force projections and
-// causing the NEB to diverge from the first step (issue introduced in 6e8461c3).
+// causing the NEB to diverge from the first step (issue introduced in
+// 6e8461c3).
 TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   Parameters params;
   params.potential_options.potential = PotType::XTB;
@@ -58,8 +59,8 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   params.optimizer_options.max_iterations = 100;
   params.optimizer_options.max_move = 0.1;
 
-  auto pot =
-      helper_functions::makePotential(params.potential_options.potential, params);
+  auto pot = helper_functions::makePotential(params.potential_options.potential,
+                                             params);
   auto initial = std::make_shared<Matter>(pot, params);
   auto final_state = std::make_shared<Matter>(pot, params);
 
