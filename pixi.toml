@@ -8,6 +8,8 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 version = "2.11.0"
 
 [tasks]
+# cbindgen is not on conda-forge; install via cargo if missing
+ensure_cbindgen = "command -v cbindgen >/dev/null 2>&1 || cargo install cbindgen"
 
 [dependencies]
 eigen = ">=3.4,<3.5"
@@ -29,6 +31,7 @@ spdlog = ">=1.16,<2"
 pkg-config = ">=0.29.2,<0.30"
 fortran-compiler = ">=1.10.0,<2"
 pyyaml = "*"
+rust = ">=1.88"
 sccache = "*"
 
 [pypi-dependencies]

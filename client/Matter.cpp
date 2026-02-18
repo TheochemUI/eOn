@@ -644,54 +644,45 @@ bool Matter::matter2con(FILE *file) {
   return true;
 }
 
-// Load atomic coordinates from a .con file
+// Load atomic coordinates from a .con file via readcon-core
 bool Matter::con2matter(std::string filename) {
-  bool state;
-  FILE *file;
   // Add the .con extension to filename if it is not already there.
   int pos = filename.find_last_of('.');
   if (filename.compare(pos + 1, 3, "con")) {
     filename += ".con";
   }
-  file = fopen(filename.c_str(), "rb");
-  if (!file) {
-    SPDLOG_LOGGER_ERROR(m_log, "File {} was not found.", filename);
-    return (false);
+  try {
+    readcon::ConFrameIterator frames(filename);
+    auto it = frames.begin();
+    if (!(it != frames.end())) {
+      SPDLOG_LOGGER_ERROR(m_log, "No frames found in {}", filename);
+      return false;
+    }
+    return con2matter(*it);
+  } catch (const std::exception &e) {
+    SPDLOG_LOGGER_ERROR(m_log, "Failed to read {}: {}", filename, e.what());
+    return false;
   }
-  state = con2matter(file);
-  fclose(file);
-  return (state);
 }
 
-bool Matter::con2matter(FILE *file) {
-  char line[255]; // Temporary string of character to read from the file.
-  fgets(headerCon1, sizeof(line), file);
+// Populate Matter from a parsed readcon frame
+bool Matter::con2matter(const readcon::ConFrame &frame) {
+  const auto &atoms = frame.atoms();
+  const auto &lengths = frame.cell();
+  const auto &angles_deg = frame.angles();
+  const auto &prebox = frame.prebox_header();
+  const auto &postbox = frame.postbox_header();
 
-  //    if (strchr(headerCon1,'\r')) {
-  //        /* Files created on Windows or on Mac with Excell have carriage
-  //        returns (\r) instead of or along with the new line charater (\n). C
-  //        recognises only the \n as the end of line. */ cerr << "A carriage
-  //        return ('\\r') has been detected. To work correctly, new lines
-  //        should be indicated by the new line character (\\n)."; return false;
-  //        // return false for error
-  //    }
+  // Store headers for round-tripping via matter2con
+  snprintf(headerCon1, sizeof(headerCon1), "%s\n", prebox[0].c_str());
+  snprintf(headerCon2, sizeof(headerCon2), "%s\n", prebox[1].c_str());
+  snprintf(headerCon5, sizeof(headerCon5), "%s\n", postbox[0].c_str());
+  snprintf(headerCon6, sizeof(headerCon6), "%s\n", postbox[1].c_str());
 
-  long int i;
-  int j;
-
-  fgets(headerCon2, sizeof(line), file);
-
-  double lengths[3];
-  // The third line contains the length of the periodic cell
-  fgets(line, sizeof(line), file);
-  sscanf(line, "%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
-
-  double angles[3];
-  fgets(headerCon4, sizeof(line), file);
-  // The fourth line contains the angles of the cell vectors
-  sscanf(headerCon4, "%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
-
+  // Build cell matrix from lengths and angles
+  double angles[3] = {angles_deg[0], angles_deg[1], angles_deg[2]};
   if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
+    cell.setZero();
     cell(0, 0) = lengths[0];
     cell(1, 1) = lengths[1];
     cell(2, 2) = lengths[2];
@@ -716,112 +707,25 @@ bool Matter::con2matter(FILE *file) {
   }
   cellInverse = cell.inverse();
 
-  fgets(headerCon5, sizeof(line), file);
-  fgets(headerCon6, sizeof(line), file);
+  // Also store headerCon4 for convel round-tripping
+  snprintf(headerCon4, sizeof(headerCon4), "%f %f %f\n", angles_deg[0],
+           angles_deg[1], angles_deg[2]);
 
-  fgets(line, sizeof(line), file);
-  int Ncomponent; // Number of components or different types of atoms  (eg
-                  // water: two components H and O)
-  if (sscanf(line, "%d", &Ncomponent) == 0) {
-    SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
-                              "component is assumed instead");
-    Ncomponent = 1;
-  }
-  if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    SPDLOG_LOGGER_ERROR(
-        m_log,
-        "con2atoms doesn't support more that {} components or less than 1",
-        MAXC);
-    return false;
+  resize(static_cast<long>(atoms.size()));
+  for (size_t i = 0; i < atoms.size(); ++i) {
+    positions(i, 0) = atoms[i].x;
+    positions(i, 1) = atoms[i].y;
+    positions(i, 2) = atoms[i].z;
+    setMass(i, atoms[i].mass);
+    setAtomicNr(i, static_cast<int>(atoms[i].atomic_number));
+    setFixed(i, atoms[i].is_fixed ? 1 : 0);
   }
 
-  // stores the position of the first atom of each element
-  // 'MAXC+1': the last element is used to store the total number of atom
-  long int first[MAXC + 1];
-  long int Natoms = 0;
-  first[0] = 0;
-
-  // Now we want to know the number of atom of each type. Ex with H2O, two
-  // hydrogens and one oxygen
-  fgets(line, sizeof(line), file);
-  // split at either space or tab
-  char *split = strtok(line, " \t");
-  for (j = 0; j < Ncomponent; j++) {
-    if (split == NULL) {
-      SPDLOG_LOGGER_ERROR(
-          m_log, "input con file does not list the number of each component");
-      return false;
-    }
-    if (sscanf(split, "%ld", &Natoms) != 1) {
-      SPDLOG_LOGGER_ERROR(
-          m_log, "input con file does not list the number of each component");
-      return false;
-    }
-    first[j + 1] = Natoms + first[j];
-    // split at either space or tab
-    split = strtok(NULL, " \t");
-  }
-
-  // Set the total number of atoms, and allocates memory
-  resize(first[Ncomponent]);
-
-  double mass[MAXC];
-  fgets(line, sizeof(line), file);
-  // split at either space or tab
-  split = strtok(line, " \t");
-
-  for (j = 0; j < Ncomponent; j++) {
-    // Now we want to know the number of atom of each type. Ex with
-    // H2O, two hydrogens and one oxygen
-    if (split == NULL) {
-      SPDLOG_LOGGER_ERROR(m_log, "input con file does not list enough masses");
-      return false;
-    }
-    // *1* seems like a bug as a result of copying and pasting from above
-    // *1*       if(sscanf(split, "%ld", &Natoms)!=1)
-    if (sscanf(split, "%lf", &mass[j]) != 1) {
-      SPDLOG_LOGGER_ERROR(m_log, "input con file does not list enough masses");
-      return false;
-    }
-    // *1*       sscanf(line, "%lf", &mass[j]);
-    // split at either space or tab
-    split = strtok(NULL, " \t");
-  }
-
-  int atomicNr;
-  int fixed;
-  double x, y, z;
-  for (j = 0; j < Ncomponent; j++) {
-    char symbol[3];
-    fgets(line, sizeof(line), file);
-    sscanf(line, "%2s", symbol);
-    atomicNr = symbol2atomicNumber(symbol);
-    fgets(line, sizeof(line), file); // skip one line
-    for (i = first[j]; i < first[j + 1]; i++) {
-      setMass(i, mass[j]);
-
-      setAtomicNr(i, atomicNr);
-      fgets(line, sizeof(line), file);
-      if (strlen(line) < 6) {
-        SPDLOG_LOGGER_ERROR(m_log, "error parsing position in con file");
-        return false;
-      }
-
-      sscanf(line, "%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-      positions(i, 0) = x;
-      positions(i, 1) = y;
-      positions(i, 2) = z;
-      setFixed(i, static_cast<bool>(fixed));
-    }
-  }
   if (usePeriodicBoundaries) {
-    // Transform the coordinate to use the minimum
-    // image convention.
     applyPeriodicBoundary();
   }
-  // potential_ = new Potential(parameters_);
   recomputePotential = true;
-  return (true);
+  return true;
 }
 
 void Matter::computePotential() {

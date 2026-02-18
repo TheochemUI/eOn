@@ -15,6 +15,7 @@
 #include "Potential.h"
 #include "SurrogatePotential.h"
 #include <memory>
+#include <readcon-core.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
@@ -163,8 +164,8 @@ public:
   void writeTibble(std::string filename);
   bool con2matter(std::string filename); // read con file into Matter, return
                                          // true if successful
-  bool con2matter(FILE *file); // read con file and load data into Matter,
-                               // return true if successful
+  bool con2matter(const readcon::ConFrame &frame); // populate from a parsed
+                                                    // readcon frame
   bool
   convel2matter(std::string filename); // read con file with both coordinates
                                        // and velocities into Matter
