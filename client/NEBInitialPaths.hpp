@@ -35,7 +35,7 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
 std::vector<std::filesystem::path>
 readFilePaths(const std::string &listFilePath);
 
-Eigen::MatrixXd getDistanceMatrix(const Matter &m);
+MatrixXd getDistanceMatrix(const Matter &m);
 
 std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
                              size_t nimgs, const Parameters &params,
