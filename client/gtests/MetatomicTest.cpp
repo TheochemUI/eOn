@@ -51,7 +51,7 @@ TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
       -29664.02315515, 9047.94473885, -62279.76038293, 73831.6816454;
 
   double e_mta{0};
-  AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
+  AtomMatrix f_mta = MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params.potential_options.potential = PotType::METATOMIC;
   params.metatomic_options.model_path = "lennard-jones.pt";
   auto pot = helper_functions::makePotential(params.potential_options.potential,
@@ -82,7 +82,7 @@ TEST_CASE_METHOD(PotTest,
                                              params);
 
   double e_mta{0};
-  AtomMatrix f_mta = Eigen::MatrixXd::Zero(m1->numberOfAtoms(), 3);
+  AtomMatrix f_mta = MatrixXd::Zero(m1->numberOfAtoms(), 3);
   double variance = -12345.6789; // sentinel
 
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
@@ -119,7 +119,7 @@ TEST_CASE_METHOD(PotTest, "Metatomic variant (doubled)", "[PotTest][variant]") {
       9047.94473885, -62279.76038293, 73831.6816454;
 
   double e_mta{0};
-  AtomMatrix f_mta = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
+  AtomMatrix f_mta = MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params.potential_options.potential = PotType::METATOMIC;
   params.metatomic_options.model_path = "lennard-jones.pt";
 

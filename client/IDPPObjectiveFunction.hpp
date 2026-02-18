@@ -23,7 +23,7 @@ class IDPPObjectiveFunction : public ObjectiveFunction {
 public:
   IDPPObjectiveFunction(std::shared_ptr<Matter> matterPassed,
                         const Parameters &paramsPassed,
-                        const Eigen::MatrixXd &targetDistances)
+                        const MatrixXd &targetDistances)
       : ObjectiveFunction(matterPassed, paramsPassed),
         d_target(targetDistances) {
 
@@ -68,7 +68,7 @@ public:
   }
 
 private:
-  Eigen::MatrixXd d_target; // The interpolated "ideal" distances
+  MatrixXd d_target; // The interpolated "ideal" distances
 };
 
 class CollectiveIDPPObjectiveFunction : public ObjectiveFunction {
@@ -131,12 +131,12 @@ public:
 
 private:
   std::vector<Matter> &path;
-  Eigen::MatrixXd dInit, dFinal;
+  MatrixXd dInit, dFinal;
   double lastMaxForce = 100.0;
 
-  Eigen::MatrixXd getDistanceMatrix(const Matter &m);
-  Eigen::MatrixXd getIDPPForces(const Matter &m,
-                                const Eigen::MatrixXd &dTarget);
+  MatrixXd getDistanceMatrix(const Matter &m);
+  MatrixXd getIDPPForces(const Matter &m,
+                                const MatrixXd &dTarget);
 };
 
 class ZBLRepulsiveIDPPObjective : public ObjectiveFunction {

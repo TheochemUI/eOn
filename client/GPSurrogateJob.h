@@ -50,12 +50,12 @@ private:
 };
 
 namespace helper_functions::surrogate {
-Eigen::MatrixXd get_features(const std::vector<Matter> &matobjs);
-Eigen::MatrixXd
+MatrixXd get_features(const std::vector<Matter> &matobjs);
+MatrixXd
 get_features(const std::vector<std::shared_ptr<Matter>> &matobjs);
-Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
+MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
                             std::shared_ptr<Potential> true_pot);
-Eigen::MatrixXd get_targets(std::vector<Matter> &matobjs,
+MatrixXd get_targets(std::vector<Matter> &matobjs,
                             std::shared_ptr<Potential> true_pot);
 Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot);
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
@@ -69,7 +69,7 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs);
 } // namespace helper_functions::surrogate
 
 namespace helper_functions::eigen {
-Eigen::MatrixXd vertCat(const Eigen::MatrixXd &m1, const Eigen::MatrixXd &m2);
-void addVectorRow(Eigen::MatrixXd &data, const Eigen::VectorXd &newrow);
+MatrixXd vertCat(const MatrixXd &m1, const MatrixXd &m2);
+void addVectorRow(MatrixXd &data, const Eigen::VectorXd &newrow);
 // Modifies data
 } // namespace helper_functions::eigen

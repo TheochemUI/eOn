@@ -48,7 +48,7 @@ TEST_CASE_METHOD(ZBLPotTest, "ZBL Potential against LAMMPS", "[PotTest][ZBL]") {
 
   double calculated_energy = 0.0;
   AtomMatrix calculated_forces =
-      Eigen::MatrixXd::Zero(matter->numberOfAtoms(), 3);
+      MatrixXd::Zero(matter->numberOfAtoms(), 3);
 
   pot_zbl->force(matter->numberOfAtoms(), matter->getPositions().data(),
                  matter->getAtomicNrs().data(), calculated_forces.data(),

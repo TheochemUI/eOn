@@ -28,8 +28,8 @@ CatLearnPot::CatLearnPot(const Parameters &a_params)
       "model"_a = a_params.catlearn_options.model);
 };
 
-void CatLearnPot::train_optimize(Eigen::MatrixXd features,
-                                 Eigen::MatrixXd targets) {
+void CatLearnPot::train_optimize(MatrixXd features,
+                                 MatrixXd targets) {
   m_gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
   return;
 }
@@ -37,12 +37,12 @@ void CatLearnPot::train_optimize(Eigen::MatrixXd features,
 void CatLearnPot::force(long nAtoms, const double *positions,
                         const int *atomicNrs, double *forces, double *energy,
                         double *variance, const double *box) {
-  Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(
+  MatrixXd features = Eigen::Map<MatrixXd>(
       const_cast<double *>(positions), 1, nAtoms * 3);
   py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(
       features, "get_variance"_a = true, "get_derivatives"_a = true));
-  auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
-  auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
+  auto ef_dat = ef_and_unc[0].cast<MatrixXd>();
+  auto vari = ef_and_unc[1].cast<MatrixXd>();
   auto gradients = ef_dat.block(0, 1, 1, nAtoms * 3);
   for (int idx = 0; idx < nAtoms; idx++) {
     forces[3 * idx] = gradients(0, 3 * idx) * -1;
