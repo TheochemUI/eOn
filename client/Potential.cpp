@@ -128,7 +128,7 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
                                                  const Matrix3d &box) {
   double energy{std::numeric_limits<double>::infinity()};
   long nAtoms = static_cast<long>(pos.rows());
-  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
+  AtomMatrix forces{MatrixXd::Zero(nAtoms, 3)};
   double var{0}; // no variance for true potentials
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());
