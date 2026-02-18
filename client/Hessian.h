@@ -20,7 +20,7 @@ public:
   Hessian(const Parameters &params, Matter *matter);
   ~Hessian();
 
-  Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(Matter *matterIn,
+  MatrixXd getHessian(Matter *matterIn,
                                                             VectorXi atomsIn);
   VectorXd getFreqs(Matter *matterIn, VectorXi atomsIn);
   //    VectorXd getModes(Matter *matterIn, VectorXi atomsIn);
@@ -30,7 +30,7 @@ private:
   Matter *matter;
   const Parameters &parameters;
 
-  Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
+  MatrixXd hessian;
   //    VectorXd modes;
   VectorXd freqs;
 
