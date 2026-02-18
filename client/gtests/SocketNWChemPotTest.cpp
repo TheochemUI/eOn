@@ -52,8 +52,7 @@ TEST_CASE_METHOD(SocketNWChemPotTest, "SocketNWChemPot against reference data",
       -5.10672548e-01, -2.83695544e-01, 4.60793143e-01, 5.12060944e-01;
 
   double calculated_energy = 0.0;
-  AtomMatrix calculated_forces =
-      MatrixXd::Zero(matter->numberOfAtoms(), 3);
+  AtomMatrix calculated_forces = MatrixXd::Zero(matter->numberOfAtoms(), 3);
 
   pot_socket->force(matter->numberOfAtoms(), matter->getPositions().data(),
                     matter->getAtomicNrs().data(), calculated_forces.data(),

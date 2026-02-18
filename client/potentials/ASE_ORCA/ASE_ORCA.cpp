@@ -59,10 +59,8 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
                        double *F, double *U, double *variance,
                        const double *box) {
   variance = nullptr;
-  MatrixXd positions =
-      Eigen::Map<MatrixXd>(const_cast<double *>(R), nAtoms, 3);
-  MatrixXd boxx =
-      Eigen::Map<MatrixXd>(const_cast<double *>(box), 3, 3);
+  MatrixXd positions = Eigen::Map<MatrixXd>(const_cast<double *>(R), nAtoms, 3);
+  MatrixXd boxx = Eigen::Map<MatrixXd>(const_cast<double *>(box), 3, 3);
   Eigen::VectorXi atmnmrs =
       Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
   py::object atoms = this->ase.attr("Atoms")(
@@ -70,8 +68,7 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
   atoms.attr("set_calculator")(this->calc);
   atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
-  MatrixXd py_force =
-      py::cast<MatrixXd>(atoms.attr("get_forces")());
+  MatrixXd py_force = py::cast<MatrixXd>(atoms.attr("get_forces")());
 
   // Populate the output parameters
   *U = py_e;

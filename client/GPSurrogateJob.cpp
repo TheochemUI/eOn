@@ -169,8 +169,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
 namespace helper_functions::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions
-  MatrixXd features(matobjs.size(),
-                           matobjs.front().numberOfFreeAtoms() * 3);
+  MatrixXd features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
   SPDLOG_TRACE("rows: {}, cols:{}", matobjs.size(),
                matobjs.front().numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
@@ -179,11 +178,9 @@ MatrixXd get_features(const std::vector<Matter> &matobjs) {
   SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
   return features;
 }
-MatrixXd
-get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
+MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   // Calculate dimensions
-  MatrixXd features(matobjs.size(),
-                           matobjs.front()->numberOfFreeAtoms() * 3);
+  MatrixXd features(matobjs.size(), matobjs.front()->numberOfFreeAtoms() * 3);
   SPDLOG_TRACE("rows: {}, cols:{}\n", matobjs.size(),
                matobjs.front()->numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
@@ -193,7 +190,7 @@ get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   return features;
 }
 MatrixXd get_targets(std::vector<Matter> &matobjs,
-                            std::shared_ptr<Potential> true_pot) {
+                     std::shared_ptr<Potential> true_pot) {
   // Always with derivatives for now
   // Energy + Derivatives for each row
   const auto nrows = matobjs.size();
@@ -209,7 +206,7 @@ MatrixXd get_targets(std::vector<Matter> &matobjs,
   return targets;
 }
 MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
-                            std::shared_ptr<Potential> true_pot) {
+                     std::shared_ptr<Potential> true_pot) {
   const auto nrows = matobjs.size();
   const auto ncols = (matobjs.front()->numberOfFreeAtoms() * 3) + 1;
   MatrixXd targets(nrows, ncols);

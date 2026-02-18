@@ -20,8 +20,7 @@ public:
   Hessian(const Parameters &params, Matter *matter);
   ~Hessian();
 
-  MatrixXd getHessian(Matter *matterIn,
-                                                            VectorXi atomsIn);
+  MatrixXd getHessian(Matter *matterIn, VectorXi atomsIn);
   VectorXd getFreqs(Matter *matterIn, VectorXi atomsIn);
   //    VectorXd getModes(Matter *matterIn, VectorXi atomsIn);
   VectorXd removeZeroFreqs(VectorXd freqs);
