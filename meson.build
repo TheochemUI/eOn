@@ -4,7 +4,7 @@ project(
     'eon',
     'cpp',
     version: run_command(['tools/gitversion.py'], check: true).stdout().strip(),
-    meson_version: '>= 1.6.0',
+    meson_version: '>= 1.8.0',
     default_options: [  #
         'buildtype=debugoptimized',
         'warning_level=0',

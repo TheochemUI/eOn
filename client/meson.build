@@ -582,6 +582,18 @@ endif
 
 _linkto += potentials
 
+# readcon-core: Rust-based .con file I/O (required)
+readcon_proj = subproject(
+    'readcon-core',
+    default_options: {
+        'with_tests': false,
+        'with_examples': false,
+        'default_library': 'static',
+    },
+)
+readcon_dep = readcon_proj.get_variable('readcon_dep')
+_deps += [readcon_dep]
+
 # --------------------- Library
 
 eclib = library(
