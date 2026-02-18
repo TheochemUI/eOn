@@ -135,8 +135,7 @@ private:
   double lastMaxForce = 100.0;
 
   MatrixXd getDistanceMatrix(const Matter &m);
-  MatrixXd getIDPPForces(const Matter &m,
-                                const MatrixXd &dTarget);
+  MatrixXd getIDPPForces(const Matter &m, const MatrixXd &dTarget);
 };
 
 class ZBLRepulsiveIDPPObjective : public ObjectiveFunction {
