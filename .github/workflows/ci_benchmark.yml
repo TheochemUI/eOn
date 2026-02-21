@@ -95,25 +95,9 @@ jobs:
             --record-samples --quick
 
       # ── Compare ────────────────────────────────────────────────
-      # TODO: switch to `uvx asv-spyglass` once the labels feature is released
-      - name: Compare results
-        id: compare
-        shell: pixi run bash -e {0}
+      - name: Generate metadata
         run: |
-          MACHINE=$(ls .asv/results/ | grep -v benchmarks.json | head -1)
-          MAIN_SHORT="${{ steps.shas.outputs.main }}"
-          PR_SHORT="${{ steps.shas.outputs.pr }}"
-          BEFORE=$(ls .asv/results/$MACHINE/${MAIN_SHORT:0:8}* 2>/dev/null | head -1)
-          AFTER=$(ls .asv/results/$MACHINE/${PR_SHORT:0:8}* 2>/dev/null | head -1)
-          if [[ -z "$BEFORE" || -z "$AFTER" ]]; then
-            echo "Benchmark comparison skipped: missing result files (before=${BEFORE:-<empty>}, after=${AFTER:-<empty>})"
-            mkdir -p .asv/results
-            echo "Benchmark comparison skipped: missing result files" > .asv/results/comparison.txt
-          else
-            uvx --from "asv-spyglass @ git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
-              asv-spyglass compare --label-before main --label-after pr \
-              "$BEFORE" "$AFTER" > .asv/results/comparison.txt 2>&1 || true
-          fi
+          mkdir -p .asv/results
           echo "main_sha=${{ steps.shas.outputs.main }}" >> .asv/results/metadata.txt
           echo "pr_sha=${{ steps.shas.outputs.pr }}" >> .asv/results/metadata.txt
 
