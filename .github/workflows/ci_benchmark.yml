@@ -112,7 +112,7 @@ jobs:
             mkdir -p .asv/results
             echo "Benchmark comparison skipped: missing result files" > .asv/results/comparison.txt
           else
-            uvx --from "asv-spyglass @ git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
+            uvx --quiet --from "asv-spyglass @ git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
               asv-spyglass compare --label-before main --label-after pr \
               "$BEFORE" "$AFTER" > .asv/results/comparison.txt 2>&1 || true
           fi
