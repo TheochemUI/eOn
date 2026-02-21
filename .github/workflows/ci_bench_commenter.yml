@@ -23,6 +23,28 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run comparison
+        run: |
+          MACHINE=$(ls -F results/ | grep '/$' | head -1 | sed 's|/||')
+          MAIN_SHA=$(grep main_sha results/metadata.txt | cut -d= -f2)
+          PR_SHA=$(grep pr_sha results/metadata.txt | cut -d= -f2)
+          BEFORE=$(ls results/$MACHINE/${MAIN_SHA:0:8}* 2>/dev/null | head -1)
+          AFTER=$(ls results/$MACHINE/${PR_SHA:0:8}* 2>/dev/null | head -1)
+          if [[ -z "$BEFORE" || -z "$AFTER" ]]; then
+            echo "Benchmark comparison skipped: missing result files" > results/comparison.txt
+            echo "Before: $BEFORE" >> results/comparison.txt
+            echo "After: $AFTER" >> results/comparison.txt
+            echo "Machine: $MACHINE" >> results/comparison.txt
+            ls -R results/ >> results/comparison.txt
+          else
+            uvx --from "asv-spyglass @ git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
+              asv-spyglass compare --label-before main --label-after pr \
+              "$BEFORE" "$AFTER" > results/comparison.txt 2>&1 || true
+          fi
+
       - name: Read results
         id: data
         run: |
