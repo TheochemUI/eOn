@@ -93,7 +93,7 @@ Eigen::MatrixXd
 CollectiveIDPPObjectiveFunction::getIDPPForces(const Matter &m,
                                                const Eigen::MatrixXd &dTarget) {
   int natoms = m.numberOfAtoms();
-  Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(natoms, 3);
+  AtomMatrix forces = AtomMatrix::Zero(natoms, 3);
   auto pos = m.getPositions();
 
   for (int i = 0; i < natoms; ++i) {
@@ -122,8 +122,8 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
   double maxForce = 0.0;
 
   // 1. Compute Raw IDPP Forces and Tangents
-  std::vector<Eigen::MatrixXd> rawForces(path.size());
-  std::vector<Eigen::MatrixXd> tangents(path.size());
+  std::vector<AtomMatrix> rawForces(path.size());
+  std::vector<AtomMatrix> tangents(path.size());
 
   // We compute for 1..N (moving images)
   for (size_t i = 1; i <= nImgs; ++i) {
@@ -134,8 +134,8 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
     rawForces[i] = getIDPPForces(path[i], dTarget);
 
     // Simple Tangent: Next - Prev
-    Eigen::MatrixXd nextPos = path[i + 1].getPositions();
-    Eigen::MatrixXd prevPos = path[i - 1].getPositions();
+    AtomMatrix nextPos = path[i + 1].getPositions();
+    AtomMatrix prevPos = path[i - 1].getPositions();
     tangents[i] = path[i].pbc(nextPos - prevPos);
     tangents[i].normalize(); // Unit tangent
   }
@@ -144,20 +144,20 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
   double k = params.neb_options.spring.constant;
 
   for (size_t i = 1; i <= nImgs; ++i) {
-    Eigen::MatrixXd f = rawForces[i];
-    Eigen::MatrixXd t = tangents[i];
+    AtomMatrix f = rawForces[i];
+    AtomMatrix t = tangents[i];
 
     // Perpendicular Force (IDPP optimization)
     double f_dot_t = (f.array() * t.array()).sum();
-    Eigen::MatrixXd f_perp = f - f_dot_t * t;
+    AtomMatrix f_perp = f - f_dot_t * t;
 
     // Spring Force (Spacing optimization)
     double distNext = path[i].distanceTo(path[i + 1]);
     double distPrev = path[i].distanceTo(path[i - 1]);
-    Eigen::MatrixXd f_spring = k * (distNext - distPrev) * t;
+    AtomMatrix f_spring = k * (distNext - distPrev) * t;
 
     // Total NEB Force
-    Eigen::MatrixXd f_neb = f_perp + f_spring;
+    AtomMatrix f_neb = f_perp + f_spring;
 
     // Store as Gradient (-Force)
     totalGradient.segment(3 * natoms * (i - 1), 3 * natoms) =

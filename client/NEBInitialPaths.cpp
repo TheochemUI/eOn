@@ -145,7 +145,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
         xi, residual);
 
     // Explicitly sync positions back to the path vector just to be safe
-    path[i].setPositions(MatrixXd::Map(idpp_objf->getPositions().data(),
+    path[i].setPositions(AtomMatrix::Map(idpp_objf->getPositions().data(),
                                        path[i].numberOfAtoms(), 3));
   }
 

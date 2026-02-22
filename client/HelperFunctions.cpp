@@ -799,7 +799,7 @@ void helper_functions::pushApart(std::shared_ptr<Matter> m1,
     return;
 
   AtomMatrix r1 = m1->getPositions();
-  MatrixXd Force(r1.rows(), 3);
+  AtomMatrix Force(r1.rows(), 3);
   double f = 0.025;
   double cut = minDistance;
   double pushAparts = 500;
