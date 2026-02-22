@@ -69,23 +69,26 @@ void commandLine(int argc, char **argv) {
       "p,potential", "The potential (e.g. qsc, lj, eam_al)",
       cxxopts::value<std::string>())
 #ifdef WITH_SERVE_MODE
-      ("serve", "Serve potential(s) over rgpot Cap'n Proto RPC. "
-                "Spec: 'potential:port' or 'pot1:port1,pot2:port2'",
+      ("serve",
+       "Serve potential(s) over rgpot Cap'n Proto RPC. "
+       "Spec: 'potential:port' or 'pot1:port1,pot2:port2'",
        cxxopts::value<std::string>())(
-      "serve-host", "Host to bind RPC server(s) to",
-      cxxopts::value<std::string>()->default_value("localhost"))(
-      "serve-port", "Port for single-potential serve mode (used with -p)",
-      cxxopts::value<uint16_t>()->default_value("12345"))(
-      "replicas", "Number of replicated server instances (used with -p)",
-      cxxopts::value<size_t>()->default_value("1"))(
-      "gateway", "Run a single gateway port backed by N pool instances "
-                 "(use with -p and --replicas)",
-      cxxopts::value<bool>()->default_value("false"))(
-      "config", "Config file for potential parameters (INI format, "
-                "e.g. [Metatomic] model_path=model.pt)",
-      cxxopts::value<std::string>())
+          "serve-host", "Host to bind RPC server(s) to",
+          cxxopts::value<std::string>()->default_value("localhost"))(
+          "serve-port", "Port for single-potential serve mode (used with -p)",
+          cxxopts::value<uint16_t>()->default_value("12345"))(
+          "replicas", "Number of replicated server instances (used with -p)",
+          cxxopts::value<size_t>()->default_value("1"))(
+          "gateway",
+          "Run a single gateway port backed by N pool instances "
+          "(use with -p and --replicas)",
+          cxxopts::value<bool>()->default_value("false"))(
+          "config",
+          "Config file for potential parameters (INI format, "
+          "e.g. [Metatomic] model_path=model.pt)",
+          cxxopts::value<std::string>())
 #endif
-      ("h,help", "Print usage");
+          ("h,help", "Print usage");
 
   try {
     auto result = options.parse(argc, argv);
@@ -195,8 +198,8 @@ void commandLine(int argc, char **argv) {
     }
 
     // Config-driven serve (no -p or --serve, just --config with [Serve])
-    if (!pflag && !sflag && !mflag && !cflag &&
-        result.count("config") && !result.count("serve") &&
+    if (!pflag && !sflag && !mflag && !cflag && result.count("config") &&
+        !result.count("serve") &&
         (!params.serve_options.endpoints.empty() ||
          params.serve_options.gateway_port > 0 ||
          params.serve_options.replicas > 1)) {

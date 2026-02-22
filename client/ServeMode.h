@@ -48,7 +48,8 @@ void serveMode(const Parameters &params, const std::string &host,
  * Cap'n Proto event loop. All threads block until SIGINT/SIGTERM.
  *
  * @param endpoints  List of {potential, host, port} configurations.
- * @param params     Base eOn parameters (potential type is overridden per endpoint).
+ * @param params     Base eOn parameters (potential type is overridden per
+ * endpoint).
  */
 void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
                    const Parameters &params);
@@ -59,7 +60,8 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
  * Starts `replicas` threads, each serving the same potential type on
  * ports base_port, base_port+1, ..., base_port+replicas-1.
  *
- * @param params    The eOn parameters (potential_options.potential must be set).
+ * @param params    The eOn parameters (potential_options.potential must be
+ * set).
  * @param host      The hostname to listen on.
  * @param base_port The first port; replicas use base_port+0 .. base_port+N-1.
  * @param replicas  Number of concurrent server instances.
@@ -74,7 +76,8 @@ void serveReplicated(const Parameters &params, const std::string &host,
  * behind a single gateway port. Incoming requests are dispatched round-robin
  * across the pool. This gives clients a single endpoint while spreading load.
  *
- * @param params     The eOn parameters (potential_options.potential must be set).
+ * @param params     The eOn parameters (potential_options.potential must be
+ * set).
  * @param host       The hostname to listen on.
  * @param port       The gateway port.
  * @param pool_size  Number of potential instances in the pool.

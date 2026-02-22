@@ -14,10 +14,10 @@
  * @file ServeMode.cpp
  * @brief Multi-model RPC serving for eOn potentials.
  *
- * Wraps any eOn Potential (including Metatomic ML models) as an rgpot
- * PotentialBase and serves it over Cap'n Proto RPC. Supports serving
- * multiple potentials concurrently on different ports, each in its own
- * thread with its own event loop.
+ * Wraps any eOn Potential as a flat-array ForceCallback and serves it
+ * over Cap'n Proto RPC. Uses ForceCallback (std::function taking flat
+ * arrays) to completely avoid the AtomMatrix type collision between
+ * eOn's Eigen-based AtomMatrix and rgpot's custom AtomMatrix.
  *
  * This translation unit includes eOn's Potential.h. The Cap'n Proto server
  * code is in ServeRpcServer.cpp (separate TU to avoid naming collision with
@@ -37,66 +37,19 @@
 
 #include <spdlog/spdlog.h>
 
-#include "rgpot/Potential.hpp"
-#include "rgpot/types/AtomMatrix.hpp"
+namespace {
 
-using rgpot::types::AtomMatrix;
-
-/**
- * @class EonPotentialAdapter
- * @brief Adapts eOn's Potential::force() to rgpot's PotentialBase interface.
- *
- * This allows any eOn potential (LJ, EAM, Metatomic, VASP, LAMMPS, etc.)
- * to be served over rgpot's Cap'n Proto RPC protocol without modification.
- */
-class EonPotentialAdapter : public rgpot::PotentialBase {
-public:
-  explicit EonPotentialAdapter(std::shared_ptr<::Potential> pot)
-      : rgpot::PotentialBase(rgpot::PotType::UNKNOWN),
-        m_potential(std::move(pot)) {}
-
-  std::pair<double, AtomMatrix>
-  operator()(const AtomMatrix &positions, const std::vector<int> &atmtypes,
-             const std::array<std::array<double, 3>, 3> &box) override {
-    long nAtoms = static_cast<long>(positions.rows());
-
-    // Flatten positions: eOn expects [x1,y1,z1, x2,y2,z2, ...]
-    std::vector<double> flat_pos(nAtoms * 3);
-    for (long i = 0; i < nAtoms; ++i) {
-      flat_pos[3 * i + 0] = positions(i, 0);
-      flat_pos[3 * i + 1] = positions(i, 1);
-      flat_pos[3 * i + 2] = positions(i, 2);
-    }
-
-    // Flatten box (3x3 row-major)
-    double flat_box[9];
-    for (int i = 0; i < 3; ++i) {
-      for (int j = 0; j < 3; ++j) {
-        flat_box[i * 3 + j] = box[i][j];
-      }
-    }
-
-    // Call eOn's potential
-    std::vector<double> flat_forces(nAtoms * 3, 0.0);
-    double energy = 0.0;
+/// Create a ForceCallback that wraps an eOn Potential's force() method.
+ForceCallback makeForceCallback(std::shared_ptr<::Potential> pot) {
+  return [pot = std::move(pot)](long nAtoms, const double *positions,
+                                const int *atomicNrs, double *forces,
+                                double *energy, const double *box) {
     double variance = 0.0;
-    m_potential->force(nAtoms, flat_pos.data(), atmtypes.data(),
-                       flat_forces.data(), &energy, &variance, flat_box);
+    pot->force(nAtoms, positions, atomicNrs, forces, energy, &variance, box);
+  };
+}
 
-    // Convert back to Eigen matrix
-    AtomMatrix forces(nAtoms, 3);
-    for (long i = 0; i < nAtoms; ++i) {
-      forces(i, 0) = flat_forces[3 * i + 0];
-      forces(i, 1) = flat_forces[3 * i + 1];
-      forces(i, 2) = flat_forces[3 * i + 2];
-    }
-
-    return {energy, forces};
-  }
-
-private:
-  std::shared_ptr<::Potential> m_potential;
-};
+} // anonymous namespace
 
 // ---------------------------------------------------------------------------
 // Single-model serve
@@ -115,10 +68,10 @@ void serveMode(const Parameters &params, const std::string &host,
     return;
   }
 
-  auto adapter = std::make_unique<EonPotentialAdapter>(std::move(eon_pot));
+  auto callback = makeForceCallback(std::move(eon_pot));
 
   // Blocks until killed (runs Cap'n Proto event loop)
-  startRpcServer(std::move(adapter), host, port);
+  startRpcServer(std::move(callback), host, port);
 }
 
 // ---------------------------------------------------------------------------
@@ -162,8 +115,8 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
         return;
       }
 
-      auto adapter = std::make_unique<EonPotentialAdapter>(std::move(eon_pot));
-      startRpcServer(std::move(adapter), ep.host, ep.port);
+      auto callback = makeForceCallback(std::move(eon_pot));
+      startRpcServer(std::move(callback), ep.host, ep.port);
     });
   }
 
@@ -198,9 +151,8 @@ void serveReplicated(const Parameters &params, const std::string &host,
 
   for (size_t i = 0; i < replicas; ++i) {
     uint16_t port = static_cast<uint16_t>(base_port + i);
-    threads.emplace_back([&params, &host, port]() {
-      serveMode(params, host, port);
-    });
+    threads.emplace_back(
+        [&params, &host, port]() { serveMode(params, host, port); });
   }
 
   for (auto &t : threads) {
@@ -226,7 +178,7 @@ void serveGateway(const Parameters &params, const std::string &host,
                pool_size, std::string(magic_enum::enum_name(pot_type)), host,
                port);
 
-  std::vector<std::unique_ptr<rgpot::PotentialBase>> pool;
+  std::vector<ForceCallback> pool;
   pool.reserve(pool_size);
 
   for (size_t i = 0; i < pool_size; ++i) {
@@ -236,8 +188,7 @@ void serveGateway(const Parameters &params, const std::string &host,
                     pool_size);
       return;
     }
-    pool.push_back(
-        std::make_unique<EonPotentialAdapter>(std::move(eon_pot)));
+    pool.push_back(makeForceCallback(std::move(eon_pot)));
   }
 
   spdlog::info("Pool ready, starting gateway server");
@@ -310,9 +261,9 @@ std::vector<ServeEndpoint> parseServeSpec(const std::string &spec) {
     std::transform(pot_str.begin(), pot_str.end(), pot_str.begin(), ::tolower);
 
     ServeEndpoint ep;
-    ep.potential = magic_enum::enum_cast<PotType>(pot_str,
-                                                   magic_enum::case_insensitive)
-                       .value_or(PotType::UNKNOWN);
+    ep.potential =
+        magic_enum::enum_cast<PotType>(pot_str, magic_enum::case_insensitive)
+            .value_or(PotType::UNKNOWN);
 
     if (ep.potential == PotType::UNKNOWN) {
       spdlog::error("Unknown potential type '{}'", pot_str);
