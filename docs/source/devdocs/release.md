@@ -7,6 +7,11 @@ myst:
 
 # Checklist
 
+- [ ] Bump version in `pyproject.toml` -- this is the single source of truth.
+  All other consumers (`docs/source/conf.py`, `client/get_version.py`,
+  and the meson/CMake builds) read from it automatically.
+  + [ ] Also bump `version` in `pixi.toml` to match.
+
 - [ ] Lockfiles updated
 
 ``` bash
@@ -16,20 +21,16 @@ uvx pixi-to-conda-lock pixi.lock --output condaEnvs
 - [ ] Changelog build and edited if necessary
 
 ``` bash
-pixi r -e dev towncrier build --draft --version=2.8.0 --date "$(date +%Y-%m-%d)"
+pixi r -e dev towncrier build --draft --version=X.Y.Z --date "$(date +%Y-%m-%d)"
 ```
 
-- [ ] Ensure the versions are set consistently
-  + [ ] `eon` server
-  + [ ] `eonclient` C++ build
-
-- [ ] Generate release notes, and also the publication page, e.g. see `releases/v2.8.0`
+- [ ] Generate release notes, and also the publication page, e.g. see `releases/vX.Y.Z/`
 
 To generate the archive since auto-generated archives of tags have [security
-issues](https://github.blog/open-source/git/update-on-the-future-stability-of-source-code-archives-and-hashes/)..
+issues](https://github.blog/open-source/git/update-on-the-future-stability-of-source-code-archives-and-hashes/):
 
 ```bash
-git archive --format=tar v2.9.0 | xz -9 > eon-v2.9.0.tar.xz
+git archive --format=tar vX.Y.Z | xz -9 > eon-vX.Y.Z.tar.xz
 ```
 
 Paper related tags do not need full release machinery, just a lightweight tag:
