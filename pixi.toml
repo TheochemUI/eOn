@@ -55,6 +55,7 @@ ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
 docs = {features = ["docs"]}
 rel = {features = ["metatomic", "release"]}
+serve = {features = ["serve"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
@@ -114,6 +115,12 @@ python -m http.server -d html
 
 [feature.xtb.dependencies]
 xtb = "*"
+
+[feature.serve]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[feature.serve.dependencies]
+capnproto = ">=1.0,<2"
 
 [feature.metatomic.tasks.mkeon]
 args = ["buildtype"]
