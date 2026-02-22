@@ -60,7 +60,7 @@ set(TORCH_VERSION "2.9" CACHE STRING "Torch version")
 option(PIP_METATOMIC "Use pip versions of torch/metatensor/metatomic" OFF)
 
 # ---------------------- Fortran (optional)
-if(WITH_FORTRAN OR WITH_XTB OR WITH_CUH2)
+if(WITH_FORTRAN OR WITH_CUH2)
   enable_language(Fortran)
 endif()
 

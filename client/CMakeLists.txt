@@ -5,7 +5,7 @@ set(EON_INCLUDE_DIRS
 )
 
 # Fortran compiler flags
-if(WITH_FORTRAN OR WITH_XTB OR WITH_CUH2)
+if(WITH_FORTRAN OR WITH_CUH2)
   include(CheckFortranCompilerFlag)
   set(EON_FORTRAN_FLAGS "")
   foreach(flag -fno-implicit-none -Wno-compare-reals -Wno-conversion
@@ -64,11 +64,12 @@ execute_process(
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   ERROR_QUIET)
 if(NOT VERSION_OUTPUT)
-  set(VERSION_OUTPUT "unknown,unknown")
+  set(VERSION_OUTPUT "unknown,unknown,unknown")
 endif()
 string(REPLACE "," ";" VERSION_LIST "${VERSION_OUTPUT}")
 list(GET VERSION_LIST 0 VERSION)
 list(GET VERSION_LIST 1 BUILD_DATE)
+list(GET VERSION_LIST 2 GIT_HASH)
 set(OS_INFO ${CMAKE_SYSTEM_NAME})
 set(ARCH ${CMAKE_SYSTEM_PROCESSOR})
 

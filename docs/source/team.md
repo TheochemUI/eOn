@@ -1,24 +1,35 @@
 ---
 myst:
   html_meta:
-    "description": "Details of the eOn software development team, a collaboration between the Henkelman and Jónsson research groups, and other key contributors."
+    "description": "Details of the eOn software development team and key contributors."
     "keywords": "eOn team, developers, contributors"
 ---
 # eOn Team
 
-The `eOn` software is primarily a collaboration between the Henkelman and
-Jónsson research groups.
+`eOn` is maintained by [Rohit Goswami](https://rgoswami.me) and the
+[Jónsson Group](https://hj.hi.is/researchgroup.html) at the University of
+Iceland.  For background on the project's history and relationship to the
+original UT Austin codebase, see
+[this post](https://rgoswami.me/posts/eon-acad-foss/).
 
-## Primary Contributors
-
-In no particular order. Refer to the log for more details.
+## Active Contributors
 
 ### [Jónsson Group](https://hj.hi.is/researchgroup.html) (University of Iceland)
 
-- [Rohit Goswami](https://rgoswami.me), **release manager**
+- [Rohit Goswami](https://rgoswami.me), **maintainer & release manager**
 - Andreas Pederson
 - Alejandro Pena Torres
 - Vilhjálmur Ásgeirsson
+
+### [Li Lei Group](https://faculty.sustech.edu.cn/lil33/en/)
+
+- SONG Zichen
+
+## Historical Contributors (pre-v2.8)
+
+The Henkelman group were major contributors up to v2.8.  See
+[the original project page](https://theory.cm.utexas.edu/eon/) and
+[this post](https://rgoswami.me/posts/eon-acad-foss/) for background.
 
 ### [Henkelman Group](https://theory.cm.utexas.edu/henkelman/) (UT Austin)
 
@@ -31,11 +42,6 @@ In no particular order. Refer to the log for more details.
 - Juliana Duncan
 - Naman Katyal
 - Sung Hoon Jung
-
-<!-- TODO(rg) update!! -->
-### [Li Lei Group](https://faculty.sustech.edu.cn/lil33/en/)
-
-- SONG Zichen
 
 ### Other contributions
 

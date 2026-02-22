@@ -3,3 +3,4 @@ const std::string VERSION = "@VERSION@";
 const std::string BUILD_DATE = "@BUILD_DATE@";
 const std::string OS_INFO = "@OS_INFO@";
 const std::string ARCH = "@ARCH@";
+const std::string GIT_HASH = "@GIT_HASH@";
