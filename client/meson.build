@@ -427,7 +427,10 @@ if get_option('with_metatomic')
     ]
 
 
-    lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
+    lib_torch_list = ['c10', 'torch', 'torch_cpu']
+    if not is_windows
+        lib_torch_list += 'torch_global_deps'
+    endif
     # On Windows, torch DLLs live in <prefix>/bin not <prefix>/lib
     LIB_TORCH_BIN_PATH = LIB_TORCH_PATH / 'bin'
     lib_torch_dirs = is_windows ? [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH] : [LIB_TORCH_LIB_PATH]
