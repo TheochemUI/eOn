@@ -12,10 +12,14 @@
 
 /**
  * @file ServeRpcServer.cpp
- * @brief Cap'n Proto RPC server for rgpot PotentialBase instances.
+ * @brief Cap'n Proto RPC server using flat-array force callbacks.
  *
  * This translation unit does NOT include eOn's Potential.h to avoid naming
  * collision with the capnp-generated `Potential` interface class.
+ *
+ * Uses a ForceCallback (std::function taking flat arrays) instead of
+ * rgpot::PotentialBase to avoid the AtomMatrix type collision between
+ * eOn's Eigen-based AtomMatrix and rgpot's custom AtomMatrix.
  */
 
 #include "ServeRpcServer.h"
@@ -26,9 +30,6 @@
 #include <mutex>
 #include <spdlog/spdlog.h>
 
-#include "rgpot/types/AtomMatrix.hpp"
-#include "rgpot/types/adapters/capnp/capnp_adapter.hpp"
-
 // Cap'n Proto generated header (from Potentials.capnp).
 // This defines `class Potential` -- which collides with eOn's Potential class,
 // hence the separate translation unit.
@@ -37,16 +38,16 @@
 namespace {
 
 /**
- * @class GenericPotImpl
- * @brief Cap'n Proto RPC server implementation wrapping a PotentialBase.
+ * @class CallbackPotImpl
+ * @brief Cap'n Proto RPC server wrapping a flat-array ForceCallback.
  *
- * Same pattern as rgpot's potserv -- receives ForceInput over RPC, dispatches
- * to the polymorphic PotentialBase, returns PotentialResult.
+ * Receives ForceInput over RPC, extracts flat arrays, calls the callback,
+ * and returns PotentialResult.
  */
-class GenericPotImpl final : public Potential::Server {
+class CallbackPotImpl final : public Potential::Server {
 public:
-  explicit GenericPotImpl(std::unique_ptr<rgpot::PotentialBase> pot)
-      : m_potential(std::move(pot)) {}
+  explicit CallbackPotImpl(ForceCallback cb)
+      : m_callback(std::move(cb)) {}
 
   kj::Promise<void> calculate(CalculateContext context) override {
     auto fip = context.getParams().getFip();
@@ -54,40 +55,56 @@ public:
 
     KJ_REQUIRE(fip.getAtmnrs().size() == numAtoms, "AtomNumbers size mismatch");
 
-    auto nativePositions =
-        rgpot::types::adapt::capnp::convertPositionsFromCapnp(fip.getPos(),
-                                                              numAtoms);
-    auto nativeAtomTypes =
-        rgpot::types::adapt::capnp::convertAtomNumbersFromCapnp(
-            fip.getAtmnrs());
-    auto nativeBoxMatrix =
-        rgpot::types::adapt::capnp::convertBoxMatrixFromCapnp(fip.getBox());
+    // Extract flat arrays from capnp
+    std::vector<double> positions(numAtoms * 3);
+    auto capnpPos = fip.getPos();
+    for (size_t i = 0; i < numAtoms * 3; ++i) {
+      positions[i] = capnpPos[i];
+    }
 
-    auto [energy, forces] =
-        (*m_potential)(nativePositions, nativeAtomTypes, nativeBoxMatrix);
+    std::vector<int> atomicNrs(numAtoms);
+    auto capnpAtmnrs = fip.getAtmnrs();
+    for (size_t i = 0; i < numAtoms; ++i) {
+      atomicNrs[i] = capnpAtmnrs[i];
+    }
 
+    double box[9] = {};
+    auto capnpBox = fip.getBox();
+    for (size_t i = 0; i < 9 && i < capnpBox.size(); ++i) {
+      box[i] = capnpBox[i];
+    }
+
+    // Call the force callback
+    std::vector<double> forces(numAtoms * 3, 0.0);
+    double energy = 0.0;
+    m_callback(static_cast<long>(numAtoms), positions.data(), atomicNrs.data(),
+               forces.data(), &energy, box);
+
+    // Serialize result back to capnp
     auto result = context.getResults();
     auto pres = result.initResult();
     pres.setEnergy(energy);
 
     auto forcesList = pres.initForces(numAtoms * 3);
-    rgpot::types::adapt::capnp::populateForcesToCapnp(forcesList, forces);
+    for (size_t i = 0; i < numAtoms * 3; ++i) {
+      forcesList.set(i, forces[i]);
+    }
 
     return kj::READY_NOW;
   }
 
 private:
-  std::unique_ptr<rgpot::PotentialBase> m_potential;
+  ForceCallback m_callback;
 };
 
 } // anonymous namespace
 
-void startRpcServer(std::unique_ptr<rgpot::PotentialBase> pot,
-                    const std::string &host, uint16_t port) {
+void startRpcServer(ForceCallback callback, const std::string &host,
+                    uint16_t port) {
   spdlog::info("Starting Cap'n Proto RPC server on {}:{}", host, port);
 
-  capnp::EzRpcServer server(kj::heap<GenericPotImpl>(std::move(pot)), host,
-                             port);
+  capnp::EzRpcServer server(kj::heap<CallbackPotImpl>(std::move(callback)),
+                            host, port);
 
   auto &waitScope = server.getWaitScope();
   spdlog::info("Server ready on port {}. Ctrl+C to stop.", port);
@@ -101,71 +118,76 @@ void startRpcServer(std::unique_ptr<rgpot::PotentialBase> pot,
 namespace {
 
 /**
- * @class PooledPotImpl
- * @brief Cap'n Proto RPC server that dispatches across a pool of potentials.
- *
- * Incoming calculate() requests are assigned round-robin to the pool members.
- * Each pool member is guarded by its own mutex so concurrent RPC calls are
- * safe even though individual PotentialBase instances are not thread-safe.
+ * @class PooledCallbackPotImpl
+ * @brief Cap'n Proto RPC server dispatching across a pool of callbacks.
  */
-class PooledPotImpl final : public Potential::Server {
+class PooledCallbackPotImpl final : public Potential::Server {
 public:
-  explicit PooledPotImpl(
-      std::vector<std::unique_ptr<rgpot::PotentialBase>> pool)
-      : m_pool(std::move(pool)), m_mutexes(m_pool.size()),
+  explicit PooledCallbackPotImpl(std::vector<ForceCallback> pool)
+      : m_pool(std::move(pool)),
+        m_mutexes(m_pool.size()),
         m_next(0) {}
 
   kj::Promise<void> calculate(CalculateContext context) override {
-    // Round-robin selection
-    size_t idx =
-        m_next.fetch_add(1, std::memory_order_relaxed) % m_pool.size();
+    size_t idx = m_next.fetch_add(1, std::memory_order_relaxed) % m_pool.size();
 
     auto fip = context.getParams().getFip();
     const size_t numAtoms = fip.getPos().size() / 3;
 
-    KJ_REQUIRE(fip.getAtmnrs().size() == numAtoms,
-               "AtomNumbers size mismatch");
+    KJ_REQUIRE(fip.getAtmnrs().size() == numAtoms, "AtomNumbers size mismatch");
 
-    auto nativePositions =
-        rgpot::types::adapt::capnp::convertPositionsFromCapnp(fip.getPos(),
-                                                              numAtoms);
-    auto nativeAtomTypes =
-        rgpot::types::adapt::capnp::convertAtomNumbersFromCapnp(
-            fip.getAtmnrs());
-    auto nativeBoxMatrix =
-        rgpot::types::adapt::capnp::convertBoxMatrixFromCapnp(fip.getBox());
+    std::vector<double> positions(numAtoms * 3);
+    auto capnpPos = fip.getPos();
+    for (size_t i = 0; i < numAtoms * 3; ++i) {
+      positions[i] = capnpPos[i];
+    }
 
-    // Lock the selected pool member for the duration of the force call
+    std::vector<int> atomicNrs(numAtoms);
+    auto capnpAtmnrs = fip.getAtmnrs();
+    for (size_t i = 0; i < numAtoms; ++i) {
+      atomicNrs[i] = capnpAtmnrs[i];
+    }
+
+    double box[9] = {};
+    auto capnpBox = fip.getBox();
+    for (size_t i = 0; i < 9 && i < capnpBox.size(); ++i) {
+      box[i] = capnpBox[i];
+    }
+
+    std::vector<double> forces(numAtoms * 3, 0.0);
+    double energy = 0.0;
+
     std::lock_guard<std::mutex> lock(m_mutexes[idx]);
-    auto [energy, forces] =
-        (*m_pool[idx])(nativePositions, nativeAtomTypes, nativeBoxMatrix);
+    m_pool[idx](static_cast<long>(numAtoms), positions.data(), atomicNrs.data(),
+                forces.data(), &energy, box);
 
     auto result = context.getResults();
     auto pres = result.initResult();
     pres.setEnergy(energy);
 
     auto forcesList = pres.initForces(numAtoms * 3);
-    rgpot::types::adapt::capnp::populateForcesToCapnp(forcesList, forces);
+    for (size_t i = 0; i < numAtoms * 3; ++i) {
+      forcesList.set(i, forces[i]);
+    }
 
     return kj::READY_NOW;
   }
 
 private:
-  std::vector<std::unique_ptr<rgpot::PotentialBase>> m_pool;
+  std::vector<ForceCallback> m_pool;
   std::vector<std::mutex> m_mutexes;
   std::atomic<size_t> m_next;
 };
 
 } // anonymous namespace
 
-void startPooledRpcServer(
-    std::vector<std::unique_ptr<rgpot::PotentialBase>> pool,
-    const std::string &host, uint16_t port) {
+void startPooledRpcServer(std::vector<ForceCallback> pool,
+                          const std::string &host, uint16_t port) {
   spdlog::info("Starting pooled RPC gateway on {}:{} with {} instances", host,
                port, pool.size());
 
-  capnp::EzRpcServer server(
-      kj::heap<PooledPotImpl>(std::move(pool)), host, port);
+  capnp::EzRpcServer server(kj::heap<PooledCallbackPotImpl>(std::move(pool)),
+                            host, port);
 
   auto &waitScope = server.getWaitScope();
   spdlog::info("Gateway ready on port {}. Ctrl+C to stop.", port);

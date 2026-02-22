@@ -562,23 +562,22 @@ if get_option('with_metatomic')
 endif
 
 if get_option('with_serve')
-    # rgpot-compatible RPC serve mode: wraps any eOn potential as an rgpot
-    # PotentialBase and serves it over Cap'n Proto RPC.
+    # rgpot-compatible RPC serve mode: wraps any eOn potential and serves it
+    # over Cap'n Proto RPC using the rgpot Potentials.capnp schema.
+    # Only links capnp-rpc and the generated schema (ptlrpc); does NOT link
+    # rgpot types to avoid the AtomMatrix name collision with eOn's Eigen.h.
     serve_capnp_dep = dependency('capnp-rpc', required: true)
     rgpot_serve_opts = {
-        'with_rpc': true,
-        'with_eigen': true,
-        'pure_lib': false,
-        'with_rpc_client_only': false,
+        'with_rpc_client_only': true,
+        'pure_lib': true,
         'with_tests': false,
         'with_examples': false,
     }
     rgpot_proj = subproject('rgpot', default_options: rgpot_serve_opts)
-    rgpot_serve_dep = rgpot_proj.get_variable('rgpot_dep')
     ptlrpc_dep = rgpot_proj.get_variable('ptlrpc_dep')
     _args += ['-DWITH_SERVE_MODE']
     eonclib_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
-    _deps += [serve_capnp_dep, rgpot_serve_dep, ptlrpc_dep]
+    _deps += [serve_capnp_dep, ptlrpc_dep]
 endif
 
 _linkto += potentials
