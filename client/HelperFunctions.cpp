@@ -187,7 +187,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
 
   // Determine optimal rotation
   // Horn, J. Opt. Soc. Am. A, 1987
-  Eigen::Matrix3d m = r1.transpose() * r2;
+  Matrix3d m = r1.transpose() * r2;
 
   double sxx = m(0, 0);
   double sxy = m(0, 1);
@@ -199,7 +199,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
   double szy = m(2, 1);
   double szz = m(2, 2);
 
-  Eigen::Matrix4d n;
+  Matrix4d n;
   n.setZero();
   n(0, 1) = syz - szy;
   n(0, 2) = szx - sxz;
