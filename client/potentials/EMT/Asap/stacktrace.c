@@ -5,7 +5,9 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #if STACKTRACE == alpha
 #define USE_LADEBUG
