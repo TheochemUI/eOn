@@ -1,9 +1,8 @@
 [project]
 name = "eon"
-version = "2.10.1"
+version = "2.10.2"
 description = "Server component of eon project"
 authors = [
-    {name = "Henkelman Group", email = "contact@henkelmanlab.com"},
     {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
 ]
 dependencies = [
