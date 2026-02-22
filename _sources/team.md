@@ -9,7 +9,7 @@ myst:
 `eOn` is maintained by [Rohit Goswami](https://rgoswami.me) and the
 [Jónsson Group](https://hj.hi.is/researchgroup.html) at the University of
 Iceland.  For background on the project's history and relationship to the
-original UT Austin codebase, see
+UT Austin codebase, see
 [this post](https://rgoswami.me/posts/eon-acad-foss/).
 
 ## Active Contributors
@@ -21,14 +21,10 @@ original UT Austin codebase, see
 - Alejandro Pena Torres
 - Vilhjálmur Ásgeirsson
 
-### [Li Lei Group](https://faculty.sustech.edu.cn/lil33/en/)
-
-- SONG Zichen
-
 ## Historical Contributors (pre-v2.8)
 
 The Henkelman group were major contributors up to v2.8.  See
-[the original project page](https://theory.cm.utexas.edu/eon/) and
+[their project page](https://theory.cm.utexas.edu/eon/) and
 [this post](https://rgoswami.me/posts/eon-acad-foss/) for background.
 
 ### [Henkelman Group](https://theory.cm.utexas.edu/henkelman/) (UT Austin)
@@ -42,6 +38,10 @@ The Henkelman group were major contributors up to v2.8.  See
 - Juliana Duncan
 - Naman Katyal
 - Sung Hoon Jung
+
+### [Li Lei Group](https://faculty.sustech.edu.cn/lil33/en/)
+
+- SONG Zichen
 
 ### Other contributions
 
