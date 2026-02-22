@@ -568,7 +568,7 @@ if get_option('with_serve')
     rgpot_serve_opts = {
         'with_rpc': true,
         'with_eigen': true,
-        'pure_lib': true,
+        'pure_lib': false,
         'with_rpc_client_only': false,
         'with_tests': false,
         'with_examples': false,
@@ -577,7 +577,7 @@ if get_option('with_serve')
     rgpot_serve_dep = rgpot_proj.get_variable('rgpot_dep')
     ptlrpc_dep = rgpot_proj.get_variable('ptlrpc_dep')
     _args += ['-DWITH_SERVE_MODE']
-    eonclient_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
+    eonclib_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
     _deps += [serve_capnp_dep, rgpot_serve_dep, ptlrpc_dep]
 endif
 
