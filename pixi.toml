@@ -24,7 +24,7 @@ pip = ">=25.1.1,<26"
 pipx = ">=1.7.1,<2"
 numpy = ">=2.3.0,<3"
 compilers = ">=1.9.0,<2"
-fmt = ">=12,<13"
+fmt = ">=11,<13"
 spdlog = ">=1.16,<2"
 pkg-config = ">=0.29.2,<0.30"
 fortran-compiler = ">=1.10.0,<2"
@@ -62,6 +62,12 @@ dev-serve-mta = {features = ["serve", "metatomic", "develop"]}
 # vesin torch has a wheel issue with macos x86_64
 # no torch wheels for 2.9 onwards for non arm macos
 platforms = ["linux-64", "osx-arm64", "win-64"]
+
+[feature.metatomic.dependencies]
+# Torch 2.9 bundles fmt 11.2 internally.  Pin fmt to v11 so that pixi's
+# spdlog is compiled against the same fmt ABI as torch, preventing linker
+# errors from symbol mismatches between fmt v11 (torch) and fmt v12 (default).
+fmt = ">=11,<12"
 
 [feature.metatomic.pypi-dependencies]
 torch = ">=2.9, <2.10"
