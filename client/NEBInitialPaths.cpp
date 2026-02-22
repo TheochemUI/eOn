@@ -146,7 +146,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
     // Explicitly sync positions back to the path vector just to be safe
     path[i].setPositions(AtomMatrix::Map(idpp_objf->getPositions().data(),
-                                       path[i].numberOfAtoms(), 3));
+                                         path[i].numberOfAtoms(), 3));
   }
 
   SPDLOG_LOGGER_INFO(log, "IDPP path generation complete.");
