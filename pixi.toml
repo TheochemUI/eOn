@@ -56,6 +56,7 @@ nwchem = {features = ["nwchem"]}
 docs = {features = ["docs"]}
 rel = {features = ["metatomic", "release"]}
 serve = {features = ["serve"]}
+dev-serve-mta = {features = ["serve", "metatomic", "develop"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
