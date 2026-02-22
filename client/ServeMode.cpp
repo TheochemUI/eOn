@@ -29,8 +29,6 @@
 #include "ServeRpcServer.h"
 
 #include <algorithm>
-#include <atomic>
-#include <csignal>
 #include <sstream>
 #include <thread>
 #include <vector>
