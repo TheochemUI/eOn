@@ -208,11 +208,20 @@ using ChemGP
 pot = RpcPotential("localhost", 12345, atmnrs, box)
 E, F = ChemGP.calculate(pot, positions)
 
-# Use as a GP optimization oracle
-oracle = make_rpc_oracle(pot, n_atoms)
+# Use as a GP optimization oracle (gradient = -forces)
+oracle = make_rpc_oracle(pot)
 ```
 
 See the [ChemGP RPC tutorial](https://github.com/HaoZeke/ChemGP) for details.
+
+## Architecture Notes
+
+The serve mode uses a **ForceCallback** (flat-array `std::function`) interface
+internally, completely decoupling the eOn potential from the capnp server.
+This avoids a type collision between eOn's Eigen-based `AtomMatrix` and rgpot's
+custom `AtomMatrix` by never allowing both types to coexist in the same
+translation unit. The capnp schema code is compiled in a separate TU
+(`ServeRpcServer.cpp`) from the eOn potential wrapper (`ServeMode.cpp`).
 
 ## Command Reference
 
