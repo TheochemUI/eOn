@@ -23,6 +23,9 @@ jobs:
           cache-write: false
           activate-environment: true
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
       - name: Configure sccache
         uses: actions/github-script@v7
         with:
@@ -30,9 +33,9 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Install ASV and spyglass
+      - name: Install ASV
         shell: pixi run bash -e {0}
-        run: pip install asv asv-spyglass
+        run: pip install asv
 
       - name: Initialise ASV machine
         shell: pixi run bash -e {0}
@@ -95,9 +98,9 @@ jobs:
             --record-samples --quick
 
       # ── Compare ────────────────────────────────────────────────
+      # TODO: switch to `uvx asv-spyglass` once the labels feature is released
       - name: Compare results
         id: compare
-        shell: pixi run bash -e {0}
         run: |
           MACHINE=$(ls .asv/results/ | grep -v benchmarks.json | head -1)
           MAIN_SHORT="${{ steps.shas.outputs.main }}"
@@ -109,8 +112,9 @@ jobs:
             mkdir -p .asv/results
             echo "Benchmark comparison skipped: missing result files" > .asv/results/comparison.txt
           else
-            asv-spyglass compare "$BEFORE" "$AFTER" \
-              .asv/results/benchmarks.json > .asv/results/comparison.txt 2>&1 || true
+            uvx --quiet --from "asv-spyglass @ git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
+              asv-spyglass compare --label-before main --label-after pr \
+              "$BEFORE" "$AFTER" > .asv/results/comparison.txt 2>&1 || true
           fi
           echo "main_sha=${{ steps.shas.outputs.main }}" >> .asv/results/metadata.txt
           echo "pr_sha=${{ steps.shas.outputs.pr }}" >> .asv/results/metadata.txt
