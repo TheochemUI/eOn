@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2026-01-27T05:17:43+00:00" />
+    <meta property="article:modified_time" content="2026-02-22T04:10:07+00:00" />
     <title>Checklist &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="Tracking changes" href="tracking-changes.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Jan 27, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 22, 2026"/>
   </head>
   
   
@@ -470,6 +470,13 @@ document.write(`
   <section id="checklist">
 <h1>Checklist<a class="headerlink" href="#checklist" title="Link to this heading">#</a></h1>
 <ul class="simple">
+<li><p>[ ] Bump version in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> – this is the single source of truth.
+All other consumers (<code class="docutils literal notranslate"><span class="pre">docs/source/conf.py</span></code>, <code class="docutils literal notranslate"><span class="pre">client/get_version.py</span></code>,
+and the meson/CMake builds) read from it automatically.</p>
+<ul>
+<li><p>[ ] Also bump <code class="docutils literal notranslate"><span class="pre">version</span></code> in <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> to match.</p></li>
+</ul>
+</li>
 <li><p>[ ] Lockfiles updated</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uvx<span class="w"> </span>pixi-to-conda-lock<span class="w"> </span>pixi.lock<span class="w"> </span>--output<span class="w"> </span>condaEnvs
@@ -478,21 +485,15 @@ document.write(`
 <ul class="simple">
 <li><p>[ ] Changelog build and edited if necessary</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>r<span class="w"> </span>-e<span class="w"> </span>dev<span class="w"> </span>towncrier<span class="w"> </span>build<span class="w"> </span>--draft<span class="w"> </span>--version<span class="o">=</span><span class="m">2</span>.8.0<span class="w"> </span>--date<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>r<span class="w"> </span>-e<span class="w"> </span>dev<span class="w"> </span>towncrier<span class="w"> </span>build<span class="w"> </span>--draft<span class="w"> </span>--version<span class="o">=</span>X.Y.Z<span class="w"> </span>--date<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>[ ] Ensure the versions are set consistently</p>
-<ul>
-<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">eon</span></code> server</p></li>
-<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> C++ build</p></li>
-</ul>
-</li>
-<li><p>[ ] Generate release notes, and also the publication page, e.g. see <code class="docutils literal notranslate"><span class="pre">releases/v2.8.0</span></code></p></li>
+<li><p>[ ] Generate release notes, and also the publication page, e.g. see <code class="docutils literal notranslate"><span class="pre">releases/vX.Y.Z/</span></code></p></li>
 </ul>
 <p>To generate the archive since auto-generated archives of tags have <a class="reference external" href="https://github.blog/open-source/git/update-on-the-future-stability-of-source-code-archives-and-hashes/">security
-issues</a>..</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>v2.9.0<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-v2.9.0.tar.xz
+issues</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-vX.Y.Z.tar.xz
 </pre></div>
 </div>
 <p>Paper related tags do not need full release machinery, just a lightweight tag:</p>
@@ -568,7 +569,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Jan 27, 2026.
+  Last updated on Feb 22, 2026.
   <br/>
 </p>
   </div>
