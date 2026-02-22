@@ -79,9 +79,9 @@ std::vector<fs::path> readFilePaths(const std::string &listFilePath) {
   return paths;
 }
 
-Eigen::MatrixXd getDistanceMatrix(const Matter &m) {
+MatrixXd getDistanceMatrix(const Matter &m) {
   int natoms = m.numberOfAtoms();
-  Eigen::MatrixXd d(natoms, natoms);
+  MatrixXd d(natoms, natoms);
   AtomMatrix pos = m.getPositions();
   for (int i = 0; i < natoms; ++i) {
     for (int j = 0; j < natoms; ++j) {
@@ -111,8 +111,8 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
   std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
 
   // Pre-calculate endpoint distance matrices
-  Eigen::MatrixXd dInit = getDistanceMatrix(initImg);
-  Eigen::MatrixXd dFinal = getDistanceMatrix(finalImg);
+  MatrixXd dInit = getDistanceMatrix(initImg);
+  MatrixXd dFinal = getDistanceMatrix(finalImg);
 
   // Optimize intermediate images
   // Note: path[0] and path[nimgs+1] are fixed endpoints
@@ -122,7 +122,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
     double xi = static_cast<double>(i) / (nimgs + 1);
 
     // Linear interpolation of the distance matrix (The "Image Dependent" part)
-    Eigen::MatrixXd dTarget = (1.0 - xi) * dInit + xi * dFinal;
+    MatrixXd dTarget = (1.0 - xi) * dInit + xi * dFinal;
 
     // Create the IDPP Objective Function
     auto idpp_objf = std::make_shared<IDPPObjectiveFunction>(
