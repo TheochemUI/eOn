@@ -300,6 +300,12 @@ std::vector<ServeEndpoint> parseServeSpec(const std::string &spec) {
     std::string pot_str = token.substr(0, first_colon);
     std::string rest = token.substr(first_colon + 1);
 
+    // Trim parts after colon split
+    pot_str.erase(0, pot_str.find_first_not_of(" \t"));
+    pot_str.erase(pot_str.find_last_not_of(" \t") + 1);
+    rest.erase(0, rest.find_first_not_of(" \t"));
+    rest.erase(rest.find_last_not_of(" \t") + 1);
+
     // Lowercase the potential name
     std::transform(pot_str.begin(), pot_str.end(), pot_str.begin(), ::tolower);
 
@@ -317,8 +323,12 @@ std::vector<ServeEndpoint> parseServeSpec(const std::string &spec) {
     if (second_colon != std::string::npos) {
       // "host:port" format
       ep.host = rest.substr(0, second_colon);
-      ep.port = static_cast<uint16_t>(
-          std::stoi(rest.substr(second_colon + 1)));
+      ep.host.erase(0, ep.host.find_first_not_of(" \t"));
+      ep.host.erase(ep.host.find_last_not_of(" \t") + 1);
+      std::string port_str = rest.substr(second_colon + 1);
+      port_str.erase(0, port_str.find_first_not_of(" \t"));
+      port_str.erase(port_str.find_last_not_of(" \t") + 1);
+      ep.port = static_cast<uint16_t>(std::stoi(port_str));
     } else {
       // "port" only
       ep.host = "localhost";
