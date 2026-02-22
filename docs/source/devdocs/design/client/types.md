@@ -8,15 +8,28 @@ myst:
 # Type system
 
 `eOn` was written to use `Eigen` as the matrix multiplication library.
-Row-major storage is specified via the `eOnStorageOrder` constant in
-`client/Eigen.h`, which the `AtomMatrix` and `RotationMatrix` typedefs use.
-This keeps the layout explicit and in one place, without the old
-`EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro that silently changed every
-Eigen type.
+All matrices are row-major (`eOnStorageOrder = Eigen::RowMajor`), so that
+`.data()` yields `[x0, y0, z0, x1, y1, z1, ...]` as the Fortran potentials
+and `VectorXd::Map` round-trips expect.
 
-```{versionchanged} 2.x
-Replaced the `EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro with an explicit
-`eOnStorageOrder` constant used by the project typedefs.
+Instead of the `EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro (which would
+make eOn's Eigen types binary-incompatible with other libraries), `client/Eigen.h`
+provides explicit row-major type aliases (`MatrixXd`, `Matrix3d`, `Matrix4d`,
+`AtomMatrix`, `RotationMatrix`) alongside selective `using` declarations for
+vector types (`VectorXd`, `VectorXi`, `Vector3d`) that are unaffected by
+storage order.
+
+```{warning}
+New multi-dimensional Eigen matrix types in the codebase **must** use
+`eOnStorageOrder` or one of the existing row-major aliases.  Adding a bare
+`Eigen::MatrixXd` (column-major) will silently corrupt force projections and
+data mapping.
+```
+
+```{versionchanged} 2.11
+Removed the `EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro.  All matrix types
+are now explicitly row-major via aliases in `client/Eigen.h`, ensuring binary
+compatibility with other Eigen-based libraries.
 ```
 
 ## Header conventions

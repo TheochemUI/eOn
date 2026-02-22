@@ -1,3 +1,23 @@
+## [2.10.1](https://github.com/theochemui/eongit/tree/2.10.1) - 2026-02-18
+
+### Developer
+
+- Added a CI-NEB XTB regression test (`CINEBXTBTest.cpp`) that runs a 10-image
+  climbing-image NEB with GFN2-xTB on a 9-atom molecule.  The test completes in
+  under 2 seconds and guards against storage-order regressions that corrupt force
+  projections.
+
+### Fixed
+
+- Replaced the `EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro with explicit
+  row-major type aliases in `client/Eigen.h`.  The macro made eOn's Eigen types
+  binary-incompatible with other Eigen-based libraries; removing it without
+  updating bare `MatrixXd` types caused NEB force projections to silently corrupt
+  and the optimizer to diverge from the first step.
+- Use `datetime.timezone.utc` instead of `datetime.UTC` in `get_version.py` for
+  Python 3.10 compatibility (the `datetime.UTC` alias was added in 3.11).
+
+
 ## [v2.10.0](https://github.com/theochemui/eongit/tree/v2.10.0) - 2026-02-15
 
 ### Added

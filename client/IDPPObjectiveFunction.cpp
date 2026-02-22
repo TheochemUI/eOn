@@ -76,10 +76,9 @@ VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
   return VectorXd::Map(forces.data(), 3 * natoms) * -1.0;
 }
 
-Eigen::MatrixXd
-CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
+MatrixXd CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
   int natoms = m.numberOfAtoms();
-  Eigen::MatrixXd d(natoms, natoms);
+  MatrixXd d(natoms, natoms);
   auto pos = m.getPositions();
   for (int i = 0; i < natoms; ++i) {
     for (int j = 0; j < natoms; ++j) {
@@ -89,9 +88,9 @@ CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
   return d;
 }
 
-Eigen::MatrixXd
+MatrixXd
 CollectiveIDPPObjectiveFunction::getIDPPForces(const Matter &m,
-                                               const Eigen::MatrixXd &dTarget) {
+                                               const MatrixXd &dTarget) {
   int natoms = m.numberOfAtoms();
   AtomMatrix forces = AtomMatrix::Zero(natoms, 3);
   auto pos = m.getPositions();
@@ -129,7 +128,7 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
   for (size_t i = 1; i <= nImgs; ++i) {
     // Interpolate Target
     double xi = static_cast<double>(i) / (nImgs + 1);
-    Eigen::MatrixXd dTarget = (1.0 - xi) * dInit + xi * dFinal;
+    MatrixXd dTarget = (1.0 - xi) * dInit + xi * dFinal;
 
     rawForces[i] = getIDPPForces(path[i], dTarget);
 

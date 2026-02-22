@@ -23,8 +23,8 @@ TEST_CASE("TestCell", "[MatterTest]") {
   std::string confile("pos.con");
   m1->con2matter(confile);
 
-  Eigen::Matrix3d _cell;
-  Eigen::Matrix3d _cellInverse;
+  Matrix3d _cell;
+  Matrix3d _cellInverse;
   // clang-format off
     _cell << // Comma initialized
         25.0, 0.0, 0.0,
