@@ -11,11 +11,29 @@ env:
 
 jobs:
   benchmark:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: main
+            sha: ${{ github.event.pull_request.base.sha }}
+          - label: pr
+            sha: ${{ github.event.pull_request.head.sha }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Checkout target commit
+        run: |
+          mkdir -p /tmp/_bench_preserve
+          cp -r benchmarks/ /tmp/_bench_preserve/
+          cp asv.conf.json /tmp/_bench_preserve/
+          git checkout -f ${{ matrix.sha }}
+          git clean -fd
+          cp -r /tmp/_bench_preserve/benchmarks/ benchmarks/
+          cp /tmp/_bench_preserve/asv.conf.json asv.conf.json
 
       - uses: prefix-dev/setup-pixi@v0.8.10
         with:
@@ -23,8 +41,7 @@ jobs:
           cache-write: false
           activate-environment: true
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v5
 
       - name: Configure sccache
         uses: actions/github-script@v7
@@ -33,95 +50,82 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Install ASV
-        shell: pixi run bash -e {0}
-        run: pip install asv
-
-      - name: Initialise ASV machine
-        shell: pixi run bash -e {0}
-        run: asv machine --yes
-
-      - name: Record commit SHAs
-        id: shas
+      - name: Build
         run: |
-          echo "pr=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
-          echo "main=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+          pixi run bash -c "meson setup bbdir \
+            --prefix=$CONDA_PREFIX --libdir=lib \
+            --buildtype release --wipe 2>/dev/null \
+            || meson setup bbdir --prefix=$CONDA_PREFIX \
+            --libdir=lib --buildtype release"
+          pixi run meson install -C bbdir
 
-      # Save benchmark files from the PR before switching branches.
-      - name: Stash benchmark suite
+      - name: Run benchmarks
         run: |
-          cp -r benchmarks /tmp/benchmarks
-          cp asv.conf.json /tmp/asv.conf.json
-
-      # ── Benchmark main ──────────────────────────────────────────
-      - name: Build eonclient (main)
-        shell: pixi run bash -e {0}
-        run: |
-          git checkout -f ${{ steps.shas.outputs.main }}
-          git clean -fd
-          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release --wipe 2>/dev/null \
-            || meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
-          meson install -C bbdir
-
-      - name: Benchmark main
-        id: bench_main
-        continue-on-error: true
-        shell: pixi run bash -e {0}
-        run: |
-          rm -rf benchmarks asv.conf.json
-          cp -r /tmp/benchmarks benchmarks
-          cp /tmp/asv.conf.json asv.conf.json
-          asv run -E "existing:$(which python)" \
-            --set-commit-hash ${{ steps.shas.outputs.main }} \
+          pixi run bash -c "pip install asv && asv machine --yes"
+          pixi run asv run -E "existing:$(which python)" \
+            --set-commit-hash ${{ matrix.sha }} \
             --record-samples --quick
 
-      # ── Benchmark PR HEAD ───────────────────────────────────────
-      - name: Build eonclient (PR)
-        shell: pixi run bash -e {0}
-        run: |
-          git checkout -f ${{ steps.shas.outputs.pr }}
-          git clean -fd
-          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release --wipe 2>/dev/null \
-            || meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
-          meson install -C bbdir
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-${{ matrix.label }}
+          path: .asv/results/
+          retention-days: 7
 
-      - name: Benchmark PR
-        id: bench_pr
-        continue-on-error: true
-        shell: pixi run bash -e {0}
-        run: |
-          rm -rf benchmarks asv.conf.json
-          cp -r /tmp/benchmarks benchmarks
-          cp /tmp/asv.conf.json asv.conf.json
-          asv run -E "existing:$(which python)" \
-            --set-commit-hash ${{ steps.shas.outputs.pr }} \
-            --record-samples --quick
+  combine:
+    needs: benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astral-sh/setup-uv@v5
 
-      # ── Compare ────────────────────────────────────────────────
-      # TODO: switch to `uvx asv-spyglass` once the labels feature is released
-      - name: Compare results
-        id: compare
+      - name: Download main results
+        uses: actions/download-artifact@v4
+        with:
+          name: bench-main
+          path: results/
+
+      - name: Download PR results
+        uses: actions/download-artifact@v4
+        with:
+          name: bench-pr
+          path: results/
+
+      - name: Find result files and compare
         run: |
-          MACHINE=$(ls .asv/results/ | grep -v benchmarks.json | head -1)
-          MAIN_SHORT="${{ steps.shas.outputs.main }}"
-          PR_SHORT="${{ steps.shas.outputs.pr }}"
-          BEFORE=$(ls .asv/results/$MACHINE/${MAIN_SHORT:0:8}* 2>/dev/null | head -1)
-          AFTER=$(ls .asv/results/$MACHINE/${PR_SHORT:0:8}* 2>/dev/null | head -1)
-          if [[ -z "$BEFORE" || -z "$AFTER" ]]; then
-            echo "Benchmark comparison skipped: missing result files (before=${BEFORE:-<empty>}, after=${AFTER:-<empty>})"
-            mkdir -p .asv/results
-            echo "Benchmark comparison skipped: missing result files" > .asv/results/comparison.txt
-          else
-            uvx --quiet --from "asv-spyglass @ git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
-              asv-spyglass compare --label-before main --label-after pr \
-              "$BEFORE" "$AFTER" > .asv/results/comparison.txt 2>&1 || true
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          PR_SHA="${{ github.event.pull_request.head.sha }}"
+          BASE_PREFIX="${BASE_SHA:0:8}"
+          PR_PREFIX="${PR_SHA:0:8}"
+          BASE_FILE=$(find results -name "${BASE_PREFIX}*.json" | head -1)
+          PR_FILE=$(find results -name "${PR_PREFIX}*.json" | head -1)
+          BCONF=$(find results -name "benchmarks.json" | head -1)
+          echo "Base file: $BASE_FILE"
+          echo "PR file: $PR_FILE"
+          echo "Benchmarks: $BCONF"
+          BCONF_ARG=""
+          if [ -n "$BCONF" ]; then
+            BCONF_ARG="$BCONF"
           fi
-          echo "main_sha=${{ steps.shas.outputs.main }}" >> .asv/results/metadata.txt
-          echo "pr_sha=${{ steps.shas.outputs.pr }}" >> .asv/results/metadata.txt
+          # Exit code 1 = regressions detected (expected, not an error)
+          uvx --from "git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
+            asv-spyglass compare "$BASE_FILE" "$PR_FILE" $BCONF_ARG \
+            --label-before main --label-after pr \
+            > results/comparison.txt || true
+          if [ ! -s results/comparison.txt ]; then
+            echo "::error::asv-spyglass compare produced no output"
+            exit 1
+          fi
+          cat results/comparison.txt
 
-      - name: Upload benchmark results
+      - name: Write metadata
+        run: |
+          echo "main_sha=${{ github.event.pull_request.base.sha }}" > results/metadata.txt
+          echo "pr_sha=${{ github.event.pull_request.head.sha }}" >> results/metadata.txt
+
+      - name: Upload combined results
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-results
-          path: .asv/results/
+          path: results/
           retention-days: 7
