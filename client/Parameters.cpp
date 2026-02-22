@@ -459,6 +459,13 @@ Parameters::Parameters() {
   bgsd_options.grad2energy_convergence = 0.000001;
   bgsd_options.grad2force_convergence = 0.0001;
 
+  // [Serve] //
+  serve_options.host = "localhost";
+  serve_options.port = 12345;
+  serve_options.replicas = 1;
+  serve_options.gateway_port = 0;
+  serve_options.endpoints = "";
+
   // [CatLearn] //
   // No reasonable default for catlearn_options.path
   catlearn_options.model = "gp";
@@ -884,6 +891,20 @@ int Parameters::load(FILE *file) {
       _variant.energy_uncertainty =
           ini.GetValue("Metatomic", "variant_energy_uncertainty", "");
     }
+    // [Serve]
+    if (ini.FindKey("Serve") != -1) {
+      serve_options.host =
+          ini.GetValue("Serve", "host", serve_options.host);
+      serve_options.port = static_cast<uint16_t>(
+          ini.GetValueL("Serve", "port", serve_options.port));
+      serve_options.replicas = static_cast<size_t>(
+          ini.GetValueL("Serve", "replicas", serve_options.replicas));
+      serve_options.gateway_port = static_cast<uint16_t>(
+          ini.GetValueL("Serve", "gateway_port", serve_options.gateway_port));
+      serve_options.endpoints =
+          ini.GetValue("Serve", "endpoints", serve_options.endpoints);
+    }
+
     // GP_NEB only
     gp_surrogate_options.linear_path_always =
         ini.GetValueB("Surrogate", "gp_linear_path_always",
