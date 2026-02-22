@@ -617,6 +617,7 @@ if get_option('with_tests')
         ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
         ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
+        ['test_storage_order', 'StorageOrderTest.cpp', ''],
     ]
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
