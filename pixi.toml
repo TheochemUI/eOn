@@ -124,7 +124,7 @@ python -m http.server -d html
 xtb = "*"
 
 [feature.serve]
-platforms = ["linux-64", "osx-64", "osx-arm64"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [feature.serve.dependencies]
 capnproto = ">=1.0,<2"
