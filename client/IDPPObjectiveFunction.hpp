@@ -41,7 +41,7 @@ public:
   // Standard Interface Plumbing
   void setPositions(VectorXd x) override {
     // Map 3N vector back to Matter
-    matter->setPositions(MatrixXd::Map(x.data(), matter->numberOfAtoms(), 3));
+    matter->setPositions(AtomMatrix::Map(x.data(), matter->numberOfAtoms(), 3));
   }
 
   VectorXd getPositions() override {
@@ -95,7 +95,7 @@ public:
     int atoms = path[0].numberOfAtoms();
     // Skip endpoints (0 and N+1)
     for (size_t i = 1; i < path.size() - 1; ++i) {
-      path[i].setPositions(MatrixXd::Map(
+      path[i].setPositions(AtomMatrix::Map(
           x.segment(3 * atoms * (i - 1), 3 * atoms).data(), atoms, 3));
     }
   }

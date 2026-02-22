@@ -49,7 +49,7 @@ double NEBObjectiveFunction::getEnergy() {
 void NEBObjectiveFunction::setPositions(VectorXd x) {
   neb->movedAfterForceCall = true;
   for (long i = 1; i <= neb->numImages; i++) {
-    neb->path[i]->setPositions(MatrixXd::Map(
+    neb->path[i]->setPositions(AtomMatrix::Map(
         x.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms).data(), neb->atoms,
         3));
   }

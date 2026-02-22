@@ -189,7 +189,7 @@ AtomMatrix Matter::pbc(const AtomMatrix &diff) const {
 VectorXd Matter::pbcV(const VectorXd &diffVector) const {
   AtomMatrix pbcMatrix =
       pbc(AtomMatrix::Map(diffVector.data(), diffVector.size() / 3, 3));
-  return VectorXd::Map(pbcMatrix.data(), diffVector.size());
+  return VectorXd(VectorXd::Map(pbcMatrix.data(), diffVector.size()));
 }
 
 // Returns the maximum distance between two atoms in the Matter objects.

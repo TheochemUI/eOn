@@ -70,8 +70,8 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
   variance = nullptr;
-  MatrixXd positions = Eigen::Map<MatrixXd>(const_cast<double *>(R), nAtoms, 3);
-  MatrixXd boxx = Eigen::Map<MatrixXd>(const_cast<double *>(box), 3, 3);
+  AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
+  RotationMatrix boxx = RotationMatrix::Map(const_cast<double *>(box), 3, 3);
   Eigen::VectorXi atmnmrs =
       Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
   // XXX: NWChem refuses to perform SCF for anything but a molecule, so no box
@@ -81,7 +81,8 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
   atoms.attr("calc") = this->calc;
   // atoms.attr("center")();
   double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
-  MatrixXd py_force = py::cast<MatrixXd>(atoms.attr("get_forces")());
+  Eigen::MatrixXd py_force =
+      py::cast<Eigen::MatrixXd>(atoms.attr("get_forces")());
 
   // Populate the output parameters
   *U = py_e;
