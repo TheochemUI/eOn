@@ -9,7 +9,7 @@ myst:
 `eOn` is maintained by [Rohit Goswami](https://rgoswami.me) and the
 [Jónsson Group](https://hj.hi.is/researchgroup.html) at the University of
 Iceland.  For background on the project's history and relationship to the
-original UT Austin codebase, see
+older UT Austin codebase, see
 [this post](https://rgoswami.me/posts/eon-acad-foss/).
 
 ## Active Contributors
