@@ -11,14 +11,10 @@ project = "eOn"
 author = "the eOn developers"
 copyright = f"{datetime.now().date().year}, {author}"
 try:
-    with open("../../CHANGELOG.md", "r") as f:
-        # The first non-empty line should be like: ## [2.8.0] - 2025-09-04
-        for line in f:
-            if line.strip():
-                # Extract version from "## [2.8.0]" -> "2.8.0"
-                release = line.split("[")[1].split("]")[0]
-                break
-except FileNotFoundError:
+    import tomllib
+    with open("../../pyproject.toml", "rb") as f:
+        release = tomllib.load(f)["project"]["version"]
+except Exception:
     release = "0.0.0"
 
 # -- General configuration ---------------------------------------------------

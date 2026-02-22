@@ -1,3 +1,13 @@
+<!-- towncrier release notes start -->
+
+## [2.10.2](https://github.com/theochemui/eongit/tree/2.10.2) - 2026-02-22
+
+### Fixed
+
+- Fixed a significant performance regression in NEB calculations caused by incorrect Eigen matrix storage order mapping. Added a regression test and updated CI to automatically mark PRs as draft if benchmark regressions exceed 10x. ([#310](https://github.com/theochemui/eongit/issues/310))
+- Absorbed conda-forge Windows patches upstream: replace C99 VLA in XTBPot with `std::vector`, guard empty-string indexing in INIFile, decouple xtb from Fortran requirement, add Windows library search paths for libtorch/metatensor/vesin, guard POSIX headers, and replace shell commands in IMD with `std::filesystem`. ([#312](https://github.com/theochemui/eongit/issues/312))
+
+
 ## [2.10.1](https://github.com/theochemui/eongit/tree/2.10.1) - 2026-02-18
 
 ### Developer

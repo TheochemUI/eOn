@@ -98,12 +98,13 @@ if get_option('buildtype') != 'release'
 endif
 
 
-# Get the version and build date
+# Get the version, build date, and git hash
 version_script = find_program('get_version.py')
 version_output = run_command(version_script).stdout().strip()
 version_bits = version_output.split(',')
 version = version_bits[0]
 build_date = version_bits[1]
+git_hash = version_bits[2]
 architecture = host_machine.cpu_family()
 message(host_system)
 message(architecture)
@@ -117,6 +118,7 @@ configure_file(
         'BUILD_DATE': build_date,
         'OS_INFO': host_system,
         'ARCH': architecture,
+        'GIT_HASH': git_hash,
     },
 )
 

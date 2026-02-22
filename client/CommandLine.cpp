@@ -73,7 +73,8 @@ void commandLine(int argc, char **argv) {
     }
 
     if (result.count("version")) {
-      std::cout << "eonclient version r" << VERSION << std::endl;
+      std::cout << "eonclient version " << VERSION << " (" << GIT_HASH << ")"
+                << std::endl;
       std::cout << "          compiled " << BUILD_DATE << std::endl;
       exit(0);
     }
