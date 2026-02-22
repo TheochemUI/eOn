@@ -1,0 +1,45 @@
+name: Build and test serve mode
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+on: [push, pull_request]
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+
+jobs:
+  build_serve:
+    runs-on: ${{ matrix.os }}
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.10
+        with:
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          activate-environment: true
+          environments: >-
+            serve
+      - name: Configure sccache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Build with serve mode
+        shell: pixi run bash -e {0}
+        run: |
+          meson setup bbdir \
+            --prefix=$CONDA_PREFIX \
+            --libdir=lib \
+            -Dwith_serve=true \
+            -Dwith_tests=true
+          meson compile -C bbdir
+      - name: Run serve mode tests
+        shell: pixi run bash -e {0}
+        run: |
+          meson test -C bbdir test_serve_spec

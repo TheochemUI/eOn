@@ -1,0 +1,5 @@
+[wrap-git]
+directory=rgpot
+url=https://github.com/OmniPotentRPC/rgpot.git
+revision = head
+depth = 1

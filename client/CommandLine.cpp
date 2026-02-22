@@ -15,7 +15,12 @@
 #include "Potential.h"
 #include "version.h"
 
+#ifdef WITH_SERVE_MODE
+#include "ServeMode.h"
+#endif
+
 #include <cstdlib>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -62,7 +67,25 @@ void commandLine(int argc, char **argv) {
       "t,tolerance", "Distance tolerance",
       cxxopts::value<double>()->default_value("0.1"))(
       "p,potential", "The potential (e.g. qsc, lj, eam_al)",
-      cxxopts::value<std::string>())("h,help", "Print usage");
+      cxxopts::value<std::string>())
+#ifdef WITH_SERVE_MODE
+      ("serve", "Serve potential(s) over rgpot Cap'n Proto RPC. "
+                "Spec: 'potential:port' or 'pot1:port1,pot2:port2'",
+       cxxopts::value<std::string>())(
+      "serve-host", "Host to bind RPC server(s) to",
+      cxxopts::value<std::string>()->default_value("localhost"))(
+      "serve-port", "Port for single-potential serve mode (used with -p)",
+      cxxopts::value<uint16_t>()->default_value("12345"))(
+      "replicas", "Number of replicated server instances (used with -p)",
+      cxxopts::value<size_t>()->default_value("1"))(
+      "gateway", "Run a single gateway port backed by N pool instances "
+                 "(use with -p and --replicas)",
+      cxxopts::value<bool>()->default_value("false"))(
+      "config", "Config file for potential parameters (INI format, "
+                "e.g. [Metatomic] model_path=model.pt)",
+      cxxopts::value<std::string>())
+#endif
+      ("h,help", "Print usage");
 
   try {
     auto result = options.parse(argc, argv);
@@ -119,6 +142,68 @@ void commandLine(int argc, char **argv) {
       std::cerr << "Must specify a potential" << std::endl;
       exit(2);
     }
+
+#ifdef WITH_SERVE_MODE
+    // Load config file if provided (for potential-specific parameters
+    // like model_path, device, length_unit, etc.)
+    if (result.count("config")) {
+      auto config_path = result["config"].as<std::string>();
+      std::ifstream config_file(config_path);
+      if (!config_file.is_open()) {
+        std::cerr << "Cannot open config file: " << config_path << std::endl;
+        exit(2);
+      }
+      params.load(config_path);
+    }
+
+    // Handle --serve mode (does not require a con file)
+    if (result.count("serve")) {
+      auto spec = result["serve"].as<std::string>();
+      auto endpoints = parseServeSpec(spec);
+      if (endpoints.empty()) {
+        std::cerr << "No valid serve endpoints in spec: " << spec << std::endl;
+        exit(2);
+      }
+      serveMultiple(endpoints, params);
+      exit(0);
+    }
+
+    // Handle -p with serve flags (single potential serve mode)
+    if (pflag && !sflag && !mflag && !cflag &&
+        (result.count("serve-port") || result.count("replicas") ||
+         result.count("gateway"))) {
+      for (auto &ch : potential) {
+        ch = tolower(ch);
+      }
+      params.potential_options.potential =
+          magic_enum::enum_cast<PotType>(potential,
+                                         magic_enum::case_insensitive)
+              .value_or(PotType::UNKNOWN);
+      auto host = result["serve-host"].as<std::string>();
+      auto port = result["serve-port"].as<uint16_t>();
+      auto reps = result["replicas"].as<size_t>();
+      bool gw = result["gateway"].as<bool>();
+
+      if (gw) {
+        serveGateway(params, host, port, reps);
+      } else if (reps > 1) {
+        serveReplicated(params, host, port, reps);
+      } else {
+        serveMode(params, host, port);
+      }
+      exit(0);
+    }
+
+    // Config-driven serve (no -p or --serve, just --config with [Serve])
+    if (!pflag && !sflag && !mflag && !cflag &&
+        result.count("config") && !result.count("serve") &&
+        (!params.serve_options.endpoints.empty() ||
+         params.serve_options.gateway_port > 0 ||
+         params.serve_options.replicas > 1)) {
+      serveFromConfig(params);
+      exit(0);
+    }
+#endif
 
     if (!cflag) {
       for (auto &ch : potential) {
