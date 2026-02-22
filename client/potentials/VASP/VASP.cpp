@@ -14,7 +14,6 @@
 #include <errno.h>
 #include <iostream>
 #include <stdlib.h>
-#include <unistd.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -23,6 +22,7 @@
 #else
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #endif
 
 #include "VASP.h"

@@ -13,7 +13,9 @@
 #include "AMS_IO.h"
 #include <iostream>
 #include <string>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 AMS_IO::AMS_IO(const Parameters &p)
     : Potential(PotType::AMS_IO, p) {

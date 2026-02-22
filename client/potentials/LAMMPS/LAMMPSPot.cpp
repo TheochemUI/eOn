@@ -13,9 +13,11 @@
 #include "library.h"
 #include <map>
 #include <string.h>
+#ifndef _WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#endif
 
 // LAMMPS library inclusion
 #ifdef EONMPI
