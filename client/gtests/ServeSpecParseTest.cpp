@@ -9,8 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "catch2/catch_amalgamated.hpp"
 #include "ServeMode.h"
+#include "catch2/catch_amalgamated.hpp"
 
 TEST_CASE("parseServeSpec single endpoint", "[serve]") {
   auto eps = parseServeSpec("lj:12345");
