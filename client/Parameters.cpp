@@ -893,8 +893,7 @@ int Parameters::load(FILE *file) {
     }
     // [Serve]
     if (ini.FindKey("Serve") != -1) {
-      serve_options.host =
-          ini.GetValue("Serve", "host", serve_options.host);
+      serve_options.host = ini.GetValue("Serve", "host", serve_options.host);
       serve_options.port = static_cast<uint16_t>(
           ini.GetValueL("Serve", "port", serve_options.port));
       serve_options.replicas = static_cast<size_t>(
