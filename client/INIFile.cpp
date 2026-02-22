@@ -52,10 +52,10 @@ bool CIniFile::ReadFile(FILE *file) {
 
     string line(buff);
 
-    if (line[line.length() - 1] == '\n')
+    if (!line.empty() && line[line.length() - 1] == '\n')
       line = line.substr(0, line.length() - 1);
 #ifdef IS_WINDOWS
-    if (line[line.length() - 1] == '\r')
+    if (!line.empty() && line[line.length() - 1] == '\r')
       line = line.substr(0, line.length() - 1);
 #endif
 
