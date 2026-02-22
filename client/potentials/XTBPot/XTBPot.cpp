@@ -12,6 +12,7 @@
 
 #include "XTBPot.h"
 #include <cstddef>
+#include <vector>
 
 // Conversion factors
 // const double angstromToBohr = 1.8897261349925714;
@@ -32,7 +33,7 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
   double box_bohr[3 * 3];
 
   // Allocate memory for converted positions
-  double R_bohr[3 * N];
+  std::vector<double> R_bohr(3 * N);
 
   // Convert positions from Angstrom to Bohr
   for (long idx = 0; idx < 3 * N; ++idx) {
@@ -44,8 +45,8 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
 
   if (!initialized) {
     // First call: Create the molecule and load the Hamiltonian
-    mol = xtb_newMolecule(env, &intN, atomicNrs, R_bohr, &total_charge, &uhf,
-                          box_bohr, periodicity);
+    mol = xtb_newMolecule(env, &intN, atomicNrs, R_bohr.data(), &total_charge,
+                          &uhf, box_bohr, periodicity);
 
     switch (xtb_paramset) {
     case GFNMethod::GFNFF:
@@ -68,7 +69,7 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
     initialized = true;
   } else {
     // Subsequent calls: Only update coordinates and lattice
-    xtb_updateMolecule(env, mol, R_bohr, box_bohr);
+    xtb_updateMolecule(env, mol, R_bohr.data(), box_bohr);
   }
 
   xtb_singlepoint(env, mol, calc, res);
