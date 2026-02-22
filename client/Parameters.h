@@ -582,6 +582,15 @@ public:
     double grad2force_convergence;
   } bgsd_options;
 
+  // [Serve] //
+  struct serve_options_t {
+    string host;
+    uint16_t port;
+    size_t replicas;
+    uint16_t gateway_port; // 0 = disabled
+    string endpoints;      // "pot:port,pot:host:port,..." spec string
+  } serve_options;
+
   // [Debug] //
   struct debug_options_t {
     bool write_movies;

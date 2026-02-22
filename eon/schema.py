@@ -1350,6 +1350,31 @@ class RefineConfig(BaseModel):
     )
 
 
+class ServeConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    host: str = Field(
+        default="localhost",
+        description="Hostname to bind serve mode RPC servers to.",
+    )
+    port: int = Field(
+        default=12345,
+        description="TCP port for single-potential or replicated serve mode.",
+    )
+    replicas: int = Field(
+        default=1,
+        description="Number of replicated server instances. In gateway mode, this is the pool size.",
+    )
+    gateway_port: int = Field(
+        default=0,
+        description="If > 0, start a single gateway on this port backed by a pool of 'replicas' potential instances dispatched round-robin. Set to 0 to disable gateway mode.",
+    )
+    endpoints: str = Field(
+        default="",
+        description="Multi-model serve spec: comma-separated 'potential:port' or 'potential:host:port' entries. When set, overrides single-potential serve.",
+    )
+
+
 class DebugConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -1866,6 +1891,7 @@ class Config(BaseModel):
     distributed_replica: DistributedReplicaConfig
     gprdimer: GPRDimerConfig
     debug: DebugConfig
+    serve: ServeConfig
 
     @validator("communicator")
     def check_communicator(cls, v, values):
