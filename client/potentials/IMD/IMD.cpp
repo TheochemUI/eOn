@@ -12,14 +12,21 @@
 
 #include <cstdio>
 #include <errno.h>
+#include <filesystem>
 #include <iostream>
 #include <stdlib.h>
 
 #include "IMD.h"
 
 void IMD::cleanMemory(void) {
-  system("rm -f imd_eon.out*");
-  system("rm -f imd_eon.in.conf");
+  std::error_code ec;
+  for (auto &entry : std::filesystem::directory_iterator(".", ec)) {
+    auto fname = entry.path().filename().string();
+    if (fname.rfind("imd_eon.out", 0) == 0) {
+      std::filesystem::remove(entry.path(), ec);
+    }
+  }
+  std::filesystem::remove("imd_eon.in.conf", ec);
   return;
 }
 
@@ -29,7 +36,11 @@ void IMD::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
   variance = nullptr;
   writeConfIMD(N, R, atomicNrs, box);
+#ifdef _WIN32
+  system("imd_eon -p imd_eon.in.param > NUL");
+#else
   system("imd_eon -p imd_eon.in.param > /dev/null");
+#endif
   readForceIMD(N, F, U);
   return;
 }
