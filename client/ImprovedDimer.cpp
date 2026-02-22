@@ -328,7 +328,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       // http://doi.org/10.1021/ct501155k
       if (params.dimer_options.remove_rotation) {
         x1->setPositionsV(x1_r);
-        rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+        rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3),
+                       x1);
         x1_r = x1->getPositionsV();
         tau = x1_r - x0_r;
         tau.normalize();

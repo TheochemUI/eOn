@@ -59,10 +59,8 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
                        double *F, double *U, double *variance,
                        const double *box) {
   variance = nullptr;
-  AtomMatrix positions =
-      AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
-  RotationMatrix boxx =
-      RotationMatrix::Map(const_cast<double *>(box), 3, 3);
+  AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
+  RotationMatrix boxx = RotationMatrix::Map(const_cast<double *>(box), 3, 3);
   Eigen::VectorXi atmnmrs =
       Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
   py::object atoms = this->ase.attr("Atoms")(
