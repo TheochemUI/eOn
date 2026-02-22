@@ -20,7 +20,7 @@ jobs:
         with:
           name: benchmark-results
           path: results
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event_run.id || github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Read results
@@ -34,6 +34,19 @@ jobs:
           echo "table<<EOF" >> "$GITHUB_OUTPUT"
           echo "$TABLE" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
+
+          # Check for 10x regression
+          REGRESSION="false"
+          while read -r line; do
+            if [[ "$line" =~ \|.*\|.*\|.*\|[[:space:]]*([0-9.]+)[[:space:]]*\| ]]; then
+              RATIO="${BASH_REMATCH[1]}"
+              if (( $(echo "$RATIO > 10.0" | bc -l) )); then
+                REGRESSION="true"
+                echo "Critical regression detected: ratio $RATIO"
+              fi
+            fi
+          done <<< "$TABLE"
+          echo "regression=$REGRESSION" >> "$GITHUB_OUTPUT"
 
       - name: Find associated PR
         id: pr
@@ -50,6 +63,27 @@ jobs:
               return;
             }
             core.setOutput('number', data.items[0].number);
+            core.setOutput('node_id', data.items[0].node_id);
+
+      - name: Convert PR to draft on critical regression
+        if: steps.data.outputs.regression == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prId = '${{ steps.pr.outputs.node_id }}';
+            const query = `
+              mutation($id: ID!) {
+                convertPullRequestToDraft(input: {pullRequestId: $id}) {
+                  pullRequest {
+                    number
+                    isDraft
+                  }
+                }
+              }
+            `;
+            await github.graphql(query, { id: prId });
+            console.log(`PR ${{ steps.pr.outputs.number }} converted to draft due to performance regression.`);
 
       - name: Post PR comment
         uses: actions/github-script@v7

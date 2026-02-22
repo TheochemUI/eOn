@@ -70,10 +70,10 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
   variance = nullptr;
-  Eigen::MatrixXd positions =
-      Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(R), nAtoms, 3);
-  Eigen::MatrixXd boxx =
-      Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(box), 3, 3);
+  AtomMatrix positions =
+      AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
+  RotationMatrix boxx =
+      RotationMatrix::Map(const_cast<double *>(box), 3, 3);
   Eigen::VectorXi atmnmrs =
       Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
   // XXX: NWChem refuses to perform SCF for anything but a molecule, so no box
