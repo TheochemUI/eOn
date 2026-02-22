@@ -14,7 +14,9 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <time.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 MPIPot::MPIPot(const Parameters &p)
     : Potential(p) {

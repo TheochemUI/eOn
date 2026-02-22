@@ -5,9 +5,7 @@ cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
 use_fortran = false
-if get_option('with_fortran') or get_option('with_xtb') or get_option(
-    'with_cuh2',
-)
+if get_option('with_fortran') or get_option('with_cuh2')
     use_fortran = true
     add_languages('fortran', required: true)
     fc = meson.get_compiler('fortran')
@@ -324,13 +322,10 @@ if get_option('with_ams')
 endif
 
 if get_option('with_xtb')
-    # Try finding system 'xtb'.
-    # If not found, look for 'xtb' in subprojects/ and use the 'xtb_dep_static' variable from it.
-    xtb_dep = dependency(
-        'xtb',
-        required: true,
-        fallback: ['xtb', 'xtb_dep_static'],
-    )
+    # Try finding system 'xtb' via pkg-config or cmake.
+    # Users who need to build xtb from source can place it in subprojects/
+    # and Meson's implicit fallback will find it.
+    xtb_dep = dependency('xtb', required: true)
 
     _deps += [xtb_dep]
     subdir('potentials/XTBPot')
@@ -431,9 +426,12 @@ if get_option('with_metatomic')
 
 
     lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
+    # On Windows, torch DLLs live in <prefix>/bin not <prefix>/lib
+    LIB_TORCH_BIN_PATH = LIB_TORCH_PATH / 'bin'
+    lib_torch_dirs = is_windows ? [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH] : [LIB_TORCH_LIB_PATH]
     tdeps = []
     foreach lib_name : lib_torch_list
-        tdeps += cppc.find_library(lib_name, dirs: [LIB_TORCH_LIB_PATH])
+        tdeps += cppc.find_library(lib_name, dirs: lib_torch_dirs)
     endforeach
 
     torch_inc_args = []
@@ -503,21 +501,41 @@ if get_option('with_metatomic')
         )
         # Try system dependency() first (pkg-config / cmake), fall back to find_library
         # xref: https://github.com/metatensor/metatensor/issues/930
+        # On Windows (MSVC), static libraries are often prefixed with 'lib'
         vesin_dep = dependency('vesin', required: false)
         if not vesin_dep.found()
             vesin_dep = cppc.find_library('vesin', required: false)
         endif
+        if not vesin_dep.found() and is_windows
+            vesin_dep = cppc.find_library('libvesin', required: false)
+        endif
         mts_dep = dependency('metatensor_torch', required: false)
         if not mts_dep.found()
+            mts_dep = dependency('metatensor-torch', required: false)
+        endif
+        if not mts_dep.found()
+            mts_dep = dependency('metatensor_torch', method: 'cmake', required: false)
+        endif
+        if not mts_dep.found()
+            # Manual find_library fallback
+            _ms_lib = is_windows ? 'lib' : ''
             mts_dep = [
-                cppc.find_library('metatensor'),
-                cppc.find_library('metatensor_torch'),
-                cppc.find_library('metatomic_torch'),
+                cppc.find_library(_ms_lib + 'metatensor'),
+                cppc.find_library(_ms_lib + 'metatensor_torch'),
+                cppc.find_library(_ms_lib + 'metatomic_torch'),
             ]
         else
+            mta_dep = dependency('metatomic_torch', required: false)
+            if not mta_dep.found()
+                mta_dep = dependency('metatomic-torch', required: false)
+            endif
+            if not mta_dep.found()
+                _ms_lib = is_windows ? 'lib' : ''
+                mta_dep = cppc.find_library(_ms_lib + 'metatomic_torch')
+            endif
             mts_dep = [
                 mts_dep,
-                dependency('metatomic_torch'),
+                mta_dep,
             ]
         endif
     endif
