@@ -561,6 +561,26 @@ if get_option('with_metatomic')
     _args += ['-DWITH_METATOMIC']
 endif
 
+if get_option('with_serve')
+    # rgpot-compatible RPC serve mode: wraps any eOn potential as an rgpot
+    # PotentialBase and serves it over Cap'n Proto RPC.
+    serve_capnp_dep = dependency('capnp-rpc', required: true)
+    rgpot_serve_opts = {
+        'with_rpc': true,
+        'with_eigen': true,
+        'pure_lib': true,
+        'with_rpc_client_only': false,
+        'with_tests': false,
+        'with_examples': false,
+    }
+    rgpot_proj = subproject('rgpot', default_options: rgpot_serve_opts)
+    rgpot_serve_dep = rgpot_proj.get_variable('rgpot_dep')
+    ptlrpc_dep = rgpot_proj.get_variable('ptlrpc_dep')
+    _args += ['-DWITH_SERVE_MODE']
+    eonclient_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
+    _deps += [serve_capnp_dep, rgpot_serve_dep, ptlrpc_dep]
+endif
+
 _linkto += potentials
 
 # --------------------- Library
@@ -648,6 +668,9 @@ if get_option('with_tests')
     if get_option('with_xtb')
         test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
         test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb']]
+    endif
+    if get_option('with_serve')
+        test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif
     foreach test : test_array
         test(
