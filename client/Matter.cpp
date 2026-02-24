@@ -543,122 +543,79 @@ void Matter::matter2xyz(std::string filename,
   fclose(file);
 }
 
-// Print atomic coordinates to a .con file
-bool Matter::matter2con(std::string filename, bool append) {
-  bool state;
-  FILE *file;
-  int pos = filename.find_last_of('.');
-  if (filename.compare(pos + 1, 3, "con")) {
-    filename += ".con";
-  };
-  if (append) {
-    file = fopen(filename.c_str(), "ab");
-  } else {
-    file = fopen(filename.c_str(), "wb");
-  }
-  state = matter2con(file);
-  fclose(file);
-  return (state);
-}
-
-bool Matter::matter2con(FILE *file) {
-  long int i;
-  int j;
-  long int Nfix = 0;  // Nfix to store the number of fixed atoms
-  int Ncomponent = 0; // used to store the number of components (eg water: two
-                      // components H and O)
-  int first[MAXC]; // to store the position of the first atom of each component
-                   // plus at the end the total number of atoms
-  double mass[MAXC];
-  long atomicNrs[MAXC];
-  first[0] = 0;
-
-  if (usePeriodicBoundaries) {
-    applyPeriodicBoundary(); // Transform the coordinate to use the minimum
-                             // image convention.
-  }
-
-  if (numberOfAtoms() > 0) {
-    if (getFixed(0))
-      Nfix = 1; // count the number of fixed atoms
-    mass[0] = getMass(0);
-    atomicNrs[0] = getAtomicNr(0);
-  };
-  j = 0;
-  for (i = 1; i < numberOfAtoms(); i++) {
-    if (getFixed(i))
-      Nfix++; // count the number of fixed atoms
-    if (getAtomicNr(i) !=
-        atomicNrs[j]) { // check if there is a second component
-      j++;
-      if (j >= MAXC) {
-        SPDLOG_LOGGER_ERROR(m_log,
-                            "Does not support more than {} components and the "
-                            "atoms must be ordered by component.",
-                            MAXC);
-        return false;
-      };
-      mass[j] = getMass(i);
-      atomicNrs[j] = getAtomicNr(i);
-      first[j] = i;
-    }
-  }
-  first[j + 1] = numberOfAtoms();
-  Ncomponent = j + 1;
-
-  fputs(headerCon1, file);
-  fputs(headerCon2, file);
-  double lengths[3];
+std::pair<std::array<double, 3>, std::array<double, 3>>
+Matter::cell_to_lengths_angles() const {
+  std::array<double, 3> lengths;
   lengths[0] = cell.row(0).norm();
   lengths[1] = cell.row(1).norm();
   lengths[2] = cell.row(2).norm();
-  fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
-  double angles[3];
+  std::array<double, 3> angles;
   angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
-              180 / helper_functions::pi;
+              180.0 / helper_functions::pi;
   angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
-              180 / helper_functions::pi;
+              180.0 / helper_functions::pi;
   angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
-              180 / helper_functions::pi;
-  fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-  fputs(headerCon5, file);
-  fputs(headerCon6, file);
+              180.0 / helper_functions::pi;
+  return {lengths, angles};
+}
 
-  fprintf(file, "%d\n", Ncomponent);
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%d ", first[j + 1] - first[j]);
+// Print atomic coordinates to a .con file
+bool Matter::matter2con(std::string filename, bool append) {
+  int pos = filename.find_last_of('.');
+  if (filename.compare(pos + 1, 3, "con")) {
+    filename += ".con";
   }
-  fprintf(file, "\n");
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%f ", mass[j]);
+
+  if (usePeriodicBoundaries) {
+    applyPeriodicBoundary();
   }
-  fprintf(file, "\n");
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
-    fprintf(file, "Coordinates of Component %d\n", j + 1);
-    for (i = first[j]; i < first[j + 1]; i++) {
-      fprintf(file, "%22.17f %22.17f %22.17f %d %4ld\n", getPosition(i, 0),
-              getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
+
+  auto [lengths, angles_deg] = cell_to_lengths_angles();
+
+  // Strip trailing newlines from header buffers for readcon
+  auto strip_nl = [](const char *s) -> std::string {
+    std::string str(s);
+    while (!str.empty() && (str.back() == '\n' || str.back() == '\r'))
+      str.pop_back();
+    return str;
+  };
+
+  readcon::ConFrameBuilder builder(
+      {lengths[0], lengths[1], lengths[2]},
+      {angles_deg[0], angles_deg[1], angles_deg[2]},
+      {strip_nl(headerCon1), strip_nl(headerCon2)},
+      {strip_nl(headerCon5), strip_nl(headerCon6)});
+
+  for (long i = 0; i < numberOfAtoms(); i++) {
+    builder.add_atom(atomicNumber2symbol(getAtomicNr(i)), getPosition(i, 0),
+                     getPosition(i, 1), getPosition(i, 2), getFixed(i) != 0,
+                     static_cast<uint64_t>(i), getMass(i));
+  }
+
+  auto frame = builder.build();
+  std::vector<readcon::ConFrame> frames;
+  if (append) {
+    try {
+      frames = readcon::read_all_frames(filename);
+    } catch (...) {
+      // File doesn't exist yet, start fresh
     }
   }
+  frames.push_back(std::move(frame));
+  readcon::ConFrameWriter writer(filename, 17);
+  writer.extend(frames);
   return true;
 }
 
-// Load atomic coordinates from a .con file via readcon-core
+// Load atomic coordinates from a .con file via readcon-core (mmap reader)
 bool Matter::con2matter(std::string filename) {
-  // Add the .con extension to filename if it is not already there.
   int pos = filename.find_last_of('.');
   if (filename.compare(pos + 1, 3, "con")) {
     filename += ".con";
   }
   try {
-    readcon::ConFrameIterator frames(filename);
-    auto it = frames.begin();
-    if (!(it != frames.end())) {
-      SPDLOG_LOGGER_ERROR(m_log, "No frames found in {}", filename);
-      return false;
-    }
-    return con2matter(*it);
+    auto frame = readcon::read_first_frame(filename);
+    return con2matter(frame);
   } catch (const std::exception &e) {
     SPDLOG_LOGGER_ERROR(m_log, "Failed to read {}: {}", filename, e.what());
     return false;
@@ -848,267 +805,70 @@ AtomMatrix Matter::getAccelerations() {
 Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const { return masses; }
 
 bool Matter::matter2convel(std::string filename) {
-  bool state;
-  FILE *file;
   int pos = filename.find_last_of('.');
   if (filename.compare(pos + 1, 6, "convel")) {
     filename += ".convel";
   }
-  file = fopen(filename.c_str(), "w");
-  state = matter2convel(file);
-  fclose(file);
-  return (state);
-}
-
-bool Matter::matter2convel(FILE *file) {
-  long int i;
-  int j;
-  long int Nfix = 0;  // Nfix to store the number of fixed atoms
-  int Ncomponent = 0; // used to store the number of components (eg water: two
-                      // components H and O)
-  int first[MAXC]; // to store the position of the first atom of each component
-                   // plus at the end the total number of atoms
-  double mass[MAXC];
-  long atomicNrs[MAXC];
-  first[0] = 0;
 
   if (usePeriodicBoundaries) {
-    applyPeriodicBoundary(); // Transform the coordinate to use the minimum
-                             // image convention.
+    applyPeriodicBoundary();
   }
 
-  if (numberOfAtoms() > 0) {
-    if (getFixed(0))
-      Nfix = 1; // count the number of fixed atoms
-    mass[0] = getMass(0);
-    atomicNrs[0] = getAtomicNr(0);
-  }
-  j = 0;
-  for (i = 1; i < numberOfAtoms(); i++) {
-    if (getFixed(i))
-      Nfix++; // count the number of fixed atoms
-    if (getAtomicNr(i) !=
-        atomicNrs[j]) { // check if there is a second component
-      j++;
-      if (j >= MAXC) {
-        SPDLOG_LOGGER_ERROR(m_log,
-                            "Does not support more than {} components and the "
-                            "atoms must be ordered by component.",
-                            MAXC);
-        return false;
-      }
-      mass[j] = getMass(i);
-      atomicNrs[j] = getAtomicNr(i);
-      first[j] = i;
-    }
-  }
-  first[j + 1] = numberOfAtoms();
-  Ncomponent = j + 1;
+  auto [lengths, angles_deg] = cell_to_lengths_angles();
 
-  fputs(headerCon1, file);
-  fputs(headerCon2, file);
-  double lengths[3];
-  lengths[0] = cell.row(0).norm();
-  lengths[1] = cell.row(1).norm();
-  lengths[2] = cell.row(2).norm();
-  fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
-  double angles[3];
-  angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
-              180 / helper_functions::pi;
-  angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
-              180 / helper_functions::pi;
-  angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
-              180 / helper_functions::pi;
-  fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-  fputs(headerCon5, file);
-  fputs(headerCon6, file);
+  auto strip_nl = [](const char *s) -> std::string {
+    std::string str(s);
+    while (!str.empty() && (str.back() == '\n' || str.back() == '\r'))
+      str.pop_back();
+    return str;
+  };
 
-  fprintf(file, "%d\n", Ncomponent);
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%d ", first[j + 1] - first[j]);
+  readcon::ConFrameBuilder builder(
+      {lengths[0], lengths[1], lengths[2]},
+      {angles_deg[0], angles_deg[1], angles_deg[2]},
+      {strip_nl(headerCon1), strip_nl(headerCon2)},
+      {strip_nl(headerCon5), strip_nl(headerCon6)});
+
+  for (long i = 0; i < numberOfAtoms(); i++) {
+    builder.add_atom_with_velocity(
+        atomicNumber2symbol(getAtomicNr(i)), getPosition(i, 0),
+        getPosition(i, 1), getPosition(i, 2), getFixed(i) != 0,
+        static_cast<uint64_t>(i), getMass(i), velocities(i, 0),
+        velocities(i, 1), velocities(i, 2));
   }
-  fprintf(file, "\n");
-  for (j = 0; j < Ncomponent; j++) {
-    // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the
-    // mass units
-    fprintf(file, "%f ", mass[j]);
-  }
-  fprintf(file, "\n");
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
-    fprintf(file, "Coordinates of Component %d\n", j + 1);
-    for (i = first[j]; i < first[j + 1]; i++) {
-      fprintf(file, "%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", getPosition(i, 0),
-              getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
-    }
-  }
-  fprintf(file, "\n");
-  for (j = 0; j < Ncomponent; j++) {
-    fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
-    fprintf(file, "Velocities of Component %d\n", j + 1);
-    for (i = first[j]; i < first[j + 1]; i++) {
-      fprintf(file, "%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", velocities(i, 0),
-              velocities(i, 1), velocities(i, 2), getFixed(i), i);
-    }
-  }
+
+  auto frame = builder.build();
+  readcon::ConFrameWriter writer(filename, 6);
+  std::vector<readcon::ConFrame> frames;
+  frames.push_back(std::move(frame));
+  writer.extend(frames);
   return true;
 }
 
 bool Matter::convel2matter(std::string filename) {
-  bool state;
-  FILE *file;
-  // Add the .con extension to filename if it is not already there.
   int pos = filename.find_last_of('.');
   if (filename.compare(pos + 1, 3, "con")) {
     filename += ".con";
   }
-  file = fopen(filename.c_str(), "rb");
-  if (!file) {
-    SPDLOG_LOGGER_ERROR(m_log, "File {} was not found.", filename);
-    return (false);
-  }
-  state = convel2matter(file);
-  fclose(file);
-  return (state);
-}
-
-bool Matter::convel2matter(FILE *file) {
-  char line[255]; // Temporary string of character to read from the file.
-  fgets(headerCon1, sizeof(line), file);
-
-  //    if (strchr(headerCon1,'\r')) {
-  //        /* Files created on Windows or on Mac with Excell have carriage
-  //        returns (\r) instead of or along with the new line charater (\n). C
-  //        recognises only the \n as the end of line. */ cerr << "A carriage
-  //        return ('\\r') has been detected. To work correctly, new lines
-  //        should be indicated by the new line character (\\n)."; return false;
-  //        // return false for error
-  //    }
-
-  long int i;
-  int j;
-
-  fgets(headerCon2, sizeof(line), file);
-
-  double lengths[3];
-  // The third line contains the length of the periodic cell
-  fgets(line, sizeof(line), file);
-  sscanf(line, "%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
-
-  double angles[3];
-  fgets(headerCon4, sizeof(line), file);
-  // The fourth line contains the angles of the cell vectors
-  sscanf(headerCon4, "%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
-
-  if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-    cell(0, 0) = lengths[0];
-    cell(1, 1) = lengths[1];
-    cell(2, 2) = lengths[2];
-  } else {
-    angles[0] *= helper_functions::pi / 180.0;
-    angles[1] *= helper_functions::pi / 180.0;
-    angles[2] *= helper_functions::pi / 180.0;
-
-    cell(0, 0) = 1.0;
-    cell(1, 0) = cos(angles[0]);
-    cell(1, 1) = sin(angles[0]);
-    cell(2, 0) = cos(angles[1]);
-    cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
-
-    cell(0, 0) *= lengths[0];
-    cell(1, 0) *= lengths[1];
-    cell(1, 1) *= lengths[1];
-    cell(2, 0) *= lengths[2];
-    cell(2, 1) *= lengths[2];
-    cell(2, 2) *= lengths[2];
-  }
-  cellInverse = cell.inverse();
-
-  fgets(headerCon5, sizeof(line), file);
-  fgets(headerCon6, sizeof(line), file);
-
-  fgets(line, sizeof(line), file);
-  int Ncomponent; // Number of components or different types of atoms. For
-                  // instance H2O has two components (H and O).
-  if (sscanf(line, "%d", &Ncomponent) == 0) {
-    SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
-                              "component is assumed instead");
-    Ncomponent = 1;
-  }
-  if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    SPDLOG_LOGGER_ERROR(
-        m_log,
-        "con2atoms doesn't support more that {} components or less than 1",
-        MAXC);
+  try {
+    auto frame = readcon::read_first_frame(filename);
+    bool ok = con2matter(frame);
+    if (!ok)
+      return false;
+    if (frame.has_velocities()) {
+      const auto &atoms = frame.atoms();
+      for (size_t i = 0; i < atoms.size(); ++i) {
+        setVelocity(i, 0, atoms[i].vx);
+        setVelocity(i, 1, atoms[i].vy);
+        setVelocity(i, 2, atoms[i].vz);
+      }
+    }
+    return true;
+  } catch (const std::exception &e) {
+    SPDLOG_LOGGER_ERROR(m_log, "Failed to read convel {}: {}", filename,
+                        e.what());
     return false;
   }
-  /* to store the position of the
-      first atom of each element 'MAXC+1': the last element is used to store the
-     total number of atom.*/
-  long int first[MAXC + 1];
-  long int Natoms = 0;
-  first[0] = 0;
-
-  // Now we want to know the number of atom of each type. Ex with H2O, two
-  // hydrogens and one oxygen
-  for (j = 0; j < Ncomponent; j++) {
-    fscanf(file, "%ld", &Natoms);
-    first[j + 1] = Natoms + first[j];
-  }
-
-  fgets(line, sizeof(line), file); // Discard the rest of the line
-  // Set the total number of atoms, and allocates memory
-  resize(first[Ncomponent]);
-  double mass[MAXC];
-  for (j = 0; j < Ncomponent; j++) {
-    // Now we want to know the number of atom of each type. Ex with
-    // H2O, two hydrogens and one oxygen
-    fscanf(file, "%lf", &mass[j]);
-    // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
-  }
-
-  fgets(line, sizeof(line), file); // discard rest of the line
-  int atomicNr;
-  int fixed;
-  double x, y, z;
-  for (j = 0; j < Ncomponent; j++) {
-    char symbol[3];
-    fgets(line, sizeof(line), file);
-    sscanf(line, "%2s\n", symbol);
-    atomicNr = symbol2atomicNumber(symbol);
-    fgets(line, sizeof(line), file); // skip one line
-    for (i = first[j]; i < first[j + 1]; i++) {
-      setMass(i, mass[j]);
-      setAtomicNr(i, atomicNr);
-      fgets(line, sizeof(line), file);
-      sscanf(line, "%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-      setPosition(i, 0, x);
-      setPosition(i, 1, y);
-      setPosition(i, 2, z);
-      setFixed(i, static_cast<bool>(fixed));
-    }
-  }
-
-  fgets(line, sizeof(line), file);
-  for (j = 0; j < Ncomponent; j++) {
-    fgets(line, sizeof(line), file);
-    fgets(line, sizeof(line), file); // skip one line
-    for (i = first[j]; i < first[j + 1]; i++) {
-      fgets(line, sizeof(line), file);
-      sscanf(line, "%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-      setVelocity(i, 0, x);
-      setVelocity(i, 1, y);
-      setVelocity(i, 2, z);
-    }
-  }
-
-  if (usePeriodicBoundaries) {
-    applyPeriodicBoundary(); // Transform the coordinate to use the minimum
-                             // image convention.
-  }
-  //    potential_ = new Potential(parameters_);
-  return (true);
 }
 
 void Matter::writeTibble(std::string fname) {
