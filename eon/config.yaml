@@ -1779,3 +1779,27 @@ LBFGS:
         lbfgs_auto_scale:
             kind: boolean
             default: True
+
+################################################################################
+
+Serve:
+    options:
+        host:
+            kind: string
+            default: "localhost"
+
+        port:
+            kind: int
+            default: 12345
+
+        replicas:
+            kind: int
+            default: 1
+
+        gateway_port:
+            kind: int
+            default: 0
+
+        endpoints:
+            kind: string
+            default: ""
