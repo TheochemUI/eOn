@@ -1,0 +1,1 @@
+Replace custom con/convel parser in ``eon/fileio.py`` with the ``readcon`` package (readcon-core v0.4.3). ``loadcon``, ``loadcons``, and ``savecon`` now delegate to Rust-based parsing and writing, providing identical behavior with better performance on large trajectory files.

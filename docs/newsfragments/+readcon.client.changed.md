@@ -1,0 +1,1 @@
+Replace all ``FILE*``-based con/convel I/O in the C++ client (``Matter.cpp``) with readcon-core FFI calls. ``con2matter`` uses mmap-based reading, ``matter2con`` and ``matter2convel`` use the frame builder API. Precision is preserved at 17 decimal places for lossless position roundtrip.
