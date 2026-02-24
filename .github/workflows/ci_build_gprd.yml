@@ -24,7 +24,7 @@ jobs:
           git clone git@github.com:TheochemUI/gpr_optim.git subprojects/gpr_optim
           cd subprojects/gpr_optim
           git checkout 26242c8e94569ef81103ece4662008c3250ada55
-      - uses: prefix-dev/setup-pixi@v0.8.10
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
