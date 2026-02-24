@@ -51,7 +51,8 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Install cbindgen
-        run: pixi run ensure_cbindgen
+        shell: bash
+        run: command -v cbindgen || cargo install cbindgen
 
       - name: Build
         run: |

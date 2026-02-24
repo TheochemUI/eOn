@@ -9,7 +9,7 @@ version = "2.11.0"
 
 [tasks]
 # cbindgen is not on conda-forge; install via cargo if missing
-ensure_cbindgen = "command -v cbindgen >/dev/null 2>&1 || cargo install cbindgen"
+ensure_cbindgen = "command -v cbindgen > /dev/null || cargo install cbindgen"
 
 [dependencies]
 eigen = ">=3.4,<3.5"
