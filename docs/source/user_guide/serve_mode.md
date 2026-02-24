@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Learn how to use eonclient --serve to expose any eOn potential over RPC for integration with external tools like ChemGP."
+    "description": "Guide to using eonclient serve mode to expose any eOn potential over RPC for integration with external tools like ChemGP."
     "keywords": "eOn serve mode, RPC server, rgpot, Cap'n Proto, ChemGP, potential serving"
 ---
 
@@ -10,21 +10,25 @@ myst:
 ```{versionadded} 2.2
 ```
 
-Serve mode wraps any eOn potential as an [rgpot](https://github.com/OmniPotentRPC/rgpot)-compatible
-server, exposing it over Cap'n Proto RPC. This allows external tools -- such as
-Julia-based optimization frameworks (e.g., [ChemGP](https://github.com/HaoZeke/ChemGP))
--- to evaluate energies and forces without embedding C++ code directly.
+Serve mode wraps any eOn potential as an
+[rgpot](https://github.com/OmniPotentRPC/rgpot)-compatible server, exposing it
+over Cap'n Proto RPC. This allows external tools, such as Julia-based
+optimization frameworks (e.g.,
+[ChemGP](https://github.com/HaoZeke/ChemGP)), to evaluate energies and forces
+without embedding C++ code directly.
 
 ## Compilation
 
-Serve mode requires the `with_serve` build option and a Cap'n Proto installation:
+Serve mode requires the `with_serve` build option and a Cap'n Proto installation.
+The `serve` pixi environment provides all necessary dependencies:
 
 ```{code-block} bash
+pixi run -e serve bash
 meson setup builddir -Dwith_serve=true
 meson compile -C builddir
 ```
 
-If you also need Metatomic (ML) potentials:
+To also enable Metatomic (ML) potentials:
 
 ```{code-block} bash
 meson setup builddir \
@@ -32,9 +36,16 @@ meson setup builddir \
     -Dwith_metatomic=true \
     -Dpip_metatomic=true \
     -Dtorch_version=2.9
+meson compile -C builddir
 ```
 
-## Single-Potential Serving
+## Usage
+
+Serve mode supports four modes of operation: single-potential, replicated,
+gateway, and multi-model. Each mode is selected by the combination of CLI flags
+provided.
+
+### Single-Potential
 
 The simplest usage serves one potential on a single port:
 
@@ -51,7 +62,7 @@ To bind to all interfaces:
 eonclient -p lj --serve-host 0.0.0.0 --serve-port 12345
 ```
 
-## Replicated Serving
+### Replicated
 
 To start multiple copies of the same potential on sequential ports:
 
@@ -59,11 +70,11 @@ To start multiple copies of the same potential on sequential ports:
 eonclient -p lj --serve-port 12345 --replicas 4
 ```
 
-This starts 4 independent servers on ports 12345--12348, each with its own
-potential instance and Cap'n Proto event loop. Useful when clients can
-load-balance across known ports.
+This starts 4 independent servers on ports 12345 through 12348, each with its
+own potential instance and event loop. Useful when clients can load-balance
+across known ports.
 
-## Gateway Mode
+### Gateway
 
 Gateway mode exposes a single port backed by a pool of potential instances.
 Incoming requests are dispatched round-robin across the pool, so clients only
@@ -78,7 +89,7 @@ Each incoming RPC call is routed to the next available instance. This is the
 recommended mode for high-throughput use cases where clients should not need to
 track multiple ports.
 
-## Multi-Model Serving
+### Multi-Model
 
 The `--serve` flag accepts a comma-separated specification of
 `potential:port` or `potential:host:port` pairs, each served concurrently
@@ -94,7 +105,7 @@ With explicit hosts:
 eonclient --serve "lj:0.0.0.0:12345,eam_al:0.0.0.0:12346"
 ```
 
-## Configuration Files
+## Potential Configuration
 
 Potentials that require parameters (Metatomic, XTB, etc.) can be configured
 via the `--config` flag, which loads an INI-format config file:
@@ -121,7 +132,7 @@ paramset = GFN2xTB
 accuracy = 1.0
 ```
 
-### Config-Driven Serve
+## Config-Driven Serve
 
 The `[Serve]` section allows fully config-driven serving without CLI flags
 beyond `--config`:
@@ -141,13 +152,17 @@ gateway_port = 0
 eonclient --config serve.ini
 ```
 
-The dispatch logic:
+The dispatch logic when serving from config:
 
-1. If `endpoints` is set, uses multi-model mode (`serveMultiple`).
-2. If `gateway_port > 0`, uses gateway mode with `replicas` pool instances.
-3. Otherwise, uses replicated mode on sequential ports starting at `port`.
+1. If `endpoints` is set, each endpoint is served in its own thread.
+2. If `gateway_port > 0`, a single gateway port is opened backed by a pool
+   of `replicas` potential instances.
+3. Otherwise, `replicas` independent servers are started on sequential ports
+   beginning at `port`.
 
-Example with gateway:
+### Examples
+
+Gateway with a Metatomic model:
 
 ```{code-block} ini
 [Potential]
@@ -163,7 +178,7 @@ gateway_port = 12345
 replicas = 6
 ```
 
-Example with multi-model endpoints:
+Multi-model endpoints:
 
 ```{code-block} ini
 [Serve]
@@ -173,15 +188,15 @@ endpoints = lj:12345,eam_al:12346,metatomic:0.0.0.0:12347
 model_path = /path/to/model.pt
 ```
 
-### Serve Section Options
+## Configuration
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `host` | string | `localhost` | Hostname to bind servers to |
-| `port` | int | `12345` | Port for single/replicated mode |
-| `replicas` | int | `1` | Number of server instances (or gateway pool size) |
-| `gateway_port` | int | `0` | Gateway port (0 = disabled; when > 0, pool mode) |
-| `endpoints` | string | `""` | Multi-model spec (overrides other options) |
+```{code-block} ini
+[Serve]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.ServeConfig
+```
 
 ## Protocol
 
@@ -199,7 +214,7 @@ Each response returns:
 
 ## Integration with ChemGP
 
-ChemGP connects to the serve mode via its `RpcPotential` oracle:
+ChemGP connects to serve mode via its `RpcPotential` oracle:
 
 ```{code-block} julia
 using ChemGP
@@ -216,12 +231,14 @@ See the [ChemGP RPC tutorial](https://github.com/HaoZeke/ChemGP) for details.
 
 ## Architecture Notes
 
-The serve mode uses a **ForceCallback** (flat-array `std::function`) interface
+The serve mode uses a `ForceCallback` (flat-array `std::function`) interface
 internally, completely decoupling the eOn potential from the capnp server.
 This avoids a type collision between eOn's Eigen-based `AtomMatrix` and rgpot's
 custom `AtomMatrix` by never allowing both types to coexist in the same
 translation unit. The capnp schema code is compiled in a separate TU
-(`ServeRpcServer.cpp`) from the eOn potential wrapper (`ServeMode.cpp`).
+(`ServeRpcServer.cpp`) from the eOn potential wrapper (`ServeMode.cpp`). For
+more on the integration pattern, see the
+[rgpot integration guide](https://rgpot.rgoswami.me/integration_guide.html).
 
 ## Command Reference
 
