@@ -204,11 +204,13 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       minTrial->matter2con("movie", true);
     }
 
-    SPDLOG_LOGGER_DEBUG(
-        log, "[Basin Hopping] {:5d} {:12.3f} {:12.3f} {:12.3f} {:5.3f} {:5.3f} {:1s}",
-        step + 1, currentEnergy, minTrial->getPotentialEnergy(),
-        minimumEnergy, totalAccept / (static_cast<double>(step) + 1),
-        curDisplacement, accepted ? "A" : "R");
+    SPDLOG_LOGGER_DEBUG(log,
+                        "[Basin Hopping] {:5d} {:12.3f} {:12.3f} {:12.3f} "
+                        "{:5.3f} {:5.3f} {:1s}",
+                        step + 1, currentEnergy, minTrial->getPotentialEnergy(),
+                        minimumEnergy,
+                        totalAccept / (static_cast<double>(step) + 1),
+                        curDisplacement, accepted ? "A" : "R");
     bhFile.print("{:6d} {:12.4e} {:12.4e}\n", step + 1, currentEnergy,
                  minTrial->getPotentialEnergy());
 

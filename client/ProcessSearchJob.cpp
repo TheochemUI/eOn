@@ -241,9 +241,8 @@ void ProcessSearchJob::saveData(int status) {
     auto out = fmt::output_file(resultsFilename);
     out.print("{} termination_reason\n", status);
     out.print("{} random_seed\n", params.main_options.randomSeed);
-    out.print("{} potential_type\n",
-              std::string{magic_enum::enum_name<PotType>(
-                  params.potential_options.potential)});
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
     out.print("{} total_force_calls\n",
               fCallsMin + fCallsSaddle + fCallsPrefactors);
     out.print("{} force_calls_minimization\n", fCallsMin);
@@ -252,8 +251,7 @@ void ProcessSearchJob::saveData(int status) {
               saddle->getPotentialEnergy());
     out.print("{:.12e} potential_energy_reactant\n",
               min1->getPotentialEnergy());
-    out.print("{:.12e} potential_energy_product\n",
-              min2->getPotentialEnergy());
+    out.print("{:.12e} potential_energy_product\n", min2->getPotentialEnergy());
     out.print("{:.12e} barrier_reactant_to_product\n", barriersValues[0]);
     out.print("{:.12e} barrier_product_to_reactant\n", barriersValues[1]);
     if (params.saddle_search_options.method == "min_mode") {
@@ -280,7 +278,8 @@ void ProcessSearchJob::saveData(int status) {
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
-  helper_functions::saveMode(modeFilename, saddle, saddleSearch->getEigenvector());
+  helper_functions::saveMode(modeFilename, saddle,
+                             saddleSearch->getEigenvector());
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);

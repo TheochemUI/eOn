@@ -203,9 +203,8 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   returnFiles.push_back(resultsFilename);
   {
     auto out = fmt::output_file(resultsFilename);
-    out.print("{} potential_type\n",
-              std::string{magic_enum::enum_name<PotType>(
-                  params.potential_options.potential)});
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
     out.print("{} random_seed\n", params.main_options.randomSeed);
     out.print("{:f} potential_energy_reactant\n",
               reactant->getPotentialEnergy());

@@ -101,15 +101,13 @@ void SaddleSearchJob::saveData(int status) {
     out.print("{} termination_reason\n", status);
     out.print("saddle_search job_type\n");
     out.print("{} random_seed\n", params.main_options.randomSeed);
-    out.print("{} potential_type\n",
-              std::string{magic_enum::enum_name<PotType>(
-                  params.potential_options.potential)});
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
     out.print("{} total_force_calls\n", this->pot->forceCallCounter);
     out.print("{} force_calls_saddle\n", fCallsSaddle);
     out.print("{} iterations\n", saddleSearch->iteration);
     if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
-      out.print("{:f} potential_energy_saddle\n",
-                saddle->getPotentialEnergy());
+      out.print("{:f} potential_energy_saddle\n", saddle->getPotentialEnergy());
       out.print("{:f} final_eigenvalue\n", saddleSearch->getEigenvalue());
     }
     out.print("{:f} potential_energy_reactant\n",
@@ -118,7 +116,8 @@ void SaddleSearchJob::saveData(int status) {
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
-  helper_functions::saveMode(modeFilename, saddle, saddleSearch->getEigenvector());
+  helper_functions::saveMode(modeFilename, saddle,
+                             saddleSearch->getEigenvector());
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);

@@ -17,8 +17,8 @@
 #include <array>
 #include <memory>
 #include <readcon-core.hpp>
-#include <utility>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <utility>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
@@ -167,12 +167,10 @@ public:
   bool con2matter(std::string filename); // read con file into Matter, return
                                          // true if successful
   bool con2matter(const readcon::ConFrame &frame); // populate from a parsed
-                                                    // readcon frame
-  bool
-  convel2matter(std::string filename); // read convel file via readcon-core
-  bool
-  matter2con(std::string filename,
-             bool append = false); // write con file via readcon-core
+                                                   // readcon frame
+  bool convel2matter(std::string filename); // read convel file via readcon-core
+  bool matter2con(std::string filename,
+                  bool append = false); // write con file via readcon-core
   bool
   matter2convel(std::string filename); // write convel file via readcon-core
   void matter2xyz(std::string filename,
