@@ -89,7 +89,8 @@ getRelevantFile(string filename); // return filename containing _checkpoint or
 VectorXd loadMasses(string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
 AtomMatrix loadMode(string filename, int nAtoms);
-void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
+void saveMode(const std::string &filename, std::shared_ptr<Matter> matter,
+              AtomMatrix mode);
 std::vector<int> split_string_int(std::string s, std::string delim);
 
 bool identical(const Matter &m1, const Matter &m2,

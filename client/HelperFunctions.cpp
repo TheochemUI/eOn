@@ -615,17 +615,18 @@ AtomMatrix helper_functions::loadMode(string filename, int nAtoms) {
   return mode;
 }
 
-void helper_functions::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
+void helper_functions::saveMode(const std::string &filename,
+                                std::shared_ptr<Matter> matter,
                                 AtomMatrix mode) {
+  auto out = fmt::output_file(filename);
   long const nAtoms = matter->numberOfAtoms();
   for (long i = 0; i < nAtoms; ++i) {
     if (matter->getFixed(i)) {
-      fprintf(modeFile, "0 0 0\n");
+      out.print("0 0 0\n");
     } else {
-      fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i, 0), mode(i, 1), mode(i, 2));
+      out.print("{:f}\t{:f} \t{:f}\n", mode(i, 0), mode(i, 1), mode(i, 2));
     }
   }
-  return;
 }
 
 std::vector<int> helper_functions::split_string_int(std::string s,

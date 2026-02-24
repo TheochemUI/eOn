@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <filesystem>
 #include <string>
 
 #include "BasinHoppingJob.h"
@@ -82,9 +82,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   *minimumEnergyStructure = *current;
   int nsteps = params.basin_hopping_options.steps +
                params.basin_hopping_options.quenching_steps;
-  long totalfc;
-  FILE *pFile;
-  pFile = fopen("bh.dat", "w");
+  auto bhFile = fmt::output_file("bh.dat");
 
   SPDLOG_LOGGER_DEBUG(
       log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
@@ -190,9 +188,10 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
           snprintf(fname, 128, "energy_%.5i.dat", step + 1);
           returnFiles.push_back(fname);
-          FILE *fh = fopen(fname, "w");
-          fprintf(fh, "%.10e\n", currentEnergy);
-          fclose(fh);
+          {
+            auto efh = fmt::output_file(fname);
+            efh.print("{:.10e}\n", currentEnergy);
+          }
         }
       }
 
@@ -205,21 +204,13 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       minTrial->matter2con("movie", true);
     }
 
-    // totalfc = Potential::fcallsTotal;
-    char acceptReject[2];
-    acceptReject[1] = '\0';
-    if (accepted) {
-      acceptReject[0] = 'A';
-    } else {
-      acceptReject[0] = 'R';
-    }
-    // SPDLOG_LOGGER_DEBUG(log, "[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i
-    // %5.3f %5.3f %1s\n",
-    //        step+1, currentEnergy, minTrial->getPotentialEnergy(),
-    //        minimumEnergy, minfcalls, totalAccept/((double)step+1),
-    //        curDisplacement, acceptReject);
-    // fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
-    // minTrial->getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(
+        log, "[Basin Hopping] {:5d} {:12.3f} {:12.3f} {:12.3f} {:5.3f} {:5.3f} {:1s}",
+        step + 1, currentEnergy, minTrial->getPotentialEnergy(),
+        minimumEnergy, totalAccept / (static_cast<double>(step) + 1),
+        curDisplacement, accepted ? "A" : "R");
+    bhFile.print("{:6d} {:12.4e} {:12.4e}\n", step + 1, currentEnergy,
+                 minTrial->getPotentialEnergy());
 
     if (minimumEnergy < params.basin_hopping_options.stop_energy) {
       break;
@@ -261,37 +252,34 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       recentAccept = 0;
     }
   }
-  fclose(pFile);
 
   /* Save Results */
 
-  FILE *fileResults;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
+  {
+    auto out = fmt::output_file(resultsFilename);
 
-  if (params.debug_options.write_movies == true) {
-    std::string movieFilename("movie.xyz");
-    returnFiles.push_back(movieFilename);
-  }
+    if (params.debug_options.write_movies == true) {
+      std::string movieFilename("movie.xyz");
+      returnFiles.push_back(movieFilename);
+    }
 
-  fprintf(fileResults, "%d termination_reason\n", 0);
-  fprintf(fileResults, "%.6f minimum_energy\n", minimumEnergy);
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%.3f acceptance_ratio\n",
-          totalAccept / params.basin_hopping_options.steps);
-  if (params.basin_hopping_options.swap_probability > 0) {
-    fprintf(fileResults, "%.3f swap_acceptance_ratio\n",
-            swap_accept / double(swap_count));
+    out.print("{} termination_reason\n", 0);
+    out.print("{:.6f} minimum_energy\n", minimumEnergy);
+    out.print("{} random_seed\n", params.main_options.randomSeed);
+    out.print("{:.3f} acceptance_ratio\n",
+              totalAccept / params.basin_hopping_options.steps);
+    if (params.basin_hopping_options.swap_probability > 0) {
+      out.print("{:.3f} swap_acceptance_ratio\n",
+                swap_accept / double(swap_count));
+    }
+    out.print("{} total_normal_displacement_steps\n",
+              disp_count - jump_count -
+                  params.basin_hopping_options.quenching_steps);
+    out.print("{} total_jump_steps\n", jump_count);
+    out.print("{} total_swap_steps\n", swap_count);
   }
-  fprintf(fileResults, "%ld total_normal_displacement_steps\n",
-          disp_count - jump_count -
-              params.basin_hopping_options.quenching_steps);
-  fprintf(fileResults, "%d total_jump_steps\n", jump_count);
-  fprintf(fileResults, "%d total_swap_steps\n", swap_count);
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
-  fclose(fileResults);
 
   std::string productFilename("min.con");
   returnFiles.push_back(productFilename);

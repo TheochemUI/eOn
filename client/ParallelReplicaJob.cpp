@@ -199,39 +199,35 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   product.matter2con("product.con");
 
   // report the results
-  FILE *fileResults;
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%f potential_energy_reactant\n",
-          reactant->getPotentialEnergy());
-  // fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
+  {
+    auto out = fmt::output_file(resultsFilename);
+    out.print("{} potential_type\n",
+              std::string{magic_enum::enum_name<PotType>(
+                  params.potential_options.potential)});
+    out.print("{} random_seed\n", params.main_options.randomSeed);
+    out.print("{:f} potential_energy_reactant\n",
+              reactant->getPotentialEnergy());
 
-  if (transitionTime == 0) {
-    fprintf(fileResults, "0 transition_found\n");
-    fprintf(fileResults, "%e simulation_time_s\n",
-            simulationTime * params.constants.timeUnit * 1.0e-15);
-  } else {
-    fprintf(fileResults, "1 transition_found\n");
-    fprintf(fileResults, "%e transition_time_s\n",
-            transitionTime * params.constants.timeUnit * 1.0e-15);
-    fprintf(fileResults, "%e correlation_time_s\n",
-            params.parallel_replica_options.corr_time *
-                params.constants.timeUnit * 1.0e-15);
-    fprintf(fileResults, "%lf potential_energy_product\n",
-            product.getPotentialEnergy());
+    if (transitionTime == 0) {
+      out.print("0 transition_found\n");
+      out.print("{:e} simulation_time_s\n",
+                simulationTime * params.constants.timeUnit * 1.0e-15);
+    } else {
+      out.print("1 transition_found\n");
+      out.print("{:e} transition_time_s\n",
+                transitionTime * params.constants.timeUnit * 1.0e-15);
+      out.print("{:e} correlation_time_s\n",
+                params.parallel_replica_options.corr_time *
+                    params.constants.timeUnit * 1.0e-15);
+      out.print("{:f} potential_energy_product\n",
+                product.getPotentialEnergy());
+    }
+    out.print("{:f} speedup\n",
+              simulationTime / (params.dynamics_options.steps *
+                                params.dynamics_options.time_step));
   }
-  fprintf(fileResults, "%lf speedup\n",
-          simulationTime / (params.dynamics_options.steps *
-                            params.dynamics_options.time_step));
-
-  fclose(fileResults);
 
   MDSnapshots.clear();
   MDTimes.clear();

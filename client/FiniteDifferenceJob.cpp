@@ -36,10 +36,10 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   AtomMatrix displacement;
   displacement.resize(reactant->numberOfAtoms(), 3);
   displacement.setZero();
-  printf("displacing atoms:");
+  SPDLOG_DEBUG( "displacing atoms:");
   for (int i = 0; i < reactant->numberOfAtoms(); i++) {
     if (reactant->distance(epicenter, i) <= 3.3) {
-      printf(" %i", i);
+      SPDLOG_DEBUG( " {}", i);
       for (int j = 0; j < 3; j++) {
         if (!reactant->getFixed(i)) {
           displacement(i, j) = randomDouble(1.0);
@@ -47,13 +47,12 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
       }
     }
   }
-  printf("\n");
   displacement.normalize();
 
   // Loop over values of dimer dR and print the output to results.dat.
-  FILE *results = fopen("results.dat", "w");
-  fprintf(results, "%14s    %14s\n", "dR", "curvature");
-  printf("%14s    %14s\n", "dR", "curvature");
+  auto results = fmt::output_file("results.dat");
+  results.print("{:>14s}    {:>14s}\n", "dR", "curvature");
+  SPDLOG_DEBUG( "{:>14s}    {:>14s}", "dR", "curvature");
   AtomMatrix posB;
   AtomMatrix forceB;
   double curvature = 0.0;
@@ -63,11 +62,9 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     forceB = reactant->getForces();
     curvature =
         ((forceB - forceA).array() * displacement.array()).sum() / dRs[dRi];
-    fprintf(results, "%14.8f    %14.8f\n", dRs[dRi], curvature);
-    printf("%14.8f    %14.8f\n", dRs[dRi], curvature);
-    fflush(results);
+    results.print("{:14.8f}    {:14.8f}\n", dRs[dRi], curvature);
+    SPDLOG_DEBUG( "{:14.8f}    {:14.8f}", dRs[dRi], curvature);
   }
-  fclose(results);
 
   std::vector<std::string> empty;
   return empty;
