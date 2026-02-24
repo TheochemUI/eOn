@@ -36,6 +36,7 @@ sccache = "*"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
+readcon = ">=0.4.2, <0.5"
 
 [pypi-options]
 # TODO(rg): only if the CPU version is needed
@@ -54,7 +55,7 @@ dev = {features = ["lint", "develop", "nwchem", "metatomic", "xtb"]}
 # ams is incompatible with metatomic
 dev-mta = {features = ["lint", "develop", "metatomic"]}
 lammps = {features = ["lammps"]}
-ams = {features = ["ams"]}
+# ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
 docs = {features = ["docs"]}
 rel = {features = ["metatomic", "release"]}
