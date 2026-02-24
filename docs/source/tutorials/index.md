@@ -18,6 +18,7 @@ server and client).
 akmc
 parrep
 displacement_scripts
+dict_config
 CECAM_LTS_MAP_2024/index
 ```
 
