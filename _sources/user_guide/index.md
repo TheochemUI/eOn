@@ -136,6 +136,7 @@ described in the subsequent sections.
 :caption: External linkage
 
 kdb
+serve_mode
 ```
 
 <!-- TODO(rg) Maybe add the whole config as well -->

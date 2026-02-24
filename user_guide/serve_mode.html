@@ -1,0 +1,1136 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Guide to using eonclient serve mode to expose any eOn potential over RPC for integration with external tools like ChemGP." name="description" />
+<meta content="eOn serve mode, RPC server, rgpot, Cap'n Proto, ChemGP, potential serving" name="keywords" />
+    <link href="../_static/favicons/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../_static/favicons/favicon-32x32.png" sizes="32x32" rel="icon" type="image/png">
+    <link href="../_static/favicons/favicon.ico" rel="icon" type="image/x-icon">
+    <link href="../_static/favicons/android-chrome-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
+    <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
+    <link href="../_static/favicons/site.webmanifest" rel="icon">
+    <meta property="article:modified_time" content="2026-02-24T06:10:02+00:00" />
+    <title>Serve Mode &#8212; eOn</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=fe63c40d"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/serve_mode';</script>
+    <link rel="canonical" href="https://eondocs.org/user_guide/serve_mode.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Development Documentation" href="../devdocs/index.html" />
+    <link rel="prev" title="Kinetic Database" href="kdb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Feb 24, 2026"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/ev2_trans.png" class="logo__image only-light" alt="eOn - Home"/>
+    <script>document.write(`<img src="../_static/ev2_trans_dark.png" class="logo__image only-dark" alt="eOn - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../team.html">eOn Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">User Guide</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quip.html">QUIP with LAMMPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="potential.html">Potential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimization.html">Minimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dimer.html">Dimer method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lanczos.html">Lanczos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hessian.html">Hessian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prefactor.html">Prefactor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="process_search.html">Process Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recycling.html">Recycling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicator.html">Communicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug.html">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="paths.html">Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Serve Mode</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../devdocs/release.html">Checklist</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../apidocs/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.1/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.10.0/index.html">[v2.10.0] - 2026-02-15</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.0/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/TheochemUI/eOn" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/user_guide/serve_mode.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Serve Mode</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compilation">Compilation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-potential">Single-Potential</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replicated">Replicated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gateway">Gateway</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-model">Multi-Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#potential-configuration">Potential Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#config-driven-serve">Config-Driven Serve</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig"><code class="docutils literal notranslate"><span class="pre">ServeConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.endpoints"><code class="docutils literal notranslate"><span class="pre">ServeConfig.endpoints</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.gateway_port"><code class="docutils literal notranslate"><span class="pre">ServeConfig.gateway_port</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.host"><code class="docutils literal notranslate"><span class="pre">ServeConfig.host</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.port"><code class="docutils literal notranslate"><span class="pre">ServeConfig.port</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.replicas"><code class="docutils literal notranslate"><span class="pre">ServeConfig.replicas</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#protocol">Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-with-chemgp">Integration with ChemGP</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-notes">Architecture Notes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-reference">Command Reference</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="serve-mode">
+<h1>Serve Mode<a class="headerlink" href="#serve-mode" title="Link to this heading">#</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.2.</span></p>
+</div>
+<p>Serve mode wraps any eOn potential as an
+<a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a>-compatible server, exposing it
+over Cap’n Proto RPC. This allows external tools, such as Julia-based
+optimization frameworks (e.g.,
+<a class="reference external" href="https://github.com/HaoZeke/ChemGP">ChemGP</a>), to evaluate energies and forces
+without embedding C++ code directly.</p>
+<section id="compilation">
+<h2>Compilation<a class="headerlink" href="#compilation" title="Link to this heading">#</a></h2>
+<p>Serve mode requires the <code class="docutils literal notranslate"><span class="pre">with_serve</span></code> build option and a Cap’n Proto installation.
+The <code class="docutils literal notranslate"><span class="pre">serve</span></code> pixi environment provides all necessary dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>serve<span class="w"> </span>bash
+meson<span class="w"> </span>setup<span class="w"> </span>builddir<span class="w"> </span>-Dwith_serve<span class="o">=</span><span class="nb">true</span>
+meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>builddir
+</pre></div>
+</div>
+<p>To also enable Metatomic (ML) potentials:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>meson<span class="w"> </span>setup<span class="w"> </span>builddir<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dwith_serve<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dwith_metatomic<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dpip_metatomic<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-Dtorch_version<span class="o">=</span><span class="m">2</span>.9
+meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>builddir
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<p>Serve mode supports four modes of operation: single-potential, replicated,
+gateway, and multi-model. Each mode is selected by the combination of CLI flags
+provided.</p>
+<section id="single-potential">
+<h3>Single-Potential<a class="headerlink" href="#single-potential" title="Link to this heading">#</a></h3>
+<p>The simplest usage serves one potential on a single port:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>-p<span class="w"> </span>lj<span class="w"> </span>--serve-port<span class="w"> </span><span class="m">12345</span>
+</pre></div>
+</div>
+<p>This starts a blocking RPC server on <code class="docutils literal notranslate"><span class="pre">localhost:12345</span></code> serving the Lennard-Jones
+potential. The server runs until interrupted with <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code>.</p>
+<p>To bind to all interfaces:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>-p<span class="w"> </span>lj<span class="w"> </span>--serve-host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--serve-port<span class="w"> </span><span class="m">12345</span>
+</pre></div>
+</div>
+</section>
+<section id="replicated">
+<h3>Replicated<a class="headerlink" href="#replicated" title="Link to this heading">#</a></h3>
+<p>To start multiple copies of the same potential on sequential ports:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>-p<span class="w"> </span>lj<span class="w"> </span>--serve-port<span class="w"> </span><span class="m">12345</span><span class="w"> </span>--replicas<span class="w"> </span><span class="m">4</span>
+</pre></div>
+</div>
+<p>This starts 4 independent servers on ports 12345 through 12348, each with its
+own potential instance and event loop. Useful when clients can load-balance
+across known ports.</p>
+</section>
+<section id="gateway">
+<h3>Gateway<a class="headerlink" href="#gateway" title="Link to this heading">#</a></h3>
+<p>Gateway mode exposes a single port backed by a pool of potential instances.
+Incoming requests are dispatched round-robin across the pool, so clients only
+need to know one address:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>-p<span class="w"> </span>lj<span class="w"> </span>--serve-port<span class="w"> </span><span class="m">12345</span><span class="w"> </span>--replicas<span class="w"> </span><span class="m">6</span><span class="w"> </span>--gateway
+</pre></div>
+</div>
+<p>This creates 6 LJ potential instances and serves them all behind port 12345.
+Each incoming RPC call is routed to the next available instance. This is the
+recommended mode for high-throughput use cases where clients should not need to
+track multiple ports.</p>
+</section>
+<section id="multi-model">
+<h3>Multi-Model<a class="headerlink" href="#multi-model" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">--serve</span></code> flag accepts a comma-separated specification of
+<code class="docutils literal notranslate"><span class="pre">potential:port</span></code> or <code class="docutils literal notranslate"><span class="pre">potential:host:port</span></code> pairs, each served concurrently
+in its own thread:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>--serve<span class="w"> </span><span class="s2">&quot;lj:12345,eam_al:12346&quot;</span>
+</pre></div>
+</div>
+<p>With explicit hosts:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>--serve<span class="w"> </span><span class="s2">&quot;lj:0.0.0.0:12345,eam_al:0.0.0.0:12346&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="potential-configuration">
+<h2>Potential Configuration<a class="headerlink" href="#potential-configuration" title="Link to this heading">#</a></h2>
+<p>Potentials that require parameters (Metatomic, XTB, etc.) can be configured
+via the <code class="docutils literal notranslate"><span class="pre">--config</span></code> flag, which loads an INI-format config file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>--serve<span class="w"> </span><span class="s2">&quot;metatomic:12345&quot;</span><span class="w"> </span>--config<span class="w"> </span>model.ini
+</pre></div>
+</div>
+<p>The config file uses the same INI format as eOn’s standard <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>. For
+example, a Metatomic model:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Metatomic]</span>
+<span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/model.pt</span>
+<span class="na">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cuda</span>
+<span class="na">length_unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">angstrom</span>
+</pre></div>
+</div>
+<p>Or for XTB:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[XTBPot]</span>
+<span class="na">paramset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">GFN2xTB</span>
+<span class="na">accuracy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.0</span>
+</pre></div>
+</div>
+</section>
+<section id="config-driven-serve">
+<h2>Config-Driven Serve<a class="headerlink" href="#config-driven-serve" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">[Serve]</span></code> section allows fully config-driven serving without CLI flags
+beyond <code class="docutils literal notranslate"><span class="pre">--config</span></code>:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Potential]</span>
+<span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lj</span>
+
+<span class="k">[Serve]</span>
+<span class="na">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">localhost</span>
+<span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">12345</span>
+<span class="na">replicas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">4</span>
+<span class="na">gateway_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>eonclient<span class="w"> </span>--config<span class="w"> </span>serve.ini
+</pre></div>
+</div>
+<p>The dispatch logic when serving from config:</p>
+<ol class="arabic simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">endpoints</span></code> is set, each endpoint is served in its own thread.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">gateway_port</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, a single gateway port is opened backed by a pool
+of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> potential instances.</p></li>
+<li><p>Otherwise, <code class="docutils literal notranslate"><span class="pre">replicas</span></code> independent servers are started on sequential ports
+beginning at <code class="docutils literal notranslate"><span class="pre">port</span></code>.</p></li>
+</ol>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h3>
+<p>Gateway with a Metatomic model:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Potential]</span>
+<span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">metatomic</span>
+
+<span class="k">[Metatomic]</span>
+<span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/model.pt</span>
+<span class="na">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cuda</span>
+
+<span class="k">[Serve]</span>
+<span class="na">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.0.0.0</span>
+<span class="na">gateway_port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">12345</span>
+<span class="na">replicas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">6</span>
+</pre></div>
+</div>
+<p>Multi-model endpoints:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Serve]</span>
+<span class="na">endpoints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lj:12345,eam_al:12346,metatomic:0.0.0.0:12347</span>
+
+<span class="k">[Metatomic]</span>
+<span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/model.pt</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Serve]</span>
+</pre></div>
+</div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.ServeConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">ServeConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#ServeConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.ServeConfig" title="Link to this definition">#</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ServeConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hostname to bind serve mode RPC servers to.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Host&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12345</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TCP port for single-potential or replicated serve mode.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Port&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;replicas&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of replicated server instances. In gateway mode, this is the pool size.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Replicas&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;gateway_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If &gt; 0, start a single gateway on this port backed by a pool of &#39;replicas&#39; potential instances dispatched round-robin. Set to 0 to disable gateway mode.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gateway Port&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Multi-model serve spec: comma-separated &#39;potential:port&#39; or &#39;potential:host:port&#39; entries. When set, overrides single-potential serve.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Endpoints&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.ServeConfig.endpoints" title="eon.schema.ServeConfig.endpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">endpoints</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ServeConfig.gateway_port" title="eon.schema.ServeConfig.gateway_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gateway_port</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ServeConfig.host" title="eon.schema.ServeConfig.host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">host</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ServeConfig.port" title="eon.schema.ServeConfig.port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ServeConfig.replicas" title="eon.schema.ServeConfig.replicas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replicas</span> <span class="pre">(int)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ServeConfig.endpoints">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">endpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#eon.schema.ServeConfig.endpoints" title="Link to this definition">#</a></dt>
+<dd><p>Multi-model serve spec: comma-separated ‘potential:port’ or ‘potential:host:port’ entries. When set, overrides single-potential serve.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ServeConfig.gateway_port">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gateway_port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#eon.schema.ServeConfig.gateway_port" title="Link to this definition">#</a></dt>
+<dd><p>If &gt; 0, start a single gateway on this port backed by a pool of ‘replicas’ potential instances dispatched round-robin. Set to 0 to disable gateway mode.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ServeConfig.host">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'localhost'</span></em><a class="headerlink" href="#eon.schema.ServeConfig.host" title="Link to this definition">#</a></dt>
+<dd><p>Hostname to bind serve mode RPC servers to.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ServeConfig.port">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12345</span></em><a class="headerlink" href="#eon.schema.ServeConfig.port" title="Link to this definition">#</a></dt>
+<dd><p>TCP port for single-potential or replicated serve mode.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ServeConfig.replicas">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replicas</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#eon.schema.ServeConfig.replicas" title="Link to this definition">#</a></dt>
+<dd><p>Number of replicated server instances. In gateway mode, this is the pool size.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="protocol">
+<h2>Protocol<a class="headerlink" href="#protocol" title="Link to this heading">#</a></h2>
+<p>The RPC protocol is defined by rgpot’s <code class="docutils literal notranslate"><span class="pre">Potentials.capnp</span></code> schema. Each request
+sends:</p>
+<ul class="simple">
+<li><p><strong>positions</strong>: flat array <code class="docutils literal notranslate"><span class="pre">[x1,</span> <span class="pre">y1,</span> <span class="pre">z1,</span> <span class="pre">x2,</span> <span class="pre">y2,</span> <span class="pre">z2,</span> <span class="pre">...]</span></code> (Angstroms)</p></li>
+<li><p><strong>atmnrs</strong>: atomic numbers <code class="docutils literal notranslate"><span class="pre">[Z1,</span> <span class="pre">Z2,</span> <span class="pre">...]</span></code></p></li>
+<li><p><strong>box</strong>: 3x3 cell matrix (row-major flat array)</p></li>
+</ul>
+<p>Each response returns:</p>
+<ul class="simple">
+<li><p><strong>energy</strong>: total potential energy (eV)</p></li>
+<li><p><strong>forces</strong>: flat array matching positions layout (eV/Angstrom)</p></li>
+</ul>
+</section>
+<section id="integration-with-chemgp">
+<h2>Integration with ChemGP<a class="headerlink" href="#integration-with-chemgp" title="Link to this heading">#</a></h2>
+<p>ChemGP connects to serve mode via its <code class="docutils literal notranslate"><span class="pre">RpcPotential</span></code> oracle:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">ChemGP</span>
+
+<span class="c"># Connect to a running eonclient --serve instance</span>
+<span class="n">pot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RpcPotential</span><span class="p">(</span><span class="s">&quot;localhost&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">12345</span><span class="p">,</span><span class="w"> </span><span class="n">atmnrs</span><span class="p">,</span><span class="w"> </span><span class="n">box</span><span class="p">)</span>
+<span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ChemGP</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span><span class="w"> </span><span class="n">positions</span><span class="p">)</span>
+
+<span class="c"># Use as a GP optimization oracle (gradient = -forces)</span>
+<span class="n">oracle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">make_rpc_oracle</span><span class="p">(</span><span class="n">pot</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://github.com/HaoZeke/ChemGP">ChemGP RPC tutorial</a> for details.</p>
+</section>
+<section id="architecture-notes">
+<h2>Architecture Notes<a class="headerlink" href="#architecture-notes" title="Link to this heading">#</a></h2>
+<p>The serve mode uses a <code class="docutils literal notranslate"><span class="pre">ForceCallback</span></code> (flat-array <code class="docutils literal notranslate"><span class="pre">std::function</span></code>) interface
+internally, completely decoupling the eOn potential from the capnp server.
+This avoids a type collision between eOn’s Eigen-based <code class="docutils literal notranslate"><span class="pre">AtomMatrix</span></code> and rgpot’s
+custom <code class="docutils literal notranslate"><span class="pre">AtomMatrix</span></code> by never allowing both types to coexist in the same
+translation unit. The capnp schema code is compiled in a separate TU
+(<code class="docutils literal notranslate"><span class="pre">ServeRpcServer.cpp</span></code>) from the eOn potential wrapper (<code class="docutils literal notranslate"><span class="pre">ServeMode.cpp</span></code>). For
+more on the integration pattern, see the
+<a class="reference external" href="https://rgpot.rgoswami.me/integration_guide.html">rgpot integration guide</a>.</p>
+</section>
+<section id="command-reference">
+<h2>Command Reference<a class="headerlink" href="#command-reference" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--serve</span> <span class="pre">&lt;spec&gt;</span></code></p></td>
+<td><p>Multi-model serve spec: <code class="docutils literal notranslate"><span class="pre">pot:port</span></code> or <code class="docutils literal notranslate"><span class="pre">pot:host:port</span></code>, comma-separated</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--serve-host</span> <span class="pre">&lt;host&gt;</span></code></p></td>
+<td><p>Host for single-potential mode (default: <code class="docutils literal notranslate"><span class="pre">localhost</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--serve-port</span> <span class="pre">&lt;port&gt;</span></code></p></td>
+<td><p>Port for single-potential mode with <code class="docutils literal notranslate"><span class="pre">-p</span></code> (default: <code class="docutils literal notranslate"><span class="pre">12345</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--replicas</span> <span class="pre">&lt;N&gt;</span></code></p></td>
+<td><p>Number of server instances or gateway pool size (default: <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gateway</span></code></p></td>
+<td><p>Enable gateway mode (single port, round-robin pool)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--config</span> <span class="pre">&lt;file&gt;</span></code></p></td>
+<td><p>INI config file for potential and serve parameters</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">&lt;potential&gt;</span></code></p></td>
+<td><p>Potential type (used with <code class="docutils literal notranslate"><span class="pre">--serve-port</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="kdb.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Kinetic Database</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../devdocs/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Development Documentation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compilation">Compilation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-potential">Single-Potential</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replicated">Replicated</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gateway">Gateway</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-model">Multi-Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#potential-configuration">Potential Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#config-driven-serve">Config-Driven Serve</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig"><code class="docutils literal notranslate"><span class="pre">ServeConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.endpoints"><code class="docutils literal notranslate"><span class="pre">ServeConfig.endpoints</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.gateway_port"><code class="docutils literal notranslate"><span class="pre">ServeConfig.gateway_port</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.host"><code class="docutils literal notranslate"><span class="pre">ServeConfig.host</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.port"><code class="docutils literal notranslate"><span class="pre">ServeConfig.port</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eon.schema.ServeConfig.replicas"><code class="docutils literal notranslate"><span class="pre">ServeConfig.replicas</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#protocol">Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-with-chemgp">Integration with ChemGP</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-notes">Architecture Notes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-reference">Command Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By the eOn developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, the eOn developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Feb 24, 2026.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+<div
+  style="
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--pst-color-muted, #6c757d);
+  "
+>
+  
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+    "
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+      style="vertical-align: middle"
+    >
+      <path
+        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+      ></path>
+    </svg>
+    Hosted by
+    <a href="https://www.netlify.com/" target="_blank" rel="noopener noreferrer"
+      >Netlify</a
+    >
+  </span>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    role="img"
+    aria-hidden="true"
+  >
+    <path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z" />
+  </svg>
+  <span style="white-space: nowrap">
+    Analytics via
+    <a href="https://plausible.io/" target="_blank" rel="noopener noreferrer"
+      >Plausible</a
+    >, provided by
+  </span>
+
+  <span
+    style="
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      white-space: nowrap;
+      margin-left: 0.4em;
+    "
+  >
+    <span
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+        margin-left: 0.4em;
+      "
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.2em"
+        height="1.2em"
+        viewBox="0 0 64 64"
+        role="img"
+        aria-hidden="true"
+        style="vertical-align: middle"
+      >
+        <g fill-rule="evenodd">
+          <ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9" />
+          <path
+            fill="#80D25B"
+            d="M20.302104,46 C20.302104,46 17.1330329,55.8812548 20.6828149,59.7817355 C24.232597,63.6822162 26.8008673,63.215359 26.8008673,53.7414927 C26.8008673,44.2676263 20.302104,46 20.302104,46 Z"
+          />
+          <path
+            fill="#80D25B"
+            d="M38.302104,46 C38.302104,46 35.1330329,55.8812548 38.6828149,59.7817355 C42.232597,63.6822162 44.8008673,63.215359 44.8008673,53.7414927 C44.8008673,44.2676263 38.302104,46 38.302104,46 Z"
+            transform="matrix(-1 0 0 1 81.8 0)"
+          />
+          <path
+            fill="#80D25B"
+            d="M20.6227767,21.2218684 C20.6227767,21.2218684 13.956214,15.3844007 10.091955,16.0534044 C6.22769598,16.722408 6,22.2124633 6,23.9992899 C6,25.7861165 7.78917398,37.3159836 9.78726488,36.4967476 C11.7853558,35.6775115 13.7411938,27.959322 13.7411938,27.959322 C13.7411938,27.959322 15.6510232,30.2287702 18.609193,30.4630388"
+          />
+          <path
+            fill="#80D25B"
+            d="M57.6227767,21.2218684 C57.6227767,21.2218684 50.956214,15.3844007 47.091955,16.0534044 C43.227696,16.722408 43,22.2124633 43,23.9992899 C43,25.7861165 44.789174,37.3159836 46.7872649,36.4967476 C48.7853558,35.6775115 50.7411938,27.959322 50.7411938,27.959322 C50.7411938,27.959322 52.6510232,30.2287702 55.609193,30.4630388"
+            transform="matrix(-1 0 0 1 100.623 0)"
+          />
+          <path
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32,53 C40.836556,53 48,44.4934102 48,34 C48,23.5065898 46.6814044,17 32,17 C17.3185956,17 16,23.5065898 16,34 C16,44.4934102 23.163444,53 32,53 Z"
+          />
+          <polygon
+            fill="#BD7575"
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            points="32 22 38.928 26 38.928 34 32 38 25.072 34 25.072 26"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M30,8 C28.8954305,8 28,8.8954305 28,10"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M36,8 C34.8954305,8 34,8.8954305 34,10"
+            transform="matrix(-1 0 0 1 70 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M32.1194396 38.1881507L32.1194396 52.4125899M32.0164956 21.7467197L32.0164956 17M25.2141026 26.0041506L17.737148 23.0721126M25.1254173 34.1534318L16.7659494 38.8876521"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M46.2141026,26.0041506 L38.737148,23.0721126"
+            transform="matrix(-1 0 0 1 84.951 0)"
+          />
+          <path
+            stroke="#595959"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M47.1254173,34.1534318 L38.7659494,38.8876521"
+            transform="matrix(-1 0 0 1 85.891 0)"
+          />
+        </g>
+      </svg>
+    </span>
+    <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer"
+      >TurtleTech ehf</a
+    >
+  </span>
+</div>
+
+
+<!------>
+
+  <footer class="bd-footer">
+  </footer>
+<!------>
+
+  </body>
+</html>

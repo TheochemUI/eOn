@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=ae31f39a"></script>
+    <script src="../../_static/documentation_options.js?v=fe63c40d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -177,6 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -212,6 +213,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -262,6 +264,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.1/release-notes.html">Release notes</a></li>
 </ul>
@@ -1860,6 +1866,34 @@ document.write(`
 
 
 
+<div class="viewcode-block" id="ServeConfig">
+<a class="viewcode-back" href="../../user_guide/serve_mode.html#eon.schema.ServeConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServeConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_attribute_docstrings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hostname to bind serve mode RPC servers to.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;TCP port for single-potential or replicated serve mode.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of replicated server instances. In gateway mode, this is the pool size.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gateway_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If &gt; 0, start a single gateway on this port backed by a pool of &#39;replicas&#39; potential instances dispatched round-robin. Set to 0 to disable gateway mode.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">endpoints</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Multi-model serve spec: comma-separated &#39;potential:port&#39; or &#39;potential:host:port&#39; entries. When set, overrides single-potential serve.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="DebugConfig">
 <a class="viewcode-back" href="../../user_guide/debug.html#eon.schema.DebugConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DebugConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -2400,6 +2434,7 @@ document.write(`
     <span class="n">distributed_replica</span><span class="p">:</span> <span class="n">DistributedReplicaConfig</span>
     <span class="n">gprdimer</span><span class="p">:</span> <span class="n">GPRDimerConfig</span>
     <span class="n">debug</span><span class="p">:</span> <span class="n">DebugConfig</span>
+    <span class="n">serve</span><span class="p">:</span> <span class="n">ServeConfig</span>
 
     <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;communicator&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_communicator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
