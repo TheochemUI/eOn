@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2026-02-15T21:43:45+00:00" />
+    <meta property="article:modified_time" content="2026-02-24T05:45:11+00:00" />
     <title>Tutorials &#8212; eOn</title>
   
   
@@ -50,7 +50,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=ae31f39a"></script>
+    <script src="../_static/documentation_options.js?v=fe63c40d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -70,7 +70,7 @@
     <link rel="prev" title="Installation" href="../install/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Feb 15, 2026"/>
+    <meta name="docbuild:last-update" content="Feb 24, 2026"/>
   </head>
   
   
@@ -188,6 +188,7 @@
 <li class="toctree-l2"><a class="reference internal" href="akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dict_config.html">Dictionary-Style Configuration</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -223,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -273,6 +275,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.10.1/release-notes.html">Release notes</a></li>
 </ul>
@@ -487,6 +493,15 @@ server and client).</p>
 <li class="toctree-l2"><a class="reference internal" href="displacement_scripts.html#client-side-listed-atoms">Client-Side <code class="docutils literal notranslate"><span class="pre">listed_atoms</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="dict_config.html">Dictionary-Style Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dict_config.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dict_config.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dict_config.html#why-dictionaries">Why Dictionaries?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dict_config.html#examples-by-job-type">Examples by Job Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dict_config.html#parameter-sweeps">Parameter Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dict_config.html#schema-reference">Schema Reference</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -560,7 +575,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Feb 15, 2026.
+  Last updated on Feb 24, 2026.
   <br/>
 </p>
   </div>

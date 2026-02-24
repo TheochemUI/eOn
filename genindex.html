@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=ae31f39a"></script>
+    <script src="_static/documentation_options.js?v=fe63c40d"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -177,6 +177,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -212,6 +213,7 @@
 <li class="toctree-l2"><a class="reference internal" href="user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/paths.html">Paths</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="devdocs/index.html">Development Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -262,6 +264,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="releases/v2.10.1/release-notes.html">Release notes</a></li>
 </ul>
@@ -818,6 +824,8 @@ document.write(`
 </li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.elements">elements (in module eon.atoms)</a>
 </li>
+      <li><a href="user_guide/serve_mode.html#eon.schema.ServeConfig.endpoints">endpoints (eon.schema.ServeConfig attribute)</a>
+</li>
       <li><a href="user_guide/structure_comparison.html#eon.schema.StructureComparisonConfig.energy_difference">energy_difference (eon.schema.StructureComparisonConfig attribute)</a>
 </li>
       <li><a href="user_guide/coarse_graining.html#eon.schema.CoarseGrainingConfig.energy_increment">energy_increment (eon.schema.CoarseGrainingConfig attribute)</a>
@@ -1116,6 +1124,8 @@ document.write(`
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user_guide/serve_mode.html#eon.schema.ServeConfig.gateway_port">gateway_port (eon.schema.ServeConfig attribute)</a>
+</li>
       <li><a href="apidocs/eon/eon._utils.html#eon._utils.gen_ids_from_con">gen_ids_from_con() (in module eon._utils)</a>
 </li>
       <li><a href="apidocs/eon/eon.recycling.html#eon.recycling.SB_Recycling.generate_corresponding_states">generate_corresponding_states() (eon.recycling.SB_Recycling method)</a>
@@ -1220,10 +1230,10 @@ document.write(`
       </ul></li>
       <li><a href="apidocs/eon/eon.state.html#eon.state.State.get_process_ids">get_process_ids() (eon.state.State method)</a>
 </li>
-      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_mode">get_process_mode() (eon.akmcstate.AKMCState method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_mode">get_process_mode() (eon.akmcstate.AKMCState method)</a>
+</li>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_product">get_process_product() (eon.akmcstate.AKMCState method)</a>
 
       <ul>
@@ -1340,8 +1350,12 @@ document.write(`
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="user_guide/potential.html#eon.schema.SocketNWChemPot.host">host (eon.schema.SocketNWChemPot attribute)</a>
+      <li><a href="user_guide/serve_mode.html#eon.schema.ServeConfig.host">host (eon.schema.ServeConfig attribute)</a>
+
+      <ul>
+        <li><a href="user_guide/potential.html#eon.schema.SocketNWChemPot.host">(eon.schema.SocketNWChemPot attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1939,8 +1953,12 @@ document.write(`
 </li>
       <li><a href="apidocs/eon/eon.atoms.html#eon.atoms.points_energies_match">points_energies_match() (in module eon.atoms)</a>
 </li>
-      <li><a href="user_guide/potential.html#eon.schema.SocketNWChemPot.port">port (eon.schema.SocketNWChemPot attribute)</a>
+      <li><a href="user_guide/serve_mode.html#eon.schema.ServeConfig.port">port (eon.schema.ServeConfig attribute)</a>
+
+      <ul>
+        <li><a href="user_guide/potential.html#eon.schema.SocketNWChemPot.port">(eon.schema.SocketNWChemPot attribute)</a>
 </li>
+      </ul></li>
       <li><a href="user_guide/parallel_replica.html#eon.schema.ParallelReplicaConfig.post_transition_time">post_transition_time (eon.schema.ParallelReplicaConfig attribute)</a>
 </li>
       <li><a href="user_guide/potential.html#eon.schema.PotentialConfig.potential">potential (eon.schema.PotentialConfig attribute)</a>
@@ -2116,6 +2134,8 @@ document.write(`
       <li><a href="user_guide/structure_comparison.html#eon.schema.StructureComparisonConfig.remove_translation">remove_translation (eon.schema.StructureComparisonConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.locking.html#eon.locking.LockFile.removelock">removelock() (eon.locking.LockFile method)</a>
+</li>
+      <li><a href="user_guide/serve_mode.html#eon.schema.ServeConfig.replicas">replicas (eon.schema.ServeConfig attribute)</a>
 </li>
       <li><a href="apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.reset_repeats">reset_repeats() (eon.akmcstate.AKMCState method)</a>
 </li>
