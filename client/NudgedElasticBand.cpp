@@ -307,11 +307,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       bool append = (iteration != 0);
       path[maxEnergyImage]->matter2con("neb_maximage.con", append);
       std::string nebFilename(fmt::format("neb_path_{:03d}.con", iteration));
-      FILE *fileNEBPath = fopen(nebFilename.c_str(), "wb");
       for (long idx = 0; idx <= numImages + 1; idx++) {
-        path[idx]->matter2con(fileNEBPath);
+        path[idx]->matter2con(nebFilename, /*append=*/idx > 0);
       }
-      fclose(fileNEBPath);
       printImageData(true, iteration);
     }
 
