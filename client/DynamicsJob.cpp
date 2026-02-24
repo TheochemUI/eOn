@@ -9,7 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include <stdio.h>
 #include <string>
 
 #include "Dynamics.h"

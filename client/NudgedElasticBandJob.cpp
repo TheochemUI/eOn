@@ -14,6 +14,8 @@
 #include "NEBInitialPaths.hpp"
 #include "Potential.h"
 
+#include <filesystem>
+
 using namespace std;
 
 std::vector<std::string> NudgedElasticBandJob::run(void) {
@@ -26,10 +28,8 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   string transitionStateFilename = helper_functions::getRelevantFile("ts.con");
   bool tsInterpolate = false;
   auto transitionState = std::make_shared<Matter>(pot, params);
-  FILE *fhTransitionState = fopen("ts.con", "r");
-  if (fhTransitionState != nullptr) {
+  if (std::filesystem::exists("ts.con")) {
     tsInterpolate = true;
-    fclose(fhTransitionState);
     transitionState->con2matter(transitionStateFilename);
   } else {
     transitionState = nullptr;
@@ -135,49 +135,37 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
 
 void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
                                     NudgedElasticBand *neb) {
-  FILE *fileResults;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  if (!fileResults) {
-    SPDLOG_LOGGER_ERROR(m_log, "Failed to open {} for writing",
-                        resultsFilename);
-    return;
+  {
+    auto out = fmt::output_file(resultsFilename);
+    out.print("{} termination_reason\n", static_cast<int>(status));
+    out.print("{} potential_type\n",
+              std::string{magic_enum::enum_name<PotType>(
+                  params.potential_options.potential)});
+    out.print("{:f} energy_reference\n", neb->path[0]->getPotentialEnergy());
+    out.print("{} number_of_images\n", neb->numImages);
+
+    for (long i = 0; i <= neb->numImages + 1; i++) {
+      out.print("{:f} image{}_energy\n",
+                neb->path[i]->getPotentialEnergy() -
+                    neb->path[0]->getPotentialEnergy(),
+                i);
+      out.print("{:f} image{}_force\n", neb->path[i]->getForces().norm(), i);
+
+      double proj_norm =
+          (i >= 1 && i <= neb->numImages)
+              ? neb->projectedForce[i]->norm()
+              : 0.0;
+      out.print("{:f} image{}_projected_force\n", proj_norm, i);
+    }
+
+    out.print("{} number_of_extrema\n", neb->numExtrema);
+    for (long i = 0; i < neb->numExtrema; i++) {
+      out.print("{:f} extremum{}_position\n", neb->extremumPosition[i], i);
+      out.print("{:f} extremum{}_energy\n", neb->extremumEnergy[i], i);
+    }
   }
-
-  fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
-  // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
-  fprintf(fileResults, "%f energy_reference\n",
-          neb->path[0]->getPotentialEnergy());
-  fprintf(fileResults, "%li number_of_images\n", neb->numImages);
-
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    fprintf(fileResults, "%f image%li_energy\n",
-            neb->path[i]->getPotentialEnergy() -
-                neb->path[0]->getPotentialEnergy(),
-            i);
-    fprintf(fileResults, "%f image%li_force\n",
-            neb->path[i]->getForces().norm(), i);
-
-    // Only interior images have a meaningful projected force
-    double proj_norm =
-        (i >= 1 && i <= neb->numImages) ? neb->projectedForce[i]->norm() : 0.0;
-    fprintf(fileResults, "%f image%li_projected_force\n", proj_norm, i);
-  }
-
-  fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
-  for (long i = 0; i < neb->numExtrema; i++) {
-    fprintf(fileResults, "%f extremum%li_position\n", neb->extremumPosition[i],
-            i);
-    fprintf(fileResults, "%f extremum%li_energy\n", neb->extremumEnergy[i], i);
-  }
-  fclose(fileResults);
 
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
@@ -224,15 +212,14 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 
         std::string peakModeFile =
             fmt::format("peak{:02d}_mode.dat", peakCount);
-        FILE *fMode = fopen(peakModeFile.c_str(), "w");
-        if (fMode) {
+        {
+          auto modeOut = fmt::output_file(peakModeFile);
           for (int row = 0; row < peakMode.rows(); ++row) {
-            fprintf(fMode, "%12.6f %12.6f %12.6f\n", peakMode(row, 0),
-                    peakMode(row, 1), peakMode(row, 2));
+            modeOut.print("{:12.6f} {:12.6f} {:12.6f}\n", peakMode(row, 0),
+                          peakMode(row, 1), peakMode(row, 2));
           }
-          fclose(fMode);
-          returnFiles.push_back(peakModeFile);
         }
+        returnFiles.push_back(peakModeFile);
 
         SPDLOG_LOGGER_INFO(
             m_log,

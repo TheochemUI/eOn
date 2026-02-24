@@ -89,29 +89,26 @@ std::vector<std::string> PrefactorJob::run(void) {
 
   bool failed = freqs.size() != 3 * atoms.rows();
 
-  FILE *fileResults;
-  FILE *fileFreq;
-
   std::string results_file("results.dat");
   std::string freq_file("freq.dat");
 
   returnFiles.push_back(results_file);
   returnFiles.push_back(freq_file);
 
-  fileResults = fopen(results_file.c_str(), "wb");
-  fileFreq = fopen(freq_file.c_str(), "wb");
-
-  fprintf(fileResults, "%s good\n", failed ? "false" : "true");
-  // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
+  {
+    auto out = fmt::output_file(results_file);
+    out.print("{} good\n", failed ? "false" : "true");
+  }
 
   if (!failed) {
+    auto fout = fmt::output_file(freq_file);
     for (int i = 0; i < freqs.size(); i++) {
       if (0. < freqs[i]) {
-        fprintf(fileFreq, "%f\n",
-                sqrt(freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
+        fout.print("{:f}\n",
+                   sqrt(freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
       } else {
-        fprintf(fileFreq, "%f\n",
-                -sqrt(-freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
+        fout.print("{:f}\n",
+                   -sqrt(-freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
       }
     }
   }

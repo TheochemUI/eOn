@@ -25,9 +25,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   string posOutFilename("min.con");
 
   if (params.main_options.checkpoint) {
-    FILE *pos_file;
-    pos_file = fopen("pos_cp.con", "r");
-    if (pos_file != NULL) {
+    if (std::filesystem::exists("pos_cp.con")) {
       posInFilename = "pos_cp.con";
       SPDLOG_LOGGER_DEBUG(log, "[Minimization] Resuming from checkpoint");
     } else {
