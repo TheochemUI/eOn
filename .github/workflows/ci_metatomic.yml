@@ -31,6 +31,10 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Install cbindgen
+        shell: pixi run bash -e {0}
+        run: pixi run ensure_cbindgen
+
       - name: Use Homebrew gfortran (macOS)
         if: runner.os == 'macOS'
         run: |
