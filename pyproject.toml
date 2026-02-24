@@ -45,10 +45,10 @@ install = ['--skip-subprojects']
 dist = ['--include-subprojects']
 
 
-[tool.pdm]
-distribution = true
+[project.scripts]
+eon-server = "eon.main:main"
 
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 lint = [
     "ruff>=0.3.4",
 ]
@@ -60,18 +60,6 @@ testing = [
 extras = [
     "ase>=3.23.0",
 ]
-
-[tool.pdm.scripts]
-check_ruff  = "ruff check ."
-ruff_fix    = "ruff --fix --unsafe-fixes ."
-ruff_format = "ruff format ."
-lint        = { composite = [ "ruff_fix", "ruff_format" ] }
-test        = "pytest --cov=src tests"
-mkdoc = {composite = ["sphinx-build -b html docs/source docs/build/html"]}
-[project.scripts]
-eon-server = "eon.main:main"
-
-[dependency-groups]
 docs = [
     "sphinx>=7.3.7",
     "sphinx-contributors>=0.2.7",
