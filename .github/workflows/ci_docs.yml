@@ -38,10 +38,10 @@ jobs:
 
       - name: Generate Docs
         shell: pixi run bash -e {0}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           uv sync --group docs --no-install-project
-          uv pip install meson-python numpy
-          uv pip install . -vvv --no-build-isolation
           uv run sphinx-build -b html docs/source docs/build/html
 
       - name: Upload artifact
