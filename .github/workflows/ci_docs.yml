@@ -40,6 +40,7 @@ jobs:
         shell: pixi run bash -e {0}
         run: |
           uv sync --group docs --no-install-project
+          uv pip install meson-python numpy
           uv pip install . -vvv --no-build-isolation
           uv run sphinx-build -b html docs/source docs/build/html
 
