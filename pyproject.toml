@@ -7,7 +7,7 @@ authors = [
 ]
 dependencies = [
     "numpy>=1.26.4",
-    "readcon>=0.4.2",
+    "readcon>=0.4.3",
 ]
 requires-python = ">=3.11"
 # readme = "readme.md"
