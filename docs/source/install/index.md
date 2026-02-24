@@ -57,7 +57,7 @@ cd eOn
 
 ## Building from source
 
-We provide a `conda` environment and `pixi` setup, with dependencies handled by `conda-lock`.
+We provide a `conda` environment and `pixi` setup, with dependencies handled by `pixi`.
 
 ```{code-block} bash
 pixi shell
