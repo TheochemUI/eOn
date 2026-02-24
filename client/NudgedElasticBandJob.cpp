@@ -135,7 +135,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
 
 void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
                                     NudgedElasticBand *neb) {
-  FILE *fileResults, *fileNEB;
+  FILE *fileResults;
 
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
@@ -182,11 +182,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
-  fileNEB = fopen(nebFilename.c_str(), "wb");
   for (long i = 0; i <= neb->numImages + 1; i++) {
-    neb->path[i]->matter2con(fileNEB);
+    neb->path[i]->matter2con(nebFilename, /*append=*/i > 0);
   }
-  fclose(fileNEB);
 
   // Save Discrete Saddle Point (Highest Energy Image)
   std::string spFilename("sp.con");

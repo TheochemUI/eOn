@@ -96,7 +96,7 @@ int SaddleSearchJob::doSaddleSearch() {
 }
 
 void SaddleSearchJob::saveData(int status) {
-  FILE *fileResults, *fileSaddle, *fileMode;
+  FILE *fileResults, *fileMode;
 
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
@@ -142,9 +142,7 @@ void SaddleSearchJob::saveData(int status) {
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);
-  fileSaddle = fopen(saddleFilename.c_str(), "wb");
-  saddle->matter2con(fileSaddle);
-  fclose(fileSaddle);
+  saddle->matter2con(saddleFilename);
 }
 
 void SaddleSearchJob::printEndState(int status) {
