@@ -29,20 +29,11 @@ jobs:
         with:
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-          activate-environment: true
           environments: >-
             docs
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-
       - name: Generate Docs
-        shell: pixi run bash -e {0}
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          uv sync --group docs --no-install-project
-          .venv/bin/sphinx-build -b html docs/source docs/build/html
+        run: pixi run -e docs makedocs
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
