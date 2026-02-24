@@ -1,6 +1,6 @@
 [project]
 name = "eon"
-version = "2.10.2"
+version = "2.11.0"
 description = "Server component of eon project"
 authors = [
     {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
