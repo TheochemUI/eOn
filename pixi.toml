@@ -5,7 +5,7 @@ name = "eOn"
 # NOTE: not every platform has 100% support other than Linux
 # e.g. LAMMPS and NWChem do not have builds for Windows
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
-version = "2.10.2"
+version = "2.11.0"
 
 [tasks]
 

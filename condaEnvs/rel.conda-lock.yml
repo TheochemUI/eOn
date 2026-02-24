@@ -331,16 +331,16 @@ package:
   category: main
   optional: false
 - name: fmt
-  version: 12.1.0
+  version: 11.2.0
   manager: conda
   platform: osx-arm64
   dependencies:
     __osx: '>=11.0'
-    libcxx: '>=19'
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/fmt-12.1.0-h403dcb5_0.conda
+    libcxx: '>=18'
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/fmt-11.2.0-h440487c_0.conda
   hash:
-    md5: ae2f556fbb43e5a75cc80a47ac942a8e
-    sha256: dba5d4a93dc62f20e4c2de813ccf7beefed1fb54313faff9c4f2383e4744c8e5
+    md5: 24109723ac700cce5ff96ea3e63a83a3
+    sha256: 1449ec46468860f6fb77edba87797ce22d4f6bfe8d5587c46fd5374c4f7383ee
   category: main
   optional: false
 - name: fortran-compiler
@@ -1315,17 +1315,17 @@ package:
   category: main
   optional: false
 - name: spdlog
-  version: 1.17.0
+  version: 1.16.0
   manager: conda
   platform: osx-arm64
   dependencies:
     __osx: '>=11.0'
-    fmt: '>=12.1.0,<12.2.0a0'
+    fmt: '>=11.2.0,<11.3.0a0'
     libcxx: '>=19'
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/spdlog-1.17.0-ha0f8610_1.conda
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/spdlog-1.16.0-h06f2c6e_0.conda
   hash:
-    md5: 1885f7cface8cd627774407eeacb2caf
-    sha256: 465e81abc0e662937046a2c6318d1a9e74baee0addd51234d36e08bae6811296
+    md5: f429110bb3c4139f94a2c5c3aecd4af5
+    sha256: 6cfe6eba97204dc1d4165f903a9247a34d1cac6e06c29307db7150226452b118
   category: main
   optional: false
 - name: tapi
@@ -2597,17 +2597,17 @@ package:
   category: main
   optional: false
 - name: fmt
-  version: 12.1.0
+  version: 11.2.0
   manager: conda
   platform: win-64
   dependencies:
     ucrt: '>=10.0.20348.0'
     vc: '>=14.3,<15'
     vc14_runtime: '>=14.44.35208'
-  url: https://conda.anaconda.org/conda-forge/win-64/fmt-12.1.0-h7f4e812_0.conda
+  url: https://conda.anaconda.org/conda-forge/win-64/fmt-11.2.0-h1d4551f_0.conda
   hash:
-    md5: 6e226b58e18411571aaa57a16ad10831
-    sha256: cce96406ec353692ab46cd9d992eddb6923979c1a342cbdba33521a7c234176f
+    md5: 15b63c3fb5b7d67b1cb63553a33e6090
+    sha256: 890f2789e55b509ff1f14592a5b20a0d0ec19f6da463eff96e378a5d70f882da
   category: main
   optional: false
 - name: fortran-compiler
@@ -3325,18 +3325,18 @@ package:
   category: main
   optional: false
 - name: spdlog
-  version: 1.17.0
+  version: 1.16.0
   manager: conda
   platform: win-64
   dependencies:
-    fmt: '>=12.1.0,<12.2.0a0'
+    fmt: '>=11.2.0,<11.3.0a0'
     ucrt: '>=10.0.20348.0'
     vc: '>=14.3,<15'
     vc14_runtime: '>=14.44.35208'
-  url: https://conda.anaconda.org/conda-forge/win-64/spdlog-1.17.0-h9f585f1_1.conda
+  url: https://conda.anaconda.org/conda-forge/win-64/spdlog-1.16.0-hb1706eb_0.conda
   hash:
-    md5: 5c17c0a063b4d36b15d5f9c0ca5377a0
-    sha256: 90c9befa5f154463647c8e101bc7a4e05cb84b731e2dea5406bedfea02f8b012
+    md5: f0fedd71001bf8ac6552865d5fb315b5
+    sha256: 76b093cd335b011376bf591341026f4569cf5943986e9546a8146e95557d9492
   category: main
   optional: false
 - name: tbb
@@ -4743,17 +4743,17 @@ package:
   category: main
   optional: false
 - name: fmt
-  version: 12.0.0
+  version: 11.2.0
   manager: conda
   platform: linux-64
   dependencies:
     __glibc: '>=2.17,<3.0.a0'
-    libgcc: '>=14'
-    libstdcxx: '>=14'
-  url: https://conda.anaconda.org/conda-forge/linux-64/fmt-12.0.0-h2b0788b_0.conda
+    libgcc: '>=13'
+    libstdcxx: '>=13'
+  url: https://conda.anaconda.org/conda-forge/linux-64/fmt-11.2.0-h07f6e7f_0.conda
   hash:
-    md5: d90bf58b03d9a958cb4f9d3de539af17
-    sha256: b546c4eb5e11c2d8eab0685593e078fd0cd483e467d5d6e307d60d887488230f
+    md5: 0c2f855a88fab6afa92a7aa41217dc8e
+    sha256: e0f53b7801d0bcb5d61a1ddcb873479bfe8365e56fd3722a232fbcc372a9ac52
   category: main
   optional: false
 - name: fortran-compiler
@@ -5656,13 +5656,13 @@ package:
   platform: linux-64
   dependencies:
     __glibc: '>=2.17,<3.0.a0'
-    fmt: '>=12.0.0,<12.1.0a0'
+    fmt: '>=11.2.0,<11.3.0a0'
     libgcc: '>=14'
     libstdcxx: '>=14'
-  url: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.16.0-hffee6e0_1.conda
+  url: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.16.0-ha91398d_0.conda
   hash:
-    md5: e7d62748a83b2a4574e219085e1d9855
-    sha256: decf20ffbc2491ab4a65750e3ead2618ace69f3398b7bb58b5784b02f16ca87d
+    md5: 57711002d722e1067e33c0bce84c2207
+    sha256: b186180e4ad6d00aa58b6890a31d45bee5b96202d636fe35a97bc5a621f65220
   category: main
   optional: false
 - name: sysroot_linux-64

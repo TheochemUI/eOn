@@ -1,4 +1,37 @@
+
+
 <!-- towncrier release notes start -->
+
+## [2.11.0](https://github.com/theochemui/eongit/tree/2.11.0) - 2026-02-24
+
+### Added
+
+- Add `eonclient --serve` mode that wraps any eOn potential as an
+  rgpot-compatible RPC server over Cap'n Proto. Supports four serving modes:
+  single-potential (`--serve-port`), multi-model (`--serve "lj:12345,eam_al:12346"`),
+  replicated (`--replicas N` on sequential ports), and gateway (single port with
+  round-robin pool via `--gateway`). All options are also available through a
+  `[Serve]` INI config section. Requires `-Dwith_serve=true` at build time. ([#316](https://github.com/theochemui/eongit/issues/316))
+- Add dictionary-style configuration examples using `rgpycrumbs` to the user
+  guide, demonstrating programmatic config generation alongside INI files. ([#317](https://github.com/theochemui/eongit/issues/317))
+
+### Developer
+
+- Switch benchmark PR comment workflow from hand-rolled scripts to the
+  `asv-perch` GitHub Action, and parallelize benchmark execution with a matrix
+  strategy for main and PR HEAD. ([#315](https://github.com/theochemui/eongit/issues/315))
+- Add rgpot subproject wrap, `with_serve` meson option, `serve` pixi environment,
+  CI workflow for serve mode builds, and Catch2 unit tests for serve spec parsing. ([#316](https://github.com/theochemui/eongit/issues/316))
+
+### Fixed
+
+- Skip `torch_global_deps` on Windows where the conda-forge libtorch package does not ship it. ([#314](https://github.com/theochemui/eongit/issues/314))
+- Fixed serve mode segfault caused by `AtomMatrix` type collision between eOn's
+  Eigen-based type and rgpot's custom type. Replaced the `rgpot::PotentialBase`
+  virtual interface with a flat-array `ForceCallback`, eliminating the name
+  collision entirely. The serve code now only links the capnp schema dependency
+  (`ptlrpc_dep`) from rgpot, not the full library. ([#316](https://github.com/theochemui/eongit/issues/316))
+
 
 ## [2.10.2](https://github.com/theochemui/eongit/tree/2.10.2) - 2026-02-22
 
