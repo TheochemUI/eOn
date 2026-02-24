@@ -140,9 +140,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   {
     auto out = fmt::output_file(resultsFilename);
     out.print("{} termination_reason\n", static_cast<int>(status));
-    out.print("{} potential_type\n",
-              std::string{magic_enum::enum_name<PotType>(
-                  params.potential_options.potential)});
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
     out.print("{:f} energy_reference\n", neb->path[0]->getPotentialEnergy());
     out.print("{} number_of_images\n", neb->numImages);
 
@@ -153,10 +152,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
                 i);
       out.print("{:f} image{}_force\n", neb->path[i]->getForces().norm(), i);
 
-      double proj_norm =
-          (i >= 1 && i <= neb->numImages)
-              ? neb->projectedForce[i]->norm()
-              : 0.0;
+      double proj_norm = (i >= 1 && i <= neb->numImages)
+                             ? neb->projectedForce[i]->norm()
+                             : 0.0;
       out.print("{:f} image{}_projected_force\n", proj_norm, i);
     }
 

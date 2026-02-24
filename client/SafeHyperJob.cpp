@@ -291,9 +291,8 @@ void SafeHyperJob::saveData(int status) {
 
   {
     auto out = fmt::output_file(resultsFilename);
-    out.print("{} potential_type\n",
-              std::string{magic_enum::enum_name<PotType>(
-                  params.potential_options.potential)});
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
     out.print("{} random_seed\n", params.main_options.randomSeed);
     out.print("{:f} potential_energy_reactant\n",
               reactant->getPotentialEnergy());
@@ -312,9 +311,8 @@ void SafeHyperJob::saveData(int status) {
 
     out.print("{:e} simulation_time_s\n",
               time * 1.0e-15 * params.constants.timeUnit);
-    out.print("{:f} speedup\n",
-              time / params.dynamics_options.steps /
-                  params.dynamics_options.time_step);
+    out.print("{:f} speedup\n", time / params.dynamics_options.steps /
+                                    params.dynamics_options.time_step);
   }
 
   std::string reactantFilename("reactant.con");

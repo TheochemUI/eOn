@@ -137,9 +137,8 @@ void ReplicaExchangeJob::saveData(void) {
   {
     auto out = fmt::output_file(resultsFilename);
     out.print("{} random_seed\n", params.main_options.randomSeed);
-    out.print("{} potential_type\n",
-              std::string{magic_enum::enum_name<PotType>(
-                  params.potential_options.potential)});
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
   }
 
   std::string posFilename("pos_out.con");

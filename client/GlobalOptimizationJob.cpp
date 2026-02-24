@@ -191,8 +191,10 @@ void GlobalOptimizationJob::report(Matter *matter_hop) {
   double epot_hop = matter_hop->getPotentialEnergy();
   double temp = (2.0 * ekin_p / params.constants.kB);
   double dt = params.dynamics_options.time_step;
-  monfile.print("{:15.5f}  {:15.5f}  {:11d}  {:12.2f}         {:c}{:c}  {:5d}  {:5d}",
-                epot_hop, ediff, static_cast<size_t>(temp), dt, C1, C2, fcallsMove, fcallsRelax);
+  monfile.print(
+      "{:15.5f}  {:15.5f}  {:11d}  {:12.2f}         {:c}{:c}  {:5d}  {:5d}",
+      epot_hop, ediff, static_cast<size_t>(temp), dt, C1, C2, fcallsMove,
+      fcallsRelax);
 }
 
 void GlobalOptimizationJob::decisionStep(Matter *matter_cur,
