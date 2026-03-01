@@ -11,7 +11,11 @@ myst:
 and libraries and others via interfaces.
 
 ```{note}
-Some of these require flags to be set, details are in the [installation instructions](project:../install/index.md)
+Some of these require compile-time flags, detailed in the [installation instructions](project:../install/index.md).
+The `conda-forge` package (`conda install -c conda-forge eon`) ships with
+**Metatomic**, **XTB**, **EXT_POT**, and the vendored potentials.
+LAMMPS, ASE, VASP, AMS, and MPI potentials require building from source with
+the corresponding `-Dwith_*` flags.
 ```
 
 ## Supported Potentials
@@ -19,27 +23,27 @@ Some of these require flags to be set, details are in the [installation instruct
 ### External
 
 VASP {cite:p}`pot-kresseEfficientIterativeSchemes1996`
-: Vienna Ab-Initio Simulation Program (VASP) I/O interface.
+: Vienna Ab-Initio Simulation Program (VASP) I/O interface. {bdg-warning}`source build`
 
 LAMMPS {cite:p}`pot-plimptonFastParallelAlgorithms1995,pot-thompsonLAMMPSFlexibleSimulation2022`
-: Library interface, detailed [documentation here](project:../user_guide/lammps_pot.md)
+: Library interface, detailed [documentation here](project:../user_guide/lammps_pot.md). {bdg-warning}`source build`
 
 EXT_POT
-: Writes box size and coordinates to the file `from_eon_to_ext` and makes a system call to `ext_pot` which must populate `from_ext_to_eon`
+: File-based interface to any external calculator. Detailed [documentation here](project:ext_pot.md). {bdg-success}`conda-forge`
 
 ```{versionadded} 2.0
 AMS(-IO)
-: Amsterdam modeling suite {cite:p}`pot-teveldeChemistryADF2001`, both I/O and library
+: Amsterdam modeling suite {cite:p}`pot-teveldeChemistryADF2001`, both I/O and library. {bdg-warning}`source build`
 ASE_ORCA
-: Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to ORCA {cite:p}`pot-neeseORCAQuantumChemistry2020`
+: Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to ORCA {cite:p}`pot-neeseORCAQuantumChemistry2020`. {bdg-warning}`source build`
 ASE_NWChem
-: Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to NWChem {cite:p}`pot-apraNWChemPresentFuture2020`
+: Atomic simulation environment {cite:p}`pot-larsenAtomicSimulationEnvironment2017` interface to NWChem {cite:p}`pot-apraNWChemPresentFuture2020`. {bdg-warning}`source build`
 XTB
-: Extended Tight binding models via native Fortran-C interfce {cite:p}`pot-bannwarthExtendedTightbindingQuantum2021`
+: Extended Tight binding models via native Fortran-C interfce {cite:p}`pot-bannwarthExtendedTightbindingQuantum2021`. {bdg-success}`conda-forge`
 Metatomic
-: Common interface to atomistic machine learning models
+: Common interface to atomistic machine learning models. {bdg-success}`conda-forge`
 SocketNWChem
-: Socket oriented communicator for efficient integration with NWChem {cite:p}`pot-apraNWChemPresentFuture2020`
+: Socket oriented communicator for efficient integration with NWChem {cite:p}`pot-apraNWChemPresentFuture2020`. {bdg-success}`conda-forge`
 ```
 
 ### Vendored

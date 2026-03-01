@@ -10,6 +10,12 @@ myst:
 ```{versionadded} 2.5
 ```
 
+```{admonition} conda-forge availability
+:class: warning
+**Not** included in the `conda-forge` package. Requires building both QUIP and
+LAMMPS from source, then building eOn with `-Dwith_lammps=True`.
+```
+
 In order, we require:
 - QUIP as a library (`quippy` is not required)
   + SOAP needs to be compiled in, [documented here](https://github.com/HaoZeke/quip-nix)
