@@ -657,6 +657,7 @@ if get_option('with_tests')
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
         ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
+        ['test_extpot', 'ExtPotTest.cpp', 'extpot'],
         ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],

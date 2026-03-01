@@ -151,7 +151,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     return (std::make_shared<EffectiveMediumTheory>(params));
     break;
   }
-  case PotType::EXT: {
+  case PotType::EXT_POT: {
     return (std::make_shared<ExtPot>(params));
     break;
   }

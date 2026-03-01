@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""Harmonic spring: E = 0.5 * k * (r - r0)^2, k=1.0, r0=1.0."""
+import math
+
+lines = open("from_eon_to_extpot").readlines()
+# Skip 3 box lines
+atoms = []
+for l in lines[3:]:
+    tok = l.split()
+    atoms.append((int(tok[0]), float(tok[1]), float(tok[2]), float(tok[3])))
+
+N = len(atoms)
+forces = [[0.0, 0.0, 0.0] for _ in range(N)]
+energy = 0.0
+k = 1.0
+r0 = 1.0
+
+for i in range(N):
+    for j in range(i + 1, N):
+        dx = atoms[j][1] - atoms[i][1]
+        dy = atoms[j][2] - atoms[i][2]
+        dz = atoms[j][3] - atoms[i][3]
+        r = math.sqrt(dx * dx + dy * dy + dz * dz)
+        if r < 1e-12:
+            continue
+        energy += 0.5 * k * (r - r0) ** 2
+        fmag = k * (r - r0) / r
+        forces[i][0] += fmag * dx
+        forces[i][1] += fmag * dy
+        forces[i][2] += fmag * dz
+        forces[j][0] -= fmag * dx
+        forces[j][1] -= fmag * dy
+        forces[j][2] -= fmag * dz
+
+with open("from_extpot_to_eon", "w") as f:
+    f.write(f"{energy:.15f}\n")
+    for fx, fy, fz in forces:
+        f.write(f"{fx:.15f} {fy:.15f} {fz:.15f}\n")

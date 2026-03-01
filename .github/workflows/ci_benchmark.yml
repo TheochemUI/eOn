@@ -32,6 +32,7 @@ jobs:
           cp asv.conf.json /tmp/_bench_preserve/
           git checkout -f ${{ matrix.sha }}
           git clean -fd
+          rm -rf benchmarks
           cp -r /tmp/_bench_preserve/benchmarks/ benchmarks/
           cp /tmp/_bench_preserve/asv.conf.json asv.conf.json
 
@@ -108,7 +109,7 @@ jobs:
             BCONF_ARG="$BCONF"
           fi
           # Exit code 1 = regressions detected (expected, not an error)
-          uvx --from "git+https://github.com/HaoZeke/asv_spyglass.git@enh-multiple-comparisons" \
+          uvx --from "git+https://github.com/airspeed-velocity/asv_spyglass.git" \
             asv-spyglass compare "$BASE_FILE" "$PR_FILE" $BCONF_ARG \
             --label-before main --label-after pr \
             > results/comparison.txt || true
