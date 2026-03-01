@@ -64,6 +64,7 @@ described in the subsequent sections.
 :maxdepth: 1
 :caption: Potentials
 
+ext_pot
 lammps_pot
 ase_pot
 metatomic_pot
