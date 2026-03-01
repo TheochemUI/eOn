@@ -10,6 +10,11 @@ myst:
 ```{versionadded} 2.0
 ```
 
+```{admonition} conda-forge availability
+:class: tip
+Included in the `conda-forge` package. No additional build flags required.
+```
+
 The Metatomic interface allows eOn to use machine learning potentials developed
 with the `metatensor` and `pytorch` libraries.
 
