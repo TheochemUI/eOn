@@ -576,7 +576,7 @@ class PotentialConfig(BaseModel):
      - ``eam_al``: Embedded atom method parameterized for aluminum.
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
      - ``emt``: Effective medium theory, for metals.
-     - ``ext``: External potential with system call interface.
+     - ``ext_pot``: External potential with system call interface.
      - ``fehe``: Potential for iron-hydrogen systems.
      - ``gpr``: Gaussian process regression potential.
      - ``imd``: IMD simulation package interface.
