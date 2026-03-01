@@ -7,6 +7,12 @@ myst:
 
 # MPI Potential
 
+```{admonition} conda-forge availability
+:class: warning
+**Not** included in the `conda-forge` package. Requires building from source
+with `-Dwith_mpi=True`.
+```
+
 ```{note}
 This is only for modified VASP at the moment..
 ```

@@ -10,6 +10,11 @@ myst:
 ```{versionadded} 2.2
 ```
 
+```{admonition} conda-forge availability
+:class: tip
+Included in the `conda-forge` package (v2.12+). No additional build flags required.
+```
+
 Serve mode wraps any eOn potential as an
 [rgpot](https://github.com/OmniPotentRPC/rgpot)-compatible server, exposing it
 over Cap'n Proto RPC. This allows external tools, such as Julia-based

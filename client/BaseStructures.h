@@ -42,7 +42,7 @@ enum class PotType {
   // Only add to the end of this!!!
   UNKNOWN = 0,
   EMT,
-  EXT,
+  EXT_POT,
   LJ,
   LJCLUSTER,
   MORSE_PT,
