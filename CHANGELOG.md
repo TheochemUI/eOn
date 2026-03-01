@@ -2,6 +2,21 @@
 
 <!-- towncrier release notes start -->
 
+## [2.11.1](https://github.com/theochemui/eongit/tree/2.11.1) - 2026-03-01
+
+### Added
+
+- External potential (`ext_pot`) documentation with protocol spec, DeePMD and ASE wrapper examples, and conda-forge availability badges on all potential pages. ([#318](https://github.com/theochemui/eongit/issues/318))
+
+### Developer
+
+- Add `ExtPotTest` unit test verifying the file-based ext_pot protocol with a harmonic spring calculator. ([#318](https://github.com/theochemui/eongit/issues/318))
+
+### Fixed
+
+- Rename `PotType::EXT` to `EXT_POT` so `magic_enum` matches the `ext_pot` config string. Previously `potential = ext_pot` was silently mapped to `UNKNOWN`. ([#318](https://github.com/theochemui/eongit/issues/318))
+
+
 ## [2.11.0](https://github.com/theochemui/eongit/tree/2.11.0) - 2026-02-24
 
 ### Added
