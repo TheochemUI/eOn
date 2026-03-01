@@ -26,7 +26,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Post benchmark comment
-        uses: HaoZeke/asv-perch@v1.1.0
+        uses: HaoZeke/asv-perch@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comparison-text-file: results/comparison.txt
