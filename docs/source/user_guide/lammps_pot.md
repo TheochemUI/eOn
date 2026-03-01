@@ -11,6 +11,14 @@ myst:
 Instructions now reflect using the `cmake` and `meson` build system.
 ```
 
+```{admonition} conda-forge availability
+:class: warning
+**Not** included in the `conda-forge` package. Requires building from source
+with `-Dwith_lammps=True`. If you need to run an MLIP (DeePMD, MACE, etc.)
+from a `conda-forge` install, see the [external potential](project:ext_pot.md)
+guide instead.
+```
+
 ## Setup
 
 In order to use LAMMPS, reviewed recently in
