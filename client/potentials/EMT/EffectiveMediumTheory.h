@@ -12,7 +12,7 @@
 #pragma once
 
 // serves as an interface between emt potentials provided by CamposASE and
-// dynamics provided by EON
+// dynamics provided by eOn
 
 #include "Asap/Atoms.h"
 #include "Asap/EMT.h"

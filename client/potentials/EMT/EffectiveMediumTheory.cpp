@@ -95,7 +95,7 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
 
   *U = EMTObj->GetPotentialEnergy();
 
-  // converts data from EMT to suite EON
+  // converts data from EMT to suit eOn
   const Vec *tempF = EMTObj->GetCartesianForces();
   memcpy(F, tempF, N * sizeof(Vec));
 

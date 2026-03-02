@@ -104,7 +104,7 @@ ax.axhline(
 ax.set_xlabel("Iteration Number")
 ax.set_ylabel("Perpendicular Force Norm")
 # ax.set_facecolor("gray")
-ax.set_title("EON NEB Calculation: Force Norm per Iteration\n Text is max energy")
+ax.set_title("eOn NEB Calculation: Force Norm per Iteration\n Text is max energy")
 ax.legend(loc="upper right")
 
 # Add the last data point's x-value

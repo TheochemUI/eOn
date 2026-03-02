@@ -12,7 +12,7 @@ from ase.io import write
 
 def main():
     """
-    Creates a simple Si-Au dimer and writes it to EON .con and
+    Creates a simple Si-Au dimer and writes it to eOn .con and
     LAMMPS data formats.
     """
     print("Creating Si-Au dimer structure...")
@@ -30,7 +30,7 @@ def main():
     atoms.pbc = True
     atoms.center()
 
-    # Write the EON .con file
+    # Write the eOn .con file
     print("Writing to system.con...")
     write("pos.con", atoms, format="eon")
 

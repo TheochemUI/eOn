@@ -30,7 +30,7 @@ Compile the IMD code, which creates an executable located in '$IMD/bin':
  make IMDSYS=x86-eon imd_cg_eam_adp_nbl_writef
 
 3
-For the created executable to work with EON it must be rename to 'imd_eon' and
+For the created executable to work with eOn it must be rename to 'imd_eon' and
 placed in a directory in the search path. As an example:
 
  cp $IMD/bin/imd_cg_eam_adp_nbl_writef ~/bin/imd_eon

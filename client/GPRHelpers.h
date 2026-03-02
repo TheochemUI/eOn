@@ -22,14 +22,14 @@ namespace helper_functions {
  *
  * TODO: Get the cell size from a Matter object
  *
- * @param *parameters An EON parameters object
+ * @param *parameters An eOn parameters object
  */
 gpr::InputParameters eon_parameters_to_gpr(const Parameters &parameters);
 
 /**
  * \brief Create a configuration of atoms for gpr_dimer
  *
- * @param *Matter An EON Matter object
+ * @param *Matter An eOn Matter object
  */
 gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
 
@@ -40,7 +40,7 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
  * actually append or handle the Observation structure other than for
  * initialization of atomic gp dimer
  *
- * @param *Matter An EON Matter object
+ * @param *Matter An eOn Matter object
  */
 gpr::Observation eon_matter_to_init_obs(Matter *matter);
 

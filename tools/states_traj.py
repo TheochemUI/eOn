@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This script constructs an ASE trajectory file from EON state files.
+This script constructs an ASE trajectory file from eOn state files.
 
 It can generate trajectories in three ways:
 1. From a continuous range of states.
@@ -157,7 +157,7 @@ def process_akmc_path(start_step: int, end_state: int, states_e: dict[int, float
 @click.option('--akmc_step', type=int, help='Starting step number from dynamics.txt for an AKMC path.')
 @click.option('-o', '--output', type=str, default='', help='Name of the output trajectory file (default is auto-generated).')
 def main(states, start, end, akmc_step, output):
-    """Constructs an ASE binary trajectory (.traj) from EON states."""
+    """Constructs an ASE binary trajectory (.traj) from eOn states."""
     # --- Pre-computation Checks ---
     if not STATE_MAIN_DIR.is_dir():
         logging.error(f"Error: 'states' directory not found in '{CWD}'.")
