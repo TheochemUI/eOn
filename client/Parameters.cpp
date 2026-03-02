@@ -218,7 +218,7 @@ Parameters::Parameters() {
   metatomic_options.length_unit = "angstrom"s;
   metatomic_options.extensions_directory = ""s;
   metatomic_options.check_consistency = false;
-  metatomic_options.uncertainty_threshold = 0.1;
+  metatomic_options.uncertainty_threshold = -1.0;
   metatomic_options.variant.base = ""s;
   metatomic_options.variant.energy = ""s;
   metatomic_options.variant.energy_uncertainty = ""s;
@@ -884,7 +884,7 @@ int Parameters::load(FILE *file) {
       metatomic_options.check_consistency =
           ini.GetValueB("Metatomic", "check_consistency", false);
       metatomic_options.uncertainty_threshold =
-          ini.GetValueF("Metatomic", "uncertainty_threshold", 0.1);
+          ini.GetValueF("Metatomic", "uncertainty_threshold", -1.0);
       auto &_variant = metatomic_options.variant;
       _variant.base = ini.GetValue("Metatomic", "variant_base", "");
       _variant.energy = ini.GetValue("Metatomic", "variant_energy", "");
