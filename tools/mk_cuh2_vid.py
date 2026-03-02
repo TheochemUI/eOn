@@ -42,7 +42,7 @@ true_e_dat = cuh2slab.plt_data(
 
 # print([x.energy for x in true_e_dat.pltpts])
 
-def plot_band(_index, _band, _k, _method="EON", _opt="QM", _ci="False"):
+def plot_band(_index, _band, _k, _method="eOn", _opt="QM", _ci="False"):
     plot_last = [ASE_MoveCoordTrain().transform(x) for x in _band]
     cuh2slab.contour_plot(
         true_e_dat.pltpts,
@@ -85,7 +85,7 @@ if __name__ == "__main__":
         )
 
     if args.ffmpeg:
-        oname = f"EON_{ec_opt}_{ec_ci}"
+        oname = f"eOn_{ec_opt}_{ec_ci}"
         subprocess.run(
             [
                 "ffmpeg",

@@ -52,7 +52,7 @@ ax.minorticks_on()
 ax.set_ylim(0, ax.get_ylim()[1])
 ax.set_xlim(0, ax.get_xlim()[1])
 ax.set_facecolor("gray")
-plt.title("EON NEB paths")
+plt.title("eOn NEB paths")
 plt.tight_layout(pad=0.2)
 plt.subplots_adjust(left=0.20)
 

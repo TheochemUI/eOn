@@ -44,7 +44,7 @@ in  pkgs.stdenv.mkDerivation rec {
   '';
 
     meta = with pkgs.lib; {
-    description = "EON C++ client";
+    description = "eOn C++ client";
     homepage = "https://github.com/HaoZeke/eongit";
     maintainers = [ maintainers.HaoZeke ];
     license = licenses.bsd3;

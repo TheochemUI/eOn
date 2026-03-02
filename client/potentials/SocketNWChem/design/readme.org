@@ -111,4 +111,4 @@ Correctly formatting the binary data stream is essential.
 - Units :: The i-PI protocol mandates the use of atomic units. All lengths
   (positions, cell vectors) must be converted to Bohr before being sent.
   Energies and forces are received in Hartree and Hartree/Bohr, respectively,
-  and so need to be converted again into Angstrom and eV for EON.
+  and so need to be converted again into Angstrom and eV for eOn.
