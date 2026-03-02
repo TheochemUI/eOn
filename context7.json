@@ -1,4 +1,7 @@
 {
+  "$schema": "https://context7.com/schema/context7.json",
   "url": "https://context7.com/theochemui/eon",
-  "public_key": "pk_gq0VEaRq7MjJWbmNFu1Se"
+  "public_key": "pk_gq0VEaRq7MjJWbmNFu1Se",
+  "projectTitle": "eOn",
+  "description": "eOn is a software package for modeling the long-time evolution of atomic scale systems using saddle point finding methods, parallel replica dynamics, and kinetic Monte Carlo."
 }
