@@ -351,13 +351,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       statsRotations += 1;
       SPDLOG_LOGGER_INFO(
           log,
-          "[IDimerRot]  -----   ---------   ----------   ----------   "
-          "{:9.4f}   {:7.3f}   {:6.2f}   {:4}   {:5.3f}",
+          "[IDimerRot]  -----   ---------   ----------   ------------------   "
+          "{:9.4f}   {:7.3f}   {:6.3f}   {:4}   {:5.3f}",
           C_tau, statsTorque, statsAngle, statsRotations, alignment);
     } else {
       SPDLOG_LOGGER_INFO(
           log,
-          "[IDimerRot]  -----   ---------   ----------   ----------   "
+          "[IDimerRot]  -----   ---------   ----------   ------------------   "
           "{:9.4f}   {:7.3f}   ------   ----   {:5.3f}",
           C_tau, F_R.norm() / delta, alignment);
     }

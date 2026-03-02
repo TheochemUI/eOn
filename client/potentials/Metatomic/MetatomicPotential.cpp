@@ -1,5 +1,6 @@
 #include "MetatomicPotential.h"
 #include "../../Parameters.h"
+#include "../../fpe_handler.h"
 #include "vesin.h"
 
 #include <cstdint>
@@ -20,6 +21,9 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {
+
+  eonc::FPEHandler fpeh;
+  fpeh.eat_fpe();
 
   m_log->info("[MetatomicPotential] Initializing...");
 
@@ -140,6 +144,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 
   this->check_consistency_ = m_params.metatomic_options.check_consistency;
   m_log->info("[MetatomicPotential] Initialization complete.");
+
+  fpeh.restore_fpe();
 }
 
 // --- MetatomicPotential::force ---
@@ -148,6 +154,9 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                                const int *atomicNrs, double *forces,
                                double *energy, double *variance,
                                const double *box) {
+  eonc::FPEHandler fpeh;
+  fpeh.eat_fpe();
+
   // 1. Convert input arrays to torch::Tensors
   auto f64_options =
       torch::TensorOptions().dtype(torch::kFloat64).device(torch::kCPU);
@@ -325,6 +334,8 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
 
   std::memcpy(forces, forces_tensor.contiguous().data_ptr<double>(),
               nAtoms * 3 * sizeof(double));
+
+  fpeh.restore_fpe();
 }
 
 // --- MetatomicPotential::computeNeighbors (helper) ---

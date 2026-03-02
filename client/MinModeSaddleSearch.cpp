@@ -265,9 +265,9 @@ int MinModeSaddleSearch::run() {
         LowestEigenmode::MINMODE_DIMER) {
       SPDLOG_LOGGER_INFO(log,
                          "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
-                         "{:7s}   {:6s}   {:4s}\n",
+                         "{:7s}   {:6s}   {:4s}   {:5s}\n",
                          "Step", "Step Size", "Delta E", forceLabel,
-                         "Curvature", "Torque", "Angle", "Rots", "Alignment");
+                         "Curvature", "Torque", "Angle", "Rots", "Align");
     } else if (params.saddle_search_options.minmode_method ==
                LowestEigenmode::MINMODE_LANCZOS) {
       SPDLOG_LOGGER_INFO(
