@@ -693,7 +693,7 @@ class Metatomic(BaseModel):
         description="Whether to check consistency of the Metatomic model.",
     )
     uncertainty_threshold: float = Field(
-        default=0.1,  # 100meV/atom
+        default=-1,
         description="Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.",
     )
     variant_base: str = Field(
