@@ -595,7 +595,7 @@ def main(config: ConfigClass = EON_CONFIG):
                 else:
                     wait = lambda: sleep(10.0)
             else:
-                raise RuntimeError("You have found a bug in EON!")
+                raise RuntimeError("You have found a bug in eOn!")
             # Run a specified number of steps or forever.
             steps = 0
             while True:

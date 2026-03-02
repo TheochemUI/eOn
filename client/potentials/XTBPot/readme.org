@@ -7,7 +7,7 @@ Note that the units XTB expects are in Hartree and Bohr, and need to be
 converted.
 
 The commands MUST center the molecule in the resulting ~con~ file, which makes
-it completely useless. More specifically, EON will attempt to "wrap around" the
+it completely useless. More specifically, eOn will attempt to "wrap around" the
 coordinates, making the result incorrect.
 
 #+begin_src bash

@@ -1,4 +1,4 @@
-#+TITLE: EON GPR Test Systems
+#+TITLE: eOn GPR Test Systems
 #+SUBTITLE: Under the Auspices of REAXPRO
 #+AUTHOR: Alejandro, Hannes, Rohit, Satish, Maxim
 #+OPTIONS: toc:nil tasks:nill
@@ -82,12 +82,12 @@ However, these proof of concept studies were implemented in MATLAB and were not 
 The structure of the interface is given below:
 
 #+DOWNLOADED: screenshot @ 2021-02-26 16:18:25
-#+caption: EON to GPR Dimer interface
+#+caption: eOn to GPR Dimer interface
 [[file:images/Architecture/2021-02-26_16-18-25_screenshot.png]]
 
 ** Programming Methodology
 The GPR dimer is implemented as a stand-alone library (Apache2 licensed) with minimally invasive
-changes to the EON code. This allowed for the use of modern and performance
+changes to the eOn code. This allowed for the use of modern and performance
 oriented programming practices like:
 - Modern build system
   - Allows for cross-platform optimizations
@@ -105,17 +105,17 @@ oriented programming practices like:
     - A standard interface for the implementation of future covariance functions has been provided
 - Only user determined parameters are used internally
 We use the numerical linear algebra library, Eigen; which supports Intel MKL
-optimizations. Eigen is also used by EON.
+optimizations. Eigen is also used by eOn.
 
 The library itself has a self contained executable for testing which consumes the same input data as the MATLB code. The interface is seamless, with the addition of input parameters done through the standard ~eon~ configuration file.
 
-The structure of the library is such that it accepts a general potential function from EON and then uses it to calculate the GPR approximation to the potential energy surface. For the relaxation phase, the trained GPR potential in EON is called.
+The structure of the library is such that it accepts a general potential function from eOn and then uses it to calculate the GPR approximation to the potential energy surface. For the relaxation phase, the trained GPR potential in eOn is called.
 
 A user defined set of pruning parameters have been implemented which ensure optimal and bound scaling of the GPR.
-*** EON Changes
+*** eOn Changes
 A Cmake build system was implemented for efficient cross-platform builds. We augment the potentials with an interface to AMS. A GPR potential was also written, which is called by the library for the relaxation phase. Additionally, the build system allows for HPC speed-ups which are determined automatically and uses the MKL.
 *** User Inputs
-All the configurations follow the standard ~ini~ file specification of EON. As the ~gprdimer~ is implemented as a Minimum Mode Search method; as a replacement for the existing ~lanczos~ or ~dimer~ methods. Consider the standard configuration for a saddle search run:
+All the configurations follow the standard ~ini~ file specification of eOn. As the ~gprdimer~ is implemented as a Minimum Mode Search method; as a replacement for the existing ~lanczos~ or ~dimer~ methods. Consider the standard configuration for a saddle search run:
 #+begin_src ini
 [Main]
 job = saddle_search
@@ -144,7 +144,7 @@ xc = B3LYP
 #+end_src
 The current implementation uses an I/O pipe and supports any of the engines exposed by AMS; however efforts to use the standard [[https://www.scm.com/doc/AMS/Pipe_protocol.html][AMSpipe protocol]] for AMS are ongoing.
 **** GPR Dimer
-The interface through EON augments the existing ~conf.ini~ file with the following GPR specific parameters.
+The interface through eOn augments the existing ~conf.ini~ file with the following GPR specific parameters.
 #+begin_src ini
 [GPR Dimer]
 finite_angle = 0.05
@@ -210,7 +210,7 @@ For both systems, the results are the same, 5 hyperparameter optimizations, and 
 
 ** DONE Platinum Adatom on Platinum
 CLOSED: [2021-02-28 Sun 04:30]
-Chronologically the first system tested with EON. The system has some pleasant qualities which make it easy to work and test:
+Chronologically the first system tested with eOn. The system has some pleasant qualities which make it easy to work and test:
 - Easy control of the degrees of freedom
   - Achieved by varying the number of moving atoms and the fixed atoms
 - Homogeneity meant neither atomic numbers nor atomic masses were required
@@ -344,7 +344,7 @@ $$
 O_{\mathrm{method}}=T_{elapsed}-(\overbar{t_{DFT}}×N_{\mathrm{samples}})
 $$
 #+end_export
-Note that this measure includes the time taken by the LBFGS on the GPR surface. We can apply the same formula to the dimer method as well; in order to get an estimate of the normal EON dimer overhead. This means that we can also define a cost function (lower is better) as:
+Note that this measure includes the time taken by the LBFGS on the GPR surface. We can apply the same formula to the dimer method as well; in order to get an estimate of the normal eOn dimer overhead. This means that we can also define a cost function (lower is better) as:
 #+begin_export latex
 $$
 C_{\mathrm{method}}=\frac{O_{\mathrm{method}}}{N_{\mathrm{samples}}}
@@ -433,7 +433,7 @@ To check against the reported values, we also calculated the systems with PM3 ci
 Note that now the pruning was set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
 * Analysis
 ** Scaling
-The training of the hyperparameters using the methods of textcite:rasmussenGaussianProcessesMachine2006 involves the Cholesky decomposition for the calculation of the inverse of a dense covariance matrix. This operation scales as $O(N^{3})$. However, we show that there are more considerations, including the time taken by the LBFGS on the GPR dimer; which has a fixed scaling in cost per step (like the EON dimer) for a given system, but is unbound in that the time taken to convergence cannot be estimated.
+The training of the hyperparameters using the methods of textcite:rasmussenGaussianProcessesMachine2006 involves the Cholesky decomposition for the calculation of the inverse of a dense covariance matrix. This operation scales as $O(N^{3})$. However, we show that there are more considerations, including the time taken by the LBFGS on the GPR dimer; which has a fixed scaling in cost per step (like the eOn dimer) for a given system, but is unbound in that the time taken to convergence cannot be estimated.
 ** Pruning
 With pruning the covariance matrix size is not allowed to exceed a user-defined size; unless the samples are of a particularly high quality. Pruning is of importance to systems which are larger than those considered here; or for systems which require more iterations.
 * References

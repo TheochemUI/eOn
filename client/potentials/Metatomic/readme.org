@@ -60,7 +60,7 @@ model = metatomic_lj_test.lennard_jones_model(
 model.save("lennard-jones.pt", collect_extensions="extensions/")
 #+end_src
 
-This can be loaded checked with a configuration file for EON:
+This can be loaded checked with a configuration file for eOn:
 
 #+begin_src ini
 [Main]

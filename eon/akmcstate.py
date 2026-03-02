@@ -542,7 +542,7 @@ class AKMCState(state.State):
             new_time_at_current_temp = \
                 self.info.get("SearchTime", temp_str, 0.0) + dt
         else:
-            # The info file must come from an older version of EON,
+            # The info file must come from an older version of eOn,
             # which didn't have this section, yet. In this case we
             # assume all prior searches were done at the current
             # temperature and add the SearchTime section. This makes
@@ -560,7 +560,7 @@ class AKMCState(state.State):
             return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime"))
         except configparser.NoSectionError:
             # The "info" file seems to have been produced by an old
-            # version of EON which didn't have the SearchTime
+            # version of eOn which didn't have the SearchTime
             # section. We simply upgrade and try again (no recursion
             # to avoid endless recursion if the exception is raised
             # again).

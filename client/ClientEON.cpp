@@ -89,7 +89,7 @@ void print_memory_usage() {
 #endif
 
 void printSystemInfo() {
-  spdlog::info("EON Client");
+  spdlog::info("eOn Client");
   spdlog::info("VERSION: {}", VERSION);
   spdlog::info("BUILD DATE: {}\n", BUILD_DATE);
 #ifndef __aarch64__

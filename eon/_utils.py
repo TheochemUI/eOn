@@ -31,7 +31,7 @@ class ScriptConfig:
     @classmethod
     def from_eon_config(cls, config: econf.ConfigClass) -> typ.Self:
         """
-        Factory method to create a ScriptConfig instance from the main EON config.
+        Factory method to create a ScriptConfig instance from the main eOn config.
         """
         return cls(
             script_path=Path(config.displace_atom_kmc_state_script),
