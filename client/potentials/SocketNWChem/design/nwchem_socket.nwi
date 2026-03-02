@@ -1,5 +1,5 @@
 start nwchem_socket_job
-title "NWChem Server for EON"
+title "NWChem Server for eOn"
 
 memory 2 gb
 

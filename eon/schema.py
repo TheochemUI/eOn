@@ -158,7 +158,7 @@ class AKMCConfig(BaseModel):
     )
     max_kmc_steps: int = Field(
         default=0,
-        description="The maximum number of KMC transitions in a row. In MPI or continuous mode, EON will exit after performing this many KMC steps. If this is set to 0, EON will run forever.",
+        description="The maximum number of KMC transitions in a row. In MPI or continuous mode, eOn will exit after performing this many KMC steps. If this is set to 0, eOn will run forever.",
     )
     confidence_scheme: Literal["old", "new", "sampling", "dynamics"] = Field(
         default="new", description="The scheme used for confidence calculation."
@@ -650,7 +650,7 @@ class SocketNWChemPot(BaseModel):
         default="127.0.0.1", description="Host where the NWChem client will connect."
     )
     port: int = Field(
-        default=9999, description="Port for the NWChem client to send data to EON."
+        default=9999, description="Port for the NWChem client to send data to eOn."
     )
     nwchem_settings: str = Field(
         default="nwchem_settings.nwi",

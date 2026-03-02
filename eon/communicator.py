@@ -70,7 +70,7 @@ class CommunicatorError(Exception):
 
 
 class EONClientError(Exception):
-    """An EON client finished without outputting results, it probably crashed."""
+    """An eOn client finished without outputting results, it probably crashed."""
     pass
 
 

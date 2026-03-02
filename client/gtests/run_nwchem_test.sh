@@ -34,8 +34,8 @@ cd "$TEST_WORKDIR"
 echo "--- Running test in: $(pwd) ---"
 rm -f results.dat
 
-# 2. Start the EON test server in the background
-echo "--- Starting EON test server in background ---"
+# 2. Start the eOn test server in the background
+echo "--- Starting eOn test server in background ---"
 "$TEST_EXECUTABLE" &
 SERVER_PID=$! # Capture the Process ID of the server
 
@@ -49,7 +49,7 @@ echo "--- Starting NWChem client ---"
 mpirun -np 4 "$NWCHEM_EXECUTABLE" "$NWCHEM_INPUT_FILE"
 
 # 5. Wait for the server process to finish and get its exit code
-echo "--- Waiting for EON test server to exit ---"
+echo "--- Waiting for eOn test server to exit ---"
 wait "$SERVER_PID"
 TEST_EXIT_CODE=$?
 

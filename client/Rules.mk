@@ -186,7 +186,7 @@ export
 #Build rules
 all: $(POTDIRS) $(FPOTDIRS) eonclient
 	@echo
-	@echo "EON Client Compilation Options"
+	@echo "eOn Client Compilation Options"
 	@echo "DEBUG: $(DEBUG)"
 	@echo "POTENTIALS: $(POTENTIALS)"
 

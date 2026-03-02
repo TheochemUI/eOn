@@ -30,7 +30,7 @@ export LIBRARY_PATH="$cur_dir/gprdimer/googletest/googletest/build/lib:$LIBRARY_
 export CPATH="$cur_dir/gprdimer/googletest/googletest/include:$CPATH"
 
 echo ""
-echo " ............... Build the EON client..."
+echo " ............... Build the eOn client..."
 echo ""
 cd $cur_dir
 rm -rf build

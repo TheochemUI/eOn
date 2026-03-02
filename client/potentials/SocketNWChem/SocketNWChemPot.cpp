@@ -88,7 +88,7 @@ void SocketNWChemPot::write_nwchem_template(
   }
 
   outfile << "start nwchem_socket_job\n";
-  outfile << "title \"NWChem Server for EON\"\n\n";
+  outfile << "title \"NWChem Server for eOn\"\n\n";
   outfile << "memory " << mem_in_gb << " gb\n\n";
   outfile << "geometry units bohr noautosym nocenter noautoz\n";
   // This geometry block is only a template for memory allocation.
@@ -130,12 +130,12 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
     accept_connection();
     std::cout << "NWChem client connected." << std::endl;
 
-    // 1. EON acts as the server: after accepting the NWChem client connection,
-    // EON sends "STATUS" to the client to query its status.
+    // 1. eOn acts as the server: after accepting the NWChem client connection,
+    // eOn sends "STATUS" to the client to query its status.
     char status_buffer[MSG_LEN + 1] = {0};
     send_header("STATUS");
 
-    // 2. EON (acting as server) then waits for NWChem (the client) to respond
+    // 2. eOn (acting as server) then waits for NWChem (the client) to respond
     // with "READY".
     recv_header(status_buffer);
     if (std::string(status_buffer) != "READY") {
@@ -224,7 +224,7 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
     recv_exact(extra_buf.data(), extra_len);
   }
 
-  // Convert results back to EON units (eV and Angstrom)
+  // Convert results back to eOn units (eV and Angstrom)
   *U = energy_ha * HARTREE_IN_EV;
   for (int i = 0; i < N * 3; ++i) {
     F[i] = forces_ha_bohr[i] * (HARTREE_IN_EV / BOHR_IN_ANGSTROM);
