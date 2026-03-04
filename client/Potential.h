@@ -62,7 +62,7 @@ public:
   std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix &pos, const VectorXi &atmnrs, const Matrix3d &box);
 
-  PotType getType() { return this->ptype; }
+  [[nodiscard]] PotType getType() { return this->ptype; }
 
   // Logger initialization
   void initializeLogger() {

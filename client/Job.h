@@ -65,7 +65,7 @@ public:
   virtual ~Job() = default;
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;
-  JobType getType() { return this->jtype; };
+  [[nodiscard]] JobType getType() { return this->jtype; };
 };
 
 namespace helper_functions {
