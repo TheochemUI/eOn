@@ -93,7 +93,7 @@ void Dynamics::run() {
   if (parameters.thermostat_options.kind != NONE) {
     SPDLOG_LOGGER_DEBUG(
         log,
-        "{} Running NVT molecular dynamics: {:8.2lf} K for {} "
+        "{} Running NVT molecular dynamics: {:8.2f} K for {} "
         "steps ({:.4e} s)\n",
         "[Dynamics]", temperature, parameters.dynamics_options.steps,
         1e-15 * parameters.dynamics_options.time_step *
@@ -107,7 +107,7 @@ void Dynamics::run() {
     matter->matter2con("dynamics", false);
   }
 
-  SPDLOG_LOGGER_DEBUG(log, "%s %8s %10s %12s %12s %10s\n", "[Dynamics]"s,
+  SPDLOG_LOGGER_DEBUG(log, "{} {:8} {:10} {:12} {:12} {:10}\n", "[Dynamics]"s,
                       "step", "KE", "PE", "TE", "kinT");
 
   for (long step = 0; step <= parameters.dynamics_options.steps; step++) {
@@ -121,8 +121,8 @@ void Dynamics::run() {
     sumT2 += kinT * kinT;
 
     if (step % parameters.debug_options.write_movies_interval == 0) {
-      SPDLOG_LOGGER_DEBUG(log, "{} {:8} {:10} {:12} {:12} {:10}\n",
-                          "[Dynamics]", step, kinE, potE, kinE + potE, kinT);
+      SPDLOG_LOGGER_DEBUG(log, "{} {} {} {} {} {}\n", "[Dynamics]", step, kinE,
+                          potE, kinE + potE, kinT);
     }
 
     if ((parameters.debug_options.write_movies == true) &&
@@ -134,8 +134,8 @@ void Dynamics::run() {
   varT = sumT2 / double(parameters.dynamics_options.steps) - avgT * avgT;
   stdT = sqrt(varT);
   SPDLOG_LOGGER_DEBUG(log,
-                      "{} Temperature : Average = {:.2lf} ; StdDev = {:.2lf} ; "
-                      "Factor = {:.2lf}\n",
+                      "{} Temperature : Average = {:.2f} ; StdDev = {:.2f} ; "
+                      "Factor = {:.2f}\n",
                       "[Dynamics]", avgT, stdT,
                       varT / avgT / avgT * nFreeCoords / 2.0);
 }
