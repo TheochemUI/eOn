@@ -44,6 +44,6 @@ jobs:
           -Dwith_tests=True
           meson install -C bbdir
       - name: Run tests
-        shell: bash -el {0}
+        shell: pixi run -e dev bash -e {0}
         run: |
-          meson test -C bbdir --suite eon
+          meson test -C bbdir test_ase_pot
