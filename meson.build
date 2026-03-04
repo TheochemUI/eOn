@@ -65,8 +65,7 @@ if py_embed
         ],
         check: true,
     ).stdout().strip()
-    inc_np = include_directories(incdir_numpy)
-    _deps += declare_dependency(include_directories: inc_np)
+    _deps += declare_dependency(compile_args: '-I' + incdir_numpy)
 endif
 
 # Client binary

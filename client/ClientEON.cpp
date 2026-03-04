@@ -43,7 +43,7 @@
 #endif
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
-#include <pybind11/embed.h>
+#include "PyGuard.h"
 #endif
 
 #ifdef EONMPIBGP
@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
   Parameters parameters;
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
-  pybind11::scoped_interpreter guard{};
+  eonc::ensure_interpreter();
 #endif
 
 #ifdef EONMPI

@@ -12,6 +12,7 @@
 
 #include "ASE_ORCA.h"
 #include "../../EnvHelpers.hpp"
+#include "../../PyGuard.h"
 #include "../../fpe_handler.h"
 
 // XXX: This always assumes that charge is 0, mult is 1
@@ -19,7 +20,7 @@
 // See also: https://gitlab.com/ase/ase/-/issues/1357
 ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
     : Potential(PotType::ASE_ORCA, a_params) {
-
+  eonc::ensure_interpreter();
   counter = 0;
   py::module_ sys = py::module_::import("sys");
   // Fix for gh-184, see
