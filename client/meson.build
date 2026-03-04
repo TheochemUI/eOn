@@ -348,6 +348,8 @@ if py_embed
     # subdir('potentials/QSC')
     # potentials += [ qsc ]
     if get_option('with_ase')
+        pyb11f_deps = [dependency('pybind11')]
+        _deps += [pyb11f_deps]
         subdir('potentials/ASE')
         potentials += [ase]
         _args += ['-DWITH_ASE_POT']

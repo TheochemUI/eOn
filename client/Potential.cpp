@@ -49,7 +49,7 @@
 #include "potentials/Tersoff/Tersoff.h"
 #endif
 
-#ifdef WITH_PYTHON
+#ifdef EMBED_PYTHON
 
 #ifdef PYAMFF_POT
 #include "potentials/PyAMFF/PyAMFF.h"
@@ -251,7 +251,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-#ifdef WITH_PYTHON
+#ifdef EMBED_PYTHON
 #ifdef PYAMFF_POT
   case PotType::PYAMFF: {
     return (std::make_shared<PyAMFF>());
