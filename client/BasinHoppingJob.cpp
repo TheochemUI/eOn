@@ -32,8 +32,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   disp_count = 0; // count of displacement moves
   int consecutive_rejected_trials = 0;
   double totalAccept = 0.0;
-  Matter *minTrial = new Matter(pot, params);
-  Matter *swapTrial = new Matter(pot, params);
+  std::unique_ptr<Matter> minTrial = std::make_unique<Matter>(pot, params);
+  std::unique_ptr<Matter> swapTrial = std::make_unique<Matter>(pot, params);
 
   string conFilename = getRelevantFile(params.main_options.conFilename);
   current->con2matter(conFilename);
@@ -102,7 +102,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     if (randomDouble(1.0) < params.basin_hopping_options.swap_probability &&
         step < params.basin_hopping_options.steps) {
       *swapTrial = *current;
-      randomSwap(swapTrial);
+      randomSwap(swapTrial.get());
       swapMove = true;
       *minTrial = *swapTrial;
     } else {
@@ -302,8 +302,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   std::string bhFilename("bh.dat");
   returnFiles.push_back(bhFilename);
 
-  delete minTrial;
-  delete swapTrial;
+  // minTrial and swapTrial automatically cleaned up by unique_ptr
   return returnFiles;
 }
 
