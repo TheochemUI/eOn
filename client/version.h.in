@@ -1,6 +1,25 @@
 #include<string>
 const std::string VERSION = "@VERSION@";
+
+// Parse version into components for easy programmatic access
+const int VERSION_MAJOR = @VERSION_MAJOR@;
+const int VERSION_MINOR = @VERSION_MINOR@;
+const int VERSION_PATCH = @VERSION_PATCH@;
+
 const std::string BUILD_DATE = "@BUILD_DATE@";
 const std::string OS_INFO = "@OS_INFO@";
 const std::string ARCH = "@ARCH@";
 const std::string GIT_HASH = "@GIT_HASH@";
+
+// Formatted version string for cleaner output
+// Format: "2.11.1 (abc4bfa7)\ncompiled Wed Mar 04 05:46:31 PM GMT 2026"
+// This matches the Python version.py format for compatibility
+const std::string VERSION_STRING = VERSION + " (" + GIT_HASH + ")\ncompiled " + BUILD_DATE;
+
+// Compile-time feature flags
+// These are defined via -D flags in meson.build based on build options
+// To see which features are enabled at runtime, run: eonclient --features
+
+// Features string - generated from meson.build based on enabled features
+// Format: "FEATURE1: enabled\nFEATURE2: disabled\n..."
+const std::string FEATURES_STRING = R"FEATURES(@FEATURES@)FEATURES";
