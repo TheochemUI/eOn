@@ -1,0 +1,49 @@
+name: Build and test eonclient with ASE
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+on: [push, pull_request]
+
+env:
+  SCCACHE_GHA_ENABLED: "true"
+
+jobs:
+  build_eon:
+    runs-on: ${{ matrix.os }}
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.10
+        with:
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          activate-environment: true
+          environments: >-
+            dev
+      - name: Install ASE
+        shell: pixi run -e dev bash -e {0}
+        run: pip install ase
+      - name: Configure sccache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Build eonclient with ASE
+        shell: pixi run -e dev bash -e {0}
+        run: |
+          meson setup bbdir  \
+          --prefix=$CONDA_PREFIX           \
+          --buildtype release              \
+          --libdir=lib                     \
+          -Dwith_ase=True            \
+          -Dwith_tests=True
+          meson install -C bbdir
+      - name: Run tests
+        shell: bash -el {0}
+        run: |
+          meson test -C bbdir --suite eon

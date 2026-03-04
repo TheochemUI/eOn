@@ -11,6 +11,7 @@
 */
 
 #include "ASE.h"
+#include "../../PyGuard.h"
 #include "../../fpe_handler.h"
 #include <cstdlib> // for exit()
 #include <pybind11/embed.h>
@@ -22,9 +23,9 @@
 
 namespace py = pybind11;
 
-ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
-    : Potential(PotType::ASE_ORCA, a_params),
-      guard{} {
+ASE::ASE(const Parameters &a_params)
+    : Potential(PotType::ASE_POT, a_params) {
+  eonc::ensure_interpreter();
   counter = 1;
   std::string py_file = a_params.potential_options.extPotPath;
 
@@ -32,10 +33,8 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
   try {
     // must briefly disable FPE because Python packages like Numpy causes it
     // during import
-    bool FPE_WAS_ENABLED = isFPEEnabled();
-    if (FPE_WAS_ENABLED) {
-      disableFPE();
-    }
+    eonc::FPEHandler fpeh;
+    fpeh.eat_fpe();
 
     // Create a Python script to use importlib.util to load the module
     py::exec(R"(
@@ -55,9 +54,7 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
     py::object load_module = py::globals()["load_module_from_path"];
     py_module = load_module(module_name, py_file);
 
-    if (FPE_WAS_ENABLED) {
-      enableFPE();
-    }
+    fpeh.restore_fpe();
 
     calculator = py_module.attr("ase_calc")();
     _calculate = py_module.attr("_calculate");
@@ -79,9 +76,9 @@ void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
   try {
     // TODO(rg): This is easier on the type system if Eigen::Map is used like in
     // ASE_ORCA convert arrays to Numpy arrays
-    std::vector<size_t> R_shape = {static_cast<size_t>(N), 3};
+    std::vector<size_t> R_shape = {static_cast<size_t>(nAtoms), 3};
     py::array_t<double> R_np(R_shape, R);
-    py::array_t<int> atomicNrs_np(N, atomicNrs);
+    py::array_t<int> atomicNrs_np(nAtoms, atomicNrs);
     py::array_t<double> box_np({3, 3}, box);
 
     // get energy and forces (in this order) from Python

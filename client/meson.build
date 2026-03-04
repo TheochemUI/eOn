@@ -350,8 +350,7 @@ if py_embed
     if get_option('with_ase')
         subdir('potentials/ASE')
         potentials += [ase]
-        # TODO(rg): Annoying, use WITH_ style
-        _args += ['-DASE_POT']
+        _args += ['-DWITH_ASE_POT']
     endif
 endif
 
@@ -662,6 +661,9 @@ if get_option('with_tests')
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
     ]
+    if get_option('with_ase')
+        test_array += [['test_ase_pot', 'ASEPotTest.cpp', 'ase_pot']]
+    endif
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
     endif
