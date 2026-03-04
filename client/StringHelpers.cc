@@ -51,6 +51,7 @@ std::vector<std::string> get_split_strings(std::string_view line) {
 
 bool isNumber(std::string_view token) {
   return std::regex_match(
-      std::string{token}, std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
+      std::string{token},
+      std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
 }
 } // namespace helper_functions
