@@ -336,8 +336,8 @@ void GlobalOptimizationJob::mdescape(Matter *matter) {
     econs_min = min(econs_min, ekinc + epot);
     if (nummin >= (size_t)mdmin) {
       if (nummax != nummin)
-        SPDLOG_LOGGER_WARN(log, "WARNING: iproc,nummin,nummax {:4lu} {:4lu}",
-                           nummin, nummax);
+        SPDLOG_LOGGER_WARN(log, "WARNING: iproc,nummin,nummax {} {}", nummin,
+                           nummax);
       md_presumably_escaped = true;
       break;
     }
@@ -411,7 +411,7 @@ void GlobalOptimizationJob::insert(Matter *matter) {
   // vector<double>::iterator it;
   epot = matter->getPotentialEnergy();
   jlo = hunt(epot);
-  SPDLOG_LOGGER_DEBUG(log, "JLO= {:5lu}  {:10.5f}  ", jlo,
+  SPDLOG_LOGGER_DEBUG(log, "JLO= {}  {:10.5f}  ", jlo,
                       std::abs(epot - earr[jlo]));
   // it=earr.begin()+jlo;
   // epot_hop.push_back(epot);
