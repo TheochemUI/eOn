@@ -101,7 +101,7 @@ Some libraries[^2] are distributed along with `eOn`, namely:
 - `mcamc` which contains `libqd` :: BSD-3-Clause license
 
 ```{versionadded} 2.0
-- `cxxopts` :: MIT License
+- `cxxopts` :: BSD License
 - `magic_enum` :: MIT License
 - `catch2` :: Boost Software License, Version 1.0
 - `ApprovalTests.cpp` :: Apache 2.0 License
