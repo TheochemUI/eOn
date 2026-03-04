@@ -403,23 +403,23 @@ void BasinHoppingJob::randomSwap(Matter *matter) {
 }
 
 vector<long> BasinHoppingJob::getElements(Matter *matter) {
-  int allElements[118] = {0};
-  vector<long> Elements;
+  std::array<int, 118> allElements{};
+  std::vector<long> elements;
 
-  for (long y = 0; y < matter->numberOfAtoms(); y++) {
+  for (long y = 0; y < matter->numberOfAtoms(); ++y) {
     if (!matter->getFixed(y)) {
-      int index = matter->getAtomicNr(y);
+      const int index = matter->getAtomicNr(y);
       allElements[index] = 1;
     }
   }
 
-  for (int i = 0; i < 118; i++) {
+  for (int i = 0; i < 118; ++i) {
     if (allElements[i] != 0) {
-      Elements.push_back(i);
+      elements.push_back(i);
     }
   }
 
-  return Elements;
+  return elements;
 }
 
 VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
