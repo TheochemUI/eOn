@@ -5,7 +5,7 @@
 
 namespace helper_functions {
 template <typename T>
-std::vector<T> get_val_from_string(const std::string &line,
+std::vector<T> get_val_from_string(std::string_view line,
                                    std::optional<size_t> nelements) {
   assert(not line.empty());
   std::vector<T> retval;
@@ -37,20 +37,20 @@ std::vector<T> get_val_from_string(const std::string &line,
 }
 // Instantiate explicitly
 // This is useful since we don't want to support other types either
-template std::vector<size_t> get_val_from_string(const std::string &,
+template std::vector<size_t> get_val_from_string(std::string_view,
                                                  std::optional<size_t>);
-template std::vector<double> get_val_from_string(const std::string &,
+template std::vector<double> get_val_from_string(std::string_view,
                                                  std::optional<size_t>);
 
-std::vector<std::string> get_split_strings(const std::string &line) {
-  std::istringstream ss{line};
+std::vector<std::string> get_split_strings(std::string_view line) {
+  std::istringstream ss{std::string{line}};
   std::vector<std::string> split_strings{std::istream_iterator<std::string>{ss},
                                          std::istream_iterator<std::string>()};
   return split_strings;
 }
 
-bool isNumber(const std::string &token) {
+bool isNumber(std::string_view token) {
   return std::regex_match(
-      token, std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
+      std::string{token}, std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
 }
 } // namespace helper_functions

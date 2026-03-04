@@ -21,25 +21,25 @@ namespace helper_functions {
 /**
  * \brief Parse a string into values
  *
- * @param std::string A thing to be parsed
+ * @param line A thing to be parsed
  */
 template <typename T>
 std::vector<T>
-get_val_from_string(const std::string &line,
+get_val_from_string(std::string_view line,
                     std::optional<size_t> nelements = std::nullopt);
 /**
  * \brief Split a string into constituent strings
  *
  * Based on https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
  *
- * @param std::string A thing to be parsed
+ * @param line A thing to be parsed
  */
-std::vector<std::string> get_split_strings(const std::string &line);
+std::vector<std::string> get_split_strings(std::string_view line);
 /**
  * \brief Figure out if a string has a number in it
  *
  * Based on
  *
  */
-bool isNumber(const std::string &token);
+bool isNumber(std::string_view token);
 } // namespace helper_functions
