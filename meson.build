@@ -8,7 +8,7 @@ project(
     default_options: [  #
         'buildtype=debugoptimized',
         'warning_level=0',
-        'cpp_std=c++17',
+        'cpp_std=c++20',
     ],
 )
 # IMPORTANT!! warning_level=3 passes -fimplicit-none
