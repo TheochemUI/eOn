@@ -286,71 +286,48 @@ int SafeHyperJob::dynamics() {
 }
 
 void SafeHyperJob::saveData(int status) {
-  FILE *fileResults, *fileReactant;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
 
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls +
-  // refineFCalls;
+  {
+    auto out = fmt::output_file(resultsFilename);
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
+    out.print("{} random_seed\n", params.main_options.randomSeed);
+    out.print("{:f} potential_energy_reactant\n",
+              reactant->getPotentialEnergy());
+    out.print("{} force_calls_dephase\n", dephaseFCalls);
+    out.print("{} force_calls_dynamics\n", mdFCalls);
+    out.print("{} force_calls_minimize\n", minimizeFCalls);
+    out.print("{} transition_found\n", (newStateFlag) ? 1 : 0);
 
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%lf potential_energy_reactant\n",
-          reactant->getPotentialEnergy());
-  // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
-  fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
-  fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
-  fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
-  // fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
+    if (newStateFlag) {
+      out.print("{:e} transition_time_s\n",
+                minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+      out.print("{:f} potential_energy_product\n",
+                product->getPotentialEnergy());
+      out.print("{:f} moved_distance\n", product->distanceTo(*reactant));
+    }
 
-  //    fprintf(fileResults, "%d termination_reason\n", status);
-  fprintf(fileResults, "%d transition_found\n", (newStateFlag) ? 1 : 0);
-
-  if (newStateFlag) {
-    fprintf(fileResults, "%e transition_time_s\n",
-            minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
-    fprintf(fileResults, "%lf potential_energy_product\n",
-            product->getPotentialEnergy());
-    fprintf(fileResults, "%lf moved_distance\n",
-            product->distanceTo(*reactant));
+    out.print("{:e} simulation_time_s\n",
+              time * 1.0e-15 * params.constants.timeUnit);
+    out.print("{:f} speedup\n", time / params.dynamics_options.steps /
+                                    params.dynamics_options.time_step);
   }
-
-  fprintf(fileResults, "%e simulation_time_s\n",
-          time * 1.0e-15 * params.constants.timeUnit);
-  fprintf(fileResults, "%lf speedup\n",
-          time / params.dynamics_options.steps /
-              params.dynamics_options.time_step);
-
-  fclose(fileResults);
 
   std::string reactantFilename("reactant.con");
   returnFiles.push_back(reactantFilename);
-  fileReactant = fopen(reactantFilename.c_str(), "wb");
-  reactant->matter2con(fileReactant);
-  fclose(fileReactant);
+  reactant->matter2con(reactantFilename);
 
   if (newStateFlag) {
-    FILE *fileProduct;
     std::string productFilename("product.con");
     returnFiles.push_back(productFilename);
-
-    fileProduct = fopen(productFilename.c_str(), "wb");
-    product->matter2con(fileProduct);
-    fclose(fileProduct);
+    product->matter2con(productFilename);
 
     if (params.parallel_replica_options.refine_transition) {
-      FILE *fileSaddle;
       std::string saddleFilename("saddle.con");
       returnFiles.push_back(saddleFilename);
-
-      fileSaddle = fopen(saddleFilename.c_str(), "wb");
-      saddle->matter2con(fileSaddle);
-      fclose(fileSaddle);
+      saddle->matter2con(saddleFilename);
     }
   }
   return;

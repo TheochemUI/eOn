@@ -39,17 +39,12 @@ std::vector<std::string> HessianJob::run(void) {
   moved = moved.head(nMoved);
   hessian.getFreqs(matter.get(), moved);
 
-  FILE *fileResults;
-  //    FILE *fileMode;
-
   std::string results_file("results.dat");
-
   returnFiles.push_back(results_file);
-
-  fileResults = fopen(results_file.c_str(), "wb");
-
-  // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
-  fclose(fileResults);
+  {
+    // Create empty results file
+    auto out = fmt::output_file(results_file);
+  }
 
   return returnFiles;
 }

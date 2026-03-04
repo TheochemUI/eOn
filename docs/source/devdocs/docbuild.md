@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Instructions for building and working with the eOn documentation, including setup with PDM, local building, and adding citations and extensions."
-    "keywords": "eOn docs, build documentation, Sphinx, MyST, PDM, autodoc-pydantic"
+    "description": "Instructions for building and working with the eOn documentation, including setup with uv, local building, and adding citations and extensions."
+    "keywords": "eOn docs, build documentation, Sphinx, MyST, uv, autodoc-pydantic"
 ---
 
 # Working with the documentation
@@ -16,28 +16,27 @@ The input file format transitioned to TOML from previously being an enhanced INI
 
 ## Setup
 
-Although we use `micromamba` for handling system dependencies, the documenation
+Although we use `pixi` for handling system dependencies, the documentation
 is handled via the `python` ecosystem. Namely:
 
-- [PDM](https://pdm-project.org/en/latest/) is used to track versions, and provide [development groups](https://pdm-project.org/latest/usage/dependency/#add-development-only-dependencies)
-
-To facilitate interactions with `pdm`,
-[uvx](https://docs.astral.sh/uv/getting-started/installation//) is recommended.
+- [uv](https://docs.astral.sh/uv/) is used to manage the lockfile and dependency groups defined in `pyproject.toml`
 
 ## Building locally
 
 ````{margin}
 ```{note}
-`uvx` simplifies running Python commands, and `pdm` handles version updates better, syncing nicely with the `pyproject.toml` so no Python dependencies not needed by the client should be in the `environment.yml`
+`uv` manages dependency groups declared in `pyproject.toml` under
+`[dependency-groups]`.  System-level dependencies (compilers, etc.)
+are handled separately by `pixi`.
 ```
 ````
 
 ```{code-block} bash
 # Setup dependencies
-uvx pdm sync
+uv sync --group docs --no-install-project
 # Need to install for autodoc-pydantic
-uvx pdm run pip install . -vvv
-uvx pdm run sphinx-build -b html docs/source docs/build/html
+uv pip install . -vvv --no-build-isolation
+uv run sphinx-build -b html docs/source docs/build/html
 ```
 
 This can be viewed locally with an HTTP server.
@@ -45,6 +44,28 @@ This can be viewed locally with an HTTP server.
 ```{code-block} bash
 python -m http.server docs/build/html
 ```
+
+### Extra-index pitfall
+
+The `pixi.toml` workspace sets `extra-index-urls` pointing at the PyTorch CPU
+wheel index and uses `index-strategy = "unsafe-best-match"`.  When pixi
+activates an environment, these propagate as `UV_EXTRA_INDEX_URL` and
+`PIP_EXTRA_INDEX_URL` environment variables.
+
+If you regenerate `uv.lock` from inside a pixi shell, `uv lock` will resolve
+packages against the PyTorch index as well as PyPI.  The PyTorch index carries
+only a subset of wheels (often only the latest CPython pre-release), so
+packages like `markupsafe` can resolve to versions with no compatible wheel for
+the CI Python version.
+
+To avoid this, always regenerate the lockfile with the extra-index variables
+unset:
+
+```{code-block} bash
+UV_EXTRA_INDEX_URL="" PIP_EXTRA_INDEX_URL="" uv lock --upgrade
+```
+
+Alternatively, run `uv lock` outside of any pixi environment.
 
 ## Writing documentation
 
@@ -61,10 +82,10 @@ The following sections detail methods to add functionality to the documentation.
 
 ## Adding extensions
 
-Additions to the build process are handled by the `pdm` development group `docs`, so additions are done via:
+Additions to the build process are handled by the `docs` dependency group, so additions are done via:
 
 ```{code-block} bash
-uvx pdm add -dG docs "sphinxcontrib-bibtex"
+uv add --group docs "sphinxcontrib-bibtex"
 ```
 
 ## Adding citations

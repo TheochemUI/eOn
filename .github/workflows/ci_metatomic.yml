@@ -18,7 +18,7 @@ jobs:
         os: [ubuntu-22.04, macos-14]
     steps:
       - uses: actions/checkout@v4
-      - uses: prefix-dev/setup-pixi@v0.8.10
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
@@ -31,6 +31,10 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Install cbindgen
+        shell: bash
+        run: command -v cbindgen || cargo install cbindgen
+
       - name: Use Homebrew gfortran (macOS)
         if: runner.os == 'macOS'
         run: |

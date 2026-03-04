@@ -14,6 +14,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+#include <optional>
+
 class GlobalOptimizationJob : public Job {
 public:
   GlobalOptimizationJob(std::unique_ptr<Parameters> parameters)
@@ -30,17 +32,12 @@ public:
         fcallsMove{0},
         firstStep{true},
         fcallsRelax{0},
-        monfile{fopen("monitoring.dat", "w")},
-        earrfile{fopen("earr.dat", "w")} {
+        monfile{fmt::output_file("monitoring.dat")},
+        earrfile{fmt::output_file("earr.dat")} {
 
     log = spdlog::get("combi");
   }
-  // etoler = parameters->globalOptimizationEtoler;
-  // decisionMethod = "NPEW";
-  ~GlobalOptimizationJob(void) {
-    fclose(monfile);
-    fclose(earrfile);
-  };
+  ~GlobalOptimizationJob(void) = default;
   void hoppingStep(long, Matter *, Matter *);
   void decisionStep(Matter *, Matter *);
   void report(Matter *);
@@ -76,7 +73,7 @@ private:
   // string decisionMethod;
   string decisionResult;
   string hoppingResult;
-  FILE *monfile;
-  FILE *earrfile;
+  fmt::ostream monfile;
+  fmt::ostream earrfile;
   std::shared_ptr<spdlog::logger> log;
 };

@@ -14,7 +14,7 @@
 #include "HelperFunctions.h"
 #include "Potential.h"
 
-#include <stdio.h>
+#include <filesystem>
 #include <string>
 
 using namespace std;
@@ -25,10 +25,8 @@ std::vector<std::string> SaddleSearchJob::run(void) {
   string modeFilename("direction.dat");
 
   if (params.main_options.checkpoint) {
-    FILE *disp, *mode;
-    disp = fopen("displacement_cp.con", "r");
-    mode = fopen("mode_cp.dat", "r");
-    if (disp != NULL && mode != NULL) {
+    namespace fs = std::filesystem;
+    if (fs::exists("displacement_cp.con") && fs::exists("mode_cp.dat")) {
       displacementFilename = "displacement_cp.con";
       modeFilename = "mode_cp.dat";
       SPDLOG_LOGGER_DEBUG(log, "Resuming from checkpoint");
@@ -96,55 +94,34 @@ int SaddleSearchJob::doSaddleSearch() {
 }
 
 void SaddleSearchJob::saveData(int status) {
-  FILE *fileResults, *fileSaddle, *fileMode;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  /// XXX: min_fcalls isn't quite right it should get them from
-  //      the minimizer. But right now the minimizers are in
-  //      the SaddleSearch object. They will be taken out eventually.
-
-  fprintf(fileResults, "%d termination_reason\n", status);
-  fprintf(fileResults, "saddle_search job_type\n");
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  if (params.saddle_search_options.minmode_method ==
-      LowestEigenmode::MINMODE_GPRDIMER) {
-    fprintf(fileResults, "%zu total_force_calls\n",
-            this->pot->forceCallCounter);
-    fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
-  } else {
-    fprintf(fileResults, "%zu total_force_calls\n",
-            this->pot->forceCallCounter);
-    fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
+  {
+    auto out = fmt::output_file(resultsFilename);
+    out.print("{} termination_reason\n", status);
+    out.print("saddle_search job_type\n");
+    out.print("{} random_seed\n", params.main_options.randomSeed);
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
+    out.print("{} total_force_calls\n", this->pot->forceCallCounter);
+    out.print("{} force_calls_saddle\n", fCallsSaddle);
+    out.print("{} iterations\n", saddleSearch->iteration);
+    if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
+      out.print("{:f} potential_energy_saddle\n", saddle->getPotentialEnergy());
+      out.print("{:f} final_eigenvalue\n", saddleSearch->getEigenvalue());
+    }
+    out.print("{:f} potential_energy_reactant\n",
+              initial->getPotentialEnergy());
   }
-  if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
-    fprintf(fileResults, "%f potential_energy_saddle\n",
-            saddle->getPotentialEnergy());
-    fprintf(fileResults, "%f final_eigenvalue\n",
-            saddleSearch->getEigenvalue());
-  }
-  fprintf(fileResults, "%f potential_energy_reactant\n",
-          initial->getPotentialEnergy());
-  fclose(fileResults);
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
-  fileMode = fopen(modeFilename.c_str(), "wb");
-  helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
-  fclose(fileMode);
+  helper_functions::saveMode(modeFilename, saddle,
+                             saddleSearch->getEigenvector());
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);
-  fileSaddle = fopen(saddleFilename.c_str(), "wb");
-  saddle->matter2con(fileSaddle);
-  fclose(fileSaddle);
+  saddle->matter2con(saddleFilename);
 }
 
 void SaddleSearchJob::printEndState(int status) {

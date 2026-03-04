@@ -441,10 +441,8 @@ int MinModeSaddleSearch::run() {
 
       if (params.main_options.checkpoint) {
         matter->matter2con("displacement_cp.con", false);
-        FILE *fileMode = fopen("mode_cp.dat", "wb");
-        helper_functions::saveMode(fileMode, matter,
+        helper_functions::saveMode("mode_cp.dat", matter,
                                    minModeMethod->getEigenvector());
-        fclose(fileMode);
       }
 
       if (de > params.saddle_search_options.max_energy) {

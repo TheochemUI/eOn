@@ -132,25 +132,19 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
 }
 
 void ReplicaExchangeJob::saveData(void) {
-
-  FILE *fileResults, *filePos;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  // fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
-  fclose(fileResults);
+  {
+    auto out = fmt::output_file(resultsFilename);
+    out.print("{} random_seed\n", params.main_options.randomSeed);
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
+  }
 
   std::string posFilename("pos_out.con");
   returnFiles.push_back(posFilename);
-  filePos = fopen(posFilename.c_str(), "wb");
-  fclose(filePos);
-
-  return;
+  {
+    // Create empty pos_out.con
+    auto out = fmt::output_file(posFilename);
+  }
 }

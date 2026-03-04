@@ -36,7 +36,7 @@ jobs:
           cp -r /tmp/_bench_preserve/benchmarks/ benchmarks/
           cp /tmp/_bench_preserve/asv.conf.json asv.conf.json
 
-      - uses: prefix-dev/setup-pixi@v0.8.10
+      - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
           cache-write: false
@@ -50,6 +50,10 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Install cbindgen
+        shell: bash
+        run: command -v cbindgen || cargo install cbindgen
 
       - name: Build
         run: |

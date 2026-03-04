@@ -14,8 +14,11 @@
 #include "Parameters.h"
 #include "Potential.h"
 #include "SurrogatePotential.h"
+#include <array>
 #include <memory>
+#include <readcon-core.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <utility>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
@@ -163,22 +166,13 @@ public:
   void writeTibble(std::string filename);
   bool con2matter(std::string filename); // read con file into Matter, return
                                          // true if successful
-  bool con2matter(FILE *file); // read con file and load data into Matter,
-                               // return true if successful
+  bool con2matter(const readcon::ConFrame &frame); // populate from a parsed
+                                                   // readcon frame
+  bool convel2matter(std::string filename); // read convel file via readcon-core
+  bool matter2con(std::string filename,
+                  bool append = false); // write con file via readcon-core
   bool
-  convel2matter(std::string filename); // read con file with both coordinates
-                                       // and velocities into Matter
-  bool convel2matter(FILE *file); // read con file with both coordinates and
-                                  // velocities and load data into Matter
-  bool
-  matter2con(std::string filename,
-             bool append = false); // print con file from data in Class Matter
-  bool matter2con(FILE *file);     // print con file from data in Class Matter
-  bool
-  matter2convel(std::string filename); // print con file with both coordinates
-                                       // and velocities  in Class Matter
-  bool matter2convel(FILE *file); // print con file with both coordinates and
-                                  // velocities from data in Class Matter
+  matter2convel(std::string filename); // write convel file via readcon-core
   void matter2xyz(std::string filename,
                   bool append = false); // print xyz file from data in Matter
   AtomMatrix getFree() const;
@@ -206,6 +200,10 @@ private:
   void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
+
+  // Extract cell lengths and angles (degrees) from the cell matrix
+  std::pair<std::array<double, 3>, std::array<double, 3>>
+  cell_to_lengths_angles() const;
 
   // Stuff which used to be in MatterPrivateData
   const Parameters *parameters;

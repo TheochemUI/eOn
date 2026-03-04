@@ -235,80 +235,59 @@ int ProcessSearchJob::doProcessSearch(void) {
 }
 
 void ProcessSearchJob::saveData(int status) {
-  FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  // XXX: min_fcalls isn't quite right it should get them from
-  //      the minimizer. But right now the minimizers are in
-  //      the SaddleSearch object. They will be taken out eventually.
-
-  fprintf(fileResults, "%d termination_reason\n", status);
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  fprintf(fileResults, "%zu total_force_calls\n",
-          fCallsMin + fCallsSaddle + fCallsPrefactors);
-  fprintf(fileResults, "%zu force_calls_minimization\n", fCallsMin);
-  //    fprintf(fileResults, "%ld force_calls_minimization\n",
-  //    SaddleSearch->forceCallsMinimization + fCallsMin);
-  fprintf(fileResults, "%zu force_calls_saddle\n", fCallsSaddle);
-  fprintf(fileResults, "%.12e potential_energy_saddle\n",
-          saddle->getPotentialEnergy());
-  fprintf(fileResults, "%.12e potential_energy_reactant\n",
-          min1->getPotentialEnergy());
-  fprintf(fileResults, "%.12e potential_energy_product\n",
-          min2->getPotentialEnergy());
-  fprintf(fileResults, "%.12e barrier_reactant_to_product\n",
-          barriersValues[0]);
-  fprintf(fileResults, "%.12e barrier_product_to_reactant\n",
-          barriersValues[1]);
-  if (params.saddle_search_options.method == "min_mode") {
-    fprintf(fileResults, "%.12e displacement_saddle_distance\n",
-            displacement->perAtomNorm(*saddle));
-  } else {
-    fprintf(fileResults, "%.12e displacement_saddle_distance\n", 0.0);
+  {
+    auto out = fmt::output_file(resultsFilename);
+    out.print("{} termination_reason\n", status);
+    out.print("{} random_seed\n", params.main_options.randomSeed);
+    out.print("{} potential_type\n", std::string{magic_enum::enum_name<PotType>(
+                                         params.potential_options.potential)});
+    out.print("{} total_force_calls\n",
+              fCallsMin + fCallsSaddle + fCallsPrefactors);
+    out.print("{} force_calls_minimization\n", fCallsMin);
+    out.print("{} force_calls_saddle\n", fCallsSaddle);
+    out.print("{:.12e} potential_energy_saddle\n",
+              saddle->getPotentialEnergy());
+    out.print("{:.12e} potential_energy_reactant\n",
+              min1->getPotentialEnergy());
+    out.print("{:.12e} potential_energy_product\n", min2->getPotentialEnergy());
+    out.print("{:.12e} barrier_reactant_to_product\n", barriersValues[0]);
+    out.print("{:.12e} barrier_product_to_reactant\n", barriersValues[1]);
+    if (params.saddle_search_options.method == "min_mode") {
+      out.print("{:.12e} displacement_saddle_distance\n",
+                displacement->perAtomNorm(*saddle));
+    } else {
+      out.print("{:.12e} displacement_saddle_distance\n", 0.0);
+    }
+    if (params.saddle_search_options.method == "dynamics") {
+      auto ds = dynamic_cast<DynamicsSaddleSearch &>(*saddleSearch);
+      out.print("{:.12e} simulation_time\n",
+                ds.time * params.constants.timeUnit);
+      out.print("{:.12e} md_temperature\n",
+                params.saddle_search_options.dynamics.temperature);
+    }
+    out.print("{} force_calls_prefactors\n", fCallsPrefactors);
+    out.print("{:.12e} prefactor_reactant_to_product\n", prefactorsValues[0]);
+    out.print("{:.12e} prefactor_product_to_reactant\n", prefactorsValues[1]);
   }
-  if (params.saddle_search_options.method == "dynamics") {
-    auto ds = dynamic_cast<DynamicsSaddleSearch &>(*saddleSearch);
-    fprintf(fileResults, "%.12e simulation_time\n",
-            ds.time * params.constants.timeUnit);
-    fprintf(fileResults, "%.12e md_temperature\n",
-            params.saddle_search_options.dynamics.temperature);
-  }
-  fprintf(fileResults, "%zu force_calls_prefactors\n", fCallsPrefactors);
-  fprintf(fileResults, "%.12e prefactor_reactant_to_product\n",
-          prefactorsValues[0]);
-  fprintf(fileResults, "%.12e prefactor_product_to_reactant\n",
-          prefactorsValues[1]);
-  fclose(fileResults);
 
   std::string reactantFilename("reactant.con");
   returnFiles.push_back(reactantFilename);
-  fileReactant = fopen(reactantFilename.c_str(), "wb");
-  min1->matter2con(fileReactant);
+  min1->matter2con(reactantFilename);
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
-  fileMode = fopen(modeFilename.c_str(), "wb");
-  helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
-  fclose(fileMode);
-  fclose(fileReactant);
+  helper_functions::saveMode(modeFilename, saddle,
+                             saddleSearch->getEigenvector());
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);
-  fileSaddle = fopen(saddleFilename.c_str(), "wb");
-  saddle->matter2con(fileSaddle);
-  fclose(fileSaddle);
+  saddle->matter2con(saddleFilename);
 
   std::string productFilename("product.con");
   returnFiles.push_back(productFilename);
-  fileProduct = fopen(productFilename.c_str(), "wb");
-  min2->matter2con(fileProduct);
-  fclose(fileProduct);
+  min2->matter2con(productFilename);
 
   return;
 }
