@@ -1,11 +1,13 @@
 #include "ASE_NWCHEM.h"
 #include "../../EnvHelpers.hpp"
+#include "../../PyGuard.h"
 #include "../../fpe_handler.h"
 #include <string>
 
 // TODO(rg): Clean this up.
 ASENwchemPot::ASENwchemPot(const Parameters &a_params)
     : Potential(PotType::ASE_NWCHEM, a_params) {
+  eonc::ensure_interpreter();
   counter = 0;
   py::module_ sys = py::module_::import("sys");
   // Fix for gh-184, see

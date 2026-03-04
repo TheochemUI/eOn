@@ -18,10 +18,10 @@
 #ifdef WITH_CATLEARN
 #include "potentials/CatLearnPot/CatLearnPot.h"
 #endif
+#include "PyGuard.h"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <pybind11/eigen.h>
-#include <pybind11/embed.h>
 
 #include "NudgedElasticBand.h"
 
@@ -29,6 +29,7 @@ class GPSurrogateJob : public Job {
 public:
   GPSurrogateJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)) {
+    eonc::ensure_interpreter();
     // debugging
 #ifndef NDEBUG
     py::module_ sys_mod = py::module_::import("sys");
@@ -43,10 +44,6 @@ private:
   void saveData(NudgedElasticBand::NEBStatus status,
                 std::unique_ptr<NudgedElasticBand> neb);
   std::vector<std::string> returnFiles;
-#ifndef WITH_ASE_ORCA
-  // When ASE_ORCA is used as a potential ClientEON.cpp holds lock in main
-  pybind11::scoped_interpreter guard{};
-#endif
 };
 
 namespace helper_functions::surrogate {

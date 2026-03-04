@@ -54,7 +54,7 @@
 #ifdef PYAMFF_POT
 #include "potentials/PyAMFF/PyAMFF.h"
 #endif
-#ifdef ASE_POT
+#ifdef WITH_ASE_POT
 #include "potentials/ASE/ASE.h"
 #endif
 
@@ -258,9 +258,9 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-#ifdef ASE_POT
+#ifdef WITH_ASE_POT
   case PotType::ASE_POT: {
-    return (std::make_shared<ASE_POT>(params));
+    return (std::make_shared<ASE>(params));
     break;
   }
 #endif

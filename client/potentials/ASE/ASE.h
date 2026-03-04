@@ -12,7 +12,6 @@
 #pragma once
 
 #include "../../Potential.h"
-#include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
@@ -21,10 +20,8 @@ class ASE : public Potential {
 
 private:
   size_t counter;
-  // XXX(rg): Remove this, guards are done in the client
-  py::scoped_interpreter guard; // Member to manage the Python Interpreter
-  py::module_ py_module;        // Member to store the Python module
-  py::object calculator;        // Member to store the ASE calculator object
+  py::module_ py_module; // Member to store the Python module
+  py::object calculator; // Member to store the ASE calculator object
   py::object _calculate; // Member to store the Python function to calculate
                          // forces and energy
 
