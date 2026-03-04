@@ -16,7 +16,7 @@ python = ">=3.11.5,<3.13"
 # End manual pins
 cmake = ">=4.0.3,<5"
 highfive = ">=2.10.1,<3"
-meson = ">=1.8.2,<2"
+meson = ">=1.10.1,<2"
 ninja = ">=1.12.1,<2"
 pkgconf = ">=2.4.3,<3"
 openblas = ">=0.3.29,<0.4"
