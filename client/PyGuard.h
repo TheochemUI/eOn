@@ -15,12 +15,14 @@
 
 namespace eonc {
 
-// Lazy singleton for the Python interpreter. The interpreter is only started on
-// the first call and lives until program exit. This avoids paying the cost of
-// Py_Initialize for runs that never use a Python-based potential.
+// Lazy, one-shot Python interpreter init.  We intentionally never call
+// Py_Finalize so that pybind11 py::object members in potentials can release
+// their refcounts during normal destruction without racing against interpreter
+// teardown.  The OS reclaims everything on process exit.
 inline void ensure_interpreter() {
-  static pybind11::scoped_interpreter guard{};
-  (void)guard;
+  if (!Py_IsInitialized()) {
+    pybind11::initialize_interpreter();
+  }
 }
 
 } // namespace eonc
