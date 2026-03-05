@@ -15,7 +15,6 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "quill/sinks/NullSink.h"
 
-
 #include <algorithm>
 #include <memory>
 #include <set>
@@ -39,7 +38,6 @@ struct LoggerSetup {
   }
 };
 static LoggerSetup _logger_setup;
-
 
 // ---------------------------------------------------------------------------
 // Fixture: loads Pt_Heptamer_FrozenLayers system
