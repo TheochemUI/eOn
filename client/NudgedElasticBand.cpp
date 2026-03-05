@@ -1058,15 +1058,13 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   AtomMatrix tangentEnd = path[numImages]->pbc(
       path[numImages + 1]->getPositions() - path[numImages]->getPositions());
   AtomMatrix tang;
-  std::string header, fmttr;
+  std::string header;
   if (params.debug_options.estimate_neb_eigenvalues) {
     header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s} {:>12s}", "img",
                          "rxn_coord", "energy", "f_para", "eigval");
-    fmttr = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}";
   } else {
     header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s}", "img", "rxn_coord",
                          "energy", "f_para");
-    fmttr = "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}";
   }
 
   // Endpoint tangents must be normalized for a correct projection
@@ -1119,18 +1117,21 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
       eigenmode_solvers[i]->compute(path[i], tang);
       double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
       if (fileLogger) {
-        fileLogger->info(fmttr, i, distTotal, relative_energy, parallel_force,
+        fileLogger->info("{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i,
+                         distTotal, relative_energy, parallel_force,
                          lowest_eigenvalue);
       } else {
-        SPDLOG_LOGGER_DEBUG(log, fmttr, i, distTotal, relative_energy,
-                            parallel_force, lowest_eigenvalue);
+        SPDLOG_LOGGER_DEBUG(
+            log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
+            relative_energy, parallel_force, lowest_eigenvalue);
       }
     } else { // Standard output without the eigenvalue
       if (fileLogger) {
-        fileLogger->info(fmttr, i, distTotal, relative_energy, parallel_force);
+        fileLogger->info("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
+                         relative_energy, parallel_force);
       } else {
-        SPDLOG_LOGGER_DEBUG(log, fmttr, i, distTotal, relative_energy,
-                            parallel_force);
+        SPDLOG_LOGGER_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i,
+                            distTotal, relative_energy, parallel_force);
       }
     }
   }
