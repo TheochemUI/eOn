@@ -52,7 +52,7 @@ int BasinHoppingSaddleSearch::run(void) {
 
   for (int i = 1; i < neb.numImages; i++) {
     double Etest = neb.path[i]->getPotentialEnergy();
-    SPDLOG_LOGGER_DEBUG(log, "i: {} Etest: {:.f}", i, Etest);
+    SPDLOG_LOGGER_DEBUG(log, "i: {} Etest: {:.1f}", i, Etest);
     if (Etest > Emax) {
       Emax = Etest;
       HighestImage = i;

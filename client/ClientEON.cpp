@@ -81,7 +81,7 @@ void print_memory_usage() {
 
   unsigned int rss = t_info.resident_size;
   unsigned int vs = t_info.virtual_size;
-  printf(
+  fmt::printf(
       "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
       (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
 }
@@ -90,8 +90,7 @@ void print_memory_usage() {
 
 void printSystemInfo() {
   spdlog::info("eOn Client");
-  spdlog::info("VERSION: {}", VERSION);
-  spdlog::info("BUILD DATE: {}\n", BUILD_DATE);
+  spdlog::info("{}", VERSION_STRING);
 #ifndef __aarch64__
   spdlog::info("OS: {}", OS_INFO);
   spdlog::info("Arch: {}", ARCH);

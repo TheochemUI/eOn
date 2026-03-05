@@ -90,6 +90,9 @@ find_package(spdlog REQUIRED)
 
 set(EON_DEPS Eigen3::Eigen spdlog::spdlog Threads::Threads)
 
+# Argum (C++20 argument parser)
+# Using single-header from thirdparty
+
 if(NOT WIN32)
   find_library(MATH_LIB m)
   if(MATH_LIB)
@@ -340,6 +343,7 @@ endif()
 add_executable(eonclient ClientEON.cpp CommandLine.cpp)
 target_include_directories(eonclient PRIVATE
   ${EON_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
   ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(eonclient PRIVATE eonclib)
 install(TARGETS eonclient)

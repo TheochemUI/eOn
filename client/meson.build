@@ -1,5 +1,7 @@
 _incdirs += [include_directories('thirdparty')]
 
+# Argum (C++20 argument parser) - single header in thirdparty
+
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
@@ -105,9 +107,51 @@ version_bits = version_output.split(',')
 version = version_bits[0]
 build_date = version_bits[1]
 git_hash = version_bits[2]
+
+# Parse semver into components
+version_parts = version.split('.')
+version_major = version_parts[0].to_int()
+version_minor = version_parts[1].to_int()
+version_patch = version_parts[2].split('+')[0].to_int()  # Remove any +git suffix
+
 architecture = host_machine.cpu_family()
 message(host_system)
 message(architecture)
+
+# Generate features string for version.h.in
+features_list = [
+    ['WITH_GPRD', 'GPRD'],
+    ['WITH_GP_SURROGATE', 'GP Surrogate'],
+    ['WITH_CATLEARN', 'CatLearn'],
+    ['WITH_VASP', 'VASP'],
+    ['WITH_WATER', 'Water'],
+    ['WITH_AMS', 'AMS'],
+    ['WITH_XTB', 'XTB'],
+    ['LAMMPS_POT', 'LAMMPS'],
+    ['WITH_ASE_POT', 'ASE Potentials'],
+    ['EONMPI', 'MPI'],
+    ['WITH_FORTRAN', 'Fortran'],
+    ['CUH2_POT', 'CuH2'],
+    ['WITH_ASE_ORCA', 'ASE-ORCA'],
+    ['WITH_ASE_NWCHEM', 'ASE-NWChem'],
+    ['WITH_METATOMIC', 'Metatomic'],
+    ['WITH_SERVE_MODE', 'Serve Mode'],
+    ['EMBED_PYTHON', 'Embedded Python'],
+]
+
+# Join _args into a single string for checking
+_args_str = ' '.join(_args)
+
+features_string = ''
+foreach feature : features_list
+    feature_flag = feature[0]
+    feature_name = feature[1]
+    if '-D' + feature_flag in _args_str
+        features_string += '  ' + feature_name + ': enabled\n'
+    else
+        features_string += '  ' + feature_name + ': disabled\n'
+    endif
+endforeach
 
 # Configure the header file
 configure_file(
@@ -115,10 +159,14 @@ configure_file(
     output: 'version.h',
     configuration: {
         'VERSION': version,
+        'VERSION_MAJOR': version_major,
+        'VERSION_MINOR': version_minor,
+        'VERSION_PATCH': version_patch,
         'BUILD_DATE': build_date,
         'OS_INFO': host_system,
         'ARCH': architecture,
         'GIT_HASH': git_hash,
+        'FEATURES': features_string,
     },
 )
 

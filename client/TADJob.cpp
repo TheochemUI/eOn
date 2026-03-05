@@ -233,7 +233,7 @@ int TADJob::dynamics() {
     if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
       SPDLOG_LOGGER_DEBUG(
-          log, "progress: {:.0f}%, max displacement: {:.3lf}, step {:7d}/{:d}",
+          log, "progress: {:.0f}%, max displacement: {:.3f}, step {}/{}",
           (double)100.0 * step / params.dynamics_options.steps, maxAtomDistance,
           step, params.dynamics_options.steps);
     }
@@ -252,12 +252,12 @@ int TADJob::dynamics() {
   avgT = sumT / step;
   varT = sumT2 / step - avgT * avgT;
 
-  SPDLOG_LOGGER_DEBUG(
-      log,
-      "Temperature : Average = %lf ; Stddev = %lf ; Factor = %lf; "
-      "Average_Boost = %lf",
-      avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
-      minCorrectedTime / step / params.dynamics_options.time_step);
+  SPDLOG_LOGGER_DEBUG(log,
+                      "Temperature : Average = {} ; Stddev = {} ; Factor = {}; "
+                      "Average_Boost = {}",
+                      avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
+                      minCorrectedTime / step /
+                          params.dynamics_options.time_step);
   if (isfinite(avgT) == 0) {
     SPDLOG_LOGGER_DEBUG(log,
                         "Infinite average temperature, something went wrong!");

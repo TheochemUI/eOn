@@ -1,0 +1,138 @@
+diff --git i/client/CommandLine.cpp w/client/CommandLine.cpp
+index 0a9923c9..64ef44f1 100644
+--- i/client/CommandLine.cpp
++++ w/client/CommandLine.cpp
+@@ -46,6 +46,95 @@ void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
+   matter->matter2con(confileout);
+ }
+
++void printFeatures() {
++  std::cout << "Compile-time features:" << std::endl;
++#ifdef WITH_GPRD
++  std::cout << "  WITH_GPRD:        enabled" << std::endl;
++#else
++  std::cout << "  WITH_GPRD:        disabled" << std::endl;
++#endif
++#ifdef WITH_GP_SURROGATE
++  std::cout << "  WITH_GP_SURROGATE: enabled" << std::endl;
++#else
++  std::cout << "  WITH_GP_SURROGATE: disabled" << std::endl;
++#endif
++#ifdef WITH_CATLEARN
++  std::cout << "  WITH_CATLEARN:    enabled" << std::endl;
++#else
++  std::cout << "  WITH_CATLEARN:    disabled" << std::endl;
++#endif
++#ifdef WITH_VASP
++  std::cout << "  WITH_VASP:        enabled" << std::endl;
++#else
++  std::cout << "  WITH_VASP:        disabled" << std::endl;
++#endif
++#ifdef WITH_WATER
++  std::cout << "  WITH_WATER:       enabled" << std::endl;
++#else
++  std::cout << "  WITH_WATER:       disabled" << std::endl;
++#endif
++#ifdef WITH_AMS
++  std::cout << "  WITH_AMS:         enabled" << std::endl;
++#else
++  std::cout << "  WITH_AMS:         disabled" << std::endl;
++#endif
++#ifdef WITH_XTB
++  std::cout << "  WITH_XTB:         enabled" << std::endl;
++#else
++  std::cout << "  WITH_XTB:         disabled" << std::endl;
++#endif
++#ifdef LAMMPS_POT
++  std::cout << "  LAMMPS_POT:       enabled" << std::endl;
++#else
++  std::cout << "  LAMMPS_POT:       disabled" << std::endl;
++#endif
++#ifdef WITH_ASE_POT
++  std::cout << "  WITH_ASE_POT:     enabled" << std::endl;
++#else
++  std::cout << "  WITH_ASE_POT:     disabled" << std::endl;
++#endif
++#ifdef EONMPI
++  std::cout << "  EONMPI:           enabled" << std::endl;
++#else
++  std::cout << "  EONMPI:           disabled" << std::endl;
++#endif
++#ifdef WITH_FORTRAN
++  std::cout << "  WITH_FORTRAN:     enabled" << std::endl;
++#else
++  std::cout << "  WITH_FORTRAN:     disabled" << std::endl;
++#endif
++#ifdef CUH2_POT
++  std::cout << "  CUH2_POT:         enabled" << std::endl;
++#else
++  std::cout << "  CUH2_POT:         disabled" << std::endl;
++#endif
++#ifdef WITH_ASE_ORCA
++  std::cout << "  WITH_ASE_ORCA:    enabled" << std::endl;
++#else
++  std::cout << "  WITH_ASE_ORCA:    disabled" << std::endl;
++#endif
++#ifdef WITH_ASE_NWCHEM
++  std::cout << "  WITH_ASE_NWCHEM:  enabled" << std::endl;
++#else
++  std::cout << "  WITH_ASE_NWCHEM:  disabled" << std::endl;
++#endif
++#ifdef WITH_METATOMIC
++  std::cout << "  WITH_METATOMIC:   enabled" << std::endl;
++#else
++  std::cout << "  WITH_METATOMIC:   disabled" << std::endl;
++#endif
++#ifdef WITH_SERVE_MODE
++  std::cout << "  WITH_SERVE_MODE:  enabled" << std::endl;
++#else
++  std::cout << "  WITH_SERVE_MODE:  disabled" << std::endl;
++#endif
++#ifdef EMBED_PYTHON
++  std::cout << "  EMBED_PYTHON:     enabled" << std::endl;
++#else
++  std::cout << "  EMBED_PYTHON:     disabled" << std::endl;
++#endif
++}
++
+ void commandLine(int argc, char **argv) {
+   bool sflag = false, mflag = false, pflag = false, cflag = false;
+   double optConvergedForce = 0.001;
+@@ -88,7 +177,8 @@ void commandLine(int argc, char **argv) {
+           "e.g. [Metatomic] model_path=model.pt)",
+           cxxopts::value<std::string>())
+ #endif
+-          ("h,help", "Print usage");
++          ("features", "Print compile-time features")(
++              "h,help", "Print usage");
+
+   try {
+     auto result = options.parse(argc, argv);
+@@ -102,6 +192,15 @@ void commandLine(int argc, char **argv) {
+       std::cout << "eonclient version " << VERSION << " (" << GIT_HASH << ")"
+                 << std::endl;
+       std::cout << "          compiled " << BUILD_DATE << std::endl;
++      if (result.count("features")) {
++        std::cout << std::endl;
++        printFeatures();
++      }
++      exit(0);
++    }
++
++    if (result.count("features")) {
++      printFeatures();
+       exit(0);
+     }
+
+diff --git i/client/version.h.in w/client/version.h.in
+index 8ddb3c75..7dffed64 100644
+--- i/client/version.h.in
++++ w/client/version.h.in
+@@ -4,3 +4,7 @@ const std::string BUILD_DATE = "@BUILD_DATE@";
+ const std::string OS_INFO = "@OS_INFO@";
+ const std::string ARCH = "@ARCH@";
+ const std::string GIT_HASH = "@GIT_HASH@";
++
++// Compile-time feature flags
++// These are defined via -D flags in meson.build based on build options
++// To see which features are enabled at runtime, run: eonclient --features

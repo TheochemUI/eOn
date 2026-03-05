@@ -2,6 +2,29 @@
 
 <!-- towncrier release notes start -->
 
+## [2.12.0](https://github.com/theochemui/eongit/tree/2.12.0) - 2026-03-04
+
+### Changed
+
+- Replace cxxopts with argum for command line parsing. This change updates the
+  CLI argument handling library and requires C++20 support. ([#320](https://github.com/theochemui/eongit/issues/320))
+- Replace per-site `scoped_interpreter` guards with lazy singleton `eonc::ensure_interpreter()` in `PyGuard.h`. Python interpreter is only started when a Python-based potential is actually used. ([#324](https://github.com/theochemui/eongit/issues/324))
+
+### Fixed
+
+- Fix ASE_POT compilation errors (wrong constructor, PotType, FPE calls, undeclared variable) and rename `-DASE_POT` to `-DWITH_ASE_POT` to avoid macro-enum collision. ([#321](https://github.com/theochemui/eongit/issues/321))
+- Fix `[IDimerRot]` column misalignment: widen force placeholder from 10 to 18
+  dashes, change angle precision from `{:6.2f}` to `{:6.3f}`, and add missing
+  "Align" column specifier to the `[Dimer]` header. ([#322](https://github.com/theochemui/eongit/issues/322))
+- Suppress FPE trapping during libtorch operations in `MetatomicPotential`
+  constructor and `force()`, preventing SIGFPE from benign NaN/Inf produced by
+  SiLU (sleef) and autograd internals. Follows the existing `FPEHandler` pattern
+  from ASE_ORCA, ASE_NWCHEM, and AtomicGPDimer. ([#323](https://github.com/theochemui/eongit/issues/323))
+- Change `uncertainty_threshold` default from `0.1` to `-1` (disabled) in both
+  C++ and Python. Most models lack uncertainty outputs, so the previous default
+  triggered a noisy exception+catch in the metatomic constructor for no benefit. ([#325](https://github.com/theochemui/eongit/issues/325))
+
+
 ## [2.11.1](https://github.com/theochemui/eongit/tree/2.11.1) - 2026-03-01
 
 ### Added

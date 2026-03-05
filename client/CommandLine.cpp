@@ -19,6 +19,8 @@
 #include "ServeMode.h"
 #endif
 
+#include <argum.h>
+
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
@@ -26,7 +28,12 @@
 #include <memory>
 #include <string>
 
+using namespace Argum;
 using namespace std;
+
+// Create a colorizer with default color scheme
+constexpr auto colorScheme = basicDefaultColorScheme<char>;
+BasicColorizer<char> colorizer(colorScheme);
 
 void singlePoint(std::unique_ptr<Matter> matter) {
   std::cout << "Energy:         " << std::fixed << std::setprecision(15)
@@ -46,225 +53,321 @@ void minimize(std::unique_ptr<Matter> matter, const string &confileout) {
   matter->matter2con(confileout);
 }
 
+void printFeatures() {
+  std::cout << colorizer.heading("Compile-time features:") << std::endl;
+  // Parse FEATURES_STRING and colorize enabled/disabled
+  std::istringstream stream(FEATURES_STRING);
+  std::string line;
+  while (std::getline(stream, line)) {
+    if (line.find(": enabled") != std::string::npos) {
+      // Extract feature name and colorize "enabled" with warning (yellow)
+      size_t colonPos = line.find(": ");
+      if (colonPos != std::string::npos) {
+        std::string featureName = line.substr(0, colonPos + 2);
+        std::string status = line.substr(colonPos + 2);
+        std::cout << featureName << colorizer.warning(status) << std::endl;
+      } else {
+        std::cout << line << std::endl;
+      }
+    } else if (line.find(": disabled") != std::string::npos) {
+      // Extract feature name and colorize "disabled" with error (red)
+      size_t colonPos = line.find(": ");
+      if (colonPos != std::string::npos) {
+        std::string featureName = line.substr(0, colonPos + 2);
+        std::string status = line.substr(colonPos + 2);
+        std::cout << featureName << colorizer.error(status) << std::endl;
+      } else {
+        std::cout << line << std::endl;
+      }
+    } else {
+      std::cout << line << std::endl;
+    }
+  }
+}
+
 void commandLine(int argc, char **argv) {
   bool sflag = false, mflag = false, pflag = false, cflag = false;
   double optConvergedForce = 0.001;
   string potential;
   string confile;
   string optimizer("cg");
+  optional<string> config_path;
+
+#ifdef WITH_SERVE_MODE
+  optional<string> serve_spec;
+  optional<string> serve_host("localhost");
+  optional<uint16_t> serve_port(12345);
+  optional<size_t> replicas(1);
+  optional<bool> gateway(false);
+#endif
 
   auto params = Parameters{};
 
-  cxxopts::Options options("eonclient", "The eOn client");
-  options.add_options()("v,version", "Print version information")(
-      "m,minimize", "Minimization of inputConfile saves to outputConfile")(
-      "s,single", "Single point energy of inputConfile")(
-      "c,compare", "Compare structures of inputConfile to outputConfile")(
-      "o,optimizer", "Optimization method",
-      cxxopts::value<std::string>()->default_value("cg"))(
-      "f,force", "Convergence force",
-      cxxopts::value<double>()->default_value("0.001"))(
-      "t,tolerance", "Distance tolerance",
-      cxxopts::value<double>()->default_value("0.1"))(
-      "p,potential", "The potential (e.g. qsc, lj, eam_al)",
-      cxxopts::value<std::string>())
+  const char *progname = (argc ? argv[0] : "eonclient");
+
+  Parser parser;
+
+  parser.add(Option("--help", "-h")
+                 .help("show this help message and exit")
+                 .handler([&]() {
+                   // Format help with color
+                   auto helpText = parser.formatHelp(progname);
+                   cout << colorizer.heading("eOn Client - Help") << "\n\n";
+                   cout << helpText;
+                   exit(EXIT_SUCCESS);
+                 }));
+
+  parser.add(Option("--version", "-v")
+                 .help("Print version information")
+                 .handler([&]() {
+                   cout << VERSION_STRING << endl;
+                   exit(EXIT_SUCCESS);
+                 }));
+
+  parser.add(
+      Option("--features").help("Print compile-time features").handler([&]() {
+        printFeatures();
+        exit(EXIT_SUCCESS);
+      }));
+
+  parser.add(Option("--minimize", "-m")
+                 .help("Minimization of inputConfile saves to outputConfile")
+                 .handler([&]() { mflag = true; }));
+
+  parser.add(Option("--single", "-s")
+                 .help("Single point energy of inputConfile")
+                 .handler([&]() { sflag = true; }));
+
+  parser.add(Option("--compare", "-c")
+                 .help("Compare structures of inputConfile to outputConfile")
+                 .handler([&]() { cflag = true; }));
+
+  parser.add(
+      Option("--optimizer", "-o")
+          .argName("METHOD")
+          .help("Optimization method")
+          .handler([&](const string_view &value) { optimizer = value; }));
+
+  parser.add(Option("--force", "-f")
+                 .argName("VALUE")
+                 .help("Convergence force")
+                 .handler([&](const string_view &value) {
+                   optConvergedForce = parseFloatingPoint<double>(value);
+                 }));
+
+  parser.add(Option("--tolerance", "-t")
+                 .argName("VALUE")
+                 .help("Distance tolerance")
+                 .handler([&](const string_view &value) {
+                   params.structure_comparison_options.distance_difference =
+                       parseFloatingPoint<double>(value);
+                 }));
+
+  parser.add(Option("--potential", "-p")
+                 .argName("POTENTIAL")
+                 .help("The potential (e.g. qsc, lj, eam_al)")
+                 .handler([&](const string_view &value) {
+                   pflag = true;
+                   potential = value;
+                 }));
+
 #ifdef WITH_SERVE_MODE
-      ("serve",
-       "Serve potential(s) over rgpot Cap'n Proto RPC. "
-       "Spec: 'potential:port' or 'pot1:port1,pot2:port2'",
-       cxxopts::value<std::string>())(
-          "serve-host", "Host to bind RPC server(s) to",
-          cxxopts::value<std::string>()->default_value("localhost"))(
-          "serve-port", "Port for single-potential serve mode (used with -p)",
-          cxxopts::value<uint16_t>()->default_value("12345"))(
-          "replicas", "Number of replicated server instances (used with -p)",
-          cxxopts::value<size_t>()->default_value("1"))(
-          "gateway",
-          "Run a single gateway port backed by N pool instances "
-          "(use with -p and --replicas)",
-          cxxopts::value<bool>()->default_value("false"))(
-          "config",
-          "Config file for potential parameters (INI format, "
-          "e.g. [Metatomic] model_path=model.pt)",
-          cxxopts::value<std::string>())
+  parser.add(
+      Option("--serve")
+          .argName("SPEC")
+          .help("Serve potential(s) over rgpot Cap'n Proto RPC. "
+                "Spec: 'potential:port' or 'pot1:port1,pot2:port2'")
+          .handler([&](const string_view &value) { serve_spec = value; }));
+
+  parser.add(
+      Option("--serve-host")
+          .argName("HOST")
+          .help("Host to bind RPC server(s) to")
+          .handler([&](const string_view &value) { serve_host = value; }));
+
+  parser.add(Option("--serve-port")
+                 .argName("PORT")
+                 .help("Port for single-potential serve mode (used with -p)")
+                 .handler([&](const string_view &value) {
+                   serve_port = parseIntegral<uint16_t>(value);
+                 }));
+
+  parser.add(Option("--replicas")
+                 .argName("N")
+                 .help("Number of replicated server instances (used with -p)")
+                 .handler([&](const string_view &value) {
+                   replicas = parseIntegral<size_t>(value);
+                 }));
+
+  parser.add(Option("--gateway")
+                 .help("Run a single gateway port backed by N pool instances "
+                       "(use with -p and --replicas)")
+                 .handler([&]() { gateway = true; }));
+
+  parser.add(
+      Option("--config")
+          .argName("FILE")
+          .help("Config file for potential parameters (INI format, "
+                "e.g. [Metatomic] model_path=model.pt)")
+          .handler([&](const string_view &value) { config_path = value; }));
 #endif
-          ("h,help", "Print usage");
+
+  parser.add(Positional("confile")
+                 .help("Input structure file")
+                 .occurs(zeroOrMoreTimes)
+                 .handler([&](const string_view &value) { confile = value; }));
+
+  parser.add(Positional("confileout")
+                 .help("Output structure file (optional)")
+                 .occurs(zeroOrMoreTimes)
+                 .handler([&](const string_view &value) {
+                   // confileout will be set after confile
+                 }));
 
   try {
-    auto result = options.parse(argc, argv);
+    parser.parse(argc, argv);
+  } catch (const ParsingException &ex) {
+    cerr << colorizer.error(ex.message()) << '\n';
+    cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
+    exit(EXIT_FAILURE);
+  }
 
-    if (result.count("help")) {
-      std::cout << options.help() << std::endl;
-      exit(0);
+  // Re-parse positional arguments since argum handles them in order
+  // We need to manually extract confile and confileout
+  // Reset and re-parse for positional args
+  confile.clear();
+  string confileout;
+  int positional_count = 0;
+  for (int i = 1; i < argc; ++i) {
+    string arg = argv[i];
+    if (arg.starts_with("-")) {
+      continue;
     }
+    if (positional_count == 0) {
+      confile = arg;
+    } else if (positional_count == 1) {
+      confileout = arg;
+    }
+    ++positional_count;
+  }
 
-    if (result.count("version")) {
-      std::cout << "eonclient version " << VERSION << " (" << GIT_HASH << ")"
-                << std::endl;
-      std::cout << "          compiled " << BUILD_DATE << std::endl;
-      exit(0);
-    }
+  if (confile.empty()) {
+    cerr << colorizer.error(
+        "At least one non-option argument is required: the con file\n");
+    cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
+    exit(EXIT_FAILURE);
+  }
 
-    if (result.count("minimize")) {
-      mflag = true;
-    }
+  if (sflag && mflag) {
+    cerr << colorizer.error(
+        "Cannot specify both minimization and single point\n");
+    exit(EXIT_FAILURE);
+  }
 
-    if (result.count("single")) {
-      sflag = true;
-    }
-
-    if (result.count("compare")) {
-      cflag = true;
-    }
-
-    if (result.count("potential")) {
-      pflag = true;
-      potential = result["potential"].as<std::string>();
-    }
-
-    if (result.count("optimizer")) {
-      optimizer = result["optimizer"].as<std::string>();
-    }
-
-    if (result.count("force")) {
-      optConvergedForce = result["force"].as<double>();
-    }
-
-    if (result.count("tolerance")) {
-      params.structure_comparison_options.distance_difference =
-          result["tolerance"].as<double>();
-    }
-
-    if (sflag && mflag) {
-      std::cerr << "Cannot specify both minimization and single point"
-                << std::endl;
-      exit(2);
-    }
-
-    if (!pflag && (sflag || mflag)) {
-      std::cerr << "Must specify a potential" << std::endl;
-      exit(2);
-    }
+  if (!pflag && (sflag || mflag)) {
+    cerr << colorizer.error("Must specify a potential\n");
+    exit(EXIT_FAILURE);
+  }
 
 #ifdef WITH_SERVE_MODE
-    // Load config file if provided (for potential-specific parameters
-    // like model_path, device, length_unit, etc.)
-    if (result.count("config")) {
-      auto config_path = result["config"].as<std::string>();
-      std::ifstream config_file(config_path);
-      if (!config_file.is_open()) {
-        std::cerr << "Cannot open config file: " << config_path << std::endl;
-        exit(2);
-      }
-      params.load(config_path);
+  // Load config file if provided (for potential-specific parameters
+  // like model_path, device, length_unit, etc.)
+  if (config_path.has_value()) {
+    std::ifstream config_file(config_path.value());
+    if (!config_file.is_open()) {
+      cerr << colorizer.error("Cannot open config file: ")
+           << config_path.value() << '\n';
+      exit(EXIT_FAILURE);
     }
+    params.load(config_path.value());
+  }
 
-    // Handle --serve mode (does not require a con file)
-    if (result.count("serve")) {
-      auto spec = result["serve"].as<std::string>();
-      auto endpoints = parseServeSpec(spec);
-      if (endpoints.empty()) {
-        std::cerr << "No valid serve endpoints in spec: " << spec << std::endl;
-        exit(2);
-      }
-      serveMultiple(endpoints, params);
-      exit(0);
+  // Handle --serve mode (does not require a con file)
+  if (serve_spec.has_value()) {
+    auto endpoints = parseServeSpec(serve_spec.value());
+    if (endpoints.empty()) {
+      cerr << colorizer.error("No valid serve endpoints in spec: ")
+           << serve_spec.value() << '\n';
+      exit(EXIT_FAILURE);
     }
+    serveMultiple(endpoints, params);
+    exit(EXIT_SUCCESS);
+  }
 
-    // Handle -p with serve flags (single potential serve mode)
-    if (pflag && !sflag && !mflag && !cflag &&
-        (result.count("serve-port") || result.count("replicas") ||
-         result.count("gateway"))) {
-      for (auto &ch : potential) {
-        ch = tolower(ch);
-      }
-      params.potential_options.potential =
-          magic_enum::enum_cast<PotType>(potential,
-                                         magic_enum::case_insensitive)
-              .value_or(PotType::UNKNOWN);
-      auto host = result["serve-host"].as<std::string>();
-      auto port = result["serve-port"].as<uint16_t>();
-      auto reps = result["replicas"].as<size_t>();
-      bool gw = result["gateway"].as<bool>();
-
-      if (gw) {
-        serveGateway(params, host, port, reps);
-      } else if (reps > 1) {
-        serveReplicated(params, host, port, reps);
-      } else {
-        serveMode(params, host, port);
-      }
-      exit(0);
+  // Handle -p with serve flags (single potential serve mode)
+  if (pflag && !sflag && !mflag && !cflag &&
+      (serve_port.has_value() || replicas.has_value() || gateway.has_value())) {
+    for (auto &ch : potential) {
+      ch = tolower(ch);
     }
+    params.potential_options.potential =
+        magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
+            .value_or(PotType::UNKNOWN);
+    auto host = serve_host.value_or("localhost");
+    auto port = serve_port.value_or(12345);
+    auto reps = replicas.value_or(1);
+    bool gw = gateway.value_or(false);
 
-    // Config-driven serve (no -p or --serve, just --config with [Serve])
-    if (!pflag && !sflag && !mflag && !cflag && result.count("config") &&
-        !result.count("serve") &&
-        (!params.serve_options.endpoints.empty() ||
-         params.serve_options.gateway_port > 0 ||
-         params.serve_options.replicas > 1)) {
-      serveFromConfig(params);
-      exit(0);
+    if (gw) {
+      serveGateway(params, host, port, reps);
+    } else if (reps > 1) {
+      serveReplicated(params, host, port, reps);
+    } else {
+      serveMode(params, host, port);
     }
+    exit(EXIT_SUCCESS);
+  }
+
+  // Config-driven serve (no -p or --serve, just --config with [Serve])
+  if (!pflag && !sflag && !mflag && !cflag && config_path.has_value() &&
+      !serve_spec.has_value() &&
+      (!params.serve_options.endpoints.empty() ||
+       params.serve_options.gateway_port > 0 ||
+       params.serve_options.replicas > 1)) {
+    serveFromConfig(params);
+    exit(EXIT_SUCCESS);
+  }
 #endif
 
-    if (!cflag) {
-      for (auto &ch : potential) {
-        ch = tolower(ch);
-      }
+  if (!cflag) {
+    for (auto &ch : potential) {
+      ch = tolower(ch);
     }
+  }
 
-    auto unmatched = result.unmatched();
-    if (unmatched.size() < 1) {
-      std::cerr << "At least one non-option argument is required: the con file"
-                << std::endl;
-      exit(2);
+  if (!cflag) {
+    params.potential_options.potential =
+        magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
+            .value_or(PotType::UNKNOWN);
+  }
+
+  if (!sflag) {
+    params.optimizer_options.method =
+        magic_enum::enum_cast<OptType>(optimizer, magic_enum::case_insensitive)
+            .value_or(OptType::CG);
+    params.optimizer_options.converged_force = optConvergedForce;
+  }
+
+  auto pot = helper_functions::makePotential(params);
+  auto matter = std::make_unique<Matter>(pot, params);
+  auto matter2 = std::make_unique<Matter>(pot, params);
+  matter->con2matter(confile);
+
+  if (confileout.empty() && confile.empty()) {
+    // confileout was not provided as second positional arg
+    // It's empty, which is fine for single point/minimize
+  }
+
+  if (sflag) {
+    singlePoint(std::move(matter));
+  } else if (mflag) {
+    minimize(std::move(matter), confileout);
+  } else if (cflag) {
+    params.structure_comparison_options.check_rotation = true;
+    if (matter->compare(*matter2, true)) {
+      cout << "Structures match\n";
     } else {
-      confile = unmatched[0];
+      cout << colorizer.error("Structures do not match\n");
     }
-
-    if (!cflag) {
-      params.potential_options.potential =
-          magic_enum::enum_cast<PotType>(potential,
-                                         magic_enum::case_insensitive)
-              .value_or(PotType::UNKNOWN);
-    }
-
-    if (!sflag) {
-      params.optimizer_options.method =
-          magic_enum::enum_cast<OptType>(optimizer,
-                                         magic_enum::case_insensitive)
-              .value_or(OptType::CG);
-      params.optimizer_options.converged_force = optConvergedForce;
-    }
-
-    auto pot = helper_functions::makePotential(params);
-    auto matter = std::make_unique<Matter>(pot, params);
-    auto matter2 = std::make_unique<Matter>(pot, params);
-    matter->con2matter(confile);
-
-    string confileout;
-    if (unmatched.size() == 2) {
-      confileout = unmatched[1];
-      if (cflag)
-        matter2->con2matter(confileout);
-    }
-
-    if (sflag) {
-      singlePoint(std::move(matter));
-    } else if (mflag) {
-      minimize(std::move(matter), confileout);
-    } else if (cflag) {
-      params.structure_comparison_options.check_rotation = true;
-      if (matter->compare(*matter2, true)) {
-        std::cout << "Structures match" << std::endl;
-      } else {
-        std::cout << "Structures do not match" << std::endl;
-      }
-    }
-  } catch (const cxxopts::exceptions::exception &e) {
-    std::cerr << "Error parsing options: " << e.what() << std::endl;
-    std::cerr << options.help() << std::endl;
-    exit(1);
   }
 }
