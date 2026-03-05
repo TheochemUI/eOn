@@ -41,7 +41,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       *initial, *final_state, params.neb_options.image_count);
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
   auto features = helper_functions::surrogate::get_features(init_data);
-  SPDLOG_TRACE("Potential is {}",
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Potential is {}",
                magic_enum::enum_name<PotType>(pot->getType()));
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
 
@@ -58,12 +58,14 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
-      SPDLOG_CRITICAL("Whoops, power level of problem too high!!");
+      LOG_CRITICAL(quill::Frontend::get_logger("combi"),
+                   "Whoops, power level of problem too high!!");
       break;
     }
     // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
     // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
-    SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+    LOG_TRACE_L1(quill::Frontend::get_logger("combi"),
+                 "Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
         helper_functions::surrogate::getMaxUncertainty(neb->path);
     auto [feature, target] =
@@ -78,16 +80,17 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       obj->setPotential(surpot);
     }
     if (!(pyparams->gp_linear_path_always)) {
-      SPDLOG_TRACE("Using previous path");
+      LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Using previous path");
       neb = std::make_unique<NudgedElasticBand>(neb->path, *pyparams, surpot);
     } else {
-      SPDLOG_TRACE("Using linear interpolation");
+      LOG_TRACE_L1(quill::Frontend::get_logger("combi"),
+                   "Using linear interpolation");
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, *pyparams,
                                                 surpot);
     }
     status_neb = neb->compute();
 
-    std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
+    std::string nebFilename(std::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
     FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
     for (long i = 0; i <= neb->numImages + 1; i++) {
@@ -123,26 +126,26 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   fileResults << magic_enum::enum_name<PotType>(
                      params.potential_options.potential)
               << " potential_type\n";
-  fileResults << fmt::format("{:.6f} energy_reference\n",
+  fileResults << std::format("{:.6f} energy_reference\n",
                              neb->path[0]->getPotentialEnergy());
   fileResults << neb->numImages << " number_of_images\n";
 
   for (long i = 0; i <= neb->numImages + 1; i++) {
-    fileResults << fmt::format("{:.6f} image{}_energy\n",
+    fileResults << std::format("{:.6f} image{}_energy\n",
                                neb->path[i]->getPotentialEnergy() -
                                    neb->path[0]->getPotentialEnergy(),
                                i);
-    fileResults << fmt::format("{:.6f} image{}_force\n",
+    fileResults << std::format("{:.6f} image{}_force\n",
                                neb->path[i]->getForces().norm(), i);
-    fileResults << fmt::format("{:.6f} image{}_projected_force\n",
+    fileResults << std::format("{:.6f} image{}_projected_force\n",
                                neb->projectedForce[i]->norm(), i);
   }
 
   fileResults << neb->numExtrema << " number_of_extrema\n";
   for (long i = 0; i < neb->numExtrema; i++) {
-    fileResults << fmt::format("{:.6f} extremum{}_position\n",
+    fileResults << std::format("{:.6f} extremum{}_position\n",
                                neb->extremumPosition[i], i);
-    fileResults << fmt::format("{:.6f} extremum{}_energy\n",
+    fileResults << std::format("{:.6f} extremum{}_energy\n",
                                neb->extremumEnergy[i], i);
   }
 
@@ -170,23 +173,25 @@ namespace helper_functions::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions
   MatrixXd features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
-  SPDLOG_TRACE("rows: {}, cols:{}", matobjs.size(),
-               matobjs.front().numberOfFreeAtoms() * 3);
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "rows: {}, cols:{}",
+               matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx].getPositionsFreeV();
   }
-  SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Features\n:{}",
+               fmt::streamed(features));
   return features;
 }
 MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   // Calculate dimensions
   MatrixXd features(matobjs.size(), matobjs.front()->numberOfFreeAtoms() * 3);
-  SPDLOG_TRACE("rows: {}, cols:{}\n", matobjs.size(),
-               matobjs.front()->numberOfFreeAtoms() * 3);
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "rows: {}, cols:{}\n",
+               matobjs.size(), matobjs.front()->numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx]->getPositionsFreeV();
   }
-  SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Features\n:{}",
+               fmt::streamed(features));
   return features;
 }
 MatrixXd get_targets(std::vector<Matter> &matobjs,
@@ -202,7 +207,8 @@ MatrixXd get_targets(std::vector<Matter> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx].getForcesFree().array() * -1;
   }
-  SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Targets\n:{}",
+               fmt::streamed(targets));
   return targets;
 }
 MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -216,7 +222,8 @@ MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx]->getForcesFree().array() * -1;
   }
-  SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Targets\n:{}",
+               fmt::streamed(targets));
   return targets;
 }
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
@@ -238,7 +245,8 @@ Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   m1.setPotential(true_pot);
   target(0) = m1.getPotentialEnergy();
   target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
-  // SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
+  // LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Generated Target:\n{}",
+  // fmt::streamed(target));
   return target;
 }
 std::pair<double, Eigen::VectorXd::Index>
@@ -250,7 +258,8 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
-  // SPDLOG_TRACE("Uncertainty along path is {}\nmax_index: {}, maxVal: {}",
+  // LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Uncertainty along path
+  // is {}\nmax_index: {}, maxVal: {}",
   //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
@@ -279,7 +288,8 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   auto mae = difference.array()
                  .abs()
                  .maxCoeff(); //.squaredNorm() / predEnergies.size();
-  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
+  LOG_TRACE_L1(quill::Frontend::get_logger("combi"),
+               "predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
                fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
                fmt::streamed(difference), mae);
   return mae < 0.05;

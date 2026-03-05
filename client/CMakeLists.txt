@@ -86,9 +86,9 @@ message(STATUS "Platform: ${OS_INFO} ${ARCH}")
 # ---------------------- Dependencies
 find_package(Threads REQUIRED)
 find_package(Eigen3 3.3 REQUIRED)
-find_package(spdlog REQUIRED)
+find_package(quill REQUIRED)
 
-set(EON_DEPS Eigen3::Eigen spdlog::spdlog Threads::Threads)
+set(EON_DEPS Eigen3::Eigen quill::quill Threads::Threads)
 
 # Argum (C++20 argument parser)
 # Using single-header from thirdparty

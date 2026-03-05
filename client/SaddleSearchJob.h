@@ -47,7 +47,7 @@ public:
   SaddleSearchJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
         fCallsSaddle{0} {
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
@@ -77,5 +77,5 @@ private:
   //! Force calls to find the saddle
   int fCallsSaddle;
 
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

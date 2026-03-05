@@ -23,9 +23,9 @@ std::vector<std::string> MonteCarloJob::run(void) {
     pos = fopen("pos_cp.con", "r");
     if (pos != NULL) {
       posInFilename = "pos_cp.con";
-      SPDLOG_LOGGER_DEBUG(log, "Resuming from checkpoint\n");
+      LOG_DEBUG(log, "Resuming from checkpoint\n");
     } else {
-      SPDLOG_LOGGER_DEBUG(log, "No checkpoint files found\n");
+      LOG_DEBUG(log, "No checkpoint files found\n");
     }
   }
 

@@ -28,8 +28,19 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
   direction.setZero();
   rotationalPlane.setZero();
   totalForceCalls = 0;
-  log = spdlog::basic_logger_mt("dimer", "dimer.log", true);
-  log->set_pattern("%v");
+  log = quill::Frontend::create_or_get_logger(
+      "dimer",
+      quill::Frontend::create_or_get_sink<quill::FileSink>(
+          "dimer.log",
+          []() {
+            quill::FileSinkConfig cfg;
+            cfg.set_open_mode('w');
+            return cfg;
+          }(),
+          quill::FileEventNotifier{}),
+      quill::PatternFormatterOptions{quill::PatternFormatterOptions{
+          quill::PatternFormatterOptions{quill::PatternFormatterOptions{
+              quill::PatternFormatterOptions{"%(message)"}}}}});
 }
 
 // was estimateLowestEigenmode. rename to compute
@@ -127,11 +138,11 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       rotationalPlaneOld = rotationalPlane; // XXX: Is this copying correctly???
       rotations++;
     }
-    SPDLOG_LOGGER_DEBUG(log,
-                        "[DimerRot]   -----   ---------   ----------------   "
-                        "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
-                        curvature, torque,
-                        rotationAngle * (180.0 / helper_functions::pi));
+    LOG_DEBUG(log,
+              "[DimerRot]   -----   ---------   ----------------   "
+              "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
+              curvature, torque,
+              rotationAngle * (180.0 / helper_functions::pi));
   }
 
   statsTorque = torque;

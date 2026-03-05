@@ -24,12 +24,17 @@ public:
                   const Parameters &a_params)
       : Optimizer(a_objf, OptType::SD, a_params),
         iteration{0} {
-    if (spdlog::get("sd")) {
-      m_log = spdlog::get("sd");
-    } else {
-      m_log = spdlog::basic_logger_mt("sd", "_sd.log", true);
-    }
-    m_log->set_pattern("[%l] [SD] %v");
+    m_log = quill::Frontend::create_or_get_logger(
+        "sd",
+        quill::Frontend::create_or_get_sink<quill::FileSink>(
+            "_sd.log",
+            []() {
+              quill::FileSinkConfig cfg;
+              cfg.set_open_mode('w');
+              return cfg;
+            }(),
+            quill::FileEventNotifier{}),
+        quill::PatternFormatterOptions{"%(message)"});
   }
   ~SteepestDescent() = default;
 
@@ -37,7 +42,7 @@ public:
   int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
-  shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
   Eigen::VectorXd getStep(Eigen::VectorXd a_f);
   size_t iteration;
   Eigen::VectorXd m_rPrev;

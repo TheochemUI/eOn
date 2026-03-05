@@ -14,8 +14,7 @@
 #include "Potential.h"
 #include "PyGuard.h"
 #include <cstdlib>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <format>
 #include <memory>
 
 using namespace std::string_literals; // For ""s
@@ -31,7 +30,7 @@ int main(void) {
   auto [energy, forces] = pot->get_ef(
       matter->getPositions(), matter->getAtomicNrs(), matter->getCell());
   auto execString =
-      fmt::format("Got {energy:}\n{forces:}", fmt::arg("energy", energy),
+      std::format("Got {energy:}\n{forces:}", fmt::arg("energy", energy),
                   fmt::arg("forces", fmt::streamed(forces)));
   std::cout << execString << "\n";
   return EXIT_SUCCESS;

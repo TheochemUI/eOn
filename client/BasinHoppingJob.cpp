@@ -43,18 +43,17 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   Elements = getElements(current.get());
   if (params.basin_hopping_options.swap_probability > 0 &&
       Elements.size() == 1) {
-    log = spdlog::get("_traceback");
-    SPDLOG_LOGGER_CRITICAL(
-        log, "error: [Basin Hopping] swap move probability must be "
-             "zero if there is only one element type\n");
+    log = quill::Frontend::get_logger("_traceback");
+    LOG_CRITICAL(log, "error: [Basin Hopping] swap move probability must be "
+                      "zero if there is only one element type\n");
     std::exit(1);
   }
 
   double randomProb =
       params.basin_hopping_options.initial_random_structure_probability;
   if (randomProb > 0.0) {
-    SPDLOG_LOGGER_DEBUG(
-        log, "generating random structure with probability {:.4f}", randomProb);
+    LOG_DEBUG(log, "generating random structure with probability {:.4f}",
+              randomProb);
   }
   double u = helper_functions::random();
   if (u < params.basin_hopping_options.initial_random_structure_probability) {
@@ -86,12 +85,10 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   FILE *pFile;
   pFile = fopen("bh.dat", "w");
 
-  SPDLOG_LOGGER_DEBUG(
-      log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
-      "step", "current", "trial", "global min", "fc", "ar", "md");
-  SPDLOG_LOGGER_DEBUG(
-      log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
-      "----", "-------", "-----", "----------", "--", "--", "--");
+  LOG_DEBUG(log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
+            "step", "current", "trial", "global min", "fc", "ar", "md");
+  LOG_DEBUG(log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
+            "----", "-------", "-----", "----------", "--", "--", "--");
 
   int recentAccept = 0;
   double curDisplacement = params.basin_hopping_options.displacement;
@@ -213,7 +210,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     } else {
       acceptReject[0] = 'R';
     }
-    // SPDLOG_LOGGER_DEBUG(log, "[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i
+    // LOG_DEBUG(log, "[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i
     // %5.3f %5.3f %1s\n",
     //        step+1, currentEnergy, minTrial->getPotentialEnergy(),
     //        minimumEnergy, minfcalls, totalAccept/((double)step+1),
@@ -256,7 +253,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
         curDisplacement *= 1.0 - adjustFraction;
       }
 
-      // SPDLOG_LOGGER_DEBUG(log, "recentRatio %.3f md: %.3f\n", recentRatio,
+      // LOG_DEBUG(log, "recentRatio %.3f md: %.3f\n", recentRatio,
       // curDisplacement);
       recentAccept = 0;
     }
@@ -340,8 +337,8 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
         double Cq = curDisplacement / (distvec.maxCoeff() * distvec.maxCoeff());
         disp = Cq * dist * dist;
       } else {
-        log = spdlog::get("_traceback");
-        SPDLOG_LOGGER_CRITICAL(log, "Unknown displacement_algorithm\n");
+        log = quill::Frontend::get_logger("_traceback");
+        LOG_CRITICAL(log, "Unknown displacement_algorithm\n");
         std::exit(1);
       }
       for (int j = 0; j < 3; j++) {
@@ -352,8 +349,8 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
                    "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
-          log = spdlog::get("_traceback");
-          SPDLOG_LOGGER_CRITICAL(log, "Unknown displacement_distribution\n");
+          log = quill::Frontend::get_logger("_traceback");
+          LOG_CRITICAL(log, "Unknown displacement_distribution\n");
           std::exit(1);
         }
       }

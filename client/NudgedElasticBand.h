@@ -73,7 +73,7 @@ private:
   Parameters params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
   bool mmf_active{false};
   int mmf_iterations_used{0};
 };

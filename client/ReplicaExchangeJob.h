@@ -20,7 +20,7 @@ public:
   ReplicaExchangeJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
         forceCalls{0} {
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   ~ReplicaExchangeJob(void) = default;
   std::vector<std::string> run(void);
@@ -34,5 +34,5 @@ private:
   //        Dynamics **replicaDynamics;
   //        double *replicaTemperature;
   std::vector<std::string> returnFiles;
-  shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

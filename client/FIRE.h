@@ -30,12 +30,17 @@ public:
         m_f_dec{0.5},
         m_f_a{0.99},
         m_iteration{0} {
-    if (spdlog::get("fire")) {
-      m_log = spdlog::get("fire");
-    } else {
-      m_log = spdlog::basic_logger_mt("fire", "_fire.log", true);
-    }
-    m_log->set_pattern("[%l] [FIRE] %v");
+    m_log = quill::Frontend::create_or_get_logger(
+        "fire",
+        quill::Frontend::create_or_get_sink<quill::FileSink>(
+            "_fire.log",
+            []() {
+              quill::FileSinkConfig cfg;
+              cfg.set_open_mode('w');
+              return cfg;
+            }(),
+            quill::FileEventNotifier{}),
+        quill::PatternFormatterOptions{"%(message)"});
   }
   virtual ~FIRE() = default;
 
@@ -52,5 +57,5 @@ private:
   double m_f_dec;
   double m_f_a;
   size_t m_iteration;
-  shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
 };

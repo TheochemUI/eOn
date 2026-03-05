@@ -193,8 +193,8 @@ if not eigen_dep.found()
 endif
 _deps += [eigen_dep]
 
-spdlog_dep = dependency('spdlog', required: true)
-_deps += spdlog_dep
+quill_dep = dependency('quill', required: true)
+_deps += quill_dep
 
 eoncbase_sources = ['INIFile.cpp', 'fpe_handler.cpp']
 

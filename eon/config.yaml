@@ -146,11 +146,11 @@ Paths:
 
         superbasin_recycling:
             kind: string
-            default: "%(main_directory)s/SB_recycling"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         superbasins:
             kind: string
-            default: "%(main_directory)s/superbasins/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         main_directory:
             kind: string
@@ -158,43 +158,43 @@ Paths:
 
         scratch:
             kind: string
-            default: "%(main_directory)s/jobs/scratch/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         results:
             kind: string
-            default: "%(main_directory)s"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         kdb:
             kind: string
-            default: "%(main_directory)s/kdb/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         kdb_scratch:
             kind: string
-            default: "%(main_directory)s/kdbscratch/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         states:
             kind: string
-            default: "%(main_directory)s/states/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         potential_files:
             kind: string
-            default: "%(main_directory)s/potfiles"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         jobs_in:
             kind: string
-            default: "%(main_directory)s/jobs/in/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         jobs_out:
             kind: string
-            default: "%(main_directory)s/jobs/out/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         incomplete:
             kind: string
-            default: "%(main_directory)s/jobs/incomplete/"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         bh_minima:
             kind: string
-            default: "%(main_directory)s/minima"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
 ################################################################################
 
@@ -288,7 +288,7 @@ Nudged Elastic Band:
 
         initial_path_in:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         initializer:
             kind: string
@@ -418,7 +418,7 @@ Debug:
 
         neb_mmf_estimator:
             kind: string
-            default: "dimer"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         write_movies:
             kind: boolean
@@ -1553,54 +1553,54 @@ AMS_ENV:
     options:
         amshome:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         scm_tmpdir:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         scm_pythondir:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         amsbin:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         scmlicense:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         amsresources:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
 ################################################################################
 AMS:
     options:
         engine:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         forcefield:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         model:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         xc:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         basis:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         resources:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
 ################################################################################
 
@@ -1608,19 +1608,19 @@ AMS_IO:
     options:
         engine:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         forcefield:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         model:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         xc:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
 ################################################################################
 
@@ -1628,7 +1628,7 @@ XTBPot:
     options:
         paramset:
             kind: string
-            default: "GFNFF"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         accuracy:
             kind: float
@@ -1660,7 +1660,7 @@ SocketNWChemPot:
     options:
         host:
             kind: string
-            default: "127.0.0.1"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         port:
             kind: int
@@ -1672,7 +1672,7 @@ SocketNWChemPot:
 
         nwchem_settings:
             kind: string
-            default: "nwchem_settings.nwi"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         unix_socket_mode:
             kind: bool
@@ -1680,7 +1680,7 @@ SocketNWChemPot:
 
         unix_socket_path:
             kind: string
-            default: "eon_nwchem"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         make_template_input:
             kind: bool
@@ -1692,19 +1692,19 @@ Metatomic:
     options:
         model_path:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         device:
             kind: string
-            default: "auto"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         length_unit:
             kind: string
-            default: "Angstrom"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         extensions_directory:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         check_consistency:
             kind: boolean
@@ -1716,15 +1716,15 @@ Metatomic:
 
         variant_base:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         variant_energy:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         variant_energy_uncertainty:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}
 
 ################################################################################
 
@@ -1732,15 +1732,15 @@ ASE_NWCHEM:
     options:
         nwchem_path:
             kind: string
-            default: "NONE"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         nproc:
             kind: string
-            default: "auto"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         multiplicity:
             kind: string
-            default: "1"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         scf_thresh:
             kind: float
@@ -1756,15 +1756,15 @@ ASE_ORCA:
     options:
         orca_path:
             kind: string
-            default: "NONE"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         nproc:
             kind: string
-            default: "auto"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         simpleinput:
             kind: string
-            default: "ENGRAD HF-3c"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
 ################################################################################
 
@@ -1786,7 +1786,7 @@ Serve:
     options:
         host:
             kind: string
-            default: "localhost"
+            default: quill::PatternFormatterOptions{"%(message)"}
 
         port:
             kind: int
@@ -1802,4 +1802,4 @@ Serve:
 
         endpoints:
             kind: string
-            default: ""
+            default: quill::PatternFormatterOptions{"%(message)"}

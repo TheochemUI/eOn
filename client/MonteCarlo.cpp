@@ -38,30 +38,30 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
     matter->setPositions(trial);
     etrial = matter->getPotentialEnergy();
     double de = ecurrent - etrial;
-    SPDLOG_LOGGER_INFO(log, "de={}", de);
+    LOG_INFO(log, "de={}", de);
     if (de <= 0.0) {
-      SPDLOG_LOGGER_INFO(log, "{}: accept de <= 0.0", steps);
+      LOG_INFO(log, "{}: accept de <= 0.0", steps);
       accepts++;
       continue;
     }
     double r = randomDouble();
     double kB = params.constants.kB;
     double arg = -de / (kB * T);
-    SPDLOG_LOGGER_DEBUG(log, "arg: {}\n", arg);
+    LOG_DEBUG(log, "arg: {}\n", arg);
     if (arg < -50.0) {
       matter->setPositions(current);
-      SPDLOG_LOGGER_DEBUG(log, "{}: reject small arg\n", steps);
+      LOG_DEBUG(log, "{}: reject small arg\n", steps);
       continue;
     }
 
     double p = exp(arg);
     if (r < p) {
-      SPDLOG_LOGGER_DEBUG(log, "{}: accept r<p\n", steps);
+      LOG_DEBUG(log, "{}: accept r<p\n", steps);
       accepts++;
       continue;
     } else {
       matter->setPositions(current);
-      SPDLOG_LOGGER_DEBUG(log, "{}: reject\n", steps);
+      LOG_DEBUG(log, "{}: reject\n", steps);
     }
   }
   cout << accepts << "\n";

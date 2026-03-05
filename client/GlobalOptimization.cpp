@@ -17,4 +17,6 @@ GlobalOptimization::GlobalOptimization(const Parameters &params)
 
 GlobalOptimization::~GlobalOptimization(void) {}
 
-void GlobalOptimization::run(void) { SPDLOG_INFO("HELLO FROM GO\n"); }
+void GlobalOptimization::run(void) {
+  LOG_INFO(quill::Frontend::get_logger("combi"), "HELLO FROM GO\n");
+}

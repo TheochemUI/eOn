@@ -1,5 +1,5 @@
 #include "EnvHelpers.hpp"
-#include <spdlog/spdlog.h>
+#include "BaseStructures.h"
 
 namespace helper_functions {
 
@@ -25,7 +25,7 @@ std::string get_value_from_env_or_param(const char *env_variable,
   }
 
   if (!default_value.empty() && !warning_message.empty()) {
-    SPDLOG_WARN(warning_message);
+    LOG_WARNING(quill::Frontend::get_logger("combi"), "{}", warning_message);
   }
 
   return default_value;

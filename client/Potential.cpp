@@ -133,8 +133,8 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());
   forceCallCounter++;
-  m_log->trace("[{}] {} so far", magic_enum::enum_name<PotType>(getType()),
-               forceCallCounter);
+  LOG_TRACE_L3(m_log, "[{}] {} so far",
+               magic_enum::enum_name<PotType>(getType()), forceCallCounter);
 
   return std::make_tuple(energy, forces);
 };
@@ -341,8 +341,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
   default:
-    SPDLOG_ERROR("No known potential could be constructed from {}",
-                 magic_enum::enum_name(ptype));
+    LOG_ERROR(quill::Frontend::get_logger("combi"),
+              "No known potential could be constructed from {}",
+              magic_enum::enum_name(ptype));
+    quill::Frontend::get_logger("combi")->flush_log();
     throw std::runtime_error("Terminating");
     break;
   }

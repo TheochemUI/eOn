@@ -29,12 +29,17 @@ public:
             min(a_objf->degreesOfFreedom(),
                 static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {
 
-    if (spdlog::get("lbfgs")) {
-      m_log = spdlog::get("lbfgs");
-    } else {
-      m_log = spdlog::basic_logger_mt("lbfgs", "_lbfgs.log", true);
-    }
-    m_log->set_pattern("[%l] [LBFGS] %v");
+    m_log = quill::Frontend::create_or_get_logger(
+        "lbfgs",
+        quill::Frontend::create_or_get_sink<quill::FileSink>(
+            "_lbfgs.log",
+            []() {
+              quill::FileSinkConfig cfg;
+              cfg.set_open_mode('w');
+              return cfg;
+            }(),
+            quill::FileEventNotifier{}),
+        quill::PatternFormatterOptions{"%(message)"});
   }
 
   ~LBFGS() = default;
@@ -57,5 +62,5 @@ private:
 
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
-  std::shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
 };

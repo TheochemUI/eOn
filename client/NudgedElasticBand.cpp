@@ -20,8 +20,6 @@
 #include "eonExceptions.hpp"
 #include "magic_enum/magic_enum.hpp"
 
-#include <spdlog/spdlog.h>
-
 using namespace helper_functions;
 namespace fs = std::filesystem;
 
@@ -155,11 +153,11 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
 
             // Decimate path back to the target count using the cubic spline
             if (init_opt.oversampling && path.size() > (base_count + 2)) {
-              auto log = spdlog::get("combi");
-              SPDLOG_LOGGER_INFO(log,
-                                 "Decimating oversampled path ({} images) to "
-                                 "{} images via cubic spline.",
-                                 path.size() - 2, base_count);
+              auto *log = quill::Frontend::get_logger("combi");
+              LOG_INFO(log,
+                       "Decimating oversampled path ({} images) to "
+                       "{} images via cubic spline.",
+                       path.size() - 2, base_count);
 
               // Perform the Spline Resampling
               path =
@@ -167,8 +165,8 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
 
               // POST-DECIMATION RE-RELAXATION
               // The spline might have placed atoms in high-energy positions.
-              SPDLOG_LOGGER_INFO(
-                  log, "Relaxing decimated path to restore IDPP surface...");
+              LOG_INFO(log,
+                       "Relaxing decimated path to restore IDPP surface...");
 
               // Collective IDPP objective for the new reduced path
               std::shared_ptr<ObjectiveFunction> post_decim_objf =
@@ -207,7 +205,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
       mmf_active{false},
       mmf_iterations_used{0} {
 
-  log = spdlog::get("combi");
+  log = quill::Frontend::get_logger("combi");
   this->status = NEBStatus::INIT;
   numImages = params.neb_options.image_count;
   atoms = initPath.front().numberOfAtoms();
@@ -258,9 +256,9 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
         eigenmode_solvers[i] =
             std::make_shared<Lanczos>(path[i], parametersPassed, pot);
       } else {
-        log = spdlog::get("_traceback");
-        SPDLOG_LOGGER_CRITICAL(log, "[Debug] unknown neb_mmf_estimator: {}",
-                               params.debug_options.neb_mmf);
+        log = quill::Frontend::get_logger("_traceback");
+        LOG_CRITICAL(log, "[Debug] unknown neb_mmf_estimator: {}",
+                     params.debug_options.neb_mmf);
         std::exit(1);
       }
     }
@@ -283,7 +281,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   const int stability_threshold =
       params.neb_options.climbing_image.roneb.ci_stability_count;
 
-  SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band calculation started.");
+  LOG_DEBUG(log, "Nudged elastic band calculation started.");
 
   // Initialize E_ref for energy weighting
   E_ref = std::min(path[0]->getPotentialEnergy(),
@@ -306,7 +304,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     if (params.debug_options.write_movies) {
       bool append = (iteration != 0);
       path[maxEnergyImage]->matter2con("neb_maximage.con", append);
-      std::string nebFilename(fmt::format("neb_path_{:03d}.con", iteration));
+      std::string nebFilename(std::format("neb_path_{:03d}.con", iteration));
       FILE *fileNEBPath = fopen(nebFilename.c_str(), "wb");
       for (long idx = 0; idx <= numImages + 1; idx++) {
         path[idx]->matter2con(fileNEBPath);
@@ -342,51 +340,48 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       auto fmt_trigger = [](double val) -> std::string {
         if (val > 1e100)
           return "INF";
-        return fmt::format("{:.4f}", val);
+        return std::format("{:.4f}", val);
       };
 
-      SPDLOG_LOGGER_INFO(
+      LOG_INFO(
           log,
           "===============================================================");
-      SPDLOG_LOGGER_INFO(log, " NEB Optimization Configuration");
-      SPDLOG_LOGGER_INFO(
+      LOG_INFO(log, " NEB Optimization Configuration");
+      LOG_INFO(
           log,
           "===============================================================");
-      SPDLOG_LOGGER_INFO(log, " {:<25} : {:.4f}", "Baseline Force",
-                         baseline_force);
+      LOG_INFO(log, " {:<25} : {:.4f}", "Baseline Force", baseline_force);
 
       // Climbing Image Logs
       std::string ci_status = ci_opt.enabled ? "ENABLED" : "DISABLED";
-      SPDLOG_LOGGER_INFO(log, " {:<25} : {}", "Climbing Image (CI)", ci_status);
+      LOG_INFO(log, " {:<25} : {}", "Climbing Image (CI)", ci_status);
       if (ci_opt.enabled) {
         double ci_rel_val = baseline_force * ci_opt.trigger_factor;
-        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {} (Factor: {:.2f})",
-                           "Relative Trigger", fmt_trigger(ci_rel_val),
-                           ci_opt.trigger_factor);
-        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {}", "Absolute Trigger",
-                           fmt_trigger(ci_opt.trigger_force));
-        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {}", "Converged Only",
-                           ci_opt.converged_only);
+        LOG_INFO(log, "   - {:<21} : {} (Factor: {:.2f})", "Relative Trigger",
+                 fmt_trigger(ci_rel_val), ci_opt.trigger_factor);
+        LOG_INFO(log, "   - {:<21} : {}", "Absolute Trigger",
+                 fmt_trigger(ci_opt.trigger_force));
+        LOG_INFO(log, "   - {:<21} : {}", "Converged Only",
+                 ci_opt.converged_only);
       }
 
       // RONEB / MMF Logs
       std::string mmf_status =
           (ci_opt.enabled && mmf_opt.use_mmf) ? "ENABLED" : "DISABLED";
-      SPDLOG_LOGGER_INFO(log, " {:<25} : {}", "Hybrid MMF (RONEB)", mmf_status);
+      LOG_INFO(log, " {:<25} : {}", "Hybrid MMF (RONEB)", mmf_status);
       if (ci_opt.enabled && mmf_opt.use_mmf) {
-        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {:.4f} (Factor: {:.2f})",
-                           "Initial Threshold", current_mmf_threshold,
-                           mmf_opt.trigger_factor);
-        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {:.4f}", "Absolute Floor",
-                           mmf_opt.trigger_force);
-        SPDLOG_LOGGER_INFO(log,
-                           "   - {:<21} : {:.2f} (Base: {:.2f}, Str: {:.2f})",
-                           "Penalty Scheme", mmf_opt.penalty.base,
-                           mmf_opt.penalty.base, mmf_opt.penalty.strength);
-        SPDLOG_LOGGER_INFO(log, "   - {:<21} : {:.4f}", "Angle Tolerance",
-                           mmf_opt.angle_tol);
+        LOG_INFO(log, "   - {:<21} : {:.4f} (Factor: {:.2f})",
+                 "Initial Threshold", current_mmf_threshold,
+                 mmf_opt.trigger_factor);
+        LOG_INFO(log, "   - {:<21} : {:.4f}", "Absolute Floor",
+                 mmf_opt.trigger_force);
+        LOG_INFO(log, "   - {:<21} : {:.2f} (Base: {:.2f}, Str: {:.2f})",
+                 "Penalty Scheme", mmf_opt.penalty.base, mmf_opt.penalty.base,
+                 mmf_opt.penalty.strength);
+        LOG_INFO(log, "   - {:<21} : {:.4f}", "Angle Tolerance",
+                 mmf_opt.angle_tol);
       }
-      SPDLOG_LOGGER_INFO(
+      LOG_INFO(
           log,
           "---------------------------------------------------------------");
       // --- Improved Logging End ---
@@ -394,11 +389,12 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
     if (iteration == 0) {
 
-      SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
-                   "step size",
-                   params.optimizer_options.convergence_metric_label,
-                   "max image", "max energy");
-      SPDLOG_DEBUG(
+      LOG_DEBUG(quill::Frontend::get_logger("combi"),
+                "{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
+                "step size", params.optimizer_options.convergence_metric_label,
+                "max image", "max energy");
+      LOG_DEBUG(
+          quill::Frontend::get_logger("combi"),
           "---------------------------------------------------------------\n");
     }
 
@@ -418,11 +414,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
            convForce < params.neb_options.climbing_image.roneb.trigger_force) &&
           convForce > params.neb_options.force_tolerance) {
 
-        SPDLOG_LOGGER_DEBUG(log,
-                            "Triggering MMF.  Force: {:.4f}, Threshold: {:.4f} "
-                            "({:.2f}x baseline)",
-                            convForce, current_mmf_threshold,
-                            current_mmf_threshold / baseline_force);
+        LOG_DEBUG(log,
+                  "Triggering MMF.  Force: {:.4f}, Threshold: {:.4f} "
+                  "({:.2f}x baseline)",
+                  convForce, current_mmf_threshold,
+                  current_mmf_threshold / baseline_force);
 
         // Save climbing image state before MMF
         AtomMatrix savedPositions = path[climbingImage]->getPositions();
@@ -438,8 +434,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
         // Check if we're done
         if (newForce < params.neb_options.force_tolerance) {
-          SPDLOG_LOGGER_DEBUG(log, "NEB converged after MMF. Force: {:.4f}",
-                              newForce);
+          LOG_DEBUG(log, "NEB converged after MMF. Force: {:.4f}", newForce);
           status = NEBStatus::GOOD;
           break;
         }
@@ -461,11 +456,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           current_mmf_threshold =
               std::min(current_mmf_threshold, max_threshold);
 
-          SPDLOG_LOGGER_DEBUG(log,
-                              "MMF helped (status={}). Force: {:.4f} -> {:.4f} "
-                              "({:.2f}x baseline). New threshold: {:.4f}",
-                              mmfResult, convForce, newForce,
-                              newForce / baseline_force, current_mmf_threshold);
+          LOG_DEBUG(log,
+                    "MMF helped (status={}). Force: {:.4f} -> {:.4f} "
+                    "({:.2f}x baseline). New threshold: {:.4f}",
+                    mmfResult, convForce, newForce, newForce / baseline_force,
+                    current_mmf_threshold);
         } else {
           // MMF didn't help - apply backoff relative to baseline
           double strength =
@@ -495,7 +490,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           current_mmf_threshold =
               std::max(current_mmf_threshold, min_threshold);
 
-          SPDLOG_LOGGER_DEBUG(
+          LOG_DEBUG(
               log,
               "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
               "Alignment:  {:.3f}. New threshold: {:.4f} ({:.2f}x baseline)",
@@ -505,7 +500,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           // NOTE(rg): Doesn't really help anyway
           // Only revert if MMF made things much worse
           // if (newForce > convForce * 2) {
-          //   SPDLOG_LOGGER_DEBUG(log, "Reverting to older position.");
+          //   LOG_DEBUG(log, "Reverting to older position.");
           //   path[climbingImage]->setPositions(savedPositions);
           // }
         }
@@ -513,7 +508,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
             params.optimizer_options.max_move *
                 params.neb_options.image_count) {
           // Reset optimizer after MMF - history is stale
-          SPDLOG_LOGGER_DEBUG(log, "Resetting optimization history.");
+          LOG_DEBUG(log, "Resetting optimization history.");
           optim = helpers::create::mkOptim(objf, params.neb_options.opt_method,
                                            params);
         }
@@ -537,9 +532,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         } else {
           if (!switched) {
             switched = true;
-            SPDLOG_DEBUG("Switched to {}",
-                         magic_enum::enum_name<OptType>(
-                             params.optimizer_options.refine.method));
+            LOG_DEBUG(quill::Frontend::get_logger("combi"), "Switched to {}",
+                      magic_enum::enum_name<OptType>(
+                          params.optimizer_options.refine.method));
           }
           refine_optim->step(params.optimizer_options.max_move);
         }
@@ -556,23 +551,22 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                 path[0]->getPotentialEnergy();
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
-    SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
-                        iteration, stepSize, convergenceForce(), maxEnergyImage,
-                        dE);
+    LOG_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}", iteration,
+              stepSize, convergenceForce(), maxEnergyImage, dE);
 
     if (pot->getType() == PotType::CatLearn) {
       if (objf->isUncertain()) {
-        SPDLOG_LOGGER_DEBUG(log, "NEB failed due to high uncertainty");
+        LOG_DEBUG(log, "NEB failed due to high uncertainty");
         status = NEBStatus::MAX_UNCERTAINTY;
         break;
       } else if (objf->isConverged()) {
-        SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
+        LOG_DEBUG(log, "NEB converged\n");
         status = NEBStatus::GOOD;
         break;
       }
     } else {
       if (objf->isConverged()) {
-        SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
+        LOG_DEBUG(log, "NEB converged\n");
         status = NEBStatus::GOOD;
         break;
       }
@@ -586,8 +580,7 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
   alignment = 0.0;
 
   if (climbingImage <= 0 || climbingImage > numImages) {
-    SPDLOG_LOGGER_WARN(log, "Invalid climbing image for MMF:  {}",
-                       climbingImage);
+    LOG_WARNING(log, "Invalid climbing image for MMF:  {}", climbingImage);
     return -1;
   }
 
@@ -597,7 +590,7 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
   // Verify tangent is valid
   double tangentNorm = initialMode.norm();
   if (tangentNorm < 1e-8) {
-    SPDLOG_LOGGER_WARN(log, "Tangent too small for MMF initialization");
+    LOG_WARNING(log, "Tangent too small for MMF initialization");
     return -1;
   }
   initialMode /= tangentNorm;
@@ -619,10 +612,10 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
   } catch (const eonc::DimerModeRestoredException &e) {
     // Dimer restored to valid state - treat as partial success
     minModeStatus = MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST;
-    SPDLOG_LOGGER_DEBUG(log, "MMF:  Dimer restored to best state");
+    LOG_DEBUG(log, "MMF:  Dimer restored to best state");
   } catch (const eonc::DimerModeLostException &e) {
     minModeStatus = MinModeSaddleSearch::STATUS_DIMER_LOST_MODE;
-    SPDLOG_LOGGER_WARN(log, "Dimer lost mode during MMF refinement");
+    LOG_WARNING(log, "Dimer lost mode during MMF refinement");
   }
 
   // Restore original parameters
@@ -637,9 +630,8 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
   // minimum. We only want to refine if we are in a saddle region (negative
   // curvature).
   if (eigenvalue > 0.0) {
-    SPDLOG_LOGGER_WARN(log,
-                       "MMF skipped: Positive curvature detected (eig={:.4f}).",
-                       eigenvalue);
+    LOG_WARNING(log, "MMF skipped: Positive curvature detected (eig={:.4f}).",
+                eigenvalue);
     return -2;
   }
 
@@ -654,7 +646,7 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
       minModeStatus == MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST) {
     // Check alignment - if mode drifted too far, treat as failure
     if (alignment < params.neb_options.climbing_image.roneb.angle_tol) {
-      SPDLOG_LOGGER_WARN(
+      LOG_WARNING(
           log,
           "MMF converged/restored but mode drifted (alignment={:.3f} < {:.3f})",
           alignment, params.neb_options.climbing_image.roneb.angle_tol);
@@ -664,8 +656,7 @@ int NudgedElasticBand::runMMFRefinement(double &alignment) {
   } else if (minModeStatus == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
     return 1;
   } else {
-    SPDLOG_LOGGER_WARN(log, "MMF failed.  Mode-tangent alignment: {:.3f}",
-                       alignment);
+    LOG_WARNING(log, "MMF failed.  Mode-tangent alignment: {:.3f}", alignment);
     return -1;
   }
 }
@@ -693,10 +684,10 @@ double NudgedElasticBand::convergenceForce(void) {
     } else if (params.optimizer_options.convergence_metric == "max_component") {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
-      log = spdlog::get("_traceback");
-      SPDLOG_LOGGER_CRITICAL(
-          log, "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
-          params.optimizer_options.convergence_metric);
+      log = quill::Frontend::get_logger("_traceback");
+      LOG_CRITICAL(log,
+                   "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
+                   params.optimizer_options.convergence_metric);
       std::exit(1);
     }
     if (params.neb_options.climbing_image.converged_only == true &&
@@ -813,7 +804,7 @@ void NudgedElasticBand::updateForces(void) {
 
       // Log the optimized k for debugging
       // TODO(rg): refactor and log separately
-      // SPDLOG_LOGGER_DEBUG(log, "Optimized OM k: {}", base_k);
+      // LOG_DEBUG(log, "Optimized OM k: {}", base_k);
     }
     // Pre-calculate L vectors for all images (including endpoints)
     L_vecs.resize(numImages + 2);
@@ -1060,10 +1051,10 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   AtomMatrix tang;
   std::string header;
   if (params.debug_options.estimate_neb_eigenvalues) {
-    header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s} {:>12s}", "img",
+    header = std::format("{:>3s} {:>12s} {:>12s} {:>12s} {:>12s}", "img",
                          "rxn_coord", "energy", "f_para", "eigval");
   } else {
-    header = fmt::format("{:>3s} {:>12s} {:>12s} {:>12s}", "img", "rxn_coord",
+    header = std::format("{:>3s} {:>12s} {:>12s} {:>12s}", "img", "rxn_coord",
                          "energy", "f_para");
   }
 
@@ -1071,11 +1062,8 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   tangentStart.normalize();
   tangentEnd.normalize();
 
-  std::shared_ptr<spdlog::logger> fileLogger;
+  quill::Logger *fileLogger = nullptr;
   if (writeToFile) {
-    if (spdlog::get("file_logger")) {
-      spdlog::drop("file_logger");
-    }
     // If idx is SIZE_MAX, treat this as the dedicated final output file
     // "neb.dat". This avoids overwriting iteration files named neb_000.dat,
     // neb_001.dat, ...
@@ -1083,14 +1071,25 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     if (idx == std::numeric_limits<size_t>::max()) {
       neb_dat_fs = "neb.dat";
     } else {
-      neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
+      neb_dat_fs = std::format("neb_{:03}.dat", idx);
     }
     if (fs::exists(neb_dat_fs)) {
       fs::remove(neb_dat_fs);
     }
-    fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
-    fileLogger->set_pattern("%v");
-    fileLogger->info(header);
+    fileLogger = quill::Frontend::create_or_get_logger(
+        "file_logger",
+        quill::Frontend::create_or_get_sink<quill::FileSink>(
+            neb_dat_fs,
+            []() {
+              quill::FileSinkConfig cfg;
+              cfg.set_open_mode('w');
+              return cfg;
+            }(),
+            quill::FileEventNotifier{}),
+        quill::PatternFormatterOptions{
+            quill::PatternFormatterOptions{quill::PatternFormatterOptions{
+                quill::PatternFormatterOptions{"%(message)"}}}});
+    LOG_INFO(fileLogger, "{}", header);
   }
   const double energy_reactant = path[0]->getPotentialEnergy();
 
@@ -1117,27 +1116,22 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
       eigenmode_solvers[i]->compute(path[i], tang);
       double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
       if (fileLogger) {
-        fileLogger->info("{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i,
-                         distTotal, relative_energy, parallel_force,
-                         lowest_eigenvalue);
+        LOG_INFO(fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i,
+                 distTotal, relative_energy, parallel_force, lowest_eigenvalue);
       } else {
-        SPDLOG_LOGGER_DEBUG(
-            log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
-            relative_energy, parallel_force, lowest_eigenvalue);
+        LOG_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i,
+                  distTotal, relative_energy, parallel_force,
+                  lowest_eigenvalue);
       }
     } else { // Standard output without the eigenvalue
       if (fileLogger) {
-        fileLogger->info("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
-                         relative_energy, parallel_force);
+        LOG_INFO(fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i,
+                 distTotal, relative_energy, parallel_force);
       } else {
-        SPDLOG_LOGGER_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i,
-                            distTotal, relative_energy, parallel_force);
+        LOG_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
+                  relative_energy, parallel_force);
       }
     }
-  }
-
-  if (fileLogger) {
-    spdlog::drop("file_logger");
   }
 }
 
@@ -1221,11 +1215,10 @@ void NudgedElasticBand::findExtrema(void) {
     }
   }
 
-  SPDLOG_LOGGER_DEBUG(log, "Found {} extrema", numExtrema);
-  SPDLOG_LOGGER_DEBUG(log, "Energy reference: {}",
-                      path[0]->getPotentialEnergy());
+  LOG_DEBUG(log, "Found {} extrema", numExtrema);
+  LOG_DEBUG(log, "Energy reference: {}", path[0]->getPotentialEnergy());
   for (long i = 0; i < numExtrema; i++) {
-    SPDLOG_LOGGER_DEBUG(
+    LOG_DEBUG(
         log, "extrema #{} at image position {} with energy {} and curvature {}",
         i + 1, extremumPosition[i],
         extremumEnergy[i] - path[0]->getPotentialEnergy(),

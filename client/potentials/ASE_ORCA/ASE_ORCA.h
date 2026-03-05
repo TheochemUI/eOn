@@ -31,7 +31,8 @@ private:
 public:
   ASEOrcaPot(const Parameters &a_params);
   virtual ~ASEOrcaPot() {
-    SPDLOG_INFO("[ASEOrca] called potential {} times", counter);
+    LOG_INFO(quill::Frontend::get_logger("combi"),
+             "[ASEOrca] called potential {} times", counter);
   }
 
   // Functions

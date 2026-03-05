@@ -19,13 +19,13 @@ class SafeHyperJob : public Job {
 public:
   SafeHyperJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)) {
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   ~SafeHyperJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
-  shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
   int dynamics();
   long refine(Matter *mdBuffer[], long length, Matter *reactant);
   bool checkState(Matter *current, Matter *reactant);

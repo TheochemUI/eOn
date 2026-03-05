@@ -27,7 +27,7 @@ int SteepestDescent::step(double a_maxMove) {
     if (alpha < 0) {
       alpha = m_params.optimizer_options.sd.alpha;
     }
-    SPDLOG_LOGGER_DEBUG(m_log, "[SD] alpha: {:.4e}", alpha);
+    LOG_DEBUG(m_log, "[SD] alpha: {:.4e}", alpha);
   }
 
   dr = alpha * f;

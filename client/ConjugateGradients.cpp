@@ -173,8 +173,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
           (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
         forceChange = (projectedForce1 - projectedForce2);
         stepSize = (projectedForce1 / forceChange) * stepSize;
-        SPDLOG_LOGGER_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
-                            forceChange, stepSize);
+        LOG_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
+                  forceChange, stepSize);
       }
     }
   }
@@ -183,7 +183,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
       // knockout old search direction
       m_directionOld = m_objf->getPositions() * 0.0;
       m_forceOld = m_objf->getPositions() * 0.0;
-      SPDLOG_LOGGER_DEBUG(m_log, "Resetting the old search direction");
+      LOG_DEBUG(m_log, "Resetting the old search direction");
     }
   }
 

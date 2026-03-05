@@ -45,7 +45,7 @@ ASENwchemPot::ASENwchemPot(const Parameters &a_params)
   py::dict nwchem_params = py::dict(
       "label"_a = "_eonpot_engrad",
       "set"_a = py::dict("geom:dont_verify"_a = true),
-      "command"_a = py::str(fmt::format(
+      "command"_a = py::str(std::format(
           "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
       "memory"_a = py::str("2 gb"),
       "scf"_a = py::dict("nopen"_a = mult - 1,

@@ -51,25 +51,24 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   // Log what decision was made so users can see behavior.
   bool shouldMinimizeEndpoints = false;
   if (!params.neb_options.endpoints.minimize) {
-    SPDLOG_LOGGER_DEBUG(
-        m_log, "minimize_endpoints == false: not minimizing endpoints.");
+    LOG_DEBUG(m_log, "minimize_endpoints == false: not minimizing endpoints.");
     shouldMinimizeEndpoints = false;
   } else {
     if (params.neb_options.initialization.input_path.empty()) {
-      SPDLOG_LOGGER_DEBUG(m_log, "minimize_endpoints == true and nebIpath "
-                                 "empty: minimizing endpoints.");
+      LOG_DEBUG(m_log, "minimize_endpoints == true and nebIpath "
+                       "empty: minimizing endpoints.");
       shouldMinimizeEndpoints = true;
     } else {
       // nebIpath provided: only minimize if neb_options.endpoints.use_path_file
       // explicitly allowed.
       if (params.neb_options.endpoints.use_path_file) {
-        SPDLOG_LOGGER_DEBUG(
+        LOG_DEBUG(
             m_log,
             "minimize_endpoints == true and nebIpath provided, but "
             "minimize_endpoints_for_ipath == true: minimizing endpoints.");
         shouldMinimizeEndpoints = true;
       } else {
-        SPDLOG_LOGGER_DEBUG(
+        LOG_DEBUG(
             m_log,
             "minimize_endpoints == true but nebIpath provided and "
             "minimize_endpoints_for_ipath == false: not minimizing endpoints.");
@@ -79,7 +78,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   }
 
   if (shouldMinimizeEndpoints) {
-    SPDLOG_LOGGER_DEBUG(m_log, "Minimizing reactant");
+    LOG_DEBUG(m_log, "Minimizing reactant");
     // TODO(rg): Maybe when we have even more parameters, false can be set by
     // the user too..
     initial->relax(false, params.debug_options.write_movies,
@@ -87,8 +86,8 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
     // TODO(rg): How do we report the total E/F now? Currently this is just the
     // total total, people might want "per-stage" totals (but they can also get
     // them from the log.)
-    SPDLOG_LOGGER_DEBUG(m_log, "Minimized reactant in ");
-    SPDLOG_LOGGER_DEBUG(m_log, "Minimizing product");
+    LOG_DEBUG(m_log, "Minimized reactant in ");
+    LOG_DEBUG(m_log, "Minimizing product");
     final_state->relax(false, params.debug_options.write_movies,
                        params.main_options.checkpoint, "prod_neb", "prod_neb");
   }
@@ -141,8 +140,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back(resultsFilename);
   fileResults = fopen(resultsFilename.c_str(), "wb");
   if (!fileResults) {
-    SPDLOG_LOGGER_ERROR(m_log, "Failed to open {} for writing",
-                        resultsFilename);
+    LOG_ERROR(m_log, "Failed to open {} for writing", resultsFilename);
     return;
   }
 
@@ -215,7 +213,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
         // 1. Write Interpolated Position (.con)
         Matter peakPos = helper_functions::neb_paths::interpolateImage(
             *neb->path[leftIdx], *neb->path[leftIdx + 1], f);
-        std::string peakPosFile = fmt::format("peak{:02d}_pos.con", peakCount);
+        std::string peakPosFile = std::format("peak{:02d}_pos.con", peakCount);
         peakPos.matter2con(peakPosFile);
         returnFiles.push_back(peakPosFile);
 
@@ -225,7 +223,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
         peakMode.normalize();
 
         std::string peakModeFile =
-            fmt::format("peak{:02d}_mode.dat", peakCount);
+            std::format("peak{:02d}_mode.dat", peakCount);
         FILE *fMode = fopen(peakModeFile.c_str(), "w");
         if (fMode) {
           for (int row = 0; row < peakMode.rows(); ++row) {
@@ -236,7 +234,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
           returnFiles.push_back(peakModeFile);
         }
 
-        SPDLOG_LOGGER_INFO(
+        LOG_INFO(
             m_log,
             "Generated MMF peak {:02d} at position {:.3f} (Energy: {:.3f} eV)",
             peakCount, posFraction, relativeEnergy);
@@ -250,12 +248,12 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 }
 
 void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
-  SPDLOG_LOGGER_DEBUG(m_log, "Final state: ");
+  LOG_DEBUG(m_log, "Final state: ");
   if (status == NudgedElasticBand::NEBStatus::GOOD)
-    SPDLOG_LOGGER_DEBUG(m_log, "Nudged elastic band, successful.");
+    LOG_DEBUG(m_log, "Nudged elastic band, successful.");
   else if (status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS)
-    SPDLOG_LOGGER_DEBUG(m_log, "Nudged elastic band, too many iterations.");
+    LOG_DEBUG(m_log, "Nudged elastic band, too many iterations.");
   else
-    SPDLOG_LOGGER_WARN(m_log, "Unknown status: {}!", static_cast<int>(status));
+    LOG_WARNING(m_log, "Unknown status: {}!", static_cast<int>(status));
   return;
 }

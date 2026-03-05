@@ -38,7 +38,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   if (params.dimer_options.opt_method == OPT_CG) {
     init_cg = true;
   }
-  log = spdlog::get("combi");
+  log = quill::Frontend::get_logger("combi");
 }
 
 void ImprovedDimer::setReferenceMode(const VectorXd &ref) {
@@ -99,8 +99,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       10.0 * params.main_options.finiteDifference) {
     tau = -tau;
     x1->setPositionsV(x0_r + params.main_options.finiteDifference * tau);
-    SPDLOG_LOGGER_DEBUG(
-        log, "[IDimer] Initial tangent flipped due to high energy wall.");
+    LOG_DEBUG(log, "[IDimer] Initial tangent flipped due to high energy wall.");
   }
 
   if (params.dimer_options.opt_method == OPT_LBFGS) {
@@ -349,13 +348,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       statsTorque = F_R.norm() / (2.0 * params.main_options.finiteDifference);
       statsRotations += 1;
-      SPDLOG_LOGGER_INFO(
+      LOG_INFO(
           log,
           "[IDimerRot]  -----   ---------   ----------   ------------------   "
           "{:9.4f}   {:7.3f}   {:6.3f}   {:4}   {:5.3f}",
           C_tau, statsTorque, statsAngle, statsRotations, alignment);
     } else {
-      SPDLOG_LOGGER_INFO(
+      LOG_INFO(
           log,
           "[IDimerRot]  -----   ---------   ----------   ------------------   "
           "{:9.4f}   {:7.3f}   ------   ----   {:5.3f}",
@@ -363,8 +362,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     }
     if (alignment < params.neb_options.climbing_image.roneb.angle_tol &&
         params.neb_options.climbing_image.roneb.use_mmf) {
-      SPDLOG_LOGGER_WARN(
-          log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
+      LOG_WARNING(log, "Terminating dimer due to lost mode (align {:.3f}).",
+                  alignment);
 
       rotationDidConverge = false;
 
@@ -380,16 +379,15 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         // Also update the input matter to reflect the restored position
         *matter = *x0;
 
-        SPDLOG_LOGGER_DEBUG(
-            log, "Restored best negative curvature state:  C_tau={:.4f}",
-            C_tau);
+        LOG_DEBUG(log, "Restored best negative curvature state:  C_tau={:.4f}",
+                  C_tau);
         throw eonc::DimerModeRestoredException();
       } else {
         // Never found negative curvature - keep current (positive) value
         // to signal we're not at a saddle
         rotationDidConverge = false;
-        SPDLOG_LOGGER_WARN(
-            log, "Never found negative curvature.  Final C_tau: {:.4f}", C_tau);
+        LOG_WARNING(log, "Never found negative curvature.  Final C_tau: {:.4f}",
+                    C_tau);
         throw eonc::DimerModeLostException();
       }
       break;

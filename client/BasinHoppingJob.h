@@ -21,7 +21,7 @@ public:
         current{std::make_shared<Matter>(pot, params)},
         trial{std::make_shared<Matter>(pot, params)},
         fcalls{0} {
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   ~BasinHoppingJob(void) = default;
 
@@ -42,5 +42,5 @@ private:
 
   std::vector<std::shared_ptr<Matter>> uniqueStructures;
   std::vector<double> uniqueEnergies;
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

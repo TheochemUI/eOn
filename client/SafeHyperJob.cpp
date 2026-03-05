@@ -29,26 +29,25 @@ std::vector<std::string> SafeHyperJob::run(void) {
       helper_functions::getRelevantFile(params.main_options.conFilename);
   current->con2matter(reactantFilename);
 
-  SPDLOG_LOGGER_DEBUG(log, "Minimizing initial reactant");
+  LOG_DEBUG(log, "Minimizing initial reactant");
   long refFCalls = Potential::fcalls;
   *reactant = *current;
   reactant->relax();
   // minimizeFCalls += (Potential::fcalls - refFCalls);
 
-  SPDLOG_LOGGER_DEBUG(log, "Parallel Replica Dynamics, running");
+  LOG_DEBUG(log, "Parallel Replica Dynamics, running");
 
   int status = dynamics();
 
   saveData(status);
 
   if (newStateFlag) {
-    SPDLOG_LOGGER_DEBUG(log, "Transition time: {:.2e} s",
-                        minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+    LOG_DEBUG(log, "Transition time: {:.2e} s",
+              minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
   } else {
-    SPDLOG_LOGGER_DEBUG(
-        log, "No new state was found in {} dynamics steps ({:.3e} s)",
-        params.dynamics_options.steps,
-        time * 1.0e-15 * params.constants.timeUnit);
+    LOG_DEBUG(log, "No new state was found in {} dynamics steps ({:.3e} s)",
+              params.dynamics_options.steps,
+              time * 1.0e-15 * params.constants.timeUnit);
   }
 
   delete current;
@@ -110,7 +109,7 @@ int SafeHyperJob::dynamics() {
   dephase();
   // dephaseFCalls = Potential::fcalls - refFCalls;
 
-  SPDLOG_LOGGER_DEBUG(
+  LOG_DEBUG(
       log,
       "Starting MD run\nTemperature: {:.2f} Kelvin\n"
       "Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: {}",
@@ -119,7 +118,7 @@ int SafeHyperJob::dynamics() {
           params.constants.timeUnit,
       params.dynamics_options.time_step * params.constants.timeUnit,
       params.dynamics_options.steps);
-  SPDLOG_LOGGER_DEBUG(log, "MD buffer length: {}", mdBufferLength);
+  LOG_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
   long tenthSteps = params.dynamics_options.steps / 10;
   // This prevents and edge case division by zero if mdSteps is < 10
@@ -179,7 +178,7 @@ int SafeHyperJob::dynamics() {
       // minimizeFCalls += Potential::fcalls - refFCalls;
       if (transitionFlag == true) {
         nState++;
-        SPDLOG_LOGGER_DEBUG(log, "New State {}: ", nState);
+        LOG_DEBUG(log, "New State {}: ", nState);
         *final_img_tmp = *current;
         transitionTime = time;
         newStateStep = step; // remember the step when we are in a new state
@@ -218,15 +217,15 @@ int SafeHyperJob::dynamics() {
         *saddle = *mdBuffer[refineStep];
         *final_img = *final_img_tmp;
       }
-      SPDLOG_LOGGER_DEBUG(
-          log,
-          "tranisitonTime= {:.3e} s, biasPot= {:.3f} eV, "
-          "correctedTime= {:.3e} s, "
-          "sumCorrectedTime= {:.3e} s, minCorTime= {:.3e} s",
-          transitionTime * 1e-15 * params.constants.timeUnit, transitionPot,
-          correctedTime * 1e-15 * params.constants.timeUnit,
-          sumCorrectedTime * 1e-15 * params.constants.timeUnit,
-          minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+      LOG_DEBUG(log,
+                "tranisitonTime= {:.3e} s, biasPot= {:.3f} eV, "
+                "correctedTime= {:.3e} s, "
+                "sumCorrectedTime= {:.3e} s, minCorTime= {:.3e} s",
+                transitionTime * 1e-15 * params.constants.timeUnit,
+                transitionPot,
+                correctedTime * 1e-15 * params.constants.timeUnit,
+                sumCorrectedTime * 1e-15 * params.constants.timeUnit,
+                minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
 
       // refineFCalls += Potential::fcalls - refFCalls;
       transitionFlag = false;
@@ -241,7 +240,7 @@ int SafeHyperJob::dynamics() {
     // stdout Progress
     if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
-      SPDLOG_LOGGER_DEBUG(
+      LOG_DEBUG(
           log, "progress: {:.0f}%, max displacement: {:.3f}, step {} / {}",
           static_cast<double>(100.0 * step / params.dynamics_options.steps),
           maxAtomDistance, step, params.dynamics_options.steps);
@@ -253,20 +252,19 @@ int SafeHyperJob::dynamics() {
   varT = sumT2 / step - avgT * avgT;
 
   if (nBoost > 0) {
-    SPDLOG_LOGGER_DEBUG(log,
-                        "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; "
-                        "Factor = {:.6f}; Boost = {:.6f}",
-                        avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
-                        sumboost / nBoost);
+    LOG_DEBUG(log,
+              "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; "
+              "Factor = {:.6f}; Boost = {:.6f}",
+              avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
+              sumboost / nBoost);
   } else {
-    SPDLOG_LOGGER_DEBUG(
+    LOG_DEBUG(
         log,
         "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; Factor = {:.6f}",
         avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2);
   }
   if (std::isfinite(avgT) == 0) {
-    SPDLOG_LOGGER_DEBUG(log,
-                        "Infinite average temperature, something went wrong!");
+    LOG_DEBUG(log, "Infinite average temperature, something went wrong!");
     newStateFlag = false;
   }
 
@@ -366,9 +364,9 @@ void SafeHyperJob::dephase() {
   DephaseSteps = int(params.parallel_replica_options.dephase_time /
                      params.dynamics_options.time_step);
   Dynamics dephaseDynamics(current, params);
-  SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs",
-                      params.parallel_replica_options.dephase_time *
-                          params.constants.timeUnit);
+  LOG_DEBUG(log, "Dephasing for {:.2f} fs",
+            params.parallel_replica_options.dephase_time *
+                params.constants.timeUnit);
 
   step = stepNew = loop = 0;
 
@@ -389,15 +387,15 @@ void SafeHyperJob::dephase() {
     if (transitionFlag) {
       dephaseRefineStep =
           refine(dephaseBuffer.data(), dephaseBufferLength, reactant);
-      SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
-                          dephaseRefineStep);
+      LOG_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
+                dephaseRefineStep);
       transitionStep = dephaseRefineStep - 1; // check that this is correct
       transitionStep = (transitionStep > 0) ? transitionStep : 0;
-      SPDLOG_LOGGER_DEBUG(log,
-                          "Dephasing warning: in a new state, inverse the "
-                          "momentum and restart "
-                          "from step {}",
-                          step + transitionStep);
+      LOG_DEBUG(log,
+                "Dephasing warning: in a new state, inverse the "
+                "momentum and restart "
+                "from step {}",
+                step + transitionStep);
       *current = *dephaseBuffer[transitionStep];
       velocity = current->getVelocities();
       velocity = velocity * (-1);
@@ -415,15 +413,15 @@ void SafeHyperJob::dephase() {
 
     if ((params.parallel_replica_options.dephase_loop_stop) &&
         (loop > params.parallel_replica_options.dephase_loop_max)) {
-      SPDLOG_LOGGER_DEBUG(
+      LOG_DEBUG(
           log,
           "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",
           step);
       break;
     }
-    SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs",
-                        step * params.dynamics_options.time_step *
-                            params.constants.timeUnit);
+    LOG_DEBUG(log, "Successfully Dephased for {:.2f} fs",
+              step * params.dynamics_options.time_step *
+                  params.constants.timeUnit);
   }
 }
 
@@ -456,7 +454,7 @@ long SafeHyperJob::refine(Matter *buff[], long length, Matter *reactant) {
     } else if (midTest == true) {
       max = mid;
     } else {
-      SPDLOG_LOGGER_CRITICAL(log, "Refine step failed!");
+      LOG_CRITICAL(log, "Refine step failed!");
       std::exit(1);
     }
   }

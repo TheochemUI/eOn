@@ -22,7 +22,7 @@ class Potential {
 protected:
   PotType ptype;
   const Parameters &m_params;
-  std::shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
 
 public:
   size_t forceCallCounter;
@@ -41,7 +41,7 @@ public:
 
   virtual ~Potential() {
     if (m_log) {
-      m_log->trace("[{}] destroyed after {} calls",
+      LOG_TRACE_L1(m_log, "[{}] destroyed after {} calls",
                    magic_enum::enum_name<PotType>(getType()), forceCallCounter);
     } else {
       std::cerr << "Logger is not initialized\n";
@@ -66,16 +66,20 @@ public:
 
   // Logger initialization
   void initializeLogger() {
-    if (!spdlog::get("_potcalls")) {
-      // Create logger if it doesn't exist
-      m_log = spdlog::basic_logger_mt("_potcalls", "_potcalls.log", true);
-      m_log->set_pattern("[%l] [%Y-%m-%d %H:%M:%S] %v");
-    } else {
-      // Use existing logger
-      m_log = spdlog::get("_potcalls");
-    }
+    m_log = quill::Frontend::create_or_get_logger(
+        "_potcalls",
+        quill::Frontend::create_or_get_sink<quill::FileSink>(
+            "_potcalls.log",
+            []() {
+              quill::FileSinkConfig cfg;
+              cfg.set_open_mode('w');
+              return cfg;
+            }(),
+            quill::FileEventNotifier{}),
+        quill::PatternFormatterOptions{"%(message)"});
     if (m_log) {
-      m_log->trace("[{}] created", magic_enum::enum_name<PotType>(getType()));
+      LOG_TRACE_L1(m_log, "[{}] created",
+                   magic_enum::enum_name<PotType>(getType()));
     }
   }
 };

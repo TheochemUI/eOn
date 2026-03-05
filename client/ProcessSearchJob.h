@@ -50,7 +50,7 @@ public:
         fCallsSaddle{0},
         fCallsMin{0},
         fCallsPrefactors{0} {
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   //! Process Search job De-constructor
   ~ProcessSearchJob() = default;
@@ -58,7 +58,7 @@ public:
   std::vector<std::string> run(void) override;
 
 private:
-  shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
   //! Runs the correct saddle search; also checks if the run was successful
   int doProcessSearch(void);
   //! UNDEFINED
