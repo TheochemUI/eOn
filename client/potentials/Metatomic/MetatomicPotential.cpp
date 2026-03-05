@@ -1,3 +1,14 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
 #include "MetatomicPotential.h"
 #include "../../Parameters.h"
 #include "../../fpe_handler.h"
@@ -56,8 +67,6 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   }
 
   // 3. Determine and set up the device (CPU/CUDA/MPS)
-  // TODO(rg):: Eventually switch to upstream selection
-  // https://github.com/metatensor/metatomic/issues/21
   torch::optional<std::string> desired = torch::nullopt;
   if (!m_params.metatomic_options.device.empty()) {
     desired = m_params.metatomic_options.device;
@@ -98,15 +107,27 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 
   this->energy_key_ = metatomic_torch::pick_output("energy", outputs, v_energy);
 
+  if (!outputs.contains(this->energy_key_)) {
+    LOG_ERROR(m_log,
+              "[MetatomicPotential] The model does not provide an '{}' output.",
+              this->energy_key_);
+    throw std::runtime_error("Missing energy output in metatomic model");
+  }
+
   // 6. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
   evaluations_options_->set_length_unit(m_params.metatomic_options.length_unit);
 
+  auto model_output = outputs.at(this->energy_key_);
   auto requested_output =
       torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
-  requested_output->per_atom = false;
+
+  // Adopt the model's native per_atom handling and specify quantity/unit
+  requested_output->per_atom = model_output->per_atom;
   requested_output->explicit_gradients = {};
+  requested_output->set_quantity("energy");
+  requested_output->set_unit("eV");
   evaluations_options_->outputs.insert(this->energy_key_, requested_output);
 
   // 7. Optionally request energy uncertainty if threshold is positive
@@ -116,25 +137,29 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     try {
       this->energy_uncertainty_key_ = metatomic_torch::pick_output(
           "energy_uncertainty", outputs, v_energy_uq);
-      auto uncertainty_info = outputs.at(this->energy_uncertainty_key_);
-      if (uncertainty_info->per_atom) {
-        auto requested_uncertainty =
-            torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
-        requested_uncertainty->per_atom = true;
-        requested_uncertainty->explicit_gradients = {};
-        requested_uncertainty->set_quantity("energy");
-        evaluations_options_->outputs.insert(this->energy_uncertainty_key_,
-                                             requested_uncertainty);
-        LOG_INFO(m_log,
-                 "[MetatomicPotential] Requested per-atom "
-                 "'{}' from model (threshold = {})",
-                 this->energy_uncertainty_key_, this->uncertainty_threshold_);
-      } else {
-        LOG_DEBUG(m_log,
-                  "[MetatomicPotential] Model provides '{}' "
-                  "but not per-atom; skipping uncertainty checks.",
-                  this->energy_uncertainty_key_);
-        this->uncertainty_threshold_ = -1.0;
+
+      if (outputs.contains(this->energy_uncertainty_key_)) {
+        auto uncertainty_info = outputs.at(this->energy_uncertainty_key_);
+        if (uncertainty_info->per_atom) {
+          auto requested_uncertainty =
+              torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
+          requested_uncertainty->per_atom = true;
+          requested_uncertainty->explicit_gradients = {};
+          requested_uncertainty->set_quantity("energy");
+          requested_uncertainty->set_unit("eV");
+          evaluations_options_->outputs.insert(this->energy_uncertainty_key_,
+                                               requested_uncertainty);
+          LOG_INFO(m_log,
+                   "[MetatomicPotential] Requested per-atom "
+                   "'{}' from model (threshold = {})",
+                   this->energy_uncertainty_key_, this->uncertainty_threshold_);
+        } else {
+          LOG_DEBUG(m_log,
+                    "[MetatomicPotential] Model provides '{}' "
+                    "but not per-atom; skipping uncertainty checks.",
+                    this->energy_uncertainty_key_);
+          this->uncertainty_threshold_ = -1.0;
+        }
       }
     } catch (const std::exception &e) {
       LOG_DEBUG(m_log,
@@ -319,18 +344,15 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   // 5. Extract energy and compute gradients (forces)
   auto energy_block =
       metatensor_torch::TensorMapHolder::block_by_id(output_map, 0);
-  auto energy_tensor = energy_block->values(); // This should be a [1, 1] tensor
+  auto energy_tensor = energy_block->values();
 
-  if (energy_tensor.sizes().vec() != std::vector<int64_t>{1, 1}) {
-    throw std::runtime_error(
-        "Model did not return a single scalar energy value.");
-  }
-
-  // Set the energy value
-  *energy = energy_tensor.item<double>();
+  // Sum all returned per-atom energies (handles both [1,1] and [N,1] shapes)
+  *energy = energy_tensor.sum().item<double>();
 
   // Compute gradients w.r.t positions
-  energy_tensor.backward();
+  // passing ones_like allows .backward() to work correctly on non-scalar
+  // tensors
+  energy_tensor.backward(torch::ones_like(energy_tensor));
   auto positions_grad = system->positions().grad();
 
   // 6. Copy forces back to the output array
