@@ -39,9 +39,11 @@ std::vector<std::string> PointJob::run(void) {
           quill::FileEventNotifier{}),
       quill::PatternFormatterOptions{
           quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-              quill::PatternFormatterOptions{"%(message)"}}}});
+              quill::PatternFormatterOptions{"%(message)"}}}},
+      quill::ClockSourceType::System);
   LOG_INFO(fileLogger, "{:.12f} Energy", pos->getPotentialEnergy());
   LOG_INFO(fileLogger, "{:.12f} Max_Force", pos->maxForce());
+  fileLogger->flush_log();
 
   return returnFiles;
 }

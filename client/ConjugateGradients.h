@@ -57,7 +57,8 @@ public:
             }(),
             quill::FileEventNotifier{}),
         quill::PatternFormatterOptions{
-            quill::PatternFormatterOptions{"%(message)"}});
+            quill::PatternFormatterOptions{"%(message)"}},
+        quill::ClockSourceType::System);
   }
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;

@@ -23,7 +23,9 @@ struct LoggerSetup {
     quill::Backend::start();
     auto null_sink =
         quill::Frontend::create_or_get_sink<quill::NullSink>("null");
-    quill::Frontend::create_or_get_logger("combi", std::move(null_sink));
+    quill::Frontend::create_or_get_logger("combi", std::move(null_sink),
+                                          quill::PatternFormatterOptions{},
+                                          quill::ClockSourceType::System);
   }
 };
 static LoggerSetup _logger_setup;

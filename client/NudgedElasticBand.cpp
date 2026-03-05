@@ -1088,7 +1088,8 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
             quill::FileEventNotifier{}),
         quill::PatternFormatterOptions{
             quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-                quill::PatternFormatterOptions{"%(message)"}}}});
+                quill::PatternFormatterOptions{"%(message)"}}}},
+        quill::ClockSourceType::System);
     LOG_INFO(fileLogger, "{}", header);
   }
   const double energy_reactant = path[0]->getPotentialEnergy();

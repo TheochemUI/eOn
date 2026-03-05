@@ -135,7 +135,8 @@ int main(int argc, char **argv) {
   auto *logger = quill::Frontend::create_or_get_logger(
       "combi", {std::move(console_sink), std::move(file_sink)},
       quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-          quill::PatternFormatterOptions{"%(message)"}}});
+          quill::PatternFormatterOptions{"%(message)"}}},
+      quill::ClockSourceType::System);
   logger->set_log_level(quill::LogLevel::TraceL3);
   // Traceback logger
   auto trace_csink =
@@ -152,7 +153,8 @@ int main(int argc, char **argv) {
       "_traceback", {std::move(trace_csink), std::move(trace_fsink)},
       quill::PatternFormatterOptions{quill::PatternFormatterOptions{
           " [%(log_level)] [%(source_location)] [%(caller_function)] \n "
-          "%(message)\n[end %(log_level)]"}});
+          "%(message)\n[end %(log_level)]"}},
+      quill::ClockSourceType::System);
   //--- End logging setup
   Parameters parameters;
 
@@ -481,5 +483,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
+  // Ensure all queued log messages are flushed before exiting
+  quill::Backend::stop();
   exit(0);
 }

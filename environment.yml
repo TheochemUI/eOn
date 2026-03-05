@@ -17,9 +17,8 @@ dependencies:
   - openblas
   - pybind11
   # Pinned
-  - quill::PatternFormatterOptions{"%(message)"} # For the docs
-  - quill::PatternFormatterOptions{"%(message)"}
-  - quill::PatternFormatterOptions{"%(message)"}
+  - "python<3.13" # For the docs
+  - "eigen==3.4.0"
   - quill
   # AMS
   - boost-cpp

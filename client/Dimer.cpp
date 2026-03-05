@@ -39,8 +39,8 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
           }(),
           quill::FileEventNotifier{}),
       quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-          quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-              quill::PatternFormatterOptions{"%(message)"}}}}});
+          quill::PatternFormatterOptions{"%(message)"}}},
+      quill::ClockSourceType::System);
 }
 
 // was estimateLowestEigenmode. rename to compute

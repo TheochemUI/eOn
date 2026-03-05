@@ -40,7 +40,8 @@ public:
               return cfg;
             }(),
             quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{"%(message)"});
+        quill::PatternFormatterOptions{"%(message)"},
+        quill::ClockSourceType::System);
   }
   virtual ~FIRE() = default;
 

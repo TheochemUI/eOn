@@ -76,7 +76,8 @@ public:
               return cfg;
             }(),
             quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{"%(message)"});
+        quill::PatternFormatterOptions{"%(message)"},
+        quill::ClockSourceType::System);
     if (m_log) {
       LOG_TRACE_L1(m_log, "[{}] created",
                    magic_enum::enum_name<PotType>(getType()));

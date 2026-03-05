@@ -178,7 +178,8 @@ void Prefactor::logFreqs(VectorXd freqs, char *name) {
           quill::FileEventNotifier{}),
       quill::PatternFormatterOptions{
           quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-              quill::PatternFormatterOptions{"%(message)"}}}});
+              quill::PatternFormatterOptions{"%(message)"}}}},
+      quill::ClockSourceType::System);
   LOG_DEBUG(fileLogger, "[Prefactor] Frequencies at {}", name);
   int i;
   for (i = 0; i < freqs.size(); i++) {
