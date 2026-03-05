@@ -83,7 +83,7 @@ private:
    */
   metatensor_torch::TensorBlock
   computeNeighbors(metatomic_torch::NeighborListOptions request, long nAtoms,
-                   const double *positions, const double *box, bool periodic);
+                   const double *positions, const double *box, bool periodic[3]);
 
 public:
   /**

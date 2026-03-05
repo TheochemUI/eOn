@@ -15,7 +15,6 @@
 #include "vesin.h"
 
 #include <cstdint>
-#include <memory>
 #include <sstream>
 #include <string>
 
@@ -201,7 +200,9 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
 
   auto cell_norms = torch::norm(torch_cell, 2, /*dim=*/1);
   auto torch_pbc = cell_norms.abs() > 1e-9;
-  bool periodic = torch::all(torch_pbc).item<bool>();
+  bool periodic[3] = {torch_pbc[0].item<bool>(), 
+                      torch_pbc[1].item<bool>(), 
+                      torch_pbc[2].item<bool>()};
 
   bool types_changed = false;
   if (static_cast<size_t>(nAtoms) != last_atomic_nrs_.size()) {
@@ -237,7 +238,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   // 3. Compute and add neighbor lists to the system
   for (const auto &request : this->nl_requests_) {
     auto neighbors =
-        this->computeNeighbors(request, nAtoms, positions, box, periodic);
+        this->computeNeighbors(request, nAtoms, positions, box, periodic[3]);
     metatomic_torch::register_autograd_neighbors(system, neighbors,
                                                  this->check_consistency_);
     system->add_neighbor_list(request, neighbors);
@@ -387,7 +388,7 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   int status = vesin_neighbors(
       reinterpret_cast<const double (*)[3]>(positions),
       static_cast<size_t>(nAtoms), reinterpret_cast<const double (*)[3]>(box),
-      &periodic, cpu, options, vesin_neighbor_list, &error_message);
+      periodic, cpu, options, vesin_neighbor_list, &error_message);
 
   if (status != EXIT_SUCCESS) {
     std::string err_str = "vesin_neighbors failed";
