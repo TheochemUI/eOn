@@ -200,8 +200,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
 
   auto cell_norms = torch::norm(torch_cell, 2, /*dim=*/1);
   auto torch_pbc = cell_norms.abs() > 1e-9;
-  bool periodic[3] = {torch_pbc[0].item<bool>(), 
-                      torch_pbc[1].item<bool>(), 
+  bool periodic[3] = {torch_pbc[0].item<bool>(), torch_pbc[1].item<bool>(),
                       torch_pbc[2].item<bool>()};
 
   bool types_changed = false;
@@ -238,7 +237,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   // 3. Compute and add neighbor lists to the system
   for (const auto &request : this->nl_requests_) {
     auto neighbors =
-        this->computeNeighbors(request, nAtoms, positions, box, periodic[3]);
+        this->computeNeighbors(request, nAtoms, positions, box, periodic);
     metatomic_torch::register_autograd_neighbors(system, neighbors,
                                                  this->check_consistency_);
     system->add_neighbor_list(request, neighbors);
@@ -370,7 +369,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
 
 metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     metatomic_torch::NeighborListOptions request, long nAtoms,
-    const double *positions, const double *box, bool periodic) {
+    const double *positions, const double *box, const bool periodic[3]) {
 
   auto cutoff = request->engine_cutoff(m_params.metatomic_options.length_unit);
 
