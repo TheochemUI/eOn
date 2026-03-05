@@ -65,12 +65,12 @@ platforms = ["linux-64", "osx-arm64", "win-64"]
 [feature.metatomic.dependencies]
 
 [feature.metatomic.pypi-dependencies]
-torch = ">=2.9, <2.10"
-metatomic-torch = ">=0.1.7, <0.2"
-metatensor-torch = ">=0.8.2, <0.9"
-vesin-torch = ">=0.4, <0.5"
-vesin = ">=0.4, <0.5"
-metatrain = ">=2025.8.1, <2026"
+torch = ">=2.10, <2.11"
+metatomic-torch = ">=0.1.9, <0.2"
+metatensor-torch = ">=0.8.4, <0.9"
+vesin-torch = ">=0.5.2, <0.6"
+vesin = ">=0.5.2, <0.6"
+metatrain = ">=2026.2.1, <2027"
 
 [feature.ams.dependencies]
 boost-cpp = "*"

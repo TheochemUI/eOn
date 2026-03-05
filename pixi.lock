@@ -1025,8 +1025,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/46/c7/844739309a227216e3b20049ec76cc0c0ca769c56d46f2434488316f5bbd/metatensor_torch-0.8.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/85/4e/3b2a61f99bc2e9f18ad68b6f8ed91c132a618aa84ebccd98e42dc9cf2f22/metatomic_torch-0.1.7-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/17/49fc50b531fd0a2e094407a0add8dc25f685d2740fd3162ef4ea0d21c627/metatomic_torch-0.1.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -1042,13 +1042,13 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/f6/66/fe9c41fcf5fe73637997e632a488637d8283fe7bed327b147d26e4964a20/vesin-0.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ac/17/56cd86df5cedca93a7973546abd1ae2f0a1e202c17ca928b377477119332/vesin_torch-0.4.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/8f/cc/87cd5e2053ff8026c63f1682f98592f35b9b32faa39916cd8ca88e13f1be/vesin-0.5.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/e0/13/808ee2e14a04c467b02ea7e40119af594a0eb9196fab4e67cd295b59c7a1/vesin_torch-0.5.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
@@ -1236,8 +1236,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/4d/74ba4841666518ed916d6637a4fd6dbc3f8272a4b2d724dbd0cdc26b4105/metatensor_torch-0.8.4-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/2c/bb/a6d972d6f392aa734b965343e3de053048846644435fc68ba2f8563b1898/metatomic_torch-0.1.7-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/13/7f/03fdc81a62f69866cd937b284a54290cb4570b02cb0761a4a4ea0fdbb487/metatomic_torch-0.1.11-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -1253,13 +1253,13 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1-cp312-none-macosx_11_0_arm64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/6a/1d/8a061603f318e965f50c39e46a56ed372a987b48c40011709f2a9219add0/vesin-0.4.2-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/de/3b/517af8e11dc8f321929669be69ad1d29dae757d656c6427613179865c3aa/vesin_torch-0.4.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/7e/f4/a71146bf735c0cb31c2dc74bc7d3cb862e276f6b1f9068afbaf70db3046d/vesin-0.5.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/3c/72/f56c87f4942958e073d2e60dfd8fb2d8914a5ca579d267c7e442da73a32c/vesin_torch-0.5.2-py3-none-macosx_11_0_arm64.whl
   dev-lite:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -2005,8 +2005,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/46/c7/844739309a227216e3b20049ec76cc0c0ca769c56d46f2434488316f5bbd/metatensor_torch-0.8.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/85/4e/3b2a61f99bc2e9f18ad68b6f8ed91c132a618aa84ebccd98e42dc9cf2f22/metatomic_torch-0.1.7-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/17/49fc50b531fd0a2e094407a0add8dc25f685d2740fd3162ef4ea0d21c627/metatomic_torch-0.1.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -2022,13 +2022,13 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/f6/66/fe9c41fcf5fe73637997e632a488637d8283fe7bed327b147d26e4964a20/vesin-0.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ac/17/56cd86df5cedca93a7973546abd1ae2f0a1e202c17ca928b377477119332/vesin_torch-0.4.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/8f/cc/87cd5e2053ff8026c63f1682f98592f35b9b32faa39916cd8ca88e13f1be/vesin-0.5.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/e0/13/808ee2e14a04c467b02ea7e40119af594a0eb9196fab4e67cd295b59c7a1/vesin_torch-0.5.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
@@ -2194,8 +2194,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/4d/74ba4841666518ed916d6637a4fd6dbc3f8272a4b2d724dbd0cdc26b4105/metatensor_torch-0.8.4-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/2c/bb/a6d972d6f392aa734b965343e3de053048846644435fc68ba2f8563b1898/metatomic_torch-0.1.7-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/13/7f/03fdc81a62f69866cd937b284a54290cb4570b02cb0761a4a4ea0fdbb487/metatomic_torch-0.1.11-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -2211,13 +2211,13 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1-cp312-none-macosx_11_0_arm64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/6a/1d/8a061603f318e965f50c39e46a56ed372a987b48c40011709f2a9219add0/vesin-0.4.2-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/de/3b/517af8e11dc8f321929669be69ad1d29dae757d656c6427613179865c3aa/vesin_torch-0.4.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/7e/f4/a71146bf735c0cb31c2dc74bc7d3cb862e276f6b1f9068afbaf70db3046d/vesin-0.5.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/3c/72/f56c87f4942958e073d2e60dfd8fb2d8914a5ca579d267c7e442da73a32c/vesin_torch-0.5.2-py3-none-macosx_11_0_arm64.whl
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
@@ -2360,8 +2360,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/ed/1649ae0382a4d9942a1e0124ecae8d68b403e12bf2b6d8fd9759160fde5f/metatensor_torch-0.8.4-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/c8/8a09a68567ad2426fd9ae4abd12872f2e1c5b3a6a3db8809b88dc1c4d738/metatomic_torch-0.1.8-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/78/6c/0de3222e7b01aa4ff6e226210808af11810808fd5cc8b224220f9e160385/metatomic_torch-0.1.11-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -2378,14 +2378,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-win_amd64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d5/91/9b286ab899c008c2cb05e8be99814807e7fbbd33f0c0c960470826e5ac82/typer-0.23.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ad/8a/5764b851659345f34787f1b6eb30b9d308bbd6c294825cbe38b6b869c97a/typer_slim-0.23.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/ca/e3/556a107f6496b3f7f99c60eadf037cde6b37cf6b033f643c38617e95b8df/vesin-0.4.2-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/91/c45cc56afbf545989c57c1ab54bf9d6a96d23a2f96f4e7d5a831a8bc7c93/vesin_torch-0.4.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/d6/41/040252275e7048bbe1676ede1e184c58b605d7d0056e0156cad6bf43587e/vesin-0.5.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/72/9b/eb3edd1703000c02a75c93cf320b376f822f4d7ee8b0224862e358ea05eb/vesin_torch-0.5.2-py3-none-win_amd64.whl
   dev-serve-mta:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -2533,8 +2533,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/46/c7/844739309a227216e3b20049ec76cc0c0ca769c56d46f2434488316f5bbd/metatensor_torch-0.8.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ea/29/052418062fe9d97fada027b4ed451e3c378a149f58202f5f0ab3bec58f47/metatomic_torch-0.1.8-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/17/49fc50b531fd0a2e094407a0add8dc25f685d2740fd3162ef4ea0d21c627/metatomic_torch-0.1.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -2551,14 +2551,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4a/91/48db081e7a63bb37284f9fbcefda7c44c277b18b0e13fbc36ea2335b71e6/typer-0.24.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a7/24/5480c20380dfd18cf33d14784096dca45a24eae6102e91d49a718d3b6855/typer_slim-0.24.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/f6/66/fe9c41fcf5fe73637997e632a488637d8283fe7bed327b147d26e4964a20/vesin-0.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ac/17/56cd86df5cedca93a7973546abd1ae2f0a1e202c17ca928b377477119332/vesin_torch-0.4.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/8f/cc/87cd5e2053ff8026c63f1682f98592f35b9b32faa39916cd8ca88e13f1be/vesin-0.5.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/e0/13/808ee2e14a04c467b02ea7e40119af594a0eb9196fab4e67cd295b59c7a1/vesin_torch-0.5.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
@@ -2712,8 +2712,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/4d/74ba4841666518ed916d6637a4fd6dbc3f8272a4b2d724dbd0cdc26b4105/metatensor_torch-0.8.4-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/7a/4b/8e57c02768e8daf0b6833345e1b8a2472a73489b24d6157ed332cf224d67/metatomic_torch-0.1.8-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/13/7f/03fdc81a62f69866cd937b284a54290cb4570b02cb0761a4a4ea0fdbb487/metatomic_torch-0.1.11-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -2730,14 +2730,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1-cp312-none-macosx_11_0_arm64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4a/91/48db081e7a63bb37284f9fbcefda7c44c277b18b0e13fbc36ea2335b71e6/typer-0.24.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a7/24/5480c20380dfd18cf33d14784096dca45a24eae6102e91d49a718d3b6855/typer_slim-0.24.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/6a/1d/8a061603f318e965f50c39e46a56ed372a987b48c40011709f2a9219add0/vesin-0.4.2-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/de/3b/517af8e11dc8f321929669be69ad1d29dae757d656c6427613179865c3aa/vesin_torch-0.4.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/7e/f4/a71146bf735c0cb31c2dc74bc7d3cb862e276f6b1f9068afbaf70db3046d/vesin-0.5.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/3c/72/f56c87f4942958e073d2e60dfd8fb2d8914a5ca579d267c7e442da73a32c/vesin_torch-0.5.2-py3-none-macosx_11_0_arm64.whl
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/asttokens-3.0.1-pyhd8ed1ab_0.conda
@@ -2865,8 +2865,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/ed/1649ae0382a4d9942a1e0124ecae8d68b403e12bf2b6d8fd9759160fde5f/metatensor_torch-0.8.4-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/c8/8a09a68567ad2426fd9ae4abd12872f2e1c5b3a6a3db8809b88dc1c4d738/metatomic_torch-0.1.8-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/78/6c/0de3222e7b01aa4ff6e226210808af11810808fd5cc8b224220f9e160385/metatomic_torch-0.1.11-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -2883,14 +2883,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-win_amd64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4a/91/48db081e7a63bb37284f9fbcefda7c44c277b18b0e13fbc36ea2335b71e6/typer-0.24.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a7/24/5480c20380dfd18cf33d14784096dca45a24eae6102e91d49a718d3b6855/typer_slim-0.24.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/ca/e3/556a107f6496b3f7f99c60eadf037cde6b37cf6b033f643c38617e95b8df/vesin-0.4.2-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/91/c45cc56afbf545989c57c1ab54bf9d6a96d23a2f96f4e7d5a831a8bc7c93/vesin_torch-0.4.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/d6/41/040252275e7048bbe1676ede1e184c58b605d7d0056e0156cad6bf43587e/vesin-0.5.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/72/9b/eb3edd1703000c02a75c93cf320b376f822f4d7ee8b0224862e358ea05eb/vesin_torch-0.5.2-py3-none-win_amd64.whl
   dev-xtb:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -4438,8 +4438,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/46/c7/844739309a227216e3b20049ec76cc0c0ca769c56d46f2434488316f5bbd/metatensor_torch-0.8.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/85/4e/3b2a61f99bc2e9f18ad68b6f8ed91c132a618aa84ebccd98e42dc9cf2f22/metatomic_torch-0.1.7-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/17/49fc50b531fd0a2e094407a0add8dc25f685d2740fd3162ef4ea0d21c627/metatomic_torch-0.1.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -4455,14 +4455,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/typing_extensions-4.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/f6/66/fe9c41fcf5fe73637997e632a488637d8283fe7bed327b147d26e4964a20/vesin-0.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ac/17/56cd86df5cedca93a7973546abd1ae2f0a1e202c17ca928b377477119332/vesin_torch-0.4.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/8f/cc/87cd5e2053ff8026c63f1682f98592f35b9b32faa39916cd8ca88e13f1be/vesin-0.5.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/e0/13/808ee2e14a04c467b02ea7e40119af594a0eb9196fab4e67cd295b59c7a1/vesin_torch-0.5.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
@@ -4593,8 +4593,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/4d/74ba4841666518ed916d6637a4fd6dbc3f8272a4b2d724dbd0cdc26b4105/metatensor_torch-0.8.4-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/2c/bb/a6d972d6f392aa734b965343e3de053048846644435fc68ba2f8563b1898/metatomic_torch-0.1.7-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/13/7f/03fdc81a62f69866cd937b284a54290cb4570b02cb0761a4a4ea0fdbb487/metatomic_torch-0.1.11-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -4610,14 +4610,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1-cp312-none-macosx_11_0_arm64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/typing_extensions-4.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/6a/1d/8a061603f318e965f50c39e46a56ed372a987b48c40011709f2a9219add0/vesin-0.4.2-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/de/3b/517af8e11dc8f321929669be69ad1d29dae757d656c6427613179865c3aa/vesin_torch-0.4.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/7e/f4/a71146bf735c0cb31c2dc74bc7d3cb862e276f6b1f9068afbaf70db3046d/vesin-0.5.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/3c/72/f56c87f4942958e073d2e60dfd8fb2d8914a5ca579d267c7e442da73a32c/vesin_torch-0.5.2-py3-none-macosx_11_0_arm64.whl
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h0ad9c76_8.conda
@@ -4729,8 +4729,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/ed/1649ae0382a4d9942a1e0124ecae8d68b403e12bf2b6d8fd9759160fde5f/metatensor_torch-0.8.4-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/c8/8a09a68567ad2426fd9ae4abd12872f2e1c5b3a6a3db8809b88dc1c4d738/metatomic_torch-0.1.8-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/78/6c/0de3222e7b01aa4ff6e226210808af11810808fd5cc8b224220f9e160385/metatomic_torch-0.1.11-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -4748,15 +4748,15 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-win_amd64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d5/91/9b286ab899c008c2cb05e8be99814807e7fbbd33f0c0c960470826e5ac82/typer-0.23.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ad/8a/5764b851659345f34787f1b6eb30b9d308bbd6c294825cbe38b6b869c97a/typer_slim-0.23.1-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/typing_extensions-4.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/ca/e3/556a107f6496b3f7f99c60eadf037cde6b37cf6b033f643c38617e95b8df/vesin-0.4.2-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/91/c45cc56afbf545989c57c1ab54bf9d6a96d23a2f96f4e7d5a831a8bc7c93/vesin_torch-0.4.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/d6/41/040252275e7048bbe1676ede1e184c58b605d7d0056e0156cad6bf43587e/vesin-0.5.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/72/9b/eb3edd1703000c02a75c93cf320b376f822f4d7ee8b0224862e358ea05eb/vesin_torch-0.5.2-py3-none-win_amd64.whl
   nwchem:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -5254,8 +5254,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/46/c7/844739309a227216e3b20049ec76cc0c0ca769c56d46f2434488316f5bbd/metatensor_torch-0.8.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/85/4e/3b2a61f99bc2e9f18ad68b6f8ed91c132a618aa84ebccd98e42dc9cf2f22/metatomic_torch-0.1.7-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/17/49fc50b531fd0a2e094407a0add8dc25f685d2740fd3162ef4ea0d21c627/metatomic_torch-0.1.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -5271,14 +5271,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/typing_extensions-4.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/f6/66/fe9c41fcf5fe73637997e632a488637d8283fe7bed327b147d26e4964a20/vesin-0.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/ac/17/56cd86df5cedca93a7973546abd1ae2f0a1e202c17ca928b377477119332/vesin_torch-0.4.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/8f/cc/87cd5e2053ff8026c63f1682f98592f35b9b32faa39916cd8ca88e13f1be/vesin-0.5.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/e0/13/808ee2e14a04c467b02ea7e40119af594a0eb9196fab4e67cd295b59c7a1/vesin_torch-0.5.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
@@ -5409,8 +5409,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5c/4d/74ba4841666518ed916d6637a4fd6dbc3f8272a4b2d724dbd0cdc26b4105/metatensor_torch-0.8.4-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/2c/bb/a6d972d6f392aa734b965343e3de053048846644435fc68ba2f8563b1898/metatomic_torch-0.1.7-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/13/7f/03fdc81a62f69866cd937b284a54290cb4570b02cb0761a4a4ea0fdbb487/metatomic_torch-0.1.11-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -5426,14 +5426,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1-cp312-none-macosx_11_0_arm64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/tqdm-4.66.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c8/0a/4aca634faf693e33004796b6cee0ae2e1dba375a800c16ab8d3eff4bb800/typer_slim-0.21.1-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/typing_extensions-4.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/6a/1d/8a061603f318e965f50c39e46a56ed372a987b48c40011709f2a9219add0/vesin-0.4.2-py3-none-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/de/3b/517af8e11dc8f321929669be69ad1d29dae757d656c6427613179865c3aa/vesin_torch-0.4.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/7e/f4/a71146bf735c0cb31c2dc74bc7d3cb862e276f6b1f9068afbaf70db3046d/vesin-0.5.2-py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/3c/72/f56c87f4942958e073d2e60dfd8fb2d8914a5ca579d267c7e442da73a32c/vesin_torch-0.5.2-py3-none-macosx_11_0_arm64.whl
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/argcomplete-3.6.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h0ad9c76_8.conda
@@ -5545,8 +5545,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0c/9c/f455b26da18906a8bdcd4fd2ddd3a916bf3e7c1e6675f4478da35ce41949/metatensor_learn-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/63/e6/60691e210a43b738249ee9abb3f2343dece72d0b821fda3d4023e061d26a/metatensor_operations-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/ed/1649ae0382a4d9942a1e0124ecae8d68b403e12bf2b6d8fd9759160fde5f/metatensor_torch-0.8.4-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/c8/8a09a68567ad2426fd9ae4abd12872f2e1c5b3a6a3db8809b88dc1c4d738/metatomic_torch-0.1.8-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/78/6c/0de3222e7b01aa4ff6e226210808af11810808fd5cc8b224220f9e160385/metatomic_torch-0.1.11-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl
@@ -5564,15 +5564,15 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
-      - pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-win_amd64.whl
+      - pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d5/91/9b286ab899c008c2cb05e8be99814807e7fbbd33f0c0c960470826e5ac82/typer-0.23.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ad/8a/5764b851659345f34787f1b6eb30b9d308bbd6c294825cbe38b6b869c97a/typer_slim-0.23.1-py3-none-any.whl
       - pypi: https://download.pytorch.org/whl/typing_extensions-4.15.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/ca/e3/556a107f6496b3f7f99c60eadf037cde6b37cf6b033f643c38617e95b8df/vesin-0.4.2-py3-none-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/35/91/c45cc56afbf545989c57c1ab54bf9d6a96d23a2f96f4e7d5a831a8bc7c93/vesin_torch-0.4.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/d6/41/040252275e7048bbe1676ede1e184c58b605d7d0056e0156cad6bf43587e/vesin-0.5.2-py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/72/9b/eb3edd1703000c02a75c93cf320b376f822f4d7ee8b0224862e358ea05eb/vesin_torch-0.5.2-py3-none-win_amd64.whl
   serve:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -15383,60 +15383,40 @@ packages:
   - torch>=2.1,<2.11
   - metatensor-core>=0.1.18,<0.2
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/2c/bb/a6d972d6f392aa734b965343e3de053048846644435fc68ba2f8563b1898/metatomic_torch-0.1.7-py3-none-macosx_11_0_arm64.whl
+- pypi: https://files.pythonhosted.org/packages/13/7f/03fdc81a62f69866cd937b284a54290cb4570b02cb0761a4a4ea0fdbb487/metatomic_torch-0.1.11-py3-none-macosx_11_0_arm64.whl
   name: metatomic-torch
-  version: 0.1.7
-  sha256: a83b74cb80c1fd4faf3ab1a7b825d45d051d8a3c57f18bc1b7357dbe22b82b47
+  version: 0.1.11
+  sha256: c1d7f5488862025ab2c82cbe39aef3caa99a5689ea1f9121d56e90592dc81815
   requires_dist:
-  - torch>=2.1,<2.10
-  - vesin
+  - torch>=2.3,<2.11
+  - vesin>=0.5.1
   - metatensor-torch>=0.8.0,<0.9
   - metatensor-operations>=0.4.0,<0.5
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/85/4e/3b2a61f99bc2e9f18ad68b6f8ed91c132a618aa84ebccd98e42dc9cf2f22/metatomic_torch-0.1.7-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+- pypi: https://files.pythonhosted.org/packages/78/6c/0de3222e7b01aa4ff6e226210808af11810808fd5cc8b224220f9e160385/metatomic_torch-0.1.11-py3-none-win_amd64.whl
   name: metatomic-torch
-  version: 0.1.7
-  sha256: 9dacf9c51d1010e0912cbb0ba373c5a1e63dd10cf16a7166542092504f0cf832
+  version: 0.1.11
+  sha256: 8f0b3b8084a34c5e59ddbef8c9c30afed9d245574a8498a6c4c230d5db3d24be
   requires_dist:
-  - torch>=2.1,<2.10
-  - vesin
+  - torch>=2.3,<2.11
+  - vesin>=0.5.1
   - metatensor-torch>=0.8.0,<0.9
   - metatensor-operations>=0.4.0,<0.5
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/35/c8/8a09a68567ad2426fd9ae4abd12872f2e1c5b3a6a3db8809b88dc1c4d738/metatomic_torch-0.1.8-py3-none-win_amd64.whl
+- pypi: https://files.pythonhosted.org/packages/9c/17/49fc50b531fd0a2e094407a0add8dc25f685d2740fd3162ef4ea0d21c627/metatomic_torch-0.1.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
   name: metatomic-torch
-  version: 0.1.8
-  sha256: 5e13e884b1044ec576899ddd51ba5a936384c102e325d74b5d35fbb767d4a1e5
+  version: 0.1.11
+  sha256: 5db59c1d28bc412a8f2d0fcabcfc246f75a11a042109edf1c24cfdc9c802ad89
   requires_dist:
-  - torch>=2.1,<2.11
-  - vesin
+  - torch>=2.3,<2.11
+  - vesin>=0.5.1
   - metatensor-torch>=0.8.0,<0.9
   - metatensor-operations>=0.4.0,<0.5
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/7a/4b/8e57c02768e8daf0b6833345e1b8a2472a73489b24d6157ed332cf224d67/metatomic_torch-0.1.8-py3-none-macosx_11_0_arm64.whl
-  name: metatomic-torch
-  version: 0.1.8
-  sha256: e69c3c5dba312563d3a89efd4df4c1ddb094fa973e8bbb69d70bf40d3c3a01e4
-  requires_dist:
-  - torch>=2.1,<2.11
-  - vesin
-  - metatensor-torch>=0.8.0,<0.9
-  - metatensor-operations>=0.4.0,<0.5
-  requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/ea/29/052418062fe9d97fada027b4ed451e3c378a149f58202f5f0ab3bec58f47/metatomic_torch-0.1.8-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-  name: metatomic-torch
-  version: 0.1.8
-  sha256: fefb57f3f3ff76a8d3ee0ff14ee4447615a52ae46ec09ae417d09c15644a73ae
-  requires_dist:
-  - torch>=2.1,<2.11
-  - vesin
-  - metatensor-torch>=0.8.0,<0.9
-  - metatensor-operations>=0.4.0,<0.5
-  requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
   name: metatrain
-  version: '2025.12'
-  sha256: a2bace4f74261bc24e5427dd39fb9e37156a6ef2d439190058df4e9da8e58c09
+  version: 2026.2.1
+  sha256: 0cb48e9ea3f082bd4d544eacda98d5e14d6533ab49f793d997812c1642fb4f72
   requires_dist:
   - ase
   - huggingface-hub
@@ -15444,19 +15424,21 @@ packages:
   - metatensor-learn>=0.4.0,<0.5
   - metatensor-operations>=0.4.0,<0.5
   - metatensor-torch>=0.8.2,<0.9
-  - metatomic-torch>=0.1.6,<0.2
+  - metatomic-torch>=0.1.8,<0.2
   - jsonschema
   - pydantic>=2.12
   - typing-extensions
   - omegaconf>=2.3.0
   - python-hostlist
   - tqdm
-  - vesin
+  - vesin>=0.5.2
   - torch-spex>=0.1,<0.2 ; extra == 'soap-bpnn'
   - wigners ; extra == 'soap-bpnn'
   - featomic-torch>=0.7,<0.8 ; extra == 'gap'
   - skmatter ; extra == 'gap'
   - scipy ; extra == 'gap'
+  - mace-torch>=0.3.14,<0.3.15 ; extra == 'mace'
+  - e3nn ; extra == 'mace'
   requires_python: '>=3.10'
 - conda: https://conda.anaconda.org/conda-forge/win-64/mkl-2025.3.0-hac47afa_455.conda
   sha256: b2b4c84b95210760e4d12319416c60ab66e03674ccdcbd14aeb59f82ebb1318d
@@ -18774,10 +18756,10 @@ packages:
   - pkg:pypi/tomli?source=compressed-mapping
   size: 21453
   timestamp: 1768146676791
-- pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1-cp312-none-macosx_11_0_arm64.whl
+- pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
   name: torch
-  version: 2.9.1
-  sha256: 287242dd1f830846098b5eca847f817aa5c6015ea57ab4c1287809efea7b77eb
+  version: 2.10.0
+  sha256: 358bd7125cbec6e692d60618a5eec7f55a51b29e3652a849fd42af021d818023
   requires_dist:
   - filelock
   - typing-extensions>=4.10.0
@@ -18790,10 +18772,10 @@ packages:
   - opt-einsum>=3.3 ; extra == 'opt-einsum'
   - pyyaml ; extra == 'pyyaml'
   requires_python: '>=3.10'
-- pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+- pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
   name: torch
-  version: 2.9.1+cpu
-  sha256: 7417d8c565f219d3455654cb431c6d892a3eb40246055e14d645422de13b9ea1
+  version: 2.10.0+cpu
+  sha256: ee40b8a4b4b2cf0670c6fd4f35a7ef23871af956fecb238fbf5da15a72650b1d
   requires_dist:
   - filelock
   - typing-extensions>=4.10.0
@@ -18806,10 +18788,10 @@ packages:
   - opt-einsum>=3.3 ; extra == 'opt-einsum'
   - pyyaml ; extra == 'pyyaml'
   requires_python: '>=3.10'
-- pypi: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-win_amd64.whl
+- pypi: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-win_amd64.whl
   name: torch
-  version: 2.9.1+cpu
-  sha256: a4e06b4f441675d26b462123c8a83e77c55f1ec8ebc081203be2db1ea8054add
+  version: 2.10.0+cpu
+  sha256: 21cb5436978ef47c823b7a813ff0f8c2892e266cfe0f1d944879b5fba81bf4e1
   requires_dist:
   - filelock
   - typing-extensions>=4.10.0
@@ -19156,50 +19138,50 @@ packages:
   purls: []
   size: 115235
   timestamp: 1767320173250
-- pypi: https://files.pythonhosted.org/packages/6a/1d/8a061603f318e965f50c39e46a56ed372a987b48c40011709f2a9219add0/vesin-0.4.2-py3-none-macosx_11_0_arm64.whl
+- pypi: https://files.pythonhosted.org/packages/7e/f4/a71146bf735c0cb31c2dc74bc7d3cb862e276f6b1f9068afbaf70db3046d/vesin-0.5.2-py3-none-macosx_11_0_arm64.whl
   name: vesin
-  version: 0.4.2
-  sha256: 22cd5adcedccc766f98f6185bc737e3f43fc21e6aee54b8803ced17b8e7460fb
+  version: 0.5.2
+  sha256: 9bb70c897580232d80ba7e833c41c2a464ec0a49101648d39a001c6524d2c1e1
   requires_dist:
   - numpy
   - vesin-torch ; extra == 'torch'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/ca/e3/556a107f6496b3f7f99c60eadf037cde6b37cf6b033f643c38617e95b8df/vesin-0.4.2-py3-none-win_amd64.whl
+- pypi: https://files.pythonhosted.org/packages/8f/cc/87cd5e2053ff8026c63f1682f98592f35b9b32faa39916cd8ca88e13f1be/vesin-0.5.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
   name: vesin
-  version: 0.4.2
-  sha256: 70f57f618c3426c1376fbf7b79e06166e5e530e57cf787e974160a1a53a49d95
+  version: 0.5.2
+  sha256: 1b9f38f831f70b28bc8b2a47c2d984ddc3ac6ffcec6f4ac5bf0c919442b8f2ce
   requires_dist:
   - numpy
   - vesin-torch ; extra == 'torch'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/f6/66/fe9c41fcf5fe73637997e632a488637d8283fe7bed327b147d26e4964a20/vesin-0.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+- pypi: https://files.pythonhosted.org/packages/d6/41/040252275e7048bbe1676ede1e184c58b605d7d0056e0156cad6bf43587e/vesin-0.5.2-py3-none-win_amd64.whl
   name: vesin
-  version: 0.4.2
-  sha256: 72b7c3e26860c5a751fa18676f9487057a1a1f0c50993fedfe1909e33ba608f2
+  version: 0.5.2
+  sha256: 20ae92e8816d1337925e363551d5dfaffb9b051b8e35bd3fd6c66395e7fb1e21
   requires_dist:
   - numpy
   - vesin-torch ; extra == 'torch'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/35/91/c45cc56afbf545989c57c1ab54bf9d6a96d23a2f96f4e7d5a831a8bc7c93/vesin_torch-0.4.2-py3-none-win_amd64.whl
+- pypi: https://files.pythonhosted.org/packages/3c/72/f56c87f4942958e073d2e60dfd8fb2d8914a5ca579d267c7e442da73a32c/vesin_torch-0.5.2-py3-none-macosx_11_0_arm64.whl
   name: vesin-torch
-  version: 0.4.2
-  sha256: 951b21922f51236efddcd41250b88ad38cb0b031463123e8a34642e15ceb03a1
+  version: 0.5.2
+  sha256: 76ab983273a4ded0d65b2d2d2132c27012efea3c969db1445c7e0431b5f14713
   requires_dist:
-  - torch>=2.3,<2.10
+  - torch>=2.3,<2.11
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/ac/17/56cd86df5cedca93a7973546abd1ae2f0a1e202c17ca928b377477119332/vesin_torch-0.4.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+- pypi: https://files.pythonhosted.org/packages/72/9b/eb3edd1703000c02a75c93cf320b376f822f4d7ee8b0224862e358ea05eb/vesin_torch-0.5.2-py3-none-win_amd64.whl
   name: vesin-torch
-  version: 0.4.2
-  sha256: 80ff62b2fd1f3afb5632cc911bc32fdd3c82e541d1fccec71680362ccced87f0
+  version: 0.5.2
+  sha256: c8f80a75c27ec8825e8428635d08b7e52a7e72bc864cb850299911a12b3eefc2
   requires_dist:
-  - torch>=2.3,<2.10
+  - torch>=2.3,<2.11
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/de/3b/517af8e11dc8f321929669be69ad1d29dae757d656c6427613179865c3aa/vesin_torch-0.4.2-py3-none-macosx_11_0_arm64.whl
+- pypi: https://files.pythonhosted.org/packages/e0/13/808ee2e14a04c467b02ea7e40119af594a0eb9196fab4e67cd295b59c7a1/vesin_torch-0.5.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
   name: vesin-torch
-  version: 0.4.2
-  sha256: 3299217ba803e442c52613ec4f9fe4cbd2cc2b2538836b902d12eb0d2d6296d8
+  version: 0.5.2
+  sha256: 96c40e5f7d2428c4bfc8418a34a597da4bd0a1ee9e1148ae6a677486dde14d5b
   requires_dist:
-  - torch>=2.3,<2.10
+  - torch>=2.3,<2.11
   requires_python: '>=3.10'
 - conda: https://conda.anaconda.org/conda-forge/noarch/virtualenv-20.35.4-pyhd8ed1ab_0.conda
   sha256: 77193c99c6626c58446168d3700f9643d8c0dab1f6deb6b9dd039e6872781bfb
