@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -33,7 +34,7 @@ public:
         monfile{fopen("monitoring.dat", "w")},
         earrfile{fopen("earr.dat", "w")} {
 
-    log = quill::Frontend::get_logger("combi");
+    log = eonc::log::get();
   }
   // etoler = parameters->globalOptimizationEtoler;
   // decisionMethod = "NPEW";

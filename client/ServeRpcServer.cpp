@@ -24,6 +24,7 @@
 
 #include "ServeRpcServer.h"
 #include "BaseStructures.h"
+#include "EonLogger.h"
 
 #include <atomic>
 #include <capnp/ez-rpc.h>
@@ -101,15 +102,13 @@ private:
 
 void startRpcServer(ForceCallback callback, const std::string &host,
                     uint16_t port) {
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Starting Cap'n Proto RPC server on {}:{}", host, port);
+  EONC_LOG_INFO("Starting Cap'n Proto RPC server on {}:{}", host, port);
 
   capnp::EzRpcServer server(kj::heap<CallbackPotImpl>(std::move(callback)),
                             host, port);
 
   auto &waitScope = server.getWaitScope();
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Server ready on port {}. Ctrl+C to stop.", port);
+  EONC_LOG_INFO("Server ready on port {}. Ctrl+C to stop.", port);
   kj::NEVER_DONE.wait(waitScope);
 }
 
@@ -185,15 +184,13 @@ private:
 
 void startPooledRpcServer(std::vector<ForceCallback> pool,
                           const std::string &host, uint16_t port) {
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Starting pooled RPC gateway on {}:{} with {} instances", host, port,
-           pool.size());
+  EONC_LOG_INFO("Starting pooled RPC gateway on {}:{} with {} instances", host,
+                port, pool.size());
 
   capnp::EzRpcServer server(kj::heap<PooledCallbackPotImpl>(std::move(pool)),
                             host, port);
 
   auto &waitScope = server.getWaitScope();
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Gateway ready on port {}. Ctrl+C to stop.", port);
+  EONC_LOG_INFO("Gateway ready on port {}. Ctrl+C to stop.", port);
   kj::NEVER_DONE.wait(waitScope);
 }

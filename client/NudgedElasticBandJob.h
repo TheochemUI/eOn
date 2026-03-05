@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Matter.h"
@@ -21,9 +22,7 @@ class NudgedElasticBandJob : public Job {
 public:
   NudgedElasticBandJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
-        fCallsNEB{0} {
-    m_log = quill::Frontend::get_logger("combi");
-  }
+        fCallsNEB{0} {}
   ~NudgedElasticBandJob(void) = default;
   std::vector<std::string> run(void);
 
@@ -35,5 +34,5 @@ private:
   // variables
   std::vector<std::string> returnFiles;
   size_t fCallsNEB;
-  quill::Logger *m_log{nullptr};
+  eonc::log::Scoped m_log;
 };

@@ -25,6 +25,7 @@
  */
 
 #include "ServeMode.h"
+#include "EonLogger.h"
 #include "Potential.h"
 #include "ServeRpcServer.h"
 
@@ -54,14 +55,13 @@ ForceCallback makeForceCallback(std::shared_ptr<::Potential> pot) {
 void serveMode(const Parameters &params, const std::string &host,
                uint16_t port) {
   auto pot_type = params.potential_options.potential;
-  LOG_INFO(quill::Frontend::get_logger("combi"), "Creating potential: {}",
-           std::string(magic_enum::enum_name(pot_type)));
+  EONC_LOG_INFO("Creating potential: {}",
+                std::string(magic_enum::enum_name(pot_type)));
 
   auto eon_pot = helper_functions::makePotential(params);
   if (!eon_pot) {
-    LOG_ERROR(quill::Frontend::get_logger("combi"),
-              "Failed to create potential of type {}",
-              std::string(magic_enum::enum_name(pot_type)));
+    EONC_LOG_ERROR("Failed to create potential of type {}",
+                   std::string(magic_enum::enum_name(pot_type)));
     return;
   }
 
@@ -78,8 +78,7 @@ void serveMode(const Parameters &params, const std::string &host,
 void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
                    const Parameters &base_params) {
   if (endpoints.empty()) {
-    LOG_ERROR(quill::Frontend::get_logger("combi"),
-              "No serve endpoints specified");
+    EONC_LOG_ERROR("No serve endpoints specified");
     return;
   }
 
@@ -92,8 +91,7 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
   }
 
   // Multiple endpoints: one thread per server
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Starting {} concurrent RPC servers", endpoints.size());
+  EONC_LOG_INFO("Starting {} concurrent RPC servers", endpoints.size());
 
   std::vector<std::thread> threads;
   threads.reserve(endpoints.size());
@@ -104,14 +102,13 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
       params.potential_options.potential = ep.potential;
       auto pot_name = std::string(magic_enum::enum_name(ep.potential));
 
-      LOG_INFO(quill::Frontend::get_logger("combi"),
-               "[{}:{}] Creating potential: {}", ep.host, ep.port, pot_name);
+      EONC_LOG_INFO("[{}:{}] Creating potential: {}", ep.host, ep.port,
+                    pot_name);
 
       auto eon_pot = helper_functions::makePotential(params);
       if (!eon_pot) {
-        LOG_ERROR(quill::Frontend::get_logger("combi"),
-                  "[{}:{}] Failed to create potential {}", ep.host, ep.port,
-                  pot_name);
+        EONC_LOG_ERROR("[{}:{}] Failed to create potential {}", ep.host,
+                       ep.port, pot_name);
         return;
       }
 
@@ -135,7 +132,7 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
 void serveReplicated(const Parameters &params, const std::string &host,
                      uint16_t base_port, size_t replicas) {
   if (replicas == 0) {
-    LOG_ERROR(quill::Frontend::get_logger("combi"), "Replicas must be >= 1");
+    EONC_LOG_ERROR("Replicas must be >= 1");
     return;
   }
   if (replicas == 1) {
@@ -143,9 +140,8 @@ void serveReplicated(const Parameters &params, const std::string &host,
     return;
   }
 
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Starting {} replicated servers on ports {}-{}", replicas, base_port,
-           base_port + replicas - 1);
+  EONC_LOG_INFO("Starting {} replicated servers on ports {}-{}", replicas,
+                base_port, base_port + replicas - 1);
 
   std::vector<std::thread> threads;
   threads.reserve(replicas);
@@ -170,14 +166,14 @@ void serveReplicated(const Parameters &params, const std::string &host,
 void serveGateway(const Parameters &params, const std::string &host,
                   uint16_t port, size_t pool_size) {
   if (pool_size == 0) {
-    LOG_ERROR(quill::Frontend::get_logger("combi"), "Pool size must be >= 1");
+    EONC_LOG_ERROR("Pool size must be >= 1");
     return;
   }
 
   auto pot_type = params.potential_options.potential;
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Creating pool of {} {} instances for gateway on {}:{}", pool_size,
-           std::string(magic_enum::enum_name(pot_type)), host, port);
+  EONC_LOG_INFO("Creating pool of {} {} instances for gateway on {}:{}",
+                pool_size, std::string(magic_enum::enum_name(pot_type)), host,
+                port);
 
   std::vector<ForceCallback> pool;
   pool.reserve(pool_size);
@@ -185,15 +181,14 @@ void serveGateway(const Parameters &params, const std::string &host,
   for (size_t i = 0; i < pool_size; ++i) {
     auto eon_pot = helper_functions::makePotential(params);
     if (!eon_pot) {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "Failed to create potential instance {}/{}", i + 1, pool_size);
+      EONC_LOG_ERROR("Failed to create potential instance {}/{}", i + 1,
+                     pool_size);
       return;
     }
     pool.push_back(makeForceCallback(std::move(eon_pot)));
   }
 
-  LOG_INFO(quill::Frontend::get_logger("combi"),
-           "Pool ready, starting gateway server");
+  EONC_LOG_INFO("Pool ready, starting gateway server");
   startPooledRpcServer(std::move(pool), host, port);
 }
 
@@ -208,8 +203,7 @@ void serveFromConfig(const Parameters &params) {
   if (!opts.endpoints.empty()) {
     auto endpoints = parseServeSpec(opts.endpoints);
     if (endpoints.empty()) {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "No valid endpoints in spec: {}", opts.endpoints);
+      EONC_LOG_ERROR("No valid endpoints in spec: {}", opts.endpoints);
       return;
     }
     serveMultiple(endpoints, params);
@@ -246,8 +240,8 @@ std::vector<ServeEndpoint> parseServeSpec(const std::string &spec) {
     // Parse "potential:port" or "potential:host:port"
     size_t first_colon = token.find(':');
     if (first_colon == std::string::npos) {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "Invalid serve spec '{}': expected 'potential:port'", token);
+      EONC_LOG_ERROR("Invalid serve spec '{}': expected 'potential:port'",
+                     token);
       continue;
     }
 
@@ -269,8 +263,7 @@ std::vector<ServeEndpoint> parseServeSpec(const std::string &spec) {
             .value_or(PotType::UNKNOWN);
 
     if (ep.potential == PotType::UNKNOWN) {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "Unknown potential type '{}'", pot_str);
+      EONC_LOG_ERROR("Unknown potential type '{}'", pot_str);
       continue;
     }
 

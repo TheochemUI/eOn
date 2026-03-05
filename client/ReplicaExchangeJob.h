@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Dynamics.h"
 #include "Job.h"
@@ -19,9 +20,7 @@ class ReplicaExchangeJob : public Job {
 public:
   ReplicaExchangeJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
-        forceCalls{0} {
-    log = quill::Frontend::get_logger("combi");
-  }
+        forceCalls{0} {}
   ~ReplicaExchangeJob(void) = default;
   std::vector<std::string> run(void);
 
@@ -34,5 +33,5 @@ private:
   //        Dynamics **replicaDynamics;
   //        double *replicaTemperature;
   std::vector<std::string> returnFiles;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

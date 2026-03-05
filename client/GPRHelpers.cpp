@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "GPRHelpers.h"
+#include "EonLogger.h"
 
 #include "subprojects/gpr_optim/data_types/EigenHelpers.h"
 

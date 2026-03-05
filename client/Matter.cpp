@@ -17,6 +17,7 @@
 #include "Optimizer.h"
 #include "SurrogatePotential.h"
 
+#include "EonLogger.h"
 // To write the R style data frame
 #include <format>
 #include <fstream>
@@ -85,9 +86,8 @@ public:
     } else if (params.optimizer_options.convergence_metric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      LOG_CRITICAL(quill::Frontend::get_logger("combi"),
-                   "{} Unknown opt_convergence_metric: {}", "[Matter]"s,
-                   params.optimizer_options.convergence_metric);
+      EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
+                        params.optimizer_options.convergence_metric);
       std::exit(1);
     }
   }

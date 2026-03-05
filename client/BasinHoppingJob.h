@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -21,7 +22,7 @@ public:
         current{std::make_shared<Matter>(pot, params)},
         trial{std::make_shared<Matter>(pot, params)},
         fcalls{0} {
-    log = quill::Frontend::get_logger("combi");
+    log = eonc::log::get();
   }
   ~BasinHoppingJob(void) = default;
 

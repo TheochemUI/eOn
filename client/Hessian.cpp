@@ -10,13 +10,14 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Hessian.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 Hessian::Hessian(const Parameters &params, Matter *matter)
     : matter{matter},
       parameters{params} {
   hessian.resize(0, 0);
   freqs.resize(0);
-  log = quill::Frontend::get_logger("combi");
+  /* Logger initialized via class member */
 }
 
 Hessian::~Hessian() {}

@@ -20,6 +20,7 @@
 #include "eonExceptions.hpp"
 #include "magic_enum/magic_enum.hpp"
 
+#include "EonLogger.h"
 using namespace helper_functions;
 namespace fs = std::filesystem;
 
@@ -389,10 +390,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
     if (iteration == 0) {
 
-      LOG_DEBUG(quill::Frontend::get_logger("combi"),
-                "{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
-                "step size", params.optimizer_options.convergence_metric_label,
-                "max image", "max energy");
+      EONC_LOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
+                     "step size",
+                     params.optimizer_options.convergence_metric_label,
+                     "max image", "max energy");
       LOG_DEBUG(
           quill::Frontend::get_logger("combi"),
           "---------------------------------------------------------------\n");
@@ -532,9 +533,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         } else {
           if (!switched) {
             switched = true;
-            LOG_DEBUG(quill::Frontend::get_logger("combi"), "Switched to {}",
-                      magic_enum::enum_name<OptType>(
-                          params.optimizer_options.refine.method));
+            EONC_LOG_DEBUG("Switched to {}",
+                           magic_enum::enum_name<OptType>(
+                               params.optimizer_options.refine.method));
           }
           refine_optim->step(params.optimizer_options.max_move);
         }

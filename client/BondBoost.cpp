@@ -11,6 +11,7 @@
 */
 
 #include "BondBoost.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include <math.h>
 const char Hyperdynamics::NONE[] = "none";
@@ -24,7 +25,7 @@ BondBoost::BondBoost(Matter *matt, const Parameters &params)
   RAList = nullptr;
   TABAList = nullptr;
   BBAList = nullptr;
-  log = quill::Frontend::get_logger("combi");
+  /* Logger initialized via class member */
 }
 
 BondBoost::~BondBoost() {

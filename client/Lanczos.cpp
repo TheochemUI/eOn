@@ -18,13 +18,14 @@
 #include "HelperFunctions.h"
 #include "Potential.h"
 
+#include "EonLogger.h"
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
                  std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
   lowestEw = 0.0;
-  log = quill::Frontend::get_logger("combi");
+  /* Logger initialized via class member */
 }
 
 // The 1 character variables in this method match the variables in the

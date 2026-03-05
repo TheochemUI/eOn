@@ -20,6 +20,7 @@
 #include "Prefactor.h"
 #include <memory>
 
+#include "EonLogger.h"
 std::vector<std::string> ProcessSearchJob::run(void) {
   string reactantFilename("pos.con");
   string displacementFilename("displacement.con");
@@ -111,9 +112,8 @@ int ProcessSearchJob::doProcessSearch(void) {
   fctmp = pot->forceCallCounter;
   status = saddleSearch->run();
   fCallsSaddle += pot->forceCallCounter - fctmp;
-  LOG_DEBUG(quill::Frontend::get_logger("combi"),
-            "Got {} calls in the saddle search, with previous {}", fCallsSaddle,
-            fctmp);
+  EONC_LOG_DEBUG("Got {} calls in the saddle search, with previous {}",
+                 fCallsSaddle, fctmp);
 
   if (status != MinModeSaddleSearch::STATUS_GOOD) {
     return status;

@@ -12,6 +12,7 @@
 #include "Dynamics.h"
 #include <math.h>
 
+#include "EonLogger.h"
 using namespace helper_functions;
 
 const char Dynamics::ANDERSEN[] = "andersen";
@@ -28,7 +29,7 @@ Dynamics::Dynamics(Matter *matter_in, const Parameters &parameters_in)
   temperature = parameters.main_options.temperature;
   kB = parameters.constants.kB;
   vxi1 = vxi2 = xi1 = xi2 = 0.0; // NoseHoover variables
-  log = quill::Frontend::get_logger("combi");
+  /* Logger initialized via class member */
 }
 
 Dynamics::~Dynamics() { return; }

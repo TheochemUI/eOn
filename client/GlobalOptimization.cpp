@@ -12,11 +12,10 @@
 #include "GlobalOptimization.h"
 #include <stdio.h>
 
+#include "EonLogger.h"
 GlobalOptimization::GlobalOptimization(const Parameters &params)
     : parameters{params} {}
 
 GlobalOptimization::~GlobalOptimization(void) {}
 
-void GlobalOptimization::run(void) {
-  LOG_INFO(quill::Frontend::get_logger("combi"), "HELLO FROM GO\n");
-}
+void GlobalOptimization::run(void) { EONC_LOG_INFO("HELLO FROM GO\n"); }

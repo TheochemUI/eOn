@@ -17,6 +17,7 @@
 #include "helpers/Create.hpp"
 #include "potentials/CatLearnPot/CatLearnPot.h"
 
+#include "EonLogger.h"
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
   std::string reactantFilename =
@@ -41,8 +42,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       *initial, *final_state, params.neb_options.image_count);
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
   auto features = helper_functions::surrogate::get_features(init_data);
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Potential is {}",
-               magic_enum::enum_name<PotType>(pot->getType()));
+  EONC_LOG_TRACE("Potential is {}",
+                 magic_enum::enum_name<PotType>(pot->getType()));
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
@@ -58,14 +59,12 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
-      LOG_CRITICAL(quill::Frontend::get_logger("combi"),
-                   "Whoops, power level of problem too high!!");
+      EONC_LOG_CRITICAL("Whoops, power level of problem too high!!");
       break;
     }
     // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
     // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
-    LOG_TRACE_L1(quill::Frontend::get_logger("combi"),
-                 "Must handle update to the GP, update number {}", n_gp);
+    EONC_LOG_TRACE("Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
         helper_functions::surrogate::getMaxUncertainty(neb->path);
     auto [feature, target] =
@@ -80,11 +79,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       obj->setPotential(surpot);
     }
     if (!(pyparams->gp_linear_path_always)) {
-      LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Using previous path");
+      EONC_LOG_TRACE("Using previous path");
       neb = std::make_unique<NudgedElasticBand>(neb->path, *pyparams, surpot);
     } else {
-      LOG_TRACE_L1(quill::Frontend::get_logger("combi"),
-                   "Using linear interpolation");
+      EONC_LOG_TRACE("Using linear interpolation");
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, *pyparams,
                                                 surpot);
     }
@@ -173,25 +171,23 @@ namespace helper_functions::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions
   MatrixXd features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "rows: {}, cols:{}",
-               matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
+  EONC_LOG_TRACE("rows: {}, cols:{}", matobjs.size(),
+                 matobjs.front().numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx].getPositionsFreeV();
   }
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Features\n:{}",
-               fmt::streamed(features));
+  EONC_LOG_TRACE("Features\n:{}", fmt::streamed(features));
   return features;
 }
 MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   // Calculate dimensions
   MatrixXd features(matobjs.size(), matobjs.front()->numberOfFreeAtoms() * 3);
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "rows: {}, cols:{}\n",
-               matobjs.size(), matobjs.front()->numberOfFreeAtoms() * 3);
+  EONC_LOG_TRACE("rows: {}, cols:{}\n", matobjs.size(),
+                 matobjs.front()->numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx]->getPositionsFreeV();
   }
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Features\n:{}",
-               fmt::streamed(features));
+  EONC_LOG_TRACE("Features\n:{}", fmt::streamed(features));
   return features;
 }
 MatrixXd get_targets(std::vector<Matter> &matobjs,
@@ -207,8 +203,7 @@ MatrixXd get_targets(std::vector<Matter> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx].getForcesFree().array() * -1;
   }
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Targets\n:{}",
-               fmt::streamed(targets));
+  EONC_LOG_TRACE("Targets\n:{}", fmt::streamed(targets));
   return targets;
 }
 MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -222,8 +217,7 @@ MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx]->getForcesFree().array() * -1;
   }
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Targets\n:{}",
-               fmt::streamed(targets));
+  EONC_LOG_TRACE("Targets\n:{}", fmt::streamed(targets));
   return targets;
 }
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
@@ -245,7 +239,7 @@ Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   m1.setPotential(true_pot);
   target(0) = m1.getPotentialEnergy();
   target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
-  // LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Generated Target:\n{}",
+  // EONC_LOG_TRACE("Generated Target:\n{}",
   // fmt::streamed(target));
   return target;
 }
@@ -258,7 +252,7 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
-  // LOG_TRACE_L1(quill::Frontend::get_logger("combi"), "Uncertainty along path
+  // EONC_LOG_TRACE("Uncertainty along path
   // is {}\nmax_index: {}, maxVal: {}",
   //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
@@ -288,10 +282,9 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   auto mae = difference.array()
                  .abs()
                  .maxCoeff(); //.squaredNorm() / predEnergies.size();
-  LOG_TRACE_L1(quill::Frontend::get_logger("combi"),
-               "predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
-               fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-               fmt::streamed(difference), mae);
+  EONC_LOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
+                 fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
+                 fmt::streamed(difference), mae);
   return mae < 0.05;
 }
 } // namespace helper_functions::surrogate

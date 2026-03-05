@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "HelperFunctions.h"
 #include "Matter.h"
@@ -27,21 +28,7 @@ public:
         m_iteration{0},
         m_memory{
             min(a_objf->degreesOfFreedom(),
-                static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {
-
-    m_log = quill::Frontend::create_or_get_logger(
-        "lbfgs",
-        quill::Frontend::create_or_get_sink<quill::FileSink>(
-            "_lbfgs.log",
-            []() {
-              quill::FileSinkConfig cfg;
-              cfg.set_open_mode('w');
-              return cfg;
-            }(),
-            quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{"%(message)"},
-        quill::ClockSourceType::System);
-  }
+                static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {}
 
   ~LBFGS() = default;
 

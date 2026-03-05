@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "HelperFunctions.h"
 #include "Matter.h"
@@ -21,9 +22,7 @@ class MonteCarlo {
 public:
   MonteCarlo(std::shared_ptr<Matter> const matterIn, const Parameters &paramsIn)
       : matter{matterIn},
-        params{paramsIn} {
-    log = quill::Frontend::get_logger("combi");
-  }
+        params{paramsIn} {}
   ~MonteCarlo() = default;
 
   void run(int numSteps, double temperature, double stepSize);
@@ -31,5 +30,5 @@ public:
 private:
   std::shared_ptr<Matter> matter;
   const Parameters &params;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

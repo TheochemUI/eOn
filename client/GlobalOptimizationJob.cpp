@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "GlobalOptimizationJob.h"
+#include "EonLogger.h"
 #include "GlobalOptimization.h"
 // #include "MinimizationJob.h"
 #include "Dynamics.h"

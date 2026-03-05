@@ -12,6 +12,7 @@
 #include "MinModeSaddleSearch.h"
 #include "ConjugateGradients.h"
 #include "Dimer.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
@@ -59,9 +60,9 @@ public:
           // Dimer restored to best state - update eigenvector and continue
           // but signal that we should probably stop soon
           eigenvector = minModeMethod->getEigenvector();
-          LOG_DEBUG(quill::Frontend::get_logger("combi"),
-                    "[MinMode] Dimer restored to best state with C_tau={:.4f}",
-                    dimer->getEigenvalue());
+          EONC_LOG_DEBUG(
+              "[MinMode] Dimer restored to best state with C_tau={:.4f}",
+              dimer->getEigenvalue());
           throw eonc::DimerModeRestoredException();
         } else {
           // Truly lost - no valid state to restore to
@@ -177,9 +178,8 @@ public:
     } else if (params.optimizer_options.convergence_metric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      LOG_DEBUG(quill::Frontend::get_logger("combi"),
-                "[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
-                params.optimizer_options.convergence_metric);
+      EONC_LOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
+                     params.optimizer_options.convergence_metric);
       std::exit(1);
     }
   }

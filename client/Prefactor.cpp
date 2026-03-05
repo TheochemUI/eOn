@@ -13,6 +13,7 @@
 #include "HelperFunctions.h"
 #include "Hessian.h"
 
+#include "EonLogger.h"
 int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                              Matter *saddle, Matter *min2, double &pref1,
                              double &pref2) {
@@ -35,8 +36,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   Hessian hessian(parameters, min1);
   min1Freqs = hessian.getFreqs(min1, atoms);
   if (min1Freqs.size() == 0) {
-    LOG_ERROR(quill::Frontend::get_logger("combi"),
-              "[Prefactor] Bad hessian: min1");
+    EONC_LOG_ERROR("[Prefactor] Bad hessian: min1");
     return -1;
   }
   // remove zero modes
@@ -47,8 +47,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   // calculate saddle frequencies
   saddleFreqs = hessian.getFreqs(saddle, atoms);
   if (saddleFreqs.size() == 0) {
-    LOG_ERROR(quill::Frontend::get_logger("combi"),
-              "[Prefactor] Bad hessian: saddle");
+    EONC_LOG_ERROR("[Prefactor] Bad hessian: saddle");
     return -1;
   }
   // remove zero modes
@@ -60,8 +59,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   min2Freqs = hessian.getFreqs(min2, atoms);
   if (min2Freqs.size() == 0) {
     if (!parameters.main_options.quiet) {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "[Prefactor] Bad hessian: min2");
+      EONC_LOG_ERROR("[Prefactor] Bad hessian: min2");
     }
     return -1;
   }
@@ -74,8 +72,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   if ((min1Freqs.size() != saddleFreqs.size()) ||
       (min1Freqs.size() != saddleFreqs.size())) {
     if (!parameters.main_options.quiet) {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "[Prefactor] Bad prefactor: Hessian sizes do not match");
+      EONC_LOG_ERROR("[Prefactor] Bad prefactor: Hessian sizes do not match");
     }
     return -1;
   }
@@ -88,14 +85,12 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   int i, numNegFreq = 0;
   for (i = 0; i < size; i++) {
     if (min1Freqs(i) < 0) {
-      LOG_DEBUG(quill::Frontend::get_logger("combi"),
-                "[Prefactor] min1 had negative mode of {}", min1Freqs(i));
+      EONC_LOG_DEBUG("[Prefactor] min1 had negative mode of {}", min1Freqs(i));
       numNegFreq++;
     }
   }
   if (numNegFreq != 0) {
-    LOG_DEBUG(quill::Frontend::get_logger("combi"),
-              "[Prefactor] Error: {} negative modes at min1", numNegFreq);
+    EONC_LOG_DEBUG("[Prefactor] Error: {} negative modes at min1", numNegFreq);
     return -1;
   }
 
@@ -106,8 +101,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     }
   }
   if (numNegFreq != 1) {
-    LOG_DEBUG(quill::Frontend::get_logger("combi"),
-              "Error: {} negative modes at saddle", numNegFreq);
+    EONC_LOG_DEBUG("Error: {} negative modes at saddle", numNegFreq);
     return -1;
   }
 
@@ -118,8 +112,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     }
   }
   if (numNegFreq != 0) {
-    LOG_DEBUG(quill::Frontend::get_logger("combi"),
-              "Error: {} negative modes at min2", numNegFreq);
+    EONC_LOG_DEBUG("Error: {} negative modes at min2", numNegFreq);
     return -1;
   }
 
@@ -158,10 +151,8 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     pref1 = 2. * kB_T / (h)*pref1;
     pref2 = 2. * kB_T / (h)*pref2;
   }
-  LOG_DEBUG(quill::Frontend::get_logger("combi"),
-            "[Prefactor] reactant to product prefactor: {:.3e}", pref1);
-  LOG_DEBUG(quill::Frontend::get_logger("combi"),
-            "[Prefactor] product to reactant prefactor: {:.3e}", pref2);
+  EONC_LOG_DEBUG("[Prefactor] reactant to product prefactor: {:.3e}", pref1);
+  EONC_LOG_DEBUG("[Prefactor] product to reactant prefactor: {:.3e}", pref2);
   return 0;
 }
 
@@ -266,10 +257,9 @@ VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
     }
   }
 
-  LOG_DEBUG(quill::Frontend::get_logger("combi"),
-            "[Prefactor] sum of atom distances moved {:.4f}", sum);
-  LOG_DEBUG(quill::Frontend::get_logger("combi"),
-            "[Prefactor] max moved atom distance: {:.4f}", diff.maxCoeff());
+  EONC_LOG_DEBUG("[Prefactor] sum of atom distances moved {:.4f}", sum);
+  EONC_LOG_DEBUG("[Prefactor] max moved atom distance: {:.4f}",
+                 diff.maxCoeff());
 
   int nMoved = 0;
   double d = 0.0;
@@ -305,10 +295,9 @@ VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
       }
     }
   }
-  LOG_DEBUG(quill::Frontend::get_logger("combi"),
-            "[Prefactor] including {} atoms in the hessian ({} moved + {} "
-            "neighbors)",
-            totalAtoms, nMoved, totalAtoms - nMoved);
+  EONC_LOG_DEBUG("[Prefactor] including {} atoms in the hessian ({} moved + {} "
+                 "neighbors)",
+                 totalAtoms, nMoved, totalAtoms - nMoved);
   return (VectorXi)moved.block(0, 0, totalAtoms, 1);
 }
 

@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Eigen.h"
 #include "HelperFunctions.h"
@@ -24,18 +25,7 @@ public:
                   const Parameters &a_params)
       : Optimizer(a_objf, OptType::SD, a_params),
         iteration{0} {
-    m_log = quill::Frontend::create_or_get_logger(
-        "sd",
-        quill::Frontend::create_or_get_sink<quill::FileSink>(
-            "_sd.log",
-            []() {
-              quill::FileSinkConfig cfg;
-              cfg.set_open_mode('w');
-              return cfg;
-            }(),
-            quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{"%(message)"},
-        quill::ClockSourceType::System);
+    m_log = eonc::log::get_file("sd", "_sd.log");
   }
   ~SteepestDescent() = default;
 

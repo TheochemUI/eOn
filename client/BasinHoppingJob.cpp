@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "EonLogger.h"
 #include <math.h>
 #include <stdio.h>
 #include <string>

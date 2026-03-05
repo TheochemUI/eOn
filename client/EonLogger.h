@@ -46,7 +46,6 @@ get_file(std::string_view name, std::string_view filename,
          std::string_view pattern = "%(message)") {
   quill::FileSinkConfig cfg;
   cfg.set_open_mode('w');
-  cfg.set_filename(std::string(filename));
 
   auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
       std::string(filename), cfg);
@@ -75,10 +74,14 @@ get_file(std::string_view name, std::string_view filename,
 struct Scoped {
   quill::Logger *logger{nullptr};
 
-  Scoped() noexcept : logger(get()) {}
+  Scoped() noexcept
+      : logger(get()) {}
 
   // Implicit conversion to Logger* for seamless use with LOG_* macros
   operator quill::Logger *() const noexcept { return logger; }
+
+  // Support LOG macro pointer dereference
+  quill::Logger *operator->() const noexcept { return logger; }
 
   // Explicit access if needed
   [[nodiscard]] quill::Logger *ptr() const noexcept { return logger; }
@@ -120,8 +123,7 @@ struct FileScoped {
 /// Example:
 ///   EONC_LOG_INFO("quick message");
 ///   EONC_LOG_DEBUG("value: {}", x);
-#define EONC_LOG_TRACE(...)                                                    \
-  LOG_TRACE_L1(eonc::log::get(), __VA_ARGS__)
+#define EONC_LOG_TRACE(...) LOG_TRACE_L1(eonc::log::get(), __VA_ARGS__)
 #define EONC_LOG_DEBUG(...) LOG_DEBUG(eonc::log::get(), __VA_ARGS__)
 #define EONC_LOG_INFO(...) LOG_INFO(eonc::log::get(), __VA_ARGS__)
 #define EONC_LOG_WARNING(...) LOG_WARNING(eonc::log::get(), __VA_ARGS__)

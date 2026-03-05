@@ -11,6 +11,7 @@
 */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#include "EonLogger.h"
 #include <windows.h>
 #endif
 
@@ -121,7 +122,19 @@ void printSystemInfo() {
 
 int main(int argc, char **argv) {
   // --- Start Logging setup
-  quill::Backend::start();
+  // Configure backend for optimal performance (see BackendOptions.h)
+  quill::BackendOptions backend_options;
+  // Use 10μs sleep for balanced performance (10× faster than 100μs default)
+  // Set to 0 for maximum throughput at cost of 100% CPU on backend thread
+  backend_options.sleep_duration = std::chrono::microseconds{10};
+  // Larger initial buffer to avoid reallocation during logging bursts
+  backend_options.transit_event_buffer_initial_capacity = 2048;
+  // Reduce timestamp ordering grace period for lower latency
+  backend_options.log_timestamp_ordering_grace_period =
+      std::chrono::microseconds{1};
+  // Flush more frequently for better responsiveness
+  backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
+  quill::Backend::start(backend_options);
   auto console_sink =
       quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console");
   auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(

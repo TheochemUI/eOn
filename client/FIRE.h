@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Optimizer.h"
 #include "Parameters.h"
 
@@ -30,18 +31,7 @@ public:
         m_f_dec{0.5},
         m_f_a{0.99},
         m_iteration{0} {
-    m_log = quill::Frontend::create_or_get_logger(
-        "fire",
-        quill::Frontend::create_or_get_sink<quill::FileSink>(
-            "_fire.log",
-            []() {
-              quill::FileSinkConfig cfg;
-              cfg.set_open_mode('w');
-              return cfg;
-            }(),
-            quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{"%(message)"},
-        quill::ClockSourceType::System);
+    m_log = eonc::log::get_file("fire", "_fire.log");
   }
   virtual ~FIRE() = default;
 
