@@ -13,6 +13,7 @@
 #include "../MatrixHelpers.hpp"
 #include "Matter.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "quill/sinks/NullSink.h"
 #include <cstdlib>
 #include <filesystem>
 #include <memory>
@@ -22,6 +23,20 @@ using namespace std::placeholders;
 using namespace Catch::Matchers;
 
 namespace tests {
+
+// Set up a null logger so CIniFile::GetValue and other internals
+// don't crash on quill::Frontend::get_logger("combi").
+struct LoggerSetup {
+  LoggerSetup() {
+    quill::Backend::start();
+    auto null_sink =
+        quill::Frontend::create_or_get_sink<quill::NullSink>("null");
+    quill::Frontend::create_or_get_logger("combi", std::move(null_sink),
+                                          quill::PatternFormatterOptions{},
+                                          quill::ClockSourceType::System);
+  }
+};
+static LoggerSetup _logger_setup;
 
 class ASEPotTest {
 public:

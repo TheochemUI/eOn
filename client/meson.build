@@ -39,7 +39,7 @@ if host_system == 'darwin'
     add_global_arguments(['-faligned-allocation'], language: 'cpp')
 endif
 if is_windows
-    _args += ['-DIS_WINDOWS']
+    _args += ['-DIS_WINDOWS', '-DNOMINMAX']
     # The EAM Al Fortran potential (gagafeDblexp.f) allocates ~3.6 MB of local
     # arrays on the stack (phi/phivirst dimensioned at MAXPRS=200000).  The
     # Windows default stack is only 1 MB, causing STATUS_STACK_OVERFLOW.
