@@ -140,6 +140,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+.fastembed_cache
 nosetests.xml
 coverage.xml
 *.cover
@@ -663,3 +664,7 @@ compile_commands.json
 .pixi
 *.egg-info
 html/
+
+# Runtime test outputs
+pos.con
+examples/*/states/

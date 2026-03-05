@@ -10,22 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ServeMode.h"
+#include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "quill/sinks/NullSink.h"
 
-// Set up a null logger so CIniFile::GetValue and other internals
-// don't crash on quill::Frontend::get_logger("combi").
-struct LoggerSetup {
-  LoggerSetup() {
-    quill::Backend::start();
-    auto null_sink =
-        quill::Frontend::create_or_get_sink<quill::NullSink>("null");
-    quill::Frontend::create_or_get_logger("combi", std::move(null_sink),
-                                          quill::PatternFormatterOptions{},
-                                          quill::ClockSourceType::System);
-  }
-};
-static LoggerSetup _logger_setup;
+static helper_functions::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("parseServeSpec single endpoint", "[serve]") {
   auto eps = parseServeSpec("lj:12345");

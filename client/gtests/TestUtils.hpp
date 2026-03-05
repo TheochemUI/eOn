@@ -12,6 +12,9 @@
 #pragma once
 
 #include "catch2/catch_amalgamated.hpp"
+#include "quill/Backend.h"
+#include "quill/Frontend.h"
+#include "quill/sinks/NullSink.h"
 
 namespace helper_functions::test {
 
@@ -46,5 +49,30 @@ template <typename T>
 auto IsApprox(const T &expected, double threshold = 1e-4) {
   return EigenMatcher<T>(expected, threshold);
 }
+
+/// \brief RAII helper to initialize quill logging for tests.
+///
+/// Many eOn internals (CIniFile::GetValue, Matter, Potential) call
+/// quill::Frontend::get_logger("combi"). If the backend isn't started
+/// or the logger isn't registered, get_logger() returns nullptr → segfault.
+///
+/// This struct ensures:
+/// 1. quill::Backend is started before tests run
+/// 2. A "combi" logger exists (with NullSink to discard output)
+/// 3. Backend is stopped cleanly on teardown
+///
+/// Usage: Just instantiate as a static global in your test file:
+///   static helper_functions::test::QuillTestLogger _quill_setup;
+struct QuillTestLogger {
+  QuillTestLogger() {
+    quill::Backend::start();
+    auto null_sink =
+        quill::Frontend::create_or_get_sink<quill::NullSink>("null_test_sink");
+    quill::Frontend::create_or_get_logger("combi", std::move(null_sink),
+                                          quill::PatternFormatterOptions{},
+                                          quill::ClockSourceType::System);
+  }
+  ~QuillTestLogger() { quill::Backend::stop(); }
+};
 
 } // namespace helper_functions::test

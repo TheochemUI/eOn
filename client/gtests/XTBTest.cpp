@@ -2,26 +2,13 @@
 #include "Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "quill/sinks/NullSink.h"
 
 using namespace std::placeholders;
 using namespace Catch::Matchers;
 
 namespace tests {
 
-// Set up a null logger so CIniFile::GetValue and other internals
-// don't crash on quill::Frontend::get_logger("combi").
-struct LoggerSetup {
-  LoggerSetup() {
-    quill::Backend::start();
-    auto null_sink =
-        quill::Frontend::create_or_get_sink<quill::NullSink>("null");
-    quill::Frontend::create_or_get_logger("combi", std::move(null_sink),
-                                          quill::PatternFormatterOptions{},
-                                          quill::ClockSourceType::System);
-  }
-};
-static LoggerSetup _logger_setup;
+static helper_functions::test::QuillTestLogger _quill_setup;
 
 class PotTest {
 public:
