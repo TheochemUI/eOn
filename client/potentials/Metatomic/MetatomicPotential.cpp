@@ -391,6 +391,9 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
 
   if (status != EXIT_SUCCESS) {
     std::string err_str = "vesin_neighbors failed";
+    if (error_message != nullptr) {
+      err_str += ": " + std::string(error_message);
+    }
     delete vesin_neighbor_list;
     throw std::runtime_error(err_str);
   }
