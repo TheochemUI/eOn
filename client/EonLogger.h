@@ -32,7 +32,13 @@ namespace eonc::log {
 ///   auto* log = eonc::log::get();
 ///   LOG_INFO(log, "message");
 [[nodiscard]] inline quill::Logger *get() noexcept {
+  thread_local quill::Logger *cached_logger = nullptr;
+  if (cached_logger) {
+    return cached_logger;
+  }
+
   if (auto *logger = quill::Frontend::get_logger("combi")) {
+    cached_logger = logger;
     return logger;
   }
 
@@ -51,6 +57,7 @@ namespace eonc::log {
       return nullptr;
     }
   }();
+  cached_logger = fallback;
   return fallback;
 }
 

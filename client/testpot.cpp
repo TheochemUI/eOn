@@ -33,6 +33,5 @@ int main(void) {
   std::ostringstream oss;
   oss << "Got " << energy << "\n" << forces << "\n";
   std::cout << oss.str();
-  std::cout << execString << "\n";
   return EXIT_SUCCESS;
 }

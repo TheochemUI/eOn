@@ -14,7 +14,6 @@ project(
 # IMPORTANT!! warning_level=3 passes -fimplicit-none
 # eonclient needs implicit typing!!
 
-add_project_arguments('-DMAGIC_ENUM_USE_STD_MODULE', language: 'cpp')
 host_system = host_machine.system()
 
 _args = []  # Extra arguments
