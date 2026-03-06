@@ -44,6 +44,13 @@ namespace eonc::log {
 [[nodiscard]] inline quill::Logger *
 get_file(std::string_view name, std::string_view filename,
          std::string_view pattern = "%(message)") {
+  // If the logger already exists, return it immediately.
+  // Quill strictly checks configuration matches on recreation and throws if
+  // PatternFormatterOptions differ, which crashes instances (like
+  // Dimer/Optimizers) that are created multiple times in loops (e.g., NEB).
+  if (auto *existing = quill::Frontend::get_logger(std::string(name))) {
+    return existing;
+  }
   quill::FileSinkConfig cfg;
   cfg.set_open_mode('w');
 
