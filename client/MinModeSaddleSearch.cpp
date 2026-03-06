@@ -198,7 +198,6 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
   mode = modePassed;
   status = STATUS_GOOD;
   iteration = 0;
-  log = quill::Frontend::get_logger("combi");
 
   if (params.saddle_search_options.minmode_method ==
       LowestEigenmode::MINMODE_DIMER) {

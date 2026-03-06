@@ -14,6 +14,7 @@
 #include "Parameters.h"
 
 #include "Eigen.h"
+#include "EonLogger.h"
 
 /** Functionality relying on the conjugate gradients algorithm. The object is
  * capable of minimizing an Matter object or modified forces being passed in.*/
@@ -52,7 +53,7 @@ private:
   long nTABs;
   long nReg;
   long nBBs;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };
 
 class Hyperdynamics {

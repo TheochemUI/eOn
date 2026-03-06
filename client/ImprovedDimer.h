@@ -11,6 +11,7 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -20,7 +21,7 @@
 class ImprovedDimer : public LowestEigenmode {
 
 private:
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
   // For use when called as part of the NEB-MMF
   VectorXd fixedReferenceMode;
   bool hasFixedReference = false;

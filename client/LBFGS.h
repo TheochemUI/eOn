@@ -50,5 +50,5 @@ private:
 
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"lbfgs", "_lbfgs.log"};
 };

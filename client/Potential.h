@@ -23,7 +23,7 @@ class Potential {
 protected:
   PotType ptype;
   const Parameters &m_params;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"_potcalls", "_potcalls.log"};
 
 public:
   size_t forceCallCounter;
@@ -67,7 +67,6 @@ public:
 
   // Logger initialization
   void initializeLogger() {
-    m_log = eonc::log::get_file("_potcalls", "_potcalls.log");
     if (m_log) {
       LOG_TRACE_L1(m_log, "[{}] created",
                    magic_enum::enum_name<PotType>(getType()));

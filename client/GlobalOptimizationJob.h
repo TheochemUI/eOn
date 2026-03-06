@@ -32,10 +32,7 @@ public:
         firstStep{true},
         fcallsRelax{0},
         monfile{fopen("monitoring.dat", "w")},
-        earrfile{fopen("earr.dat", "w")} {
-
-    log = eonc::log::get();
-  }
+        earrfile{fopen("earr.dat", "w")} {}
   // etoler = parameters->globalOptimizationEtoler;
   // decisionMethod = "NPEW";
   ~GlobalOptimizationJob(void) {
@@ -79,5 +76,5 @@ private:
   string hoppingResult;
   FILE *monfile;
   FILE *earrfile;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

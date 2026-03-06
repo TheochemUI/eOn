@@ -28,9 +28,7 @@ public:
         m_max_move{a_params.optimizer_options.max_move},
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_iteration{0},
-        m_max_iter{a_params.optimizer_options.max_iterations} {
-    m_log = eonc::log::get_file("quickmin", "_quickmin.log");
-  }
+        m_max_iter{a_params.optimizer_options.max_iterations} {}
   ~Quickmin() = default;
 
   int step(double a_maxMove) override;
@@ -40,5 +38,5 @@ private:
   double m_dt, m_dt_max, m_max_move;
   Eigen::VectorXd m_vel;
   size_t m_iteration, m_max_iter;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"quickmin", "_quickmin.log"};
 };

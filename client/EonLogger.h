@@ -16,6 +16,7 @@
 #include "quill/Logger.h"
 #include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/FileSink.h"
+#include <atomic>
 #include <mutex>
 #include <source_location>
 #include <string>
@@ -32,13 +33,13 @@ namespace eonc::log {
 ///   auto* log = eonc::log::get();
 ///   LOG_INFO(log, "message");
 [[nodiscard]] inline quill::Logger *get() noexcept {
-  thread_local quill::Logger *cached_logger = nullptr;
-  if (cached_logger) {
-    return cached_logger;
+  static std::atomic<quill::Logger *> cached_logger{nullptr};
+  if (quill::Logger *l = cached_logger.load(std::memory_order_relaxed)) {
+    return l;
   }
 
   if (auto *logger = quill::Frontend::get_logger("combi")) {
-    cached_logger = logger;
+    cached_logger.store(logger, std::memory_order_relaxed);
     return logger;
   }
 
@@ -46,6 +47,10 @@ namespace eonc::log {
   static quill::Logger *fallback = []() -> quill::Logger * {
     try {
       quill::Backend::start();
+    } catch (...) {
+    } // Ignore if backend already started
+
+    try {
       auto console_sink =
           quill::Frontend::create_or_get_sink<quill::ConsoleSink>(
               "fallback_console");
@@ -57,7 +62,8 @@ namespace eonc::log {
       return nullptr;
     }
   }();
-  cached_logger = fallback;
+  if (fallback)
+    cached_logger.store(fallback, std::memory_order_relaxed);
   return fallback;
 }
 
@@ -80,16 +86,24 @@ get_file(std::string_view name, std::string_view filename,
   if (auto *existing = quill::Frontend::get_logger(std::string(name))) {
     return existing;
   }
-  quill::FileSinkConfig cfg;
-  cfg.set_open_mode('w');
+  static std::mutex file_logger_mutex;
+  std::lock_guard<std::mutex> lock(file_logger_mutex);
+  if (auto *existing = quill::Frontend::get_logger(std::string(name))) {
+    return existing;
+  }
 
-  auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
-      std::string(filename), cfg);
-
-  return quill::Frontend::create_or_get_logger(
-      std::string(name), std::move(file_sink),
-      quill::PatternFormatterOptions{std::string(pattern)},
-      quill::ClockSourceType::System);
+  try {
+    quill::FileSinkConfig cfg;
+    cfg.set_open_mode('w');
+    auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
+        std::string(filename), cfg);
+    return quill::Frontend::create_or_get_logger(
+        std::string(name), std::move(file_sink),
+        quill::PatternFormatterOptions{std::string(pattern)},
+        quill::ClockSourceType::System);
+  } catch (...) {
+    return get(); // Fallback to default combi logger if creation fails
+  }
 }
 
 /// \brief RAII helper for class-scoped logging.
@@ -118,6 +132,12 @@ struct Scoped {
 
   // Support LOG macro pointer dereference
   quill::Logger *operator->() const noexcept { return logger; }
+
+  // Allow dynamic re-assignment (e.g. switching to _traceback logger)
+  Scoped &operator=(quill::Logger *l) noexcept {
+    logger = l;
+    return *this;
+  }
 
   // Explicit access if needed
   [[nodiscard]] quill::Logger *ptr() const noexcept { return logger; }
@@ -148,6 +168,10 @@ struct FileScoped {
   operator quill::Logger *() const noexcept { return logger; }
   // Support LOG macro pointer dereference
   quill::Logger *operator->() const noexcept { return logger; }
+  FileScoped &operator=(quill::Logger *l) noexcept {
+    logger = l;
+    return *this;
+  }
   [[nodiscard]] quill::Logger *ptr() const noexcept { return logger; }
 };
 

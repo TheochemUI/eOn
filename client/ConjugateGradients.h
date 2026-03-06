@@ -46,9 +46,7 @@ public:
       : Optimizer(a_objf, OptType::CG, a_params),
         m_directionOld{(a_objf->getPositions()).setZero()},
         m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
-        m_cg_i{0} {
-    m_log = eonc::log::get_file("cg", "_cg.log");
-  }
+        m_cg_i{0} {}
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
 
@@ -78,7 +76,7 @@ private:
   Eigen::VectorXd m_force;
   //! Previous force vector
   Eigen::VectorXd m_forceOld;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"cg", "_cg.log"};
 
   //! Counts the number of discrete steps until algorithm convergence
   size_t m_cg_i;

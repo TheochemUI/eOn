@@ -14,6 +14,7 @@
 #include <filesystem>
 
 #include "Eigen.h"
+#include "EonLogger.h"
 
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
@@ -73,7 +74,7 @@ private:
   Parameters params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
   bool mmf_active{false};
   int mmf_iterations_used{0};
 };

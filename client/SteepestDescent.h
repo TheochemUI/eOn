@@ -24,16 +24,14 @@ public:
   SteepestDescent(std::shared_ptr<ObjectiveFunction> a_objf,
                   const Parameters &a_params)
       : Optimizer(a_objf, OptType::SD, a_params),
-        iteration{0} {
-    m_log = eonc::log::get_file("sd", "_sd.log");
-  }
+        iteration{0} {}
   ~SteepestDescent() = default;
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"sd", "_sd.log"};
   Eigen::VectorXd getStep(Eigen::VectorXd a_f);
   size_t iteration;
   Eigen::VectorXd m_rPrev;

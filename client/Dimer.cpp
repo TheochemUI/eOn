@@ -28,7 +28,6 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
   direction.setZero();
   rotationalPlane.setZero();
   totalForceCalls = 0;
-  log = eonc::log::get_file("dimer", "dimer.log");
 }
 
 // was estimateLowestEigenmode. rename to compute

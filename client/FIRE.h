@@ -30,9 +30,7 @@ public:
         m_f_inc{1.1},
         m_f_dec{0.5},
         m_f_a{0.99},
-        m_iteration{0} {
-    m_log = eonc::log::get_file("fire", "_fire.log");
-  }
+        m_iteration{0} {}
   virtual ~FIRE() = default;
 
   int step(double a_maxMove) override;
@@ -48,5 +46,5 @@ private:
   double m_f_dec;
   double m_f_a;
   size_t m_iteration;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"fire", "_fire.log"};
 };
