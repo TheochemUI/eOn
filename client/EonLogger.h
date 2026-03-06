@@ -16,6 +16,7 @@
 #include "quill/Logger.h"
 #include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/FileSink.h"
+#include <mutex>
 #include <source_location>
 #include <string>
 #include <string_view>
@@ -36,17 +37,21 @@ namespace eonc::log {
   }
 
   // Fallback for Python bindings/tests that didn't run ClientEON's main()
-  try {
-    quill::Backend::start();
-    auto console_sink = quill::Frontend::create_or_get_sink<quill::ConsoleSink>(
-        "fallback_console");
-    return quill::Frontend::create_or_get_logger(
-        "combi", std::move(console_sink),
-        quill::PatternFormatterOptions{"%(message)"},
-        quill::ClockSourceType::System);
-  } catch (...) {
-    return quill::Frontend::get_logger("combi");
-  }
+  static quill::Logger *fallback = []() -> quill::Logger * {
+    try {
+      quill::Backend::start();
+      auto console_sink =
+          quill::Frontend::create_or_get_sink<quill::ConsoleSink>(
+              "fallback_console");
+      return quill::Frontend::create_or_get_logger(
+          "combi", std::move(console_sink),
+          quill::PatternFormatterOptions{"%(message)"},
+          quill::ClockSourceType::System);
+    } catch (...) {
+      return nullptr;
+    }
+  }();
+  return fallback;
 }
 
 /// \brief Get or create a named logger with a file sink.
@@ -134,6 +139,8 @@ struct FileScoped {
       : logger(get_file(name, filename, pattern)) {}
 
   operator quill::Logger *() const noexcept { return logger; }
+  // Support LOG macro pointer dereference
+  quill::Logger *operator->() const noexcept { return logger; }
   [[nodiscard]] quill::Logger *ptr() const noexcept { return logger; }
 };
 
@@ -151,13 +158,38 @@ struct FileScoped {
 ///   EONC_LOG_INFO("quick message");
 ///   EONC_LOG_DEBUG("value: {}", x);
 #define EONC_LOG_TRACE(...)                                                    \
-  EONC_EXPAND(LOG_TRACE_L1(eonc::log::get(), __VA_ARGS__))
+  do {                                                                         \
+    if (auto *l = eonc::log::get()) {                                          \
+      EONC_EXPAND(LOG_TRACE_L1(l, __VA_ARGS__));                               \
+    }                                                                          \
+  } while (0)
 #define EONC_LOG_DEBUG(...)                                                    \
-  EONC_EXPAND(LOG_DEBUG(eonc::log::get(), __VA_ARGS__))
-#define EONC_LOG_INFO(...) EONC_EXPAND(LOG_INFO(eonc::log::get(), __VA_ARGS__))
+  do {                                                                         \
+    if (auto *l = eonc::log::get()) {                                          \
+      EONC_EXPAND(LOG_DEBUG(l, __VA_ARGS__));                                  \
+    }                                                                          \
+  } while (0)
+#define EONC_LOG_INFO(...)                                                     \
+  do {                                                                         \
+    if (auto *l = eonc::log::get()) {                                          \
+      EONC_EXPAND(LOG_INFO(l, __VA_ARGS__));                                   \
+    }                                                                          \
+  } while (0)
 #define EONC_LOG_WARNING(...)                                                  \
-  EONC_EXPAND(LOG_WARNING(eonc::log::get(), __VA_ARGS__))
+  do {                                                                         \
+    if (auto *l = eonc::log::get()) {                                          \
+      EONC_EXPAND(LOG_WARNING(l, __VA_ARGS__));                                \
+    }                                                                          \
+  } while (0)
 #define EONC_LOG_ERROR(...)                                                    \
-  EONC_EXPAND(LOG_ERROR(eonc::log::get(), __VA_ARGS__))
+  do {                                                                         \
+    if (auto *l = eonc::log::get()) {                                          \
+      EONC_EXPAND(LOG_ERROR(l, __VA_ARGS__));                                  \
+    }                                                                          \
+  } while (0)
 #define EONC_LOG_CRITICAL(...)                                                 \
-  EONC_EXPAND(LOG_CRITICAL(eonc::log::get(), __VA_ARGS__))
+  do {                                                                         \
+    if (auto *l = eonc::log::get()) {                                          \
+      EONC_EXPAND(LOG_CRITICAL(l, __VA_ARGS__));                               \
+    }                                                                          \
+  } while (0)

@@ -18,6 +18,7 @@
 #include "potentials/CatLearnPot/CatLearnPot.h"
 
 #include "EonLogger.h"
+#include <sstream>
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
   std::string reactantFilename =
@@ -176,7 +177,9 @@ MatrixXd get_features(const std::vector<Matter> &matobjs) {
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx].getPositionsFreeV();
   }
-  EONC_LOG_TRACE("Features\n:{}", fmt::streamed(features));
+  std::ostringstream oss;
+  oss << features;
+  EONC_LOG_TRACE("Features\n:{}", oss.str());
   return features;
 }
 MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
@@ -187,7 +190,9 @@ MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx]->getPositionsFreeV();
   }
-  EONC_LOG_TRACE("Features\n:{}", fmt::streamed(features));
+  std::ostringstream oss;
+  oss << features;
+  EONC_LOG_TRACE("Features\n:{}", oss.str());
   return features;
 }
 MatrixXd get_targets(std::vector<Matter> &matobjs,
@@ -203,7 +208,9 @@ MatrixXd get_targets(std::vector<Matter> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx].getForcesFree().array() * -1;
   }
-  EONC_LOG_TRACE("Targets\n:{}", fmt::streamed(targets));
+  std::ostringstream oss;
+  oss << targets;
+  EONC_LOG_TRACE("Targets\n:{}", oss.str());
   return targets;
 }
 MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -217,7 +224,9 @@ MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx]->getForcesFree().array() * -1;
   }
-  EONC_LOG_TRACE("Targets\n:{}", fmt::streamed(targets));
+  std::ostringstream oss;
+  oss << targets;
+  EONC_LOG_TRACE("Targets\n:{}", oss.str());
   return targets;
 }
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
@@ -282,9 +291,12 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   auto mae = difference.array()
                  .abs()
                  .maxCoeff(); //.squaredNorm() / predEnergies.size();
-  EONC_LOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
-                 fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-                 fmt::streamed(difference), mae);
+  std::ostringstream oss;
+  oss << "predicted\n"
+      << predEnergies << "\ntrue\n"
+      << trueEnergies << "\ndifference\n"
+      << difference << "\n MAE: " << mae;
+  EONC_LOG_TRACE("{}", oss.str());
   return mae < 0.05;
 }
 } // namespace helper_functions::surrogate
