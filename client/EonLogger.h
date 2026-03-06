@@ -126,9 +126,14 @@ struct FileScoped {
 /// Example:
 ///   EONC_LOG_INFO("quick message");
 ///   EONC_LOG_DEBUG("value: {}", x);
-#define EONC_LOG_TRACE(...) EONC_EXPAND(LOG_TRACE_L1(eonc::log::get(), __VA_ARGS__))
-#define EONC_LOG_DEBUG(...) EONC_EXPAND(LOG_DEBUG(eonc::log::get(), __VA_ARGS__))
+#define EONC_LOG_TRACE(...)                                                    \
+  EONC_EXPAND(LOG_TRACE_L1(eonc::log::get(), __VA_ARGS__))
+#define EONC_LOG_DEBUG(...)                                                    \
+  EONC_EXPAND(LOG_DEBUG(eonc::log::get(), __VA_ARGS__))
 #define EONC_LOG_INFO(...) EONC_EXPAND(LOG_INFO(eonc::log::get(), __VA_ARGS__))
-#define EONC_LOG_WARNING(...) EONC_EXPAND(LOG_WARNING(eonc::log::get(), __VA_ARGS__))
-#define EONC_LOG_ERROR(...) EONC_EXPAND(LOG_ERROR(eonc::log::get(), __VA_ARGS__))
-#define EONC_LOG_CRITICAL(...) EONC_EXPAND(LOG_CRITICAL(eonc::log::get(), __VA_ARGS__))
+#define EONC_LOG_WARNING(...)                                                  \
+  EONC_EXPAND(LOG_WARNING(eonc::log::get(), __VA_ARGS__))
+#define EONC_LOG_ERROR(...)                                                    \
+  EONC_EXPAND(LOG_ERROR(eonc::log::get(), __VA_ARGS__))
+#define EONC_LOG_CRITICAL(...)                                                 \
+  EONC_EXPAND(LOG_CRITICAL(eonc::log::get(), __VA_ARGS__))

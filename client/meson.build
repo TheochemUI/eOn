@@ -344,7 +344,6 @@ if get_option('with_water')
 endif
 
 if get_option('with_ams')
-    fmt_dep = dependency('fmt', required: true)
     # Optional, only for AMS
     absl_dep = dependency(
         'absl',
@@ -362,7 +361,7 @@ if get_option('with_ams')
         modules: ['headers', 'asio', 'iostreams'],
         required: true,
     )
-    ams_dep = [boost_ams_dep, absl_dep, fmt_dep]
+    ams_dep = [boost_ams_dep, absl_dep]
     _deps += ams_dep
     # End AMS
     subdir('potentials/AMS')
