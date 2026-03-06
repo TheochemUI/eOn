@@ -127,8 +127,6 @@ int main(int argc, char **argv) {
   // Use 10μs sleep for balanced performance (10× faster than 100μs default)
   // Set to 0 for maximum throughput at cost of 100% CPU on backend thread
   backend_options.sleep_duration = std::chrono::microseconds{10};
-  // Larger initial buffer to avoid reallocation during logging bursts
-  backend_options.transit_event_buffer_initial_capacity = 2048;
   // Reduce timestamp ordering grace period for lower latency
   backend_options.log_timestamp_ordering_grace_period =
       std::chrono::microseconds{1};
