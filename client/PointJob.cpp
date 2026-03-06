@@ -11,6 +11,8 @@
 */
 #include "PointJob.h"
 #include "Matter.h"
+#include <format>
+#include <fstream>
 
 std::vector<std::string> PointJob::run(void) {
   std::vector<std::string> returnFiles;
@@ -27,23 +29,13 @@ std::vector<std::string> PointJob::run(void) {
   LOG_DEBUG(log, "(free) Forces:\n{}", freeForcesStream.str());
   LOG_DEBUG(log, "Max atom force: {:.12f}", pos->maxForce());
 
-  auto fileLogger = quill::Frontend::create_or_get_logger(
-      "point",
-      quill::Frontend::create_or_get_sink<quill::FileSink>(
-          "results.dat",
-          []() {
-            quill::FileSinkConfig cfg;
-            cfg.set_open_mode('w');
-            return cfg;
-          }(),
-          quill::FileEventNotifier{}),
-      quill::PatternFormatterOptions{
-          quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-              quill::PatternFormatterOptions{"%(message)"}}}},
-      quill::ClockSourceType::System);
-  LOG_INFO(fileLogger, "{:.12f} Energy", pos->getPotentialEnergy());
-  LOG_INFO(fileLogger, "{:.12f} Max_Force", pos->maxForce());
-  fileLogger->flush_log();
+  std::ofstream outFile("results.dat");
+  if (outFile.is_open()) {
+    outFile << std::format("{:.12f} Energy\n", pos->getPotentialEnergy());
+    outFile << std::format("{:.12f} Max_Force\n", pos->maxForce());
+  } else {
+    LOG_ERROR(log, "Failed to open results.dat for writing");
+  }
 
   return returnFiles;
 }

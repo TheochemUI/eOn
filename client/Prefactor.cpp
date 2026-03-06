@@ -14,6 +14,8 @@
 #include "Hessian.h"
 
 #include "EonLogger.h"
+#include <format>
+#include <fstream>
 int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                              Matter *saddle, Matter *min2, double &pref1,
                              double &pref2) {
@@ -157,30 +159,19 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
 }
 
 void Prefactor::logFreqs(VectorXd freqs, char *name) {
-  auto fileLogger = quill::Frontend::create_or_get_logger(
-      "prefactor",
-      quill::Frontend::create_or_get_sink<quill::FileSink>(
-          "freqs.dat",
-          []() {
-            quill::FileSinkConfig cfg;
-            cfg.set_open_mode('w');
-            return cfg;
-          }(),
-          quill::FileEventNotifier{}),
-      quill::PatternFormatterOptions{
-          quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-              quill::PatternFormatterOptions{"%(message)"}}}},
-      quill::ClockSourceType::System);
-  LOG_DEBUG(fileLogger, "[Prefactor] Frequencies at {}", name);
+  std::ofstream outFile("freqs.dat", std::ios::app);
+  if (!outFile.is_open())
+    return;
+
+  outFile << std::format("[Prefactor] Frequencies at {}\n", name);
   int i;
   for (i = 0; i < freqs.size(); i++) {
-    LOG_DEBUG(fileLogger, "");
-    LOG_DEBUG(fileLogger, "{:10.6f} ", freqs(i));
+    outFile << "\n" << std::format("{:10.6f} ", freqs(i));
     if ((i + 1) % 5 == 0) {
-      LOG_DEBUG(fileLogger, "");
+      outFile << "\n";
     }
   }
-  LOG_DEBUG(fileLogger, "");
+  outFile << "\n";
 }
 
 VectorXi Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,

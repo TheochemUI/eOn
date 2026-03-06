@@ -21,6 +21,7 @@
 #include "magic_enum/magic_enum.hpp"
 
 #include "EonLogger.h"
+#include <fstream>
 using namespace helper_functions;
 namespace fs = std::filesystem;
 
@@ -1063,7 +1064,7 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   tangentStart.normalize();
   tangentEnd.normalize();
 
-  quill::Logger *fileLogger = nullptr;
+  std::ofstream fileLogger;
   if (writeToFile) {
     // If idx is SIZE_MAX, treat this as the dedicated final output file
     // "neb.dat". This avoids overwriting iteration files named neb_000.dat,
@@ -1077,21 +1078,10 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     if (fs::exists(neb_dat_fs)) {
       fs::remove(neb_dat_fs);
     }
-    fileLogger = quill::Frontend::create_or_get_logger(
-        "file_logger",
-        quill::Frontend::create_or_get_sink<quill::FileSink>(
-            neb_dat_fs,
-            []() {
-              quill::FileSinkConfig cfg;
-              cfg.set_open_mode('w');
-              return cfg;
-            }(),
-            quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{
-            quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-                quill::PatternFormatterOptions{"%(message)"}}}},
-        quill::ClockSourceType::System);
-    LOG_INFO(fileLogger, "{}", header);
+    fileLogger.open(neb_dat_fs);
+    if (fileLogger.is_open()) {
+      fileLogger << header << "\n";
+    }
   }
   const double energy_reactant = path[0]->getPotentialEnergy();
 
@@ -1117,18 +1107,19 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     if (params.debug_options.estimate_neb_eigenvalues) {
       eigenmode_solvers[i]->compute(path[i], tang);
       double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
-      if (fileLogger) {
-        LOG_INFO(fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i,
-                 distTotal, relative_energy, parallel_force, lowest_eigenvalue);
+      if (fileLogger.is_open()) {
+        fileLogger << std::format(
+            "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}\n", i, distTotal,
+            relative_energy, parallel_force, lowest_eigenvalue);
       } else {
         LOG_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i,
                   distTotal, relative_energy, parallel_force,
                   lowest_eigenvalue);
       }
     } else { // Standard output without the eigenvalue
-      if (fileLogger) {
-        LOG_INFO(fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i,
-                 distTotal, relative_energy, parallel_force);
+      if (fileLogger.is_open()) {
+        fileLogger << std::format("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}\n", i,
+                                  distTotal, relative_energy, parallel_force);
       } else {
         LOG_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
                   relative_energy, parallel_force);
