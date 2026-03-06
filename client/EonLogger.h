@@ -14,8 +14,10 @@
 #include "quill/Backend.h"
 #include "quill/Frontend.h"
 #include "quill/Logger.h"
+#include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/FileSink.h"
 #include <source_location>
+#include <string>
 #include <string_view>
 
 namespace eonc::log {
@@ -29,7 +31,22 @@ namespace eonc::log {
 ///   auto* log = eonc::log::get();
 ///   LOG_INFO(log, "message");
 [[nodiscard]] inline quill::Logger *get() noexcept {
-  return quill::Frontend::get_logger("combi");
+  if (auto *logger = quill::Frontend::get_logger("combi")) {
+    return logger;
+  }
+
+  // Fallback for Python bindings/tests that didn't run ClientEON's main()
+  try {
+    quill::Backend::start();
+    auto console_sink = quill::Frontend::create_or_get_sink<quill::ConsoleSink>(
+        "fallback_console");
+    return quill::Frontend::create_or_get_logger(
+        "combi", std::move(console_sink),
+        quill::PatternFormatterOptions{"%(message)"},
+        quill::ClockSourceType::System);
+  } catch (...) {
+    return quill::Frontend::get_logger("combi");
+  }
 }
 
 /// \brief Get or create a named logger with a file sink.

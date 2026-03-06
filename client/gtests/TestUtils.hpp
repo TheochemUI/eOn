@@ -65,14 +65,17 @@ auto IsApprox(const T &expected, double threshold = 1e-4) {
 ///   static helper_functions::test::QuillTestLogger _quill_setup;
 struct QuillTestLogger {
   QuillTestLogger() {
-    quill::Backend::start();
-    auto null_sink =
-        quill::Frontend::create_or_get_sink<quill::NullSink>("null_test_sink");
-    quill::Frontend::create_or_get_logger("combi", std::move(null_sink),
-                                          quill::PatternFormatterOptions{},
-                                          quill::ClockSourceType::System);
+    if (!quill::Frontend::get_logger("combi")) {
+      quill::Backend::start();
+      auto null_sink = quill::Frontend::create_or_get_sink<quill::NullSink>(
+          "null_test_sink");
+      quill::Frontend::create_or_get_logger(
+          "combi", std::move(null_sink),
+          quill::PatternFormatterOptions{"%(message)"},
+          quill::ClockSourceType::System);
+    }
   }
-  ~QuillTestLogger() { quill::Backend::stop(); }
+  ~QuillTestLogger() = default;
 };
 
 } // namespace helper_functions::test

@@ -28,19 +28,7 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
   direction.setZero();
   rotationalPlane.setZero();
   totalForceCalls = 0;
-  log = quill::Frontend::create_or_get_logger(
-      "dimer",
-      quill::Frontend::create_or_get_sink<quill::FileSink>(
-          "dimer.log",
-          []() {
-            quill::FileSinkConfig cfg;
-            cfg.set_open_mode('w');
-            return cfg;
-          }(),
-          quill::FileEventNotifier{}),
-      quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-          quill::PatternFormatterOptions{"%(message)"}}},
-      quill::ClockSourceType::System);
+  log = eonc::log::get_file("dimer", "dimer.log");
 }
 
 // was estimateLowestEigenmode. rename to compute
