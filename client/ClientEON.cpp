@@ -67,7 +67,7 @@
 #include <mach/task_info.h>
 
 void print_memory_usage() {
-  auto *log = quill::Frontend::get_logger("combi");
+  auto *log = eonc::log::get();
   struct task_basic_info t_info;
   mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
@@ -88,7 +88,7 @@ void print_memory_usage() {
 #endif
 
 void printSystemInfo() {
-  auto *log = quill::Frontend::get_logger("combi");
+  auto *log = eonc::log::get();
   LOG_INFO(log, "eOn Client");
   LOG_INFO(log, "{}", VERSION_STRING);
 #ifndef __aarch64__
@@ -145,8 +145,7 @@ int main(int argc, char **argv) {
       quill::FileEventNotifier{});
   auto *logger = quill::Frontend::create_or_get_logger(
       "combi", {std::move(console_sink), std::move(file_sink)},
-      quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-          quill::PatternFormatterOptions{"%(message)"}}},
+      quill::PatternFormatterOptions{"%(message)"},
       quill::ClockSourceType::System);
   logger->set_log_level(quill::LogLevel::TraceL3);
   // Traceback logger
@@ -162,9 +161,9 @@ int main(int argc, char **argv) {
       quill::FileEventNotifier{});
   quill::Frontend::create_or_get_logger(
       "_traceback", {std::move(trace_csink), std::move(trace_fsink)},
-      quill::PatternFormatterOptions{quill::PatternFormatterOptions{
+      quill::PatternFormatterOptions{
           " [%(log_level)] [%(source_location)] [%(caller_function)] \n "
-          "%(message)\n[end %(log_level)]"}},
+          "%(message)\n[end %(log_level)]"},
       quill::ClockSourceType::System);
   //--- End logging setup
   Parameters parameters;
