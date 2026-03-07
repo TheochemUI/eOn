@@ -209,7 +209,7 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
     if (number_of_mov_atoms == 0) {
       //!> Sometimes, nothing happens
       LOG_CRITICAL(
-          quill::Frontend::get_logger("combi"),
+          eonc::log::get(),
           " You need to have atoms move!!!\nIn stillness there is only "
           "death\n");
       std::exit(1);

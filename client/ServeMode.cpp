@@ -284,7 +284,7 @@ std::vector<ServeEndpoint> parseServeSpec(const std::string &spec) {
     }
 
     LOG_INFO(
-        quill::Frontend::get_logger("combi"), "Parsed endpoint: {} on {}:{}",
+        eonc::log::get(), "Parsed endpoint: {} on {}:{}",
         std::string(magic_enum::enum_name(ep.potential)), ep.host, ep.port);
     endpoints.push_back(ep);
   }

@@ -108,7 +108,7 @@ void GlobalOptimizationJob::analyze(Matter *matter_cur, Matter *matter_hop) {
   } else if (decisionResult == "rejected") {
     // matter_hop[0]=matter_cur[0];
   } else {
-    log = quill::Frontend::get_logger("_traceback");
+    log = eonc::log::traceback();
     LOG_CRITICAL(
         log,
         "ERROR: new minimum is neither accepted nor rejected: client stops.");
@@ -146,7 +146,7 @@ void GlobalOptimizationJob::applyMoveFeedbackMD(void) {
   } else if (hoppingResult == "new") {
     ekin *= beta3;
   } else {
-    log = quill::Frontend::get_logger("_traceback");
+    log = eonc::log::traceback();
     LOG_CRITICAL(log, "ERROR: client does not know what to do with ekin.");
     LOG_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
     std::exit(1);
@@ -207,7 +207,7 @@ void GlobalOptimizationJob::decisionStep(Matter *matter_cur,
              "boltzmann") {
     acceptRejectBoltzmann(matter_cur, matter_hop);
   } else {
-    log = quill::Frontend::get_logger("_traceback");
+    log = eonc::log::traceback();
     LOG_CRITICAL(log,
                  "ERROR: accept/reject method not specified. client stops.");
     std::exit(1);
@@ -288,7 +288,7 @@ void GlobalOptimizationJob::randomMove(Matter *matter) {
                    "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
-          log = quill::Frontend::get_logger("_traceback");
+          log = eonc::log::traceback();
           LOG_CRITICAL(log, "Unknown displacement_distribution");
           std::exit(1);
         }

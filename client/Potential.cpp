@@ -344,7 +344,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   default:
     EONC_LOG_ERROR("No known potential could be constructed from {}",
                    magic_enum::enum_name(ptype));
-    quill::Frontend::get_logger("combi")->flush_log();
+    eonc::log::get()->flush_log();
     throw std::runtime_error("Terminating");
     break;
   }

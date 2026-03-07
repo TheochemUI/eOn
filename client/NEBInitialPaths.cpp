@@ -100,7 +100,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
                              const size_t nimgs, const Parameters &params,
                              bool use_zbl) {
 
-  auto log = quill::Frontend::get_logger("combi");
+  auto log = eonc::log::get();
   LOG_INFO(log, "Generating initial path using IDPP...");
   if (use_zbl) {
     LOG_WARNING(log,
@@ -156,7 +156,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 std::vector<Matter> idppCollectivePath(const Matter &initImg,
                                        const Matter &finalImg, size_t nimgs,
                                        const Parameters &params, bool use_zbl) {
-  auto log = quill::Frontend::get_logger("combi");
+  auto log = eonc::log::get();
   LOG_INFO(log, "Generating initial path using Collective IDPP-NEB...");
 
   std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
@@ -214,7 +214,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
                               size_t target_nimgs, const Parameters &params,
                               bool use_zbl) {
 
-  auto log = quill::Frontend::get_logger("combi");
+  auto log = eonc::log::get();
   if (use_zbl) {
     LOG_INFO(log,
              "Generating initial path using Sequential IDPP-ZBL (S-IDPP)...");

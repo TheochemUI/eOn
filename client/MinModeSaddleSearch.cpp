@@ -427,7 +427,7 @@ int MinModeSaddleSearch::run() {
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else {
-        log = quill::Frontend::get_logger("_traceback");
+        log = eonc::log::traceback();
         LOG_CRITICAL(log, "[MinModeSaddleSearch] Unknown min_mode_method: {}",
                      params.saddle_search_options.minmode_method);
         std::exit(1);

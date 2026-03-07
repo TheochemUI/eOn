@@ -25,7 +25,7 @@ std::string get_value_from_env_or_param(const char *env_variable,
   }
 
   if (!default_value.empty() && !warning_message.empty()) {
-    LOG_WARNING(quill::Frontend::get_logger("combi"), "{}", warning_message);
+    LOG_WARNING(eonc::log::get(), "{}", warning_message);
   }
 
   return default_value;

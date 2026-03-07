@@ -65,7 +65,7 @@ auto IsApprox(const T &expected, double threshold = 1e-4) {
 ///   static helper_functions::test::QuillTestLogger _quill_setup;
 struct QuillTestLogger {
   QuillTestLogger() {
-    if (!quill::Frontend::get_logger("combi")) {
+    if (!eonc::log::get()) {
       quill::Backend::start();
       auto null_sink = quill::Frontend::create_or_get_sink<quill::NullSink>(
           "null_test_sink");

@@ -31,7 +31,7 @@ private:
 public:
   ASENwchemPot(const Parameters &a_params);
   virtual ~ASENwchemPot() {
-    LOG_INFO(quill::Frontend::get_logger("combi"),
+    LOG_INFO(eonc::log::get(),
              "[ASENwchem] called potential {} times", counter);
   }
 

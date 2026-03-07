@@ -28,7 +28,7 @@ private:
 public:
   ASE(const Parameters &a_params);
   virtual ~ASE() {
-    LOG_INFO(quill::Frontend::get_logger("combi"),
+    LOG_INFO(eonc::log::get(),
              "[ASE] called potential {} times", counter);
   }
 

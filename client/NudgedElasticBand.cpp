@@ -155,7 +155,7 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
 
             // Decimate path back to the target count using the cubic spline
             if (init_opt.oversampling && path.size() > (base_count + 2)) {
-              auto *log = quill::Frontend::get_logger("combi");
+              auto *log = eonc::log::get();
               LOG_INFO(log,
                        "Decimating oversampled path ({} images) to "
                        "{} images via cubic spline.",
@@ -207,7 +207,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
       mmf_active{false},
       mmf_iterations_used{0} {
 
-  log = quill::Frontend::get_logger("combi");
+  log = eonc::log::get();
   this->status = NEBStatus::INIT;
   numImages = params.neb_options.image_count;
   atoms = initPath.front().numberOfAtoms();
@@ -258,7 +258,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
         eigenmode_solvers[i] =
             std::make_shared<Lanczos>(path[i], parametersPassed, pot);
       } else {
-        log = quill::Frontend::get_logger("_traceback");
+        log = eonc::log::traceback();
         LOG_CRITICAL(log, "[Debug] unknown neb_mmf_estimator: {}",
                      params.debug_options.neb_mmf);
         std::exit(1);
@@ -395,8 +395,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                      "step size",
                      params.optimizer_options.convergence_metric_label,
                      "max image", "max energy");
-      LOG_DEBUG(
-          quill::Frontend::get_logger("combi"),
+      LOG_DEBUG(eonc::log::get(),
           "---------------------------------------------------------------\n");
     }
 
@@ -686,7 +685,7 @@ double NudgedElasticBand::convergenceForce(void) {
     } else if (params.optimizer_options.convergence_metric == "max_component") {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
-      log = quill::Frontend::get_logger("_traceback");
+      log = eonc::log::traceback();
       LOG_CRITICAL(log,
                    "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
                    params.optimizer_options.convergence_metric);

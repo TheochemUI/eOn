@@ -235,7 +235,7 @@ VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
   diff.setConstant(0.0);
 
   LOG_DEBUG(
-      quill::Frontend::get_logger("combi"),
+      eonc::log::get(),
       "[Prefactor] including all atoms that make up {:.3f}% of the motion",
       parameters.prefactor_options.filter_fraction * 100);
   double sum = 0.0;
