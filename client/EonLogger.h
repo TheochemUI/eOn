@@ -24,6 +24,12 @@
 
 namespace eonc::log {
 
+// Logger name constants for internal use
+namespace detail {
+inline constexpr std::string_view kDefaultLoggerName{"combi"};
+inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
+} // namespace detail
+
 /// \brief Get or create the default "combi" logger.
 ///
 /// This is the primary logger used throughout eOn. Returns a raw pointer
@@ -38,7 +44,7 @@ namespace eonc::log {
     return l;
   }
 
-  if (auto *logger = quill::Frontend::get_logger("combi")) {
+  if (auto *logger = quill::Frontend::get_logger(std::string(detail::kDefaultLoggerName))) {
     cached_logger.store(logger, std::memory_order_relaxed);
     return logger;
   }
@@ -66,6 +72,27 @@ namespace eonc::log {
     cached_logger.store(fallback, std::memory_order_relaxed);
   return fallback;
 }
+
+/// \brief Get or create the "_traceback" logger for traceback logging.
+///
+/// This logger is used for detailed traceback and debugging information.
+/// Returns a raw pointer (quill's API) valid for the lifetime of the program.
+///
+/// Usage:
+///   auto* log = eonc::log::traceback();
+///   LOG_INFO(log, "traceback message");
+[[nodiscard]] inline quill::Logger *traceback() noexcept {
+  static std::atomic<quill::Logger *> cached{nullptr};
+  if (quill::Logger *l = cached.load(std::memory_order_relaxed)) {
+    return l;
+  }
+  if (auto *logger = quill::Frontend::get_logger(std::string(detail::kTracebackLoggerName))) {
+    cached.store(logger, std::memory_order_relaxed);
+    return logger;
+  }
+  return nullptr;
+}
+
 
 /// \brief Get or create a named logger with a file sink.
 ///
@@ -122,7 +149,7 @@ get_file(std::string_view name, std::string_view filename,
 ///   };
 /// \endcode
 struct Scoped {
-  quill::Logger *logger{nullptr};
+  [[no_unique_address]] quill::Logger *logger{nullptr};
 
   Scoped() noexcept
       : logger(get()) {}
@@ -159,7 +186,7 @@ struct Scoped {
 ///   };
 /// \endcode
 struct FileScoped {
-  quill::Logger *logger{nullptr};
+  [[no_unique_address]] quill::Logger *logger{nullptr};
 
   FileScoped(std::string_view name, std::string_view filename,
              std::string_view pattern = "%(message)") noexcept
