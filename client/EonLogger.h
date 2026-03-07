@@ -44,7 +44,8 @@ inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
     return l;
   }
 
-  if (auto *logger = quill::Frontend::get_logger(std::string(detail::kDefaultLoggerName))) {
+  if (auto *logger = quill::Frontend::get_logger(
+          std::string(detail::kDefaultLoggerName))) {
     cached_logger.store(logger, std::memory_order_relaxed);
     return logger;
   }
@@ -86,13 +87,13 @@ inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
   if (quill::Logger *l = cached.load(std::memory_order_relaxed)) {
     return l;
   }
-  if (auto *logger = quill::Frontend::get_logger(std::string(detail::kTracebackLoggerName))) {
+  if (auto *logger = quill::Frontend::get_logger(
+          std::string(detail::kTracebackLoggerName))) {
     cached.store(logger, std::memory_order_relaxed);
     return logger;
   }
   return nullptr;
 }
-
 
 /// \brief Get or create a named logger with a file sink.
 ///

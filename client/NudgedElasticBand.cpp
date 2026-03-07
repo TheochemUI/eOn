@@ -395,7 +395,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                      "step size",
                      params.optimizer_options.convergence_metric_label,
                      "max image", "max energy");
-      LOG_DEBUG(eonc::log::get(),
+      LOG_DEBUG(
+          eonc::log::get(),
           "---------------------------------------------------------------\n");
     }
 

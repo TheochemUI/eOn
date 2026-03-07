@@ -28,8 +28,7 @@ private:
 public:
   ASE(const Parameters &a_params);
   virtual ~ASE() {
-    LOG_INFO(eonc::log::get(),
-             "[ASE] called potential {} times", counter);
+    LOG_INFO(eonc::log::get(), "[ASE] called potential {} times", counter);
   }
 
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
