@@ -47,6 +47,7 @@
  */
 class MetatomicPotential : public Potential {
 private:
+  eonc::log::Scoped m_log;
   // --- Metatomic and Torch members ---
   metatensor_torch::Module model_;
   metatomic_torch::ModelCapabilities capabilities_;
