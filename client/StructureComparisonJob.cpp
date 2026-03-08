@@ -13,6 +13,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "Optimizer.h"
+using namespace std;
 
 std::vector<std::string> StructureComparisonJob::run(void) {
   std::vector<std::string> returnFiles;

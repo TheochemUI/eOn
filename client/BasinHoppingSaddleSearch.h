@@ -17,6 +17,8 @@
 #include "SaddleSearchMethod.h"
 #include <vector>
 
+namespace eonc {
+
 class BasinHoppingSaddleSearch : public SaddleSearchMethod {
 public:
   BasinHoppingSaddleSearch(std::shared_ptr<Matter> reactant,
@@ -47,3 +49,7 @@ public:
 private:
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::BasinHoppingSaddleSearch;

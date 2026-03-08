@@ -16,16 +16,19 @@
 #include "EonLogger.h"
 #include <format>
 #include <fstream>
-int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
-                             Matter *saddle, Matter *min2, double &pref1,
-                             double &pref2) {
+
+using namespace std;
+
+int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
+                                   Matter *saddle, Matter *min2, double &pref1,
+                                   double &pref2) {
   VectorXd min1Freqs, saddleFreqs, min2Freqs;
 
   // determine which atoms moved in the process
   VectorXi atoms;
 
   if (parameters.prefactor_options.filter_scheme ==
-      Prefactor::FILTER_FRACTION) {
+      eonc::Prefactor::FILTER_FRACTION) {
     atoms = movedAtomsPct(parameters, min1, saddle, min2);
   } else {
     atoms = movedAtoms(parameters, min1, saddle, min2);
@@ -122,7 +125,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   pref1 = 1.0;
   pref2 = 1.0;
 
-  if (parameters.prefactor_options.rate == Prefactor::RATE_HTST) {
+  if (parameters.prefactor_options.rate == eonc::Prefactor::RATE_HTST) {
 
     // products are calculated this way in order to avoid overflow
     for (int i = 0; i < saddleFreqs.size(); i++) {
@@ -133,9 +136,10 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
         pref2 /= saddleFreqs[i];
       }
     }
-    pref1 = sqrt(pref1) / (2 * helper_functions::pi * 10.18e-15);
-    pref2 = sqrt(pref2) / (2 * helper_functions::pi * 10.18e-15);
-  } else if (parameters.prefactor_options.rate == Prefactor::RATE_QQHTST) {
+    pref1 = sqrt(pref1) / (2 * eonc::helpers::pi * 10.18e-15);
+    pref2 = sqrt(pref2) / (2 * eonc::helpers::pi * 10.18e-15);
+  } else if (parameters.prefactor_options.rate ==
+             eonc::Prefactor::RATE_QQHTST) {
     float kB_T = parameters.main_options.temperature * 8.617332e-5; // eV
     float h_bar = 6.582119e-16;                                     // eV*s
     float h = 4.135667e-15;                                         // eV*s
@@ -158,7 +162,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   return 0;
 }
 
-void Prefactor::logFreqs(VectorXd freqs, char *name) {
+void eonc::Prefactor::logFreqs(VectorXd freqs, char *name) {
   std::ofstream outFile("freqs.dat", std::ios::app);
   if (!outFile.is_open())
     return;
@@ -174,8 +178,8 @@ void Prefactor::logFreqs(VectorXd freqs, char *name) {
   outFile << "\n";
 }
 
-VectorXi Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
-                               Matter *saddle, Matter *min2) {
+VectorXi eonc::Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
+                                     Matter *saddle, Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
 
   VectorXi moved(nAtoms);
@@ -215,8 +219,9 @@ VectorXi Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
   return (VectorXi)moved.block(0, 0, nMoved, 1);
 }
 
-VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
-                                  Matter *saddle, Matter *min2) {
+VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
+                                        Matter *min1, Matter *saddle,
+                                        Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
   long nFree = saddle->numberOfFreeAtoms();
 
@@ -292,7 +297,7 @@ VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
   return (VectorXi)moved.block(0, 0, totalAtoms, 1);
 }
 
-VectorXi Prefactor::allFreeAtoms(Matter *matter) {
+VectorXi eonc::Prefactor::allFreeAtoms(Matter *matter) {
   long nAtoms = matter->numberOfAtoms();
 
   VectorXi moved(nAtoms);

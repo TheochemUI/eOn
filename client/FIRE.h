@@ -14,6 +14,8 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 class FIRE : public Optimizer {
 
 public:
@@ -48,3 +50,7 @@ private:
   size_t m_iteration;
   eonc::log::FileScoped m_log{"fire", "_fire.log"};
 };
+
+} // namespace eonc
+
+using eonc::FIRE;

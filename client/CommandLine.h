@@ -11,4 +11,8 @@
 */
 #pragma once
 
+namespace eonc {
+
 void commandLine(int argc, char **argv);
+
+} // namespace eonc

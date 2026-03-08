@@ -11,6 +11,7 @@
 */
 
 #include "IDPPObjectiveFunction.hpp"
+using namespace std;
 
 double IDPPObjectiveFunction::getEnergy() {
   double energy = 0.0;

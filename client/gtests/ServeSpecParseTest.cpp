@@ -13,7 +13,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
-static helper_functions::test::QuillTestLogger _quill_setup;
+static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("parseServeSpec single endpoint", "[serve]") {
   auto eps = parseServeSpec("lj:12345");

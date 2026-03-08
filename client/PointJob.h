@@ -15,6 +15,8 @@
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 class PointJob : public Job {
 public:
   PointJob(std::unique_ptr<Parameters> parameters)
@@ -25,3 +27,7 @@ public:
 private:
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::PointJob;

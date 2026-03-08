@@ -23,7 +23,8 @@
 
 #include "EonLogger.h"
 #include <fstream>
-using namespace helper_functions;
+using namespace std;
+using namespace eonc::helpers;
 namespace fs = std::filesystem;
 
 // NEBObjectiveFunction definitions
@@ -127,29 +128,28 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
             switch (init_opt.method) {
             case NEBInit::FILE: {
               std::vector<fs::path> file_paths =
-                  helper_functions::neb_paths::readFilePaths(
-                      init_opt.input_path);
-              path = helper_functions::neb_paths::filePathInit(
+                  eonc::helpers::neb_paths::readFilePaths(init_opt.input_path);
+              path = eonc::helpers::neb_paths::filePathInit(
                   file_paths, *initialPassed, base_count);
               break;
             }
             case NEBInit::IDPP:
-              path = helper_functions::neb_paths::idppPath(
+              path = eonc::helpers::neb_paths::idppPath(
                   *initialPassed, *finalPassed, relax_count, parametersPassed);
               break;
             case NEBInit::IDPP_COLLECTIVE:
-              path = helper_functions::neb_paths::idppCollectivePath(
+              path = eonc::helpers::neb_paths::idppCollectivePath(
                   *initialPassed, *finalPassed, relax_count, parametersPassed);
               break;
             case NEBInit::SIDPP:
             case NEBInit::SIDPP_ZBL:
-              path = helper_functions::neb_paths::sidppPath(
+              path = eonc::helpers::neb_paths::sidppPath(
                   *initialPassed, *finalPassed, relax_count, parametersPassed,
                   (init_opt.method == NEBInit::SIDPP_ZBL));
               break;
             case NEBInit::LINEAR:
             default:
-              path = helper_functions::neb_paths::linearPath(
+              path = eonc::helpers::neb_paths::linearPath(
                   *initialPassed, *finalPassed, base_count);
               break;
             }
@@ -163,8 +163,7 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                              path.size() - 2, base_count);
 
               // Perform the Spline Resampling
-              path =
-                  helper_functions::neb_paths::resamplePath(path, base_count);
+              path = eonc::helpers::neb_paths::resamplePath(path, base_count);
 
               // POST-DECIMATION RE-RELAXATION
               // The spline might have placed atoms in high-energy positions.
@@ -179,13 +178,12 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
               // Wrap with ZBL if the original method used ZBL options
               bool use_zbl = (init_opt.method == NEBInit::SIDPP_ZBL);
               if (use_zbl) {
-                auto zbl_pot =
-                    helper_functions::neb_paths::createZBLPotential();
+                auto zbl_pot = eonc::helpers::neb_paths::createZBLPotential();
                 post_decim_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(
                     post_decim_objf, zbl_pot, path, parametersPassed, 1.0);
               }
 
-              auto optim = helpers::create::mkOptim(
+              auto optim = eonc::helpers::create::mkOptim(
                   post_decim_objf, parametersPassed.neb_options.opt_method,
                   parametersPassed);
 
@@ -296,11 +294,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
   bool switched{false};
   // TODO(rg): clear up the refine stanza with it's own opt method, use pre_post
-  auto optim =
-      helpers::create::mkOptim(objf, params.neb_options.opt_method, params);
+  auto optim = eonc::helpers::create::mkOptim(
+      objf, params.neb_options.opt_method, params);
   std::unique_ptr<Optimizer> refine_optim{nullptr};
   if (params.optimizer_options.refine.method != OptType::None) {
-    refine_optim = helpers::create::mkOptim(
+    refine_optim = eonc::helpers::create::mkOptim(
         objf, params.optimizer_options.refine.method, params);
   }
   while (this->status != NEBStatus::GOOD) {
@@ -514,8 +512,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                 params.neb_options.image_count) {
           // Reset optimizer after MMF - history is stale
           QUILL_LOG_DEBUG(log, "Resetting optimization history.");
-          optim = helpers::create::mkOptim(objf, params.neb_options.opt_method,
-                                           params);
+          optim = eonc::helpers::create::mkOptim(
+              objf, params.neb_options.opt_method, params);
         }
 
         // Reset stability counter since MMF moved the image
@@ -554,7 +552,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
                 path[0]->getPotentialEnergy();
-    double stepSize = helper_functions::maxAtomMotionV(
+    double stepSize = eonc::helpers::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
     QUILL_LOG_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
                     iteration, stepSize, convergenceForce(), maxEnergyImage,
@@ -1003,7 +1001,7 @@ void NudgedElasticBand::updateForces(void) {
                 forcePerpNormalized;
 
         double switching =
-            2.0 / helper_functions::pi *
+            2.0 / eonc::helpers::pi *
             atan(std::pow(forcePerpNorm, 2) / std::pow(forceSpringPerpNorm, 2));
         forceDNEB *= switching;
       } else {

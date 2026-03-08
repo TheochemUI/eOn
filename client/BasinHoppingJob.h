@@ -15,6 +15,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 class BasinHoppingJob : public Job {
 public:
   BasinHoppingJob(std::unique_ptr<Parameters> parameters)
@@ -32,7 +34,7 @@ private:
   void randomSwap(Matter *matter);
   std::shared_ptr<Matter> current;
   std::shared_ptr<Matter> trial; // initial configuration
-  vector<long> getElements(Matter *matter);
+  std::vector<long> getElements(Matter *matter);
   std::vector<std::string> returnFiles;
   int jump_count; // count of jump moves
   int disp_count; // count of displacement moves
@@ -43,3 +45,7 @@ private:
   std::vector<double> uniqueEnergies;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::BasinHoppingJob;

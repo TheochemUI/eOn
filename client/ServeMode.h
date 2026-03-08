@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+namespace eonc {
+
 /**
  * @brief Configuration for a single serve endpoint.
  *
@@ -110,3 +112,13 @@ void serveFromConfig(const Parameters &params);
  * @return A vector of ServeEndpoint structs.
  */
 std::vector<ServeEndpoint> parseServeSpec(const std::string &spec);
+
+} // namespace eonc
+
+using eonc::parseServeSpec;
+using eonc::ServeEndpoint;
+using eonc::serveFromConfig;
+using eonc::serveGateway;
+using eonc::serveMode;
+using eonc::serveMultiple;
+using eonc::serveReplicated;

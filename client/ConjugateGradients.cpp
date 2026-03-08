@@ -11,6 +11,7 @@
 */
 #include "ConjugateGradients.h"
 #include "SafeMath.h"
+using namespace std;
 
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = 0, b = 0, gamma = 0;
@@ -149,11 +150,11 @@ int ConjugateGradients::single_step(double a_maxMove) {
   if (!m_params.optimizer_options.cg.no_overshooting) {
     if (m_params.saddle_search_options.confine_positive.bowl_breakout) {
       // max displacement is based on system not single atom
-      pos += helper_functions::maxMotionAppliedV(stepSize * m_directionNorm,
-                                                 a_maxMove);
+      pos += eonc::helpers::maxMotionAppliedV(stepSize * m_directionNorm,
+                                              a_maxMove);
     } else {
-      pos += helper_functions::maxAtomMotionAppliedV(stepSize * m_directionNorm,
-                                                     a_maxMove);
+      pos += eonc::helpers::maxAtomMotionAppliedV(stepSize * m_directionNorm,
+                                                  a_maxMove);
     }
     m_objf->setPositions(pos);
   } else {
@@ -163,7 +164,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
     double forceChange = 0.;
     while (passedMinimum < 0. and
            (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
-      posStep = pos + helper_functions::maxAtomMotionAppliedV(
+      posStep = pos + eonc::helpers::maxAtomMotionAppliedV(
                           stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
       forceAfterStep = -m_objf->getGradient(true);

@@ -24,8 +24,6 @@
 #include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/FileSink.h"
 
-using namespace std::string_literals; // For ""s
-
 // This file contains forward declarations and enum classes
 // NOTE(rg):
 // We use magic_enum for converting <-> strings so the names have to match what
@@ -33,6 +31,8 @@ using namespace std::string_literals; // For ""s
 
 /* Don't guard with compiler directives anymore because that will break ABI for
  * any of these */
+namespace eonc {
+
 enum class PotType {
   // Only add to the end of this!!!
   UNKNOWN = 0,
@@ -114,3 +114,12 @@ enum class OptType {
 enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, SIDPP, SIDPP_ZBL, FILE };
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
+
+} // namespace eonc
+
+// Backward-compat aliases during migration
+using eonc::JobType;
+using eonc::NEBInit;
+using eonc::OptType;
+using eonc::PotType;
+using eonc::RunStatus;

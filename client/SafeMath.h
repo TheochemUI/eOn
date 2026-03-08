@@ -20,7 +20,7 @@ inline constexpr double eps = 1e-300;
 
 [[nodiscard]] inline constexpr double safe_div(double num, double denom,
                                                double fallback = 0.0) {
-  if (std::abs(denom) < eps) [[unlikely]] {
+  if ((denom < 0.0 ? -denom : denom) < eps) [[unlikely]] {
     return fallback;
   }
   return num / denom;
@@ -41,7 +41,7 @@ inline constexpr double eps = 1e-300;
 
 [[nodiscard]] inline double safe_atan_ratio(double num, double denom,
                                             double fallback = 0.0) {
-  if (std::abs(denom) < eps) [[unlikely]] {
+  if ((denom < 0.0 ? -denom : denom) < eps) [[unlikely]] {
     return fallback;
   }
   return std::atan(num / denom);

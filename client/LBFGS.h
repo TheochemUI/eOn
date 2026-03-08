@@ -18,6 +18,8 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 #define LBFGS_EPS 1e-30
 
 class LBFGS final : public Optimizer {
@@ -26,9 +28,9 @@ public:
   LBFGS(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
       : Optimizer(a_objf, OptType::LBFGS, a_params),
         m_iteration{0},
-        m_memory{
-            min(a_objf->degreesOfFreedom(),
-                static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {}
+        m_memory{std::min(
+            a_objf->degreesOfFreedom(),
+            static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {}
 
   ~LBFGS() = default;
 
@@ -52,3 +54,7 @@ private:
   Eigen::VectorXd m_fPrev;
   eonc::log::FileScoped m_log{"lbfgs", "_lbfgs.log"};
 };
+
+} // namespace eonc
+
+using eonc::LBFGS;

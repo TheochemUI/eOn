@@ -20,7 +20,7 @@ public:
     params.socket_nwchem_options.unix_socket_mode = true;
     params.socket_nwchem_options.unix_socket_path = "eon_nwchem_test_socket";
 
-    pot_socket = helper_functions::makePotential(
+    pot_socket = eonc::helpers::makePotential(
         params.potential_options.potential, params);
     matter = std::make_shared<Matter>(pot_socket, params);
 
@@ -61,7 +61,7 @@ TEST_CASE_METHOD(SocketNWChemPotTest, "SocketNWChemPot against reference data",
   REQUIRE_THAT(calculated_energy, WithinAbs(expected_energy, threshold));
 
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
   REQUIRE(matEq(calculated_forces, expected_forces));
 }
 

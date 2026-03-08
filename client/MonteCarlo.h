@@ -16,6 +16,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 // dimer method to find the lowest curvature mode
 class MonteCarlo {
 
@@ -32,3 +34,7 @@ private:
   const Parameters &params;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::MonteCarlo;

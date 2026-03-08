@@ -15,6 +15,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 class GlobalOptimizationJob : public Job {
 public:
   GlobalOptimizationJob(std::unique_ptr<Parameters> parameters)
@@ -69,12 +71,16 @@ private:
   double ekin;
   bool firstStep;
   std::vector<double> earr;
-  string escapeResult;
-  // string moveFeedbackMethod;
-  // string decisionMethod;
-  string decisionResult;
-  string hoppingResult;
+  std::string escapeResult;
+  // std::string moveFeedbackMethod;
+  // std::string decisionMethod;
+  std::string decisionResult;
+  std::string hoppingResult;
   FILE *monfile;
   FILE *earrfile;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::GlobalOptimizationJob;

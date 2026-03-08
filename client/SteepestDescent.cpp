@@ -14,6 +14,7 @@
 
 #include "SteepestDescent.h"
 #include "SafeMath.h"
+using namespace std;
 
 int SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
@@ -32,7 +33,7 @@ int SteepestDescent::step(double a_maxMove) {
   }
 
   dr = alpha * f;
-  dr = helper_functions::maxAtomMotionAppliedV(dr, a_maxMove);
+  dr = eonc::helpers::maxAtomMotionAppliedV(dr, a_maxMove);
 
   m_objf->setPositions(r + dr);
 

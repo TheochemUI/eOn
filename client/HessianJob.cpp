@@ -14,6 +14,8 @@
 #include "Matter.h"
 #include "Potential.h"
 
+using namespace std;
+
 std::vector<std::string> HessianJob::run(void) {
   string matter_in("pos.con");
 

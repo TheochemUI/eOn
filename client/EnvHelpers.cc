@@ -1,7 +1,7 @@
 #include "EnvHelpers.hpp"
 #include "BaseStructures.h"
 
-namespace helper_functions {
+namespace eonc::helpers {
 
 std::string get_value_from_env_or_param(const char *env_variable,
                                         const std::string &param_value,
@@ -31,4 +31,4 @@ std::string get_value_from_env_or_param(const char *env_variable,
   return default_value;
 }
 
-} // namespace helper_functions
+} // namespace eonc::helpers

@@ -17,7 +17,7 @@
 #include "quill/Frontend.h"
 #include "quill/sinks/NullSink.h"
 
-namespace helper_functions::test {
+namespace eonc::helpers::test {
 
 template <typename T>
 class EigenMatcher : public Catch::Matchers::MatcherGenericBase {
@@ -63,7 +63,7 @@ auto IsApprox(const T &expected, double threshold = 1e-4) {
 /// 3. Backend is stopped cleanly on teardown
 ///
 /// Usage: Just instantiate as a static global in your test file:
-///   static helper_functions::test::QuillTestLogger _quill_setup;
+///   static helpers::test::QuillTestLogger _quill_setup;
 struct QuillTestLogger {
   QuillTestLogger() {
     if (!eonc::log::get()) {
@@ -79,4 +79,4 @@ struct QuillTestLogger {
   ~QuillTestLogger() = default;
 };
 
-} // namespace helper_functions::test
+} // namespace eonc::helpers::test

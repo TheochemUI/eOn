@@ -19,6 +19,8 @@
 #include "Eigen.h"
 #include "EonLogger.h"
 
+namespace eonc {
+
 class Dynamics {
 
 public:
@@ -53,3 +55,7 @@ private:
   double vxi1, vxi2, xi1, xi2;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::Dynamics;

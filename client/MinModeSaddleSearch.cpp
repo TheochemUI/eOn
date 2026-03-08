@@ -26,7 +26,8 @@
 #include "EpiCenters.h"
 #include "ObjectiveFunction.h"
 
-using namespace helper_functions;
+using namespace std;
+using namespace eonc::helpers;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
@@ -303,8 +304,8 @@ int MinModeSaddleSearch::run() {
       }
     }
 
-    auto optim =
-        helpers::create::mkOptim(objf, params.optimizer_options.method, params);
+    auto optim = eonc::helpers::create::mkOptim(
+        objf, params.optimizer_options.method, params);
 
     while (!objf->isConverged() || iteration == 0) {
 
@@ -383,7 +384,7 @@ int MinModeSaddleSearch::run() {
       double de = objf->getEnergy() - reactantEnergy;
       // should be the total displacement of the system not just a single atom
       // double stepSize =
-      // helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() -
+      // eonc::helpers::maxAtomMotion(matter->pbc(matter->getPositions() -
       // pos));
 
       double stepSize;
@@ -442,8 +443,8 @@ int MinModeSaddleSearch::run() {
       if (params.main_options.checkpoint) {
         matter->matter2con("displacement_cp.con", false);
         FILE *fileMode = fopen("mode_cp.dat", "wb");
-        helper_functions::saveMode(fileMode, matter,
-                                   minModeMethod->getEigenvector());
+        eonc::helpers::saveMode(fileMode, matter,
+                                minModeMethod->getEigenvector());
         fclose(fileMode);
       }
 

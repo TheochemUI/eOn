@@ -16,6 +16,9 @@
 #include "Parameters.h"
 
 #include "EonLogger.h"
+
+namespace eonc {
+
 /** @defgroup Optimizers
  *
  * \brief ClientEON methods for optimizing atomic structures
@@ -83,3 +86,7 @@ namespace helpers::create {
 std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
                                    OptType a_otype, const Parameters &a_params);
 }
+
+} // namespace eonc
+
+using eonc::Optimizer;

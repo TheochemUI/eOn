@@ -17,6 +17,8 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 /**
  * @file
  * @ingroup Optimizers
@@ -93,3 +95,7 @@ private:
    */
   int line_search(double a_maxMove);
 };
+
+} // namespace eonc
+
+using eonc::ConjugateGradients;

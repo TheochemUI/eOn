@@ -19,6 +19,8 @@
 #include <cmath>
 #include <vector>
 
+namespace eonc {
+
 class IDPPObjectiveFunction : public ObjectiveFunction {
 public:
   IDPPObjectiveFunction(std::shared_ptr<Matter> matterPassed,
@@ -200,3 +202,9 @@ public:
     return idpp_obj->difference(a, b);
   }
 };
+
+} // namespace eonc
+
+using eonc::CollectiveIDPPObjectiveFunction;
+using eonc::IDPPObjectiveFunction;
+using eonc::ZBLRepulsiveIDPPObjective;

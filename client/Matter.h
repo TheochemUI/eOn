@@ -16,11 +16,11 @@
 #include "Potential.h"
 #include "SurrogatePotential.h"
 #include <memory>
+#include <string>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
+namespace eonc {
 class BondBoost;
-
-#include <string>
 
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
@@ -82,8 +82,8 @@ public:
       long int atom, int axis,
       double velocity); // set the velocity of atom along axis to velocity
   bool relax(bool quiet = false, bool writeMovie = false,
-             bool checkpoint = false, string prefixMovie = string(),
-             string prefixCheckpoint = string());
+             bool checkpoint = false, std::string prefixMovie = std::string(),
+             std::string prefixCheckpoint = std::string());
 
   AtomMatrix pbc(const AtomMatrix &diff) const;
   VectorXd pbcV(const VectorXd &diff) const;
@@ -220,3 +220,7 @@ private:
   mutable double energyVariance;
   mutable double potentialEnergy;
 };
+
+} // namespace eonc
+
+using eonc::Matter;

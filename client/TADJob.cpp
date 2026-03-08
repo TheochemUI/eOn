@@ -17,6 +17,8 @@
 #include "Optimizer.h"
 #include "TADJob.h"
 
+using namespace std;
+
 std::vector<std::string> TADJob::run(void) {
   current = std::make_shared<Matter>(pot, params);
   reactant = std::make_shared<Matter>(pot, params);
@@ -29,7 +31,7 @@ std::vector<std::string> TADJob::run(void) {
   minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
   time = 0.0;
   string reactantFilename =
-      helper_functions::getRelevantFile(params.main_options.conFilename);
+      eonc::helpers::getRelevantFile(params.main_options.conFilename);
   current->con2matter(reactantFilename);
 
   QUILL_LOG_DEBUG(log, "Minimizing initial reactant");

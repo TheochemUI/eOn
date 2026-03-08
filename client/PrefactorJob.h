@@ -14,6 +14,8 @@
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 class PrefactorJob : public Job {
 public:
   PrefactorJob(std::unique_ptr<Parameters> parameters)
@@ -25,3 +27,7 @@ public:
   static const char PREFACTOR_SADDLE[];
   static const char PREFACTOR_PRODUCT[];
 };
+
+} // namespace eonc
+
+using eonc::PrefactorJob;

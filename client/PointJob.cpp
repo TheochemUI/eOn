@@ -14,6 +14,8 @@
 #include <format>
 #include <fstream>
 
+using namespace std;
+
 std::vector<std::string> PointJob::run(void) {
   std::vector<std::string> returnFiles;
   string posInFilename("pos.con");

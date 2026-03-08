@@ -12,6 +12,8 @@
 #include "FIRE.h"
 #include "HelperFunctions.h"
 
+using namespace std;
+
 int FIRE::step(double a_maxMove) {
   double P = 0;
   // Check convergence.
@@ -26,7 +28,7 @@ int FIRE::step(double a_maxMove) {
   m_vel += f * m_dt;
   Eigen::VectorXd dx = m_vel * m_dt;
 
-  dx = helper_functions::maxAtomMotionAppliedV(dx, m_max_move);
+  dx = eonc::helpers::maxAtomMotionAppliedV(dx, m_max_move);
   m_objf->setPositions(x + dx);
 
   f = -m_objf->getGradient();

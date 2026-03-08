@@ -11,6 +11,7 @@
 */
 #include "Quickmin.h"
 #include "HelperFunctions.h"
+using namespace std;
 
 int Quickmin::step(double a_maxMove) {
   Eigen::VectorXd force = -m_objf->getGradient();
@@ -26,7 +27,7 @@ int Quickmin::step(double a_maxMove) {
   }
 
   m_vel += force * m_dt;
-  Eigen::VectorXd dr = helper_functions::maxAtomMotionAppliedV(
+  Eigen::VectorXd dr = eonc::helpers::maxAtomMotionAppliedV(
       m_vel * m_dt,
       a_maxMove); // used to be m_params.optimizer_options.max_time_step
   QUILL_LOG_INFO(m_log, "{} M_Vel.norm() is {}", m_iteration, m_vel.norm());

@@ -16,6 +16,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 class Hessian {
 public:
   Hessian(const Parameters &params, Matter *matter);
@@ -38,3 +40,7 @@ private:
   bool calculate(void);
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::Hessian;

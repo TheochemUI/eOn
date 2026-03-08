@@ -14,6 +14,9 @@
 #include "EonLogger.h"
 #include "HelperFunctions.h"
 #include <math.h>
+
+using namespace std;
+
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 
@@ -53,7 +56,7 @@ void BondBoost::initialize() {
   nBBs = 0;
   nReg = 1;
   BALstring = parameters.hyperdynamics_options.boost_atom_list;
-  atoms = helper_functions::split_string_int(BALstring, ",");
+  atoms = eonc::helpers::split_string_int(BALstring, ",");
   leng_strlist = atoms.size();
   if (BALstring.c_str() == string("all") or atoms.size() == 0) {
     QUILL_LOG_DEBUG(log, "boost all atoms that are set free\n");

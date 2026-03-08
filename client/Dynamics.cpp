@@ -13,7 +13,8 @@
 #include <math.h>
 
 #include "EonLogger.h"
-using namespace helper_functions;
+using namespace std;
+using namespace eonc::helpers;
 
 const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";

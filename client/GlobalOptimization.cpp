@@ -13,6 +13,9 @@
 #include <stdio.h>
 
 #include "EonLogger.h"
+
+using namespace std;
+
 GlobalOptimization::GlobalOptimization(const Parameters &params)
     : parameters{params} {}
 

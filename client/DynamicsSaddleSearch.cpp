@@ -19,6 +19,8 @@
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
 
+using namespace std;
+
 int DynamicsSaddleSearch::run(void) {
   std::vector<std::shared_ptr<Matter>> MDSnapshots;
   std::vector<double> MDTimes;
@@ -29,7 +31,7 @@ int DynamicsSaddleSearch::run(void) {
     QUILL_LOG_DEBUG(log, "Found mass weights file");
     massFile.close();
     Eigen::VectorXd masses =
-        helper_functions::loadMasses("masses.dat", saddle->numberOfAtoms());
+        eonc::helpers::loadMasses("masses.dat", saddle->numberOfAtoms());
     saddle->setMasses(masses);
     QUILL_LOG_DEBUG(log, "Applied mass weights");
   } else {

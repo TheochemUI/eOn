@@ -22,6 +22,8 @@
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 // NEB method for determining a minimum energy path between two matter objects
 class NudgedElasticBand {
 
@@ -103,3 +105,8 @@ public:
 private:
   NudgedElasticBand *neb;
 };
+
+} // namespace eonc
+
+using eonc::NEBObjectiveFunction;
+using eonc::NudgedElasticBand;
