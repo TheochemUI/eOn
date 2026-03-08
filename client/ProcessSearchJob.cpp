@@ -44,12 +44,12 @@ std::vector<std::string> ProcessSearchJob::run(void) {
   }
 
   if (params.process_search_options.minimize_first) {
-    LOG_DEBUG(log, "Minimizing initial structure\n");
+    QUILL_LOG_DEBUG(log, "Minimizing initial structure\n");
     fctmp = initial->getPotentialCalls();
     initial->relax();
     fCallsMin += initial->getPotentialCalls() - fctmp;
-    LOG_DEBUG(log, "Initial minimization took {} fcalls",
-              initial->getPotentialCalls() - fctmp);
+    QUILL_LOG_DEBUG(log, "Initial minimization took {} fcalls",
+                    initial->getPotentialCalls() - fctmp);
   }
 
   barriersValues[0] = barriersValues[1] = 0;
@@ -131,13 +131,13 @@ int ProcessSearchJob::doProcessSearch(void) {
                       params.process_search_options.minimization_offset;
   min1->setPositions(displacedPos);
 
-  LOG_DEBUG(log, "Starting Minimization 1");
+  QUILL_LOG_DEBUG(log, "Starting Minimization 1");
   fctmp = min1->getPotentialCalls();
   bool converged =
       min1->relax(false, params.debug_options.write_movies, false, "min1");
   fCallsMin += min1->getPotentialCalls() - fctmp;
-  LOG_DEBUG(log, "Min1 minimization took {} fcalls",
-            min1->getPotentialCalls() - fctmp);
+  QUILL_LOG_DEBUG(log, "Min1 minimization took {} fcalls",
+                  min1->getPotentialCalls() - fctmp);
 
   if (!converged) {
     return MinModeSaddleSearch::STATUS_BAD_MINIMA;
@@ -149,13 +149,13 @@ int ProcessSearchJob::doProcessSearch(void) {
                       params.process_search_options.minimization_offset;
   min2->setPositions(displacedPos);
 
-  LOG_DEBUG(log, "Starting Minimization 2");
+  QUILL_LOG_DEBUG(log, "Starting Minimization 2");
   fctmp = min2->getPotentialCalls();
   converged =
       min2->relax(false, params.debug_options.write_movies, false, "min2");
   fCallsMin += min2->getPotentialCalls() - fctmp;
-  LOG_DEBUG(log, "Min2 minimization took {} fcalls",
-            min2->getPotentialCalls() - fctmp);
+  QUILL_LOG_DEBUG(log, "Min2 minimization took {} fcalls",
+                  min2->getPotentialCalls() - fctmp);
 
   if (!converged) {
     return MinModeSaddleSearch::STATUS_BAD_MINIMA;
@@ -169,13 +169,13 @@ int ProcessSearchJob::doProcessSearch(void) {
   }
 
   if ((initial->compare(*min1)) == false) {
-    LOG_DEBUG(log, "initial != min1");
+    QUILL_LOG_DEBUG(log, "initial != min1");
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }
 
   if (initial->compare(*min2)) {
     // both minima are the initial state
-    LOG_DEBUG(log, "both minima are the initial state");
+    QUILL_LOG_DEBUG(log, "both minima are the initial state");
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }
 
@@ -314,43 +314,44 @@ void ProcessSearchJob::saveData(int status) {
 }
 
 void ProcessSearchJob::printEndState(int status) {
-  LOG_DEBUG(log, "[Saddle Search] Final status: ");
+  QUILL_LOG_DEBUG(log, "[Saddle Search] Final status: ");
 
   if (status == MinModeSaddleSearch::STATUS_GOOD)
-    LOG_DEBUG(log, "Success");
+    QUILL_LOG_DEBUG(log, "Success");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
-    LOG_ERROR(log, "Initial displacement unable to reach convex region");
+    QUILL_LOG_ERROR(log, "Initial displacement unable to reach convex region");
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
-    LOG_ERROR(log, "Barrier too high");
+    QUILL_LOG_ERROR(log, "Barrier too high");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-    LOG_ERROR(log, "Too many iterations in concave region");
+    QUILL_LOG_ERROR(log, "Too many iterations in concave region");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-    LOG_ERROR(log, "Too many iterations");
+    QUILL_LOG_ERROR(log, "Too many iterations");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
-    LOG_ERROR(log, "Saddle is not connected to initial state");
+    QUILL_LOG_ERROR(log, "Saddle is not connected to initial state");
   else if (status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
-    LOG_ERROR(log, "Prefactors not within window");
+    QUILL_LOG_ERROR(log, "Prefactors not within window");
   else if (status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
-    LOG_ERROR(log, "Hessian calculation failed");
+    QUILL_LOG_ERROR(log, "Hessian calculation failed");
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
-    LOG_ERROR(log, "Energy barrier not within window");
+    QUILL_LOG_ERROR(log, "Energy barrier not within window");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
-    LOG_ERROR(log, "Minimizations from saddle did not converge");
+    QUILL_LOG_ERROR(log, "Minimizations from saddle did not converge");
   else if (status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-    LOG_CRITICAL(log, "Nonnegative initial mode, aborting");
+    QUILL_LOG_CRITICAL(log, "Nonnegative initial mode, aborting");
   else if (status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
-    LOG_ERROR(log, "Negative barrier detected");
+    QUILL_LOG_ERROR(log, "Negative barrier detected");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
-    LOG_ERROR(log, "No reaction found during MD trajectory");
+    QUILL_LOG_ERROR(log, "No reaction found during MD trajectory");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
-    LOG_ERROR(log, "Converged to stationary point with zero negative modes");
+    QUILL_LOG_ERROR(log,
+                    "Converged to stationary point with zero negative modes");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
-    LOG_ERROR(log, "No forward barrier was found along minimized band");
+    QUILL_LOG_ERROR(log, "No forward barrier was found along minimized band");
   else if (status == MinModeSaddleSearch::STATUS_ZEROMODE_ABORT)
-    LOG_CRITICAL(log, "Zero mode abort.");
+    QUILL_LOG_CRITICAL(log, "Zero mode abort.");
   else if (status == MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
-    LOG_ERROR(log, "Optimizer error.");
+    QUILL_LOG_ERROR(log, "Optimizer error.");
   else
-    LOG_ERROR(log, "Unknown status: {}!", status);
+    QUILL_LOG_ERROR(log, "Unknown status: {}!", status);
   return;
 }

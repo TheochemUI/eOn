@@ -37,7 +37,7 @@ inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
 ///
 /// Usage:
 ///   auto* log = eonc::log::get();
-///   LOG_INFO(log, "message");
+///   QUILL_LOG_INFO(log, "message");
 [[nodiscard]] inline quill::Logger *get() noexcept {
   static std::atomic<quill::Logger *> cached_logger{nullptr};
   if (quill::Logger *l = cached_logger.load(std::memory_order_relaxed)) {
@@ -81,7 +81,7 @@ inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
 ///
 /// Usage:
 ///   auto* log = eonc::log::traceback();
-///   LOG_INFO(log, "traceback message");
+///   QUILL_LOG_INFO(log, "traceback message");
 [[nodiscard]] inline quill::Logger *traceback() noexcept {
   static std::atomic<quill::Logger *> cached{nullptr};
   if (quill::Logger *l = cached.load(std::memory_order_relaxed)) {
@@ -145,7 +145,7 @@ get_file(std::string_view name, std::string_view filename,
 ///     eonc::log::Scoped m_log;  // No manual initialization needed!
 ///   public:
 ///     void work() {
-///       LOG_INFO(m_log, "doing work");
+///       QUILL_LOG_INFO(m_log, "doing work");
 ///     }
 ///   };
 /// \endcode
@@ -155,10 +155,10 @@ struct Scoped {
   Scoped() noexcept
       : logger(get()) {}
 
-  // Implicit conversion to Logger* for seamless use with LOG_* macros
+  // Implicit conversion to Logger* for seamless use with QUILL_LOG_* macros
   operator quill::Logger *() const noexcept { return logger; }
 
-  // Support LOG macro pointer dereference
+  // Support QUILL_LOG_ macro pointer dereference
   quill::Logger *operator->() const noexcept { return logger; }
 
   // Allow dynamic re-assignment (e.g. switching to _traceback logger)
@@ -182,7 +182,7 @@ struct Scoped {
 ///     eonc::log::FileScoped m_log{"opt_trace", "optimizer.log"};
 ///   public:
 ///     void step() {
-///       LOG_INFO(m_log, "iteration {}", iter);
+///       QUILL_LOG_INFO(m_log, "iteration {}", iter);
 ///     }
 ///   };
 /// \endcode
@@ -194,7 +194,7 @@ struct FileScoped {
       : logger(get_file(name, filename, pattern)) {}
 
   operator quill::Logger *() const noexcept { return logger; }
-  // Support LOG macro pointer dereference
+  // Support QUILL_LOG_ macro pointer dereference
   quill::Logger *operator->() const noexcept { return logger; }
   FileScoped &operator=(quill::Logger *l) noexcept {
     logger = l;
@@ -219,36 +219,36 @@ struct FileScoped {
 #define EONC_LOG_TRACE(...)                                                    \
   do {                                                                         \
     if (auto *l = eonc::log::get()) {                                          \
-      EONC_EXPAND(LOG_TRACE_L1(l, __VA_ARGS__));                               \
+      EONC_EXPAND(QUILL_LOG_TRACE_L1(l, __VA_ARGS__));                         \
     }                                                                          \
   } while (0)
 #define EONC_LOG_DEBUG(...)                                                    \
   do {                                                                         \
     if (auto *l = eonc::log::get()) {                                          \
-      EONC_EXPAND(LOG_DEBUG(l, __VA_ARGS__));                                  \
+      EONC_EXPAND(QUILL_LOG_DEBUG(l, __VA_ARGS__));                            \
     }                                                                          \
   } while (0)
 #define EONC_LOG_INFO(...)                                                     \
   do {                                                                         \
     if (auto *l = eonc::log::get()) {                                          \
-      EONC_EXPAND(LOG_INFO(l, __VA_ARGS__));                                   \
+      EONC_EXPAND(QUILL_LOG_INFO(l, __VA_ARGS__));                             \
     }                                                                          \
   } while (0)
 #define EONC_LOG_WARNING(...)                                                  \
   do {                                                                         \
     if (auto *l = eonc::log::get()) {                                          \
-      EONC_EXPAND(LOG_WARNING(l, __VA_ARGS__));                                \
+      EONC_EXPAND(QUILL_LOG_WARNING(l, __VA_ARGS__));                          \
     }                                                                          \
   } while (0)
 #define EONC_LOG_ERROR(...)                                                    \
   do {                                                                         \
     if (auto *l = eonc::log::get()) {                                          \
-      EONC_EXPAND(LOG_ERROR(l, __VA_ARGS__));                                  \
+      EONC_EXPAND(QUILL_LOG_ERROR(l, __VA_ARGS__));                            \
     }                                                                          \
   } while (0)
 #define EONC_LOG_CRITICAL(...)                                                 \
   do {                                                                         \
     if (auto *l = eonc::log::get()) {                                          \
-      EONC_EXPAND(LOG_CRITICAL(l, __VA_ARGS__));                               \
+      EONC_EXPAND(QUILL_LOG_CRITICAL(l, __VA_ARGS__));                         \
     }                                                                          \
   } while (0)

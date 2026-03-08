@@ -195,6 +195,7 @@ _deps += [eigen_dep]
 
 quill_dep = dependency('quill', required: true)
 _deps += quill_dep
+_args += ['-DQUILL_DISABLE_NON_PREFIXED_MACROS']
 
 eoncbase_sources = ['INIFile.cpp', 'fpe_handler.cpp']
 

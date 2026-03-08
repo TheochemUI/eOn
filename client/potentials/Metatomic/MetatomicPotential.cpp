@@ -35,7 +35,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
 
-  LOG_INFO(m_log, "[MetatomicPotential] Initializing...");
+  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Initializing...");
 
   // 1. Load the model from the path specified in parameters
   torch::optional<std::string> extensions_directory = torch::nullopt;
@@ -44,12 +44,13 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   }
 
   try {
-    LOG_INFO(m_log, "[MetatomicPotential] Loading model from '{}'",
-             m_params.metatomic_options.model_path);
+    QUILL_LOG_INFO(m_log, "[MetatomicPotential] Loading model from '{}'",
+                   m_params.metatomic_options.model_path);
     this->model_ = metatomic_torch::load_atomistic_model(
         m_params.metatomic_options.model_path, extensions_directory);
   } catch (const std::exception &e) {
-    LOG_ERROR(m_log, "[MetatomicPotential] Failed to load model: {}", e.what());
+    QUILL_LOG_ERROR(m_log, "[MetatomicPotential] Failed to load model: {}",
+                    e.what());
     throw;
   }
 
@@ -74,7 +75,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
       this->capabilities_->supported_devices, desired);
 
   device_ = torch::Device(device_type_);
-  LOG_INFO(m_log, "[MetatomicPotential] Using device: {}", device_.str());
+  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using device: {}", device_.str());
 
   this->model_.to(this->device_);
 
@@ -87,8 +88,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     throw std::runtime_error("Unsupported dtype: " +
                              this->capabilities_->dtype());
   }
-  LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
-           this->capabilities_->dtype().c_str());
+  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
+                 this->capabilities_->dtype().c_str());
 
   // 5. Resolve variant keys via pick_output
   auto outputs = this->capabilities_->outputs();
@@ -107,9 +108,10 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   this->energy_key_ = metatomic_torch::pick_output("energy", outputs, v_energy);
 
   if (!outputs.contains(this->energy_key_)) {
-    LOG_ERROR(m_log,
-              "[MetatomicPotential] The model does not provide an '{}' output.",
-              this->energy_key_);
+    QUILL_LOG_ERROR(
+        m_log,
+        "[MetatomicPotential] The model does not provide an '{}' output.",
+        this->energy_key_);
     throw std::runtime_error("Missing energy output in metatomic model");
   }
 
@@ -148,28 +150,29 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
           requested_uncertainty->set_unit("eV");
           evaluations_options_->outputs.insert(this->energy_uncertainty_key_,
                                                requested_uncertainty);
-          LOG_INFO(m_log,
-                   "[MetatomicPotential] Requested per-atom "
-                   "'{}' from model (threshold = {})",
-                   this->energy_uncertainty_key_, this->uncertainty_threshold_);
+          QUILL_LOG_INFO(m_log,
+                         "[MetatomicPotential] Requested per-atom "
+                         "'{}' from model (threshold = {})",
+                         this->energy_uncertainty_key_,
+                         this->uncertainty_threshold_);
         } else {
-          LOG_DEBUG(m_log,
-                    "[MetatomicPotential] Model provides '{}' "
-                    "but not per-atom; skipping uncertainty checks.",
-                    this->energy_uncertainty_key_);
+          QUILL_LOG_DEBUG(m_log,
+                          "[MetatomicPotential] Model provides '{}' "
+                          "but not per-atom; skipping uncertainty checks.",
+                          this->energy_uncertainty_key_);
           this->uncertainty_threshold_ = -1.0;
         }
       }
     } catch (const std::exception &e) {
-      LOG_DEBUG(m_log,
-                "[MetatomicPotential] No uncertainty output available: {}",
-                e.what());
+      QUILL_LOG_DEBUG(
+          m_log, "[MetatomicPotential] No uncertainty output available: {}",
+          e.what());
       this->uncertainty_threshold_ = -1.0;
     }
   }
 
   this->check_consistency_ = m_params.metatomic_options.check_consistency;
-  LOG_INFO(m_log, "[MetatomicPotential] Initialization complete.");
+  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Initialization complete.");
 
   fpeh.restore_fpe();
 }
@@ -212,9 +215,9 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   }
 
   if (types_changed) {
-    LOG_TRACE_L1(m_log,
-                 "[MetatomicPotential] Atomic numbers changed, re-creating "
-                 "types tensor.");
+    QUILL_LOG_TRACE_L1(
+        m_log, "[MetatomicPotential] Atomic numbers changed, re-creating "
+               "types tensor.");
     if (!atomicNrs) {
       throw std::runtime_error(
           "[MetatomicPotential] `atomicNrs` must be provided.");
@@ -283,8 +286,9 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
               *variance = mean_unc.item<double>();
             } catch (...) {
               // If mean computation fails, leave variance untouched.
-              LOG_DEBUG(m_log, "[MetatomicPotential] Failed to compute mean "
-                               "uncertainty for variance.");
+              QUILL_LOG_DEBUG(m_log,
+                              "[MetatomicPotential] Failed to compute mean "
+                              "uncertainty for variance.");
             }
           }
 
@@ -316,7 +320,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                  << " more";
             }
 
-            LOG_WARNING(
+            QUILL_LOG_WARNING(
                 m_log,
                 "[MetatomicPotential] The uncertainty on atomic energies for "
                 "{} "
@@ -330,14 +334,14 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
         }
       } catch (const std::exception &e) {
         // Don't fail the run for uncertainty-check failures; log and continue.
-        LOG_WARNING(m_log, "[MetatomicPotential] Failed to check {}: {}",
-                    this->energy_uncertainty_key_, e.what());
+        QUILL_LOG_WARNING(m_log, "[MetatomicPotential] Failed to check {}: {}",
+                          this->energy_uncertainty_key_, e.what());
       }
     }
 
   } catch (const std::exception &e) {
-    LOG_ERROR(m_log, "[MetatomicPotential] Model evaluation failed: {}",
-              e.what());
+    QUILL_LOG_ERROR(m_log, "[MetatomicPotential] Model evaluation failed: {}",
+                    e.what());
     throw;
   }
 

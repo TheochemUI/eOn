@@ -101,11 +101,11 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
                              bool use_zbl) {
 
   auto log = eonc::log::get();
-  LOG_INFO(log, "Generating initial path using IDPP...");
+  QUILL_LOG_INFO(log, "Generating initial path using IDPP...");
   if (use_zbl) {
-    LOG_WARNING(log,
-                "ZBL Repulsion not implemented for iterative IDPP (idppPath). "
-                "Using standard IDPP.");
+    QUILL_LOG_WARNING(
+        log, "ZBL Repulsion not implemented for iterative IDPP (idppPath). "
+             "Using standard IDPP.");
   }
 
   // Start with a linear interpolation to get initial Cartesian coordinates
@@ -141,15 +141,16 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
     // Log progress
     double residual = idpp_objf->getConvergence();
-    LOG_DEBUG(log, "IDPP Image {:2d}/{:2d} | xi: {:.2f} | Residual: {:.4e}", i,
-              nimgs, xi, residual);
+    QUILL_LOG_DEBUG(log,
+                    "IDPP Image {:2d}/{:2d} | xi: {:.2f} | Residual: {:.4e}", i,
+                    nimgs, xi, residual);
 
     // Explicitly sync positions back to the path vector just to be safe
     path[i].setPositions(AtomMatrix::Map(idpp_objf->getPositions().data(),
                                          path[i].numberOfAtoms(), 3));
   }
 
-  LOG_INFO(log, "IDPP path generation complete.");
+  QUILL_LOG_INFO(log, "IDPP path generation complete.");
   return path;
 }
 
@@ -157,7 +158,7 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
                                        const Matter &finalImg, size_t nimgs,
                                        const Parameters &params, bool use_zbl) {
   auto log = eonc::log::get();
-  LOG_INFO(log, "Generating initial path using Collective IDPP-NEB...");
+  QUILL_LOG_INFO(log, "Generating initial path using Collective IDPP-NEB...");
 
   std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
 
@@ -167,7 +168,7 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
 
   // 2. Optional ZBL Wrapper
   if (use_zbl) {
-    LOG_INFO(log, "Enabling ZBL repulsive penalty for IDPP...");
+    QUILL_LOG_INFO(log, "Enabling ZBL repulsive penalty for IDPP...");
     auto zbl_pot = createZBLPotential();
     // Wrap the IDPP objective with ZBL repulsion (weight = 1.0)
     idpp_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(idpp_objf, zbl_pot,
@@ -186,16 +187,17 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
     currentStep += checkInterval;
 
     if (idpp_objf->isConverged()) {
-      LOG_INFO(log, "IDPP-NEB converged after {} steps. Max Residual: {:.4f}",
-               currentStep, idpp_objf->getConvergence());
+      QUILL_LOG_INFO(log,
+                     "IDPP-NEB converged after {} steps. Max Residual: {:.4f}",
+                     currentStep, idpp_objf->getConvergence());
       return path;
     }
   }
 
-  LOG_WARNING(log,
-              "IDPP-NEB reached max_iterations ({}) without full "
-              "convergence. Residual: {:.4f}",
-              maxSteps, idpp_objf->getConvergence());
+  QUILL_LOG_WARNING(log,
+                    "IDPP-NEB reached max_iterations ({}) without full "
+                    "convergence. Residual: {:.4f}",
+                    maxSteps, idpp_objf->getConvergence());
   return path;
 }
 
@@ -216,10 +218,11 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
   auto log = eonc::log::get();
   if (use_zbl) {
-    LOG_INFO(log,
-             "Generating initial path using Sequential IDPP-ZBL (S-IDPP)...");
+    QUILL_LOG_INFO(
+        log, "Generating initial path using Sequential IDPP-ZBL (S-IDPP)...");
   } else {
-    LOG_INFO(log, "Generating initial path using Sequential IDPP (S-IDPP)...");
+    QUILL_LOG_INFO(log,
+                   "Generating initial path using Sequential IDPP (S-IDPP)...");
   }
 
   // 1. Start with [Init, Final]
@@ -264,7 +267,8 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
       path.insert(path.begin() + nLeft + 1, newImg);
       nLeft++;
       nIntermediate++;
-      LOG_DEBUG(log, "S-IDPP: Added Left Frontier. Total: {}", nIntermediate);
+      QUILL_LOG_DEBUG(log, "S-IDPP: Added Left Frontier. Total: {}",
+                      nIntermediate);
     }
 
     // Add to Right (Product side)
@@ -284,7 +288,8 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
       path.insert(path.begin() + rightFrontierIdx, newImg);
       nRight++;
       nIntermediate++;
-      LOG_DEBUG(log, "S-IDPP: Added Right Frontier. Total: {}", nIntermediate);
+      QUILL_LOG_DEBUG(log, "S-IDPP: Added Right Frontier. Total: {}",
+                      nIntermediate);
     }
 
     // --- STEP B: OPTIMIZE CURRENT SET ---
@@ -315,13 +320,13 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
         break;
     }
 
-    LOG_DEBUG(
+    QUILL_LOG_DEBUG(
         log,
         "S-IDPP Frontier Relaxed: {} images | Steps: {} | Residual: {:.4f}",
         nIntermediate, step, idpp_objf->getConvergence());
 
-    LOG_DEBUG(log, "S-IDPP: Relaxed with {} images. Residual: {:.4f}",
-              nIntermediate, idpp_objf->getConvergence());
+    QUILL_LOG_DEBUG(log, "S-IDPP: Relaxed with {} images. Residual: {:.4f}",
+                    nIntermediate, idpp_objf->getConvergence());
   }
 
   // 3. Final Interpolation / Alignment
@@ -330,7 +335,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   // It is good practice to run one final IDPP on the FULL path to evenly space
   // everything.
 
-  LOG_INFO(log, "S-IDPP: Final relaxation of full path...");
+  QUILL_LOG_INFO(log, "S-IDPP: Final relaxation of full path...");
 
   std::shared_ptr<ObjectiveFunction> final_objf =
       std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);

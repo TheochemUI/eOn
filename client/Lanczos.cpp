@@ -100,7 +100,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
         ew = alpha;
         evEst = Q.col(0);
       }
-      LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
+      QUILL_LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
       break;
     }
     // Check Eigenvalues
@@ -119,13 +119,14 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
                    (180 / helper_functions::pi);
       statsTorque = ewAbsRelErr;
       evOldEst = evEst;
-      LOG_INFO(log,
-               "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
-               "{:10.6f} {:7.3f} {:5}",
-               "----", "----", "----", "----", ew, ewAbsRelErr, statsAngle, i);
+      QUILL_LOG_INFO(log,
+                     "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
+                     "{:10.6f} {:7.3f} {:5}",
+                     "----", "----", "----", "----", ew, ewAbsRelErr,
+                     statsAngle, i);
       if (ewAbsRelErr < params.lanczos_options.tolerance) {
-        LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
-                 params.lanczos_options.tolerance);
+        QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
+                       params.lanczos_options.tolerance);
         break;
       }
     } else {
@@ -141,15 +142,15 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
         if (ewAbsRelErr <= params.lanczos_options.tolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;
-          LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
-                   params.lanczos_options.tolerance);
+          QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
+                         params.lanczos_options.tolerance);
           break;
         }
       }
     }
 
     if (i >= params.lanczos_options.max_iterations - 1) {
-      LOG_ERROR(log, "[ILanczos] Max iterations");
+      QUILL_LOG_ERROR(log, "[ILanczos] Max iterations");
       break;
     }
   }

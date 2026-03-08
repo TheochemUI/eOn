@@ -70,7 +70,8 @@ public:
     if (env) {
       xtb_delEnvironment(&env);
     }
-    LOG_INFO(eonc::log::get(), "[XTB] called potential {} times", counter++);
+    QUILL_LOG_INFO(eonc::log::get(), "[XTB] called potential {} times",
+                   counter++);
   }
 
   // Disable copy to prevent double-free of Fortran pointers

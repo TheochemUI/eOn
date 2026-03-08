@@ -42,8 +42,9 @@ public:
 
   virtual ~Potential() {
     if (m_log) {
-      LOG_TRACE_L1(m_log, "[{}] destroyed after {} calls",
-                   magic_enum::enum_name<PotType>(getType()), forceCallCounter);
+      QUILL_LOG_TRACE_L1(m_log, "[{}] destroyed after {} calls",
+                         magic_enum::enum_name<PotType>(getType()),
+                         forceCallCounter);
     } else {
       std::cerr << "Logger is not initialized\n";
     }
@@ -68,8 +69,8 @@ public:
   // Logger initialization
   void initializeLogger() {
     if (m_log) {
-      LOG_TRACE_L1(m_log, "[{}] created",
-                   magic_enum::enum_name<PotType>(getType()));
+      QUILL_LOG_TRACE_L1(m_log, "[{}] created",
+                         magic_enum::enum_name<PotType>(getType()));
     }
   }
 };

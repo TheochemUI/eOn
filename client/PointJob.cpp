@@ -23,18 +23,18 @@ std::vector<std::string> PointJob::run(void) {
   auto pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posInFilename);
 
-  LOG_DEBUG(log, "Energy:         {:.12f}", pos->getPotentialEnergy());
+  QUILL_LOG_DEBUG(log, "Energy:         {:.12f}", pos->getPotentialEnergy());
   std::stringstream freeForcesStream;
   freeForcesStream << pos->getForcesFree();
-  LOG_DEBUG(log, "(free) Forces:\n{}", freeForcesStream.str());
-  LOG_DEBUG(log, "Max atom force: {:.12f}", pos->maxForce());
+  QUILL_LOG_DEBUG(log, "(free) Forces:\n{}", freeForcesStream.str());
+  QUILL_LOG_DEBUG(log, "Max atom force: {:.12f}", pos->maxForce());
 
   std::ofstream outFile("results.dat");
   if (outFile.is_open()) {
     outFile << std::format("{:.12f} Energy\n", pos->getPotentialEnergy());
     outFile << std::format("{:.12f} Max_Force\n", pos->maxForce());
   } else {
-    LOG_ERROR(log, "Failed to open results.dat for writing");
+    QUILL_LOG_ERROR(log, "Failed to open results.dat for writing");
   }
 
   return returnFiles;

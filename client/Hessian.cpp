@@ -55,7 +55,7 @@ bool Hessian::calculate(void) {
   // Determine the Hessian size
   int size = 0;
   size = atoms.rows() * 3;
-  LOG_DEBUG(log, "[Hessian] Hessian size: {}\n", size);
+  QUILL_LOG_DEBUG(log, "[Hessian] Hessian size: {}\n", size);
   if (size == 0) {
     return false;
   }
@@ -120,7 +120,7 @@ bool Hessian::calculate(void) {
   }
 
   if (!parameters.main_options.quiet) {
-    LOG_DEBUG(log, "[Hessian] writing hessian\n");
+    QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
     ofstream hessfile;
     hessfile.open("hessian.dat");
     hessfile << hessian;
@@ -129,10 +129,11 @@ bool Hessian::calculate(void) {
 
   double t0, t1;
   helper_functions::getTime(&t0, NULL, NULL);
-  LOG_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
+  QUILL_LOG_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
   helper_functions::getTime(&t1, NULL, NULL);
-  LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n", t1 - t0);
+  QUILL_LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
+                  t1 - t0);
   freqs = es.eigenvalues();
 
   return true;
@@ -147,7 +148,7 @@ bool Hessian::calculate(void) {
 // atoms?
 
 VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
-  LOG_DEBUG(log, "[Hessian] removing zero frequency modes");
+  QUILL_LOG_DEBUG(log, "[Hessian] removing zero frequency modes");
   int size = freqs.size();
   if (size != 3 * matter->numberOfAtoms()) {
     return freqs;
@@ -164,8 +165,9 @@ VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
   }
 
   if (nremoved != 6) {
-    LOG_ERROR(log, "[Hessian] [error] Found {} trivial eigenmodes instead of 6",
-              nremoved);
+    QUILL_LOG_ERROR(
+        log, "[Hessian] [error] Found {} trivial eigenmodes instead of 6",
+        nremoved);
   }
   return newfreqs.head(size - nremoved);
 }
