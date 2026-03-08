@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Eigen.h"
 #include "HelperFunctions.h"
@@ -18,28 +19,28 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class SteepestDescent final : public Optimizer {
 public:
   SteepestDescent(std::shared_ptr<ObjectiveFunction> a_objf,
                   const Parameters &a_params)
       : Optimizer(a_objf, OptType::SD, a_params),
-        iteration{0} {
-    if (spdlog::get("sd")) {
-      m_log = spdlog::get("sd");
-    } else {
-      m_log = spdlog::basic_logger_mt("sd", "_sd.log", true);
-    }
-    m_log->set_pattern("[%l] [SD] %v");
-  }
+        iteration{0} {}
   ~SteepestDescent() = default;
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
-  shared_ptr<spdlog::logger> m_log;
+  eonc::log::FileScoped m_log{"sd", "_sd.log"};
   Eigen::VectorXd getStep(Eigen::VectorXd a_f);
   size_t iteration;
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
 };
+
+} // namespace eonc
+
+using eonc::SteepestDescent;

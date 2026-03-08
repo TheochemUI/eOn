@@ -10,19 +10,25 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class MonteCarloJob : public Job {
 public:
   MonteCarloJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
-    log = spdlog::get("combi");
-  }
+      : Job(std::move(parameters)) {}
   ~MonteCarloJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::MonteCarloJob;

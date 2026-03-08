@@ -16,7 +16,11 @@
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gpr_optim/structures/Structures.h"
 
-namespace helper_functions {
+namespace eonc {
+
+
+
+namespace helpers {
 /**
  * \brief Create a parameters object for gpr_dimer
  *
@@ -44,4 +48,6 @@ gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
  */
 gpr::Observation eon_matter_to_init_obs(Matter *matter);
 
-} // namespace helper_functions
+} // namespace helpers
+
+} // namespace eonc

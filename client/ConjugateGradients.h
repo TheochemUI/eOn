@@ -11,10 +11,14 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "Optimizer.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 /**
  * @file
@@ -45,14 +49,7 @@ public:
       : Optimizer(a_objf, OptType::CG, a_params),
         m_directionOld{(a_objf->getPositions()).setZero()},
         m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
-        m_cg_i{0} {
-    if (spdlog::get("cg")) {
-      m_log = spdlog::get("cg");
-    } else {
-      m_log = spdlog::basic_logger_mt("cg", "_cg.log", true);
-    }
-    m_log->set_pattern("[%l] [CG] %v");
-  }
+        m_cg_i{0} {}
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
 
@@ -82,7 +79,7 @@ private:
   Eigen::VectorXd m_force;
   //! Previous force vector
   Eigen::VectorXd m_forceOld;
-  std::shared_ptr<spdlog::logger> m_log;
+  eonc::log::FileScoped m_log{"cg", "_cg.log"};
 
   //! Counts the number of discrete steps until algorithm convergence
   size_t m_cg_i;
@@ -99,3 +96,7 @@ private:
    */
   int line_search(double a_maxMove);
 };
+
+} // namespace eonc
+
+using eonc::ConjugateGradients;

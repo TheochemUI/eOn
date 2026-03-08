@@ -30,7 +30,7 @@ namespace tests {
 
 NEBTest::NEBTest()
     : params{},
-      pot{helper_functions::makePotential(PotType::MORSE_PT, params)},
+      pot{eonc::helpers::makePotential(PotType::MORSE_PT, params)},
       m1{new Matter(pot, params)},
       m2{new Matter(pot, params)},
       threshold{1e-3} {}
@@ -64,7 +64,7 @@ TEST_F(NEBTest, TestCreation) {
 
 TEST_F(NEBTest, TestObjective) {
   auto vecEq =
-      std::bind(helper_functions::eigenEquality<VectorXd>, _1, _2, 1e-4);
+      std::bind(eonc::helpers::eigenEquality<VectorXd>, _1, _2, 1e-4);
   VectorXd getPositions_{
       {9.95383, 11.7605, 12.2282, 9.3464,  11.462,  10.0695, 12.9505, 12.3277,
        11.0109, 11.9457, 12.7707, 10.2873, 13.1479, 11.0061, 11.1346, 12.3646,

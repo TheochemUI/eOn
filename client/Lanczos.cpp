@@ -17,14 +17,17 @@
 #include "Lanczos.h"
 #include "HelperFunctions.h"
 #include "Potential.h"
+#include "SafeMath.h"
 
+#include "EonLogger.h"
+using namespace std;
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
                  std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
   lowestEw = 0.0;
-  log = spdlog::get("combi");
+  /* Logger initialized via class member */
 }
 
 // The 1 character variables in this method match the variables in the
@@ -47,12 +50,19 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   }
 
   double alpha, beta = r.norm();
+  if (beta < eonc::safemath::eps) {
+    // Zero initial direction; cannot proceed with Lanczos
+    lowestEw = 0.0;
+    lowestEv.resize(matter->numberOfAtoms(), 3);
+    lowestEv.setZero();
+    return;
+  }
   double ew = 0, ewOld = 0, ewAbsRelErr;
   double dr = params.main_options.finiteDifference;
   VectorXd evEst, evT, evOldEst;
 
   VectorXd force1, force2;
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
   auto tmpMatter = std::make_unique<Matter>(pot, params);
   *tmpMatter = *matter;
@@ -91,7 +101,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
         ew = alpha;
         evEst = Q.col(0);
       }
-      SPDLOG_LOGGER_ERROR(log, "[ILanczos] ERROR: linear dependence");
+      QUILL_LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
       break;
     }
     // Check Eigenvalues
@@ -99,24 +109,25 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0, 0, i + 1, i + 1));
       ew = es.eigenvalues()(0);
       evT = es.eigenvectors().col(0);
-      ewAbsRelErr = fabs((ew - ewOld) / ewOld);
+      ewAbsRelErr =
+          eonc::safemath::safe_div(fabs(ew - ewOld), fabs(ewOld), 1.0);
       ewOld = ew;
 
       // Convert eigenvector of T matrix to eigenvector of full Hessian
       evEst = Q.block(0, 0, size, i + 1) * evT;
       evEst.normalize();
-      statsAngle =
-          acos(fabs(evEst.dot(evOldEst))) * (180 / helper_functions::pi);
+      statsAngle = eonc::safemath::safe_acos(fabs(evEst.dot(evOldEst))) *
+                   (180 / eonc::helpers::pi);
       statsTorque = ewAbsRelErr;
       evOldEst = evEst;
-      SPDLOG_LOGGER_INFO(log,
-                         "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
-                         "{:10.6f} {:7.3f} {:5}",
-                         "----", "----", "----", "----", ew, ewAbsRelErr,
-                         statsAngle, i);
+      QUILL_LOG_INFO(log,
+                     "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
+                     "{:10.6f} {:7.3f} {:5}",
+                     "----", "----", "----", "----", ew, ewAbsRelErr,
+                     statsAngle, i);
       if (ewAbsRelErr < params.lanczos_options.tolerance) {
-        SPDLOG_LOGGER_INFO(log, "[ILanczos] Tolerance reached: {}",
-                           params.lanczos_options.tolerance);
+        QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
+                       params.lanczos_options.tolerance);
         break;
       }
     } else {
@@ -127,19 +138,20 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       if (lowestEw != 0.0 && params.lanczos_options.quit_early) {
         double Cprev = lowestEw;
         double Cnew = u.dot(Q.col(i));
-        ewAbsRelErr = fabs((Cnew - Cprev) / Cprev);
+        ewAbsRelErr =
+            eonc::safemath::safe_div(fabs(Cnew - Cprev), fabs(Cprev), 1.0);
         if (ewAbsRelErr <= params.lanczos_options.tolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;
-          SPDLOG_LOGGER_INFO(log, "[ILanczos] Tolerance reached: {}",
-                             params.lanczos_options.tolerance);
+          QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
+                         params.lanczos_options.tolerance);
           break;
         }
       }
     }
 
     if (i >= params.lanczos_options.max_iterations - 1) {
-      SPDLOG_LOGGER_ERROR(log, "[ILanczos] Max iterations");
+      QUILL_LOG_ERROR(log, "[ILanczos] Max iterations");
       break;
     }
   }

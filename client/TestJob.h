@@ -15,6 +15,9 @@
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class TestJob : public Job {
 public:
   TestJob(std::unique_ptr<Parameters> params)
@@ -28,6 +31,10 @@ private:
   void checkFullSearch(void);
   void checkMode(void);
   void checkPotentials(void);
-  double getEnergyDiff(string potTag, double refEnergy);
-  double getForceDiff(string potTag, double refForce);
+  double getEnergyDiff(std::string potTag, double refEnergy);
+  double getForceDiff(std::string potTag, double refForce);
 };
+
+} // namespace eonc
+
+using eonc::TestJob;

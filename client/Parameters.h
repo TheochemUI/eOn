@@ -20,14 +20,14 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 #ifdef EONMPI
 #include "mpi.h"
 #endif
 
 /** Contains all runtime parameters and results. No functionality just
  * bookkeeping.*/
+namespace eonc {
+
 class Parameters {
 
 public:
@@ -35,7 +35,7 @@ public:
   ~Parameters() = default;
   // TODO: Is this complete?
   Parameters(const Parameters &) = default;
-  int load(string filename);
+  int load(std::string filename);
   int load(FILE *file);
 
   /** string constants: declared here, defined in Parameters.cpp. **/
@@ -59,8 +59,8 @@ public:
     bool quiet;
     bool writeLog;
     bool checkpoint;
-    string iniFilename;
-    string conFilename;
+    std::string iniFilename;
+    std::string conFilename;
     double finiteDifference;
     long maxForceCalls;
     bool removeNetForce;
@@ -74,7 +74,7 @@ public:
     int LAMMPSThreads;
     bool EMTRasmussen;
     bool LogPotential;
-    string extPotPath;
+    std::string extPotPath;
     int MPIPotentialRank;
 #ifdef EONMPI
     MPI_Comm MPIClientComm;
@@ -83,25 +83,25 @@ public:
 
   // [AMS] and [AMS_IO] //
   struct ams_options_t {
-    string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
-    string forcefield; // OPt.ff etc. (REAXFF)
-    string model;      // Model hamiltonian (MOPAC)
-    string resources;  // DFTB
-    string xc;         // Exchange (BAND, ADF)
-    string basis;      // Basis (BAND, ADF)
+    std::string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
+    std::string forcefield; // OPt.ff etc. (REAXFF)
+    std::string model;      // Model hamiltonian (MOPAC)
+    std::string resources;  // DFTB
+    std::string xc;         // Exchange (BAND, ADF)
+    std::string basis;      // Basis (BAND, ADF)
     struct env_t {
-      string amshome;
-      string scm_tmpdir;
-      string scmlicense;
-      string scm_pythondir;
-      string amsbin;
-      string amsresources;
+      std::string amshome;
+      std::string scm_tmpdir;
+      std::string scmlicense;
+      std::string scm_pythondir;
+      std::string amsbin;
+      std::string amsresources;
     } env;
   } ams_options;
 
   // [XTBPot] //
   struct xtb_options_t {
-    string paramset;
+    std::string paramset;
     double elec_temperature;
     size_t maxiter;
     double acc;
@@ -146,9 +146,9 @@ public:
   struct saddle_search_options_t {
     long max_jump_attempts;
     long max_iterations;
-    string method;
-    string minmode_method;
-    string displace_type;
+    std::string method;
+    std::string minmode_method;
+    std::string displace_type;
     std::vector<long> displace_atom_list;
     double max_energy;
     double displace_magnitude;
@@ -184,8 +184,8 @@ public:
   // [Optimizer] //
   struct optimizer_options_t {
     OptType method;
-    string convergence_metric; // norm, max_atom, max_component
-    string convergence_metric_label;
+    std::string convergence_metric; // norm, max_atom, max_component
+    std::string convergence_metric_label;
     size_t max_iterations;
     double max_move;
     double converged_force;
@@ -228,7 +228,7 @@ public:
     bool improved;
     double converged_angle;
     long max_iterations;
-    string opt_method;
+    std::string opt_method;
     long rotations_max;
     long rotations_min;
     double torque_max;
@@ -247,8 +247,8 @@ public:
     long max_outer_iterations;
     long max_inner_iterations;
     double midpoint_max_disp;
-    string rot_opt_method;
-    string trans_opt_method;
+    std::string rot_opt_method;
+    std::string trans_opt_method;
     double active_radius;
     double dimer_sep;
     double conv_step;
@@ -258,7 +258,7 @@ public:
     bool init_trans_gp;
     bool many_iterations;
     struct gpr_params_t {
-      string hyper_opt_method;
+      std::string hyper_opt_method;
       double sigma2;
       double jitter_sigma2;
       double noise_sigma2;
@@ -283,11 +283,11 @@ public:
     struct debug_params_t {
       int report_level;
       int debug_level;
-      string out_dir;
-      string pos_file;
-      string energy_file;
-      string grad_file;
-      string out_ext;
+      std::string out_dir;
+      std::string pos_file;
+      std::string energy_file;
+      std::string grad_file;
+      std::string out_ext;
       double offset_mid_point;
       double dy;
       double dz;
@@ -362,16 +362,16 @@ public:
     double min_value;
     double within_radius;
     double min_displacement;
-    string rate;
-    string configuration;
+    std::string rate;
+    std::string configuration;
     bool all_free_atoms;
-    string filter_scheme;
+    std::string filter_scheme;
     double filter_fraction;
   } prefactor_options;
 
   // [Hessian] //
   struct hessian_options_t {
-    string atom_list;
+    std::string atom_list;
     double zero_freq_value;
   } hessian_options;
 
@@ -499,7 +499,7 @@ public:
 
   // [Thermostat] //
   struct thermostat_options_t {
-    string kind;
+    std::string kind;
     double andersen_alpha;
     double andersen_tcol_input;
     double andersen_tcol;
@@ -510,7 +510,7 @@ public:
 
   // [Replica Exchange] //
   struct replica_exchange_options_t {
-    string temperature_distribution;
+    std::string temperature_distribution;
     long replicas;
     long exchange_trials;
     double sampling_time_input;
@@ -523,8 +523,8 @@ public:
 
   // [Bond Boost / Hyperdynamics] //
   struct hyperdynamics_options_t {
-    string bias_potential;
-    string boost_atom_list;
+    std::string bias_potential;
+    std::string boost_atom_list;
     double rmd_time_input;
     double rmd_time;
     double dvmax;
@@ -542,8 +542,8 @@ public:
     long quenching_steps;
     bool significant_structure;
     bool single_atom_displace;
-    string displacement_algorithm;
-    string displacement_distribution;
+    std::string displacement_algorithm;
+    std::string displacement_distribution;
     double swap_probability;
     long jump_max;
     long jump_steps;
@@ -557,8 +557,8 @@ public:
 
   // [Global Optimization] //
   struct global_optimization_options_t {
-    string move_method;
-    string decision_method;
+    std::string move_method;
+    std::string decision_method;
     long steps;
     double beta;
     double alpha;
@@ -584,11 +584,11 @@ public:
 
   // [Serve] //
   struct serve_options_t {
-    string host;
+    std::string host;
     uint16_t port;
     size_t replicas;
     uint16_t gateway_port; // 0 = disabled
-    string endpoints;      // "pot:port,pot:host:port,..." spec string
+    std::string endpoints;      // "pot:port,pot:host:port,..." spec string
   } serve_options;
 
   // [Debug] //
@@ -596,9 +596,13 @@ public:
     bool write_movies;
     long write_movies_interval;
     bool estimate_neb_eigenvalues;
-    string neb_mmf;
+    std::string neb_mmf;
   } debug_options;
 
 private:
-  string toLowerCase(string s);
+  std::string toLowerCase(std::string s);
 };
+
+} // namespace eonc
+
+using eonc::Parameters;

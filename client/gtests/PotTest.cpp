@@ -29,7 +29,7 @@ public:
   ~PotTest() {}
 
   void SetUp() {
-    pot_default = helper_functions::makePotential(PotType::LJ, params);
+    pot_default = eonc::helpers::makePotential(PotType::LJ, params);
     m1 = std::make_shared<Matter>(pot_default, params);
     std::string confile("pos.con");
     m1->con2matter(confile);
@@ -49,11 +49,11 @@ TEST_CASE_METHOD(PotTest, "getType", "[PotTest]") {
   auto params = Parameters{};
   params.potential_options.potential = PotType::LJ;
   std::shared_ptr<Potential> pot =
-      helper_functions::makePotential(PotType::LJ, params);
+      eonc::helpers::makePotential(PotType::LJ, params);
   REQUIRE(pot->getType() == PotType::LJ);
   params.potential_options.potential = PotType::MORSE_PT;
   std::shared_ptr<Potential> pot2 =
-      helper_functions::makePotential(PotType::MORSE_PT, params);
+      eonc::helpers::makePotential(PotType::MORSE_PT, params);
   REQUIRE(pot2->getType() == PotType::MORSE_PT);
   TearDown();
 }
@@ -61,7 +61,7 @@ TEST_CASE_METHOD(PotTest, "getType", "[PotTest]") {
 TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
   SetUp();
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
 
   double energy_lj{-8.9245539406};
   AtomMatrix forces_lj{MatrixXd::Zero(m1->numberOfAtoms(), 3)};
@@ -82,7 +82,7 @@ TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
       209.073, -38.7473, -50.0734;
 
   params.potential_options.potential = PotType::LJ;
-  std::shared_ptr<Potential> pot = helper_functions::makePotential(
+  std::shared_ptr<Potential> pot = eonc::helpers::makePotential(
       params.potential_options.potential, params);
   double e_lj{0};
   AtomMatrix f_lj = MatrixXd::Ones(m1->numberOfAtoms(), 3);
@@ -96,7 +96,7 @@ TEST_CASE_METHOD(PotTest, "callForce", "[PotTest]") {
   double e_morse{0};
   AtomMatrix f_morse = MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params.potential_options.potential = PotType::MORSE_PT;
-  std::shared_ptr<Potential> pot2 = helper_functions::makePotential(
+  std::shared_ptr<Potential> pot2 = eonc::helpers::makePotential(
       params.potential_options.potential, params);
   REQUIRE(pot2 != pot);
 

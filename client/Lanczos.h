@@ -11,9 +11,14 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
+
 #include "LowestEigenmode.h"
 #include "Matter.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 // Lanczos method to find the lowest curvature mode
 class Lanczos : public LowestEigenmode {
@@ -29,5 +34,9 @@ public:
 private:
   AtomMatrix lowestEv;
   double lowestEw;
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::Lanczos;

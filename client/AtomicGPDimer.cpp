@@ -21,6 +21,7 @@
 #include "subprojects/gpr_optim/gpr/AtomicDimer.h"
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gpr_optim/structures/Structures.h"
+using namespace std;
 
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
@@ -31,7 +32,7 @@ AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
     : LowestEigenmode(pot, params) {
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
-  p = helper_functions::eon_parameters_to_gpr(params);
+  p = eonc::helpers::eon_parameters_to_gpr(params);
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = matter->getCell()(i);
   }
@@ -39,7 +40,7 @@ AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
 
 void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
-  atoms_config = helper_functions::eon_matter_to_atmconf(matter.get());
+  atoms_config = eonc::helpers::eon_matter_to_atmconf(matter.get());
   // R_init.resize(1, matterCenter->getPositionsFree().size());
   // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());
   R_init.resize(1, matterCenter->getPositionsFree().rows() *
@@ -81,7 +82,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                           atoms_config);
 
   // Potential *potential = Potential::getPotential(parameters);
-  auto potential = helper_functions::makePotential(params);
+  auto potential = eonc::helpers::makePotential(params);
   pot::PotentialWrapper wrapper(
       [&potential](long N, const double *R, const int *atomicNrs, double *F,
                    double *U, double *variance, const double *box) {

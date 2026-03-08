@@ -17,6 +17,8 @@
 
 #include <stdlib.h>
 
+using namespace std;
+
 std::vector<std::string> TestJob::run(void) {
   checkPotentials();
   checkFullSearch();

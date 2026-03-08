@@ -39,7 +39,7 @@ if host_system == 'darwin'
     add_global_arguments(['-faligned-allocation'], language: 'cpp')
 endif
 if is_windows
-    _args += ['-DIS_WINDOWS']
+    _args += ['-DIS_WINDOWS', '-DNOMINMAX']
     # The EAM Al Fortran potential (gagafeDblexp.f) allocates ~3.6 MB of local
     # arrays on the stack (phi/phivirst dimensioned at MAXPRS=200000).  The
     # Windows default stack is only 1 MB, causing STATUS_STACK_OVERFLOW.
@@ -193,8 +193,9 @@ if not eigen_dep.found()
 endif
 _deps += [eigen_dep]
 
-spdlog_dep = dependency('spdlog', required: true)
-_deps += spdlog_dep
+quill_dep = dependency('quill', required: true)
+_deps += quill_dep
+_args += ['-DQUILL_DISABLE_NON_PREFIXED_MACROS']
 
 eoncbase_sources = ['INIFile.cpp', 'fpe_handler.cpp']
 
@@ -344,7 +345,6 @@ if get_option('with_water')
 endif
 
 if get_option('with_ams')
-    fmt_dep = dependency('fmt', required: true)
     # Optional, only for AMS
     absl_dep = dependency(
         'absl',
@@ -362,7 +362,7 @@ if get_option('with_ams')
         modules: ['headers', 'asio', 'iostreams'],
         required: true,
     )
-    ams_dep = [boost_ams_dep, absl_dep, fmt_dep]
+    ams_dep = [boost_ams_dep, absl_dep]
     _deps += ams_dep
     # End AMS
     subdir('potentials/AMS')
@@ -502,6 +502,14 @@ if get_option('with_metatomic')
 
     if get_option('pip_metatomic')
         torch_ver = get_option('torch_version')
+        mts_inc_args = []
+        foreach d : [
+            py.get_install_dir() / 'metatensor' / 'include',
+            py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
+            py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
+        ]
+            mts_inc_args += ['-isystem', d]
+        endforeach
         mts_dep = declare_dependency(
             dependencies: [
                 cppc.find_library(
@@ -521,11 +529,7 @@ if get_option('with_metatomic')
                     ],
                 ),
             ],
-            include_directories: include_directories(
-                py.get_install_dir() / 'metatensor' / 'include',
-                py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
-                py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
-            ),
+            compile_args: mts_inc_args,
         )
         vesin_dep = cppc.find_library(
             'vesin',
@@ -541,9 +545,7 @@ if get_option('with_metatomic')
                         required: false,
                     ),
                 ],
-                include_directories: include_directories(
-                    py.get_install_dir() / 'vesin' / 'include',
-                ),
+                compile_args: ['-isystem', py.get_install_dir() / 'vesin' / 'include'],
             )
         endif
     else

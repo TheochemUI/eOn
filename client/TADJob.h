@@ -10,17 +10,19 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class TADJob : public Job {
 public:
   TADJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
-    log = spdlog::get("combi");
-  }
+      : Job(std::move(parameters)) {}
   ~TADJob() = default;
   std::vector<std::string> run(void);
 
@@ -40,7 +42,7 @@ private:
   std::shared_ptr<Matter> final_state;
   std::shared_ptr<Matter> final_tmp;
   std::shared_ptr<Matter> product;
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 
   bool metaStateFlag;
   bool newStateFlag;
@@ -61,3 +63,7 @@ private:
 
   std::vector<std::string> returnFiles;
 };
+
+} // namespace eonc
+
+using eonc::TADJob;

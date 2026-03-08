@@ -13,7 +13,11 @@
 #include "Matter.h"
 #include "Parameters.h"
 
-namespace helper_functions {
+namespace eonc {
+
+
+
+namespace helpers {
 
 /**
  * \brief Check two eigen objects for equality
@@ -26,4 +30,6 @@ bool eigenEquality(const Eigen::MatrixBase<T> &lhs,
                    const double threshold = 1e-4) {
   return lhs.isApprox(rhs, threshold);
 }
-} // namespace helper_functions
+} // namespace helpers
+
+} // namespace eonc

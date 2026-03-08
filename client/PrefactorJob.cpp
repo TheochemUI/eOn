@@ -16,6 +16,8 @@
 #include "Potential.h"
 #include "Prefactor.h"
 
+using namespace std;
+
 const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
 const char PrefactorJob::PREFACTOR_SADDLE[] = "saddle";
 const char PrefactorJob::PREFACTOR_PRODUCT[] = "product";
@@ -36,7 +38,7 @@ std::vector<std::string> PrefactorJob::run(void) {
   saddle->con2matter("saddle.con");
   product->con2matter("product.con");
   double pref1, pref2;
-  Prefactor::getPrefactors(params, reactant.get(), saddle.get(), product.get(),
+  eonc::Prefactor::getPrefactors(params, reactant.get(), saddle.get(), product.get(),
                            pref1, pref2);
   // printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
 
@@ -60,14 +62,14 @@ std::vector<std::string> PrefactorJob::run(void) {
     product->con2matter(matterFilename);
 
     // account for all free atoms
-    atoms = Prefactor::allFreeAtoms(reactant.get());
+    atoms = eonc::Prefactor::allFreeAtoms(reactant.get());
   } else {
     reactant->con2matter(reactantFilename);
     saddle->con2matter(saddleFilename);
     product->con2matter(productFilename);
 
     // determine which atoms moved in the process
-    atoms = Prefactor::movedAtoms(params, reactant.get(), saddle.get(),
+    atoms = eonc::Prefactor::movedAtoms(params, reactant.get(), saddle.get(),
                                   product.get());
   }
   assert(3 * atoms.rows() > 0);
@@ -108,10 +110,10 @@ std::vector<std::string> PrefactorJob::run(void) {
     for (int i = 0; i < freqs.size(); i++) {
       if (0. < freqs[i]) {
         fprintf(fileFreq, "%f\n",
-                sqrt(freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
+                sqrt(freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
       } else {
         fprintf(fileFreq, "%f\n",
-                -sqrt(-freqs[i]) / (2 * helper_functions::pi * 10.18e-15));
+                -sqrt(-freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
       }
     }
   }

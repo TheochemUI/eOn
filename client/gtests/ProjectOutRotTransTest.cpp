@@ -60,7 +60,7 @@ TEST_CASE("projectOutRotTrans removes pure translation",
     step(3 * i + 0) = 0.5; // dx = 0.5 for all atoms
   }
 
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
 
   // After projection, the step should be nearly zero
   REQUIRE_THAT(step.norm(), WithinAbs(0.0, 1e-12));
@@ -79,7 +79,7 @@ TEST_CASE("projectOutRotTrans removes pure translation in all directions",
     step(3 * i + 2) = 3.0;
   }
 
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
 
   REQUIRE_THAT(step.norm(), WithinAbs(0.0, 1e-12));
 }
@@ -102,7 +102,7 @@ TEST_CASE("projectOutRotTrans removes infinitesimal rotation",
     step(3 * i + 2) = 0.0;
   }
 
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
 
   REQUIRE_THAT(step.norm(), WithinAbs(0.0, 1e-10));
 }
@@ -151,11 +151,11 @@ TEST_CASE("projectOutRotTrans preserves pure internal motion",
   step(8) = -0.1;
 
   // First projection: get pure internal component
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
   Eigen::VectorXd internal_step = step;
 
   // Second projection should not change it (idempotent)
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
 
   REQUIRE_THAT((step - internal_step).norm(), WithinAbs(0.0, 1e-14));
 }
@@ -169,10 +169,10 @@ TEST_CASE("projectOutRotTrans is idempotent",
   Eigen::VectorXd step(n);
   step << 0.1, -0.2, 0.3, 0.4, -0.5, 0.6, -0.7, 0.8, -0.9;
 
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
   Eigen::VectorXd after_first = step;
 
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
 
   REQUIRE_THAT((step - after_first).norm(), WithinAbs(0.0, 1e-14));
 }
@@ -199,7 +199,7 @@ TEST_CASE("projectOutRotTrans removes mixed translation and rotation",
     step(3 * i + 1) += x * theta;
   }
 
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
 
   // Should be very close to zero (only rigid-body motion, no internal DOF)
   REQUIRE_THAT(step.norm(), WithinAbs(0.0, 1e-10));
@@ -220,7 +220,7 @@ TEST_CASE("projectOutRotTrans handles linear molecule (5 DOF not 6)",
   stretch(3) = 0.5;  // atom 1, x
   Eigen::VectorXd stretch_orig = stretch;
 
-  helper_functions::projectOutRotTrans(stretch, pos);
+  eonc::helpers::projectOutRotTrans(stretch, pos);
 
   // Bond stretch should be preserved (it's internal)
   REQUIRE_THAT((stretch - stretch_orig).norm(), WithinAbs(0.0, 1e-12));
@@ -230,7 +230,7 @@ TEST_CASE("projectOutRotTrans handles linear molecule (5 DOF not 6)",
   trans(0) = 1.0;
   trans(3) = 1.0; // both atoms move +x
 
-  helper_functions::projectOutRotTrans(trans, pos);
+  eonc::helpers::projectOutRotTrans(trans, pos);
   REQUIRE_THAT(trans.norm(), WithinAbs(0.0, 1e-12));
 
   // Rotation about y-axis (perpendicular to bond)
@@ -243,7 +243,7 @@ TEST_CASE("projectOutRotTrans handles linear molecule (5 DOF not 6)",
     rot(3 * i + 2) = -x * theta;
   }
 
-  helper_functions::projectOutRotTrans(rot, pos);
+  eonc::helpers::projectOutRotTrans(rot, pos);
   REQUIRE_THAT(rot.norm(), WithinAbs(0.0, 1e-10));
 }
 
@@ -257,7 +257,7 @@ TEST_CASE("projectOutRotTrans preserves norm of internal component",
   step << 0.1, -0.2, 0.3, 0.4, -0.5, 0.6, -0.7, 0.8, -0.9;
 
   double norm_before = step.norm();
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
   double norm_after = step.norm();
 
   // Projection can only reduce norm (Pythagorean theorem in the subspace)
@@ -274,7 +274,7 @@ TEST_CASE("projectOutRotTrans with single atom is a no-op for internal motion",
   Eigen::VectorXd step(n);
   step << 0.5, -0.3, 0.7;
 
-  helper_functions::projectOutRotTrans(step, pos);
+  eonc::helpers::projectOutRotTrans(step, pos);
 
   // All motion of a single atom is translation -> should be fully removed
   REQUIRE_THAT(step.norm(), WithinAbs(0.0, 1e-12));

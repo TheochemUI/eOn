@@ -15,12 +15,14 @@
 #include "HelperFunctions.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
+#include "SafeMath.h"
 #include "SurrogatePotential.h"
 
+#include "EonLogger.h"
 // To write the R style data frame
-#include <fmt/os.h>
+#include <format>
+#include <fstream>
 #include <memory>
-#include <spdlog/spdlog.h>
 #include <stdexcept>
 
 using namespace std;
@@ -85,8 +87,8 @@ public:
     } else if (params.optimizer_options.convergence_metric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
-                      params.optimizer_options.convergence_metric);
+      EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
+                        params.optimizer_options.convergence_metric);
       std::exit(1);
     }
   }
@@ -128,7 +130,7 @@ const Matter &Matter::operator=(const Matter &matter) {
 // The == comparison considers identity. This is crucial for process search.
 // bool Matter::operator==(const Matter& matter) {
 //     if(parameters->structure_comparison_options.check_rotation) {
-//         return helper_functions::rotationMatch(this, &matter,
+//         return eonc::helpers::rotationMatch(this, &matter,
 //         parameters->structure_comparison_options.distance_difference);
 //     }else{
 //         return (parameters->structure_comparison_options.distance_difference)
@@ -141,24 +143,24 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
     return false;
   if (parameters->structure_comparison_options.check_rotation &&
       indistinguishable) {
-    return helper_functions::sortedR(
+    return eonc::helpers::sortedR(
         *this, matter,
         parameters->structure_comparison_options.distance_difference);
   } else if (indistinguishable) {
     if (this->numberOfFixedAtoms() == 0 and
         parameters->structure_comparison_options.remove_translation)
-      helper_functions::translationRemove(*this, matter);
-    return helper_functions::identical(
+      eonc::helpers::translationRemove(*this, matter);
+    return eonc::helpers::identical(
         *this, matter,
         parameters->structure_comparison_options.distance_difference);
   } else if (parameters->structure_comparison_options.check_rotation) {
-    return helper_functions::rotationMatch(
+    return eonc::helpers::rotationMatch(
         *this, matter,
         parameters->structure_comparison_options.distance_difference);
   } else {
     if (this->numberOfFixedAtoms() == 0 and
         parameters->structure_comparison_options.remove_translation)
-      helper_functions::translationRemove(*this, matter);
+      eonc::helpers::translationRemove(*this, matter);
     return (parameters->structure_comparison_options.distance_difference) >
            perAtomNorm(matter);
   }
@@ -284,7 +286,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    string prefixMovie, string prefixCheckpoint) {
   auto objf = std::make_shared<MatterObjectiveFunction>(
       std::make_shared<Matter>(*this), *parameters);
-  auto optim = helpers::create::mkOptim(
+  auto optim = eonc::helpers::create::mkOptim(
       objf, parameters->optimizer_options.method, *parameters);
 
   ostringstream min;
@@ -295,13 +297,13 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
 
   int iteration = 0;
   if (!quiet) {
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n",
-                        "[Matter]", "Iter", "Step size",
-                        parameters->optimizer_options.convergence_metric_label,
-                        "Energy");
-    SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
-                        "[Matter]", iteration, 0.0, objf->getConvergence(),
-                        getPotentialEnergy());
+    QUILL_LOG_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
+                    "Iter", "Step size",
+                    parameters->optimizer_options.convergence_metric_label,
+                    "Energy");
+    QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+                    "[Matter]", iteration, 0.0, objf->getConvergence(),
+                    getPotentialEnergy());
   }
 
   while (!objf->isConverged() &&
@@ -314,12 +316,12 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
     setPositionsFreeV(objf->getPositions());
 
     double stepSize =
-        helper_functions::maxAtomMotion(pbc(getPositions() - pos));
+        eonc::helpers::maxAtomMotion(pbc(getPositions() - pos));
 
     if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, stepSize,
-                          objf->getConvergence(), getPotentialEnergy());
+      QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+                      "[Matter]", iteration, stepSize, objf->getConvergence(),
+                      getPotentialEnergy());
     }
 
     if (writeMovie) {
@@ -335,9 +337,9 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
 
   if (iteration == 0) {
     if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, 0.0, objf->getConvergence(),
-                          getPotentialEnergy());
+      QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+                      "[Matter]", iteration, 0.0, objf->getConvergence(),
+                      getPotentialEnergy());
     }
   }
   //    bool converged =
@@ -592,10 +594,10 @@ bool Matter::matter2con(FILE *file) {
         atomicNrs[j]) { // check if there is a second component
       j++;
       if (j >= MAXC) {
-        SPDLOG_LOGGER_ERROR(m_log,
-                            "Does not support more than {} components and the "
-                            "atoms must be ordered by component.",
-                            MAXC);
+        QUILL_LOG_ERROR(m_log,
+                        "Does not support more than {} components and the "
+                        "atoms must be ordered by component.",
+                        MAXC);
         return false;
       };
       mass[j] = getMass(i);
@@ -614,12 +616,15 @@ bool Matter::matter2con(FILE *file) {
   lengths[2] = cell.row(2).norm();
   fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
   double angles[3];
-  angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
-              180 / helper_functions::pi;
-  angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
-              180 / helper_functions::pi;
-  angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
-              180 / helper_functions::pi;
+  angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
+              180 / eonc::helpers::pi;
+  angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
+              180 / eonc::helpers::pi;
+  angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
+              180 / eonc::helpers::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
   fputs(headerCon6, file);
@@ -655,7 +660,7 @@ bool Matter::con2matter(std::string filename) {
   }
   file = fopen(filename.c_str(), "rb");
   if (!file) {
-    SPDLOG_LOGGER_ERROR(m_log, "File {} was not found.", filename);
+    QUILL_LOG_ERROR(m_log, "File {} was not found.", filename);
     return (false);
   }
   state = con2matter(file);
@@ -696,16 +701,17 @@ bool Matter::con2matter(FILE *file) {
     cell(1, 1) = lengths[1];
     cell(2, 2) = lengths[2];
   } else {
-    angles[0] *= helper_functions::pi / 180.0;
-    angles[1] *= helper_functions::pi / 180.0;
-    angles[2] *= helper_functions::pi / 180.0;
+    angles[0] *= eonc::helpers::pi / 180.0;
+    angles[1] *= eonc::helpers::pi / 180.0;
+    angles[2] *= eonc::helpers::pi / 180.0;
 
     cell(0, 0) = 1.0;
     cell(1, 0) = cos(angles[0]);
     cell(1, 1) = sin(angles[0]);
     cell(2, 0) = cos(angles[1]);
     cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
+    cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
+                                           pow(cell(2, 1), 2));
 
     cell(0, 0) *= lengths[0];
     cell(1, 0) *= lengths[1];
@@ -723,12 +729,12 @@ bool Matter::con2matter(FILE *file) {
   int Ncomponent; // Number of components or different types of atoms  (eg
                   // water: two components H and O)
   if (sscanf(line, "%d", &Ncomponent) == 0) {
-    SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
-                              "component is assumed instead");
+    QUILL_LOG_INFO(m_log, "The number of components cannot be read. One "
+                          "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    SPDLOG_LOGGER_ERROR(
+    QUILL_LOG_ERROR(
         m_log,
         "con2atoms doesn't support more that {} components or less than 1",
         MAXC);
@@ -748,12 +754,12 @@ bool Matter::con2matter(FILE *file) {
   char *split = strtok(line, " \t");
   for (j = 0; j < Ncomponent; j++) {
     if (split == NULL) {
-      SPDLOG_LOGGER_ERROR(
+      QUILL_LOG_ERROR(
           m_log, "input con file does not list the number of each component");
       return false;
     }
     if (sscanf(split, "%ld", &Natoms) != 1) {
-      SPDLOG_LOGGER_ERROR(
+      QUILL_LOG_ERROR(
           m_log, "input con file does not list the number of each component");
       return false;
     }
@@ -774,13 +780,13 @@ bool Matter::con2matter(FILE *file) {
     // Now we want to know the number of atom of each type. Ex with
     // H2O, two hydrogens and one oxygen
     if (split == NULL) {
-      SPDLOG_LOGGER_ERROR(m_log, "input con file does not list enough masses");
+      QUILL_LOG_ERROR(m_log, "input con file does not list enough masses");
       return false;
     }
     // *1* seems like a bug as a result of copying and pasting from above
     // *1*       if(sscanf(split, "%ld", &Natoms)!=1)
     if (sscanf(split, "%lf", &mass[j]) != 1) {
-      SPDLOG_LOGGER_ERROR(m_log, "input con file does not list enough masses");
+      QUILL_LOG_ERROR(m_log, "input con file does not list enough masses");
       return false;
     }
     // *1*       sscanf(line, "%lf", &mass[j]);
@@ -803,7 +809,7 @@ bool Matter::con2matter(FILE *file) {
       setAtomicNr(i, atomicNr);
       fgets(line, sizeof(line), file);
       if (strlen(line) < 6) {
-        SPDLOG_LOGGER_ERROR(m_log, "error parsing position in con file");
+        QUILL_LOG_ERROR(m_log, "error parsing position in con file");
         return false;
       }
 
@@ -828,7 +834,7 @@ void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
-      potential = helper_functions::makePotential(
+      potential = eonc::helpers::makePotential(
           parameters->potential_options.potential, *parameters);
     }
     auto surrogatePotential =
@@ -987,10 +993,10 @@ bool Matter::matter2convel(FILE *file) {
         atomicNrs[j]) { // check if there is a second component
       j++;
       if (j >= MAXC) {
-        SPDLOG_LOGGER_ERROR(m_log,
-                            "Does not support more than {} components and the "
-                            "atoms must be ordered by component.",
-                            MAXC);
+        QUILL_LOG_ERROR(m_log,
+                        "Does not support more than {} components and the "
+                        "atoms must be ordered by component.",
+                        MAXC);
         return false;
       }
       mass[j] = getMass(i);
@@ -1009,12 +1015,15 @@ bool Matter::matter2convel(FILE *file) {
   lengths[2] = cell.row(2).norm();
   fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
   double angles[3];
-  angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
-              180 / helper_functions::pi;
-  angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
-              180 / helper_functions::pi;
-  angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
-              180 / helper_functions::pi;
+  angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
+              180 / eonc::helpers::pi;
+  angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
+              180 / eonc::helpers::pi;
+  angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
+              180 / eonc::helpers::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
   fputs(headerCon6, file);
@@ -1060,7 +1069,7 @@ bool Matter::convel2matter(std::string filename) {
   }
   file = fopen(filename.c_str(), "rb");
   if (!file) {
-    SPDLOG_LOGGER_ERROR(m_log, "File {} was not found.", filename);
+    QUILL_LOG_ERROR(m_log, "File {} was not found.", filename);
     return (false);
   }
   state = convel2matter(file);
@@ -1101,16 +1110,17 @@ bool Matter::convel2matter(FILE *file) {
     cell(1, 1) = lengths[1];
     cell(2, 2) = lengths[2];
   } else {
-    angles[0] *= helper_functions::pi / 180.0;
-    angles[1] *= helper_functions::pi / 180.0;
-    angles[2] *= helper_functions::pi / 180.0;
+    angles[0] *= eonc::helpers::pi / 180.0;
+    angles[1] *= eonc::helpers::pi / 180.0;
+    angles[2] *= eonc::helpers::pi / 180.0;
 
     cell(0, 0) = 1.0;
     cell(1, 0) = cos(angles[0]);
     cell(1, 1) = sin(angles[0]);
     cell(2, 0) = cos(angles[1]);
     cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
+    cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
+                                           pow(cell(2, 1), 2));
 
     cell(0, 0) *= lengths[0];
     cell(1, 0) *= lengths[1];
@@ -1128,12 +1138,12 @@ bool Matter::convel2matter(FILE *file) {
   int Ncomponent; // Number of components or different types of atoms. For
                   // instance H2O has two components (H and O).
   if (sscanf(line, "%d", &Ncomponent) == 0) {
-    SPDLOG_LOGGER_INFO(m_log, "The number of components cannot be read. One "
-                              "component is assumed instead");
+    QUILL_LOG_INFO(m_log, "The number of components cannot be read. One "
+                          "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    SPDLOG_LOGGER_ERROR(
+    QUILL_LOG_ERROR(
         m_log,
         "con2atoms doesn't support more that {} components or less than 1",
         MAXC);
@@ -1208,23 +1218,18 @@ bool Matter::convel2matter(FILE *file) {
 }
 
 void Matter::writeTibble(std::string fname) {
-  using namespace fmt::literals;
-  auto out = fmt::output_file(fname);
   AtomMatrix fSys = this->getForces();
+  std::ofstream out(fname);
   double eSys = this->getPotentialEnergy();
   AtomMatrix pos = this->getPositions();
-  out.print("x y z fx fy fz energy mass symbol atmID fixed\n");
+  out << "x y z fx fy fz energy mass symbol atmID fixed\n";
   for (auto idx{0}; idx < this->numberOfAtoms(); idx++) {
-    out.print(
-        "{x} {y} {z} {fx} {fy} {fz} {energy} {mass} {symbol} {idx} {fixed}\n",
-        "x"_a = pos.row(idx)[0], "y"_a = pos.row(idx)[1],
-        "z"_a = pos.row(idx)[2], "fx"_a = fSys.row(idx)[0],
-        "fy"_a = fSys.row(idx)[1], "fz"_a = fSys.row(idx)[2], "energy"_a = eSys,
-        "mass"_a = this->getMass(idx),
-        "symbol"_a = atomicNumber2symbol(this->getAtomicNr(idx)),
-        "idx"_a = (idx + 1),
-        "fixed"_a =
-            this->getFixed(idx)); // NOTE: idx MAY not be the same id as before
+    out << std::format(
+        "{} {} {} {} {} {} {} {} {} {} {}\n", pos.row(idx)[0], pos.row(idx)[1],
+        pos.row(idx)[2], fSys.row(idx)[0], fSys.row(idx)[1], fSys.row(idx)[2],
+        eSys, this->getMass(idx), atomicNumber2symbol(this->getAtomicNr(idx)),
+        (idx + 1),
+        this->getFixed(idx)); // NOTE: idx MAY not be the same id as before
   }
   return;
 }

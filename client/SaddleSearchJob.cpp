@@ -31,9 +31,9 @@ std::vector<std::string> SaddleSearchJob::run(void) {
     if (disp != NULL && mode != NULL) {
       displacementFilename = "displacement_cp.con";
       modeFilename = "mode_cp.dat";
-      SPDLOG_LOGGER_DEBUG(log, "Resuming from checkpoint");
+      QUILL_LOG_DEBUG(log, "Resuming from checkpoint");
     } else {
-      SPDLOG_LOGGER_DEBUG(log, "No checkpoint files found");
+      QUILL_LOG_DEBUG(log, "No checkpoint files found");
     }
   }
 
@@ -43,7 +43,7 @@ std::vector<std::string> SaddleSearchJob::run(void) {
 
   initial->con2matter(reactantFilename);
 
-  if (params.saddle_search_options.displace_type == EpiCenters::DISP_LOAD) {
+  if (params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
     // displacement was passed from the server
     saddle->con2matter(displacementFilename);
   } else {
@@ -52,9 +52,9 @@ std::vector<std::string> SaddleSearchJob::run(void) {
     *saddle = *initial;
   }
   AtomMatrix mode;
-  if (params.saddle_search_options.displace_type == EpiCenters::DISP_LOAD) {
+  if (params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
     // mode was passed from the server
-    mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
+    mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
   saddleSearch = std::make_unique<MinModeSaddleSearch>(
@@ -137,7 +137,7 @@ void SaddleSearchJob::saveData(int status) {
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
   fileMode = fopen(modeFilename.c_str(), "wb");
-  helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
+  eonc::helpers::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
   fclose(fileMode);
 
   std::string saddleFilename("saddle.con");
@@ -148,64 +148,62 @@ void SaddleSearchJob::saveData(int status) {
 }
 
 void SaddleSearchJob::printEndState(int status) {
-  SPDLOG_LOGGER_DEBUG(log, "[Saddle Search] Final status: ");
+  QUILL_LOG_DEBUG(log, "[Saddle Search] Final status: ");
 
   if (status == MinModeSaddleSearch::STATUS_GOOD)
-    SPDLOG_LOGGER_DEBUG(log, "Success");
+    QUILL_LOG_DEBUG(log, "Success");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
-    SPDLOG_LOGGER_DEBUG(log,
-                        "Initial displacement unable to reach convex region");
+    QUILL_LOG_DEBUG(log, "Initial displacement unable to reach convex region");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
-    SPDLOG_LOGGER_DEBUG(log, "Barrier too high");
+    QUILL_LOG_DEBUG(log, "Barrier too high");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-    SPDLOG_LOGGER_DEBUG(log, "Too many iterations in concave region");
+    QUILL_LOG_DEBUG(log, "Too many iterations in concave region");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-    SPDLOG_LOGGER_DEBUG(log, "Too many iterations");
+    QUILL_LOG_DEBUG(log, "Too many iterations");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
-    SPDLOG_LOGGER_DEBUG(log, "Saddle is not connected to initial state");
+    QUILL_LOG_DEBUG(log, "Saddle is not connected to initial state");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
-    SPDLOG_LOGGER_DEBUG(log, "Prefactors not within window");
+    QUILL_LOG_DEBUG(log, "Prefactors not within window");
 
   else if (status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
-    SPDLOG_LOGGER_DEBUG(log, "Hessian calculation failed");
+    QUILL_LOG_DEBUG(log, "Hessian calculation failed");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
-    SPDLOG_LOGGER_DEBUG(log, "Energy barrier not within window");
+    QUILL_LOG_DEBUG(log, "Energy barrier not within window");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
-    SPDLOG_LOGGER_DEBUG(log, "Minimizations from saddle did not converge");
+    QUILL_LOG_DEBUG(log, "Minimizations from saddle did not converge");
 
   else if (status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-    SPDLOG_LOGGER_DEBUG(log, "Nonnegative initial mode, aborting");
+    QUILL_LOG_DEBUG(log, "Nonnegative initial mode, aborting");
 
   else if (status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
-    SPDLOG_LOGGER_DEBUG(log, "Negative barrier detected");
+    QUILL_LOG_DEBUG(log, "Negative barrier detected");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
-    SPDLOG_LOGGER_DEBUG(log, "No reaction found during MD trajectory");
+    QUILL_LOG_DEBUG(log, "No reaction found during MD trajectory");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
-    SPDLOG_LOGGER_DEBUG(
-        log, "Converged to stationary point with zero negative modes");
+    QUILL_LOG_DEBUG(log,
+                    "Converged to stationary point with zero negative modes");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
-    SPDLOG_LOGGER_DEBUG(log,
-                        "No forward barrier was found along minimized band");
+    QUILL_LOG_DEBUG(log, "No forward barrier was found along minimized band");
 
   else if (status == MinModeSaddleSearch::STATUS_ZEROMODE_ABORT)
-    SPDLOG_LOGGER_DEBUG(log, "Zero mode abort.");
+    QUILL_LOG_DEBUG(log, "Zero mode abort.");
 
   else if (status == MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
-    SPDLOG_LOGGER_DEBUG(log, "Optimizer error.");
+    QUILL_LOG_DEBUG(log, "Optimizer error.");
 
   else
-    SPDLOG_LOGGER_DEBUG(log, "Unknown status: {}!", status);
+    QUILL_LOG_DEBUG(log, "Unknown status: {}!", status);
 
   return;
 }

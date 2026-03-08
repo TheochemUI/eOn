@@ -13,6 +13,9 @@
 
 #include "Potential.h"
 
+namespace eonc {
+
+
 class SurrogatePotential : public Potential {
 
 public:
@@ -23,3 +26,7 @@ public:
   get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
   virtual void train_optimize(MatrixXd a_features, MatrixXd a_targets) = 0;
 };
+
+} // namespace eonc
+
+using eonc::SurrogatePotential;

@@ -23,17 +23,19 @@
  */
 
 #include "ServeRpcServer.h"
+#include "BaseStructures.h"
+#include "EonLogger.h"
 
 #include <atomic>
 #include <capnp/ez-rpc.h>
 #include <kj/debug.h>
 #include <mutex>
-#include <spdlog/spdlog.h>
 
 // Cap'n Proto generated header (from Potentials.capnp).
 // This defines `class Potential` -- which collides with eOn's Potential class,
 // hence the separate translation unit.
 #include "Potentials.capnp.h"
+using namespace std;
 
 namespace {
 
@@ -101,13 +103,13 @@ private:
 
 void startRpcServer(ForceCallback callback, const std::string &host,
                     uint16_t port) {
-  spdlog::info("Starting Cap'n Proto RPC server on {}:{}", host, port);
+  EONC_LOG_INFO("Starting Cap'n Proto RPC server on {}:{}", host, port);
 
   capnp::EzRpcServer server(kj::heap<CallbackPotImpl>(std::move(callback)),
                             host, port);
 
   auto &waitScope = server.getWaitScope();
-  spdlog::info("Server ready on port {}. Ctrl+C to stop.", port);
+  EONC_LOG_INFO("Server ready on port {}. Ctrl+C to stop.", port);
   kj::NEVER_DONE.wait(waitScope);
 }
 
@@ -183,13 +185,13 @@ private:
 
 void startPooledRpcServer(std::vector<ForceCallback> pool,
                           const std::string &host, uint16_t port) {
-  spdlog::info("Starting pooled RPC gateway on {}:{} with {} instances", host,
-               port, pool.size());
+  EONC_LOG_INFO("Starting pooled RPC gateway on {}:{} with {} instances", host,
+                port, pool.size());
 
   capnp::EzRpcServer server(kj::heap<PooledCallbackPotImpl>(std::move(pool)),
                             host, port);
 
   auto &waitScope = server.getWaitScope();
-  spdlog::info("Gateway ready on port {}. Ctrl+C to stop.", port);
+  EONC_LOG_INFO("Gateway ready on port {}. Ctrl+C to stop.", port);
   kj::NEVER_DONE.wait(waitScope);
 }

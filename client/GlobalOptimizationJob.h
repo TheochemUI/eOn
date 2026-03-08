@@ -10,9 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 class GlobalOptimizationJob : public Job {
 public:
@@ -31,10 +35,7 @@ public:
         firstStep{true},
         fcallsRelax{0},
         monfile{fopen("monitoring.dat", "w")},
-        earrfile{fopen("earr.dat", "w")} {
-
-    log = spdlog::get("combi");
-  }
+        earrfile{fopen("earr.dat", "w")} {}
   // etoler = parameters->globalOptimizationEtoler;
   // decisionMethod = "NPEW";
   ~GlobalOptimizationJob(void) {
@@ -71,12 +72,16 @@ private:
   double ekin;
   bool firstStep;
   std::vector<double> earr;
-  string escapeResult;
-  // string moveFeedbackMethod;
-  // string decisionMethod;
-  string decisionResult;
-  string hoppingResult;
+  std::string escapeResult;
+  // std::string moveFeedbackMethod;
+  // std::string decisionMethod;
+  std::string decisionResult;
+  std::string hoppingResult;
   FILE *monfile;
   FILE *earrfile;
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::GlobalOptimizationJob;

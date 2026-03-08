@@ -31,9 +31,9 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
   fpeh.restore_fpe();
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
-  std::string orcpth = helper_functions::get_value_from_env_or_param(
+  std::string orcpth = eonc::helpers::get_value_from_env_or_param(
       "ORCA_COMMAND", a_params.ase_orca_options.path, "", "", true);
-  std::string orca_simpleinput = helper_functions::get_value_from_env_or_param(
+  std::string orca_simpleinput = eonc::helpers::get_value_from_env_or_param(
       "ORCA_SIMPLEINPUT", a_params.ase_orca_options.simpleinput, "ENGRAD HF-3c",
       "Using ENGRAD HF-3c as a default input, set simpleinput or the "
       "environment variable ORCA_SIMPLEINPUT.\n");
@@ -52,7 +52,7 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
   this->calc =
       ORCA("profile"_a = OrcaProfile(py::str(orcpth)),
            "orcasimpleinput"_a = orca_simpleinput,
-           "orcablocks"_a = py::str(fmt::format("%pal nprocs {} end", nproc)),
+           "orcablocks"_a = py::str(std::format("%pal nprocs {} end", nproc)),
            "directory"_a = ".");
 };
 

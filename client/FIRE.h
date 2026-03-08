@@ -10,8 +10,12 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Optimizer.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 class FIRE : public Optimizer {
 
@@ -29,14 +33,7 @@ public:
         m_f_inc{1.1},
         m_f_dec{0.5},
         m_f_a{0.99},
-        m_iteration{0} {
-    if (spdlog::get("fire")) {
-      m_log = spdlog::get("fire");
-    } else {
-      m_log = spdlog::basic_logger_mt("fire", "_fire.log", true);
-    }
-    m_log->set_pattern("[%l] [FIRE] %v");
-  }
+        m_iteration{0} {}
   virtual ~FIRE() = default;
 
   int step(double a_maxMove) override;
@@ -52,5 +49,9 @@ private:
   double m_f_dec;
   double m_f_a;
   size_t m_iteration;
-  shared_ptr<spdlog::logger> m_log;
+  eonc::log::FileScoped m_log{"fire", "_fire.log"};
 };
+
+} // namespace eonc
+
+using eonc::FIRE;

@@ -15,21 +15,14 @@
 
 #include <magic_enum/magic_enum_all.hpp>
 
-#include <fmt/core.h>
-#include <fmt/format.h>
-#include <fmt/os.h> // To write the R style data frame
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+#include <format>
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-#include <spdlog/cfg/env.h> // support for loading levels from the environment variable
-#include <spdlog/fmt/ostr.h> // support for user defined types
-#include <spdlog/logger.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
-
-using namespace std::string_literals; // For ""s
+#include "quill/Backend.h"
+#include "quill/Frontend.h"
+#include "quill/LogMacros.h"
+#include "quill/Logger.h"
+#include "quill/sinks/ConsoleSink.h"
+#include "quill/sinks/FileSink.h"
 
 // This file contains forward declarations and enum classes
 // NOTE(rg):
@@ -38,6 +31,8 @@ using namespace std::string_literals; // For ""s
 
 /* Don't guard with compiler directives anymore because that will break ABI for
  * any of these */
+namespace eonc {
+
 enum class PotType {
   // Only add to the end of this!!!
   UNKNOWN = 0,
@@ -119,3 +114,12 @@ enum class OptType {
 enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, SIDPP, SIDPP_ZBL, FILE };
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
+
+} // namespace eonc
+
+// Backward-compat aliases during migration
+using eonc::JobType;
+using eonc::NEBInit;
+using eonc::OptType;
+using eonc::PotType;
+using eonc::RunStatus;

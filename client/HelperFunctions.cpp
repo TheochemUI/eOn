@@ -10,6 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "HelperFunctions.h"
+#include "EonLogger.h"
+#include "SafeMath.h"
 
 #include <cassert>
 #include <iostream>
@@ -22,11 +24,12 @@
 #ifndef _WIN32
 #include <sys/resource.h>
 #include <sys/time.h>
+using namespace std;
 #endif
 
 // Random number generator
 
-double helper_functions::random(long newSeed) {
+double eonc::helpers::random(long newSeed) {
   static long seed = -1;
   if (newSeed) {
     seed = -newSeed;
@@ -72,35 +75,35 @@ double helper_functions::random(long newSeed) {
     return temp;
 }
 
-double helper_functions::randomDouble() { return (random()); }
+double eonc::helpers::randomDouble() { return (random()); }
 
 // Random value in interval
-double helper_functions::randomDouble(int max) {
+double eonc::helpers::randomDouble(int max) {
   double dmax = double(max);
   return (dmax * randomDouble());
 }
 
-double helper_functions::randomDouble(long max) {
+double eonc::helpers::randomDouble(long max) {
   double dmax = double(max);
   return (dmax * randomDouble());
 }
 
-double helper_functions::randomDouble(double dmax) {
+double eonc::helpers::randomDouble(double dmax) {
   return (dmax * randomDouble());
 }
 
-long helper_functions::randomInt(int lower, int upper) {
+long eonc::helpers::randomInt(int lower, int upper) {
   return lround((upper - lower) * randomDouble() + lower);
 }
 
-double helper_functions::gaussRandom(double avg, double std) {
+double eonc::helpers::gaussRandom(double avg, double std) {
   double r = 2, v1, v2, l, result;
-  while (r >= 1) {
+  while (r >= 1.0 || r < 1e-300) {
     v1 = 2.0 * randomDouble() - 1.0;
     v2 = 2.0 * randomDouble() - 1.0;
     r = v1 * v1 + v2 * v2;
   }
-  l = v1 * sqrt(-2.0 * log(r) / r);
+  l = v1 * sqrt(-2.0 * ::log(r) / r);
   result = avg + std * l;
   return (result);
 }
@@ -109,18 +112,18 @@ double helper_functions::gaussRandom(double avg, double std) {
 // All functions 'returning' an array
 // the first argument should be a pointer to the array
 // where the result should be stored.
-double helper_functions::dot(const double *v1, const double *v2, long size) {
+double eonc::helpers::dot(const double *v1, const double *v2, long size) {
   double result = 0;
   for (int i = 0; i < size; i++)
     result = result + v1[i] * v2[i];
   return result;
 }
 
-double helper_functions::length(const double *v1, long numFreeCoord) {
+double eonc::helpers::length(const double *v1, long numFreeCoord) {
   return (sqrt(dot(v1, v1, numFreeCoord)));
 }
 
-void helper_functions::add(double *result, const double *v1, const double *v2,
+void eonc::helpers::add(double *result, const double *v1, const double *v2,
                            long size) {
   for (int i = 0; i < size; i++) {
     result[i] = v1[i] + v2[i];
@@ -128,14 +131,14 @@ void helper_functions::add(double *result, const double *v1, const double *v2,
   return;
 }
 
-void helper_functions::subtract(double *result, const double *v1,
+void eonc::helpers::subtract(double *result, const double *v1,
                                 const double *v2, long size) {
   for (int i = 0; i < size; i++)
     result[i] = v1[i] - v2[i];
   return;
 }
 
-void helper_functions::multiplyScalar(double *result, const double *v1,
+void eonc::helpers::multiplyScalar(double *result, const double *v1,
                                       double scalar, long size) {
   for (int i = 0; i < size; i++) {
     result[i] = v1[i] * scalar;
@@ -143,21 +146,21 @@ void helper_functions::multiplyScalar(double *result, const double *v1,
   return;
 }
 
-void helper_functions::divideScalar(double *result, const double *v1,
+void eonc::helpers::divideScalar(double *result, const double *v1,
                                     double scalar, long size) {
   for (int i = 0; i < size; i++)
     result[i] = v1[i] / scalar;
   return;
 }
 
-void helper_functions::copyRightIntoLeft(double *result, const double *v1,
+void eonc::helpers::copyRightIntoLeft(double *result, const double *v1,
                                          long size) {
   for (int i = 0; i < size; i++)
     result[i] = v1[i];
   return;
 }
 
-void helper_functions::normalize(double *v1, long size) {
+void eonc::helpers::normalize(double *v1, long size) {
   double const norm = length(v1, size);
   // XXX: dirty hack while waiting for merge
   if (norm == 0.0) {
@@ -168,20 +171,21 @@ void helper_functions::normalize(double *v1, long size) {
 }
 
 // Make v1 orthogonal to v2
-AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1,
+AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
                                             const AtomMatrix v2) {
-  return v1 - (v1.array() * v2.array()).sum() * v2.normalized();
+  return v1 -
+         (v1.array() * v2.array()).sum() * eonc::safemath::safe_normalized(v2);
 }
 
 // result contains v1 projection on v2
-void helper_functions::makeProjection(double *result, const double *v1,
+void eonc::helpers::makeProjection(double *result, const double *v1,
                                       const double *v2, long size) {
   double tempDouble = dot(v1, v2, size);
   multiplyScalar(result, v2, tempDouble, size);
   return;
 }
 
-RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
+RotationMatrix eonc::helpers::rotationExtract(const AtomMatrix r1,
                                                  const AtomMatrix r2) {
   RotationMatrix R;
 
@@ -246,7 +250,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
   return R;
 }
 
-bool helper_functions::rotationMatch(const Matter &m1, const Matter &m2,
+bool eonc::helpers::rotationMatch(const Matter &m1, const Matter &m2,
                                      const double max_diff) {
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
@@ -294,7 +298,7 @@ bool helper_functions::rotationMatch(const Matter &m1, const Matter &m2,
 //   R. Goswami and H. Jónsson, "Adaptive Pruning for Increased Robustness and
 //   Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point
 //   Searches," ChemPhysChem, Nov. 2025, doi: 10.1002/cphc.202500730.
-void helper_functions::projectOutRotTrans(Eigen::VectorXd &step,
+void eonc::helpers::projectOutRotTrans(Eigen::VectorXd &step,
                                           const AtomMatrix &positions) {
   long nAtoms = positions.rows();
   long dof = nAtoms * 3;
@@ -366,7 +370,7 @@ void helper_functions::projectOutRotTrans(Eigen::VectorXd &step,
   }
 }
 
-void helper_functions::rotationRemove(const AtomMatrix r1_passed,
+void eonc::helpers::rotationRemove(const AtomMatrix r1_passed,
                                       std::shared_ptr<Matter> m2) {
   // Skip for extended systems (slabs/surfaces with frozen atoms).
   // Rigid-body rotation and translation are not well-defined when the
@@ -395,14 +399,14 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed,
   m2->setPositions(resultMat);
 }
 
-void helper_functions::rotationRemove(const std::shared_ptr<Matter> m1,
+void eonc::helpers::rotationRemove(const std::shared_ptr<Matter> m1,
                                       std::shared_ptr<Matter> m2) {
   AtomMatrix r1 = m1->getPositions();
   rotationRemove(r1, m2);
   return;
 }
 
-void helper_functions::translationRemove(Matter &m1,
+void eonc::helpers::translationRemove(Matter &m1,
                                          const AtomMatrix r2_passed) {
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = r2_passed;
@@ -426,17 +430,17 @@ void helper_functions::translationRemove(Matter &m1,
   return;
 }
 
-void helper_functions::translationRemove(Matter &m1, const Matter &m2) {
+void eonc::helpers::translationRemove(Matter &m1, const Matter &m2) {
   AtomMatrix r2 = m2.getPositions();
   translationRemove(m1, r2);
   return;
 }
 
-double helper_functions::maxAtomMotion(const AtomMatrix v1) {
+double eonc::helpers::maxAtomMotion(const AtomMatrix v1) {
   return v1.rowwise().norm().maxCoeff();
 }
 
-double helper_functions::maxAtomMotionV(const VectorXd v1) {
+double eonc::helpers::maxAtomMotionV(const VectorXd v1) {
   double max = 0.0;
   for (int i = 0; i < v1.rows(); i += 3) {
     double norm = v1.segment<3>(i).norm();
@@ -447,7 +451,7 @@ double helper_functions::maxAtomMotionV(const VectorXd v1) {
   return max;
 }
 
-long helper_functions::numAtomsMoved(const AtomMatrix v1, double cutoff) {
+long eonc::helpers::numAtomsMoved(const AtomMatrix v1, double cutoff) {
   long num = 0;
   for (int i = 0; i < v1.rows(); i++) {
     double norm = v1.row(i).norm();
@@ -458,7 +462,7 @@ long helper_functions::numAtomsMoved(const AtomMatrix v1, double cutoff) {
   return num;
 }
 
-AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1,
+AtomMatrix eonc::helpers::maxAtomMotionApplied(const AtomMatrix v1,
                                                   double maxMotion) {
   /*
   Function ensures (by scaling) that there is no single element of the
@@ -474,7 +478,7 @@ AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1,
   return v2;
 }
 
-VectorXd helper_functions::maxAtomMotionAppliedV(const VectorXd v1,
+VectorXd eonc::helpers::maxAtomMotionAppliedV(const VectorXd v1,
                                                  double maxMotion) {
   VectorXd v2(v1);
 
@@ -485,7 +489,7 @@ VectorXd helper_functions::maxAtomMotionAppliedV(const VectorXd v1,
   return v2;
 }
 
-AtomMatrix helper_functions::maxMotionApplied(const AtomMatrix v1,
+AtomMatrix eonc::helpers::maxMotionApplied(const AtomMatrix v1,
                                               double maxMotion) {
   /*
    Function ensures (by scaling) that the norm of the AtomMatrix is not larger
@@ -500,7 +504,7 @@ AtomMatrix helper_functions::maxMotionApplied(const AtomMatrix v1,
   return v2;
 }
 
-VectorXd helper_functions::maxMotionAppliedV(const VectorXd v1,
+VectorXd eonc::helpers::maxMotionAppliedV(const VectorXd v1,
                                              double maxMotion) {
   VectorXd v2(v1);
 
@@ -511,7 +515,7 @@ VectorXd helper_functions::maxMotionAppliedV(const VectorXd v1,
   return v2;
 }
 
-void helper_functions::getTime(double *real, double *user, double *sys) {
+void eonc::helpers::getTime(double *real, double *user, double *sys) {
 #ifdef _WIN32
   *real = (double)time(NULL);
   if (user != NULL) {
@@ -539,7 +543,7 @@ void helper_functions::getTime(double *real, double *user, double *sys) {
 #endif
 }
 
-bool helper_functions::existsFile(string filename) {
+bool eonc::helpers::existsFile(string filename) {
   FILE *fh;
   fh = fopen(filename.c_str(), "rb");
   if (fh == NULL) {
@@ -549,7 +553,7 @@ bool helper_functions::existsFile(string filename) {
   return 1;
 }
 
-string helper_functions::getRelevantFile(string filename) {
+string eonc::helpers::getRelevantFile(string filename) {
   string filenameRelevant;
   string filenamePrefix;
   string filenamePostfix;
@@ -571,10 +575,10 @@ string helper_functions::getRelevantFile(string filename) {
   return filename;
 }
 
-VectorXd helper_functions::loadMasses(string filename, int nAtoms) {
+VectorXd eonc::helpers::loadMasses(string filename, int nAtoms) {
   ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
-    SPDLOG_CRITICAL("File {} was not found", filename);
+    EONC_LOG_CRITICAL("File {} was not found", filename);
     std::exit(1);
   }
 
@@ -582,7 +586,7 @@ VectorXd helper_functions::loadMasses(string filename, int nAtoms) {
   for (int i = 0; i < nAtoms; i++) {
     double mass;
     if (!(massFile >> mass)) {
-      SPDLOG_CRITICAL("Error reading {}", filename);
+      EONC_LOG_CRITICAL("Error reading {}", filename);
       std::exit(1);
     }
     masses(i) = mass;
@@ -593,7 +597,7 @@ VectorXd helper_functions::loadMasses(string filename, int nAtoms) {
   return masses;
 }
 
-AtomMatrix helper_functions::loadMode(FILE *modeFile, int nAtoms) {
+AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
   AtomMatrix mode;
   mode.resize(nAtoms, 3);
   mode.setZero();
@@ -603,11 +607,11 @@ AtomMatrix helper_functions::loadMode(FILE *modeFile, int nAtoms) {
   return mode;
 }
 
-AtomMatrix helper_functions::loadMode(string filename, int nAtoms) {
+AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
   FILE *modeFile;
   modeFile = fopen(filename.c_str(), "rb");
   if (!modeFile) {
-    SPDLOG_CRITICAL("File {} was not found\n Stopping", filename);
+    EONC_LOG_CRITICAL("File {} was not found\n Stopping", filename);
     std::exit(1);
   }
   AtomMatrix mode = loadMode(modeFile, nAtoms);
@@ -615,7 +619,7 @@ AtomMatrix helper_functions::loadMode(string filename, int nAtoms) {
   return mode;
 }
 
-void helper_functions::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
+void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
                                 AtomMatrix mode) {
   long const nAtoms = matter->numberOfAtoms();
   for (long i = 0; i < nAtoms; ++i) {
@@ -628,7 +632,7 @@ void helper_functions::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
   return;
 }
 
-std::vector<int> helper_functions::split_string_int(std::string s,
+std::vector<int> eonc::helpers::split_string_int(std::string s,
                                                     std::string delim) {
   std::vector<int> list;
   if (s.length() == 0)
@@ -656,7 +660,7 @@ std::vector<int> helper_functions::split_string_int(std::string s,
   return list;
 }
 
-namespace helper_functions {
+namespace eonc::helpers {
 struct atom {
   double r;
   int z;
@@ -671,11 +675,11 @@ struct by_atom {
     }
   }
 };
-} // namespace helper_functions
+} // namespace eonc::helpers
 
 double roundUp(double x, double f) { return ceil(x / f); }
 
-bool helper_functions::identical(const Matter &m1, const Matter &m2,
+bool eonc::helpers::identical(const Matter &m1, const Matter &m2,
                                  const double distanceDifference) {
 
   AtomMatrix r1 = m1.getPositions();
@@ -721,9 +725,9 @@ bool helper_functions::identical(const Matter &m1, const Matter &m2,
   }
 }
 
-bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
+bool eonc::helpers::sortedR(const Matter &m1, const Matter &m2,
                                const double distanceDifference) {
-  SPDLOG_INFO("In sortedR");
+  EONC_LOG_INFO("In sortedR");
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
   double tolerance = distanceDifference;
@@ -776,7 +780,7 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
         if (fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
           counter++;
         } else {
-          SPDLOG_INFO("No match");
+          EONC_LOG_INFO("No match");
           break;
         }
         ++it;
@@ -785,7 +789,7 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
       if (counter == r1.rows()) {
         matches++;
       } else {
-        SPDLOG_INFO("No match");
+        EONC_LOG_INFO("No match");
       }
     }
   }
@@ -793,7 +797,7 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
   return matches >= r1.rows();
 }
 
-void helper_functions::pushApart(std::shared_ptr<Matter> m1,
+void eonc::helpers::pushApart(std::shared_ptr<Matter> m1,
                                  double minDistance) {
   if (minDistance <= 0)
     return;

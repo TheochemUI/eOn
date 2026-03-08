@@ -14,6 +14,9 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class DynamicsJob : public Job {
 
 public:
@@ -23,3 +26,7 @@ public:
   std::vector<std::string> run(void);
   std::vector<std::string> returnFiles;
 };
+
+} // namespace eonc
+
+using eonc::DynamicsJob;

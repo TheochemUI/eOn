@@ -10,10 +10,14 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 // dimer method to find the lowest curvature mode
 class MonteCarlo {
@@ -21,9 +25,7 @@ class MonteCarlo {
 public:
   MonteCarlo(std::shared_ptr<Matter> const matterIn, const Parameters &paramsIn)
       : matter{matterIn},
-        params{paramsIn} {
-    log = spdlog::get("combi");
-  }
+        params{paramsIn} {}
   ~MonteCarlo() = default;
 
   void run(int numSteps, double temperature, double stepSize);
@@ -31,5 +33,9 @@ public:
 private:
   std::shared_ptr<Matter> matter;
   const Parameters &params;
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::MonteCarlo;

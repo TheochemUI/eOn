@@ -10,7 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ServeMode.h"
+#include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+
+static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("parseServeSpec single endpoint", "[serve]") {
   auto eps = parseServeSpec("lj:12345");

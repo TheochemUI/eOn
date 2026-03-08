@@ -15,6 +15,10 @@
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 
+#include "EonLogger.h"
+
+namespace eonc {
+
 /** @defgroup Optimizers
  *
  * \brief ClientEON methods for optimizing atomic structures
@@ -60,8 +64,9 @@ public:
       : m_otype{a_params.optimizer_options.method},
         m_params{a_params},
         m_objf{a_objf} {
-    SPDLOG_WARN("You should explicitly set an optimizer while constructing the "
-                "optimizer!!\n Defaulting to opt_method from the parameters");
+    EONC_LOG_WARNING(
+        "You should explicitly set an optimizer while constructing the "
+        "optimizer!!\n Defaulting to opt_method from the parameters");
   }
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
             const Parameters &a_params)
@@ -81,3 +86,7 @@ namespace helpers::create {
 std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
                                    OptType a_otype, const Parameters &a_params);
 }
+
+} // namespace eonc
+
+using eonc::Optimizer;

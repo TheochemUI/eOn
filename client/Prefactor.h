@@ -16,6 +16,10 @@
 
 #include "Parameters.h"
 
+namespace eonc {
+
+
+
 namespace Prefactor {
 const char RATE_HTST[] = "htst";
 const char RATE_QQHTST[] = "qqhtst";
@@ -32,3 +36,5 @@ VectorXi allFreeAtoms(Matter *matter);
 VectorXd removeZeroFreqs(const Parameters &parameters, VectorXd freqs);
 void logFreqs(VectorXd freqs, char *name);
 } // namespace Prefactor
+
+} // namespace eonc

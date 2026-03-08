@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Eigen.h"
 #include "Parameters.h"
@@ -18,11 +19,14 @@
 #include <memory>
 #include <optional>
 
+namespace eonc {
+
+
 class Potential {
 protected:
   PotType ptype;
   const Parameters &m_params;
-  std::shared_ptr<spdlog::logger> m_log;
+  eonc::log::FileScoped m_log{"_potcalls", "_potcalls.log"};
 
 public:
   size_t forceCallCounter;
@@ -41,8 +45,9 @@ public:
 
   virtual ~Potential() {
     if (m_log) {
-      m_log->trace("[{}] destroyed after {} calls",
-                   magic_enum::enum_name<PotType>(getType()), forceCallCounter);
+      QUILL_LOG_TRACE_L1(m_log, "[{}] destroyed after {} calls",
+                         magic_enum::enum_name<PotType>(getType()),
+                         forceCallCounter);
     } else {
       std::cerr << "Logger is not initialized\n";
     }
@@ -66,22 +71,19 @@ public:
 
   // Logger initialization
   void initializeLogger() {
-    if (!spdlog::get("_potcalls")) {
-      // Create logger if it doesn't exist
-      m_log = spdlog::basic_logger_mt("_potcalls", "_potcalls.log", true);
-      m_log->set_pattern("[%l] [%Y-%m-%d %H:%M:%S] %v");
-    } else {
-      // Use existing logger
-      m_log = spdlog::get("_potcalls");
-    }
     if (m_log) {
-      m_log->trace("[{}] created", magic_enum::enum_name<PotType>(getType()));
+      QUILL_LOG_TRACE_L1(m_log, "[{}] created",
+                         magic_enum::enum_name<PotType>(getType()));
     }
   }
 };
 
-namespace helper_functions {
+namespace helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params);
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params);
-} // namespace helper_functions
+} // namespace helpers
+
+} // namespace eonc
+
+using eonc::Potential;

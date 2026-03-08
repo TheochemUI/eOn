@@ -10,22 +10,28 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 class MinimizationJob : public Job {
 public:
   MinimizationJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
-        fcalls{0} {
-    log = spdlog::get("combi");
-  }
+        fcalls{0} {}
   ~MinimizationJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
   size_t fcalls;
   RunStatus status;
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::MinimizationJob;

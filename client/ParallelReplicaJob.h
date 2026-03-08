@@ -10,16 +10,18 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class ParallelReplicaJob : public Job {
 public:
   ParallelReplicaJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
-    log = spdlog::get("combi");
-  }
+      : Job(std::move(parameters)) {}
   ~ParallelReplicaJob(void) = default;
   std::vector<std::string> run(void);
 
@@ -29,5 +31,9 @@ private:
 
   void dephase(Matter *trajectory);
   int refineTransition(std::vector<Matter *> MDSnapshots, bool fake = false);
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::ParallelReplicaJob;

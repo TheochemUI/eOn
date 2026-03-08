@@ -12,6 +12,7 @@
 #include "MinModeSaddleSearch.h"
 #include "ConjugateGradients.h"
 #include "Dimer.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
@@ -25,7 +26,8 @@
 #include "EpiCenters.h"
 #include "ObjectiveFunction.h"
 
-using namespace helper_functions;
+using namespace std;
+using namespace eonc::helpers;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
@@ -59,7 +61,7 @@ public:
           // Dimer restored to best state - update eigenvector and continue
           // but signal that we should probably stop soon
           eigenvector = minModeMethod->getEigenvector();
-          SPDLOG_DEBUG(
+          EONC_LOG_DEBUG(
               "[MinMode] Dimer restored to best state with C_tau={:.4f}",
               dimer->getEigenvalue());
           throw eonc::DimerModeRestoredException();
@@ -177,8 +179,8 @@ public:
     } else if (params.optimizer_options.convergence_metric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      SPDLOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
-                   params.optimizer_options.convergence_metric);
+      EONC_LOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
+                     params.optimizer_options.convergence_metric);
       std::exit(1);
     }
   }
@@ -197,7 +199,6 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
   mode = modePassed;
   status = STATUS_GOOD;
   iteration = 0;
-  log = spdlog::get("combi");
 
   if (params.saddle_search_options.minmode_method ==
       LowestEigenmode::MINMODE_DIMER) {
@@ -229,7 +230,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
 }
 
 int MinModeSaddleSearch::run() {
-  SPDLOG_LOGGER_DEBUG(
+  QUILL_LOG_DEBUG(
       log, "Saddle point search started from reactant with energy {} eV.",
       reactantEnergy);
 
@@ -240,7 +241,7 @@ int MinModeSaddleSearch::run() {
 
   if (params.saddle_search_options.minmode_method ==
       LowestEigenmode::MINMODE_GPRDIMER) {
-    SPDLOG_LOGGER_DEBUG(
+    QUILL_LOG_DEBUG(
         log, "================= Using the GP Dimer Library =================");
     minModeMethod->compute(matter, mode);
     if (minModeMethod->getEigenvalue() > 0) {
@@ -248,7 +249,7 @@ int MinModeSaddleSearch::run() {
       return STATUS_NONNEGATIVE_ABORT;
     }
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
-      SPDLOG_LOGGER_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
+      QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
     if (fabs(minModeMethod->getEigenvalue()) <
@@ -263,25 +264,25 @@ int MinModeSaddleSearch::run() {
 
     if (params.saddle_search_options.minmode_method ==
         LowestEigenmode::MINMODE_DIMER) {
-      SPDLOG_LOGGER_INFO(log,
-                         "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
-                         "{:7s}   {:6s}   {:4s}   {:5s}\n",
-                         "Step", "Step Size", "Delta E", forceLabel,
-                         "Curvature", "Torque", "Angle", "Rots", "Align");
+      QUILL_LOG_INFO(log,
+                     "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
+                     "{:7s}   {:6s}   {:4s}   {:5s}\n",
+                     "Step", "Step Size", "Delta E", forceLabel, "Curvature",
+                     "Torque", "Angle", "Rots", "Align");
     } else if (params.saddle_search_options.minmode_method ==
                LowestEigenmode::MINMODE_LANCZOS) {
-      SPDLOG_LOGGER_INFO(
+      QUILL_LOG_INFO(
           log,
           "[Lanczos]  {:9s} {:9s} {:10s} {:18s} {:9s} {:10s} {:7s} {:5s}\n",
           "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change",
           "Angle", "Iters");
     } else if (params.saddle_search_options.minmode_method ==
                LowestEigenmode::MINMODE_GPRDIMER) {
-      SPDLOG_LOGGER_INFO(log,
-                         "[GPRDimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}  "
-                         " {:7s}   {:6s}   {:4s}\n",
-                         "Step", "Step Size", "Delta E", forceLabel,
-                         "Curvature", "Torque", "Angle", "Rots");
+      QUILL_LOG_INFO(log,
+                     "[GPRDimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}  "
+                     " {:7s}   {:6s}   {:4s}\n",
+                     "Step", "Step Size", "Delta E", forceLabel, "Curvature",
+                     "Torque", "Angle", "Rots");
     }
 
     ostringstream climb;
@@ -304,7 +305,7 @@ int MinModeSaddleSearch::run() {
     }
 
     auto optim =
-        helpers::create::mkOptim(objf, params.optimizer_options.method, params);
+        eonc::helpers::create::mkOptim(objf, params.optimizer_options.method, params);
 
     while (!objf->isConverged() || iteration == 0) {
 
@@ -355,12 +356,12 @@ int MinModeSaddleSearch::run() {
       } catch (const eonc::DimerModeRestoredException &e) {
         // Dimer lost mode but restored to valid negative curvature state
         // Check if we're now converged
-        SPDLOG_LOGGER_DEBUG(
+        QUILL_LOG_DEBUG(
             log, "Dimer restored to best state.  Checking convergence...");
 
         // Force might have changed - recompute convergence
         if (objf->isConverged()) {
-          SPDLOG_LOGGER_DEBUG(log, "Converged after dimer restoration.");
+          QUILL_LOG_DEBUG(log, "Converged after dimer restoration.");
           status = STATUS_GOOD;
         } else {
           // Not converged, but we have a valid state - report as partial
@@ -370,7 +371,7 @@ int MinModeSaddleSearch::run() {
         break;
       } catch (const eonc::DimerModeLostException &e) {
         // Truly lost the mode with no valid state
-        SPDLOG_LOGGER_WARN(log, "Dimer lost mode completely. Aborting.");
+        QUILL_LOG_WARNING(log, "Dimer lost mode completely. Aborting.");
         status = STATUS_DIMER_LOST_MODE;
         break;
       }
@@ -383,7 +384,7 @@ int MinModeSaddleSearch::run() {
       double de = objf->getEnergy() - reactantEnergy;
       // should be the total displacement of the system not just a single atom
       // double stepSize =
-      // helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() -
+      // eonc::helpers::maxAtomMotion(matter->pbc(matter->getPositions() -
       // pos));
 
       double stepSize;
@@ -399,7 +400,7 @@ int MinModeSaddleSearch::run() {
 
       if (params.saddle_search_options.minmode_method ==
           LowestEigenmode::MINMODE_DIMER) {
-        SPDLOG_LOGGER_DEBUG(
+        QUILL_LOG_DEBUG(
             log,
             "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
             "  {:6.3f}   {:4}\n",
@@ -409,7 +410,7 @@ int MinModeSaddleSearch::run() {
             minModeMethod->statsRotations);
       } else if (params.saddle_search_options.minmode_method ==
                  LowestEigenmode::MINMODE_LANCZOS) {
-        SPDLOG_LOGGER_DEBUG(
+        QUILL_LOG_DEBUG(
             log,
             "[Lanczos]  {:9} {:9.6f} {:10.4f} {:18.5e} {:9.4f} {:10.6f} "
             "{:7.3f} {:5}\n",
@@ -419,7 +420,7 @@ int MinModeSaddleSearch::run() {
             minModeMethod->statsRotations);
       } else if (params.saddle_search_options.minmode_method ==
                  LowestEigenmode::MINMODE_GPRDIMER) {
-        SPDLOG_LOGGER_DEBUG(
+        QUILL_LOG_DEBUG(
             log,
             "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
             "  {:6.3f}   {:4}\n",
@@ -428,10 +429,10 @@ int MinModeSaddleSearch::run() {
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else {
-        log = spdlog::get("_traceback");
-        SPDLOG_LOGGER_CRITICAL(
-            log, "[MinModeSaddleSearch] Unknown min_mode_method: {}",
-            params.saddle_search_options.minmode_method);
+        log = eonc::log::traceback();
+        QUILL_LOG_CRITICAL(log,
+                           "[MinModeSaddleSearch] Unknown min_mode_method: {}",
+                           params.saddle_search_options.minmode_method);
         std::exit(1);
       }
 
@@ -442,7 +443,7 @@ int MinModeSaddleSearch::run() {
       if (params.main_options.checkpoint) {
         matter->matter2con("displacement_cp.con", false);
         FILE *fileMode = fopen("mode_cp.dat", "wb");
-        helper_functions::saveMode(fileMode, matter,
+        eonc::helpers::saveMode(fileMode, matter,
                                    minModeMethod->getEigenvector());
         fclose(fileMode);
       }
@@ -461,9 +462,8 @@ int MinModeSaddleSearch::run() {
           // This shouldn't happen if we caught the exceptions above,
           // but keep as safety check
           if (dimer->getEigenvalue() < 0.0) {
-            SPDLOG_LOGGER_DEBUG(log,
-                                "Dimer restored to valid state.  C_tau={:.4f}",
-                                dimer->getEigenvalue());
+            QUILL_LOG_DEBUG(log, "Dimer restored to valid state.  C_tau={:.4f}",
+                            dimer->getEigenvalue());
             status = STATUS_DIMER_RESTORED_BEST;
           } else {
             status = STATUS_DIMER_LOST_MODE;
@@ -477,7 +477,7 @@ int MinModeSaddleSearch::run() {
       minModeMethod->compute(matter, mode);
 
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
-      SPDLOG_LOGGER_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
+      QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
   }

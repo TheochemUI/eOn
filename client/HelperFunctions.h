@@ -15,6 +15,10 @@
 #include <string>
 #include <vector>
 
+namespace eonc {
+
+
+
 // Random number generator constants
 
 constexpr double IM = 2147483647.0;
@@ -35,7 +39,7 @@ constexpr long IR2 = 3791;
 
 /* Collection of supporting functions that handle arrays of doubles as vectors
  * and different random number generators */
-namespace helper_functions {
+namespace helpers {
 
 inline constexpr double pi = 3.14159265358979323846;
 
@@ -82,13 +86,13 @@ VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion);
 AtomMatrix maxMotionApplied(const AtomMatrix v1, double maxMotion);
 VectorXd maxMotionAppliedV(const VectorXd v1, double maxMotion);
 void getTime(double *real, double *user, double *sys);
-bool existsFile(string filename); // does filename exist
-string
-getRelevantFile(string filename); // return filename containing _checkpoint or
+bool existsFile(std::string filename); // does filename exist
+std::string
+getRelevantFile(std::string filename); // return filename containing _checkpoint or
                                   // _passed if such a file exists
-VectorXd loadMasses(string filename, int nAtoms);
+VectorXd loadMasses(std::string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
-AtomMatrix loadMode(string filename, int nAtoms);
+AtomMatrix loadMode(std::string filename, int nAtoms);
 void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 std::vector<int> split_string_int(std::string s, std::string delim);
 
@@ -98,4 +102,6 @@ bool sortedR(const Matter &m1, const Matter &m2,
              const double distanceDifference);
 void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
-} // namespace helper_functions
+} // namespace helpers
+
+} // namespace eonc

@@ -10,12 +10,16 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Eigen.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
 #include <vector>
+
+namespace eonc {
+
 
 class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
@@ -28,7 +32,6 @@ public:
     saddle = matterPassed;
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("combi");
   }
   ~BiasedGradientSquaredDescent() = default;
 
@@ -45,6 +48,10 @@ public:
 
 private:
   double reactantEnergy;
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
   //        double bgsdAlpha;
 };
+
+} // namespace eonc
+
+using eonc::BiasedGradientSquaredDescent;

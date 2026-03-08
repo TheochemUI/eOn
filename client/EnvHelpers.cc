@@ -1,7 +1,7 @@
 #include "EnvHelpers.hpp"
-#include <spdlog/spdlog.h>
+#include "BaseStructures.h"
 
-namespace helper_functions {
+namespace eonc::helpers {
 
 std::string get_value_from_env_or_param(const char *env_variable,
                                         const std::string &param_value,
@@ -25,10 +25,10 @@ std::string get_value_from_env_or_param(const char *env_variable,
   }
 
   if (!default_value.empty() && !warning_message.empty()) {
-    SPDLOG_WARN(warning_message);
+    QUILL_LOG_WARNING(eonc::log::get(), "{}", warning_message);
   }
 
   return default_value;
 }
 
-} // namespace helper_functions
+} // namespace eonc::helpers

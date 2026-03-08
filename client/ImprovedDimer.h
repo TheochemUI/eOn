@@ -11,16 +11,20 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
 #include "Parameters.h"
 #include <vector>
 
+namespace eonc {
+
+
 // dimer method to find the lowest curvature mode
 class ImprovedDimer : public LowestEigenmode {
 
 private:
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
   // For use when called as part of the NEB-MMF
   VectorXd fixedReferenceMode;
   bool hasFixedReference = false;
@@ -68,3 +72,7 @@ public:
   std::vector<VectorXd> gradients;
   std::vector<VectorXd> positions;
 };
+
+} // namespace eonc
+
+using eonc::ImprovedDimer;

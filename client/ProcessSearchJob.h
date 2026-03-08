@@ -10,11 +10,15 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 /**
  * @file
@@ -49,16 +53,14 @@ public:
       : Job(std::move(parameters)),
         fCallsSaddle{0},
         fCallsMin{0},
-        fCallsPrefactors{0} {
-    log = spdlog::get("combi");
-  }
+        fCallsPrefactors{0} {}
   //! Process Search job De-constructor
   ~ProcessSearchJob() = default;
   //! Kicks off the Process Search
   std::vector<std::string> run(void) override;
 
 private:
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
   //! Runs the correct saddle search; also checks if the run was successful
   int doProcessSearch(void);
   //! UNDEFINED
@@ -105,3 +107,7 @@ private:
   //! Force calls to find the prefactors
   size_t fCallsPrefactors;
 };
+
+} // namespace eonc
+
+using eonc::ProcessSearchJob;

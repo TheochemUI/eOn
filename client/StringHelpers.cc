@@ -3,7 +3,7 @@
 #include <cassert>
 #include <type_traits>
 
-namespace helper_functions {
+namespace eonc::helpers {
 template <typename T>
 std::vector<T> get_val_from_string(std::string_view line,
                                    std::optional<size_t> nelements) {
@@ -54,4 +54,4 @@ bool isNumber(std::string_view token) {
       std::string{token},
       std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
 }
-} // namespace helper_functions
+} // namespace eonc::helpers

@@ -35,7 +35,7 @@ public:
     auto ext_pot_script = std::filesystem::canonical("ext_pot").string();
     params.potential_options.extPotPath = ext_pot_script;
 
-    pot_ext = helper_functions::makePotential(
+    pot_ext = eonc::helpers::makePotential(
         params.potential_options.potential, params);
     matter = std::make_shared<Matter>(pot_ext, params);
 
@@ -77,7 +77,7 @@ TEST_CASE_METHOD(ExtPotTest, "ExtPot harmonic spring energy and forces",
   REQUIRE_THAT(calculated_energy, WithinAbs(expected_energy, threshold));
 
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
   REQUIRE(matEq(calculated_forces, expected_forces));
 }
 

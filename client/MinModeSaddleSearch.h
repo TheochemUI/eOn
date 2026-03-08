@@ -19,6 +19,9 @@
 
 #include <string>
 
+namespace eonc {
+
+
 class MinModeSaddleSearch : public SaddleSearchMethod {
 
 public:
@@ -68,5 +71,9 @@ private:
   std::shared_ptr<LowestEigenmode>
       minModeMethod; // shared with the objective func
   double reactantEnergy;
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::MinModeSaddleSearch;

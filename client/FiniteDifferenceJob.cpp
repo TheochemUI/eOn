@@ -14,7 +14,8 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 
-using namespace helper_functions;
+using namespace std;
+using namespace eonc::helpers;
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {
   // No bundling for this job, so bundleNumber is ignored.
@@ -31,7 +32,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   forceA = reactant->getForces();
 
   // Create a random displacement.
-  long epicenter = EpiCenters::minCoordinatedEpiCenter(
+  long epicenter = eonc::EpiCenters::minCoordinatedEpiCenter(
       reactant.get(), params.structure_comparison_options.neighbor_cutoff);
   AtomMatrix displacement;
   displacement.resize(reactant->numberOfAtoms(), 3);

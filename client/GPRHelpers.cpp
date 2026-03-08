@@ -10,15 +10,17 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "GPRHelpers.h"
+#include "EonLogger.h"
 
 #include "subprojects/gpr_optim/data_types/EigenHelpers.h"
 
 #include <map>
 #include <set>
 #include <unordered_map>
+using namespace std;
 
 gpr::InputParameters
-helper_functions::eon_parameters_to_gpr(const Parameters &parameters) {
+eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   gpr::InputParameters p;
   // Problem parameters
   p.actdist_fro.value = parameters.gpr_dimer_options.active_radius;
@@ -83,7 +85,7 @@ helper_functions::eon_parameters_to_gpr(const Parameters &parameters) {
 
 // FIXME: Take in the active / inactive pairs / atomtypes
 gpr::AtomsConfiguration
-helper_functions::eon_matter_to_atmconf(Matter *matter) {
+eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
   //   AtomsConfiguration a;
   //   aux::ProblemSetUp problem_setup;
   //   std::vector<int> atomnrs;
@@ -207,7 +209,8 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   } else {
     if (number_of_mov_atoms == 0) {
       //!> Sometimes, nothing happens
-      SPDLOG_CRITICAL(
+      QUILL_LOG_CRITICAL(
+          eonc::log::get(),
           " You need to have atoms move!!!\nIn stillness there is only "
           "death\n");
       std::exit(1);
@@ -250,7 +253,7 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   return atoms_config;
 }
 
-gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
+gpr::Observation eonc::helpers::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
   o.R = matter->getPositions();

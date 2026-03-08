@@ -14,12 +14,16 @@
 #include <filesystem>
 
 #include "Eigen.h"
+#include "EonLogger.h"
 
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
+
+namespace eonc {
+
 
 // NEB method for determining a minimum energy path between two matter objects
 class NudgedElasticBand {
@@ -73,7 +77,7 @@ private:
   Parameters params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
   bool mmf_active{false};
   int mmf_iterations_used{0};
 };
@@ -102,3 +106,8 @@ public:
 private:
   NudgedElasticBand *neb;
 };
+
+} // namespace eonc
+
+using eonc::NudgedElasticBand;
+using eonc::NEBObjectiveFunction;

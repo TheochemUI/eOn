@@ -10,22 +10,24 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class SafeHyperJob : public Job {
 public:
   SafeHyperJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
-    log = spdlog::get("combi");
-  }
+      : Job(std::move(parameters)) {}
   ~SafeHyperJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
   int dynamics();
   long refine(Matter *mdBuffer[], long length, Matter *reactant);
   bool checkState(Matter *current, Matter *reactant);
@@ -58,3 +60,7 @@ private:
 
   std::vector<std::string> returnFiles;
 };
+
+} // namespace eonc
+
+using eonc::SafeHyperJob;

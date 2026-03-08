@@ -13,7 +13,13 @@
 #include "HelperFunctions.h"
 #include "Hessian.h"
 
-int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
+#include "EonLogger.h"
+#include <format>
+#include <fstream>
+
+using namespace std;
+
+int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                              Matter *saddle, Matter *min2, double &pref1,
                              double &pref2) {
   VectorXd min1Freqs, saddleFreqs, min2Freqs;
@@ -22,7 +28,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   VectorXi atoms;
 
   if (parameters.prefactor_options.filter_scheme ==
-      Prefactor::FILTER_FRACTION) {
+      eonc::Prefactor::FILTER_FRACTION) {
     atoms = movedAtomsPct(parameters, min1, saddle, min2);
   } else {
     atoms = movedAtoms(parameters, min1, saddle, min2);
@@ -35,7 +41,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   Hessian hessian(parameters, min1);
   min1Freqs = hessian.getFreqs(min1, atoms);
   if (min1Freqs.size() == 0) {
-    SPDLOG_ERROR("[Prefactor] Bad hessian: min1");
+    EONC_LOG_ERROR("[Prefactor] Bad hessian: min1");
     return -1;
   }
   // remove zero modes
@@ -46,7 +52,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   // calculate saddle frequencies
   saddleFreqs = hessian.getFreqs(saddle, atoms);
   if (saddleFreqs.size() == 0) {
-    SPDLOG_ERROR("[Prefactor] Bad hessian: saddle");
+    EONC_LOG_ERROR("[Prefactor] Bad hessian: saddle");
     return -1;
   }
   // remove zero modes
@@ -58,7 +64,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   min2Freqs = hessian.getFreqs(min2, atoms);
   if (min2Freqs.size() == 0) {
     if (!parameters.main_options.quiet) {
-      SPDLOG_ERROR("[Prefactor] Bad hessian: min2");
+      EONC_LOG_ERROR("[Prefactor] Bad hessian: min2");
     }
     return -1;
   }
@@ -71,7 +77,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   if ((min1Freqs.size() != saddleFreqs.size()) ||
       (min1Freqs.size() != saddleFreqs.size())) {
     if (!parameters.main_options.quiet) {
-      SPDLOG_ERROR("[Prefactor] Bad prefactor: Hessian sizes do not match");
+      EONC_LOG_ERROR("[Prefactor] Bad prefactor: Hessian sizes do not match");
     }
     return -1;
   }
@@ -84,12 +90,12 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   int i, numNegFreq = 0;
   for (i = 0; i < size; i++) {
     if (min1Freqs(i) < 0) {
-      SPDLOG_DEBUG("[Prefactor] min1 had negative mode of {}", min1Freqs(i));
+      EONC_LOG_DEBUG("[Prefactor] min1 had negative mode of {}", min1Freqs(i));
       numNegFreq++;
     }
   }
   if (numNegFreq != 0) {
-    SPDLOG_DEBUG("[Prefactor] Error: {} negative modes at min1", numNegFreq);
+    EONC_LOG_DEBUG("[Prefactor] Error: {} negative modes at min1", numNegFreq);
     return -1;
   }
 
@@ -100,7 +106,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     }
   }
   if (numNegFreq != 1) {
-    SPDLOG_DEBUG("Error: {} negative modes at saddle", numNegFreq);
+    EONC_LOG_DEBUG("Error: {} negative modes at saddle", numNegFreq);
     return -1;
   }
 
@@ -111,7 +117,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     }
   }
   if (numNegFreq != 0) {
-    SPDLOG_DEBUG("Error: {} negative modes at min2", numNegFreq);
+    EONC_LOG_DEBUG("Error: {} negative modes at min2", numNegFreq);
     return -1;
   }
 
@@ -119,7 +125,7 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   pref1 = 1.0;
   pref2 = 1.0;
 
-  if (parameters.prefactor_options.rate == Prefactor::RATE_HTST) {
+  if (parameters.prefactor_options.rate == eonc::Prefactor::RATE_HTST) {
 
     // products are calculated this way in order to avoid overflow
     for (int i = 0; i < saddleFreqs.size(); i++) {
@@ -130,9 +136,9 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
         pref2 /= saddleFreqs[i];
       }
     }
-    pref1 = sqrt(pref1) / (2 * helper_functions::pi * 10.18e-15);
-    pref2 = sqrt(pref2) / (2 * helper_functions::pi * 10.18e-15);
-  } else if (parameters.prefactor_options.rate == Prefactor::RATE_QQHTST) {
+    pref1 = sqrt(pref1) / (2 * eonc::helpers::pi * 10.18e-15);
+    pref2 = sqrt(pref2) / (2 * eonc::helpers::pi * 10.18e-15);
+  } else if (parameters.prefactor_options.rate == eonc::Prefactor::RATE_QQHTST) {
     float kB_T = parameters.main_options.temperature * 8.617332e-5; // eV
     float h_bar = 6.582119e-16;                                     // eV*s
     float h = 4.135667e-15;                                         // eV*s
@@ -150,30 +156,28 @@ int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     pref1 = 2. * kB_T / (h)*pref1;
     pref2 = 2. * kB_T / (h)*pref2;
   }
-  SPDLOG_DEBUG("[Prefactor] reactant to product prefactor: {:.3e}", pref1);
-  SPDLOG_DEBUG("[Prefactor] product to reactant prefactor: {:.3e}", pref2);
+  EONC_LOG_DEBUG("[Prefactor] reactant to product prefactor: {:.3e}", pref1);
+  EONC_LOG_DEBUG("[Prefactor] product to reactant prefactor: {:.3e}", pref2);
   return 0;
 }
 
-void Prefactor::logFreqs(VectorXd freqs, char *name) {
-  std::shared_ptr<spdlog::logger> fileLogger;
-  fileLogger = spdlog::basic_logger_mt("prefactor", "freqs.dat", true);
-  fileLogger->set_pattern("%v");
-  fileLogger->debug("[Prefactor] Frequencies at {}", name);
+void eonc::Prefactor::logFreqs(VectorXd freqs, char *name) {
+  std::ofstream outFile("freqs.dat", std::ios::app);
+  if (!outFile.is_open())
+    return;
+
+  outFile << std::format("[Prefactor] Frequencies at {}\n", name);
   int i;
   for (i = 0; i < freqs.size(); i++) {
-    fileLogger->debug("");
-    fileLogger->debug("{:10.6f} ", freqs(i));
+    outFile << "\n" << std::format("{:10.6f} ", freqs(i));
     if ((i + 1) % 5 == 0) {
-      fileLogger->debug("");
+      outFile << "\n";
     }
   }
-  fileLogger->debug("");
-  spdlog::drop("prefactor");
-  fileLogger.reset();
+  outFile << "\n";
 }
 
-VectorXi Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
+VectorXi eonc::Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
                                Matter *saddle, Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
 
@@ -214,7 +218,7 @@ VectorXi Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
   return (VectorXi)moved.block(0, 0, nMoved, 1);
 }
 
-VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
+VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
                                   Matter *saddle, Matter *min2) {
   long nAtoms = saddle->numberOfAtoms();
   long nFree = saddle->numberOfFreeAtoms();
@@ -233,7 +237,8 @@ VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
   VectorXd diff(nAtoms);
   diff.setConstant(0.0);
 
-  SPDLOG_DEBUG(
+  QUILL_LOG_DEBUG(
+      eonc::log::get(),
       "[Prefactor] including all atoms that make up {:.3f}% of the motion",
       parameters.prefactor_options.filter_fraction * 100);
   double sum = 0.0;
@@ -246,8 +251,9 @@ VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
     }
   }
 
-  SPDLOG_DEBUG("[Prefactor] sum of atom distances moved {:.4f}", sum);
-  SPDLOG_DEBUG("[Prefactor] max moved atom distance: {:.4f}", diff.maxCoeff());
+  EONC_LOG_DEBUG("[Prefactor] sum of atom distances moved {:.4f}", sum);
+  EONC_LOG_DEBUG("[Prefactor] max moved atom distance: {:.4f}",
+                 diff.maxCoeff());
 
   int nMoved = 0;
   double d = 0.0;
@@ -283,13 +289,13 @@ VectorXi Prefactor::movedAtomsPct(const Parameters &parameters, Matter *min1,
       }
     }
   }
-  SPDLOG_DEBUG("[Prefactor] including {} atoms in the hessian ({} moved + {} "
-               "neighbors)",
-               totalAtoms, nMoved, totalAtoms - nMoved);
+  EONC_LOG_DEBUG("[Prefactor] including {} atoms in the hessian ({} moved + {} "
+                 "neighbors)",
+                 totalAtoms, nMoved, totalAtoms - nMoved);
   return (VectorXi)moved.block(0, 0, totalAtoms, 1);
 }
 
-VectorXi Prefactor::allFreeAtoms(Matter *matter) {
+VectorXi eonc::Prefactor::allFreeAtoms(Matter *matter) {
   long nAtoms = matter->numberOfAtoms();
 
   VectorXi moved(nAtoms);

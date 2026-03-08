@@ -19,11 +19,13 @@
 #include "potentials/CatLearnPot/CatLearnPot.h"
 #endif
 #include "PyGuard.h"
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <format>
 #include <pybind11/eigen.h>
 
 #include "NudgedElasticBand.h"
+
+namespace eonc {
+
 
 class GPSurrogateJob : public Job {
 public:
@@ -46,7 +48,7 @@ private:
   std::vector<std::string> returnFiles;
 };
 
-namespace helper_functions::surrogate {
+namespace helpers::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs);
 MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs);
 MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -62,10 +64,14 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot);
 std::pair<double, Eigen::VectorXd::Index>
 getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs);
-} // namespace helper_functions::surrogate
+} // namespace helpers::surrogate
 
-namespace helper_functions::eigen {
+namespace helpers::eigen {
 MatrixXd vertCat(const MatrixXd &m1, const MatrixXd &m2);
 void addVectorRow(MatrixXd &data, const Eigen::VectorXd &newrow);
 // Modifies data
-} // namespace helper_functions::eigen
+} // namespace helpers::eigen
+
+} // namespace eonc
+
+using eonc::GPSurrogateJob;

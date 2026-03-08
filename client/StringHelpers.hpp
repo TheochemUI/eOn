@@ -17,7 +17,11 @@
 #include "Matter.h"
 #include "Parameters.h"
 
-namespace helper_functions {
+namespace eonc {
+
+
+
+namespace helpers {
 /**
  * \brief Parse a string into values
  *
@@ -42,4 +46,6 @@ std::vector<std::string> get_split_strings(std::string_view line);
  *
  */
 bool isNumber(std::string_view token);
-} // namespace helper_functions
+} // namespace helpers
+
+} // namespace eonc

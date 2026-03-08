@@ -13,7 +13,11 @@
 
 #include <cfenv>
 #include <csignal>
-#include <iostream>
+#include <cstdio>
+
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -36,31 +40,25 @@ static LONG WINAPI windowsFPEHandler(EXCEPTION_POINTERS *info) {
   DWORD code = info->ExceptionRecord->ExceptionCode;
   switch (code) {
   case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-    std::cerr << "Floating point exception (continuing): Division by zero"
-              << std::endl;
+    fprintf(stderr, "FPE (continuing): division by zero\n");
     break;
   case EXCEPTION_FLT_INVALID_OPERATION:
-    std::cerr << "Floating point exception (continuing): Invalid operation"
-              << std::endl;
+    fprintf(stderr, "FPE (continuing): invalid operation\n");
     break;
   case EXCEPTION_FLT_OVERFLOW:
-    std::cerr << "Floating point exception (continuing): Overflow" << std::endl;
+    fprintf(stderr, "FPE (continuing): overflow\n");
     break;
   case EXCEPTION_FLT_UNDERFLOW:
-    std::cerr << "Floating point exception (continuing): Underflow"
-              << std::endl;
+    fprintf(stderr, "FPE (continuing): underflow\n");
     break;
   case EXCEPTION_FLT_INEXACT_RESULT:
-    std::cerr << "Floating point exception (continuing): Inexact result"
-              << std::endl;
+    fprintf(stderr, "FPE (continuing): inexact result\n");
     break;
   case EXCEPTION_FLT_DENORMAL_OPERAND:
-    std::cerr << "Floating point exception (continuing): Denormal operand"
-              << std::endl;
+    fprintf(stderr, "FPE (continuing): denormal operand\n");
     break;
   case EXCEPTION_FLT_STACK_CHECK:
-    std::cerr << "Floating point exception (continuing): Stack check"
-              << std::endl;
+    fprintf(stderr, "FPE (continuing): stack check\n");
     break;
   default:
     return EXCEPTION_CONTINUE_SEARCH;
@@ -70,17 +68,27 @@ static LONG WINAPI windowsFPEHandler(EXCEPTION_POINTERS *info) {
 }
 #else
 static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
-  int fe_code = sip->si_code;
-  std::cerr << "Floating point exception (continuing): ";
-
-  if (fe_code == FPE_FLTDIV)
-    std::cerr << "Division by zero" << std::endl;
-  else if (fe_code == FPE_FLTINV)
-    std::cerr << "Invalid operation" << std::endl;
-  else if (fe_code == FPE_FLTOVF)
-    std::cerr << "Overflow" << std::endl;
-  else
-    std::cerr << "Code detected: " << fe_code << std::endl;
+  // Use only async-signal-safe functions (write(2), not std::cerr/fprintf)
+  static constexpr char prefix[] = "FPE (continuing): ";
+  static constexpr char msg_div[] = "division by zero\n";
+  static constexpr char msg_inv[] = "invalid operation\n";
+  static constexpr char msg_ovf[] = "overflow\n";
+  static constexpr char msg_unk[] = "unknown\n";
+  write(STDERR_FILENO, prefix, sizeof(prefix) - 1);
+  switch (sip->si_code) {
+  case FPE_FLTDIV:
+    write(STDERR_FILENO, msg_div, sizeof(msg_div) - 1);
+    break;
+  case FPE_FLTINV:
+    write(STDERR_FILENO, msg_inv, sizeof(msg_inv) - 1);
+    break;
+  case FPE_FLTOVF:
+    write(STDERR_FILENO, msg_ovf, sizeof(msg_ovf) - 1);
+    break;
+  default:
+    write(STDERR_FILENO, msg_unk, sizeof(msg_unk) - 1);
+    break;
+  }
 
   // Clear FP exception flags in the saved signal context so the kernel
   // does not re-raise on sigreturn, then clear hardware state as well.
@@ -118,7 +126,7 @@ void enableFPE() {
       _MM_MASK_MASK &
       ~(_MM_MASK_INVALID | _MM_MASK_DIV_ZERO | _MM_MASK_OVERFLOW));
 #else
-  std::cerr << "FPE trapping not supported on this platform." << std::endl;
+  fprintf(stderr, "FPE trapping not supported on this platform.\n");
 #endif
 
 #ifndef _WIN32

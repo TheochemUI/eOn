@@ -10,6 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ConjugateGradients.h"
+#include "SafeMath.h"
+using namespace std;
 
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = 0, b = 0, gamma = 0;
@@ -23,7 +25,7 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   }
   m_direction = m_force + gamma * m_directionOld;
   m_directionNorm = m_direction;
-  m_directionNorm.normalize();
+  eonc::safemath::safe_normalize_inplace(m_directionNorm);
   m_directionOld = m_direction;
   m_forceOld = m_force;
 
@@ -81,7 +83,7 @@ int ConjugateGradients::line_search(double a_maxMove) {
   do {
     // Determine curvature from last step (Secant method)
     curvature = fabs((projectedForceBeforeStep - projectedForce) / stepSize);
-    stepSize = projectedForce / curvature;
+    stepSize = eonc::safemath::safe_div(projectedForce, curvature, a_maxMove);
     // stepSize = projectedForceBeforeStep / curvature;
 
     if (a_maxMove < fabs(stepSize)) {
@@ -148,10 +150,10 @@ int ConjugateGradients::single_step(double a_maxMove) {
   if (!m_params.optimizer_options.cg.no_overshooting) {
     if (m_params.saddle_search_options.confine_positive.bowl_breakout) {
       // max displacement is based on system not single atom
-      pos += helper_functions::maxMotionAppliedV(stepSize * m_directionNorm,
+      pos += eonc::helpers::maxMotionAppliedV(stepSize * m_directionNorm,
                                                  a_maxMove);
     } else {
-      pos += helper_functions::maxAtomMotionAppliedV(stepSize * m_directionNorm,
+      pos += eonc::helpers::maxAtomMotionAppliedV(stepSize * m_directionNorm,
                                                      a_maxMove);
     }
     m_objf->setPositions(pos);
@@ -162,7 +164,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
     double forceChange = 0.;
     while (passedMinimum < 0. and
            (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
-      posStep = pos + helper_functions::maxAtomMotionAppliedV(
+      posStep = pos + eonc::helpers::maxAtomMotionAppliedV(
                           stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
       forceAfterStep = -m_objf->getGradient(true);
@@ -173,8 +175,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
           (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
         forceChange = (projectedForce1 - projectedForce2);
         stepSize = (projectedForce1 / forceChange) * stepSize;
-        SPDLOG_LOGGER_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
-                            forceChange, stepSize);
+        QUILL_LOG_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
+                        forceChange, stepSize);
       }
     }
   }
@@ -183,7 +185,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
       // knockout old search direction
       m_directionOld = m_objf->getPositions() * 0.0;
       m_forceOld = m_objf->getPositions() * 0.0;
-      SPDLOG_LOGGER_DEBUG(m_log, "Resetting the old search direction");
+      QUILL_LOG_DEBUG(m_log, "Resetting the old search direction");
     }
   }
 

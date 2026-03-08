@@ -10,13 +10,18 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Hessian.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
+#include "SafeMath.h"
+
+using namespace std;
+
 Hessian::Hessian(const Parameters &params, Matter *matter)
     : matter{matter},
       parameters{params} {
   hessian.resize(0, 0);
   freqs.resize(0);
-  log = spdlog::get("combi");
+  /* Logger initialized via class member */
 }
 
 Hessian::~Hessian() {}
@@ -53,7 +58,7 @@ bool Hessian::calculate(void) {
   // Determine the Hessian size
   int size = 0;
   size = atoms.rows() * 3;
-  SPDLOG_LOGGER_DEBUG(log, "[Hessian] Hessian size: {}\n", size);
+  QUILL_LOG_DEBUG(log, "[Hessian] Hessian size: {}\n", size);
   if (size == 0) {
     return false;
   }
@@ -100,7 +105,7 @@ bool Hessian::calculate(void) {
       // get the effective mass of the moving atoms
       double effMass =
           sqrt(matter->getMass(atoms(j / 3)) * matter->getMass(atoms(i / 3)));
-      hessian(i, j) /= effMass;
+      hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
     }
   }
 
@@ -118,7 +123,7 @@ bool Hessian::calculate(void) {
   }
 
   if (!parameters.main_options.quiet) {
-    SPDLOG_LOGGER_DEBUG(log, "[Hessian] writing hessian\n");
+    QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
     ofstream hessfile;
     hessfile.open("hessian.dat");
     hessfile << hessian;
@@ -126,13 +131,12 @@ bool Hessian::calculate(void) {
   }
 
   double t0, t1;
-  helper_functions::getTime(&t0, NULL, NULL);
-  SPDLOG_LOGGER_DEBUG(log,
-                      "[Hessian] calculating eigen values of the hessian\n");
+  eonc::helpers::getTime(&t0, NULL, NULL);
+  QUILL_LOG_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
-  helper_functions::getTime(&t1, NULL, NULL);
-  SPDLOG_LOGGER_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
-                      t1 - t0);
+  eonc::helpers::getTime(&t1, NULL, NULL);
+  QUILL_LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
+                  t1 - t0);
   freqs = es.eigenvalues();
 
   return true;
@@ -147,7 +151,7 @@ bool Hessian::calculate(void) {
 // atoms?
 
 VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
-  SPDLOG_LOGGER_DEBUG(log, "[Hessian] removing zero frequency modes");
+  QUILL_LOG_DEBUG(log, "[Hessian] removing zero frequency modes");
   int size = freqs.size();
   if (size != 3 * matter->numberOfAtoms()) {
     return freqs;
@@ -164,7 +168,7 @@ VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
   }
 
   if (nremoved != 6) {
-    SPDLOG_LOGGER_ERROR(
+    QUILL_LOG_ERROR(
         log, "[Hessian] [error] Found {} trivial eigenmodes instead of 6",
         nremoved);
   }

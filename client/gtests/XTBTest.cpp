@@ -8,6 +8,8 @@ using namespace Catch::Matchers;
 
 namespace tests {
 
+static eonc::helpers::test::QuillTestLogger _quill_setup;
+
 class PotTest {
 public:
   PotTest()
@@ -19,7 +21,7 @@ public:
   ~PotTest() {}
 
   void SetUp() {
-    pot_default = helper_functions::makePotential(PotType::LJ, params);
+    pot_default = eonc::helpers::makePotential(PotType::LJ, params);
     m1 = std::make_shared<Matter>(pot_default, params);
     std::string confile("pos.con");
     m1->con2matter(confile);
@@ -37,7 +39,7 @@ protected:
 TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   SetUp();
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
   double expected_energy = -623.58142247693342597;
   AtomMatrix expected_forces(m1->numberOfAtoms(), 3);
   // clang-format off
@@ -66,7 +68,7 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   params.xtb_options.maxiter = 250;
   params.xtb_options.charge = 0.0;
   params.xtb_options.uhf = 0;
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
@@ -76,7 +78,7 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   }
   SECTION("Force Matrix Check") {
     REQUIRE_THAT(f_mta,
-                 helper_functions::test::IsApprox(expected_forces, threshold));
+                 eonc::helpers::test::IsApprox(expected_forces, threshold));
   }
   // Call again to see that update works
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
@@ -87,7 +89,7 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   }
   SECTION("Force Matrix Check") {
     REQUIRE_THAT(f_mta,
-                 helper_functions::test::IsApprox(expected_forces, threshold));
+                 eonc::helpers::test::IsApprox(expected_forces, threshold));
   }
   TearDown();
 }

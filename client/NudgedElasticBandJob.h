@@ -10,20 +10,22 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Matter.h"
 #include "NudgedElasticBand.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class NudgedElasticBandJob : public Job {
 
 public:
   NudgedElasticBandJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
-        fCallsNEB{0} {
-    m_log = spdlog::get("combi");
-  }
+        fCallsNEB{0} {}
   ~NudgedElasticBandJob(void) = default;
   std::vector<std::string> run(void);
 
@@ -35,5 +37,9 @@ private:
   // variables
   std::vector<std::string> returnFiles;
   size_t fCallsNEB;
-  std::shared_ptr<spdlog::logger> m_log;
+  eonc::log::Scoped m_log;
 };
+
+} // namespace eonc
+
+using eonc::NudgedElasticBandJob;

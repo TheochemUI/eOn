@@ -17,18 +17,21 @@
 #include "helpers/Create.hpp"
 #include "potentials/CatLearnPot/CatLearnPot.h"
 
+#include "EonLogger.h"
+#include <sstream>
+using namespace std;
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
   std::string reactantFilename =
-      helper_functions::getRelevantFile("reactant.con");
+      eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename =
-      helper_functions::getRelevantFile("product.con");
+      eonc::helpers::getRelevantFile("product.con");
 
   // Clone and setup "true" params
   auto true_params = std::make_shared<Parameters>(params);
   true_params->main_options.job = params.sub_job;
   auto true_job =
-      helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
+      eonc::helpers::makeJob(std::make_unique<Parameters>(*true_params));
   auto pyparams = std::make_shared<Parameters>(params);
   pyparams->potential_options.potential = PotType::CatLearn;
 
@@ -37,16 +40,16 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   initial->con2matter(reactantFilename);
   auto final_state = std::make_shared<Matter>(pot, *true_params);
   final_state->con2matter(productFilename);
-  auto init_path = helper_functions::neb_paths::linearPath(
+  auto init_path = eonc::helpers::neb_paths::linearPath(
       *initial, *final_state, params.neb_options.image_count);
-  auto init_data = helper_functions::surrogate::getMidSlice(init_path);
-  auto features = helper_functions::surrogate::get_features(init_data);
-  SPDLOG_TRACE("Potential is {}",
-               magic_enum::enum_name<PotType>(pot->getType()));
-  auto targets = helper_functions::surrogate::get_targets(init_data, pot);
+  auto init_data = eonc::helpers::surrogate::getMidSlice(init_path);
+  auto features = eonc::helpers::surrogate::get_features(init_data);
+  EONC_LOG_TRACE("Potential is {}",
+                 magic_enum::enum_name<PotType>(pot->getType()));
+  auto targets = eonc::helpers::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
-  auto surpot = helpers::create::makeSurrogatePotential(
+  auto surpot = eonc::helpers::create::makeSurrogatePotential(
       params.gp_surrogate_options.potential, params);
   surpot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state,
@@ -58,18 +61,18 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
-      SPDLOG_CRITICAL("Whoops, power level of problem too high!!");
+      EONC_LOG_CRITICAL("Whoops, power level of problem too high!!");
       break;
     }
     // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
     // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
-    SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+    EONC_LOG_TRACE("Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
-        helper_functions::surrogate::getMaxUncertainty(neb->path);
+        eonc::helpers::surrogate::getMaxUncertainty(neb->path);
     auto [feature, target] =
-        helper_functions::surrogate::getNewDataPoint(neb->path, pot);
-    helper_functions::eigen::addVectorRow(features, feature);
-    helper_functions::eigen::addVectorRow(targets, target);
+        eonc::helpers::surrogate::getNewDataPoint(neb->path, pot);
+    eonc::helpers::eigen::addVectorRow(features, feature);
+    eonc::helpers::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
     pyparams->nebClimbingImageMethod = false;
     pyparams->optimizer_options.converged_force =
@@ -78,16 +81,16 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       obj->setPotential(surpot);
     }
     if (!(pyparams->gp_linear_path_always)) {
-      SPDLOG_TRACE("Using previous path");
+      EONC_LOG_TRACE("Using previous path");
       neb = std::make_unique<NudgedElasticBand>(neb->path, *pyparams, surpot);
     } else {
-      SPDLOG_TRACE("Using linear interpolation");
+      EONC_LOG_TRACE("Using linear interpolation");
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, *pyparams,
                                                 surpot);
     }
     status_neb = neb->compute();
 
-    std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
+    std::string nebFilename(std::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
     FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
     for (long i = 0; i <= neb->numImages + 1; i++) {
@@ -96,7 +99,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     fclose(fileNEB);
     // } else
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
-        helper_functions::surrogate::accuratePES(neb->path, pot)) {
+        eonc::helpers::surrogate::accuratePES(neb->path, pot)) {
       break;
     } else {
       continue;
@@ -123,26 +126,26 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   fileResults << magic_enum::enum_name<PotType>(
                      params.potential_options.potential)
               << " potential_type\n";
-  fileResults << fmt::format("{:.6f} energy_reference\n",
+  fileResults << std::format("{:.6f} energy_reference\n",
                              neb->path[0]->getPotentialEnergy());
   fileResults << neb->numImages << " number_of_images\n";
 
   for (long i = 0; i <= neb->numImages + 1; i++) {
-    fileResults << fmt::format("{:.6f} image{}_energy\n",
+    fileResults << std::format("{:.6f} image{}_energy\n",
                                neb->path[i]->getPotentialEnergy() -
                                    neb->path[0]->getPotentialEnergy(),
                                i);
-    fileResults << fmt::format("{:.6f} image{}_force\n",
+    fileResults << std::format("{:.6f} image{}_force\n",
                                neb->path[i]->getForces().norm(), i);
-    fileResults << fmt::format("{:.6f} image{}_projected_force\n",
+    fileResults << std::format("{:.6f} image{}_projected_force\n",
                                neb->projectedForce[i]->norm(), i);
   }
 
   fileResults << neb->numExtrema << " number_of_extrema\n";
   for (long i = 0; i < neb->numExtrema; i++) {
-    fileResults << fmt::format("{:.6f} extremum{}_position\n",
+    fileResults << std::format("{:.6f} extremum{}_position\n",
                                neb->extremumPosition[i], i);
-    fileResults << fmt::format("{:.6f} extremum{}_energy\n",
+    fileResults << std::format("{:.6f} extremum{}_energy\n",
                                neb->extremumEnergy[i], i);
   }
 
@@ -166,27 +169,31 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back("neb.dat");
   neb->printImageData(true);
 }
-namespace helper_functions::surrogate {
+namespace eonc::helpers::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions
   MatrixXd features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
-  SPDLOG_TRACE("rows: {}, cols:{}", matobjs.size(),
-               matobjs.front().numberOfFreeAtoms() * 3);
+  EONC_LOG_TRACE("rows: {}, cols:{}", matobjs.size(),
+                 matobjs.front().numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx].getPositionsFreeV();
   }
-  SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
+  std::ostringstream oss;
+  oss << features;
+  EONC_LOG_TRACE("Features\n:{}", oss.str());
   return features;
 }
 MatrixXd get_features(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   // Calculate dimensions
   MatrixXd features(matobjs.size(), matobjs.front()->numberOfFreeAtoms() * 3);
-  SPDLOG_TRACE("rows: {}, cols:{}\n", matobjs.size(),
-               matobjs.front()->numberOfFreeAtoms() * 3);
+  EONC_LOG_TRACE("rows: {}, cols:{}\n", matobjs.size(),
+                 matobjs.front()->numberOfFreeAtoms() * 3);
   for (long idx{0}; idx < features.rows(); idx++) {
     features.row(idx) = matobjs[idx]->getPositionsFreeV();
   }
-  SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
+  std::ostringstream oss;
+  oss << features;
+  EONC_LOG_TRACE("Features\n:{}", oss.str());
   return features;
 }
 MatrixXd get_targets(std::vector<Matter> &matobjs,
@@ -202,7 +209,9 @@ MatrixXd get_targets(std::vector<Matter> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx].getForcesFree().array() * -1;
   }
-  SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
+  std::ostringstream oss;
+  oss << targets;
+  EONC_LOG_TRACE("Targets\n:{}", oss.str());
   return targets;
 }
 MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
@@ -216,7 +225,9 @@ MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
     targets.block(idx, 1, 1, ncols - 1) =
         matobjs[idx]->getForcesFree().array() * -1;
   }
-  SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
+  std::ostringstream oss;
+  oss << targets;
+  EONC_LOG_TRACE("Targets\n:{}", oss.str());
   return targets;
 }
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
@@ -238,7 +249,8 @@ Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   m1.setPotential(true_pot);
   target(0) = m1.getPotentialEnergy();
   target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
-  // SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
+  // EONC_LOG_TRACE("Generated Target:\n{}",
+  // fmt::streamed(target));
   return target;
 }
 std::pair<double, Eigen::VectorXd::Index>
@@ -250,7 +262,8 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
-  // SPDLOG_TRACE("Uncertainty along path is {}\nmax_index: {}, maxVal: {}",
+  // EONC_LOG_TRACE("Uncertainty along path
+  // is {}\nmax_index: {}, maxVal: {}",
   //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
@@ -279,14 +292,17 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   auto mae = difference.array()
                  .abs()
                  .maxCoeff(); //.squaredNorm() / predEnergies.size();
-  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
-               fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-               fmt::streamed(difference), mae);
+  std::ostringstream oss;
+  oss << "predicted\n"
+      << predEnergies << "\ntrue\n"
+      << trueEnergies << "\ndifference\n"
+      << difference << "\n MAE: " << mae;
+  EONC_LOG_TRACE("{}", oss.str());
   return mae < 0.05;
 }
-} // namespace helper_functions::surrogate
+} // namespace eonc::helpers::surrogate
 
-namespace helper_functions::eigen {
+namespace eonc::helpers::eigen {
 MatrixXd vertCat(const MatrixXd &m1, const MatrixXd &m2) {
   assert(m1.cols() == m2.cols());
   MatrixXd res(m1.rows() + m2.rows(), m2.cols());
@@ -298,4 +314,4 @@ void addVectorRow(MatrixXd &data, const Eigen::VectorXd &newrow) {
   data.conservativeResize(data.rows() + 1, data.cols());
   data.row(data.rows() - 1) = newrow;
 }
-} // namespace helper_functions::eigen
+} // namespace eonc::helpers::eigen

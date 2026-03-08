@@ -15,6 +15,9 @@
 #include <string>
 #include <vector>
 
+namespace eonc {
+
+
 /** @defgroup Jobs
  *
  * \brief ClientEON main procedures
@@ -56,7 +59,7 @@ public:
   Job(std::unique_ptr<Parameters> parameters)
       : jtype{parameters->main_options.job},
         params{*std::move(parameters)},
-        pot{helper_functions::makePotential(params.potential_options.potential,
+        pot{helpers::makePotential(params.potential_options.potential,
                                             params)} {}
   Job(std::shared_ptr<Potential> potPassed, const Parameters &parameters)
       : jtype{parameters.main_options.job},
@@ -68,6 +71,10 @@ public:
   [[nodiscard]] JobType getType() { return this->jtype; };
 };
 
-namespace helper_functions {
+namespace helpers {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
-} // namespace helper_functions
+} // namespace helpers
+
+} // namespace eonc
+
+using eonc::Job;

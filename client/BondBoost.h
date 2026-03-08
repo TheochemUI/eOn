@@ -14,6 +14,10 @@
 #include "Parameters.h"
 
 #include "Eigen.h"
+#include "EonLogger.h"
+
+namespace eonc {
+
 
 /** Functionality relying on the conjugate gradients algorithm. The object is
  * capable of minimizing an Matter object or modified forces being passed in.*/
@@ -52,7 +56,7 @@ private:
   long nTABs;
   long nReg;
   long nBBs;
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
 
 class Hyperdynamics {
@@ -62,3 +66,8 @@ public:
   static const char NONE[];
   static const char BOND_BOOST[];
 };
+
+} // namespace eonc
+
+using eonc::BondBoost;
+using eonc::Hyperdynamics;

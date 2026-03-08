@@ -10,18 +10,20 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Dynamics.h"
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class ReplicaExchangeJob : public Job {
 public:
   ReplicaExchangeJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
-        forceCalls{0} {
-    log = spdlog::get("combi");
-  }
+        forceCalls{0} {}
   ~ReplicaExchangeJob(void) = default;
   std::vector<std::string> run(void);
 
@@ -34,5 +36,9 @@ private:
   //        Dynamics **replicaDynamics;
   //        double *replicaTemperature;
   std::vector<std::string> returnFiles;
-  shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::ReplicaExchangeJob;

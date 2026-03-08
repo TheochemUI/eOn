@@ -11,24 +11,12 @@
 */
 
 #include "NudgedElasticBand.h"
+#include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include <spdlog/sinks/null_sink.h>
-#include <spdlog/spdlog.h>
 
 namespace tests {
 
-// Set up a null logger so NEB internals don't crash on spdlog::get("combi").
-struct LoggerSetup {
-  LoggerSetup() {
-    if (!spdlog::get("combi")) {
-      auto sink = std::make_shared<spdlog::sinks::null_sink_mt>();
-      auto logger = std::make_shared<spdlog::logger>("combi", sink);
-      spdlog::register_logger(logger);
-      spdlog::set_default_logger(logger);
-    }
-  }
-};
-static LoggerSetup _logger_setup;
+static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 // Regression test: CI-NEB with XTB on a small (9-atom) molecule.
 // Reproduces a bug where removing EIGEN_DEFAULT_TO_ROW_MAJOR silently changed
@@ -59,7 +47,7 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   params.optimizer_options.max_iterations = 100;
   params.optimizer_options.max_move = 0.1;
 
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
   auto initial = std::make_shared<Matter>(pot, params);
   auto final_state = std::make_shared<Matter>(pot, params);

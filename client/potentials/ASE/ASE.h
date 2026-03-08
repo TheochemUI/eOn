@@ -27,7 +27,10 @@ private:
 
 public:
   ASE(const Parameters &a_params);
-  virtual ~ASE() { SPDLOG_INFO("[ASE] called potential {} times", counter); }
+  virtual ~ASE() {
+    QUILL_LOG_INFO(eonc::log::get(), "[ASE] called potential {} times",
+                   counter);
+  }
 
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;

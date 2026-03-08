@@ -11,10 +11,14 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
 #include <vector>
+
+namespace eonc {
+
 
 class DynamicsSaddleSearch : public SaddleSearchMethod {
 public:
@@ -27,7 +31,6 @@ public:
     this->pot = matterPassed->getPotential();
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("combi");
   };
   ~DynamicsSaddleSearch() = default;
 
@@ -50,5 +53,9 @@ public:
   int status;
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::DynamicsSaddleSearch;

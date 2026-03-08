@@ -7,9 +7,11 @@
 #include <fstream>
 #include <vector>
 
+#include "EonLogger.h"
+using namespace std;
 namespace fs = std::filesystem;
 
-namespace helper_functions::neb_paths {
+namespace eonc::helpers::neb_paths {
 
 // Forward declaration of ZBL setup helper to keep code clean
 std::shared_ptr<Potential> createZBLPotential() {
@@ -19,7 +21,7 @@ std::shared_ptr<Potential> createZBLPotential() {
   zbl_params.zbl_options.cut_inner = 0.5;
   // Cutoff sufficient to push overlapping atoms apart
   zbl_params.zbl_options.cut_global = 3.0;
-  return helper_functions::makePotential(PotType::ZBL, zbl_params);
+  return eonc::helpers::makePotential(PotType::ZBL, zbl_params);
 }
 
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
@@ -99,10 +101,10 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
                              const size_t nimgs, const Parameters &params,
                              bool use_zbl) {
 
-  auto log = spdlog::get("combi");
-  SPDLOG_LOGGER_INFO(log, "Generating initial path using IDPP...");
+  auto log = eonc::log::get();
+  QUILL_LOG_INFO(log, "Generating initial path using IDPP...");
   if (use_zbl) {
-    SPDLOG_LOGGER_WARN(
+    QUILL_LOG_WARNING(
         log, "ZBL Repulsion not implemented for iterative IDPP (idppPath). "
              "Using standard IDPP.");
   }
@@ -130,7 +132,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
     // Create an Optimizer
     // Defaults to taking the same one as optimizer
-    auto idpp_optim = helpers::create::mkOptim(
+    auto idpp_optim = eonc::helpers::create::mkOptim(
         idpp_objf, params.neb_options.opt_method, params);
 
     // Run the optimization
@@ -140,25 +142,24 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
     // Log progress
     double residual = idpp_objf->getConvergence();
-    SPDLOG_LOGGER_DEBUG(
-        log, "IDPP Image {:2d}/{:2d} | xi: {:.2f} | Residual: {:.4e}", i, nimgs,
-        xi, residual);
+    QUILL_LOG_DEBUG(log,
+                    "IDPP Image {:2d}/{:2d} | xi: {:.2f} | Residual: {:.4e}", i,
+                    nimgs, xi, residual);
 
     // Explicitly sync positions back to the path vector just to be safe
     path[i].setPositions(AtomMatrix::Map(idpp_objf->getPositions().data(),
                                          path[i].numberOfAtoms(), 3));
   }
 
-  SPDLOG_LOGGER_INFO(log, "IDPP path generation complete.");
+  QUILL_LOG_INFO(log, "IDPP path generation complete.");
   return path;
 }
 
 std::vector<Matter> idppCollectivePath(const Matter &initImg,
                                        const Matter &finalImg, size_t nimgs,
                                        const Parameters &params, bool use_zbl) {
-  auto log = spdlog::get("combi");
-  SPDLOG_LOGGER_INFO(log,
-                     "Generating initial path using Collective IDPP-NEB...");
+  auto log = eonc::log::get();
+  QUILL_LOG_INFO(log, "Generating initial path using Collective IDPP-NEB...");
 
   std::vector<Matter> path = linearPath(initImg, finalImg, nimgs);
 
@@ -168,14 +169,14 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
 
   // 2. Optional ZBL Wrapper
   if (use_zbl) {
-    SPDLOG_LOGGER_INFO(log, "Enabling ZBL repulsive penalty for IDPP...");
+    QUILL_LOG_INFO(log, "Enabling ZBL repulsive penalty for IDPP...");
     auto zbl_pot = createZBLPotential();
     // Wrap the IDPP objective with ZBL repulsion (weight = 1.0)
     idpp_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(idpp_objf, zbl_pot,
                                                             path, params, 1.0);
   }
 
-  auto optim = helpers::create::mkOptim(
+  auto optim = eonc::helpers::create::mkOptim(
       idpp_objf, params.neb_options.initialization.opt_method, params);
 
   int maxSteps = params.neb_options.initialization.max_iterations;
@@ -187,17 +188,17 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
     currentStep += checkInterval;
 
     if (idpp_objf->isConverged()) {
-      SPDLOG_LOGGER_INFO(
-          log, "IDPP-NEB converged after {} steps. Max Residual: {:.4f}",
-          currentStep, idpp_objf->getConvergence());
+      QUILL_LOG_INFO(log,
+                     "IDPP-NEB converged after {} steps. Max Residual: {:.4f}",
+                     currentStep, idpp_objf->getConvergence());
       return path;
     }
   }
 
-  SPDLOG_LOGGER_WARN(log,
-                     "IDPP-NEB reached max_iterations ({}) without full "
-                     "convergence. Residual: {:.4f}",
-                     maxSteps, idpp_objf->getConvergence());
+  QUILL_LOG_WARNING(log,
+                    "IDPP-NEB reached max_iterations ({}) without full "
+                    "convergence. Residual: {:.4f}",
+                    maxSteps, idpp_objf->getConvergence());
   return path;
 }
 
@@ -216,13 +217,13 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
                               size_t target_nimgs, const Parameters &params,
                               bool use_zbl) {
 
-  auto log = spdlog::get("combi");
+  auto log = eonc::log::get();
   if (use_zbl) {
-    SPDLOG_LOGGER_INFO(
+    QUILL_LOG_INFO(
         log, "Generating initial path using Sequential IDPP-ZBL (S-IDPP)...");
   } else {
-    SPDLOG_LOGGER_INFO(
-        log, "Generating initial path using Sequential IDPP (S-IDPP)...");
+    QUILL_LOG_INFO(log,
+                   "Generating initial path using Sequential IDPP (S-IDPP)...");
   }
 
   // 1. Start with [Init, Final]
@@ -267,8 +268,8 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
       path.insert(path.begin() + nLeft + 1, newImg);
       nLeft++;
       nIntermediate++;
-      SPDLOG_LOGGER_DEBUG(log, "S-IDPP: Added Left Frontier. Total: {}",
-                          nIntermediate);
+      QUILL_LOG_DEBUG(log, "S-IDPP: Added Left Frontier. Total: {}",
+                      nIntermediate);
     }
 
     // Add to Right (Product side)
@@ -288,8 +289,8 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
       path.insert(path.begin() + rightFrontierIdx, newImg);
       nRight++;
       nIntermediate++;
-      SPDLOG_LOGGER_DEBUG(log, "S-IDPP: Added Right Frontier. Total: {}",
-                          nIntermediate);
+      QUILL_LOG_DEBUG(log, "S-IDPP: Added Right Frontier. Total: {}",
+                      nIntermediate);
     }
 
     // --- STEP B: OPTIMIZE CURRENT SET ---
@@ -307,7 +308,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
     // TODO(rg): this is a headache, since it uses the optimizer stanza but with
     // the NEB OptType
-    auto optim = helpers::create::mkOptim(
+    auto optim = eonc::helpers::create::mkOptim(
         idpp_objf, params.neb_options.initialization.opt_method, params);
 
     // Relax the current intermediate path until it meets the tolerance
@@ -320,13 +321,13 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
         break;
     }
 
-    SPDLOG_LOGGER_DEBUG(
+    QUILL_LOG_DEBUG(
         log,
         "S-IDPP Frontier Relaxed: {} images | Steps: {} | Residual: {:.4f}",
         nIntermediate, step, idpp_objf->getConvergence());
 
-    SPDLOG_LOGGER_DEBUG(log, "S-IDPP: Relaxed with {} images. Residual: {:.4f}",
-                        nIntermediate, idpp_objf->getConvergence());
+    QUILL_LOG_DEBUG(log, "S-IDPP: Relaxed with {} images. Residual: {:.4f}",
+                    nIntermediate, idpp_objf->getConvergence());
   }
 
   // 3. Final Interpolation / Alignment
@@ -335,7 +336,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   // It is good practice to run one final IDPP on the FULL path to evenly space
   // everything.
 
-  SPDLOG_LOGGER_INFO(log, "S-IDPP: Final relaxation of full path...");
+  QUILL_LOG_INFO(log, "S-IDPP: Final relaxation of full path...");
 
   std::shared_ptr<ObjectiveFunction> final_objf =
       std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
@@ -347,7 +348,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   }
 
   auto final_optim =
-      helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
+      eonc::helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
   final_optim->run(500, params.optimizer_options.max_move);
 
   return path;
@@ -446,4 +447,4 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
   return resampled;
 }
 
-} // namespace helper_functions::neb_paths
+} // namespace eonc::helpers::neb_paths

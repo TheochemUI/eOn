@@ -14,7 +14,6 @@ project(
 # IMPORTANT!! warning_level=3 passes -fimplicit-none
 # eonclient needs implicit typing!!
 
-
 host_system = host_machine.system()
 
 _args = []  # Extra arguments
