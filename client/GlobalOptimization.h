@@ -12,6 +12,8 @@
 #pragma once
 #include "Parameters.h"
 
+namespace eonc {
+
 class GlobalOptimization {
 public:
   GlobalOptimization(const Parameters &params);
@@ -21,3 +23,7 @@ public:
 private:
   const Parameters &parameters;
 };
+
+} // namespace eonc
+
+using eonc::GlobalOptimization;

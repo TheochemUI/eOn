@@ -12,6 +12,7 @@
 //////////////////////////////////////////////////////////////////////
 
 // C++ Includes
+#include "EonLogger.h"
 #include <fstream>
 #include <iostream>
 // #include <strstream>
@@ -25,6 +26,7 @@ using namespace std;
 #include <stdio.h>
 
 // Local Includes
+#include "BaseStructures.h"
 #include "INIFile.h"
 
 #if defined(WIN32)
@@ -281,8 +283,8 @@ string CIniFile::GetValue(string const keyname, string const valuename,
     return "";
   }
 
-  printf("* [%s] %s: %s\n", keyname.c_str(), valuename.c_str(),
-         keys[keyID].values[valueID].c_str());
+  EONC_LOG_INFO("* [{}] {}: {}", keyname.c_str(), valuename.c_str(),
+                keys[keyID].values[valueID].c_str());
   found = true;
   return keys[keyID].values[valueID];
 }

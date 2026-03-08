@@ -17,6 +17,9 @@
 #include "Parameters.h"
 
 #include "Eigen.h"
+#include "EonLogger.h"
+
+namespace eonc {
 
 class Dynamics {
 
@@ -50,5 +53,9 @@ private:
   double kB;
   double temperature;
   double vxi1, vxi2, xi1, xi2;
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::Dynamics;

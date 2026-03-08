@@ -12,9 +12,13 @@
 #include "GlobalOptimization.h"
 #include <stdio.h>
 
+#include "EonLogger.h"
+
+using namespace std;
+
 GlobalOptimization::GlobalOptimization(const Parameters &params)
     : parameters{params} {}
 
 GlobalOptimization::~GlobalOptimization(void) {}
 
-void GlobalOptimization::run(void) { SPDLOG_INFO("HELLO FROM GO\n"); }
+void GlobalOptimization::run(void) { EONC_LOG_INFO("HELLO FROM GO\n"); }

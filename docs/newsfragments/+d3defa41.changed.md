@@ -1,0 +1,1 @@
+Updated metatomic ecosystem dependencies: torch 2.10, metatomic-torch 0.1.9+, metatensor-torch 0.8.4+, vesin/vesin-torch 0.5.2+, metatrain 2026.2.1+. Ensures compatibility with latest machine learning potential infrastructure.

@@ -85,6 +85,8 @@ void printFeatures() {
   }
 }
 
+namespace eonc {
+
 void commandLine(int argc, char **argv) {
   bool sflag = false, mflag = false, pflag = false, cflag = false;
   double optConvergedForce = 0.001;
@@ -348,7 +350,7 @@ void commandLine(int argc, char **argv) {
     params.optimizer_options.converged_force = optConvergedForce;
   }
 
-  auto pot = helper_functions::makePotential(params);
+  auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   auto matter2 = std::make_unique<Matter>(pot, params);
   matter->con2matter(confile);
@@ -371,3 +373,5 @@ void commandLine(int argc, char **argv) {
     }
   }
 }
+
+} // namespace eonc

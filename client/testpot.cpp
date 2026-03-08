@@ -14,10 +14,11 @@
 #include "Potential.h"
 #include "PyGuard.h"
 #include <cstdlib>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <iostream>
 #include <memory>
+#include <sstream>
 
+using namespace std;
 using namespace std::string_literals; // For ""s
 
 int main(void) {
@@ -25,14 +26,13 @@ int main(void) {
   auto params = std::make_shared<Parameters>();
   eonc::ensure_interpreter();
   params->potential_options.potential = PotType::CatLearn;
-  auto pot = helper_functions::makePotential(params);
+  auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   matter->con2matter(confile);
   auto [energy, forces] = pot->get_ef(
       matter->getPositions(), matter->getAtomicNrs(), matter->getCell());
-  auto execString =
-      fmt::format("Got {energy:}\n{forces:}", fmt::arg("energy", energy),
-                  fmt::arg("forces", fmt::streamed(forces)));
-  std::cout << execString << "\n";
+  std::ostringstream oss;
+  oss << "Got " << energy << "\n" << forces << "\n";
+  std::cout << oss.str();
   return EXIT_SUCCESS;
 }

@@ -1,0 +1,28 @@
+CompileFlags:
+  # Replace conda cross-compiler with system clang
+  Compiler: clang++
+  Add:
+    - -std=c++20
+    - -DEON_CHECKS=TRUE
+    - -DQUILL_DISABLE_NON_PREFIXED_MACROS
+  Remove:
+    # Fortran flags that leak from meson's compile DB
+    - -fno-implicit-none
+    - -J*
+    # Conda-specific flags clangd doesn't understand
+    - -fmessage-length=0
+    - -march=nocona
+    - -mtune=haswell
+    - -ftree-vectorize
+    - -fno-plt
+    - -fstack-protector-strong
+    - -fvisibility-inlines-hidden
+
+Diagnostics:
+  Suppress:
+    # Vendored thirdparty code
+    - pp_file_not_found
+  ClangTidy:
+    Remove:
+      - modernize-use-trailing-return-type
+      - readability-identifier-length

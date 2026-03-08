@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+namespace eonc {
+
 /**
  * @brief Callback type for potential energy/force evaluation.
  *
@@ -58,3 +60,9 @@ void startRpcServer(ForceCallback callback, const std::string &host,
  */
 void startPooledRpcServer(std::vector<ForceCallback> pool,
                           const std::string &host, uint16_t port);
+
+} // namespace eonc
+
+using eonc::ForceCallback;
+using eonc::startPooledRpcServer;
+using eonc::startRpcServer;

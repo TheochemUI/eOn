@@ -13,6 +13,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "MonteCarlo.h"
+using namespace std;
 
 std::vector<std::string> MonteCarloJob::run(void) {
   string posInFilename("pos.con");
@@ -23,9 +24,9 @@ std::vector<std::string> MonteCarloJob::run(void) {
     pos = fopen("pos_cp.con", "r");
     if (pos != NULL) {
       posInFilename = "pos_cp.con";
-      SPDLOG_LOGGER_DEBUG(log, "Resuming from checkpoint\n");
+      QUILL_LOG_DEBUG(log, "Resuming from checkpoint\n");
     } else {
-      SPDLOG_LOGGER_DEBUG(log, "No checkpoint files found\n");
+      QUILL_LOG_DEBUG(log, "No checkpoint files found\n");
     }
   }
 
@@ -49,7 +50,7 @@ std::vector<std::string> MonteCarloJob::run(void) {
   // fprintf(fileResults, "%d termination_reason\n", status);
   // fprintf(fileResults, "minimization job_type\n");
   // fprintf(fileResults, "%s potential_type\n",
-  // helper_functions::getPotentialName(params.potential_options.potential).c_str());
+  // eonc::helpers::getPotentialName(params.potential_options.potential).c_str());
   // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
   // if (status != STATUS_POTENTIAL_FAILED) {
   //     fprintf(fileResults, "%f potential_energy\n",

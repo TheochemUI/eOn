@@ -11,8 +11,12 @@
 */
 
 #include "BondBoost.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include <math.h>
+
+using namespace std;
+
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 
@@ -24,7 +28,7 @@ BondBoost::BondBoost(Matter *matt, const Parameters &params)
   RAList = nullptr;
   TABAList = nullptr;
   BBAList = nullptr;
-  log = spdlog::get("combi");
+  /* Logger initialized via class member */
 }
 
 BondBoost::~BondBoost() {
@@ -52,10 +56,10 @@ void BondBoost::initialize() {
   nBBs = 0;
   nReg = 1;
   BALstring = parameters.hyperdynamics_options.boost_atom_list;
-  atoms = helper_functions::split_string_int(BALstring, ",");
+  atoms = eonc::helpers::split_string_int(BALstring, ",");
   leng_strlist = atoms.size();
   if (BALstring.c_str() == string("all") or atoms.size() == 0) {
-    SPDLOG_LOGGER_DEBUG(log, "boost all atoms that are set free\n");
+    QUILL_LOG_DEBUG(log, "boost all atoms that are set free\n");
     nBAs = matter->numberOfFreeAtoms();
     nRAs = nAtoms - nBAs;    // nRestAtoms
     BAList = new long[nBAs]; // BoostAtomsList
@@ -79,15 +83,15 @@ void BondBoost::initialize() {
       }
     }
     if (count != nRAs) {
-      SPDLOG_LOGGER_DEBUG(
-          log, "Error: nRestAtoms does not equal to counted number!\n");
+      QUILL_LOG_DEBUG(log,
+                      "Error: nRestAtoms does not equal to counted number!\n");
     }
   } else {
-    SPDLOG_LOGGER_DEBUG(log, "boost the following selected atoms:");
+    QUILL_LOG_DEBUG(log, "boost the following selected atoms:");
     for (i = 0; i < leng_strlist; i++) {
-      SPDLOG_LOGGER_DEBUG(log, "{} ", atoms[i]);
+      QUILL_LOG_DEBUG(log, "{} ", atoms[i]);
     }
-    SPDLOG_LOGGER_DEBUG(log, "\n");
+    QUILL_LOG_DEBUG(log, "\n");
     nBAs = leng_strlist;
     nRAs = nAtoms - nBAs;    // nRestAtoms
     BAList = new long[nBAs]; // BoostAtomsList
@@ -109,8 +113,8 @@ void BondBoost::initialize() {
       }
     }
     if (count != nRAs) {
-      SPDLOG_LOGGER_DEBUG(
-          log, "Error: nRestAtoms does not equal to counted number!\n");
+      QUILL_LOG_DEBUG(log,
+                      "Error: nRestAtoms does not equal to counted number!\n");
     }
   }
 
@@ -118,16 +122,16 @@ void BondBoost::initialize() {
           nBAs * nRAs;            // number of Bonds involved with Tagged Atoms
   TABAList = new long[2 * nTABs]; // CorrespondingAtomsList of TABLList
   TABLList.setZero(nTABs, 1);
-  SPDLOG_LOGGER_DEBUG(log, "BondBoost Used !\n");
+  QUILL_LOG_DEBUG(log, "BondBoost Used !\n");
 
   // TEST PRINT
   /*
       for(i=0 ;i< nBAs;i++){
-      SPDLOG_LOGGER_DEBUG(log, "nBoostAtoms {}: {}\n", i, BAList[i]);
+      QUILL_LOG_DEBUG(log, "nBoostAtoms {}: {}\n", i, BAList[i]);
       }
 
       for(i=0; i< nRAs;i++){
-      SPDLOG_LOGGER_DEBUG(log, "nRestAtoms {}: {}\n", i, RAList[i]);
+      QUILL_LOG_DEBUG(log, "nRestAtoms {}: {}\n", i, RAList[i]);
       }
   */
 }
@@ -154,20 +158,20 @@ double BondBoost::boost() {
     nReg++;
     // TEST PRINT
     /*  for(long i=nTABs-1;i<nTABs;i++){
-        SPDLOG_LOGGER_DEBUG(log, "Distance between Atoms {} and {} is {}\n",
+        QUILL_LOG_DEBUG(log, "Distance between Atoms {} and {} is {}\n",
        TABAList[2 * i], TABAList[2 * i + 1], TABLList(i, 0));
             }
 
-            SPDLOG_LOGGER_DEBUG(log, "\n");
+            QUILL_LOG_DEBUG(log, "\n");
     */
     // TEST END
   } else {
-    // SPDLOG_LOGGER_DEBUG(log, "nreg = {}; RMDS={}\n", nReg, RMDS);
+    // QUILL_LOG_DEBUG(log, "nreg = {}; RMDS={}\n", nReg, RMDS);
     if (nReg == RMDS + 1) {
       nBBs = BondSelect();
 
       //   for (long i=0;i<nBBs;i++){
-      // SPDLOG_LOGGER_DEBUG(log, "Equilibrium Distance between Atoms {} and {}
+      // QUILL_LOG_DEBUG(log, "Equilibrium Distance between Atoms {} and {}
       // is {}\n", BBAList[2 * i], BBAList[2 * i + 1], EBBLList(i, 0));
       //    }
     }
@@ -228,13 +232,13 @@ double BondBoost::Booststeps() {
             (1.0 - PRR * PRR * Epsr_MAX * Epsr_MAX);
   /*
       for (i=0;i<nBBs;i++){
-      SPDLOG_LOGGER_DEBUG(log, "Boost::Distance between Atoms {} and {} is {},
+      QUILL_LOG_DEBUG(log, "Boost::Distance between Atoms {} and {} is {},
      EQ= {}; EPSR_Q={}\n", BBAList[2 * i], BBAList[2 * i + 1], CBBLList(i, 0),
      EBBLList(i, 0), Epsr_Q[i]);
       }
 
-      SPDLOG_LOGGER_DEBUG(log, "Boost::Epsr_MAX= {}, Atoms {} and {}\n",
-     Epsr_MAX, BBAList[2 * Mi], BBAList[2 * Mi + 1]); SPDLOG_LOGGER_DEBUG(log,
+      QUILL_LOG_DEBUG(log, "Boost::Epsr_MAX= {}, Atoms {} and {}\n",
+     Epsr_MAX, BBAList[2 * Mi], BBAList[2 * Mi + 1]); QUILL_LOG_DEBUG(log,
      "Boost::A_EPS_M= {}\n", A_EPS_M);
   */
   if (Epsr_MAX < 1.0) {
@@ -268,7 +272,7 @@ double BondBoost::Booststeps() {
 
     R = CBBLList(i, 0);
     //    matter->distance(AtomI_1,AtomI_2);
-    // SPDLOG_LOGGER_DEBUG(log, "R={}, CLList={}\n", R, CBBLList(i, 0));
+    // QUILL_LOG_DEBUG(log, "R={}, CLList={}\n", R, CBBLList(i, 0));
 
     for (j = 0; j < 3; j++) {
       Ri[j] = matter->pdistance(AtomI_1, AtomI_2, j);
@@ -276,49 +280,49 @@ double BondBoost::Booststeps() {
       TADF(AtomI_1, j) = TADF(AtomI_1, j) + AddForces(i, j);
       TADF(AtomI_2, j) = TADF(AtomI_2, j) - AddForces(i, j);
     }
-    // SPDLOG_LOGGER_DEBUG(log, "{} Bond:: Rx={}; Ry={}; Rz={}; Rsum={};
+    // QUILL_LOG_DEBUG(log, "{} Bond:: Rx={}; Ry={}; Rz={}; Rsum={};
     // R={}\n", i, Ri[0], Ri[1], Ri[2], std::sqrt(Ri[0] * Ri[0] + Ri[1] * Ri[1]
     // + Ri[2] * Ri[2]), R);
   }
 
   // if (i != Mi) {
-  //   SPDLOG_LOGGER_DEBUG(
+  //   QUILL_LOG_DEBUG(
   //       log, "DeltaF(Epsr_Q = {}) = {}, {}, {}, {}; Atom {} and Atom {}\n",
   //       Epsr_Q[i], AddForces(i, 0), AddForces(i, 1), AddForces(i, 2),
   //       BBAList[2 * i], BBAList[2 * i + 1]);
   // } else {
-  //   SPDLOG_LOGGER_DEBUG(
+  //   QUILL_LOG_DEBUG(
   //       log, "DeltaF(Epsr_MAX = {}) = {}, {}, {}, {}; Atom {} and Atom {}\n",
   //       Epsr_MAX, Mforce, AddForces(i, 0), AddForces(i, 1), AddForces(i, 2),
   //       BBAList[2 * i], BBAList[2 * i + 1]);
   // }
 
-  // SPDLOG_LOGGER_DEBUG(log, "TADF::");
+  // QUILL_LOG_DEBUG(log, "TADF::");
   // for (i = 0; i < nAtoms; i++) {
-  //   SPDLOG_LOGGER_DEBUG(log, "{}   {}   {}", TADF(i, 0), TADF(i, 1),
+  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", TADF(i, 0), TADF(i, 1),
   //                       TADF(i, 2));
   // }
 
-  // SPDLOG_LOGGER_DEBUG(log, "OldForces::");
+  // QUILL_LOG_DEBUG(log, "OldForces::");
   // for (i = 0; i < nAtoms; i++) {
-  //   SPDLOG_LOGGER_DEBUG(log, "{}   {}   {}", OldForce(i, 0), OldForce(i, 1),
+  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", OldForce(i, 0), OldForce(i, 1),
   //                       OldForce(i, 2));
   // }
 
-  // SPDLOG_LOGGER_DEBUG(log, "NewForces::");
+  // QUILL_LOG_DEBUG(log, "NewForces::");
   // for (i = 0; i < nAtoms; i++) {
-  //   SPDLOG_LOGGER_DEBUG(log, "{}   {}   {}", NewForce(i, 0), NewForce(i, 1),
+  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", NewForce(i, 0), NewForce(i, 1),
   //                       NewForce(i, 2));
   // }
 
   // OldForce = matter->getForces();
-  // SPDLOG_LOGGER_DEBUG(log, "NewSettedForces::");
+  // QUILL_LOG_DEBUG(log, "NewSettedForces::");
   // for (i = 0; i < nAtoms; i++) {
-  //   SPDLOG_LOGGER_DEBUG(log, "{}   {}   {}", OldForce(i, 0), OldForce(i, 1),
+  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", OldForce(i, 0), OldForce(i, 1),
   //                       OldForce(i, 2));
   // }
 
-  // SPDLOG_LOGGER_DEBUG(log, "boost_fact= {}, totE= {}\n", Boost_Fact,
+  // QUILL_LOG_DEBUG(log, "boost_fact= {}, totE= {}\n", Boost_Fact,
   // Boost_Fact + matter->getKineticEnergy() + matter->getPotentialEnergy());
   BiasForces = TADF;
   Free = matter->getFree();
@@ -333,7 +337,7 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
 
   for (i = 0; i < nBAs; i++) {
     for (j = i + 1; j < nBAs; j++) {
-      // SPDLOG_LOGGER_DEBUG(log, "distance = {}\n", matter->distance(BAList[i],
+      // QUILL_LOG_DEBUG(log, "distance = {}\n", matter->distance(BAList[i],
       // BAList[j]));
       TABL_t(count, 0) = matter->distance(BAList[i], BAList[j]);
       TABAList[2 * count] = BAList[i];
@@ -344,7 +348,7 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
 
   for (i = 0; i < nBAs; i++) {
     for (j = 0; j < nRAs; j++) {
-      // SPDLOG_LOGGER_DEBUG(log, "distance = {}\n", matter->distance(BAList[i],
+      // QUILL_LOG_DEBUG(log, "distance = {}\n", matter->distance(BAList[i],
       // RAList[j]));
       TABL_t(count, 0) = matter->distance(BAList[i], RAList[j]);
       TABAList[2 * count] = BAList[i];
@@ -352,15 +356,15 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
       count++;
     }
   }
-  // SPDLOG_LOGGER_DEBUG(log, "count={}\n", count);
+  // QUILL_LOG_DEBUG(log, "count={}\n", count);
   if (count != nTABs) {
-    SPDLOG_LOGGER_DEBUG(
+    QUILL_LOG_DEBUG(
         log, "Total Involved Bond number does not equal counted number\n");
   }
 
-  // SPDLOG_LOGGER_DEBUG(log, "test here");
+  // QUILL_LOG_DEBUG(log, "test here");
   // for (i = count - 1; i < count; i++) {
-  //   SPDLOG_LOGGER_DEBUG(log, "test ::Distance between Atoms {} and {} is
+  //   QUILL_LOG_DEBUG(log, "test ::Distance between Atoms {} and {} is
   //   {}\n",
   //                       TABAList[2 * i], TABAList[2 * i + 1], TABL_t(i, 0));
   // }

@@ -11,10 +11,13 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
 #include <vector>
+
+namespace eonc {
 
 class BasinHoppingSaddleSearch : public SaddleSearchMethod {
 public:
@@ -27,7 +30,6 @@ public:
         saddle{displacement} {
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("combi");
   }
   ~BasinHoppingSaddleSearch() = default;
 
@@ -45,5 +47,9 @@ public:
   int status;
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::BasinHoppingSaddleSearch;

@@ -50,13 +50,13 @@ TEST_F(ImpDimerTest, TestMatter) {
   parameters.dimer_options.converged_angle = 0.001;
   parameters.saddle_search_options.minmode_method =
       LowestEigenmode::MINMODE_DIMER;
-  auto pot = helper_functions::makePotential(parameters);
+  auto pot = eonc::helpers::makePotential(parameters);
   auto initial = std::make_shared<Matter>(pot, parameters);
   auto displacement = std::make_shared<Matter>(pot, parameters);
   auto saddle = std::make_shared<Matter>(pot, parameters);
   initial->con2matter(reactantFilename);
   saddle->con2matter(displacementFilename);
-  mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
+  mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   auto saddleSearch = std::make_unique<MinModeSaddleSearch>(
       saddle, mode, initial->getPotentialEnergy(), parameters, pot);
   auto minModeMethod = std::make_unique<ImprovedDimer>(saddle, parameters,

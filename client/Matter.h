@@ -11,16 +11,16 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "Parameters.h"
 #include "Potential.h"
 #include "SurrogatePotential.h"
 #include <memory>
-#include <spdlog/sinks/basic_file_sink.h>
+#include <string>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
+namespace eonc {
 class BondBoost;
-
-#include <string>
 
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
@@ -50,11 +50,8 @@ public:
         cell{Matrix3d::Zero()},
         cellInverse{Matrix3d::Zero()},
         energyVariance{0.0},
-        potentialEnergy{0.0} {
-
-    m_log = spdlog::get("combi");
-  } // the number of atoms shall be set later
-    // using resize()
+        potentialEnergy{0.0} {} // the number of atoms shall be set later
+  // using resize()
   // Matter(Parameters *parameters,
   //        long int nAtoms);      // prepare the object for use with nAtoms
   //        atoms
@@ -85,8 +82,8 @@ public:
       long int atom, int axis,
       double velocity); // set the velocity of atom along axis to velocity
   bool relax(bool quiet = false, bool writeMovie = false,
-             bool checkpoint = false, string prefixMovie = string(),
-             string prefixCheckpoint = string());
+             bool checkpoint = false, std::string prefixMovie = std::string(),
+             std::string prefixCheckpoint = std::string());
 
   AtomMatrix pbc(const AtomMatrix &diff) const;
   VectorXd pbcV(const VectorXd &diff) const;
@@ -186,7 +183,7 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-  shared_ptr<spdlog::logger> m_log;
+  eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
@@ -223,3 +220,7 @@ private:
   mutable double energyVariance;
   mutable double potentialEnergy;
 };
+
+} // namespace eonc
+
+using eonc::Matter;

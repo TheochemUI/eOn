@@ -14,6 +14,8 @@
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
 class StructureComparisonJob : public Job {
 public:
   StructureComparisonJob(std::unique_ptr<Parameters> parameters)
@@ -21,3 +23,7 @@ public:
   ~StructureComparisonJob(void) = default;
   std::vector<std::string> run(void);
 };
+
+} // namespace eonc
+
+using eonc::StructureComparisonJob;

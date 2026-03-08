@@ -12,6 +12,8 @@
 // Based on the LBFGS minimizer written in ASE.
 
 #include "LBFGS.h"
+#include "SafeMath.h"
+using namespace std;
 
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   double H0 = m_params.optimizer_options.lbfgs.inverse_curvature;
@@ -20,39 +22,40 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   if (m_iteration > 0) {
     Eigen::VectorXd dr = m_objf->difference(r, m_rPrev);
     // double C = dr.dot(fPrev-f)/dr.dot(dr);
-    double C = (m_fPrev - a_f).dot(m_fPrev - a_f) / dr.dot(m_fPrev - a_f);
+    double C = eonc::safemath::safe_div((m_fPrev - a_f).dot(m_fPrev - a_f),
+                                        dr.dot(m_fPrev - a_f), -1.0);
     if (C < 0) {
-      SPDLOG_LOGGER_DEBUG(
+      QUILL_LOG_DEBUG(
           m_log, "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
           C);
       reset();
-      return helper_functions::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
 
     if (m_params.optimizer_options.lbfgs.auto_scale) {
-      H0 = 1. / C;
-      SPDLOG_LOGGER_DEBUG(m_log, "[LBFGS] Curvature: {:.4e} eV/A^2", C);
+      H0 = eonc::safemath::safe_recip(C, -1.0);
+      QUILL_LOG_DEBUG(m_log, "[LBFGS] Curvature: {:.4e} eV/A^2", C);
     }
   }
 
   if (m_iteration == 0 && m_params.optimizer_options.lbfgs.auto_scale) {
     m_objf->setPositions(r + m_params.main_options.finiteDifference *
-                                 a_f.normalized());
+                                 eonc::safemath::safe_normalized(a_f));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
-    double C =
-        dg.dot(a_f.normalized()) / m_params.main_options.finiteDifference;
-    H0 = 1.0 / C;
+    double C = dg.dot(eonc::safemath::safe_normalized(a_f)) /
+               m_params.main_options.finiteDifference;
+    H0 = eonc::safemath::safe_recip(C, -1.0);
     m_objf->setPositions(r);
     if (H0 < 0) {
-      SPDLOG_LOGGER_WARN(m_log,
-                         "[LBFGS] Negative curvature calculated via FD: {:.4e} "
-                         "eV/A^2, take max move step",
-                         C);
+      QUILL_LOG_WARNING(m_log,
+                        "[LBFGS] Negative curvature calculated via FD: {:.4e} "
+                        "eV/A^2, take max move step",
+                        C);
       reset();
-      return helper_functions::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     } else {
-      SPDLOG_LOGGER_DEBUG(
-          m_log, "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
+      QUILL_LOG_DEBUG(m_log,
+                      "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
     }
   }
 
@@ -75,32 +78,33 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
 
   Eigen::VectorXd d = -z;
 
-  double distance = helper_functions::maxAtomMotionV(d);
+  double distance = eonc::helpers::maxAtomMotionV(d);
   if (distance >= a_maxMove &&
       m_params.optimizer_options.lbfgs.distance_reset) {
-    SPDLOG_LOGGER_DEBUG(m_log,
-                        "[LBFGS] reset memory, proposed step too large: {:.4f}",
-                        distance);
+    QUILL_LOG_DEBUG(m_log,
+                    "[LBFGS] reset memory, proposed step too large: {:.4f}",
+                    distance);
     reset();
-    return helper_functions::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
-  double vd = d.normalized().dot(a_f.normalized());
+  double vd = eonc::safemath::safe_normalized(d).dot(
+      eonc::safemath::safe_normalized(a_f));
   if (vd > 1.0)
     vd = 1.0;
   if (vd < -1.0)
     vd = -1.0;
-  double angle = acos(vd) * (180.0 / helper_functions::pi);
+  double angle = eonc::safemath::safe_acos(vd) * (180.0 / eonc::helpers::pi);
   if (angle > 90.0 && m_params.optimizer_options.lbfgs.angle_reset) {
-    SPDLOG_LOGGER_DEBUG(m_log,
-                        "[LBFGS] reset memory, angle between LBFGS angle and "
-                        "force too large: {:.4f}",
-                        angle);
+    QUILL_LOG_DEBUG(m_log,
+                    "[LBFGS] reset memory, angle between LBFGS angle and "
+                    "force too large: {:.4f}",
+                    angle);
     reset();
-    return helper_functions::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
-  return helper_functions::maxAtomMotionAppliedV(d, a_maxMove);
+  return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
 }
 
 void LBFGS::reset(void) {
@@ -118,14 +122,14 @@ int LBFGS::update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0,
 
   // GH: added to prevent crashing
   if (abs(s0.dot(y0)) < LBFGS_EPS) {
-    SPDLOG_LOGGER_ERROR(m_log, "[LBFGS] error, s0.y0 is too small: {:.4f}",
-                        s0.dot(y0));
+    QUILL_LOG_ERROR(m_log, "[LBFGS] error, s0.y0 is too small: {:.4f}",
+                    s0.dot(y0));
     return -1;
   }
 
   m_s.push_back(s0);
   m_y.push_back(y0);
-  m_rho.push_back(1.0 / (s0.dot(y0)));
+  m_rho.push_back(eonc::safemath::safe_recip(s0.dot(y0), 0.0));
 
   if ((int)m_s.size() > m_memory) {
     m_s.erase(m_s.begin());

@@ -12,7 +12,9 @@
 #include "Dynamics.h"
 #include <math.h>
 
-using namespace helper_functions;
+#include "EonLogger.h"
+using namespace std;
+using namespace eonc::helpers;
 
 const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
@@ -28,7 +30,7 @@ Dynamics::Dynamics(Matter *matter_in, const Parameters &parameters_in)
   temperature = parameters.main_options.temperature;
   kB = parameters.constants.kB;
   vxi1 = vxi2 = xi1 = xi2 = 0.0; // NoseHoover variables
-  log = spdlog::get("combi");
+  /* Logger initialized via class member */
 }
 
 Dynamics::~Dynamics() { return; }
@@ -51,8 +53,8 @@ void Dynamics::oneStep(int stepNumber) {
 
   if (stepNumber != -1) {
     if (stepNumber == 1) {
-      SPDLOG_LOGGER_DEBUG(log, "{} {:8s} {:10s} {:12s} {:12s} {:10s}\n",
-                          "[Dynamics]", "Step", "KE", "PE", "TE", "KinT");
+      QUILL_LOG_DEBUG(log, "{} {:8s} {:10s} {:12s} {:12s} {:10s}\n",
+                      "[Dynamics]", "Step", "KE", "PE", "TE", "KinT");
     }
     AtomMatrix velocity;
     double potE, kinE, kinT;
@@ -62,9 +64,8 @@ void Dynamics::oneStep(int stepNumber) {
     kinT = (2.0 * kinE / nFreeCoords / kB);
 
     if (stepNumber % parameters.debug_options.write_movies_interval == 0) {
-      SPDLOG_LOGGER_DEBUG(log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n",
-                          "[Dynamics]", stepNumber, kinE, potE, kinE + potE,
-                          kinT);
+      QUILL_LOG_DEBUG(log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n",
+                      "[Dynamics]", stepNumber, kinE, potE, kinE + potE, kinT);
     }
   }
 }
@@ -91,7 +92,7 @@ void Dynamics::run() {
   setThermalVelocity();
 
   if (parameters.thermostat_options.kind != NONE) {
-    SPDLOG_LOGGER_DEBUG(
+    QUILL_LOG_DEBUG(
         log,
         "{} Running NVT molecular dynamics: {:8.2f} K for {} "
         "steps ({:.4e} s)\n",
@@ -99,16 +100,16 @@ void Dynamics::run() {
         1e-15 * parameters.dynamics_options.time_step *
             parameters.constants.timeUnit * parameters.dynamics_options.steps);
   } else {
-    SPDLOG_LOGGER_DEBUG(log, "{} Running NVE molecular dynamics: {} steps\n",
-                        "[Dynamics]", parameters.dynamics_options.steps);
+    QUILL_LOG_DEBUG(log, "{} Running NVE molecular dynamics: {} steps\n",
+                    "[Dynamics]", parameters.dynamics_options.steps);
   }
 
   if (parameters.debug_options.write_movies == true) {
     matter->matter2con("dynamics", false);
   }
 
-  SPDLOG_LOGGER_DEBUG(log, "{} {:8} {:10} {:12} {:12} {:10}\n", "[Dynamics]"s,
-                      "step", "KE", "PE", "TE", "kinT");
+  QUILL_LOG_DEBUG(log, "{} {:8} {:10} {:12} {:12} {:10}\n", "[Dynamics]"s,
+                  "step", "KE", "PE", "TE", "kinT");
 
   for (long step = 0; step <= parameters.dynamics_options.steps; step++) {
     oneStep();
@@ -121,8 +122,8 @@ void Dynamics::run() {
     sumT2 += kinT * kinT;
 
     if (step % parameters.debug_options.write_movies_interval == 0) {
-      SPDLOG_LOGGER_DEBUG(log, "{} {} {} {} {} {}\n", "[Dynamics]", step, kinE,
-                          potE, kinE + potE, kinT);
+      QUILL_LOG_DEBUG(log, "{} {} {} {} {} {}\n", "[Dynamics]", step, kinE,
+                      potE, kinE + potE, kinT);
     }
 
     if ((parameters.debug_options.write_movies == true) &&
@@ -133,11 +134,11 @@ void Dynamics::run() {
   avgT = sumT / double(parameters.dynamics_options.steps);
   varT = sumT2 / double(parameters.dynamics_options.steps) - avgT * avgT;
   stdT = sqrt(varT);
-  SPDLOG_LOGGER_DEBUG(log,
-                      "{} Temperature : Average = {:.2f} ; StdDev = {:.2f} ; "
-                      "Factor = {:.2f}\n",
-                      "[Dynamics]", avgT, stdT,
-                      varT / avgT / avgT * nFreeCoords / 2.0);
+  QUILL_LOG_DEBUG(log,
+                  "{} Temperature : Average = {:.2f} ; StdDev = {:.2f} ; "
+                  "Factor = {:.2f}\n",
+                  "[Dynamics]", avgT, stdT,
+                  varT / avgT / avgT * nFreeCoords / 2.0);
 }
 
 void Dynamics::andersenCollision() {

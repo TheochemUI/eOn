@@ -9,6 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#include "EonLogger.h"
 #include <csignal>
 #include <limits>
 #include <time.h>
@@ -116,6 +117,7 @@
 #endif
 
 #include <limits>
+using namespace std;
 
 // TODO(rg): These aren't really used anymore, just there for eyecandy
 int Potential::fcalls = 0;
@@ -133,13 +135,14 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());
   forceCallCounter++;
-  m_log->trace("[{}] {} so far", magic_enum::enum_name<PotType>(getType()),
-               forceCallCounter);
+  QUILL_LOG_TRACE_L3(m_log, "[{}] {} so far",
+                     magic_enum::enum_name<PotType>(getType()),
+                     forceCallCounter);
 
   return std::make_tuple(energy, forces);
 };
 
-namespace helper_functions {
+namespace eonc::helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
   return makePotential(params.potential_options.potential, params);
 }
@@ -341,11 +344,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
   default:
-    SPDLOG_ERROR("No known potential could be constructed from {}",
-                 magic_enum::enum_name(ptype));
+    EONC_LOG_ERROR("No known potential could be constructed from {}",
+                   magic_enum::enum_name(ptype));
+    eonc::log::get()->flush_log();
     throw std::runtime_error("Terminating");
     break;
   }
 }
 
-} // namespace helper_functions
+} // namespace eonc::helpers

@@ -19,8 +19,7 @@ dependencies:
   # Pinned
   - "python<3.13" # For the docs
   - "eigen==3.4.0"
-  - "fmt<=10"
-  - "spdlog<=1.14"
+  - quill
   # AMS
   - boost-cpp
   - abseil-cpp

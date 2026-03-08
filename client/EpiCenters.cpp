@@ -15,11 +15,13 @@
 #include <cassert>
 #include <climits>
 #include <vector>
+using namespace std;
 
-using namespace helper_functions;
+using namespace eonc::helpers;
 using std::vector;
 
-long EpiCenters::cnaEpiCenter(const Matter *matter, double neighborCutoff) {
+long eonc::EpiCenters::cnaEpiCenter(const Matter *matter,
+                                    double neighborCutoff) {
   long *cnaList;
   long j, nAtoms, indexEpiCenter;
   double tempDouble;
@@ -57,8 +59,8 @@ long EpiCenters::cnaEpiCenter(const Matter *matter, double neighborCutoff) {
   return (indexEpiCenter);
 }
 
-long EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
-                                         double neighborCutoff) {
+long eonc::EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
+                                               double neighborCutoff) {
   bool *minCoordinatedList;
   long j, nAtoms, indexEpiCenter, minCoordinationVal;
   double tempDouble;
@@ -98,7 +100,7 @@ long EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
   return (indexEpiCenter);
 }
 
-long EpiCenters::lastAtom(const Matter *matter) {
+long eonc::EpiCenters::lastAtom(const Matter *matter) {
   long nAtoms, indexEpiCenter;
   nAtoms = matter->numberOfAtoms();
   indexEpiCenter = nAtoms - 1;
@@ -108,7 +110,7 @@ long EpiCenters::lastAtom(const Matter *matter) {
   return (indexEpiCenter);
 }
 
-long EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
+long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
   long j, nAtoms, indexEpiCenter;
   double tempDouble;
   nAtoms = matter->numberOfAtoms();
@@ -135,7 +137,7 @@ long EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
   return (indexEpiCenter);
 }
 
-// long EpiCenters::randomFreeAtomEpiCenter(const Matter *matter)
+// long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter)
 //{
 //     long indexEpiCenter;
 //     long nAtoms = matter->numberOfAtoms();
@@ -146,7 +148,8 @@ long EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
 //     return(indexEpiCenter);
 // }
 
-void EpiCenters::cna(long *cna, const Matter *matter, double neighborCutoff) {
+void eonc::EpiCenters::cna(long *cna, const Matter *matter,
+                           double neighborCutoff) {
   int a1 = 0;
   int a2 = 0;
   int a3 = 0;
@@ -232,8 +235,8 @@ void EpiCenters::cna(long *cna, const Matter *matter, double neighborCutoff) {
   return;
 }
 
-void EpiCenters::coordination(long *coordinationVal, const Matter *matter,
-                              double neighborCutoff) {
+void eonc::EpiCenters::coordination(long *coordinationVal, const Matter *matter,
+                                    double neighborCutoff) {
   long nAtoms;
   double diffR;
   nAtoms = matter->numberOfAtoms();
@@ -255,9 +258,10 @@ void EpiCenters::coordination(long *coordinationVal, const Matter *matter,
   return;
 }
 
-void EpiCenters::coordinationLessOrEqual(bool *result, long coordinationMaxVal,
-                                         const Matter *matter,
-                                         double neighborCutoff) {
+void eonc::EpiCenters::coordinationLessOrEqual(bool *result,
+                                               long coordinationMaxVal,
+                                               const Matter *matter,
+                                               double neighborCutoff) {
   long *coordinationVal;
   long nAtoms;
   nAtoms = matter->numberOfAtoms();
@@ -278,8 +282,8 @@ void EpiCenters::coordinationLessOrEqual(bool *result, long coordinationMaxVal,
   return;
 }
 
-long EpiCenters::listedAtomEpiCenter(const Matter *matter,
-                                     const std::vector<long> &atomList) {
+long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
+                                           const std::vector<long> &atomList) {
   long nAtoms = matter->numberOfAtoms();
   // Filter to only free atoms from the provided list
   std::vector<long> freeAtoms;
@@ -293,7 +297,8 @@ long EpiCenters::listedAtomEpiCenter(const Matter *matter,
   return freeAtoms[pick];
 }
 
-long EpiCenters::minCoordination(const Matter *matter, double neighborCutoff) {
+long eonc::EpiCenters::minCoordination(const Matter *matter,
+                                       double neighborCutoff) {
   long *coordinationVal;
   long nAtoms;
   long minCoordinationVal;

@@ -14,6 +14,8 @@
 #include "Parameters.h"
 #include "Potential.h"
 
+namespace eonc {
+
 class SaddleSearchMethod {
 protected:
   std::shared_ptr<Potential> pot;
@@ -31,3 +33,7 @@ public:
 
   int status;
 };
+
+} // namespace eonc
+
+using eonc::SaddleSearchMethod;

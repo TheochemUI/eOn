@@ -15,6 +15,8 @@
 #include "Parameters.h"
 #include "Potential.h"
 
+namespace eonc {
+
 // dimer method to find the lowest curvature mode
 class Dimer : public LowestEigenmode {
 
@@ -30,7 +32,7 @@ public:
   AtomMatrix getEigenvector();               // return the current eigenvector
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::FileScoped log{"dimer", "dimer.log"};
   std::shared_ptr<Matter> matterCenter; // center of the dimer
   std::shared_ptr<Matter> matterDimer;  // one configuration of the dimer
   AtomMatrix direction;                 // direction along the dimer
@@ -51,3 +53,7 @@ private:
       AtomMatrix &forceDiffOrthogonalToDimer); // determine the rotational force
                                                // on the dimer
 };
+
+} // namespace eonc
+
+using eonc::Dimer;

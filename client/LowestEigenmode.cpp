@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "LowestEigenmode.h"
+using namespace std;
 
 const char LowestEigenmode::MINMODE_DIMER[] = "dimer";
 const char LowestEigenmode::MINMODE_GPRDIMER[] = "gprdimer";

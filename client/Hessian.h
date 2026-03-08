@@ -11,9 +11,12 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 
 #include "Matter.h"
 #include "Parameters.h"
+
+namespace eonc {
 
 class Hessian {
 public:
@@ -35,5 +38,9 @@ private:
 
   VectorXi atoms;
   bool calculate(void);
-  std::shared_ptr<spdlog::logger> log;
+  eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::Hessian;

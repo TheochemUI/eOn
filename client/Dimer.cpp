@@ -11,8 +11,10 @@
 */
 #include "Dimer.h"
 #include "HelperFunctions.h"
+#include "SafeMath.h"
+using namespace std;
 
-using namespace helper_functions;
+using namespace eonc::helpers;
 
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
@@ -28,8 +30,6 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
   direction.setZero();
   rotationalPlane.setZero();
   totalForceCalls = 0;
-  log = spdlog::basic_logger_mt("dimer", "dimer.log", true);
-  log->set_pattern("%v");
 }
 
 // was estimateLowestEigenmode. rename to compute
@@ -55,7 +55,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   rotationalForce.setZero();
   rotationalForceOld.setZero();
   rotationalPlaneOld.setZero();
-  initialDirection.normalize();
+  eonc::safemath::safe_normalize_inplace(initialDirection);
   direction = initialDirection;
 
   statsAngle = 0;
@@ -113,32 +113,35 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
 
       forceDimer = (rotationalForce1 + rotationalForce2) / 2.0;
 
-      rotationAngle = (atan(2.0 * forceDimer / rotationalForceChange) / 2.0 -
+      rotationAngle = (eonc::safemath::safe_atan_ratio(
+                           2.0 * forceDimer, rotationalForceChange, 0.0) /
+                           2.0 -
                        params.dimer_options.rotation_angle / 2.0);
 
       //            std::cout << "Rotation Angle: " <<rotationAngle <<endl;
       //            //debug
 
       if (rotationalForceChange < 0) {
-        rotationAngle = rotationAngle + helper_functions::pi / 2.0;
+        rotationAngle = rotationAngle + eonc::helpers::pi / 2.0;
       }
 
       rotate(rotationAngle);
       rotationalPlaneOld = rotationalPlane; // XXX: Is this copying correctly???
       rotations++;
     }
-    SPDLOG_LOGGER_DEBUG(log,
-                        "[DimerRot]   -----   ---------   ----------------   "
-                        "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
-                        curvature, torque,
-                        rotationAngle * (180.0 / helper_functions::pi));
+    QUILL_LOG_DEBUG(log,
+                    "[DimerRot]   -----   ---------   ----------------   "
+                    "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
+                    curvature, torque,
+                    rotationAngle * (180.0 / eonc::helpers::pi));
   }
 
   statsTorque = torque;
   statsCurvature = curvature;
   direction.normalize();
-  statsAngle = acos((direction.array() * initialDirection.array()).sum());
-  statsAngle *= (180.0 / helper_functions::pi);
+  statsAngle = eonc::safemath::safe_acos(
+      (direction.array() * initialDirection.array()).sum());
+  statsAngle *= (180.0 / eonc::helpers::pi);
   statsRotations = rotations;
 
   eigenvalue = curvature;
@@ -227,7 +230,7 @@ void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
   // plane normal is made orthogonal to the dimer direction and normalized
   *lengthRotationalForceOld = rotationalPlane.norm();
   rotationalPlane = makeOrthogonal(rotationalPlane, direction);
-  rotationalPlane.normalize();
+  eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   rotationalForceOld = rotationalForce;
 
@@ -245,12 +248,12 @@ void Dimer::rotate(double rotationAngle) {
   direction = direction * cosAngle + rotationalPlane * sinAngle;
   rotationalPlane = rotationalPlane * cosAngle - direction * sinAngle;
 
-  direction.normalize();
-  rotationalPlane.normalize();
+  eonc::safemath::safe_normalize_inplace(direction);
+  eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   // remove component from rotationalPlane parallel to direction
   rotationalPlane = makeOrthogonal(rotationalPlane, direction);
-  rotationalPlane.normalize();
+  eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   return;
 }

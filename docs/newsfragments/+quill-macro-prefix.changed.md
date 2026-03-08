@@ -1,0 +1,1 @@
+Switched all logging call sites from bare `LOG_*` to `QUILL_LOG_*` prefixed macros and enabled `QUILL_DISABLE_NON_PREFIXED_MACROS` to prevent macro collisions when eOn is compiled alongside other libraries.

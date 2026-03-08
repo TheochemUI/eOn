@@ -17,6 +17,7 @@
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
 #include <stdio.h>
+using namespace std;
 
 int BasinHoppingSaddleSearch::run(void) {
   // minimize "saddle"
@@ -33,7 +34,7 @@ int BasinHoppingSaddleSearch::run(void) {
   double Temperature = params.main_options.temperature;
   double arg = -de / (kB * Temperature);
   double p = exp(arg);
-  double r = helper_functions::random();
+  double r = eonc::helpers::random();
   if (ereactant < eproduct) {
     if (r > p) { // reject
       return 1;
@@ -52,7 +53,7 @@ int BasinHoppingSaddleSearch::run(void) {
 
   for (int i = 1; i < neb.numImages; i++) {
     double Etest = neb.path[i]->getPotentialEnergy();
-    SPDLOG_LOGGER_DEBUG(log, "i: {} Etest: {:.1f}", i, Etest);
+    QUILL_LOG_DEBUG(log, "i: {} Etest: {:.1f}", i, Etest);
     if (Etest > Emax) {
       Emax = Etest;
       HighestImage = i;
