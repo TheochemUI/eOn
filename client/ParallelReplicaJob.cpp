@@ -137,10 +137,10 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
         // perform the binary search for the transition structure
         if (params.parallel_replica_options.refine_transition) {
           QUILL_LOG_DEBUG(log, "[ParallelReplica] Refining transition time");
-          // int tmpFcalls = Potential::fcalls;
+          int tmpFcalls = PotRegistry::get().total_force_calls();
           int snapshotIndex = refineTransition(MDSnapshots);
 
-          // refineForceCalls += Potential::fcalls - tmpFcalls;
+          refineForceCalls += PotRegistry::get().total_force_calls() - tmpFcalls;
 
           transitionTime = MDTimes[snapshotIndex];
           transitionStructure = *MDSnapshots[snapshotIndex];
@@ -169,7 +169,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
               log, "[ParallelReplica] Refining anyways to prevent bias...");
           int tmpFcalls = PotRegistry::get().total_force_calls();
           refineTransition(MDSnapshots, true);
-          // refineForceCalls += Potential::fcalls - tmpFcalls;
+          refineForceCalls += PotRegistry::get().total_force_calls() - tmpFcalls;
         }
         transitionStructure = *trajectory;
       }
@@ -211,8 +211,9 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
   fprintf(fileResults, "%f potential_energy_reactant\n",
           reactant->getPotentialEnergy());
-  // fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
+  fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
+  fprintf(fileResults, "%zu total_force_calls\n",
+          PotRegistry::get().total_force_calls());
 
   if (transitionTime == 0) {
     fprintf(fileResults, "0 transition_found\n");

@@ -104,7 +104,8 @@ std::vector<std::string> PrefactorJob::run(void) {
   fileFreq = fopen(freq_file.c_str(), "wb");
 
   fprintf(fileResults, "%s good\n", failed ? "false" : "true");
-  // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
+  fprintf(fileResults, "%zu force_calls\n",
+          PotRegistry::get().total_force_calls());
 
   if (!failed) {
     for (int i = 0; i < freqs.size(); i++) {

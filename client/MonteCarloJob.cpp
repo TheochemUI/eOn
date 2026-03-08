@@ -41,22 +41,18 @@ std::vector<std::string> MonteCarloJob::run(void) {
   mc.run(params.monte_carlo_options.steps, params.main_options.temperature,
          params.monte_carlo_options.step_size);
 
-  // FILE *fileResults;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  // fileResults = fopen(resultsFilename.c_str(), "wb");
-
-  // fprintf(fileResults, "%d termination_reason\n", status);
-  // fprintf(fileResults, "minimization job_type\n");
-  // fprintf(fileResults, "%s potential_type\n",
-  // eonc::helpers::getPotentialName(params.potential_options.potential).c_str());
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
-  // if (status != STATUS_POTENTIAL_FAILED) {
-  //     fprintf(fileResults, "%f potential_energy\n",
-  //     pos->getPotentialEnergy());
-  // }
-  // fclose(fileResults);
+  FILE *fileResults = fopen(resultsFilename.c_str(), "wb");
+  fprintf(fileResults, "%s potential_type\n",
+          std::string{magic_enum::enum_name<PotType>(
+                          params.potential_options.potential)}
+              .c_str());
+  fprintf(fileResults, "%zu total_force_calls\n",
+          PotRegistry::get().total_force_calls());
+  fprintf(fileResults, "%f potential_energy\n",
+          matter->getPotentialEnergy());
+  fclose(fileResults);
 
   return returnFiles;
 }

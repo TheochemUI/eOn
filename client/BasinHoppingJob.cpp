@@ -291,7 +291,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
               params.basin_hopping_options.quenching_steps);
   fprintf(fileResults, "%d total_jump_steps\n", jump_count);
   fprintf(fileResults, "%d total_swap_steps\n", swap_count);
-  // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
+  fprintf(fileResults, "%zu total_force_calls\n",
+          PotRegistry::get().total_force_calls());
   fclose(fileResults);
 
   std::string productFilename("min.con");

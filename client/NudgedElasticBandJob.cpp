@@ -18,7 +18,7 @@ using namespace std;
 
 std::vector<std::string> NudgedElasticBandJob::run(void) {
   NudgedElasticBand::NEBStatus status;
-  int f1;
+  size_t f1;
 
   string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   string productFilename = eonc::helpers::getRelevantFile("product.con");
@@ -118,9 +118,9 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
     }
   }
 
-  // f1 = Potential::fcalls;
+  f1 = PotRegistry::get().total_force_calls();
   status = neb->compute();
-  // fCallsNEB += Potential::fcalls - f1;
+  fCallsNEB += PotRegistry::get().total_force_calls() - f1;
 
   if (status == NudgedElasticBand::NEBStatus::GOOD) {
     neb->printImageData();
@@ -150,8 +150,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
           std::string{magic_enum::enum_name<PotType>(
                           params.potential_options.potential)}
               .c_str());
-  // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
-  // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
+  fprintf(fileResults, "%zu total_force_calls\n",
+          PotRegistry::get().total_force_calls());
+  fprintf(fileResults, "%zu force_calls_neb\n", fCallsNEB);
   fprintf(fileResults, "%f energy_reference\n",
           neb->path[0]->getPotentialEnergy());
   fprintf(fileResults, "%li number_of_images\n", neb->numImages);
