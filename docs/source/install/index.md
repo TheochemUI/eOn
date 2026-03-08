@@ -31,7 +31,6 @@ features enabled:
 
 - [Metatomic](project:../user_guide/metatomic_pot.md) (machine-learned potentials via libtorch)
 - [xTB](https://xtb-docs.readthedocs.io/) (semi-empirical tight-binding)
-- [ASE](project:../user_guide/ase_pot.md) (any ASE calculator as an eOn potential)
 - [Serve mode](project:../user_guide/serve_mode.md) (rgpot-compatible RPC server)
 
 The server is accessed through `python -m eon.server`, and the `eonclient`
