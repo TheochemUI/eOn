@@ -24,7 +24,7 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   }
   m_direction = m_force + gamma * m_directionOld;
   m_directionNorm = m_direction;
-  m_directionNorm.normalize();
+  eonc::safemath::safe_normalize_inplace(m_directionNorm);
   m_directionOld = m_direction;
   m_forceOld = m_force;
 
@@ -174,8 +174,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
           (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
         forceChange = (projectedForce1 - projectedForce2);
         stepSize = (projectedForce1 / forceChange) * stepSize;
-        LOG_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
-                  forceChange, stepSize);
+        QUILL_LOG_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
+                        forceChange, stepSize);
       }
     }
   }
@@ -184,7 +184,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
       // knockout old search direction
       m_directionOld = m_objf->getPositions() * 0.0;
       m_forceOld = m_objf->getPositions() * 0.0;
-      LOG_DEBUG(m_log, "Resetting the old search direction");
+      QUILL_LOG_DEBUG(m_log, "Resetting the old search direction");
     }
   }
 

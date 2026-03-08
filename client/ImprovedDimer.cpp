@@ -101,7 +101,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       10.0 * params.main_options.finiteDifference) {
     tau = -tau;
     x1->setPositionsV(x0_r + params.main_options.finiteDifference * tau);
-    LOG_DEBUG(log, "[IDimer] Initial tangent flipped due to high energy wall.");
+    QUILL_LOG_DEBUG(
+        log, "[IDimer] Initial tangent flipped due to high energy wall.");
   }
 
   if (params.dimer_options.opt_method == OPT_LBFGS) {
@@ -240,7 +241,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         vd = 1.0;
       if (vd < -1.0)
         vd = -1.0;
-      double angle = acos(vd) * (180.0 / helper_functions::pi);
+      double angle =
+          eonc::safemath::safe_acos(vd) * (180.0 / helper_functions::pi);
 
       // xph: larger angle is allowed to avoid frequent restart (was 70.0)
       if (angle > 87.0) {
@@ -253,7 +255,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       theta = -eonc::safemath::safe_normalized(z);
       // xph:  rethogonalize theta to tau
       theta = theta - theta.dot(tau) * tau;
-      theta.normalize();
+      eonc::safemath::safe_normalize_inplace(theta);
 
       thetaOld = theta;
       F_R_Old = F_R;
@@ -288,7 +290,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       // xph: renormalize the new tangent after rotating phi_prime
       // x1_rp = x0_r + (tau * cos(phi_prime) + theta * sin(phi_prime)) * delta;
       tau_prime = tau * cos(phi_prime) + theta * sin(phi_prime);
-      tau_prime = tau_prime.normalized();
+      tau_prime = eonc::safemath::safe_normalized(tau_prime);
       x1_rp = x0_r + tau_prime * delta;
 
       *x1p = *x1;
@@ -330,7 +332,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       // Update x1, tau, and C_tau.
       // xph: normalize first
       tau = tau * cos(phi_min) + theta * sin(phi_min);
-      tau = tau.normalized();
+      tau = eonc::safemath::safe_normalized(tau);
       x1_r = x0_r + tau * delta;
 
       // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
@@ -361,13 +363,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       statsTorque = F_R.norm() / (2.0 * params.main_options.finiteDifference);
       statsRotations += 1;
-      LOG_INFO(
+      QUILL_LOG_INFO(
           log,
           "[IDimerRot]  -----   ---------   ----------   ------------------   "
           "{:9.4f}   {:7.3f}   {:6.3f}   {:4}   {:5.3f}",
           C_tau, statsTorque, statsAngle, statsRotations, alignment);
     } else {
-      LOG_INFO(
+      QUILL_LOG_INFO(
           log,
           "[IDimerRot]  -----   ---------   ----------   ------------------   "
           "{:9.4f}   {:7.3f}   ------   ----   {:5.3f}",
@@ -375,8 +377,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     }
     if (alignment < params.neb_options.climbing_image.roneb.angle_tol &&
         params.neb_options.climbing_image.roneb.use_mmf) {
-      LOG_WARNING(log, "Terminating dimer due to lost mode (align {:.3f}).",
-                  alignment);
+      QUILL_LOG_WARNING(
+          log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
 
       rotationDidConverge = false;
 
@@ -392,15 +394,16 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         // Also update the input matter to reflect the restored position
         *matter = *x0;
 
-        LOG_DEBUG(log, "Restored best negative curvature state:  C_tau={:.4f}",
-                  C_tau);
+        QUILL_LOG_DEBUG(log,
+                        "Restored best negative curvature state:  C_tau={:.4f}",
+                        C_tau);
         throw eonc::DimerModeRestoredException();
       } else {
         // Never found negative curvature - keep current (positive) value
         // to signal we're not at a saddle
         rotationDidConverge = false;
-        LOG_WARNING(log, "Never found negative curvature.  Final C_tau: {:.4f}",
-                    C_tau);
+        QUILL_LOG_WARNING(
+            log, "Never found negative curvature.  Final C_tau: {:.4f}", C_tau);
         throw eonc::DimerModeLostException();
       }
       break;

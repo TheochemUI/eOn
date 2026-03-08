@@ -54,7 +54,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   rotationalForce.setZero();
   rotationalForceOld.setZero();
   rotationalPlaneOld.setZero();
-  initialDirection.normalize();
+  eonc::safemath::safe_normalize_inplace(initialDirection);
   direction = initialDirection;
 
   statsAngle = 0;
@@ -128,11 +128,11 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       rotationalPlaneOld = rotationalPlane; // XXX: Is this copying correctly???
       rotations++;
     }
-    LOG_DEBUG(log,
-              "[DimerRot]   -----   ---------   ----------------   "
-              "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
-              curvature, torque,
-              rotationAngle * (180.0 / helper_functions::pi));
+    QUILL_LOG_DEBUG(log,
+                    "[DimerRot]   -----   ---------   ----------------   "
+                    "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
+                    curvature, torque,
+                    rotationAngle * (180.0 / helper_functions::pi));
   }
 
   statsTorque = torque;
@@ -229,7 +229,7 @@ void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
   // plane normal is made orthogonal to the dimer direction and normalized
   *lengthRotationalForceOld = rotationalPlane.norm();
   rotationalPlane = makeOrthogonal(rotationalPlane, direction);
-  rotationalPlane.normalize();
+  eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   rotationalForceOld = rotationalForce;
 
@@ -247,12 +247,12 @@ void Dimer::rotate(double rotationAngle) {
   direction = direction * cosAngle + rotationalPlane * sinAngle;
   rotationalPlane = rotationalPlane * cosAngle - direction * sinAngle;
 
-  direction.normalize();
-  rotationalPlane.normalize();
+  eonc::safemath::safe_normalize_inplace(direction);
+  eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   // remove component from rotationalPlane parallel to direction
   rotationalPlane = makeOrthogonal(rotationalPlane, direction);
-  rotationalPlane.normalize();
+  eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   return;
 }
