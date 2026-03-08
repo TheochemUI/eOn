@@ -32,6 +32,7 @@
 
 #ifdef WITH_GP_SURROGATE
 #include "GPSurrogateJob.h"
+using namespace std;
 #endif
 
 namespace helper_functions {

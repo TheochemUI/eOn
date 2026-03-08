@@ -117,6 +117,7 @@
 #endif
 
 #include <limits>
+using namespace std;
 
 // TODO(rg): These aren't really used anymore, just there for eyecandy
 int Potential::fcalls = 0;

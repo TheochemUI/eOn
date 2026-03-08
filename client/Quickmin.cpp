@@ -11,6 +11,7 @@
 */
 #include "Quickmin.h"
 #include "HelperFunctions.h"
+using namespace std;
 
 int Quickmin::step(double a_maxMove) {
   Eigen::VectorXd force = -m_objf->getGradient();

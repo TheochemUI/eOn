@@ -18,6 +18,8 @@
 #include "Matter.h"
 #include "ParallelReplicaJob.h"
 
+using namespace std;
+
 std::vector<std::string> ParallelReplicaJob::run(void) {
   // load pos.con
   reactant = new Matter(pot, params);

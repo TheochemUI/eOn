@@ -12,6 +12,7 @@
 #include "Dimer.h"
 #include "HelperFunctions.h"
 #include "SafeMath.h"
+using namespace std;
 
 using namespace helper_functions;
 

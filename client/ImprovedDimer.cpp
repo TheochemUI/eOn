@@ -19,6 +19,7 @@
 #include "eonExceptions.hpp"
 
 #include "EonLogger.h"
+using namespace std;
 using namespace helper_functions;
 
 const char ImprovedDimer::OPT_SD[] = "sd";

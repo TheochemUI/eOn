@@ -33,6 +33,7 @@
 #include <sstream>
 #include <thread>
 #include <vector>
+using namespace std;
 
 namespace {
 

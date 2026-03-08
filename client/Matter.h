@@ -82,8 +82,8 @@ public:
       long int atom, int axis,
       double velocity); // set the velocity of atom along axis to velocity
   bool relax(bool quiet = false, bool writeMovie = false,
-             bool checkpoint = false, string prefixMovie = string(),
-             string prefixCheckpoint = string());
+             bool checkpoint = false, std::string prefixMovie = std::string(),
+             std::string prefixCheckpoint = std::string());
 
   AtomMatrix pbc(const AtomMatrix &diff) const;
   VectorXd pbcV(const VectorXd &diff) const;

@@ -35,6 +35,7 @@
 // This defines `class Potential` -- which collides with eOn's Potential class,
 // hence the separate translation unit.
 #include "Potentials.capnp.h"
+using namespace std;
 
 namespace {
 

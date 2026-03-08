@@ -16,6 +16,8 @@
 #include "Matter.h"
 #include "SafeMath.h"
 
+using namespace std;
+
 std::vector<std::string> ReplicaExchangeJob::run(void) {
   long i, step,
       samplingSteps = long(params.replica_exchange_options.sampling_time /

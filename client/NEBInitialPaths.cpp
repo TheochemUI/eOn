@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "EonLogger.h"
+using namespace std;
 namespace fs = std::filesystem;
 
 namespace helper_functions::neb_paths {

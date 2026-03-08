@@ -17,6 +17,7 @@
 #include <map>
 #include <set>
 #include <unordered_map>
+using namespace std;
 
 gpr::InputParameters
 helper_functions::eon_parameters_to_gpr(const Parameters &parameters) {

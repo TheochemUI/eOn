@@ -24,6 +24,7 @@
 #ifndef _WIN32
 #include <sys/resource.h>
 #include <sys/time.h>
+using namespace std;
 #endif
 
 // Random number generator

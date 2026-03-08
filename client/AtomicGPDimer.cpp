@@ -21,6 +21,7 @@
 #include "subprojects/gpr_optim/gpr/AtomicDimer.h"
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gpr_optim/structures/Structures.h"
+using namespace std;
 
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";

@@ -19,6 +19,8 @@
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
 
+using namespace std;
+
 int DynamicsSaddleSearch::run(void) {
   std::vector<std::shared_ptr<Matter>> MDSnapshots;
   std::vector<double> MDTimes;

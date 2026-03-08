@@ -18,6 +18,7 @@
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+using namespace std;
 
 namespace fs = std::filesystem;
 

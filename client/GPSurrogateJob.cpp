@@ -19,6 +19,7 @@
 
 #include "EonLogger.h"
 #include <sstream>
+using namespace std;
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
   std::string reactantFilename =

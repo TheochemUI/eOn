@@ -13,6 +13,9 @@
 #include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "SafeMath.h"
+
+using namespace std;
+
 Hessian::Hessian(const Parameters &params, Matter *matter)
     : matter{matter},
       parameters{params} {

@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "EonLogger.h"
+using namespace std;
 using namespace helper_functions;
 
 const char Dynamics::ANDERSEN[] = "andersen";

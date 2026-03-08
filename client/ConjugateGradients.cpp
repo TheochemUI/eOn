@@ -11,6 +11,7 @@
 */
 #include "ConjugateGradients.h"
 #include "SafeMath.h"
+using namespace std;
 
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = 0, b = 0, gamma = 0;

@@ -17,6 +17,7 @@
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
 #include <stdio.h>
+using namespace std;
 
 int BasinHoppingSaddleSearch::run(void) {
   // minimize "saddle"

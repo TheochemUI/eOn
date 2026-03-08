@@ -14,6 +14,7 @@
 
 #include "SteepestDescent.h"
 #include "SafeMath.h"
+using namespace std;
 
 int SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();

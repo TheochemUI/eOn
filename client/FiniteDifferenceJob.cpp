@@ -14,6 +14,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 
+using namespace std;
 using namespace helper_functions;
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {

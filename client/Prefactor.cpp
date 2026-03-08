@@ -16,6 +16,9 @@
 #include "EonLogger.h"
 #include <format>
 #include <fstream>
+
+using namespace std;
+
 int Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                              Matter *saddle, Matter *min2, double &pref1,
                              double &pref2) {

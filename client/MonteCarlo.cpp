@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "MonteCarlo.h"
+using namespace std;
 
 using namespace helper_functions;
 

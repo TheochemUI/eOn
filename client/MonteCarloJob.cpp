@@ -13,6 +13,7 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "MonteCarlo.h"
+using namespace std;
 
 std::vector<std::string> MonteCarloJob::run(void) {
   string posInFilename("pos.con");

@@ -26,6 +26,7 @@
 #include "EpiCenters.h"
 #include "ObjectiveFunction.h"
 
+using namespace std;
 using namespace helper_functions;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {

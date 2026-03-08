@@ -19,6 +19,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+using namespace std;
 
 std::vector<std::string> MinimizationJob::run(void) {
   string posInFilename("pos.con");

@@ -15,6 +15,7 @@
 // #include "MinimizationJob.h"
 #include "Dynamics.h"
 #include "HelperFunctions.h"
+using namespace std;
 
 using namespace helper_functions;
 

@@ -69,11 +69,11 @@ private:
   double ekin;
   bool firstStep;
   std::vector<double> earr;
-  string escapeResult;
-  // string moveFeedbackMethod;
-  // string decisionMethod;
-  string decisionResult;
-  string hoppingResult;
+  std::string escapeResult;
+  // std::string moveFeedbackMethod;
+  // std::string decisionMethod;
+  std::string decisionResult;
+  std::string hoppingResult;
   FILE *monfile;
   FILE *earrfile;
   eonc::log::Scoped log;

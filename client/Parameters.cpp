@@ -32,6 +32,10 @@
 #include <time.h>
 
 #include "EonLogger.h"
+
+using namespace std;
+using namespace std::string_literals; // For ""s
+
 Parameters::Parameters() {
 
   constants.kB = 8.6173324e-5;     // eV/K

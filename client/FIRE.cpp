@@ -12,6 +12,8 @@
 #include "FIRE.h"
 #include "HelperFunctions.h"
 
+using namespace std;
+
 int FIRE::step(double a_maxMove) {
   double P = 0;
   // Check convergence.

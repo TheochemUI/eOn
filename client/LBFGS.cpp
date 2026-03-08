@@ -13,6 +13,7 @@
 
 #include "LBFGS.h"
 #include "SafeMath.h"
+using namespace std;
 
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   double H0 = m_params.optimizer_options.lbfgs.inverse_curvature;

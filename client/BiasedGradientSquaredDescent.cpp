@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <map>
 #include <string.h>
+using namespace std;
 
 class BGSDObjectiveFunction : public ObjectiveFunction {
 public:

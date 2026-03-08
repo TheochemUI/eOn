@@ -14,6 +14,9 @@
 #include "EonLogger.h"
 #include "HelperFunctions.h"
 #include <math.h>
+
+using namespace std;
+
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 

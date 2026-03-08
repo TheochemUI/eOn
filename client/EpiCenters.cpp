@@ -15,6 +15,7 @@
 #include <cassert>
 #include <climits>
 #include <vector>
+using namespace std;
 
 using namespace helper_functions;
 using std::vector;

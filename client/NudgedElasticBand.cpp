@@ -23,6 +23,7 @@
 
 #include "EonLogger.h"
 #include <fstream>
+using namespace std;
 using namespace helper_functions;
 namespace fs = std::filesystem;
 

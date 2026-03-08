@@ -13,6 +13,8 @@
 #include "Parameters.h"
 #include <cstdlib>
 
+using namespace std;
+
 int main(void) {
   string confile("pos.con");
   Parameters parameters;

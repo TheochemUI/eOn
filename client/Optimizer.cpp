@@ -16,6 +16,7 @@
 #include "LBFGS.h"
 #include "Quickmin.h"
 #include "SteepestDescent.h"
+using namespace std;
 
 namespace helpers::create {
 std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,

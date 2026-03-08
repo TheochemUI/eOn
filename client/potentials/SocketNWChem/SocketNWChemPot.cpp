@@ -13,6 +13,7 @@
 
 // Helper to get element symbols from atomic numbers
 using std::this_thread::sleep_for;
+using namespace std::chrono_literals;
 
 namespace {
 const char *elementArray[] = {

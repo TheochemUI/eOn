@@ -14,6 +14,8 @@
 #include "Dynamics.h"
 #include "Optimizer.h"
 
+using namespace std;
+
 std::vector<std::string> SafeHyperJob::run(void) {
   // TODO: Rework
   current = new Matter(pot, params);

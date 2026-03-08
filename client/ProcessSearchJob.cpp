@@ -21,6 +21,9 @@
 #include <memory>
 
 #include "EonLogger.h"
+
+using namespace std;
+
 std::vector<std::string> ProcessSearchJob::run(void) {
   string reactantFilename("pos.con");
   string displacementFilename("displacement.con");

@@ -17,6 +17,7 @@
 #include "HelperFunctions.h"
 #include "Parameters.h"
 #include "Potential.h"
+using namespace std;
 
 using namespace helper_functions;
 

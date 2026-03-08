@@ -16,6 +16,8 @@
 #include "Potential.h"
 #include "Prefactor.h"
 
+using namespace std;
+
 const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
 const char PrefactorJob::PREFACTOR_SADDLE[] = "saddle";
 const char PrefactorJob::PREFACTOR_PRODUCT[] = "product";

@@ -18,6 +18,7 @@
 #include <memory>
 #include <sstream>
 
+using namespace std;
 using namespace std::string_literals; // For ""s
 
 int main(void) {

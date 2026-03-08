@@ -24,8 +24,6 @@
 #include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/FileSink.h"
 
-using namespace std::string_literals; // For ""s
-
 // This file contains forward declarations and enum classes
 // NOTE(rg):
 // We use magic_enum for converting <-> strings so the names have to match what

@@ -43,6 +43,8 @@
 #include "PyGuard.h"
 #endif
 
+using namespace std;
+
 #ifdef EONMPIBGP
 #include <libgen.h>
 #endif
