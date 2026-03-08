@@ -106,8 +106,7 @@ size_t PotRegistry::type_alive(PotType t) const noexcept {
 void PotRegistry::write_summary(const std::string &path) const {
   std::vector<InstanceRecord> snapshot;
   {
-    std::lock_guard<std::mutex> lock(
-        const_cast<std::mutex &>(m_records_mutex));
+    std::lock_guard<std::mutex> lock(const_cast<std::mutex &>(m_records_mutex));
     snapshot = m_records;
   }
 

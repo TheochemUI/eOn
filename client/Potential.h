@@ -14,10 +14,8 @@
 
 #include "Eigen.h"
 #include "Parameters.h"
-#include <algorithm>
-#include <limits>
+#include "PotRegistry.h"
 #include <memory>
-#include <optional>
 
 namespace eonc {
 
@@ -25,7 +23,10 @@ class Potential {
 protected:
   PotType ptype;
   const Parameters &m_params;
-  eonc::log::FileScoped m_log{"_potcalls", "_potcalls.log"};
+
+private:
+  uint64_t m_registry_id;
+  PotRegistry::TimePoint m_created_at;
 
 public:
   size_t forceCallCounter;
@@ -34,28 +35,18 @@ public:
   Potential(PotType a_ptype, const Parameters &a_params)
       : ptype{a_ptype},
         m_params{a_params},
-        forceCallCounter{0} {
-    initializeLogger();
-  }
+        m_registry_id{PotRegistry::get().on_created(a_ptype)},
+        m_created_at{PotRegistry::Clock::now()},
+        forceCallCounter{0} {}
 
   // Delegating Constructor
   Potential(const Parameters &a_params)
       : Potential(a_params.potential_options.potential, a_params) {}
 
   virtual ~Potential() {
-    if (m_log) {
-      QUILL_LOG_TRACE_L1(m_log, "[{}] destroyed after {} calls",
-                         magic_enum::enum_name<PotType>(getType()),
-                         forceCallCounter);
-    } else {
-      std::cerr << "Logger is not initialized\n";
-    }
+    PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
+                                    m_created_at);
   }
-
-  static int fcalls;
-  static int fcallsTotal;
-  static int wu_fcallsTotal;
-  static double totalUserTime;
 
   // Does not take into account the fixed / free atoms
   // Variance here is null when not needed and that's OK
@@ -67,14 +58,6 @@ public:
   get_ef(const AtomMatrix &pos, const VectorXi &atmnrs, const Matrix3d &box);
 
   [[nodiscard]] PotType getType() { return this->ptype; }
-
-  // Logger initialization
-  void initializeLogger() {
-    if (m_log) {
-      QUILL_LOG_TRACE_L1(m_log, "[{}] created",
-                         magic_enum::enum_name<PotType>(getType()));
-    }
-  }
 };
 
 namespace helpers {

@@ -32,7 +32,7 @@ std::vector<std::string> SafeHyperJob::run(void) {
   current->con2matter(reactantFilename);
 
   QUILL_LOG_DEBUG(log, "Minimizing initial reactant");
-  long refFCalls = Potential::fcalls;
+  long refFCalls = PotRegistry::get().total_force_calls();
   *reactant = *current;
   reactant->relax();
   // minimizeFCalls += (Potential::fcalls - refFCalls);
@@ -176,7 +176,7 @@ int SafeHyperJob::dynamics() {
     if ((nCheck == StateCheckInterval) && !newStateFlag) {
       nCheck = 0;  // reinitialize check state counter
       nRecord = 0; // restart the buffer
-      refFCalls = Potential::fcalls;
+      refFCalls = PotRegistry::get().total_force_calls();
       transitionFlag = checkState(current, reactant);
       // minimizeFCalls += Potential::fcalls - refFCalls;
       if (transitionFlag == true) {
@@ -195,7 +195,7 @@ int SafeHyperJob::dynamics() {
     if (transitionFlag) {
       // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
       // time.");
-      refFCalls = Potential::fcalls;
+      refFCalls = PotRegistry::get().total_force_calls();
       refineStep = refine(mdBuffer.data(), mdBufferLength, reactant);
 
       transitionStep =

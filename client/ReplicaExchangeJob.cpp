@@ -40,7 +40,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
 
   QUILL_LOG_DEBUG(log, "Running Replica Exchange");
 
-  long refForceCalls = Potential::fcalls;
+  long refForceCalls = PotRegistry::get().total_force_calls();
 
   // allocate a Matter and Dynamics object for each replica
   std::vector<std::shared_ptr<Matter>> replica;
