@@ -13,7 +13,9 @@ floating-point exceptions (SIGFPE) in numerical code. All functions live in
 
 ## Scalar functions
 
-All are `inline constexpr` or `inline` (for `<cmath>` calls).
+All are `inline constexpr` or `inline` (for `<cmath>` calls), and marked
+`[[nodiscard]]`. Guard branches use `[[unlikely]]` to hint the branch
+predictor.
 
 | Function | Signature | Behavior |
 |----------|-----------|----------|
@@ -26,14 +28,24 @@ All are `inline constexpr` or `inline` (for `<cmath>` calls).
 The epsilon (`1e-300`) is well below any physically meaningful value but above
 the FPE trap threshold.
 
-## Eigen template
+## Eigen templates
 
 Available only when `Eigen/Core` is already included (guarded by
-`#ifdef EIGEN_CORE_H`):
+`#ifdef EIGEN_CORE_H`). Always include Eigen headers before `SafeMath.h`.
 
 | Function | Signature | Behavior |
 |----------|-----------|----------|
 | `safe_normalized` | `(Eigen::MatrixBase<D> const& v, double min_norm=eps)` | Returns zero matrix/vector when `v.norm() < min_norm` |
+| `safe_normalize_inplace` | `(Eigen::MatrixBase<D>& v, double min_norm=eps)` | Sets `v` to zero when `v.norm() < min_norm`, else normalizes in place |
+
+### Choosing between normalize variants
+
+- **`safe_normalized(v)`**: Returns a copy. Use for expressions like
+  `tau = safe_normalized(tau * cos(a) + theta * sin(a))`.
+- **`safe_normalize_inplace(v)`**: Modifies in place. Use to replace bare
+  `.normalize()` calls like `direction.normalize()`.
+- **Bare `.normalize()` / `.normalized()`**: Only safe when preceded by an
+  explicit norm check or when the vector is guaranteed nonzero.
 
 ## Design principles
 
@@ -42,7 +54,8 @@ Available only when `Eigen/Core` is already included (guarded by
   input (reset, skip, clamp, etc.). Valid inputs produce bit-identical results.
 
 - **No overhead on the hot path.** The guard is a single `abs(x) < eps`
-  comparison, which the branch predictor will learn is almost never taken.
+  comparison with `[[unlikely]]`, which the branch predictor will learn is
+  almost never taken.
 
 - **Header-only, no link dependencies.** Just `#include "SafeMath.h"` after
-  your Eigen includes (if using `safe_normalized`).
+  your Eigen includes (if using `safe_normalized` or `safe_normalize_inplace`).
