@@ -33,8 +33,7 @@ inline double safe_acos(double x) {
 
 inline double safe_sqrt(double x) { return std::sqrt(std::max(0.0, x)); }
 
-inline double safe_atan_ratio(double num, double denom,
-                              double fallback = 0.0) {
+inline double safe_atan_ratio(double num, double denom, double fallback = 0.0) {
   return (std::abs(denom) < eps) ? fallback : std::atan(num / denom);
 }
 
