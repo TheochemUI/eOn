@@ -11,6 +11,7 @@
 */
 #pragma once
 
+#include "EonLogger.h"
 #include "catch2/catch_amalgamated.hpp"
 #include "quill/Backend.h"
 #include "quill/Frontend.h"
