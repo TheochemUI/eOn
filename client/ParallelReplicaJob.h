@@ -15,6 +15,9 @@
 #include "Job.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class ParallelReplicaJob : public Job {
 public:
   ParallelReplicaJob(std::unique_ptr<Parameters> parameters)
@@ -30,3 +33,7 @@ private:
   int refineTransition(std::vector<Matter *> MDSnapshots, bool fake = false);
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::ParallelReplicaJob;

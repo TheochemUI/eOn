@@ -19,7 +19,7 @@
 #include "Potential.h"
 using namespace std;
 
-using namespace helper_functions;
+using namespace eonc::helpers;
 
 std::vector<std::string> DynamicsJob::run(void) {
   auto R = std::make_shared<Matter>(pot, params);

@@ -13,6 +13,10 @@
 #include "Matter.h"
 #include <vector>
 
+namespace eonc {
+
+
+
 namespace EpiCenters {
 
 const char DISP_LOAD[] = "load";
@@ -52,3 +56,5 @@ void coordinationLessOrEqual(bool *result, long coordinationMaxVal,
 // determine first minimally coordinated atom
 long minCoordination(const Matter *matter, double neighborCutoff);
 } // namespace EpiCenters
+
+} // namespace eonc

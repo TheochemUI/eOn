@@ -16,6 +16,9 @@
 #include "Eigen.h"
 #include "EonLogger.h"
 
+namespace eonc {
+
+
 /** Functionality relying on the conjugate gradients algorithm. The object is
  * capable of minimizing an Matter object or modified forces being passed in.*/
 class BondBoost {
@@ -63,3 +66,8 @@ public:
   static const char NONE[];
   static const char BOND_BOOST[];
 };
+
+} // namespace eonc
+
+using eonc::BondBoost;
+using eonc::Hyperdynamics;

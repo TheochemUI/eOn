@@ -16,6 +16,9 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class SafeHyperJob : public Job {
 public:
   SafeHyperJob(std::unique_ptr<Parameters> parameters)
@@ -57,3 +60,7 @@ private:
 
   std::vector<std::string> returnFiles;
 };
+
+} // namespace eonc
+
+using eonc::SafeHyperJob;

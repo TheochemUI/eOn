@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
   int error;
   string config_file = "config.ini";
   if (client_standalone) {
-    if (helper_functions::existsFile("config_0.ini")) {
+    if (eonc::helpers::existsFile("config_0.ini")) {
       config_file = "config_0.ini";
     }
     QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
@@ -340,7 +340,7 @@ int main(int argc, char **argv) {
 
 #ifndef EONMPI
   if (argc > 1) {
-    commandLine(argc, argv);
+    eonc::commandLine(argc, argv);
     return 0;
   }
 #endif
@@ -388,7 +388,7 @@ int main(int argc, char **argv) {
 
     // XXX(rg): Be more gentle here
     bool bundlingEnabled = false;
-    int bundleSize = -1; // getBundleSize();
+    int bundleSize = -1; // eonc::getBundleSize();
     if (bundleSize == 0) {
       bundleSize = 1;
     } else if (bundleSize == -1) {
@@ -403,12 +403,12 @@ int main(int argc, char **argv) {
         QUILL_LOG_INFO(logger, "Beginning Job {} of {}", i + 1, bundleSize);
       std::vector<std::string> unbundledFilenames;
       if (bundlingEnabled) {
-        unbundledFilenames = unbundle(i);
+        unbundledFilenames = eonc::unbundle(i);
       }
 
       // check to see if parameters file exists before loading
       int error = 0;
-      string config_file = helper_functions::getRelevantFile(
+      string config_file = eonc::helpers::getRelevantFile(
           parameters.main_options.iniFilename);
       QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
       error = parameters.load(config_file);
@@ -423,7 +423,7 @@ int main(int argc, char **argv) {
       // Determine what type of job we are running according to the parameters
       // file.
       auto job =
-          helper_functions::makeJob(std::make_unique<Parameters>(parameters));
+          eonc::helpers::makeJob(std::make_unique<Parameters>(parameters));
       if (job == nullptr) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
                         std::string{magic_enum::enum_name<JobType>(
@@ -451,7 +451,7 @@ int main(int argc, char **argv) {
       std::chrono::duration<double> elapsed = end_time - start_time;
 
       double utime = 0, stime = 0, rtime = 0;
-      helper_functions::getTime(&rtime, &utime, &stime);
+      eonc::helpers::getTime(&rtime, &utime, &stime);
 
       QUILL_LOG_INFO(logger, "Timing Information:");
       QUILL_LOG_INFO(logger, "  Real time: {:.3f} seconds", elapsed.count());
@@ -470,8 +470,8 @@ int main(int argc, char **argv) {
       }
 
       if (bundlingEnabled) {
-        bundle(i, filenames, &bundledFilenames);
-        deleteUnbundledFiles(unbundledFilenames);
+        eonc::bundle(i, filenames, &bundledFilenames);
+        eonc::deleteUnbundledFiles(unbundledFilenames);
       } else {
         bundledFilenames = filenames;
       }

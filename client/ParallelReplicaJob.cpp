@@ -24,7 +24,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   // load pos.con
   reactant = new Matter(pot, params);
   reactant->con2matter(
-      helper_functions::getRelevantFile(params.main_options.conFilename));
+      eonc::helpers::getRelevantFile(params.main_options.conFilename));
 
   // minimize the initial reactant
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Minimizing initial position");
@@ -296,7 +296,7 @@ int ParallelReplicaJob::refineTransition(std::vector<Matter *> MDSnapshots,
     } else {
       // if we are faking the refinement just generate a random answer
       // for the comparison test
-      midTest = bool(helper_functions::randomInt(0, 1));
+      midTest = bool(eonc::helpers::randomInt(0, 1));
     }
 
     if (midTest) {

@@ -20,7 +20,7 @@
 
 #include "EonLogger.h"
 using namespace std;
-using namespace helper_functions;
+using namespace eonc::helpers;
 
 const char ImprovedDimer::OPT_SD[] = "sd";
 const char ImprovedDimer::OPT_CG[] = "cg";
@@ -122,7 +122,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   double delta = params.main_options.finiteDifference;
   double phi_tol =
-      helper_functions::pi * (params.dimer_options.converged_angle / 180.0);
+      eonc::helpers::pi * (params.dimer_options.converged_angle / 180.0);
   double phi_prime = 0.0;
   double phi_min = 0.0;
 
@@ -243,7 +243,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       if (vd < -1.0)
         vd = -1.0;
       double angle =
-          eonc::safemath::safe_acos(vd) * (180.0 / helper_functions::pi);
+          eonc::safemath::safe_acos(vd) * (180.0 / eonc::helpers::pi);
 
       // xph: larger angle is allowed to avoid frequent restart (was 70.0)
       if (angle > 87.0) {
@@ -280,7 +280,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     double d_C_tau_d_phi = 2.0 * (g1 - g0).dot(theta) / delta;
     phi_prime = -0.5 * eonc::safemath::safe_atan_ratio(d_C_tau_d_phi,
                                                        2.0 * abs(C_tau), 0.0);
-    statsAngle = phi_prime * (180.0 / helper_functions::pi);
+    statsAngle = phi_prime * (180.0 / eonc::helpers::pi);
 
     double alignment = std::abs(tau.dot(referenceMode));
     if (abs(phi_prime) > phi_tol) {
@@ -319,16 +319,16 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       // If the curvature is being maximized, push it over pi/2.
       if (C_tau_min > C_tau) {
-        phi_min += helper_functions::pi * 0.5;
+        phi_min += eonc::helpers::pi * 0.5;
         C_tau_min =
             0.5 * a0 + a1 * cos(2.0 * phi_min) + b1 * sin(2.0 * phi_min);
       }
 
       // xph: for accurate LBFGS
-      if (phi_min > helper_functions::pi * 0.5) {
-        phi_min -= helper_functions::pi;
+      if (phi_min > eonc::helpers::pi * 0.5) {
+        phi_min -= eonc::helpers::pi;
       }
-      statsAngle = phi_min * (180.0 / helper_functions::pi);
+      statsAngle = phi_min * (180.0 / eonc::helpers::pi);
 
       // Update x1, tau, and C_tau.
       // xph: normalize first

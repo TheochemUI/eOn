@@ -35,7 +35,7 @@
 using namespace std;
 #endif
 
-namespace helper_functions {
+namespace eonc::helpers {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
   switch (params->main_options.job) {
   case JobType::Process_Search: {
@@ -118,4 +118,4 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
   }
 }
 
-} // namespace helper_functions
+} // namespace eonc::helpers

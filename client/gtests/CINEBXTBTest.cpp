@@ -16,7 +16,7 @@
 
 namespace tests {
 
-static helper_functions::test::QuillTestLogger _quill_setup;
+static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 // Regression test: CI-NEB with XTB on a small (9-atom) molecule.
 // Reproduces a bug where removing EIGEN_DEFAULT_TO_ROW_MAJOR silently changed
@@ -47,7 +47,7 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   params.optimizer_options.max_iterations = 100;
   params.optimizer_options.max_move = 0.1;
 
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
   auto initial = std::make_shared<Matter>(pot, params);
   auto final_state = std::make_shared<Matter>(pot, params);

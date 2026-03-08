@@ -17,6 +17,9 @@
 #include "NudgedElasticBand.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class NudgedElasticBandJob : public Job {
 
 public:
@@ -36,3 +39,7 @@ private:
   size_t fCallsNEB;
   eonc::log::Scoped m_log;
 };
+
+} // namespace eonc
+
+using eonc::NudgedElasticBandJob;

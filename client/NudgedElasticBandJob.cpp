@@ -20,10 +20,10 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   NudgedElasticBand::NEBStatus status;
   int f1;
 
-  string reactantFilename = helper_functions::getRelevantFile("reactant.con");
-  string productFilename = helper_functions::getRelevantFile("product.con");
+  string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
+  string productFilename = eonc::helpers::getRelevantFile("product.con");
 
-  string transitionStateFilename = helper_functions::getRelevantFile("ts.con");
+  string transitionStateFilename = eonc::helpers::getRelevantFile("ts.con");
   bool tsInterpolate = false;
   auto transitionState = std::make_shared<Matter>(pot, params);
   FILE *fhTransitionState = fopen("ts.con", "r");
@@ -212,7 +212,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
           continue;
 
         // 1. Write Interpolated Position (.con)
-        Matter peakPos = helper_functions::neb_paths::interpolateImage(
+        Matter peakPos = eonc::helpers::neb_paths::interpolateImage(
             *neb->path[leftIdx], *neb->path[leftIdx + 1], f);
         std::string peakPosFile = std::format("peak{:02d}_pos.con", peakCount);
         peakPos.matter2con(peakPosFile);

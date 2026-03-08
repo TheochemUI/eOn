@@ -14,7 +14,7 @@
 #include "SafeMath.h"
 using namespace std;
 
-using namespace helper_functions;
+using namespace eonc::helpers;
 
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
@@ -122,7 +122,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       //            //debug
 
       if (rotationalForceChange < 0) {
-        rotationAngle = rotationAngle + helper_functions::pi / 2.0;
+        rotationAngle = rotationAngle + eonc::helpers::pi / 2.0;
       }
 
       rotate(rotationAngle);
@@ -133,7 +133,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
                     "[DimerRot]   -----   ---------   ----------------   "
                     "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
                     curvature, torque,
-                    rotationAngle * (180.0 / helper_functions::pi));
+                    rotationAngle * (180.0 / eonc::helpers::pi));
   }
 
   statsTorque = torque;
@@ -141,7 +141,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   direction.normalize();
   statsAngle = eonc::safemath::safe_acos(
       (direction.array() * initialDirection.array()).sum());
-  statsAngle *= (180.0 / helper_functions::pi);
+  statsAngle *= (180.0 / eonc::helpers::pi);
   statsRotations = rotations;
 
   eigenvalue = curvature;

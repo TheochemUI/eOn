@@ -91,34 +91,34 @@ int HelperFunctionsTest::test() {
 int HelperFunctionsTest::test_random() {
   long seed = 15;
 
-  double random1 = helper_functions::random();
+  double random1 = eonc::helpers::random();
 
   std::string output;
 
   if (std::isnan(random1) || !std::isfinite(random1)) {
-    output = "FAIL: helper_functions::random() couldn't initialize a double";
+    output = "FAIL: eonc::helpers::random() couldn't initialize a double";
     this->pushToResults(output);
     return 1;
 
   } else if (random1 < 0 || random1 > 1) {
 
     output =
-        "FAIL: helper_functions::random() gave a number out of range of (0,1)";
+        "FAIL: eonc::helpers::random() gave a number out of range of (0,1)";
     this->pushToResults(output);
     return 1;
   }
 
-  double random2 = helper_functions::random(seed);
+  double random2 = eonc::helpers::random(seed);
 
   if (std::isnan(random2) || !std::isfinite(random2)) {
-    output = "FAIL: helper_functions::random(seed) couldn't initialize a "
+    output = "FAIL: eonc::helpers::random(seed) couldn't initialize a "
              "double using a seed argument";
     this->pushToResults(output);
     return 1;
 
   } else if (random2 < 0 || random2 > 1) {
 
-    output = "FAIL: helper_functions::random(seed) gave a number out of range "
+    output = "FAIL: eonc::helpers::random(seed) gave a number out of range "
              "of (0,1) using a seed argument";
     this->pushToResults(output);
     return 1;
@@ -126,14 +126,14 @@ int HelperFunctionsTest::test_random() {
 
   if (random1 == random2) {
 
-    output = "FAIL: helper_functions::random(seed) does not give unique value "
+    output = "FAIL: eonc::helpers::random(seed) does not give unique value "
              "when a seed is passed in";
     this->pushToResults(output);
     return 1;
   }
 
   output =
-      "PASS: helper_functions::random() works as specified by documentation";
+      "PASS: eonc::helpers::random() works as specified by documentation";
   this->pushToResults(output);
   return 0;
 }
@@ -145,73 +145,73 @@ int HelperFunctionsTest::test_randomDouble() {
 
   double maxDouble = 15;
 
-  double random1 = helper_functions::randomDouble();
+  double random1 = eonc::helpers::randomDouble();
 
   std::string output;
 
   if (std::isnan(random1) || !std::isfinite(random1)) {
     output =
-        "FAIL: helper_functions::randomDouble() couldn't initialize a double";
+        "FAIL: eonc::helpers::randomDouble() couldn't initialize a double";
     this->pushToResults(output);
     return 1;
 
   } else if (random1 < 0 || random1 > 1) {
 
-    output = "FAIL: helper_functions::randomDouble() gave a number out of "
+    output = "FAIL: eonc::helpers::randomDouble() gave a number out of "
              "range of (0,1)";
     this->pushToResults(output);
     return 1;
   }
 
-  double random2 = helper_functions::randomDouble(maxInt);
+  double random2 = eonc::helpers::randomDouble(maxInt);
 
   if (std::isnan(random2) || !std::isfinite(random2)) {
-    output = "FAIL: helper_functions::randomDouble(int) couldn't initialize a "
+    output = "FAIL: eonc::helpers::randomDouble(int) couldn't initialize a "
              "double";
     this->pushToResults(output);
     return 1;
 
   } else if (random2 < 0 || random2 > maxInt) {
 
-    output = "FAIL: helper_functions::randomDouble(int) gave a number out of "
+    output = "FAIL: eonc::helpers::randomDouble(int) gave a number out of "
              "range of (0,int)";
     this->pushToResults(output);
     return 1;
   }
 
-  double random3 = helper_functions::randomDouble(maxLong);
+  double random3 = eonc::helpers::randomDouble(maxLong);
 
   if (std::isnan(random3) || !std::isfinite(random3)) {
-    output = "FAIL: helper_functions::randomDouble(long) couldn't initialize a "
+    output = "FAIL: eonc::helpers::randomDouble(long) couldn't initialize a "
              "double";
     this->pushToResults(output);
     return 1;
 
   } else if (random3 < 0 || random3 > maxLong) {
 
-    output = "FAIL: helper_functions::randomDouble(long) gave a number out of "
+    output = "FAIL: eonc::helpers::randomDouble(long) gave a number out of "
              "range of (0,long)";
     this->pushToResults(output);
     return 1;
   }
 
-  double random4 = helper_functions::randomDouble(maxDouble);
+  double random4 = eonc::helpers::randomDouble(maxDouble);
 
   if (std::isnan(random4) || !std::isfinite(random4)) {
-    output = "FAIL: helper_functions::randomDouble(double) couldn't initialize "
+    output = "FAIL: eonc::helpers::randomDouble(double) couldn't initialize "
              "a double";
     this->pushToResults(output);
     return 1;
 
   } else if (random4 < 0 || random4 > maxDouble) {
 
-    output = "FAIL: helper_functions::randomDouble(double) gave a number out "
+    output = "FAIL: eonc::helpers::randomDouble(double) gave a number out "
              "of range of (0,double)";
     this->pushToResults(output);
     return 1;
   }
 
-  output = "PASS: helper_functions::randomDouble() works as specified by "
+  output = "PASS: eonc::helpers::randomDouble() works as specified by "
            "documentation";
   this->pushToResults(output);
   return 0;
@@ -221,25 +221,25 @@ int HelperFunctionsTest::test_randomInt() {
 
   int lower = 1, upper = 4;
 
-  long random1 = helper_functions::randomInt(lower, upper);
+  long random1 = eonc::helpers::randomInt(lower, upper);
 
   std::string output;
 
   if (std::isnan(random1) || !std::isfinite(random1)) {
-    output = "FAIL: helper_functions::randomInt(lower,upper) couldn't "
+    output = "FAIL: eonc::helpers::randomInt(lower,upper) couldn't "
              "initialize a long";
     this->pushToResults(output);
     return 1;
 
   } else if (random1 < lower || random1 > upper) {
 
-    output = "FAIL: helper_functions::randomInt(lower,upper) gave a number out "
+    output = "FAIL: eonc::helpers::randomInt(lower,upper) gave a number out "
              "of range of (lower,upper)";
     this->pushToResults(output);
     return 1;
   }
 
-  output = "PASS: helper_functions::randomInt(lower,upper) works as specified "
+  output = "PASS: eonc::helpers::randomInt(lower,upper) works as specified "
            "by documentation";
   this->pushToResults(output);
   return 0;
@@ -251,25 +251,25 @@ int HelperFunctionsTest::test_gaussRandom() {
 
   double lb = avg - 4 * std, ub = avg + 4 * std;
 
-  double random1 = helper_functions::gaussRandom(avg, std);
+  double random1 = eonc::helpers::gaussRandom(avg, std);
 
   std::string output;
 
   if (std::isnan(random1) || !std::isfinite(random1)) {
-    output = "FAIL: helper_functions::gaussRandom(avg,std) couldn't initialize "
+    output = "FAIL: eonc::helpers::gaussRandom(avg,std) couldn't initialize "
              "a double";
     this->pushToResults(output);
     return 1;
 
   } else if (random1 < lb || random1 > ub) {
 
-    output = "FAIL: helper_functions::gaussRandom(avg,std) returned a double 4 "
+    output = "FAIL: eonc::helpers::gaussRandom(avg,std) returned a double 4 "
              "standard deviations out; this is probably an error";
     this->pushToResults(output);
     return 1;
   }
 
-  output = "PASS: helper_functions::gaussRandom(avg,std) works as specified by "
+  output = "PASS: eonc::helpers::gaussRandom(avg,std) works as specified by "
            "documentation";
   this->pushToResults(output);
   return 0;
@@ -295,51 +295,51 @@ int HelperFunctionsTest::test_dot() {
 
   zp = z;
 
-  double orthoDot = helper_functions::dot(xp, yp, size1);
+  double orthoDot = eonc::helpers::dot(xp, yp, size1);
 
   std::string output;
 
   if (std::isnan(orthoDot) || !std::isfinite(orthoDot)) {
-    output = "FAIL: helper_functions::dot(v1, v2, size) couldn't initialize a "
+    output = "FAIL: eonc::helpers::dot(v1, v2, size) couldn't initialize a "
              "double";
     this->pushToResults(output);
     return 1;
 
   } else if (orthoDot != 0) {
 
-    output = "FAIL: helper_functions::dot(v1, v2, size) dotted two orthogonal "
+    output = "FAIL: eonc::helpers::dot(v1, v2, size) dotted two orthogonal "
              "vectors and didn't return zero";
     this->pushToResults(output);
     return 1;
   }
 
-  double regDot1 = helper_functions::dot(wp, zp, size2);
+  double regDot1 = eonc::helpers::dot(wp, zp, size2);
 
   if (std::isnan(regDot1) || !std::isfinite(regDot1)) {
-    output = "FAIL: helper_functions::dot(v1, v2, size) couldn't initialize a "
+    output = "FAIL: eonc::helpers::dot(v1, v2, size) couldn't initialize a "
              "double";
     this->pushToResults(output);
     return 1;
 
   } else if (regDot1 != 10) {
 
-    output = "FAIL: helper_functions::dot(v1, v2, size) dotted two vectors and "
+    output = "FAIL: eonc::helpers::dot(v1, v2, size) dotted two vectors and "
              "returned the wrong value";
     this->pushToResults(output);
     return 1;
   }
 
-  double regDot2 = helper_functions::dot(zp, wp, size2);
+  double regDot2 = eonc::helpers::dot(zp, wp, size2);
 
   if (std::isnan(regDot2) || !std::isfinite(regDot2)) {
-    output = "FAIL: helper_functions::dot(v1, v2, size) couldn't initialize a "
+    output = "FAIL: eonc::helpers::dot(v1, v2, size) couldn't initialize a "
              "double";
     this->pushToResults(output);
     return 1;
 
   } else if (regDot2 != 10) {
 
-    output = "FAIL: helper_functions::dot(v1, v2, size) dotted two vectors and "
+    output = "FAIL: eonc::helpers::dot(v1, v2, size) dotted two vectors and "
              "returned the wrong value";
     this->pushToResults(output);
     return 1;
@@ -347,13 +347,13 @@ int HelperFunctionsTest::test_dot() {
 
   if (regDot1 != regDot2) {
 
-    output = "FAIL: helper_functions::dot(v1, v2, size) did not equal "
-             "helper_functions::dot(v2, v1, size)";
+    output = "FAIL: eonc::helpers::dot(v1, v2, size) did not equal "
+             "eonc::helpers::dot(v2, v1, size)";
     this->pushToResults(output);
     return 1;
   }
 
-  output = "PASS: helper_functions::dot(v1,v2,size) works as specified by "
+  output = "PASS: eonc::helpers::dot(v1,v2,size) works as specified by "
            "documentation";
   this->pushToResults(output);
   return 0;
@@ -371,19 +371,19 @@ int HelperFunctionsTest::test_length() {
 
   yp = y;
 
-  double norm1 = helper_functions::length(xp, size1);
+  double norm1 = eonc::helpers::length(xp, size1);
 
   std::string output;
 
   if (std::isnan(norm1) || !std::isfinite(norm1)) {
     output =
-        "FAIL: helper_functions::length(v1, size) couldn't initialize a double";
+        "FAIL: eonc::helpers::length(v1, size) couldn't initialize a double";
     this->pushToResults(output);
     return 1;
 
   } else if (norm1 != 5) {
 
-    output = "FAIL: helper_functions::length(v1, size) took the norm of a "
+    output = "FAIL: eonc::helpers::length(v1, size) took the norm of a "
              "vector and returned the wrong value";
     this->pushToResults(output);
     return 1;
@@ -391,23 +391,23 @@ int HelperFunctionsTest::test_length() {
 
   double normY = sqrt(30);
 
-  double norm2 = helper_functions::length(yp, size2);
+  double norm2 = eonc::helpers::length(yp, size2);
 
   if (std::isnan(norm2) || !std::isfinite(norm2)) {
     output =
-        "FAIL: helper_functions::length(v1, size) couldn't initialize a double";
+        "FAIL: eonc::helpers::length(v1, size) couldn't initialize a double";
     this->pushToResults(output);
     return 1;
 
   } else if (norm2 != normY) {
 
-    output = "FAIL: helper_functions::length(v1, size) took the norm of a "
+    output = "FAIL: eonc::helpers::length(v1, size) took the norm of a "
              "vector and returned the wrong value";
     this->pushToResults(output);
     return 1;
   }
 
-  output = "PASS: helper_functions::length(v1,size) works as specified by "
+  output = "PASS: eonc::helpers::length(v1,size) works as specified by "
            "documentation";
   this->pushToResults(output);
   return 0;
@@ -428,7 +428,7 @@ int HelperFunctionsTest::test_add()
 
         double result[3], *res, shouldRes[3] = {2,4,6};
 
-        helper_functions::add(res,xp,yp,size);
+        eonc::helpers::add(res,xp,yp,size);
 
         for(int i=0;i<3;i++)
         {
@@ -439,12 +439,12 @@ int HelperFunctionsTest::test_add()
 
         if(result != shouldRes) {
 
-                output = "FAIL: helper_functions::add(result,xp,yp,size)
+                output = "FAIL: eonc::helpers::add(result,xp,yp,size)
 returned an incorrect result"; this->pushToResults(output); return 1;
 
         }
 
-        output = "PASS: helper_functions::add(result,v1,v2,size) works as
+        output = "PASS: eonc::helpers::add(result,v1,v2,size) works as
 specified by documentation"; this->pushToResults(output); return 0;
 
 

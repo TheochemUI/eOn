@@ -20,6 +20,9 @@
 #include "subprojects/gpr_optim/gpr/AtomicDimer.h"
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 
+namespace eonc {
+
+
 // dimer method to find the lowest curvature mode
 class AtomicGPDimer : public LowestEigenmode {
 
@@ -48,3 +51,7 @@ private:
   gpr::Observation init_observations, init_middle_point;
   gpr::Coord orient_init, R_init;
 };
+
+} // namespace eonc
+
+using eonc::AtomicGPDimer;

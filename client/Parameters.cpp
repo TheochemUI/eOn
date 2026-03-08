@@ -60,10 +60,10 @@ Parameters::Parameters() {
   prefactor_options.min_value = 1e+9;
   prefactor_options.within_radius = 3.3;
   prefactor_options.min_displacement = 0.25;
-  prefactor_options.rate = Prefactor::RATE_HTST;
+  prefactor_options.rate = eonc::Prefactor::RATE_HTST;
   prefactor_options.configuration = PrefactorJob::PREFACTOR_REACTANT;
   prefactor_options.all_free_atoms = false;
-  prefactor_options.filter_scheme = Prefactor::FILTER_FRACTION;
+  prefactor_options.filter_scheme = eonc::Prefactor::FILTER_FRACTION;
   prefactor_options.filter_fraction = 0.90;
 
   // [Potential] //
@@ -130,7 +130,7 @@ Parameters::Parameters() {
   debug_options.neb_mmf = LowestEigenmode::MINMODE_DIMER;
 
   // [Saddle Search] //
-  saddle_search_options.displace_type = EpiCenters::DISP_LOAD;
+  saddle_search_options.displace_type = eonc::EpiCenters::DISP_LOAD;
   saddle_search_options.method = "min_mode";
   saddle_search_options.minmode_method = LowestEigenmode::MINMODE_DIMER;
   saddle_search_options.max_energy = 20.0;
@@ -529,9 +529,9 @@ int Parameters::load(FILE *file) {
     if (main_options.randomSeed < 0) {
       unsigned i = time(NULL);
       main_options.randomSeed = i;
-      helper_functions::random(i);
+      eonc::helpers::random(i);
     } else {
-      helper_functions::random(main_options.randomSeed);
+      eonc::helpers::random(main_options.randomSeed);
     }
     main_options.maxForceCalls =
         ini.GetValueL("Main", "max_force_calls", main_options.maxForceCalls);
@@ -1344,7 +1344,7 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Saddle Search", "perp_force_ratio",
                       saddle_search_options.perp_force_ratio);
     saddle_search_options.displace_type = toLowerCase(ini.GetValue(
-        "Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
+        "Saddle Search", "client_displace_type", eonc::EpiCenters::DISP_LOAD));
     saddle_search_options.nonlocal_count_abort =
         ini.GetValueL("Saddle Search", "nonlocal_count_abort",
                       saddle_search_options.nonlocal_count_abort);
@@ -1352,13 +1352,13 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Saddle Search", "nonlocal_distance_abort",
                       saddle_search_options.nonlocal_distance_abort);
     if (saddle_search_options.displace_type !=
-            EpiCenters::DISP_NOT_FCC_OR_HCP &&
+            eonc::EpiCenters::DISP_NOT_FCC_OR_HCP &&
         saddle_search_options.displace_type !=
-            EpiCenters::DISP_MIN_COORDINATED &&
-        saddle_search_options.displace_type != EpiCenters::DISP_LAST_ATOM &&
-        saddle_search_options.displace_type != EpiCenters::DISP_RANDOM &&
-        saddle_search_options.displace_type != EpiCenters::DISP_LISTED_ATOMS) {
-      saddle_search_options.displace_type = EpiCenters::DISP_LOAD;
+            eonc::EpiCenters::DISP_MIN_COORDINATED &&
+        saddle_search_options.displace_type != eonc::EpiCenters::DISP_LAST_ATOM &&
+        saddle_search_options.displace_type != eonc::EpiCenters::DISP_RANDOM &&
+        saddle_search_options.displace_type != eonc::EpiCenters::DISP_LISTED_ATOMS) {
+      saddle_search_options.displace_type = eonc::EpiCenters::DISP_LOAD;
     }
     // Parse comma-separated atom list for listed_atoms displacement type
     {

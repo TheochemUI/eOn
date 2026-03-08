@@ -17,6 +17,9 @@
 #include "SaddleSearchMethod.h"
 #include <vector>
 
+namespace eonc {
+
+
 class DynamicsSaddleSearch : public SaddleSearchMethod {
 public:
   DynamicsSaddleSearch(std::shared_ptr<Matter> matterPassed,
@@ -52,3 +55,7 @@ public:
 private:
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::DynamicsSaddleSearch;

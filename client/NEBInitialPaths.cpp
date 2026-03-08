@@ -11,7 +11,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-namespace helper_functions::neb_paths {
+namespace eonc::helpers::neb_paths {
 
 // Forward declaration of ZBL setup helper to keep code clean
 std::shared_ptr<Potential> createZBLPotential() {
@@ -21,7 +21,7 @@ std::shared_ptr<Potential> createZBLPotential() {
   zbl_params.zbl_options.cut_inner = 0.5;
   // Cutoff sufficient to push overlapping atoms apart
   zbl_params.zbl_options.cut_global = 3.0;
-  return helper_functions::makePotential(PotType::ZBL, zbl_params);
+  return eonc::helpers::makePotential(PotType::ZBL, zbl_params);
 }
 
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
@@ -132,7 +132,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
 
     // Create an Optimizer
     // Defaults to taking the same one as optimizer
-    auto idpp_optim = helpers::create::mkOptim(
+    auto idpp_optim = eonc::helpers::create::mkOptim(
         idpp_objf, params.neb_options.opt_method, params);
 
     // Run the optimization
@@ -176,7 +176,7 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
                                                             path, params, 1.0);
   }
 
-  auto optim = helpers::create::mkOptim(
+  auto optim = eonc::helpers::create::mkOptim(
       idpp_objf, params.neb_options.initialization.opt_method, params);
 
   int maxSteps = params.neb_options.initialization.max_iterations;
@@ -308,7 +308,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
     // TODO(rg): this is a headache, since it uses the optimizer stanza but with
     // the NEB OptType
-    auto optim = helpers::create::mkOptim(
+    auto optim = eonc::helpers::create::mkOptim(
         idpp_objf, params.neb_options.initialization.opt_method, params);
 
     // Relax the current intermediate path until it meets the tolerance
@@ -348,7 +348,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   }
 
   auto final_optim =
-      helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
+      eonc::helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
   final_optim->run(500, params.optimizer_options.max_move);
 
   return path;
@@ -447,4 +447,4 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
   return resampled;
 }
 
-} // namespace helper_functions::neb_paths
+} // namespace eonc::helpers::neb_paths

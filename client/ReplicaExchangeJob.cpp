@@ -34,7 +34,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   std::shared_ptr<Matter> tmpMatter;
 
   string posFilename =
-      helper_functions::getRelevantFile(params.main_options.conFilename);
+      eonc::helpers::getRelevantFile(params.main_options.conFilename);
   pos = std::make_shared<Matter>(pot, params);
   pos->con2matter(posFilename);
 
@@ -96,7 +96,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
     if ((step % exchangePeriodSteps) == 0) {
       for (long trial = 0;
            trial < params.replica_exchange_options.exchange_trials; trial++) {
-        i = helper_functions::randomInt(
+        i = eonc::helpers::randomInt(
             0, params.replica_exchange_options.replicas - 2);
         energyLow = replica[i]->getPotentialEnergy();
         energyHigh = replica[i + 1]->getPotentialEnergy();
@@ -105,12 +105,12 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
         pAcc = min(1.0, exp((energyHigh - energyLow) *
                             (eonc::safemath::safe_recip(kbTHigh, 0.0) -
                              eonc::safemath::safe_recip(kbTLow, 0.0))));
-        double tmp = helper_functions::randomDouble();
+        double tmp = eonc::helpers::randomDouble();
         QUILL_LOG_INFO(log,
                        "step: {} trial swap, i {}, elow: {:.5f}, ehigh: "
                        "{:.5f}, pAcc: {:.5f}, rand: {}",
                        step, i, energyLow, energyHigh, pAcc, tmp);
-        // if(helper_functions::randomDouble()<pAcc)
+        // if(eonc::helpers::randomDouble()<pAcc)
         if (tmp < pAcc) {
           QUILL_LOG_INFO(log, "swap");
           // swap configurations

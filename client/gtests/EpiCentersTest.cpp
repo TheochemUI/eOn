@@ -25,7 +25,7 @@ using namespace Catch::Matchers;
 
 namespace tests {
 
-static helper_functions::test::QuillTestLogger _quill_setup;
+static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 // ---------------------------------------------------------------------------
 // Fixture: loads Pt_Heptamer_FrozenLayers system
@@ -38,7 +38,7 @@ public:
         pot{nullptr},
         matter{nullptr} {
     params.potential_options.potential = PotType::LJ;
-    pot = helper_functions::makePotential(params.potential_options.potential,
+    pot = eonc::helpers::makePotential(params.potential_options.potential,
                                           params);
     matter = std::make_shared<Matter>(pot, params);
     const std::string confile("pos.con");
@@ -66,7 +66,7 @@ TEST_CASE_METHOD(EpiCentersFixture,
   // Run many times to exercise the random selection
   std::set<long> selected;
   for (int trial = 0; trial < 200; ++trial) {
-    long idx = EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
+    long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
     // Result must be one of the atoms in the list
     REQUIRE(std::find(atomList.begin(), atomList.end(), idx) != atomList.end());
     selected.insert(idx);
@@ -83,7 +83,7 @@ TEST_CASE_METHOD(EpiCentersFixture,
   std::vector<long> atomList = {3, 7, 8, 9, 100};
 
   for (int trial = 0; trial < 50; ++trial) {
-    long idx = EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
+    long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
     // Must pick the only free atom in the list
     REQUIRE(idx == 3);
   }
@@ -97,7 +97,7 @@ TEST_CASE_METHOD(EpiCentersFixture,
   std::vector<long> atomList = {-1, 0, nAtoms, nAtoms + 100};
 
   for (int trial = 0; trial < 50; ++trial) {
-    long idx = EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
+    long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
     REQUIRE(idx == 0);
   }
 }
@@ -108,7 +108,7 @@ TEST_CASE_METHOD(EpiCentersFixture,
   std::vector<long> atomList = {5};
 
   for (int trial = 0; trial < 20; ++trial) {
-    long idx = EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
+    long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
     REQUIRE(idx == 5);
   }
 }
@@ -127,7 +127,7 @@ TEST_CASE("Parameters default displace_type is load",
           "[Parameters][displace_type]") {
   Parameters params;
   REQUIRE(params.saddle_search_options.displace_type ==
-          std::string(EpiCenters::DISP_LOAD));
+          std::string(eonc::EpiCenters::DISP_LOAD));
 }
 
 TEST_CASE("Parameters parses comma-separated displace_atom_list from INI",
@@ -148,7 +148,7 @@ TEST_CASE("Parameters parses comma-separated displace_atom_list from INI",
 
   REQUIRE(err == 0);
   REQUIRE(params.saddle_search_options.displace_type ==
-          std::string(EpiCenters::DISP_LISTED_ATOMS));
+          std::string(eonc::EpiCenters::DISP_LISTED_ATOMS));
   REQUIRE(params.saddle_search_options.displace_atom_list.size() == 3);
   REQUIRE(params.saddle_search_options.displace_atom_list[0] == 10);
   REQUIRE(params.saddle_search_options.displace_atom_list[1] == 20);
@@ -231,7 +231,7 @@ TEST_CASE("Parameters listed_atoms is whitelisted in displace_type",
   REQUIRE(err == 0);
   // Should NOT fall back to "load"
   REQUIRE(params.saddle_search_options.displace_type ==
-          std::string(EpiCenters::DISP_LISTED_ATOMS));
+          std::string(eonc::EpiCenters::DISP_LISTED_ATOMS));
 }
 
 TEST_CASE("Parameters unknown displace_type falls back to load",
@@ -250,18 +250,18 @@ TEST_CASE("Parameters unknown displace_type falls back to load",
 
   REQUIRE(err == 0);
   REQUIRE(params.saddle_search_options.displace_type ==
-          std::string(EpiCenters::DISP_LOAD));
+          std::string(eonc::EpiCenters::DISP_LOAD));
 }
 
 TEST_CASE("Parameters all valid displace_types are accepted",
           "[Parameters][displace_type]") {
   const std::vector<std::string> valid_types = {
-      EpiCenters::DISP_LOAD,
-      EpiCenters::DISP_NOT_FCC_OR_HCP,
-      EpiCenters::DISP_MIN_COORDINATED,
-      EpiCenters::DISP_LAST_ATOM,
-      EpiCenters::DISP_RANDOM,
-      EpiCenters::DISP_LISTED_ATOMS,
+      eonc::EpiCenters::DISP_LOAD,
+      eonc::EpiCenters::DISP_NOT_FCC_OR_HCP,
+      eonc::EpiCenters::DISP_MIN_COORDINATED,
+      eonc::EpiCenters::DISP_LAST_ATOM,
+      eonc::EpiCenters::DISP_RANDOM,
+      eonc::EpiCenters::DISP_LISTED_ATOMS,
   };
 
   for (const auto &dtype : valid_types) {

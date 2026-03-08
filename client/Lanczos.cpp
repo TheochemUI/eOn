@@ -62,7 +62,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   VectorXd evEst, evT, evOldEst;
 
   VectorXd force1, force2;
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
   auto tmpMatter = std::make_unique<Matter>(pot, params);
   *tmpMatter = *matter;
@@ -117,7 +117,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       evEst = Q.block(0, 0, size, i + 1) * evT;
       evEst.normalize();
       statsAngle = eonc::safemath::safe_acos(fabs(evEst.dot(evOldEst))) *
-                   (180 / helper_functions::pi);
+                   (180 / eonc::helpers::pi);
       statsTorque = ewAbsRelErr;
       evOldEst = evEst;
       QUILL_LOG_INFO(log,

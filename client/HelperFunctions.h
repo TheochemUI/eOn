@@ -15,6 +15,10 @@
 #include <string>
 #include <vector>
 
+namespace eonc {
+
+
+
 // Random number generator constants
 
 constexpr double IM = 2147483647.0;
@@ -35,7 +39,7 @@ constexpr long IR2 = 3791;
 
 /* Collection of supporting functions that handle arrays of doubles as vectors
  * and different random number generators */
-namespace helper_functions {
+namespace helpers {
 
 inline constexpr double pi = 3.14159265358979323846;
 
@@ -98,4 +102,6 @@ bool sortedR(const Matter &m1, const Matter &m2,
              const double distanceDifference);
 void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
-} // namespace helper_functions
+} // namespace helpers
+
+} // namespace eonc

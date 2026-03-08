@@ -43,7 +43,7 @@ std::vector<std::string> SaddleSearchJob::run(void) {
 
   initial->con2matter(reactantFilename);
 
-  if (params.saddle_search_options.displace_type == EpiCenters::DISP_LOAD) {
+  if (params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
     // displacement was passed from the server
     saddle->con2matter(displacementFilename);
   } else {
@@ -52,9 +52,9 @@ std::vector<std::string> SaddleSearchJob::run(void) {
     *saddle = *initial;
   }
   AtomMatrix mode;
-  if (params.saddle_search_options.displace_type == EpiCenters::DISP_LOAD) {
+  if (params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
     // mode was passed from the server
-    mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
+    mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
   saddleSearch = std::make_unique<MinModeSaddleSearch>(
@@ -137,7 +137,7 @@ void SaddleSearchJob::saveData(int status) {
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
   fileMode = fopen(modeFilename.c_str(), "wb");
-  helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
+  eonc::helpers::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
   fclose(fileMode);
 
   std::string saddleFilename("saddle.con");

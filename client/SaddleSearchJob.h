@@ -18,6 +18,9 @@
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 /**
  * @file
  * @ingroup Jobs
@@ -78,3 +81,7 @@ private:
 
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::SaddleSearchJob;

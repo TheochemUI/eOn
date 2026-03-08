@@ -142,7 +142,7 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
   return std::make_tuple(energy, forces);
 };
 
-namespace helper_functions {
+namespace eonc::helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
   return makePotential(params.potential_options.potential, params);
 }
@@ -352,4 +352,4 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 }
 
-} // namespace helper_functions
+} // namespace eonc::helpers

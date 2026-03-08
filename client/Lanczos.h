@@ -17,6 +17,9 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 // Lanczos method to find the lowest curvature mode
 class Lanczos : public LowestEigenmode {
 
@@ -33,3 +36,7 @@ private:
   double lowestEw;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::Lanczos;

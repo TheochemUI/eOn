@@ -2,7 +2,11 @@
 #include "Matter.h"
 #include <filesystem>
 
-namespace helper_functions::neb_paths {
+namespace eonc {
+
+
+
+namespace helpers::neb_paths {
 namespace fs = std::filesystem;
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                                const size_t nimgs);
@@ -55,4 +59,6 @@ Matter interpolateImage(const Matter &A, const Matter &B, double fraction);
 // Helper to construct ZBL potentials
 std::shared_ptr<Potential> createZBLPotential();
 
-} // namespace helper_functions::neb_paths
+} // namespace helpers::neb_paths
+
+} // namespace eonc

@@ -23,15 +23,15 @@ using namespace std;
 std::vector<std::string> GPSurrogateJob::run(void) {
   // Start working
   std::string reactantFilename =
-      helper_functions::getRelevantFile("reactant.con");
+      eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename =
-      helper_functions::getRelevantFile("product.con");
+      eonc::helpers::getRelevantFile("product.con");
 
   // Clone and setup "true" params
   auto true_params = std::make_shared<Parameters>(params);
   true_params->main_options.job = params.sub_job;
   auto true_job =
-      helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
+      eonc::helpers::makeJob(std::make_unique<Parameters>(*true_params));
   auto pyparams = std::make_shared<Parameters>(params);
   pyparams->potential_options.potential = PotType::CatLearn;
 
@@ -40,16 +40,16 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   initial->con2matter(reactantFilename);
   auto final_state = std::make_shared<Matter>(pot, *true_params);
   final_state->con2matter(productFilename);
-  auto init_path = helper_functions::neb_paths::linearPath(
+  auto init_path = eonc::helpers::neb_paths::linearPath(
       *initial, *final_state, params.neb_options.image_count);
-  auto init_data = helper_functions::surrogate::getMidSlice(init_path);
-  auto features = helper_functions::surrogate::get_features(init_data);
+  auto init_data = eonc::helpers::surrogate::getMidSlice(init_path);
+  auto features = eonc::helpers::surrogate::get_features(init_data);
   EONC_LOG_TRACE("Potential is {}",
                  magic_enum::enum_name<PotType>(pot->getType()));
-  auto targets = helper_functions::surrogate::get_targets(init_data, pot);
+  auto targets = eonc::helpers::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
-  auto surpot = helpers::create::makeSurrogatePotential(
+  auto surpot = eonc::helpers::create::makeSurrogatePotential(
       params.gp_surrogate_options.potential, params);
   surpot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state,
@@ -68,11 +68,11 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
     EONC_LOG_TRACE("Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
-        helper_functions::surrogate::getMaxUncertainty(neb->path);
+        eonc::helpers::surrogate::getMaxUncertainty(neb->path);
     auto [feature, target] =
-        helper_functions::surrogate::getNewDataPoint(neb->path, pot);
-    helper_functions::eigen::addVectorRow(features, feature);
-    helper_functions::eigen::addVectorRow(targets, target);
+        eonc::helpers::surrogate::getNewDataPoint(neb->path, pot);
+    eonc::helpers::eigen::addVectorRow(features, feature);
+    eonc::helpers::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
     pyparams->nebClimbingImageMethod = false;
     pyparams->optimizer_options.converged_force =
@@ -99,7 +99,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     fclose(fileNEB);
     // } else
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
-        helper_functions::surrogate::accuratePES(neb->path, pot)) {
+        eonc::helpers::surrogate::accuratePES(neb->path, pot)) {
       break;
     } else {
       continue;
@@ -169,7 +169,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back("neb.dat");
   neb->printImageData(true);
 }
-namespace helper_functions::surrogate {
+namespace eonc::helpers::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions
   MatrixXd features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);
@@ -300,9 +300,9 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   EONC_LOG_TRACE("{}", oss.str());
   return mae < 0.05;
 }
-} // namespace helper_functions::surrogate
+} // namespace eonc::helpers::surrogate
 
-namespace helper_functions::eigen {
+namespace eonc::helpers::eigen {
 MatrixXd vertCat(const MatrixXd &m1, const MatrixXd &m2) {
   assert(m1.cols() == m2.cols());
   MatrixXd res(m1.rows() + m2.rows(), m2.cols());
@@ -314,4 +314,4 @@ void addVectorRow(MatrixXd &data, const Eigen::VectorXd &newrow) {
   data.conservativeResize(data.rows() + 1, data.cols());
   data.row(data.rows() - 1) = newrow;
 }
-} // namespace helper_functions::eigen
+} // namespace eonc::helpers::eigen

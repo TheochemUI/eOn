@@ -17,13 +17,13 @@
 #include "HelperFunctions.h"
 using namespace std;
 
-using namespace helper_functions;
+using namespace eonc::helpers;
 
 std::vector<std::string> GlobalOptimizationJob::run(void) {
   // int status;
   GlobalOptimization globopt = GlobalOptimization(params);
   string reactant_passed =
-      helper_functions::getRelevantFile(params.main_options.conFilename);
+      eonc::helpers::getRelevantFile(params.main_options.conFilename);
   std::vector<std::string> returnFiles;
   // returnFiles.push_back(reactant_output);
   Matter *matter_cur = new Matter(pot, params);

@@ -20,7 +20,7 @@
 using namespace std;
 
 gpr::InputParameters
-helper_functions::eon_parameters_to_gpr(const Parameters &parameters) {
+eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   gpr::InputParameters p;
   // Problem parameters
   p.actdist_fro.value = parameters.gpr_dimer_options.active_radius;
@@ -85,7 +85,7 @@ helper_functions::eon_parameters_to_gpr(const Parameters &parameters) {
 
 // FIXME: Take in the active / inactive pairs / atomtypes
 gpr::AtomsConfiguration
-helper_functions::eon_matter_to_atmconf(Matter *matter) {
+eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
   //   AtomsConfiguration a;
   //   aux::ProblemSetUp problem_setup;
   //   std::vector<int> atomnrs;
@@ -253,7 +253,7 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   return atoms_config;
 }
 
-gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
+gpr::Observation eonc::helpers::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
   o.R = matter->getPositions();

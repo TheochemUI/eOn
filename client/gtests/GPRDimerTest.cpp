@@ -45,12 +45,12 @@ TEST_F(GPRDimerTest, TestMatter) {
   AtomMatrix mode;
   Parameters parameters;
   parameters.load("config.ini");
-  auto pot = helper_functions::makePotential(parameters);
+  auto pot = eonc::helpers::makePotential(parameters);
   auto initial = std::make_shared<Matter>(pot, parameters);
   auto saddle = std::make_shared<Matter>(pot, parameters);
   initial->con2matter(reactantFilename);
   saddle->con2matter(displacementFilename);
-  mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
+  mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   auto saddleSearch = std::make_unique<MinModeSaddleSearch>(
       saddle, mode, initial->getPotentialEnergy(), parameters, pot);
   auto minModeMethod = std::make_unique<AtomicGPDimer>(saddle, parameters, pot);

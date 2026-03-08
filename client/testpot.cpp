@@ -26,7 +26,7 @@ int main(void) {
   auto params = std::make_shared<Parameters>();
   eonc::ensure_interpreter();
   params->potential_options.potential = PotType::CatLearn;
-  auto pot = helper_functions::makePotential(params);
+  auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   matter->con2matter(confile);
   auto [energy, forces] = pot->get_ef(

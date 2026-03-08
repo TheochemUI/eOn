@@ -16,6 +16,9 @@
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class TADJob : public Job {
 public:
   TADJob(std::unique_ptr<Parameters> parameters)
@@ -60,3 +63,7 @@ private:
 
   std::vector<std::string> returnFiles;
 };
+
+} // namespace eonc
+
+using eonc::TADJob;

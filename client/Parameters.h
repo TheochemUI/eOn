@@ -26,6 +26,8 @@
 
 /** Contains all runtime parameters and results. No functionality just
  * bookkeeping.*/
+namespace eonc {
+
 class Parameters {
 
 public:
@@ -600,3 +602,7 @@ public:
 private:
   std::string toLowerCase(std::string s);
 };
+
+} // namespace eonc
+
+using eonc::Parameters;

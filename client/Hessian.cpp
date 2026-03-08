@@ -131,10 +131,10 @@ bool Hessian::calculate(void) {
   }
 
   double t0, t1;
-  helper_functions::getTime(&t0, NULL, NULL);
+  eonc::helpers::getTime(&t0, NULL, NULL);
   QUILL_LOG_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
-  helper_functions::getTime(&t1, NULL, NULL);
+  eonc::helpers::getTime(&t1, NULL, NULL);
   QUILL_LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
                   t1 - t0);
   freqs = es.eigenvalues();

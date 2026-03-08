@@ -29,7 +29,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
           m_log, "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
           C);
       reset();
-      return helper_functions::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
 
     if (m_params.optimizer_options.lbfgs.auto_scale) {
@@ -52,7 +52,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
                         "eV/A^2, take max move step",
                         C);
       reset();
-      return helper_functions::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     } else {
       QUILL_LOG_DEBUG(m_log,
                       "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
@@ -78,14 +78,14 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
 
   Eigen::VectorXd d = -z;
 
-  double distance = helper_functions::maxAtomMotionV(d);
+  double distance = eonc::helpers::maxAtomMotionV(d);
   if (distance >= a_maxMove &&
       m_params.optimizer_options.lbfgs.distance_reset) {
     QUILL_LOG_DEBUG(m_log,
                     "[LBFGS] reset memory, proposed step too large: {:.4f}",
                     distance);
     reset();
-    return helper_functions::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
   double vd = eonc::safemath::safe_normalized(d).dot(
@@ -94,17 +94,17 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     vd = 1.0;
   if (vd < -1.0)
     vd = -1.0;
-  double angle = eonc::safemath::safe_acos(vd) * (180.0 / helper_functions::pi);
+  double angle = eonc::safemath::safe_acos(vd) * (180.0 / eonc::helpers::pi);
   if (angle > 90.0 && m_params.optimizer_options.lbfgs.angle_reset) {
     QUILL_LOG_DEBUG(m_log,
                     "[LBFGS] reset memory, angle between LBFGS angle and "
                     "force too large: {:.4f}",
                     angle);
     reset();
-    return helper_functions::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
-  return helper_functions::maxAtomMotionAppliedV(d, a_maxMove);
+  return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
 }
 
 void LBFGS::reset(void) {

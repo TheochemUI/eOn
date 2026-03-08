@@ -12,7 +12,7 @@
 #include "MonteCarlo.h"
 using namespace std;
 
-using namespace helper_functions;
+using namespace eonc::helpers;
 
 void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
 

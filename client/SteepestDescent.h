@@ -19,6 +19,9 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class SteepestDescent final : public Optimizer {
 public:
   SteepestDescent(std::shared_ptr<ObjectiveFunction> a_objf,
@@ -37,3 +40,7 @@ private:
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
 };
+
+} // namespace eonc
+
+using eonc::SteepestDescent;

@@ -25,6 +25,8 @@
 #define MAX_VALUENAME 128
 #define MAX_VALUEDATA 2048
 
+namespace eonc {
+
 class CIniFile {
 private:
   bool caseInsensitive;
@@ -190,5 +192,9 @@ public:
   bool DeleteKeyComments(unsigned const keyID);
   bool DeleteKeyComments(std::string const keyname);
 };
+
+} // namespace eonc
+
+using eonc::CIniFile;
 
 #endif

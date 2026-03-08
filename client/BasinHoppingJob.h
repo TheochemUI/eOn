@@ -15,6 +15,9 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class BasinHoppingJob : public Job {
 public:
   BasinHoppingJob(std::unique_ptr<Parameters> parameters)
@@ -43,3 +46,7 @@ private:
   std::vector<double> uniqueEnergies;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::BasinHoppingJob;

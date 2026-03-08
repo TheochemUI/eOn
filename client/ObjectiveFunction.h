@@ -21,6 +21,8 @@
 #include "AtomicGPDimer.h"
 #endif
 
+namespace eonc {
+
 class ObjectiveFunction {
 protected:
   std::shared_ptr<Matter> matter;
@@ -41,3 +43,7 @@ public:
   virtual double getConvergence() = 0;
   virtual VectorXd difference(VectorXd a, VectorXd b) = 0;
 };
+
+} // namespace eonc
+
+using eonc::ObjectiveFunction;

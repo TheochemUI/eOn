@@ -15,6 +15,9 @@
 #include "Parameters.h"
 #include "Potential.h"
 
+namespace eonc {
+
+
 // dimer method to find the lowest curvature mode
 class Dimer : public LowestEigenmode {
 
@@ -51,3 +54,7 @@ private:
       AtomMatrix &forceDiffOrthogonalToDimer); // determine the rotational force
                                                // on the dimer
 };
+
+} // namespace eonc
+
+using eonc::Dimer;

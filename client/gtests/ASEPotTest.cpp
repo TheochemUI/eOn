@@ -24,7 +24,7 @@ using namespace Catch::Matchers;
 
 namespace tests {
 
-static helper_functions::test::QuillTestLogger _quill_setup;
+static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 class ASEPotTest {
 public:
@@ -37,7 +37,7 @@ public:
     auto script = std::filesystem::canonical("ase_lj.py").string();
     params.potential_options.extPotPath = script;
 
-    pot = helper_functions::makePotential(params.potential_options.potential,
+    pot = eonc::helpers::makePotential(params.potential_options.potential,
                                           params);
     matter = std::make_shared<Matter>(pot, params);
 
@@ -74,7 +74,7 @@ TEST_CASE_METHOD(ASEPotTest, "ASE LJ energy and forces match reference",
   REQUIRE_THAT(calculated_energy, WithinAbs(expected_energy, threshold));
 
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
   REQUIRE(matEq(calculated_forces, expected_forces));
 }
 

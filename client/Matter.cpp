@@ -130,7 +130,7 @@ const Matter &Matter::operator=(const Matter &matter) {
 // The == comparison considers identity. This is crucial for process search.
 // bool Matter::operator==(const Matter& matter) {
 //     if(parameters->structure_comparison_options.check_rotation) {
-//         return helper_functions::rotationMatch(this, &matter,
+//         return eonc::helpers::rotationMatch(this, &matter,
 //         parameters->structure_comparison_options.distance_difference);
 //     }else{
 //         return (parameters->structure_comparison_options.distance_difference)
@@ -143,24 +143,24 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
     return false;
   if (parameters->structure_comparison_options.check_rotation &&
       indistinguishable) {
-    return helper_functions::sortedR(
+    return eonc::helpers::sortedR(
         *this, matter,
         parameters->structure_comparison_options.distance_difference);
   } else if (indistinguishable) {
     if (this->numberOfFixedAtoms() == 0 and
         parameters->structure_comparison_options.remove_translation)
-      helper_functions::translationRemove(*this, matter);
-    return helper_functions::identical(
+      eonc::helpers::translationRemove(*this, matter);
+    return eonc::helpers::identical(
         *this, matter,
         parameters->structure_comparison_options.distance_difference);
   } else if (parameters->structure_comparison_options.check_rotation) {
-    return helper_functions::rotationMatch(
+    return eonc::helpers::rotationMatch(
         *this, matter,
         parameters->structure_comparison_options.distance_difference);
   } else {
     if (this->numberOfFixedAtoms() == 0 and
         parameters->structure_comparison_options.remove_translation)
-      helper_functions::translationRemove(*this, matter);
+      eonc::helpers::translationRemove(*this, matter);
     return (parameters->structure_comparison_options.distance_difference) >
            perAtomNorm(matter);
   }
@@ -286,7 +286,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    string prefixMovie, string prefixCheckpoint) {
   auto objf = std::make_shared<MatterObjectiveFunction>(
       std::make_shared<Matter>(*this), *parameters);
-  auto optim = helpers::create::mkOptim(
+  auto optim = eonc::helpers::create::mkOptim(
       objf, parameters->optimizer_options.method, *parameters);
 
   ostringstream min;
@@ -316,7 +316,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
     setPositionsFreeV(objf->getPositions());
 
     double stepSize =
-        helper_functions::maxAtomMotion(pbc(getPositions() - pos));
+        eonc::helpers::maxAtomMotion(pbc(getPositions() - pos));
 
     if (!quiet) {
       QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
@@ -618,13 +618,13 @@ bool Matter::matter2con(FILE *file) {
   double angles[3];
   angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
-              180 / helper_functions::pi;
+              180 / eonc::helpers::pi;
   angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
-              180 / helper_functions::pi;
+              180 / eonc::helpers::pi;
   angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
-              180 / helper_functions::pi;
+              180 / eonc::helpers::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
   fputs(headerCon6, file);
@@ -701,9 +701,9 @@ bool Matter::con2matter(FILE *file) {
     cell(1, 1) = lengths[1];
     cell(2, 2) = lengths[2];
   } else {
-    angles[0] *= helper_functions::pi / 180.0;
-    angles[1] *= helper_functions::pi / 180.0;
-    angles[2] *= helper_functions::pi / 180.0;
+    angles[0] *= eonc::helpers::pi / 180.0;
+    angles[1] *= eonc::helpers::pi / 180.0;
+    angles[2] *= eonc::helpers::pi / 180.0;
 
     cell(0, 0) = 1.0;
     cell(1, 0) = cos(angles[0]);
@@ -834,7 +834,7 @@ void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
       throw(std::runtime_error("Whoops, you need a potential.."));
-      potential = helper_functions::makePotential(
+      potential = eonc::helpers::makePotential(
           parameters->potential_options.potential, *parameters);
     }
     auto surrogatePotential =
@@ -1017,13 +1017,13 @@ bool Matter::matter2convel(FILE *file) {
   double angles[3];
   angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
-              180 / helper_functions::pi;
+              180 / eonc::helpers::pi;
   angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
-              180 / helper_functions::pi;
+              180 / eonc::helpers::pi;
   angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
-              180 / helper_functions::pi;
+              180 / eonc::helpers::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
   fputs(headerCon6, file);
@@ -1110,9 +1110,9 @@ bool Matter::convel2matter(FILE *file) {
     cell(1, 1) = lengths[1];
     cell(2, 2) = lengths[2];
   } else {
-    angles[0] *= helper_functions::pi / 180.0;
-    angles[1] *= helper_functions::pi / 180.0;
-    angles[2] *= helper_functions::pi / 180.0;
+    angles[0] *= eonc::helpers::pi / 180.0;
+    angles[1] *= eonc::helpers::pi / 180.0;
+    angles[2] *= eonc::helpers::pi / 180.0;
 
     cell(0, 0) = 1.0;
     cell(1, 0) = cos(angles[0]);

@@ -19,6 +19,9 @@
 
 #include <string>
 
+namespace eonc {
+
+
 class MinModeSaddleSearch : public SaddleSearchMethod {
 
 public:
@@ -70,3 +73,7 @@ private:
   double reactantEnergy;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::MinModeSaddleSearch;

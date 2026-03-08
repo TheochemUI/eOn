@@ -18,6 +18,9 @@
 #include "SaddleSearchMethod.h"
 #include <vector>
 
+namespace eonc {
+
+
 class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
   BiasedGradientSquaredDescent(std::shared_ptr<Matter> matterPassed,
@@ -48,3 +51,7 @@ private:
   eonc::log::Scoped log;
   //        double bgsdAlpha;
 };
+
+} // namespace eonc
+
+using eonc::BiasedGradientSquaredDescent;

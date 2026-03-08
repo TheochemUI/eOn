@@ -23,7 +23,7 @@
 #include "Potential.h"
 
 using namespace std;
-using namespace helper_functions;
+using namespace eonc::helpers;
 
 std::vector<std::string> BasinHoppingJob::run(void) {
   bool swapMove;
@@ -57,12 +57,12 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     QUILL_LOG_DEBUG(log, "generating random structure with probability {:.4f}",
                     randomProb);
   }
-  double u = helper_functions::random();
+  double u = eonc::helpers::random();
   if (u < params.basin_hopping_options.initial_random_structure_probability) {
     AtomMatrix randomPositions = current->getPositionsFree();
     for (int i = 0; i < current->numberOfFreeAtoms(); i++) {
       for (int j = 0; j < 3; j++) {
-        randomPositions(i, j) = helper_functions::random();
+        randomPositions(i, j) = eonc::helpers::random();
       }
     }
     randomPositions *= current->getCell();

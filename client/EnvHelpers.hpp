@@ -12,9 +12,15 @@
 #pragma once
 #include <string>
 
-namespace helper_functions {
+namespace eonc {
+
+
+
+namespace helpers {
 [[nodiscard]] std::string get_value_from_env_or_param(
     const char *env_variable, const std::string &param_value,
     const std::string &default_value = "",
     const std::string &warning_message = "", const bool is_mandatory = false);
 }
+
+} // namespace eonc

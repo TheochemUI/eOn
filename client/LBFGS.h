@@ -18,6 +18,9 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 #define LBFGS_EPS 1e-30
 
 class LBFGS final : public Optimizer {
@@ -52,3 +55,7 @@ private:
   Eigen::VectorXd m_fPrev;
   eonc::log::FileScoped m_log{"lbfgs", "_lbfgs.log"};
 };
+
+} // namespace eonc
+
+using eonc::LBFGS;

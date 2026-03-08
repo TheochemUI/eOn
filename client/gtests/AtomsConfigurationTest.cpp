@@ -38,11 +38,11 @@ AtomsConfigurationTest::~AtomsConfigurationTest() {
 TEST_F(AtomsConfigurationTest, TestMatter) {
   Parameters parameters;
   parameters.potential_options.potential = PotType::MORSE_PT;
-  auto pot = helper_functions::makePotential(parameters);
+  auto pot = eonc::helpers::makePotential(parameters);
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter("pos.con");
   gpr::AtomsConfiguration a =
-      helper_functions::eon_matter_to_atmconf(matter.get());
+      eonc::helpers::eon_matter_to_atmconf(matter.get());
   int getFixed = count_if(a.is_frozen.getInternalVector().begin(),
                           a.is_frozen.getInternalVector().end(),
                           [](int i) { return i == 1; });

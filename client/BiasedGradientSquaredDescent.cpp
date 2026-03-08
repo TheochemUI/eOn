@@ -103,7 +103,7 @@ int BiasedGradientSquaredDescent::run() {
   auto objf = std::make_shared<BGSDObjectiveFunction>(
       saddle, reactantEnergy, params.bgsd_options.alpha, params);
   auto optim =
-      helpers::create::mkOptim(objf, params.optimizer_options.method, params);
+      eonc::helpers::create::mkOptim(objf, params.optimizer_options.method, params);
   int iteration = 0;
   QUILL_LOG_DEBUG(
       log,
@@ -121,7 +121,7 @@ int BiasedGradientSquaredDescent::run() {
   auto objf2 = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
                                                        0.0, params);
   auto optim2 =
-      helpers::create::mkOptim(objf2, params.optimizer_options.method, params);
+      eonc::helpers::create::mkOptim(objf2, params.optimizer_options.method, params);
   while (!objf2->isConvergedV() || iteration == 0) {
     if (objf2->isConvergedIP()) {
       break;

@@ -15,6 +15,9 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 class GlobalOptimizationJob : public Job {
 public:
   GlobalOptimizationJob(std::unique_ptr<Parameters> parameters)
@@ -78,3 +81,7 @@ private:
   FILE *earrfile;
   eonc::log::Scoped log;
 };
+
+} // namespace eonc
+
+using eonc::GlobalOptimizationJob;

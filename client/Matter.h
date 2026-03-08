@@ -16,11 +16,11 @@
 #include "Potential.h"
 #include "SurrogatePotential.h"
 #include <memory>
+#include <string>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
+namespace eonc {
 class BondBoost;
-
-#include <string>
 
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
@@ -220,3 +220,7 @@ private:
   mutable double energyVariance;
   mutable double potentialEnergy;
 };
+
+} // namespace eonc
+
+using eonc::Matter;

@@ -16,6 +16,9 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+namespace eonc {
+
+
 // when changing away from final, remember to mark the destructor as virtual
 class Quickmin final : public Optimizer {
 
@@ -40,3 +43,7 @@ private:
   size_t m_iteration, m_max_iter;
   eonc::log::FileScoped m_log{"quickmin", "_quickmin.log"};
 };
+
+} // namespace eonc
+
+using eonc::Quickmin;

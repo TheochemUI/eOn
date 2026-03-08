@@ -18,9 +18,9 @@ ASENwchemPot::ASENwchemPot(const Parameters &a_params)
   fpeh.restore_fpe();
   py::module_ ase_nwchem = py::module_::import("ase.calculators.nwchem");
   py::module_ psutil = py::module_::import("psutil");
-  std::string nwchempth = helper_functions::get_value_from_env_or_param(
+  std::string nwchempth = eonc::helpers::get_value_from_env_or_param(
       "NWCHEM_COMMAND", a_params.ase_nwchem_options.path, "", "", true);
-  std::string nwc_mult = helper_functions::get_value_from_env_or_param(
+  std::string nwc_mult = eonc::helpers::get_value_from_env_or_param(
       "NWCHEM_MULTIPLICITY", a_params.ase_nwchem_options.multiplicity, "1",
       "Using 1 as a default multiplicity, i.e. an RHF calculation suitable for "
       "closed shell molecules, set multiplicity or the "

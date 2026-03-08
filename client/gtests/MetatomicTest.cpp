@@ -8,7 +8,7 @@ using namespace Catch::Matchers;
 
 namespace tests {
 
-static helper_functions::test::QuillTestLogger _quill_setup;
+static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 class PotTest {
 public:
@@ -21,7 +21,7 @@ public:
   ~PotTest() {}
 
   void SetUp() {
-    pot_default = helper_functions::makePotential(PotType::LJ, params);
+    pot_default = eonc::helpers::makePotential(PotType::LJ, params);
     m1 = std::make_shared<Matter>(pot_default, params);
     std::string confile("pos.con");
     m1->con2matter(confile);
@@ -39,7 +39,7 @@ protected:
 TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
   SetUp();
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
   double expected_energy = 98374.87753058573;
   AtomMatrix expected_forces(m1->numberOfAtoms(), 3);
   expected_forces << -90017.67874663, 14048.6323898, 42667.56998833,
@@ -57,7 +57,7 @@ TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
   AtomMatrix f_mta = MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params.potential_options.potential = PotType::METATOMIC;
   params.metatomic_options.model_path = "lennard-jones.pt";
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
@@ -81,7 +81,7 @@ TEST_CASE_METHOD(PotTest,
   // request uncertainty checks
   params.metatomic_options.uncertainty_threshold = 0.1;
 
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
 
   double e_mta{0};
@@ -105,7 +105,7 @@ TEST_CASE_METHOD(PotTest,
 TEST_CASE_METHOD(PotTest, "Metatomic variant (doubled)", "[PotTest][variant]") {
   SetUp();
   auto matEq =
-      std::bind(helper_functions::eigenEquality<AtomMatrix>, _1, _2, threshold);
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
 
   // Define base expected values
   double base_energy = 98374.87753058573;
@@ -129,7 +129,7 @@ TEST_CASE_METHOD(PotTest, "Metatomic variant (doubled)", "[PotTest][variant]") {
   // Set the variant to 'doubled'
   params.metatomic_options.variant.base = "doubled";
 
-  auto pot = helper_functions::makePotential(params.potential_options.potential,
+  auto pot = eonc::helpers::makePotential(params.potential_options.potential,
                                              params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,

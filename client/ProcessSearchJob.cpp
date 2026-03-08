@@ -61,7 +61,7 @@ std::vector<std::string> ProcessSearchJob::run(void) {
   if (params.saddle_search_options.method == "min_mode" ||
       params.saddle_search_options.method == "basin_hopping" ||
       params.saddle_search_options.method == "bgsd") {
-    if (params.saddle_search_options.displace_type == EpiCenters::DISP_LOAD) {
+    if (params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
       // displacement was passed from the server
       if (!saddle->con2matter(displacementFilename)) {
         printf("Stop\n");
@@ -80,9 +80,9 @@ std::vector<std::string> ProcessSearchJob::run(void) {
   AtomMatrix mode;
 
   if (params.saddle_search_options.method == "min_mode") {
-    if (params.saddle_search_options.displace_type == EpiCenters::DISP_LOAD) {
+    if (params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
       // mode was passed from the server
-      mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
+      mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
     saddleSearch = std::make_unique<MinModeSaddleSearch>(
         saddle, mode, initial->getPotentialEnergy(), params, pot);
@@ -207,7 +207,7 @@ int ProcessSearchJob::doProcessSearch(void) {
     int prefStatus;
     double pref1, pref2;
     // XXX: no get() calls
-    prefStatus = Prefactor::getPrefactors(params, min1.get(), saddle.get(),
+    prefStatus = eonc::Prefactor::getPrefactors(params, min1.get(), saddle.get(),
                                           min2.get(), pref1, pref2);
     if (prefStatus == -1) {
       printf("Prefactor: bad calculation\n");
@@ -297,7 +297,7 @@ void ProcessSearchJob::saveData(int status) {
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
   fileMode = fopen(modeFilename.c_str(), "wb");
-  helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
+  eonc::helpers::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
   fclose(fileMode);
   fclose(fileReactant);
 
