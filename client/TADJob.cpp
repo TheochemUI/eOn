@@ -35,10 +35,10 @@ std::vector<std::string> TADJob::run(void) {
   current->con2matter(reactantFilename);
 
   QUILL_LOG_DEBUG(log, "Minimizing initial reactant");
-  // long refFCalls = Potential::fcalls;
+  long refFCalls = PotRegistry::get().total_force_calls();
   *reactant = *current;
   reactant->relax();
-  // minimizeFCalls += (Potential::fcalls - refFCalls);
+  minimizeFCalls += (PotRegistry::get().total_force_calls() - refFCalls);
 
   QUILL_LOG_DEBUG(log, "Temperature Accelerated Dynamics, running");
   QUILL_LOG_DEBUG(log,
@@ -68,7 +68,7 @@ int TADJob::dynamics() {
   bool transitionFlag = false, recordFlag = true, stopFlag = false,
        firstTransitFlag = false;
   long nFreeCoord = reactant->numberOfFreeAtoms() * 3;
-  long mdBufferLength, refFCalls;
+  long mdBufferLength;
   long step = 0, refineStep,
        newStateStep = 0; // check that newStateStep is set before used
   long nCheck = 0, nRecord = 0, nState = 0;
@@ -111,9 +111,9 @@ int TADJob::dynamics() {
   TAD.setThermalVelocity();
 
   // dephase the trajectory so that it is thermal and independent of others
-  // refFCalls = Potential::fcalls;
+  long refFCalls = PotRegistry::get().total_force_calls();
   dephase();
-  // dephaseFCalls = Potential::fcalls - refFCalls;
+  dephaseFCalls = PotRegistry::get().total_force_calls() - refFCalls;
 
   QUILL_LOG_DEBUG(
       log,
@@ -164,9 +164,9 @@ int TADJob::dynamics() {
     if ((nCheck == StateCheckInterval) && !newStateFlag) {
       nCheck = 0;  // reinitialize check state counter
       nRecord = 0; // restart the buffer
-      // refFCalls = Potential::fcalls;
+      refFCalls = PotRegistry::get().total_force_calls();
       transitionFlag = checkState(current.get(), reactant.get());
-      // minimizeFCalls += Potential::fcalls - refFCalls;
+      minimizeFCalls += PotRegistry::get().total_force_calls() - refFCalls;
       if (transitionFlag == true) {
         nState++;
         QUILL_LOG_DEBUG(log, "New State {}: ", nState);
@@ -183,7 +183,7 @@ int TADJob::dynamics() {
     if (transitionFlag) {
       // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
       // time.");
-      refFCalls = Potential::fcalls;
+      refFCalls = PotRegistry::get().total_force_calls();
       refineStep = refine(mdBuffer, mdBufferLength, reactant.get());
 
       transitionStep =
@@ -221,7 +221,7 @@ int TADJob::dynamics() {
           minCorrectedTime * 1.0e-15 * params.constants.timeUnit,
           stopTime * 1.0e-15 * params.constants.timeUnit);
 
-      // refineFCalls += Potential::fcalls - refFCalls;
+      refineFCalls += PotRegistry::get().total_force_calls() - refFCalls;
       transitionFlag = false;
     }
 
@@ -282,8 +282,7 @@ void TADJob::saveData(int status) {
   returnFiles.push_back(resultsFilename);
 
   fileResults = fopen(resultsFilename.c_str(), "wb");
-  // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls +
-  // refineFCalls;
+  long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
 
   fprintf(fileResults, "%s potential_type\n",
           std::string{magic_enum::enum_name<PotType>(
@@ -292,8 +291,8 @@ void TADJob::saveData(int status) {
   fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
   fprintf(fileResults, "%lf potential_energy_reactant\n",
           reactant->getPotentialEnergy());
-  // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
-  // fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
+  fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
+  fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
   fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
   fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
   fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);

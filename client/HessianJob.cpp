@@ -50,7 +50,8 @@ std::vector<std::string> HessianJob::run(void) {
 
   fileResults = fopen(results_file.c_str(), "wb");
 
-  // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
+  fprintf(fileResults, "%zu force_calls\n",
+          PotRegistry::get().total_force_calls());
   fclose(fileResults);
 
   return returnFiles;

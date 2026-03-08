@@ -40,7 +40,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
 
   QUILL_LOG_DEBUG(log, "Running Replica Exchange");
 
-  long refForceCalls = Potential::fcalls;
+  long refForceCalls = PotRegistry::get().total_force_calls();
 
   // allocate a Matter and Dynamics object for each replica
   std::vector<std::shared_ptr<Matter>> replica;
@@ -127,7 +127,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
     }
   }
 
-  // forceCalls = Potential::fcalls - refForceCalls;
+  forceCalls = PotRegistry::get().total_force_calls() - refForceCalls;
   saveData();
 
   // delete Matter and Dynamics objects
@@ -148,7 +148,7 @@ void ReplicaExchangeJob::saveData(void) {
           std::string{magic_enum::enum_name<PotType>(
                           params.potential_options.potential)}
               .c_str());
-  // fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
+  fprintf(fileResults, "%zu force_calls_sampling\n", forceCalls);
   fclose(fileResults);
 
   std::string posFilename("pos_out.con");

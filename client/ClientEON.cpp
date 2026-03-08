@@ -22,6 +22,7 @@
 #include "HelperFunctions.h"
 #include "Job.h"
 #include "Parameters.h"
+#include "PotRegistry.h"
 #include "Potential.h"
 #include "version.h"
 
@@ -444,6 +445,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
       }
 
+      PotRegistry::get().write_summary();
       filenames.push_back(std::string("client.log"));
 
       // Finalize Timing Information

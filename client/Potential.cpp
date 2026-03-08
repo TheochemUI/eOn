@@ -119,12 +119,6 @@
 #include <limits>
 using namespace std;
 
-// TODO(rg): These aren't really used anymore, just there for eyecandy
-int Potential::fcalls = 0;
-int Potential::fcallsTotal = 0;
-int Potential::wu_fcallsTotal = 0;
-double Potential::totalUserTime = 0.0;
-
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
                                                  const VectorXi &atmnrs,
                                                  const Matrix3d &box) {
@@ -135,12 +129,10 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
               box.data());
   forceCallCounter++;
-  QUILL_LOG_TRACE_L3(m_log, "[{}] {} so far",
-                     magic_enum::enum_name<PotType>(getType()),
-                     forceCallCounter);
+  PotRegistry::get().on_force_call(ptype);
 
   return std::make_tuple(energy, forces);
-};
+}
 
 namespace eonc::helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
