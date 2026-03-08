@@ -11,6 +11,7 @@
 */
 #include "Dimer.h"
 #include "HelperFunctions.h"
+#include "SafeMath.h"
 
 using namespace helper_functions;
 
@@ -111,7 +112,9 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
 
       forceDimer = (rotationalForce1 + rotationalForce2) / 2.0;
 
-      rotationAngle = (atan(2.0 * forceDimer / rotationalForceChange) / 2.0 -
+      rotationAngle = (eonc::safemath::safe_atan_ratio(
+                           2.0 * forceDimer, rotationalForceChange, 0.0) /
+                           2.0 -
                        params.dimer_options.rotation_angle / 2.0);
 
       //            std::cout << "Rotation Angle: " <<rotationAngle <<endl;
@@ -135,7 +138,8 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   statsTorque = torque;
   statsCurvature = curvature;
   direction.normalize();
-  statsAngle = acos((direction.array() * initialDirection.array()).sum());
+  statsAngle = eonc::safemath::safe_acos(
+      (direction.array() * initialDirection.array()).sum());
   statsAngle *= (180.0 / helper_functions::pi);
   statsRotations = rotations;
 

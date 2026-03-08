@@ -15,6 +15,7 @@
 #include "ImprovedDimer.h"
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
+#include "SafeMath.h"
 #include "eonExceptions.hpp"
 
 #include "EonLogger.h"
@@ -163,7 +164,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     // Determine the step direction, theta
     if (params.dimer_options.opt_method == OPT_SD) // steepest descent
     {
-      theta = F_R / F_R.norm();
+      theta = eonc::safemath::safe_normalized(F_R);
     } else if (params.dimer_options.opt_method == OPT_CG) // conjugate gradients
     {
       if (init_cg) {
@@ -190,6 +191,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       theta = theta - theta.dot(tau) * tau;
       // xph: use thetaOld before normalized
       thetaOld = theta;
+      double theta_norm = theta.norm();
+      if (theta_norm < eonc::safemath::eps) {
+        // theta parallel to tau; fall back to steepest descent direction
+        theta = F_R - F_R.dot(tau) * tau;
+      }
       theta.normalize();
 
       F_R_Old = F_R;
@@ -203,7 +209,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         // xph: rescale the force; or rescale s0 = s0*delta
         VectorXd y0 = (F_R_Old - F_R) / delta;
         y.push_back(y0);
-        rho.push_back(1.0 / (s0.dot(y0)));
+        rho.push_back(eonc::safemath::safe_recip(s0.dot(y0), 0.0));
       } else {
         init_lbfgs = false;
       }
@@ -228,7 +234,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         z += s[i] * (a[i] - b);
       }
 
-      double vd = -z.normalized().dot(F_R.normalized());
+      double vd = -eonc::safemath::safe_normalized(z).dot(
+          eonc::safemath::safe_normalized(F_R));
       if (vd > 1.0)
         vd = 1.0;
       if (vd < -1.0)
@@ -243,7 +250,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         z = -F_R;
       }
 
-      theta = -z.normalized();
+      theta = -eonc::safemath::safe_normalized(z);
       // xph:  rethogonalize theta to tau
       theta = theta - theta.dot(tau) * tau;
       theta.normalize();
@@ -268,7 +275,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
     // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
     double d_C_tau_d_phi = 2.0 * (g1 - g0).dot(theta) / delta;
-    phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
+    phi_prime = -0.5 * eonc::safemath::safe_atan_ratio(d_C_tau_d_phi,
+                                                       2.0 * abs(C_tau), 0.0);
     statsAngle = phi_prime * (180.0 / helper_functions::pi);
 
     double alignment = std::abs(tau.dot(referenceMode));
@@ -296,10 +304,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       double C_tau_prime = (g1_prime - g0).dot(tau_prime) / delta;
 
       // Calculate phi_min.
-      double a1 = (C_tau - C_tau_prime + b1 * sin(2.0 * phi_prime)) /
-                  (1.0 - cos(2.0 * phi_prime));
+      double a1 = eonc::safemath::safe_div(C_tau - C_tau_prime +
+                                               b1 * sin(2.0 * phi_prime),
+                                           1.0 - cos(2.0 * phi_prime), 0.0);
       double a0 = 2.0 * (C_tau - a1);
-      phi_min = 0.5 * atan(b1 / a1);
+      phi_min = 0.5 * eonc::safemath::safe_atan_ratio(b1, a1, 0.0);
 
       // Determine the curvature for phi_min.
       double C_tau_min =
@@ -343,8 +352,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       C_tau = C_tau_min;
 
       // Calculate the new g1.
-      g1 = g1 * (sin(phi_prime - phi_min) / sin(phi_prime)) +
-           g1_prime * (sin(phi_min) / sin(phi_prime)) +
+      double sin_phi_prime = sin(phi_prime);
+      g1 = g1 * eonc::safemath::safe_div(sin(phi_prime - phi_min),
+                                         sin_phi_prime, 0.0) +
+           g1_prime *
+               eonc::safemath::safe_div(sin(phi_min), sin_phi_prime, 0.0) +
            g0 * (1.0 - cos(phi_min) - sin(phi_min) * tan(phi_prime * 0.5));
 
       statsTorque = F_R.norm() / (2.0 * params.main_options.finiteDifference);
