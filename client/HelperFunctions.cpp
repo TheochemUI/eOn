@@ -11,6 +11,7 @@
 */
 #include "HelperFunctions.h"
 #include "EonLogger.h"
+#include "SafeMath.h"
 
 #include <cassert>
 #include <iostream>
@@ -96,7 +97,7 @@ long helper_functions::randomInt(int lower, int upper) {
 
 double helper_functions::gaussRandom(double avg, double std) {
   double r = 2, v1, v2, l, result;
-  while (r >= 1) {
+  while (r >= 1.0 || r < 1e-300) {
     v1 = 2.0 * randomDouble() - 1.0;
     v2 = 2.0 * randomDouble() - 1.0;
     r = v1 * v1 + v2 * v2;
@@ -171,7 +172,8 @@ void helper_functions::normalize(double *v1, long size) {
 // Make v1 orthogonal to v2
 AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1,
                                             const AtomMatrix v2) {
-  return v1 - (v1.array() * v2.array()).sum() * v2.normalized();
+  return v1 -
+         (v1.array() * v2.array()).sum() * eonc::safemath::safe_normalized(v2);
 }
 
 // result contains v1 projection on v2
