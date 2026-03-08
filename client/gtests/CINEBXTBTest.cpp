@@ -12,20 +12,18 @@
 
 #include "NudgedElasticBand.h"
 #include "catch2/catch_amalgamated.hpp"
-#include <spdlog/sinks/null_sink.h>
-#include <spdlog/spdlog.h>
+#include "quill/sinks/NullSink.h"
 
 namespace tests {
 
-// Set up a null logger so NEB internals don't crash on spdlog::get("combi").
+// Set up a null logger so NEB internals don't crash on
+// quill::Frontend::get_logger("combi").
 struct LoggerSetup {
   LoggerSetup() {
-    if (!spdlog::get("combi")) {
-      auto sink = std::make_shared<spdlog::sinks::null_sink_mt>();
-      auto logger = std::make_shared<spdlog::logger>("combi", sink);
-      spdlog::register_logger(logger);
-      spdlog::set_default_logger(logger);
-    }
+    quill::Backend::start();
+    auto null_sink =
+        quill::Frontend::create_or_get_sink<quill::NullSink>("null");
+    quill::Frontend::create_or_get_logger("combi", std::move(null_sink));
   }
 };
 static LoggerSetup _logger_setup;

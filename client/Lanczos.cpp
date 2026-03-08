@@ -24,7 +24,7 @@ Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
   lowestEw = 0.0;
-  log = spdlog::get("combi");
+  log = quill::Frontend::get_logger("combi");
 }
 
 // The 1 character variables in this method match the variables in the
@@ -91,7 +91,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
         ew = alpha;
         evEst = Q.col(0);
       }
-      SPDLOG_LOGGER_ERROR(log, "[ILanczos] ERROR: linear dependence");
+      LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
       break;
     }
     // Check Eigenvalues
@@ -109,14 +109,13 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
           acos(fabs(evEst.dot(evOldEst))) * (180 / helper_functions::pi);
       statsTorque = ewAbsRelErr;
       evOldEst = evEst;
-      SPDLOG_LOGGER_INFO(log,
-                         "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
-                         "{:10.6f} {:7.3f} {:5}",
-                         "----", "----", "----", "----", ew, ewAbsRelErr,
-                         statsAngle, i);
+      LOG_INFO(log,
+               "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
+               "{:10.6f} {:7.3f} {:5}",
+               "----", "----", "----", "----", ew, ewAbsRelErr, statsAngle, i);
       if (ewAbsRelErr < params.lanczos_options.tolerance) {
-        SPDLOG_LOGGER_INFO(log, "[ILanczos] Tolerance reached: {}",
-                           params.lanczos_options.tolerance);
+        LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
+                 params.lanczos_options.tolerance);
         break;
       }
     } else {
@@ -131,15 +130,15 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
         if (ewAbsRelErr <= params.lanczos_options.tolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;
-          SPDLOG_LOGGER_INFO(log, "[ILanczos] Tolerance reached: {}",
-                             params.lanczos_options.tolerance);
+          LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
+                   params.lanczos_options.tolerance);
           break;
         }
       }
     }
 
     if (i >= params.lanczos_options.max_iterations - 1) {
-      SPDLOG_LOGGER_ERROR(log, "[ILanczos] Max iterations");
+      LOG_ERROR(log, "[ILanczos] Max iterations");
       break;
     }
   }

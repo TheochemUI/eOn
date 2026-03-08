@@ -28,12 +28,17 @@ public:
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_iteration{0},
         m_max_iter{a_params.optimizer_options.max_iterations} {
-    if (spdlog::get("qm")) {
-      m_log = spdlog::get("qm");
-    } else {
-      m_log = spdlog::basic_logger_mt("qm", "_qm.log", true);
-    }
-    m_log->set_pattern("[%l] [QM] %v");
+    m_log = quill::Frontend::create_or_get_logger(
+        "qm",
+        quill::Frontend::create_or_get_sink<quill::FileSink>(
+            "_qm.log",
+            []() {
+              quill::FileSinkConfig cfg;
+              cfg.set_open_mode('w');
+              return cfg;
+            }(),
+            quill::FileEventNotifier{}),
+        quill::PatternFormatterOptions{"%(message)"});
   }
   ~Quickmin() = default;
 
@@ -44,5 +49,5 @@ private:
   double m_dt, m_dt_max, m_max_move;
   Eigen::VectorXd m_vel;
   size_t m_iteration, m_max_iter;
-  shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
 };

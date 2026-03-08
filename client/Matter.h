@@ -15,7 +15,6 @@
 #include "Potential.h"
 #include "SurrogatePotential.h"
 #include <memory>
-#include <spdlog/sinks/basic_file_sink.h>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
@@ -52,7 +51,7 @@ public:
         energyVariance{0.0},
         potentialEnergy{0.0} {
 
-    m_log = spdlog::get("combi");
+    m_log = quill::Frontend::get_logger("combi");
   } // the number of atoms shall be set later
     // using resize()
   // Matter(Parameters *parameters,
@@ -186,7 +185,7 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-  shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used

@@ -20,7 +20,7 @@
 class ImprovedDimer : public LowestEigenmode {
 
 private:
-  shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
   // For use when called as part of the NEB-MMF
   VectorXd fixedReferenceMode;
   bool hasFixedReference = false;

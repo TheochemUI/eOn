@@ -22,7 +22,7 @@ public:
   NudgedElasticBandJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
         fCallsNEB{0} {
-    m_log = spdlog::get("combi");
+    m_log = quill::Frontend::get_logger("combi");
   }
   ~NudgedElasticBandJob(void) = default;
   std::vector<std::string> run(void);
@@ -35,5 +35,5 @@ private:
   // variables
   std::vector<std::string> returnFiles;
   size_t fCallsNEB;
-  std::shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
 };

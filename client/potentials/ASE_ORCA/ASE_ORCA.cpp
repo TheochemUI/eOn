@@ -52,7 +52,7 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
   this->calc =
       ORCA("profile"_a = OrcaProfile(py::str(orcpth)),
            "orcasimpleinput"_a = orca_simpleinput,
-           "orcablocks"_a = py::str(fmt::format("%pal nprocs {} end", nproc)),
+           "orcablocks"_a = py::str(std::format("%pal nprocs {} end", nproc)),
            "directory"_a = ".");
 };
 

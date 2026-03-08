@@ -33,7 +33,7 @@ public:
         monfile{fopen("monitoring.dat", "w")},
         earrfile{fopen("earr.dat", "w")} {
 
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   // etoler = parameters->globalOptimizationEtoler;
   // decisionMethod = "NPEW";
@@ -78,5 +78,5 @@ private:
   string hoppingResult;
   FILE *monfile;
   FILE *earrfile;
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

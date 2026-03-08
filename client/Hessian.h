@@ -35,5 +35,5 @@ private:
 
   VectorXi atoms;
   bool calculate(void);
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

@@ -31,7 +31,8 @@ private:
 public:
   ASENwchemPot(const Parameters &a_params);
   virtual ~ASENwchemPot() {
-    SPDLOG_INFO("[ASENwchem] called potential {} times", counter);
+    LOG_INFO(quill::Frontend::get_logger("combi"),
+             "[ASENwchem] called potential {} times", counter);
   }
 
   // Functions

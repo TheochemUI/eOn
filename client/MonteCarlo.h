@@ -22,7 +22,7 @@ public:
   MonteCarlo(std::shared_ptr<Matter> const matterIn, const Parameters &paramsIn)
       : matter{matterIn},
         params{paramsIn} {
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   ~MonteCarlo() = default;
 
@@ -31,5 +31,5 @@ public:
 private:
   std::shared_ptr<Matter> matter;
   const Parameters &params;
-  shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

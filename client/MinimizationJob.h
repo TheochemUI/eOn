@@ -19,7 +19,7 @@ public:
   MinimizationJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
         fcalls{0} {
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   ~MinimizationJob(void) = default;
   std::vector<std::string> run(void);
@@ -27,5 +27,5 @@ public:
 private:
   size_t fcalls;
   RunStatus status;
-  shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

@@ -29,9 +29,9 @@ std::vector<std::string> MinimizationJob::run(void) {
     pos_file = fopen("pos_cp.con", "r");
     if (pos_file != NULL) {
       posInFilename = "pos_cp.con";
-      SPDLOG_LOGGER_DEBUG(log, "[Minimization] Resuming from checkpoint");
+      LOG_DEBUG(log, "[Minimization] Resuming from checkpoint");
     } else {
-      SPDLOG_LOGGER_DEBUG(log, "[Minimization] No checkpoint files found");
+      LOG_DEBUG(log, "[Minimization] No checkpoint files found");
     }
   }
 
@@ -41,7 +41,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   auto pos = std::make_shared<Matter>(pot, params);
   pos->con2matter(posInFilename);
 
-  SPDLOG_LOGGER_DEBUG(log, "\nBeginning minimization of {}", posInFilename);
+  LOG_DEBUG(log, "\nBeginning minimization of {}", posInFilename);
 
   bool converged;
   try {
@@ -50,11 +50,11 @@ std::vector<std::string> MinimizationJob::run(void) {
                    params.main_options.checkpoint, "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
-      SPDLOG_LOGGER_DEBUG(log, "Minimization converged within tolerence");
+      LOG_DEBUG(log, "Minimization converged within tolerence");
     } else {
       status = RunStatus::FAIL_MAX_ITERATIONS;
-      SPDLOG_LOGGER_DEBUG(log, "Minimization did not converge to tolerence!"
-                               "Maybe try to increase max_iterations?");
+      LOG_DEBUG(log, "Minimization did not converge to tolerence!"
+                     "Maybe try to increase max_iterations?");
     }
   } catch (int e) {
     if (e == 100) {
@@ -64,10 +64,10 @@ std::vector<std::string> MinimizationJob::run(void) {
     }
   }
 
-  SPDLOG_LOGGER_DEBUG(log, "Saving result to {}", posOutFilename);
+  LOG_DEBUG(log, "Saving result to {}", posOutFilename);
   pos->matter2con(posOutFilename);
   if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
-    SPDLOG_LOGGER_DEBUG(log, "Final Energy: {}", pos->getPotentialEnergy());
+    LOG_DEBUG(log, "Final Energy: {}", pos->getPotentialEnergy());
   }
 
   std::filesystem::path resultsFilename("results.dat");

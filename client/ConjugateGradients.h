@@ -46,12 +46,18 @@ public:
         m_directionOld{(a_objf->getPositions()).setZero()},
         m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
         m_cg_i{0} {
-    if (spdlog::get("cg")) {
-      m_log = spdlog::get("cg");
-    } else {
-      m_log = spdlog::basic_logger_mt("cg", "_cg.log", true);
-    }
-    m_log->set_pattern("[%l] [CG] %v");
+    m_log = quill::Frontend::create_or_get_logger(
+        "cg",
+        quill::Frontend::create_or_get_sink<quill::FileSink>(
+            "_cg.log",
+            []() {
+              quill::FileSinkConfig cfg;
+              cfg.set_open_mode('w');
+              return cfg;
+            }(),
+            quill::FileEventNotifier{}),
+        quill::PatternFormatterOptions{
+            quill::PatternFormatterOptions{"%(message)"}});
   }
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
@@ -82,7 +88,7 @@ private:
   Eigen::VectorXd m_force;
   //! Previous force vector
   Eigen::VectorXd m_forceOld;
-  std::shared_ptr<spdlog::logger> m_log;
+  quill::Logger *m_log{nullptr};
 
   //! Counts the number of discrete steps until algorithm convergence
   size_t m_cg_i;

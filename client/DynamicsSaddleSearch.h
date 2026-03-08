@@ -27,7 +27,7 @@ public:
     this->pot = matterPassed->getPotential();
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   };
   ~DynamicsSaddleSearch() = default;
 
@@ -50,5 +50,5 @@ public:
   int status;
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

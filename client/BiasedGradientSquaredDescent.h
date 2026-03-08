@@ -28,7 +28,7 @@ public:
     saddle = matterPassed;
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("combi");
+    log = quill::Frontend::get_logger("combi");
   }
   ~BiasedGradientSquaredDescent() = default;
 
@@ -45,6 +45,6 @@ public:
 
 private:
   double reactantEnergy;
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
   //        double bgsdAlpha;
 };

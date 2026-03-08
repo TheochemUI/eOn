@@ -22,16 +22,16 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     // double C = dr.dot(fPrev-f)/dr.dot(dr);
     double C = (m_fPrev - a_f).dot(m_fPrev - a_f) / dr.dot(m_fPrev - a_f);
     if (C < 0) {
-      SPDLOG_LOGGER_DEBUG(
-          m_log, "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
-          C);
+      LOG_DEBUG(m_log,
+                "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
+                C);
       reset();
       return helper_functions::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
 
     if (m_params.optimizer_options.lbfgs.auto_scale) {
       H0 = 1. / C;
-      SPDLOG_LOGGER_DEBUG(m_log, "[LBFGS] Curvature: {:.4e} eV/A^2", C);
+      LOG_DEBUG(m_log, "[LBFGS] Curvature: {:.4e} eV/A^2", C);
     }
   }
 
@@ -44,15 +44,14 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     H0 = 1.0 / C;
     m_objf->setPositions(r);
     if (H0 < 0) {
-      SPDLOG_LOGGER_WARN(m_log,
-                         "[LBFGS] Negative curvature calculated via FD: {:.4e} "
-                         "eV/A^2, take max move step",
-                         C);
+      LOG_WARNING(m_log,
+                  "[LBFGS] Negative curvature calculated via FD: {:.4e} "
+                  "eV/A^2, take max move step",
+                  C);
       reset();
       return helper_functions::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     } else {
-      SPDLOG_LOGGER_DEBUG(
-          m_log, "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
+      LOG_DEBUG(m_log, "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
     }
   }
 
@@ -78,9 +77,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   double distance = helper_functions::maxAtomMotionV(d);
   if (distance >= a_maxMove &&
       m_params.optimizer_options.lbfgs.distance_reset) {
-    SPDLOG_LOGGER_DEBUG(m_log,
-                        "[LBFGS] reset memory, proposed step too large: {:.4f}",
-                        distance);
+    LOG_DEBUG(m_log, "[LBFGS] reset memory, proposed step too large: {:.4f}",
+              distance);
     reset();
     return helper_functions::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
@@ -92,10 +90,10 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     vd = -1.0;
   double angle = acos(vd) * (180.0 / helper_functions::pi);
   if (angle > 90.0 && m_params.optimizer_options.lbfgs.angle_reset) {
-    SPDLOG_LOGGER_DEBUG(m_log,
-                        "[LBFGS] reset memory, angle between LBFGS angle and "
-                        "force too large: {:.4f}",
-                        angle);
+    LOG_DEBUG(m_log,
+              "[LBFGS] reset memory, angle between LBFGS angle and "
+              "force too large: {:.4f}",
+              angle);
     reset();
     return helper_functions::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
@@ -118,8 +116,7 @@ int LBFGS::update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0,
 
   // GH: added to prevent crashing
   if (abs(s0.dot(y0)) < LBFGS_EPS) {
-    SPDLOG_LOGGER_ERROR(m_log, "[LBFGS] error, s0.y0 is too small: {:.4f}",
-                        s0.dot(y0));
+    LOG_ERROR(m_log, "[LBFGS] error, s0.y0 is too small: {:.4f}", s0.dot(y0));
     return -1;
   }
 

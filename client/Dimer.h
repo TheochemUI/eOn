@@ -30,7 +30,7 @@ public:
   AtomMatrix getEigenvector();               // return the current eigenvector
 
 private:
-  std::shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
   std::shared_ptr<Matter> matterCenter; // center of the dimer
   std::shared_ptr<Matter> matterDimer;  // one configuration of the dimer
   AtomMatrix direction;                 // direction along the dimer

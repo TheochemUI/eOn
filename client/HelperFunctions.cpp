@@ -574,7 +574,8 @@ string helper_functions::getRelevantFile(string filename) {
 VectorXd helper_functions::loadMasses(string filename, int nAtoms) {
   ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
-    SPDLOG_CRITICAL("File {} was not found", filename);
+    LOG_CRITICAL(quill::Frontend::get_logger("combi"), "File {} was not found",
+                 filename);
     std::exit(1);
   }
 
@@ -582,7 +583,8 @@ VectorXd helper_functions::loadMasses(string filename, int nAtoms) {
   for (int i = 0; i < nAtoms; i++) {
     double mass;
     if (!(massFile >> mass)) {
-      SPDLOG_CRITICAL("Error reading {}", filename);
+      LOG_CRITICAL(quill::Frontend::get_logger("combi"), "Error reading {}",
+                   filename);
       std::exit(1);
     }
     masses(i) = mass;
@@ -607,7 +609,8 @@ AtomMatrix helper_functions::loadMode(string filename, int nAtoms) {
   FILE *modeFile;
   modeFile = fopen(filename.c_str(), "rb");
   if (!modeFile) {
-    SPDLOG_CRITICAL("File {} was not found\n Stopping", filename);
+    LOG_CRITICAL(quill::Frontend::get_logger("combi"),
+                 "File {} was not found\n Stopping", filename);
     std::exit(1);
   }
   AtomMatrix mode = loadMode(modeFile, nAtoms);
@@ -723,7 +726,7 @@ bool helper_functions::identical(const Matter &m1, const Matter &m2,
 
 bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
                                const double distanceDifference) {
-  SPDLOG_INFO("In sortedR");
+  LOG_INFO(quill::Frontend::get_logger("combi"), "In sortedR");
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
   double tolerance = distanceDifference;
@@ -776,7 +779,7 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
         if (fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
           counter++;
         } else {
-          SPDLOG_INFO("No match");
+          LOG_INFO(quill::Frontend::get_logger("combi"), "No match");
           break;
         }
         ++it;
@@ -785,7 +788,7 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
       if (counter == r1.rows()) {
         matches++;
       } else {
-        SPDLOG_INFO("No match");
+        LOG_INFO(quill::Frontend::get_logger("combi"), "No match");
       }
     }
   }

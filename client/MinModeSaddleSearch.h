@@ -68,5 +68,5 @@ private:
   std::shared_ptr<LowestEigenmode>
       minModeMethod; // shared with the objective func
   double reactantEnergy;
-  shared_ptr<spdlog::logger> log;
+  quill::Logger *log{nullptr};
 };

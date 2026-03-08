@@ -15,19 +15,14 @@
 
 #include <magic_enum/magic_enum_all.hpp>
 
-#include <fmt/core.h>
-#include <fmt/format.h>
-#include <fmt/os.h> // To write the R style data frame
-#include <fmt/ostream.h>
-#include <fmt/printf.h>
+#include <format>
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-#include <spdlog/cfg/env.h> // support for loading levels from the environment variable
-#include <spdlog/fmt/ostr.h> // support for user defined types
-#include <spdlog/logger.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
+#include "quill/Backend.h"
+#include "quill/Frontend.h"
+#include "quill/LogMacros.h"
+#include "quill/Logger.h"
+#include "quill/sinks/ConsoleSink.h"
+#include "quill/sinks/FileSink.h"
 
 using namespace std::string_literals; // For ""s
 

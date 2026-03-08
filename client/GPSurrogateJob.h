@@ -19,8 +19,7 @@
 #include "potentials/CatLearnPot/CatLearnPot.h"
 #endif
 #include "PyGuard.h"
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <format>
 #include <pybind11/eigen.h>
 
 #include "NudgedElasticBand.h"
