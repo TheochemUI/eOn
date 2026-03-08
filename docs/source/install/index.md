@@ -26,8 +26,16 @@ micromamba install -c conda-forge eon
 
 At this point any of the many examples should be good to go.
 
+The conda package is a maximalist build with the following potentials and
+features enabled:
+
+- [Metatomic](project:../user_guide/metatomic_pot.md) (machine-learned potentials via libtorch)
+- [xTB](https://xtb-docs.readthedocs.io/) (semi-empirical tight-binding)
+- [ASE](project:../user_guide/ase_pot.md) (any ASE calculator as an eOn potential)
+- [Serve mode](project:../user_guide/serve_mode.md) (rgpot-compatible RPC server)
+
 The server is accessed through `python -m eon.server`, and the `eonclient`
-binary is automatically made available in the activated environment..
+binary is automatically made available in the activated environment.
 
 ```{versionchanged} 2.0
 While reading older documentation, calls to `eon` must now be `python -m
