@@ -21,7 +21,8 @@ using namespace eonc;
 // Minimal concrete potential for testing
 class DummyPotential : public Potential {
 public:
-  DummyPotential(PotType pt, const Parameters &p) : Potential(pt, p) {}
+  DummyPotential(PotType pt, const Parameters &p)
+      : Potential(pt, p) {}
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
@@ -138,7 +139,9 @@ TEST_CASE("PotRegistry reset clears all state", "[PotRegistry][reset]") {
   REQUIRE(PotRegistry::get().total_force_calls() == 2);
 
   // Create and destroy a potential to generate a record
-  { DummyPotential pot(PotType::EMT, params); }
+  {
+    DummyPotential pot(PotType::EMT, params);
+  }
 
   PotRegistry::get().reset();
 
@@ -233,7 +236,9 @@ TEST_CASE("PotRegistry instance records capture correct force_calls",
   }
 
   // Instance with 0 force calls (diagnostic signal)
-  { DummyPotential pot(PotType::LJ, params); }
+  {
+    DummyPotential pot(PotType::LJ, params);
+  }
 
   // Write and verify both records appear
   std::string path = "_test_potcalls_records.json";

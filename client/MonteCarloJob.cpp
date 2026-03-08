@@ -50,8 +50,7 @@ std::vector<std::string> MonteCarloJob::run(void) {
               .c_str());
   fprintf(fileResults, "%zu total_force_calls\n",
           PotRegistry::get().total_force_calls());
-  fprintf(fileResults, "%f potential_energy\n",
-          matter->getPotentialEnergy());
+  fprintf(fileResults, "%f potential_energy\n", matter->getPotentialEnergy());
   fclose(fileResults);
 
   return returnFiles;

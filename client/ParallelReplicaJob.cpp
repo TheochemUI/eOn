@@ -140,7 +140,8 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
           int tmpFcalls = PotRegistry::get().total_force_calls();
           int snapshotIndex = refineTransition(MDSnapshots);
 
-          refineForceCalls += PotRegistry::get().total_force_calls() - tmpFcalls;
+          refineForceCalls +=
+              PotRegistry::get().total_force_calls() - tmpFcalls;
 
           transitionTime = MDTimes[snapshotIndex];
           transitionStructure = *MDSnapshots[snapshotIndex];
@@ -169,7 +170,8 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
               log, "[ParallelReplica] Refining anyways to prevent bias...");
           int tmpFcalls = PotRegistry::get().total_force_calls();
           refineTransition(MDSnapshots, true);
-          refineForceCalls += PotRegistry::get().total_force_calls() - tmpFcalls;
+          refineForceCalls +=
+              PotRegistry::get().total_force_calls() - tmpFcalls;
         }
         transitionStructure = *trajectory;
       }
