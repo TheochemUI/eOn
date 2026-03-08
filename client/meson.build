@@ -712,6 +712,7 @@ if get_option('with_tests')
         ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
+        ['test_pot_registry', 'PotRegistryTest.cpp', ''],
     ]
     if get_option('with_ase')
         test_array += [['test_ase_pot', 'ASEPotTest.cpp', 'ase_pot']]
