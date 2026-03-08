@@ -124,14 +124,17 @@ int main(int argc, char **argv) {
   // --- Start Logging setup
   // Configure backend for optimal performance (see BackendOptions.h)
   quill::BackendOptions backend_options;
-  // Use 10μs sleep for balanced performance (10× faster than 100μs default)
-  // Set to 0 for maximum throughput at cost of 100% CPU on backend thread
+  // Use 10us sleep for balanced performance (10x faster than 100us default)
   backend_options.sleep_duration = std::chrono::microseconds{10};
-  // Reduce timestamp ordering grace period for lower latency
+  // Larger initial buffer avoids reallocs in NEB (43 LOG calls/iter)
+  backend_options.transit_event_buffer_initial_capacity = 2048;
+  // eOn is single-threaded; SPSC queue guarantees ordering, no grace needed
   backend_options.log_timestamp_ordering_grace_period =
-      std::chrono::microseconds{1};
+      std::chrono::microseconds{0};
   // Flush more frequently for better responsiveness
   backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
+  // Disable per-string printable char scan (eOn logs numeric data only)
+  backend_options.check_printable_char = {};
   quill::Backend::start(backend_options);
   auto console_sink =
       quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console");
