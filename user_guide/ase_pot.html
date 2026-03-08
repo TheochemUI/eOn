@@ -16,7 +16,7 @@
     <link href="../_static/favicons/android-chrome-512x512.png" sizes="512x512" rel="icon" type="image/png">
     <link href="../_static/favicons/apple-touch-icon.png" sizes="180x180" rel="icon" type="image/png">
     <link href="../_static/favicons/site.webmanifest" rel="icon">
-    <meta property="article:modified_time" content="2026-03-01T09:33:16+00:00" />
+    <meta property="article:modified_time" content="2026-03-04T03:18:35+00:00" />
     <title>ASE Interface &#8212; eOn</title>
   
   
@@ -70,7 +70,7 @@
     <link rel="prev" title="LAMMPS Potential" href="lammps_pot.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="Mar 01, 2026"/>
+    <meta name="docbuild:last-update" content="Mar 04, 2026"/>
   </head>
   
   
@@ -276,6 +276,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.11.1/release-notes.html">Release notes</a></li>
 </ul>
@@ -476,10 +480,18 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scripting-ase">Scripting <code class="docutils literal notranslate"><span class="pre">ASE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-from-source">Building from source</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build">Build</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-the-calculator-script">Writing the calculator script</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#template">Template</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mace-example">MACE example</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives">Alternatives</a></li>
 </ul>
             </nav>
         </div>
@@ -496,44 +508,75 @@ document.write(`
 <div class="warning admonition">
 <p class="admonition-title">conda-forge availability</p>
 <p><strong>Not</strong> included in the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> package. Requires building from source
-with <code class="docutils literal notranslate"><span class="pre">-Dwith_python=True</span> <span class="pre">-Dwith_ase=True</span></code>. For a simpler alternative, see the
-<a class="reference internal" href="ext_pot.html"><span class="std std-doc">external potential</span></a> guide.</p>
+with <code class="docutils literal notranslate"><span class="pre">-Dwith_ase=True</span></code>. For a simpler alternative that works with any eOn
+install, see the <a class="reference internal" href="ext_pot.html"><span class="std std-doc">external potential</span></a> guide.</p>
 </div>
-<p>In order to build eOn client with the ability to use ASE calculators as a
-potential, the appropriate option must be setup when using <code class="docutils literal notranslate"><span class="pre">meson</span></code> which is
-<code class="docutils literal notranslate"><span class="pre">-Dwith_python=True</span> <span class="pre">-Dwith_ase=True</span></code>.</p>
-<p>Some notes about this implementation:</p>
-<ul class="simple">
-<li><p>It is registered as an external potential</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment must have <code class="docutils literal notranslate"><span class="pre">ase</span></code> present</p></li>
-<li><p>Like other <code class="docutils literal notranslate"><span class="pre">python</span></code> potentials, it shares the <code class="docutils literal notranslate"><span class="pre">guard</span></code> across the client</p></li>
-</ul>
+<p>The ASE interface embeds a Python interpreter inside the eOn client, letting you
+use <strong>any</strong> <a class="reference external" href="https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html">ASE calculator</a>
+as a potential without per-call process overhead.</p>
+<section id="building-from-source">
+<h2>Building from source<a class="headerlink" href="#building-from-source" title="Link to this heading">#</a></h2>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h3>
+<p>A conda (or mamba/pixi) environment with at minimum:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>eon<span class="w"> </span>python<span class="w"> </span>numpy<span class="w"> </span>ase<span class="w"> </span>pybind11<span class="w"> </span>eigen<span class="w"> </span>spdlog<span class="w"> </span>fmt<span class="w"> </span>meson<span class="w"> </span>ninja<span class="w"> </span>pkg-config<span class="w"> </span>compilers
+conda<span class="w"> </span>activate<span class="w"> </span>eon
+</pre></div>
+</div>
+<p>Install any additional calculator packages you need (e.g. <code class="docutils literal notranslate"><span class="pre">mace-torch</span></code>,
+<code class="docutils literal notranslate"><span class="pre">chgnet</span></code>, etc.) into the same environment.</p>
+</section>
+<section id="build">
+<h3>Build<a class="headerlink" href="#build" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/TheochemUI/eOn.git
+<span class="nb">cd</span><span class="w"> </span>eOn
+meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span>--buildtype<span class="o">=</span>release<span class="w"> </span>-Dwith_ase<span class="o">=</span>True
+meson<span class="w"> </span>install<span class="w"> </span>-C<span class="w"> </span>bbdir
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">-Dwith_python=True</span></code> flag is no longer needed; <code class="docutils literal notranslate"><span class="pre">-Dwith_ase=True</span></code> implies it.
+The Python interpreter is started lazily (only when the ASE potential is
+actually used), so builds with this flag carry zero overhead for non-ASE runs.</p>
+</div>
+</section>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Potential]</span>
-<span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ase</span>
+<span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ase_pot</span>
 <span class="na">ext_pot_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/full/path/to/the/ase_script.py</span>
 </pre></div>
 </div>
-<p>The last line (<code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code>) is required, and it may be the relative or the
-absolute path to the Python script containing the desired ASE calculator (see
-next section).</p>
-<p>When running eOn (e.g. AKMC jobs), which calls <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> in the back, <strong>it is
-highly recommended to write the full absolute path to the script</strong>.</p>
-<section id="scripting-ase">
-<h3>Scripting <code class="docutils literal notranslate"><span class="pre">ASE</span></code><a class="headerlink" href="#scripting-ase" title="Link to this heading">#</a></h3>
-<p>eOn client imports this Python script to get the energy and forces.
-The script should look like this (e.g. using ASE’s Lennard Jones calculator)::</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code> value is the path to a Python script that defines the
+calculator (see next section). When running compound jobs (aKMC, process search,
+etc.), <strong>always use an absolute path</strong> because eOn copies configuration into
+per-job scratch directories.</p>
+</section>
+<section id="writing-the-calculator-script">
+<h2>Writing the calculator script<a class="headerlink" href="#writing-the-calculator-script" title="Link to this heading">#</a></h2>
+<p>eOn imports this script at startup and calls two functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ase_calc()</span></code> – returns an initialized ASE calculator object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_calculate(R,</span> <span class="pre">atomicNrs,</span> <span class="pre">box,</span> <span class="pre">calc)</span></code> – evaluates energy and forces.</p></li>
+</ul>
+<p>Only <code class="docutils literal notranslate"><span class="pre">ase_calc()</span></code> should be edited. The <code class="docutils literal notranslate"><span class="pre">_calculate</span></code> function is a fixed
+bridge between eOn and ASE; do not modify it.</p>
+<section id="template">
+<h3>Template<a class="headerlink" href="#template" title="Link to this heading">#</a></h3>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">my_calculator.py</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ase</span><span class="w"> </span><span class="kn">import</span> <span class="n">Atoms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ase.calculators.lj</span><span class="w"> </span><span class="kn">import</span> <span class="n">LennardJones</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">ase_calc</span><span class="p">():</span>
-    <span class="c1"># MODIFY THIS SECTION</span>
+    <span class="c1"># --- customize this section ---</span>
     <span class="n">calc</span> <span class="o">=</span> <span class="n">LennardJones</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.0103</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">3.40</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">ro</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">calc</span>
 
 <span class="c1">#=======================================================================</span>
-<span class="c1"># DO NOT EDIT</span>
+<span class="c1"># DO NOT EDIT below this line</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_calculate</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">atomicNrs</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">calc</span><span class="p">):</span>
     <span class="n">system</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="n">symbols</span><span class="o">=</span><span class="n">atomicNrs</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="n">R</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">box</span><span class="p">)</span>
     <span class="n">system</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
@@ -544,12 +587,12 @@ The script should look like this (e.g. using ASE’s Lennard Jones calculator)::
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># This is just to verify that the script runs properly with `python3 &lt;this_script&gt;`</span>
+    <span class="c1"># Quick sanity check: python3 my_calculator.py</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">ase.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read</span>
-    <span class="n">atoms</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># structure file name</span>
-    <span class="n">pos</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">positions</span>  <span class="c1"># array of positions (n x 3)</span>
-    <span class="n">atomicNrs</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_atomic_numbers</span><span class="p">()</span>  <span class="c1"># array of atomic numbers (n)</span>
-    <span class="n">cell</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span>  <span class="c1"># cell array (3 x 3)</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s2">&quot;pos.con&quot;</span><span class="p">)</span>       <span class="c1"># or any structure file</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">positions</span>
+    <span class="n">atomicNrs</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_atomic_numbers</span><span class="p">()</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span>
     <span class="n">calc</span> <span class="o">=</span> <span class="n">ase_calc</span><span class="p">()</span>
     <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">_calculate</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">atomicNrs</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">calc</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;E = </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -557,15 +600,23 @@ The script should look like this (e.g. using ASE’s Lennard Jones calculator)::
     <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The user should customize the content of the function <code class="docutils literal notranslate"><span class="pre">ase_calc()</span></code> to use the
-desired ASE calculator, <strong>but not that of <code class="docutils literal notranslate"><span class="pre">_calculate()</span></code> nor the function
-names</strong>.</p>
-<p>Often, the ASE calculator may require an external potential file. When running
-eOn (e.g. AKMC jobs) and an external file name is used in this script, <strong>it is
-highly recommended to write the full absolute path to the external file</strong>.</p>
-<p>Before using it, make sure that this script contains no errors on the Python
-side.</p>
+</div>
 </section>
+<section id="mace-example">
+<h3>MACE example<a class="headerlink" href="#mace-example" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ase_calc</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mace.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MACECalculator</span>
+    <span class="k">return</span> <span class="n">MACECalculator</span><span class="p">(</span><span class="n">model_paths</span><span class="o">=</span><span class="s2">&quot;/absolute/path/to/model.pt&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="alternatives">
+<h2>Alternatives<a class="headerlink" href="#alternatives" title="Link to this heading">#</a></h2>
+<p>If you installed eOn from conda-forge or prefer not to build from source, the
+<a class="reference internal" href="ext_pot.html"><span class="std std-doc">external potential</span></a> interface provides the same calculator
+flexibility through file-based communication. It works out of the box with any
+eOn install at the cost of per-call process overhead.</p>
 </section>
 </section>
 
@@ -614,10 +665,18 @@ side.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scripting-ase">Scripting <code class="docutils literal notranslate"><span class="pre">ASE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-from-source">Building from source</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build">Build</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-the-calculator-script">Writing the calculator script</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#template">Template</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mace-example">MACE example</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives">Alternatives</a></li>
 </ul>
   </nav></div>
 
@@ -651,7 +710,7 @@ By the eOn developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on Mar 01, 2026.
+  Last updated on Mar 04, 2026.
   <br/>
 </p>
   </div>

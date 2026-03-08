@@ -265,6 +265,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.1/release-notes.html">Release notes</a></li>
 </ul>
@@ -1031,7 +1035,7 @@ document.write(`
             <span class="n">new_time_at_current_temp</span> <span class="o">=</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SearchTime&quot;</span><span class="p">,</span> <span class="n">temp_str</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">dt</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># The info file must come from an older version of EON,</span>
+            <span class="c1"># The info file must come from an older version of eOn,</span>
             <span class="c1"># which didn&#39;t have this section, yet. In this case we</span>
             <span class="c1"># assume all prior searches were done at the current</span>
             <span class="c1"># temperature and add the SearchTime section. This makes</span>
@@ -1055,7 +1059,7 @@ document.write(`
             <span class="k">return</span> <span class="nb">dict</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">)]</span> <span class="k">for</span> <span class="n">temp</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="s2">&quot;SearchTime&quot;</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">configparser</span><span class="o">.</span><span class="n">NoSectionError</span><span class="p">:</span>
             <span class="c1"># The &quot;info&quot; file seems to have been produced by an old</span>
-            <span class="c1"># version of EON which didn&#39;t have the SearchTime</span>
+            <span class="c1"># version of eOn which didn&#39;t have the SearchTime</span>
             <span class="c1"># section. We simply upgrade and try again (no recursion</span>
             <span class="c1"># to avoid endless recursion if the exception is raised</span>
             <span class="c1"># again).</span>

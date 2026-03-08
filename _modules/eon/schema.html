@@ -265,6 +265,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../releases/index.html">Releases</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.1/release-notes.html">Release notes</a></li>
 </ul>
@@ -588,7 +592,7 @@ document.write(`
     <span class="p">)</span>
     <span class="n">max_kmc_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The maximum number of KMC transitions in a row. In MPI or continuous mode, EON will exit after performing this many KMC steps. If this is set to 0, EON will run forever.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The maximum number of KMC transitions in a row. In MPI or continuous mode, eOn will exit after performing this many KMC steps. If this is set to 0, eOn will run forever.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">confidence_scheme</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="s2">&quot;sampling&quot;</span><span class="p">,</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The scheme used for confidence calculation.&quot;</span>
@@ -1113,7 +1117,7 @@ document.write(`
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Host where the NWChem client will connect.&quot;</span>
     <span class="p">)</span>
     <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Port for the NWChem client to send data to EON.&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Port for the NWChem client to send data to eOn.&quot;</span>
     <span class="p">)</span>
     <span class="n">nwchem_settings</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;nwchem_settings.nwi&quot;</span><span class="p">,</span>
@@ -1159,7 +1163,7 @@ document.write(`
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether to check consistency of the Metatomic model.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">uncertainty_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>  <span class="c1"># 100meV/atom</span>
+        <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">variant_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
