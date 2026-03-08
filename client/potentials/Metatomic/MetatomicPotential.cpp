@@ -391,7 +391,8 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
   int status = vesin_neighbors(
       reinterpret_cast<const double (*)[3]>(positions),
       static_cast<size_t>(nAtoms), reinterpret_cast<const double (*)[3]>(box),
-      periodic, cpu, options, vesin_neighbor_list, &error_message);
+      const_cast<bool *>(periodic), cpu, options, vesin_neighbor_list,
+      &error_message);
 
   if (status != EXIT_SUCCESS) {
     std::string err_str = "vesin_neighbors failed";
