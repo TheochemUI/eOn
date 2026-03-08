@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -20,9 +21,7 @@ public:
       : Job(std::move(parameters)),
         current{std::make_shared<Matter>(pot, params)},
         trial{std::make_shared<Matter>(pot, params)},
-        fcalls{0} {
-    log = quill::Frontend::get_logger("combi");
-  }
+        fcalls{0} {}
   ~BasinHoppingJob(void) = default;
 
   std::vector<std::string> run(void) override;
@@ -42,5 +41,5 @@ private:
 
   std::vector<std::shared_ptr<Matter>> uniqueStructures;
   std::vector<double> uniqueEnergies;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

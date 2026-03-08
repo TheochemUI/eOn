@@ -11,6 +11,7 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 
 #include "Matter.h"
 #include "Parameters.h"
@@ -35,5 +36,5 @@ private:
 
   VectorXi atoms;
   bool calculate(void);
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

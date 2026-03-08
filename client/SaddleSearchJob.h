@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "HelperFunctions.h"
 #include "Job.h"
@@ -46,9 +47,7 @@ public:
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)),
-        fCallsSaddle{0} {
-    log = quill::Frontend::get_logger("combi");
-  }
+        fCallsSaddle{0} {}
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search
@@ -77,5 +76,5 @@ private:
   //! Force calls to find the saddle
   int fCallsSaddle;
 
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

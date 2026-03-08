@@ -12,6 +12,7 @@
 #include "EpiCenters.h"
 #include "Matter.h"
 #include "Parameters.h"
+#include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
 #include <algorithm>
@@ -23,6 +24,8 @@
 using namespace Catch::Matchers;
 
 namespace tests {
+
+static helper_functions::test::QuillTestLogger _quill_setup;
 
 // ---------------------------------------------------------------------------
 // Fixture: loads Pt_Heptamer_FrozenLayers system

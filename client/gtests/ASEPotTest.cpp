@@ -12,6 +12,7 @@
 
 #include "../MatrixHelpers.hpp"
 #include "Matter.h"
+#include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include <cstdlib>
 #include <filesystem>
@@ -22,6 +23,8 @@ using namespace std::placeholders;
 using namespace Catch::Matchers;
 
 namespace tests {
+
+static helper_functions::test::QuillTestLogger _quill_setup;
 
 class ASEPotTest {
 public:

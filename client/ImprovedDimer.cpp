@@ -17,6 +17,7 @@
 #include "LowestEigenmode.h"
 #include "eonExceptions.hpp"
 
+#include "EonLogger.h"
 using namespace helper_functions;
 
 const char ImprovedDimer::OPT_SD[] = "sd";
@@ -38,7 +39,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   if (params.dimer_options.opt_method == OPT_CG) {
     init_cg = true;
   }
-  log = quill::Frontend::get_logger("combi");
+  /* Logger initialized via class member */
 }
 
 void ImprovedDimer::setReferenceMode(const VectorXd &ref) {

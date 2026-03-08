@@ -87,6 +87,7 @@ message(STATUS "Platform: ${OS_INFO} ${ARCH}")
 find_package(Threads REQUIRED)
 find_package(Eigen3 3.3 REQUIRED)
 find_package(quill REQUIRED)
+add_compile_definitions(QUILL_DISABLE_NON_PREFIXED_MACROS)
 
 set(EON_DEPS Eigen3::Eigen quill::quill Threads::Threads)
 

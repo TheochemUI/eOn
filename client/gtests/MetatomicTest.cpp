@@ -1,11 +1,14 @@
 #include "../MatrixHelpers.hpp"
 #include "Matter.h"
+#include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
 using namespace std::placeholders;
 using namespace Catch::Matchers;
 
 namespace tests {
+
+static helper_functions::test::QuillTestLogger _quill_setup;
 
 class PotTest {
 public:

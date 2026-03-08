@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -31,10 +32,7 @@ public:
         firstStep{true},
         fcallsRelax{0},
         monfile{fopen("monitoring.dat", "w")},
-        earrfile{fopen("earr.dat", "w")} {
-
-    log = quill::Frontend::get_logger("combi");
-  }
+        earrfile{fopen("earr.dat", "w")} {}
   // etoler = parameters->globalOptimizationEtoler;
   // decisionMethod = "NPEW";
   ~GlobalOptimizationJob(void) {
@@ -78,5 +76,5 @@ private:
   string hoppingResult;
   FILE *monfile;
   FILE *earrfile;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

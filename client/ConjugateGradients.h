@@ -11,6 +11,7 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "Optimizer.h"
@@ -45,20 +46,7 @@ public:
       : Optimizer(a_objf, OptType::CG, a_params),
         m_directionOld{(a_objf->getPositions()).setZero()},
         m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
-        m_cg_i{0} {
-    m_log = quill::Frontend::create_or_get_logger(
-        "cg",
-        quill::Frontend::create_or_get_sink<quill::FileSink>(
-            "_cg.log",
-            []() {
-              quill::FileSinkConfig cfg;
-              cfg.set_open_mode('w');
-              return cfg;
-            }(),
-            quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{
-            quill::PatternFormatterOptions{"%(message)"}});
-  }
+        m_cg_i{0} {}
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
 
@@ -88,7 +76,7 @@ private:
   Eigen::VectorXd m_force;
   //! Previous force vector
   Eigen::VectorXd m_forceOld;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"cg", "_cg.log"};
 
   //! Counts the number of discrete steps until algorithm convergence
   size_t m_cg_i;

@@ -11,6 +11,8 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
+
 #include "LowestEigenmode.h"
 #include "Matter.h"
 #include "Parameters.h"
@@ -29,5 +31,5 @@ public:
 private:
   AtomMatrix lowestEv;
   double lowestEw;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

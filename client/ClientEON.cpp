@@ -11,6 +11,7 @@
 */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#include "EonLogger.h"
 #include <windows.h>
 #endif
 
@@ -66,62 +67,76 @@
 #include <mach/task_info.h>
 
 void print_memory_usage() {
-  auto *log = quill::Frontend::get_logger("combi");
+  auto *log = eonc::log::get();
   struct task_basic_info t_info;
   mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
   if (KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO,
                                 (task_info_t)&t_info, &t_info_count)) {
-    LOG_ERROR(log, "Failed to get task info");
+    QUILL_LOG_ERROR(log, "Failed to get task info");
     return;
   }
 
   unsigned int rss = t_info.resident_size;
   unsigned int vs = t_info.virtual_size;
-  LOG_INFO(log,
-           "\nmemory usage:\nresident size (MB): {:8.2f}\nvirtual size (MB):  "
-           "{:8.2f}",
-           (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+  QUILL_LOG_INFO(
+      log,
+      "\nmemory usage:\nresident size (MB): {:8.2f}\nvirtual size (MB):  "
+      "{:8.2f}",
+      (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
 }
 #endif
 #endif
 
 void printSystemInfo() {
-  auto *log = quill::Frontend::get_logger("combi");
-  LOG_INFO(log, "eOn Client");
-  LOG_INFO(log, "{}", VERSION_STRING);
+  auto *log = eonc::log::get();
+  QUILL_LOG_INFO(log, "eOn Client");
+  QUILL_LOG_INFO(log, "{}", VERSION_STRING);
 #ifndef __aarch64__
-  LOG_INFO(log, "OS: {}", OS_INFO);
-  LOG_INFO(log, "Arch: {}", ARCH);
+  QUILL_LOG_INFO(log, "OS: {}", OS_INFO);
+  QUILL_LOG_INFO(log, "Arch: {}", ARCH);
 #endif
 
 #ifdef _WIN32
   TCHAR hostname[MAX_COMPUTERNAME_LENGTH + 1];
   DWORD size = sizeof(hostname) / sizeof(hostname[0]);
   if (GetComputerName(hostname, &size)) {
-    LOG_INFO(log, "Hostname: {}", hostname);
+    QUILL_LOG_INFO(log, "Hostname: {}", hostname);
   } else {
-    LOG_ERROR(log, "Failed to get hostname");
+    QUILL_LOG_ERROR(log, "Failed to get hostname");
   }
-  LOG_INFO(log, "PID: {}", GetCurrentProcessId());
+  QUILL_LOG_INFO(log, "PID: {}", GetCurrentProcessId());
 #else
   struct utsname systemInfo;
   int status = uname(&systemInfo);
   if (status == 0) {
-    LOG_INFO(log, "Hostname: {}", systemInfo.nodename);
-    LOG_INFO(log, "PID: {}", getpid());
+    QUILL_LOG_INFO(log, "Hostname: {}", systemInfo.nodename);
+    QUILL_LOG_INFO(log, "PID: {}", getpid());
   } else {
-    LOG_ERROR(log, "Failed to get system information");
+    QUILL_LOG_ERROR(log, "Failed to get system information");
   }
 #endif
 
   std::filesystem::path cwd = std::filesystem::current_path();
-  LOG_INFO(log, "DIR: {}", cwd.string());
+  QUILL_LOG_INFO(log, "DIR: {}", cwd.string());
 }
 
 int main(int argc, char **argv) {
   // --- Start Logging setup
-  quill::Backend::start();
+  // Configure backend for optimal performance (see BackendOptions.h)
+  quill::BackendOptions backend_options;
+  // Use 10us sleep for balanced performance (10x faster than 100us default)
+  backend_options.sleep_duration = std::chrono::microseconds{10};
+  // Larger initial buffer avoids reallocs in NEB (43 LOG calls/iter)
+  backend_options.transit_event_buffer_initial_capacity = 2048;
+  // eOn is single-threaded; SPSC queue guarantees ordering, no grace needed
+  backend_options.log_timestamp_ordering_grace_period =
+      std::chrono::microseconds{0};
+  // Flush more frequently for better responsiveness
+  backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
+  // Disable per-string printable char scan (eOn logs numeric data only)
+  backend_options.check_printable_char = {};
+  quill::Backend::start(backend_options);
   auto console_sink =
       quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console");
   auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
@@ -134,8 +149,8 @@ int main(int argc, char **argv) {
       quill::FileEventNotifier{});
   auto *logger = quill::Frontend::create_or_get_logger(
       "combi", {std::move(console_sink), std::move(file_sink)},
-      quill::PatternFormatterOptions{quill::PatternFormatterOptions{
-          quill::PatternFormatterOptions{"%(message)"}}});
+      quill::PatternFormatterOptions{"%(message)"},
+      quill::ClockSourceType::System);
   logger->set_log_level(quill::LogLevel::TraceL3);
   // Traceback logger
   auto trace_csink =
@@ -150,9 +165,10 @@ int main(int argc, char **argv) {
       quill::FileEventNotifier{});
   quill::Frontend::create_or_get_logger(
       "_traceback", {std::move(trace_csink), std::move(trace_fsink)},
-      quill::PatternFormatterOptions{quill::PatternFormatterOptions{
+      quill::PatternFormatterOptions{
           " [%(log_level)] [%(source_location)] [%(caller_function)] \n "
-          "%(message)\n[end %(log_level)]"}});
+          "%(message)\n[end %(log_level)]"},
+      quill::ClockSourceType::System);
   //--- End logging setup
   Parameters parameters;
 
@@ -168,12 +184,13 @@ int main(int argc, char **argv) {
   int number_of_clients;
   if (!client_standalone) {
     if (getenv("EON_SERVER_PATH") == NULL) {
-      LOG_ERROR(logger, "error: must set the env var EON_SERVER_PATH");
+      QUILL_LOG_ERROR(logger, "error: must set the env var EON_SERVER_PATH");
       logger->flush_log();
       return 1;
     }
     if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
-      LOG_ERROR(logger, "error: must set the env var EON_NUMBER_OF_CLIENTS");
+      QUILL_LOG_ERROR(logger,
+                      "error: must set the env var EON_NUMBER_OF_CLIENTS");
       logger->flush_log();
       return 1;
     }
@@ -192,15 +209,15 @@ int main(int argc, char **argv) {
     if (helper_functions::existsFile("config_0.ini")) {
       config_file = "config_0.ini";
     }
-    LOG_INFO(logger, "Loading parameter file {}", config_file);
+    QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
     error = parameters.load(config_file);
   } else {
-    LOG_INFO(logger, "Loading parameter file {}",
-             parameters.main_options.iniFilename);
+    QUILL_LOG_INFO(logger, "Loading parameter file {}",
+                   parameters.main_options.iniFilename);
     error = parameters.load(parameters.main_options.iniFilename);
   }
   if (error) {
-    LOG_ERROR(logger, "problem loading parameter file");
+    QUILL_LOG_ERROR(logger, "problem loading parameter file");
     logger->flush_log();
     MPI::COMM_WORLD.Abort(1);
   }
@@ -242,8 +259,9 @@ int main(int argc, char **argv) {
   }
 
   if (clients < number_of_clients) {
-    LOG_ERROR(logger, "didn't launch as many mpi client ranks as specified in "
-                      "EON_NUMBER_OF_CLIENTS");
+    QUILL_LOG_ERROR(logger,
+                    "didn't launch as many mpi client ranks as specified in "
+                    "EON_NUMBER_OF_CLIENTS");
     logger->flush_log();
     MPI::COMM_WORLD.Abort(1);
   }
@@ -286,7 +304,7 @@ int main(int argc, char **argv) {
     if (new_comm != MPI_COMM_NULL) {
       parameters.potential_options.MPIClientComm = new_comm;
     }
-    LOG_INFO(logger, "creating group with ranks: {}", r);
+    QUILL_LOG_INFO(logger, "creating group with ranks: {}", r);
   }
 #endif
 
@@ -304,7 +322,7 @@ int main(int argc, char **argv) {
       py_argv[0] = Py_DecodeLocale(argv[0], NULL);
       char *program = getenv("EON_SERVER_PATH");
       py_argv[1] = Py_DecodeLocale(program, NULL);
-      LOG_INFO(logger, "rank: {} becoming {}", irank, program);
+      QUILL_LOG_INFO(logger, "rank: {} becoming {}", irank, program);
       Py_Initialize();
       Py_Main(2, py_argv);
       Py_FinalizeEx();
@@ -342,9 +360,9 @@ int main(int argc, char **argv) {
     char *path = new char[1024];
     int ready = 1;
     if (!client_standalone) {
-      LOG_INFO(logger,
-               "client: rank {} is ready, posting send to server rank: {}!",
-               irank, server_rank);
+      QUILL_LOG_INFO(
+          logger, "client: rank {} is ready, posting send to server rank: {}!",
+          irank, server_rank);
       // Tag "1" is to interrupt the main loop and tell the communicator that a
       // client is ready
       MPI::COMM_WORLD.Isend(&ready, 1, MPI::INT, server_rank, 1);
@@ -352,14 +370,14 @@ int main(int argc, char **argv) {
       // Get the path we should run in from the server
       MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
       if (strncmp("STOPCAR", path, 1024) == 0) {
-        LOG_INFO(logger, "rank {} got STOPCAR", irank);
+        QUILL_LOG_INFO(logger, "rank {} got STOPCAR", irank);
         MPI::Finalize();
         return 0;
       }
-      LOG_INFO(logger, "client: rank: {} chdir to {}", irank, path);
+      QUILL_LOG_INFO(logger, "client: rank: {} chdir to {}", irank, path);
 
       if (chdir(path) == -1) {
-        LOG_ERROR(logger, "error: chdir: {}", strerror(errno));
+        QUILL_LOG_ERROR(logger, "error: chdir: {}", strerror(errno));
       }
     }
 #endif
@@ -380,7 +398,7 @@ int main(int argc, char **argv) {
     std::vector<std::string> bundledFilenames;
     for (int i = 0; i < bundleSize; i++) {
       if (bundleSize > 1)
-        LOG_INFO(logger, "Beginning Job {} of {}", i + 1, bundleSize);
+        QUILL_LOG_INFO(logger, "Beginning Job {} of {}", i + 1, bundleSize);
       std::vector<std::string> unbundledFilenames;
       if (bundlingEnabled) {
         unbundledFilenames = unbundle(i);
@@ -390,11 +408,11 @@ int main(int argc, char **argv) {
       int error = 0;
       string config_file = helper_functions::getRelevantFile(
           parameters.main_options.iniFilename);
-      LOG_INFO(logger, "Loading parameter file {}", config_file);
+      QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
       error = parameters.load(config_file);
 
       if (error) {
-        LOG_ERROR(logger, "problem loading parameter file, stopping");
+        QUILL_LOG_ERROR(logger, "problem loading parameter file, stopping");
         logger->flush_log();
         exit(1);
         abort();
@@ -405,9 +423,9 @@ int main(int argc, char **argv) {
       auto job =
           helper_functions::makeJob(std::make_unique<Parameters>(parameters));
       if (job == nullptr) {
-        LOG_ERROR(logger, "error: Unknown job: {}",
-                  std::string{magic_enum::enum_name<JobType>(
-                      parameters.main_options.job)});
+        QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
+                        std::string{magic_enum::enum_name<JobType>(
+                            parameters.main_options.job)});
         logger->flush_log();
         return 1;
       }
@@ -416,10 +434,10 @@ int main(int argc, char **argv) {
       try {
         filenames = job->run();
       } catch (int e) {
-        LOG_CRITICAL(logger, "[ERROR] job exited on error {}", e);
+        QUILL_LOG_CRITICAL(logger, "[ERROR] job exited on error {}", e);
         logger->flush_log();
       } catch (const std::exception &e) {
-        LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
+        QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
         logger->flush_log();
         return EXIT_FAILURE;
       }
@@ -433,10 +451,10 @@ int main(int argc, char **argv) {
       double utime = 0, stime = 0, rtime = 0;
       helper_functions::getTime(&rtime, &utime, &stime);
 
-      LOG_INFO(logger, "Timing Information:");
-      LOG_INFO(logger, "  Real time: {:.3f} seconds", elapsed.count());
-      LOG_INFO(logger, "  User time: {:.3f} seconds", utime);
-      LOG_INFO(logger, "  System time: {:.3f} seconds", stime);
+      QUILL_LOG_INFO(logger, "Timing Information:");
+      QUILL_LOG_INFO(logger, "  Real time: {:.3f} seconds", elapsed.count());
+      QUILL_LOG_INFO(logger, "  User time: {:.3f} seconds", utime);
+      QUILL_LOG_INFO(logger, "  System time: {:.3f} seconds", stime);
 
       std::ofstream result_file("results.dat", std::ios::app);
       if (result_file.is_open()) {
@@ -446,7 +464,7 @@ int main(int argc, char **argv) {
         result_file << "system_time " << stime << "\n";
 #endif
       } else {
-        LOG_ERROR(logger, "Failed to write timing to results.dat");
+        QUILL_LOG_ERROR(logger, "Failed to write timing to results.dat");
       }
 
       if (bundlingEnabled) {
@@ -481,5 +499,7 @@ int main(int argc, char **argv) {
   }
 #endif
 
+  // Ensure all queued log messages are flushed before exiting
+  quill::Backend::stop();
   exit(0);
 }

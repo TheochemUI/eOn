@@ -15,6 +15,7 @@
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 
+#include "EonLogger.h"
 /** @defgroup Optimizers
  *
  * \brief ClientEON methods for optimizing atomic structures
@@ -60,9 +61,9 @@ public:
       : m_otype{a_params.optimizer_options.method},
         m_params{a_params},
         m_objf{a_objf} {
-    LOG_WARNING(quill::Frontend::get_logger("combi"),
-                "You should explicitly set an optimizer while constructing the "
-                "optimizer!!\n Defaulting to opt_method from the parameters");
+    EONC_LOG_WARNING(
+        "You should explicitly set an optimizer while constructing the "
+        "optimizer!!\n Defaulting to opt_method from the parameters");
   }
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
             const Parameters &a_params)

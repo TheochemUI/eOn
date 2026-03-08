@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Matter.h"
@@ -18,14 +19,12 @@
 class SafeHyperJob : public Job {
 public:
   SafeHyperJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
-    log = quill::Frontend::get_logger("combi");
-  }
+      : Job(std::move(parameters)) {}
   ~SafeHyperJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
   int dynamics();
   long refine(Matter *mdBuffer[], long length, Matter *reactant);
   bool checkState(Matter *current, Matter *reactant);

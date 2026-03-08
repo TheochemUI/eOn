@@ -35,8 +35,9 @@ int FIRE::step(double a_maxMove) {
   // FIRE
   P = f.dot(m_vel);
   m_vel = (1 - m_alpha) * m_vel + m_alpha * f_unit * m_vel.norm();
-  LOG_DEBUG(m_log, "P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}",
-            P, m_vel.norm(), m_dt, m_alpha, m_N);
+  QUILL_LOG_DEBUG(m_log,
+                  "P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}",
+                  P, m_vel.norm(), m_dt, m_alpha, m_N);
   if (P >= 0) {
     m_N++;
     if (m_N > m_N_min) {
@@ -52,7 +53,8 @@ int FIRE::step(double a_maxMove) {
 
   // add a sanity check on m_dt
   if (m_dt < 1e-6) {
-    LOG_CRITICAL(m_log, "[FIRE] [critical] m_dt is too small: {:.4f}", m_dt);
+    QUILL_LOG_CRITICAL(m_log, "[FIRE] [critical] m_dt is too small: {:.4f}",
+                       m_dt);
     std::exit(1);
   }
 

@@ -51,24 +51,25 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   // Log what decision was made so users can see behavior.
   bool shouldMinimizeEndpoints = false;
   if (!params.neb_options.endpoints.minimize) {
-    LOG_DEBUG(m_log, "minimize_endpoints == false: not minimizing endpoints.");
+    QUILL_LOG_DEBUG(m_log,
+                    "minimize_endpoints == false: not minimizing endpoints.");
     shouldMinimizeEndpoints = false;
   } else {
     if (params.neb_options.initialization.input_path.empty()) {
-      LOG_DEBUG(m_log, "minimize_endpoints == true and nebIpath "
-                       "empty: minimizing endpoints.");
+      QUILL_LOG_DEBUG(m_log, "minimize_endpoints == true and nebIpath "
+                             "empty: minimizing endpoints.");
       shouldMinimizeEndpoints = true;
     } else {
       // nebIpath provided: only minimize if neb_options.endpoints.use_path_file
       // explicitly allowed.
       if (params.neb_options.endpoints.use_path_file) {
-        LOG_DEBUG(
+        QUILL_LOG_DEBUG(
             m_log,
             "minimize_endpoints == true and nebIpath provided, but "
             "minimize_endpoints_for_ipath == true: minimizing endpoints.");
         shouldMinimizeEndpoints = true;
       } else {
-        LOG_DEBUG(
+        QUILL_LOG_DEBUG(
             m_log,
             "minimize_endpoints == true but nebIpath provided and "
             "minimize_endpoints_for_ipath == false: not minimizing endpoints.");
@@ -78,7 +79,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   }
 
   if (shouldMinimizeEndpoints) {
-    LOG_DEBUG(m_log, "Minimizing reactant");
+    QUILL_LOG_DEBUG(m_log, "Minimizing reactant");
     // TODO(rg): Maybe when we have even more parameters, false can be set by
     // the user too..
     initial->relax(false, params.debug_options.write_movies,
@@ -86,8 +87,8 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
     // TODO(rg): How do we report the total E/F now? Currently this is just the
     // total total, people might want "per-stage" totals (but they can also get
     // them from the log.)
-    LOG_DEBUG(m_log, "Minimized reactant in ");
-    LOG_DEBUG(m_log, "Minimizing product");
+    QUILL_LOG_DEBUG(m_log, "Minimized reactant in ");
+    QUILL_LOG_DEBUG(m_log, "Minimizing product");
     final_state->relax(false, params.debug_options.write_movies,
                        params.main_options.checkpoint, "prod_neb", "prod_neb");
   }
@@ -140,7 +141,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back(resultsFilename);
   fileResults = fopen(resultsFilename.c_str(), "wb");
   if (!fileResults) {
-    LOG_ERROR(m_log, "Failed to open {} for writing", resultsFilename);
+    QUILL_LOG_ERROR(m_log, "Failed to open {} for writing", resultsFilename);
     return;
   }
 
@@ -234,7 +235,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
           returnFiles.push_back(peakModeFile);
         }
 
-        LOG_INFO(
+        QUILL_LOG_INFO(
             m_log,
             "Generated MMF peak {:02d} at position {:.3f} (Energy: {:.3f} eV)",
             peakCount, posFraction, relativeEnergy);
@@ -248,12 +249,12 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 }
 
 void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
-  LOG_DEBUG(m_log, "Final state: ");
+  QUILL_LOG_DEBUG(m_log, "Final state: ");
   if (status == NudgedElasticBand::NEBStatus::GOOD)
-    LOG_DEBUG(m_log, "Nudged elastic band, successful.");
+    QUILL_LOG_DEBUG(m_log, "Nudged elastic band, successful.");
   else if (status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS)
-    LOG_DEBUG(m_log, "Nudged elastic band, too many iterations.");
+    QUILL_LOG_DEBUG(m_log, "Nudged elastic band, too many iterations.");
   else
-    LOG_WARNING(m_log, "Unknown status: {}!", static_cast<int>(status));
+    QUILL_LOG_WARNING(m_log, "Unknown status: {}!", static_cast<int>(status));
   return;
 }

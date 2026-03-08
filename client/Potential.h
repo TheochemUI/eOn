@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Eigen.h"
 #include "Parameters.h"
@@ -22,7 +23,7 @@ class Potential {
 protected:
   PotType ptype;
   const Parameters &m_params;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"_potcalls", "_potcalls.log"};
 
 public:
   size_t forceCallCounter;
@@ -41,8 +42,9 @@ public:
 
   virtual ~Potential() {
     if (m_log) {
-      LOG_TRACE_L1(m_log, "[{}] destroyed after {} calls",
-                   magic_enum::enum_name<PotType>(getType()), forceCallCounter);
+      QUILL_LOG_TRACE_L1(m_log, "[{}] destroyed after {} calls",
+                         magic_enum::enum_name<PotType>(getType()),
+                         forceCallCounter);
     } else {
       std::cerr << "Logger is not initialized\n";
     }
@@ -66,20 +68,9 @@ public:
 
   // Logger initialization
   void initializeLogger() {
-    m_log = quill::Frontend::create_or_get_logger(
-        "_potcalls",
-        quill::Frontend::create_or_get_sink<quill::FileSink>(
-            "_potcalls.log",
-            []() {
-              quill::FileSinkConfig cfg;
-              cfg.set_open_mode('w');
-              return cfg;
-            }(),
-            quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{"%(message)"});
     if (m_log) {
-      LOG_TRACE_L1(m_log, "[{}] created",
-                   magic_enum::enum_name<PotType>(getType()));
+      QUILL_LOG_TRACE_L1(m_log, "[{}] created",
+                         magic_enum::enum_name<PotType>(getType()));
     }
   }
 };

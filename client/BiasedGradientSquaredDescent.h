@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Eigen.h"
 #include "Matter.h"
@@ -28,7 +29,6 @@ public:
     saddle = matterPassed;
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = quill::Frontend::get_logger("combi");
   }
   ~BiasedGradientSquaredDescent() = default;
 
@@ -45,6 +45,6 @@ public:
 
 private:
   double reactantEnergy;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
   //        double bgsdAlpha;
 };

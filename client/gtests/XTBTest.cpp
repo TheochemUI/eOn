@@ -8,6 +8,8 @@ using namespace Catch::Matchers;
 
 namespace tests {
 
+static helper_functions::test::QuillTestLogger _quill_setup;
+
 class PotTest {
 public:
   PotTest()

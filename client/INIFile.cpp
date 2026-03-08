@@ -12,6 +12,7 @@
 //////////////////////////////////////////////////////////////////////
 
 // C++ Includes
+#include "EonLogger.h"
 #include <fstream>
 #include <iostream>
 // #include <strstream>
@@ -282,9 +283,8 @@ string CIniFile::GetValue(string const keyname, string const valuename,
     return "";
   }
 
-  LOG_INFO(quill::Frontend::get_logger("combi"), "* [{}] {}: {}",
-           keyname.c_str(), valuename.c_str(),
-           keys[keyID].values[valueID].c_str());
+  EONC_LOG_INFO("* [{}] {}: {}", keyname.c_str(), valuename.c_str(),
+                keys[keyID].values[valueID].c_str());
   found = true;
   return keys[keyID].values[valueID];
 }

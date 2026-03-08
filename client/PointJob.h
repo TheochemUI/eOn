@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Parameters.h"
@@ -17,12 +18,10 @@
 class PointJob : public Job {
 public:
   PointJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {
-    log = quill::Frontend::get_logger("combi");
-  }
+      : Job(std::move(parameters)) {}
   ~PointJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

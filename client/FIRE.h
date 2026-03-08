@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 #include "Optimizer.h"
 #include "Parameters.h"
 
@@ -29,19 +30,7 @@ public:
         m_f_inc{1.1},
         m_f_dec{0.5},
         m_f_a{0.99},
-        m_iteration{0} {
-    m_log = quill::Frontend::create_or_get_logger(
-        "fire",
-        quill::Frontend::create_or_get_sink<quill::FileSink>(
-            "_fire.log",
-            []() {
-              quill::FileSinkConfig cfg;
-              cfg.set_open_mode('w');
-              return cfg;
-            }(),
-            quill::FileEventNotifier{}),
-        quill::PatternFormatterOptions{"%(message)"});
-  }
+        m_iteration{0} {}
   virtual ~FIRE() = default;
 
   int step(double a_maxMove) override;
@@ -57,5 +46,5 @@ private:
   double m_f_dec;
   double m_f_a;
   size_t m_iteration;
-  quill::Logger *m_log{nullptr};
+  eonc::log::FileScoped m_log{"fire", "_fire.log"};
 };

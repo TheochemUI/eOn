@@ -17,6 +17,7 @@
 #include "Parameters.h"
 
 #include "Eigen.h"
+#include "EonLogger.h"
 
 class Dynamics {
 
@@ -50,5 +51,5 @@ private:
   double kB;
   double temperature;
   double vxi1, vxi2, xi1, xi2;
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

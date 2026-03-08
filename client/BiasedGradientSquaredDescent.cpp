@@ -104,17 +104,17 @@ int BiasedGradientSquaredDescent::run() {
   auto optim =
       helpers::create::mkOptim(objf, params.optimizer_options.method, params);
   int iteration = 0;
-  LOG_DEBUG(
+  QUILL_LOG_DEBUG(
       log,
       "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
       params.bgsd_options.alpha, params.bgsd_options.beta);
   while (!objf->isConvergedH() || iteration == 0) {
     optim->step(params.optimizer_options.max_move);
-    LOG_DEBUG(log,
-              "iteration {} Henergy, gradientHnorm, and Venergy: "
-              "{:.8f} {:.8f} {:.8f}",
-              iteration, objf->getEnergy(), objf->getGradientnorm(),
-              saddle->getPotentialEnergy());
+    QUILL_LOG_DEBUG(log,
+                    "iteration {} Henergy, gradientHnorm, and Venergy: "
+                    "{:.8f} {:.8f} {:.8f}",
+                    iteration, objf->getEnergy(), objf->getGradientnorm(),
+                    saddle->getPotentialEnergy());
     iteration++;
   }
   auto objf2 = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
@@ -126,11 +126,11 @@ int BiasedGradientSquaredDescent::run() {
       break;
     };
     optim2->step(params.optimizer_options.max_move);
-    LOG_DEBUG(log,
-              "gradient squared iteration {} Henergy, gradientHnorm, "
-              "and Venergy: {:.8f} {:.8f} {:.8f}",
-              iteration, objf2->getEnergy(), objf2->getGradientnorm(),
-              saddle->getPotentialEnergy());
+    QUILL_LOG_DEBUG(log,
+                    "gradient squared iteration {} Henergy, gradientHnorm, "
+                    "and Venergy: {:.8f} {:.8f} {:.8f}",
+                    iteration, objf2->getEnergy(), objf2->getGradientnorm(),
+                    saddle->getPotentialEnergy());
     iteration++;
   }
 
@@ -161,7 +161,7 @@ int BiasedGradientSquaredDescent::run() {
   minModeMethod->compute(saddle, eigenvector);
   eigenvector = minModeMethod->getEigenvector();
   eigenvalue = minModeMethod->getEigenvalue();
-  LOG_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
+  QUILL_LOG_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
   if (objf2->isConvergedV()) {
     return 0;
   } else if (objf2->isConvergedIP()) {

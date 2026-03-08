@@ -11,6 +11,7 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
@@ -27,7 +28,6 @@ public:
         saddle{displacement} {
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = quill::Frontend::get_logger("combi");
   }
   ~BasinHoppingSaddleSearch() = default;
 
@@ -45,5 +45,5 @@ public:
   int status;
 
 private:
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
 };

@@ -31,6 +31,7 @@
 #include <stdexcept>
 #include <time.h>
 
+#include "EonLogger.h"
 Parameters::Parameters() {
 
   constants.kB = 8.6173324e-5;     // eV/K
@@ -738,8 +739,7 @@ int Parameters::load(FILE *file) {
                         optimizer_options.quickmin.steepest_descent);
     }
     if (ini.FindKey("FIRE") != -1) {
-      LOG_WARNING(quill::Frontend::get_logger("combi"),
-                  "Overwriting QuickMin timestep with Fire timestep!!");
+      EONC_LOG_WARNING("Overwriting QuickMin timestep with Fire timestep!!");
       optimizer_options.time_step_input =
           ini.GetValueF("FIRE", "time_step", optimizer_options.time_step_input);
       optimizer_options.time_step =
@@ -1518,26 +1518,24 @@ int Parameters::load(FILE *file) {
     if (parallel_replica_options.state_check_interval > dynamics_options.time &&
         magic_enum::enum_name<JobType>(main_options.job) ==
             "parallel_replica") {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "[Parallel Replica] state_check_interval must be <= time");
+      EONC_LOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
       error = 1;
     }
 
     // Check if an initial path exists without a specific non-linear initializer
     if (!neb_options.initialization.input_path.empty() &&
         neb_options.initialization.method == NEBInit::LINEAR) {
-      LOG_WARNING(quill::Frontend::get_logger("combi"),
-                  "[Nudged Elastic Band] 'initial_path_in' is provided, but "
-                  "'initializer' defaults to linear. "
-                  "Ensure this is intentional, as the loaded path will not be "
-                  "used without initializer set to file.");
+      EONC_LOG_WARNING(
+          "[Nudged Elastic Band] 'initial_path_in' is provided, but "
+          "'initializer' defaults to linear. "
+          "Ensure this is intentional, as the loaded path will not be "
+          "used without initializer set to file.");
     }
 
     if (saddle_search_options.dynamics.record_interval_input >
         saddle_search_options.dynamics.state_check_interval_input) {
-      LOG_ERROR(quill::Frontend::get_logger("combi"),
-                "[Saddle Search] dynamics_record_interval must be <= "
-                "dynamics_state_check_interval");
+      EONC_LOG_ERROR("[Saddle Search] dynamics_record_interval must be <= "
+                     "dynamics_state_check_interval");
       error = 1;
     }
 
@@ -1545,22 +1543,19 @@ int Parameters::load(FILE *file) {
         potential_options.potential == PotType::AMS_IO) {
       if (ams_options.forcefield.empty() && ams_options.model.empty() &&
           ams_options.xc.empty()) {
-        LOG_ERROR(quill::Frontend::get_logger("combi"),
-                  "[AMS] Must provide atleast forcefield or model or xc");
+        EONC_LOG_ERROR("[AMS] Must provide atleast forcefield or model or xc");
         error = 1;
       }
 
       if (!ams_options.forcefield.empty() && !ams_options.model.empty() &&
           !ams_options.xc.empty()) {
-        LOG_ERROR(quill::Frontend::get_logger("combi"),
-                  "[AMS] Must provide either forcefield or model");
+        EONC_LOG_ERROR("[AMS] Must provide either forcefield or model");
         error = 1;
       }
     }
 
   } else {
-    LOG_ERROR(quill::Frontend::get_logger("combi"),
-              "Couldn't parse the ini file");
+    EONC_LOG_ERROR("Couldn't parse the ini file");
     error = 1;
   }
 

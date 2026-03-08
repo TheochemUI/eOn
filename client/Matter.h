@@ -11,6 +11,7 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "EonLogger.h"
 #include "Parameters.h"
 #include "Potential.h"
 #include "SurrogatePotential.h"
@@ -49,11 +50,8 @@ public:
         cell{Matrix3d::Zero()},
         cellInverse{Matrix3d::Zero()},
         energyVariance{0.0},
-        potentialEnergy{0.0} {
-
-    m_log = quill::Frontend::get_logger("combi");
-  } // the number of atoms shall be set later
-    // using resize()
+        potentialEnergy{0.0} {} // the number of atoms shall be set later
+  // using resize()
   // Matter(Parameters *parameters,
   //        long int nAtoms);      // prepare the object for use with nAtoms
   //        atoms
@@ -185,7 +183,7 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-  quill::Logger *m_log{nullptr};
+  eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used

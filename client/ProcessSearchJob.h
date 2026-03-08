@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "EonLogger.h"
 
 #include "Job.h"
 #include "Matter.h"
@@ -49,16 +50,14 @@ public:
       : Job(std::move(parameters)),
         fCallsSaddle{0},
         fCallsMin{0},
-        fCallsPrefactors{0} {
-    log = quill::Frontend::get_logger("combi");
-  }
+        fCallsPrefactors{0} {}
   //! Process Search job De-constructor
   ~ProcessSearchJob() = default;
   //! Kicks off the Process Search
   std::vector<std::string> run(void) override;
 
 private:
-  quill::Logger *log{nullptr};
+  eonc::log::Scoped log;
   //! Runs the correct saddle search; also checks if the run was successful
   int doProcessSearch(void);
   //! UNDEFINED

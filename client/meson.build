@@ -39,7 +39,7 @@ if host_system == 'darwin'
     add_global_arguments(['-faligned-allocation'], language: 'cpp')
 endif
 if is_windows
-    _args += ['-DIS_WINDOWS']
+    _args += ['-DIS_WINDOWS', '-DNOMINMAX']
     # The EAM Al Fortran potential (gagafeDblexp.f) allocates ~3.6 MB of local
     # arrays on the stack (phi/phivirst dimensioned at MAXPRS=200000).  The
     # Windows default stack is only 1 MB, causing STATUS_STACK_OVERFLOW.
@@ -195,6 +195,7 @@ _deps += [eigen_dep]
 
 quill_dep = dependency('quill', required: true)
 _deps += quill_dep
+_args += ['-DQUILL_DISABLE_NON_PREFIXED_MACROS']
 
 eoncbase_sources = ['INIFile.cpp', 'fpe_handler.cpp']
 
@@ -344,7 +345,6 @@ if get_option('with_water')
 endif
 
 if get_option('with_ams')
-    fmt_dep = dependency('fmt', required: true)
     # Optional, only for AMS
     absl_dep = dependency(
         'absl',
@@ -362,7 +362,7 @@ if get_option('with_ams')
         modules: ['headers', 'asio', 'iostreams'],
         required: true,
     )
-    ams_dep = [boost_ams_dep, absl_dep, fmt_dep]
+    ams_dep = [boost_ams_dep, absl_dep]
     _deps += ams_dep
     # End AMS
     subdir('potentials/AMS')
