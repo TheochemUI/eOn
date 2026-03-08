@@ -31,6 +31,8 @@
 
 /* Don't guard with compiler directives anymore because that will break ABI for
  * any of these */
+namespace eonc {
+
 enum class PotType {
   // Only add to the end of this!!!
   UNKNOWN = 0,
@@ -112,3 +114,12 @@ enum class OptType {
 enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, SIDPP, SIDPP_ZBL, FILE };
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
+
+} // namespace eonc
+
+// Backward-compat aliases during migration
+using eonc::JobType;
+using eonc::NEBInit;
+using eonc::OptType;
+using eonc::PotType;
+using eonc::RunStatus;
