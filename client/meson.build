@@ -501,6 +501,14 @@ if get_option('with_metatomic')
 
     if get_option('pip_metatomic')
         torch_ver = get_option('torch_version')
+        mts_inc_args = []
+        foreach d : [
+            py.get_install_dir() / 'metatensor' / 'include',
+            py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
+            py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
+        ]
+            mts_inc_args += ['-isystem', d]
+        endforeach
         mts_dep = declare_dependency(
             dependencies: [
                 cppc.find_library(
@@ -520,11 +528,7 @@ if get_option('with_metatomic')
                     ],
                 ),
             ],
-            include_directories: include_directories(
-                py.get_install_dir() / 'metatensor' / 'include',
-                py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
-                py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
-            ),
+            compile_args: mts_inc_args,
         )
         vesin_dep = cppc.find_library(
             'vesin',
@@ -540,9 +544,7 @@ if get_option('with_metatomic')
                         required: false,
                     ),
                 ],
-                include_directories: include_directories(
-                    py.get_install_dir() / 'vesin' / 'include',
-                ),
+                compile_args: ['-isystem', py.get_install_dir() / 'vesin' / 'include'],
             )
         endif
     else
