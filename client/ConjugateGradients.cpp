@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ConjugateGradients.h"
+#include "SafeMath.h"
 
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = 0, b = 0, gamma = 0;
@@ -81,7 +82,7 @@ int ConjugateGradients::line_search(double a_maxMove) {
   do {
     // Determine curvature from last step (Secant method)
     curvature = fabs((projectedForceBeforeStep - projectedForce) / stepSize);
-    stepSize = projectedForce / curvature;
+    stepSize = eonc::safemath::safe_div(projectedForce, curvature, a_maxMove);
     // stepSize = projectedForceBeforeStep / curvature;
 
     if (a_maxMove < fabs(stepSize)) {

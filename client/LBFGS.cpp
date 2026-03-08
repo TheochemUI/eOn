@@ -12,6 +12,7 @@
 // Based on the LBFGS minimizer written in ASE.
 
 #include "LBFGS.h"
+#include "SafeMath.h"
 
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   double H0 = m_params.optimizer_options.lbfgs.inverse_curvature;
@@ -20,7 +21,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   if (m_iteration > 0) {
     Eigen::VectorXd dr = m_objf->difference(r, m_rPrev);
     // double C = dr.dot(fPrev-f)/dr.dot(dr);
-    double C = (m_fPrev - a_f).dot(m_fPrev - a_f) / dr.dot(m_fPrev - a_f);
+    double C = eonc::safemath::safe_div((m_fPrev - a_f).dot(m_fPrev - a_f),
+                                        dr.dot(m_fPrev - a_f), -1.0);
     if (C < 0) {
       LOG_DEBUG(m_log,
                 "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
@@ -30,7 +32,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     }
 
     if (m_params.optimizer_options.lbfgs.auto_scale) {
-      H0 = 1. / C;
+      H0 = eonc::safemath::safe_recip(C, -1.0);
       LOG_DEBUG(m_log, "[LBFGS] Curvature: {:.4e} eV/A^2", C);
     }
   }
@@ -41,7 +43,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
     double C =
         dg.dot(a_f.normalized()) / m_params.main_options.finiteDifference;
-    H0 = 1.0 / C;
+    H0 = eonc::safemath::safe_recip(C, -1.0);
     m_objf->setPositions(r);
     if (H0 < 0) {
       LOG_WARNING(m_log,
@@ -83,7 +85,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
     return helper_functions::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
-  double vd = d.normalized().dot(a_f.normalized());
+  double vd = eonc::safemath::safe_normalized(d).dot(
+      eonc::safemath::safe_normalized(a_f));
   if (vd > 1.0)
     vd = 1.0;
   if (vd < -1.0)
@@ -122,7 +125,7 @@ int LBFGS::update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0,
 
   m_s.push_back(s0);
   m_y.push_back(y0);
-  m_rho.push_back(1.0 / (s0.dot(y0)));
+  m_rho.push_back(eonc::safemath::safe_recip(s0.dot(y0), 0.0));
 
   if ((int)m_s.size() > m_memory) {
     m_s.erase(m_s.begin());
