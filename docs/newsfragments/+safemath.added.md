@@ -1,1 +1,0 @@
-Add `SafeMath.h` utility header with guarded arithmetic functions (`safe_div`, `safe_recip`, `safe_acos`, `safe_sqrt`, `safe_atan_ratio`) and an Eigen-aware `safe_normalized` template. These prevent floating-point exceptions (SIGFPE) from division-by-zero and domain errors in numerical code without changing results for valid inputs.

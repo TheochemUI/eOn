@@ -2,6 +2,55 @@
 
 <!-- towncrier release notes start -->
 
+## [2.12.0](https://github.com/TheochemUI/eOn/tree/2.12.0) - 2026-03-08
+
+### Removed
+
+- Remove `_potcalls.log` text logger and `QUILL_LOG_TRACE_L3` from `Potential::get_ef()`. Remove static counters `Potential::fcalls`, `fcallsTotal`, `wu_fcallsTotal`, `totalUserTime`. Output is now `_potcalls.json` with structured per-instance records.
+
+### Added
+
+- Add `PotRegistry` singleton for thread-safe, enum-indexed force call tracking. Replaces per-instance `FileScoped` text loggers and dead static counters (`Potential::fcalls` et al.). Tracks per-instance lifecycle (created_at, destroyed_at, force_calls, unique ID) with JSON output (`_potcalls.json`). Restore force call delta tracking in SafeHyperJob, TADJob, ParallelReplicaJob, ReplicaExchangeJob, NudgedElasticBandJob, BasinHoppingJob, HessianJob, and PrefactorJob.
+- Add `SafeMath.h` utility header with guarded arithmetic functions (`safe_div`, `safe_recip`, `safe_acos`, `safe_sqrt`, `safe_atan_ratio`) and an Eigen-aware `safe_normalized` template. These prevent floating-point exceptions (SIGFPE) from division-by-zero and domain errors in numerical code without changing results for valid inputs.
+- Drop spdlog and fmt for quill and cpp20
+
+### Changed
+
+- Replace cxxopts with argum for command line parsing. This change updates the
+  CLI argument handling library and requires C++20 support. ([#320](https://github.com/TheochemUI/eOn/issues/320))
+- Replace per-site `scoped_interpreter` guards with lazy singleton `eonc::ensure_interpreter()` in `PyGuard.h`. Python interpreter is only started when a Python-based potential is actually used. ([#324](https://github.com/TheochemUI/eOn/issues/324))
+- Migrated from spdlog/fmt to quill logging library with std::format for modern C++20 logging infrastructure. Quill provides lock-free asynchronous logging with lower latency and better performance characteristics. All LOG_* macros now use quill backend with configurable formatters and sinks. ([#327](https://github.com/TheochemUI/eOn/issues/327))
+- Migrate to modern C++20 logging API (EonLogger.h).
+
+  Replaced verbose quill logger initialization throughout codebase with new `eonc::log::Scoped` RAII helper and `eonc::log::get_file()` utility. Eliminates 14-line boilerplate for file loggers and manual initialization for default loggers. Net reduction of 74 lines while improving code clarity and safety.
+- Optimize quill backend for improved logging performance.
+
+  Configure `BackendOptions` with reduced sleep duration (100us to 10us), larger initial transit buffer (256 to 2048), zero timestamp ordering grace period (single-threaded, SPSC guarantees ordering), faster flush interval (200ms to 100ms), and disabled printable char checking (numeric data only).
+- Switched all logging call sites from bare `LOG_*` to `QUILL_LOG_*` prefixed macros and enabled `QUILL_DISABLE_NON_PREFIXED_MACROS` to prevent macro collisions when eOn is compiled alongside other libraries.
+- Updated metatomic ecosystem dependencies: torch 2.10, metatomic-torch 0.1.9+, metatensor-torch 0.8.4+, vesin/vesin-torch 0.5.2+, metatrain 2026.2.1+. Ensures compatibility with latest machine learning potential infrastructure.
+- Updated vesin to v0.5.2: adapted to new API with per-dimension periodicity (`bool[3]` instead of single `bool`) and VesinDevice struct syntax. Ensures compatibility with latest metatomic/metatensor ecosystem.
+- Wrap all client classes, enums, and helper namespaces under `namespace eonc`. Rename `helper_functions` namespace to `helpers`. `BaseStructures.h` enums (`PotType`, `JobType`, `AtomState`) are now scoped under `eonc`. Backward-compatible `using` aliases are provided for all classes and enums at global scope. Remove `using namespace std` from all client headers to prevent symbol leakage into downstream translation units.
+
+### Fixed
+
+- Fix ASE_POT compilation errors (wrong constructor, PotType, FPE calls, undeclared variable) and rename `-DASE_POT` to `-DWITH_ASE_POT` to avoid macro-enum collision. ([#321](https://github.com/TheochemUI/eOn/issues/321))
+- Fix `[IDimerRot]` column misalignment: widen force placeholder from 10 to 18
+  dashes, change angle precision from `{:6.2f}` to `{:6.3f}`, and add missing
+  "Align" column specifier to the `[Dimer]` header. ([#322](https://github.com/TheochemUI/eOn/issues/322))
+- Suppress FPE trapping during libtorch operations in `MetatomicPotential`
+  constructor and `force()`, preventing SIGFPE from benign NaN/Inf produced by
+  SiLU (sleef) and autograd internals. Follows the existing `FPEHandler` pattern
+  from ASE_ORCA, ASE_NWCHEM, and AtomicGPDimer. ([#323](https://github.com/TheochemUI/eOn/issues/323))
+- Change `uncertainty_threshold` default from `0.1` to `-1` (disabled) in both
+  C++ and Python. Most models lack uncertainty outputs, so the previous default
+  triggered a noisy exception+catch in the metatomic constructor for no benefit. ([#325](https://github.com/TheochemUI/eOn/issues/325))
+- Fixed quill migration test failures: added logger initialization to all test fixtures (XTBTest, ASEPotTest, ServeSpecParseTest, EpiCentersTest, MetatomicTest) to prevent segfaults from uninitialized quill backend. Restored correct ConfigParser defaults in config.yaml (49 path interpolations accidentally replaced during migration). Added `-DNOMINMAX` for Windows builds to fix MSVC compilation errors in quill headers. ([#327](https://github.com/TheochemUI/eOn/issues/327))
+- Added `safe_normalize_inplace` to SafeMath.h and guarded remaining unprotected `.normalize()` / `.normalized()` calls in Dimer, ImprovedDimer, ConjugateGradients, and LBFGS that could trigger FPE on zero vectors.
+- Guard unprotected floating-point divisions and domain-error-prone math across 12 source files using `eonc::safemath` utilities. Eliminates spurious SIGFPE signals during saddle search (Dimer, ImprovedDimer, Lanczos), optimization (LBFGS, CG, SteepestDescent), and infrastructure (Matter, Hessian, HelperFunctions, NEB, ReplicaExchange). Fallback values preserve existing branch/skip/reset behavior so valid inputs produce identical results.
+- Make the POSIX FPE signal handler async-signal-safe by replacing `std::cerr` (undefined behavior in signal context) with `write(STDERR_FILENO, ...)`. Windows SEH handler switched from `std::cerr` to `fprintf(stderr, ...)` for consistency.
+- Use `-isystem` instead of `-I` for pip-installed metatomic and vesin include paths to suppress third-party compiler warnings when building with `-Wall -Wextra`.
+
+
 ## [2.12.0](https://github.com/theochemui/eongit/tree/2.12.0) - 2026-03-04
 
 ### Changed

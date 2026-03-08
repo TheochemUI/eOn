@@ -414,20 +414,6 @@ package:
     sha256: 19025a4078ff3940d97eb0da29983d5e0deac9c3e09b0eabf897daeaf9d1114e
   category: main
   optional: false
-- name: fmt
-  version: 11.2.0
-  manager: conda
-  platform: linux-64
-  dependencies:
-    __glibc: '>=2.17,<3.0.a0'
-    libgcc: '>=13'
-    libstdcxx: '>=13'
-  url: https://conda.anaconda.org/conda-forge/linux-64/fmt-11.2.0-h07f6e7f_0.conda
-  hash:
-    md5: 0c2f855a88fab6afa92a7aa41217dc8e
-    sha256: e0f53b7801d0bcb5d61a1ddcb873479bfe8365e56fd3722a232fbcc372a9ac52
-  category: main
-  optional: false
 - name: fortran-compiler
   version: 1.10.0
   manager: conda
@@ -1438,16 +1424,16 @@ package:
   category: main
   optional: false
 - name: meson
-  version: 1.9.1
+  version: 1.10.1
   manager: conda
   platform: linux-64
   dependencies:
     python: '*'
     ninja: '>=1.8.2'
-  url: https://conda.anaconda.org/conda-forge/noarch/meson-1.9.1-pyhcf101f3_0.conda
+  url: https://conda.anaconda.org/conda-forge/noarch/meson-1.10.1-pyhcf101f3_0.conda
   hash:
-    md5: ef2b132f3e216b5bf6c2f3c36cfd4c89
-    sha256: 89a0ff2f69471b50a0bd848c6745ee9e448bc20826f6de7c8108a2d00fa80779
+    md5: 6c07238c531b1f93603c6908d1a4ef4f
+    sha256: c97f42730fcab178be043f7de3093f419b5ad179370c00494d46a472971f7bf7
   category: main
   optional: false
 - name: mpi
@@ -1915,6 +1901,20 @@ package:
     sha256: 1b3dc4c25c83093fff08b86a3574bc6b94ba355c8eba1f35d805c5e256455fc7
   category: main
   optional: false
+- name: quill
+  version: 11.0.2
+  manager: conda
+  platform: linux-64
+  dependencies:
+    __glibc: '>=2.17,<3.0.a0'
+    libgcc: '>=14'
+    libstdcxx: '>=14'
+  url: https://conda.anaconda.org/conda-forge/linux-64/quill-11.0.2-hb700be7_0.conda
+  hash:
+    md5: 78db218c078bd661be3e3aaae9d4d1ca
+    sha256: 73a0f11c4907cc200dc4d916f193768ec95a155fa5843bfc6488422fe4c9c636
+  category: main
+  optional: false
 - name: rdma-core
   version: '60.0'
   manager: conda
@@ -2054,21 +2054,6 @@ package:
   hash:
     md5: f2130bd77c1bc4ca8aa79d5fe0a05f61
     sha256: 436c2166d738f3ac02ef6fc0d2cc87d9cfe7c0ba060cf27fbd4d2d46c74d1585
-  category: main
-  optional: false
-- name: spdlog
-  version: 1.16.0
-  manager: conda
-  platform: linux-64
-  dependencies:
-    __glibc: '>=2.17,<3.0.a0'
-    fmt: '>=11.2.0,<11.3.0a0'
-    libgcc: '>=14'
-    libstdcxx: '>=14'
-  url: https://conda.anaconda.org/conda-forge/linux-64/spdlog-1.16.0-ha91398d_0.conda
-  hash:
-    md5: 57711002d722e1067e33c0bce84c2207
-    sha256: b186180e4ad6d00aa58b6890a31d45bee5b96202d636fe35a97bc5a621f65220
   category: main
   optional: false
 - name: stack_data
@@ -2831,21 +2816,21 @@ package:
   category: main
   optional: false
 - name: metatomic-torch
-  version: 0.1.7
+  version: 0.1.11
   manager: pip
   platform: linux-64
   dependencies:
-    torch: '>=2.1,<2.10'
-    vesin: '*'
+    torch: '>=2.3,<2.11'
+    vesin: '>=0.5.1'
     metatensor-torch: '>=0.8.0,<0.9'
     metatensor-operations: '>=0.4.0,<0.5'
-  url: https://files.pythonhosted.org/packages/85/4e/3b2a61f99bc2e9f18ad68b6f8ed91c132a618aa84ebccd98e42dc9cf2f22/metatomic_torch-0.1.7-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  url: https://files.pythonhosted.org/packages/9c/17/49fc50b531fd0a2e094407a0add8dc25f685d2740fd3162ef4ea0d21c627/metatomic_torch-0.1.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
   hash:
-    sha256: 9dacf9c51d1010e0912cbb0ba373c5a1e63dd10cf16a7166542092504f0cf832
+    sha256: 5db59c1d28bc412a8f2d0fcabcfc246f75a11a042109edf1c24cfdc9c802ad89
   category: main
   optional: false
 - name: metatrain
-  version: '2025.12'
+  version: 2026.2.1
   manager: pip
   platform: linux-64
   dependencies:
@@ -2855,22 +2840,24 @@ package:
     metatensor-learn: '>=0.4.0,<0.5'
     metatensor-operations: '>=0.4.0,<0.5'
     metatensor-torch: '>=0.8.2,<0.9'
-    metatomic-torch: '>=0.1.6,<0.2'
+    metatomic-torch: '>=0.1.8,<0.2'
     jsonschema: '*'
     pydantic: '>=2.12'
     typing-extensions: '*'
     omegaconf: '>=2.3.0'
     python-hostlist: '*'
     tqdm: '*'
-    vesin: '*'
+    vesin: '>=0.5.2'
     torch-spex: '>=0.1,<0.2 ; extra == ''soap-bpnn'''
     wigners ; extra: == 'soap-bpnn'
     featomic-torch: '>=0.7,<0.8 ; extra == ''gap'''
     skmatter ; extra: == 'gap'
     scipy ; extra: == 'gap'
-  url: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+    mace-torch: '>=0.3.14,<0.3.15 ; extra == ''mace'''
+    e3nn ; extra: == 'mace'
+  url: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
   hash:
-    sha256: a2bace4f74261bc24e5427dd39fb9e37156a6ef2d439190058df4e9da8e58c09
+    sha256: 0cb48e9ea3f082bd4d544eacda98d5e14d6533ab49f793d997812c1642fb4f72
   category: main
   optional: false
 - name: mpmath
@@ -3135,7 +3122,7 @@ package:
   category: main
   optional: false
 - name: torch
-  version: 2.9.1+cpu
+  version: 2.10.0+cpu
   manager: pip
   platform: linux-64
   dependencies:
@@ -3149,9 +3136,9 @@ package:
     optree: '>=0.13.0 ; extra == ''optree'''
     opt-einsum: '>=3.3 ; extra == ''opt-einsum'''
     pyyaml ; extra: == 'pyyaml'
-  url: https://download.pytorch.org/whl/cpu/torch-2.9.1%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+  url: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
   hash:
-    sha256: 7417d8c565f219d3455654cb431c6d892a3eb40246055e14d645422de13b9ea1
+    sha256: ee40b8a4b4b2cf0670c6fd4f35a7ef23871af956fecb238fbf5da15a72650b1d
   category: main
   optional: false
 - name: towncrier
@@ -3218,26 +3205,26 @@ package:
   category: main
   optional: false
 - name: vesin
-  version: 0.4.2
+  version: 0.5.2
   manager: pip
   platform: linux-64
   dependencies:
     numpy: '*'
     vesin-torch ; extra: == 'torch'
-  url: https://files.pythonhosted.org/packages/f6/66/fe9c41fcf5fe73637997e632a488637d8283fe7bed327b147d26e4964a20/vesin-0.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  url: https://files.pythonhosted.org/packages/8f/cc/87cd5e2053ff8026c63f1682f98592f35b9b32faa39916cd8ca88e13f1be/vesin-0.5.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
   hash:
-    sha256: 72b7c3e26860c5a751fa18676f9487057a1a1f0c50993fedfe1909e33ba608f2
+    sha256: 1b9f38f831f70b28bc8b2a47c2d984ddc3ac6ffcec6f4ac5bf0c919442b8f2ce
   category: main
   optional: false
 - name: vesin-torch
-  version: 0.4.2
+  version: 0.5.2
   manager: pip
   platform: linux-64
   dependencies:
-    torch: '>=2.3,<2.10'
-  url: https://files.pythonhosted.org/packages/ac/17/56cd86df5cedca93a7973546abd1ae2f0a1e202c17ca928b377477119332/vesin_torch-0.4.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+    torch: '>=2.3,<2.11'
+  url: https://files.pythonhosted.org/packages/e0/13/808ee2e14a04c467b02ea7e40119af594a0eb9196fab4e67cd295b59c7a1/vesin_torch-0.5.2-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
   hash:
-    sha256: 80ff62b2fd1f3afb5632cc911bc32fdd3c82e541d1fccec71680362ccced87f0
+    sha256: 96c40e5f7d2428c4bfc8418a34a597da4bd0a1ee9e1148ae6a677486dde14d5b
   category: main
   optional: false
 - name: _openmp_mutex
@@ -3723,19 +3710,6 @@ package:
   hash:
     md5: 2cfaaccf085c133a477f0a7a8657afe9
     sha256: 8b90dc21f00167a7e58abb5141a140bdb31a7c5734fe1361b5f98f4a4183fd32
-  category: main
-  optional: false
-- name: fmt
-  version: 11.2.0
-  manager: conda
-  platform: osx-arm64
-  dependencies:
-    __osx: '>=11.0'
-    libcxx: '>=18'
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/fmt-11.2.0-h440487c_0.conda
-  hash:
-    md5: 24109723ac700cce5ff96ea3e63a83a3
-    sha256: 1449ec46468860f6fb77edba87797ce22d4f6bfe8d5587c46fd5374c4f7383ee
   category: main
   optional: false
 - name: fortran-compiler
@@ -5088,6 +5062,19 @@ package:
     sha256: 690943c979a5bf014348933a68cd39e3bb9114d94371c4c5d846d2daaa82c7d9
   category: main
   optional: false
+- name: quill
+  version: 11.0.2
+  manager: conda
+  platform: osx-arm64
+  dependencies:
+    __osx: '>=11.0'
+    libcxx: '>=19'
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/quill-11.0.2-ha7d2532_0.conda
+  hash:
+    md5: bc51385a6143c0710221c5edc62d9f50
+    sha256: 39d2d50b3a21af6bfb9c9b9c50e31bffbfe07fcd6717fe3e88a8c5dcfc069d06
+  category: main
+  optional: false
 - name: readline
   version: '8.3'
   manager: conda
@@ -5232,20 +5219,6 @@ package:
   hash:
     md5: 975878cfb1573e7032a1ed4f49229096
     sha256: 5293c8f35c9c97b57a90581353e22389c912869e94af3a144532069a81b1b798
-  category: main
-  optional: false
-- name: spdlog
-  version: 1.16.0
-  manager: conda
-  platform: osx-arm64
-  dependencies:
-    __osx: '>=11.0'
-    fmt: '>=11.2.0,<11.3.0a0'
-    libcxx: '>=19'
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/spdlog-1.16.0-h06f2c6e_0.conda
-  hash:
-    md5: f429110bb3c4139f94a2c5c3aecd4af5
-    sha256: 6cfe6eba97204dc1d4165f903a9247a34d1cac6e06c29307db7150226452b118
   category: main
   optional: false
 - name: stack_data
@@ -5984,21 +5957,21 @@ package:
   category: main
   optional: false
 - name: metatomic-torch
-  version: 0.1.7
+  version: 0.1.11
   manager: pip
   platform: osx-arm64
   dependencies:
-    torch: '>=2.1,<2.10'
-    vesin: '*'
+    torch: '>=2.3,<2.11'
+    vesin: '>=0.5.1'
     metatensor-torch: '>=0.8.0,<0.9'
     metatensor-operations: '>=0.4.0,<0.5'
-  url: https://files.pythonhosted.org/packages/2c/bb/a6d972d6f392aa734b965343e3de053048846644435fc68ba2f8563b1898/metatomic_torch-0.1.7-py3-none-macosx_11_0_arm64.whl
+  url: https://files.pythonhosted.org/packages/13/7f/03fdc81a62f69866cd937b284a54290cb4570b02cb0761a4a4ea0fdbb487/metatomic_torch-0.1.11-py3-none-macosx_11_0_arm64.whl
   hash:
-    sha256: a83b74cb80c1fd4faf3ab1a7b825d45d051d8a3c57f18bc1b7357dbe22b82b47
+    sha256: c1d7f5488862025ab2c82cbe39aef3caa99a5689ea1f9121d56e90592dc81815
   category: main
   optional: false
 - name: metatrain
-  version: '2025.12'
+  version: 2026.2.1
   manager: pip
   platform: osx-arm64
   dependencies:
@@ -6008,22 +5981,24 @@ package:
     metatensor-learn: '>=0.4.0,<0.5'
     metatensor-operations: '>=0.4.0,<0.5'
     metatensor-torch: '>=0.8.2,<0.9'
-    metatomic-torch: '>=0.1.6,<0.2'
+    metatomic-torch: '>=0.1.8,<0.2'
     jsonschema: '*'
     pydantic: '>=2.12'
     typing-extensions: '*'
     omegaconf: '>=2.3.0'
     python-hostlist: '*'
     tqdm: '*'
-    vesin: '*'
+    vesin: '>=0.5.2'
     torch-spex: '>=0.1,<0.2 ; extra == ''soap-bpnn'''
     wigners ; extra: == 'soap-bpnn'
     featomic-torch: '>=0.7,<0.8 ; extra == ''gap'''
     skmatter ; extra: == 'gap'
     scipy ; extra: == 'gap'
-  url: https://files.pythonhosted.org/packages/ce/85/1607598424a7ee8bdd3dd6f7b47bbf79907c8b4ff57d6883da05ec6560dd/metatrain-2025.12-py3-none-any.whl
+    mace-torch: '>=0.3.14,<0.3.15 ; extra == ''mace'''
+    e3nn ; extra: == 'mace'
+  url: https://files.pythonhosted.org/packages/bb/37/53e014f343322ddd75dd8f92c314d334302934786d6511639eec7e3942d9/metatrain-2026.2.1-py3-none-any.whl
   hash:
-    sha256: a2bace4f74261bc24e5427dd39fb9e37156a6ef2d439190058df4e9da8e58c09
+    sha256: 0cb48e9ea3f082bd4d544eacda98d5e14d6533ab49f793d997812c1642fb4f72
   category: main
   optional: false
 - name: mpmath
@@ -6288,7 +6263,7 @@ package:
   category: main
   optional: false
 - name: torch
-  version: 2.9.1
+  version: 2.10.0
   manager: pip
   platform: osx-arm64
   dependencies:
@@ -6302,9 +6277,9 @@ package:
     optree: '>=0.13.0 ; extra == ''optree'''
     opt-einsum: '>=3.3 ; extra == ''opt-einsum'''
     pyyaml ; extra: == 'pyyaml'
-  url: https://download.pytorch.org/whl/cpu/torch-2.9.1-cp312-none-macosx_11_0_arm64.whl
+  url: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
   hash:
-    sha256: 287242dd1f830846098b5eca847f817aa5c6015ea57ab4c1287809efea7b77eb
+    sha256: 358bd7125cbec6e692d60618a5eec7f55a51b29e3652a849fd42af021d818023
   category: main
   optional: false
 - name: towncrier
@@ -6371,25 +6346,25 @@ package:
   category: main
   optional: false
 - name: vesin
-  version: 0.4.2
+  version: 0.5.2
   manager: pip
   platform: osx-arm64
   dependencies:
     numpy: '*'
     vesin-torch ; extra: == 'torch'
-  url: https://files.pythonhosted.org/packages/6a/1d/8a061603f318e965f50c39e46a56ed372a987b48c40011709f2a9219add0/vesin-0.4.2-py3-none-macosx_11_0_arm64.whl
+  url: https://files.pythonhosted.org/packages/7e/f4/a71146bf735c0cb31c2dc74bc7d3cb862e276f6b1f9068afbaf70db3046d/vesin-0.5.2-py3-none-macosx_11_0_arm64.whl
   hash:
-    sha256: 22cd5adcedccc766f98f6185bc737e3f43fc21e6aee54b8803ced17b8e7460fb
+    sha256: 9bb70c897580232d80ba7e833c41c2a464ec0a49101648d39a001c6524d2c1e1
   category: main
   optional: false
 - name: vesin-torch
-  version: 0.4.2
+  version: 0.5.2
   manager: pip
   platform: osx-arm64
   dependencies:
-    torch: '>=2.3,<2.10'
-  url: https://files.pythonhosted.org/packages/de/3b/517af8e11dc8f321929669be69ad1d29dae757d656c6427613179865c3aa/vesin_torch-0.4.2-py3-none-macosx_11_0_arm64.whl
+    torch: '>=2.3,<2.11'
+  url: https://files.pythonhosted.org/packages/3c/72/f56c87f4942958e073d2e60dfd8fb2d8914a5ca579d267c7e442da73a32c/vesin_torch-0.5.2-py3-none-macosx_11_0_arm64.whl
   hash:
-    sha256: 3299217ba803e442c52613ec4f9fe4cbd2cc2b2538836b902d12eb0d2d6296d8
+    sha256: 76ab983273a4ded0d65b2d2d2132c27012efea3c969db1445c7e0431b5f14713
   category: main
   optional: false
