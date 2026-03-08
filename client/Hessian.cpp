@@ -12,6 +12,7 @@
 #include "Hessian.h"
 #include "EonLogger.h"
 #include "HelperFunctions.h"
+#include "SafeMath.h"
 Hessian::Hessian(const Parameters &params, Matter *matter)
     : matter{matter},
       parameters{params} {
@@ -101,7 +102,7 @@ bool Hessian::calculate(void) {
       // get the effective mass of the moving atoms
       double effMass =
           sqrt(matter->getMass(atoms(j / 3)) * matter->getMass(atoms(i / 3)));
-      hessian(i, j) /= effMass;
+      hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
     }
   }
 

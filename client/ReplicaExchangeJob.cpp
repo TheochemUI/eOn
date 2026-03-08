@@ -14,6 +14,7 @@
 #include "Dynamics.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
+#include "SafeMath.h"
 
 std::vector<std::string> ReplicaExchangeJob::run(void) {
   long i, step,
@@ -100,7 +101,8 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
         kbTLow = kB * replicaTemperature[i];
         kbTHigh = kB * replicaTemperature[i + 1];
         pAcc = min(1.0, exp((energyHigh - energyLow) *
-                            (1.0 / kbTHigh - 1.0 / kbTLow)));
+                            (eonc::safemath::safe_recip(kbTHigh, 0.0) -
+                             eonc::safemath::safe_recip(kbTLow, 0.0))));
         double tmp = helper_functions::randomDouble();
         LOG_INFO(log,
                  "step: {} trial swap, i {}, elow: {:.5f}, ehigh: "

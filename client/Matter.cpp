@@ -15,6 +15,7 @@
 #include "HelperFunctions.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
+#include "SafeMath.h"
 #include "SurrogatePotential.h"
 
 #include "EonLogger.h"
@@ -612,11 +613,14 @@ bool Matter::matter2con(FILE *file) {
   lengths[2] = cell.row(2).norm();
   fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
   double angles[3];
-  angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
+  angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
               180 / helper_functions::pi;
-  angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
+  angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
               180 / helper_functions::pi;
-  angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
+  angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
               180 / helper_functions::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
@@ -703,7 +707,8 @@ bool Matter::con2matter(FILE *file) {
     cell(1, 1) = sin(angles[0]);
     cell(2, 0) = cos(angles[1]);
     cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
+    cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
+                                           pow(cell(2, 1), 2));
 
     cell(0, 0) *= lengths[0];
     cell(1, 0) *= lengths[1];
@@ -1007,11 +1012,14 @@ bool Matter::matter2convel(FILE *file) {
   lengths[2] = cell.row(2).norm();
   fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
   double angles[3];
-  angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) *
+  angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
               180 / helper_functions::pi;
-  angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) *
+  angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
               180 / helper_functions::pi;
-  angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) *
+  angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
               180 / helper_functions::pi;
   fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
   fputs(headerCon5, file);
@@ -1108,7 +1116,8 @@ bool Matter::convel2matter(FILE *file) {
     cell(1, 1) = sin(angles[0]);
     cell(2, 0) = cos(angles[1]);
     cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
+    cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
+                                           pow(cell(2, 1), 2));
 
     cell(0, 0) *= lengths[0];
     cell(1, 0) *= lengths[1];

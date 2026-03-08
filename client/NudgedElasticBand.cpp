@@ -17,6 +17,7 @@
 #include "MinModeSaddleSearch.h"
 #include "NEBInitialPaths.hpp"
 #include "Optimizer.h"
+#include "SafeMath.h"
 #include "eonExceptions.hpp"
 #include "magic_enum/magic_enum.hpp"
 
@@ -820,7 +821,7 @@ void NudgedElasticBand::updateForces(void) {
         AtomMatrix forces = path[j]->getForces();
         for (int k = 0; k < atoms; k++) {
           // Apply 1/m scaling as per Eq (12)
-          double alpha_k = 1.0 / (2.0 * base_k);
+          double alpha_k = eonc::safemath::safe_recip(2.0 * base_k, 0.0);
           L_vecs[j].row(k) = alpha_k * forces.row(k);
         }
       }
