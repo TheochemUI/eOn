@@ -28,10 +28,12 @@ namespace EpiCenters
     void cna(long *cna, const Matter *matter, double neighborCutoff);
 
     // determine the coordination for individual atoms
-    void coordination(long *coordinationVal, const Matter *matter, double neighborCutoff);
+    void coordination(long *coordinationVal, const Matter *matter,
+                      double neighborCutoff);
 
     // determine atoms with coordination <= coordinationMaxVal
-    void coordinationLessOrEqual(bool *result, long coordinationMaxVal, const Matter *matter, double neighborCutoff);
+    void coordinationLessOrEqual(bool *result, long coordinationMaxVal,
+                                 const Matter *matter, double neighborCutoff);
 
     // determine first minimally coordinated atom
     long minCoordination(const Matter *matter, double neighborCutoff);

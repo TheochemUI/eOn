@@ -16,6 +16,7 @@ def insert(state, process_id):
         from kdb import aselite
         from kdb import local_db
         from kdb import local_insert
+        #print("kdb works")
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
@@ -28,7 +29,7 @@ def insert(state, process_id):
     params = db.get_params()
     insert_sub_class = local_insert.LocalInsert()
     insert_sub_class.insert(reactant, saddle, product, mode=mode, nf=params['nf'], 
-               dc=params['dc'], mac=params['mac'], kdbname=config.kdb_name)
+               dc=params['dc'], mac=params['mac'], kdbname=config.kdb_name) #insert instead (no into_db)
 
 def query(state):
     try:
@@ -55,21 +56,21 @@ def query(state):
 
 def make_suggestion():
     if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
-        dones = glob.glob(os.path.join(config.kdb_scratch_path, "kdbmatches",".done_*"))
+        dones = glob.glob(os.path.join(config.kdb_scratch_path, "kdbmatches","SADDLE_*"))
         if len(dones) > 0:
-            number = dones[0].split("_")[1]
+            entry_state = dones[0].split("_")[1]
+            entry_id  = dones[0].split("_")[2]
             try:
-                displacement = io.loadcon(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
+                displacement = io.loadcon(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s_%s" % (entry_state, entry_id)))
             except FloatingPointError:
-                displacement = io.loadposcar(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
+                displacement = io.loadposcar(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s_%s" % (entry_state, entry_id)))
             except ValueError:
-                displacement = io.loadposcar(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
+                displacement = io.loadposcar(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s_%s" % (entry_state, entry_id)))
             mode = [[float(i) for i in l.strip().split()] for l in
                     open(os.path.join(config.kdb_scratch_path, "kdbmatches",
-                    "MODE_%s" % number), 'r').readlines()[:]]
-            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", ".done_%s" % number))
-            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
-            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
+                    "MODE_%s_%s" % (entry_state, entry_id)), 'r').readlines()[:]]
+            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s_%s" % (entry_state, entry_id)))
+            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s_%s" % (entry_state, entry_id)))
             return displacement, mode
     return None, None
 

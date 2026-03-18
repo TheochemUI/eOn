@@ -1,19 +1,17 @@
-
 #include "TestJob.h"
 #include "Matter.h"
-#include "Potential.h"
 #include "MinModeSaddleSearch.h"
+#include "Potential.h"
 #include "Parameters.h"
 
 #include <stdlib.h>
 
-TestJob::TestJob(Parameters *params)
-{
+TestJob::TestJob(Parameters *params) {
     tolerance = 0.01;
     parameters = params;
 }
 
-TestJob::~TestJob(){ }
+TestJob::~TestJob() { }
 
 std::vector<std::string> TestJob::run(void)
 {
@@ -29,14 +27,14 @@ void TestJob::checkFullSearch(void){
     printf("Reported as OK if within a tolerance of: %f\n",tolerance);
 
 //    long status;
-    bool ok=1;
+    bool ok = 1;
     double diffM1, diffM2, diffSP;
 
     Matter *initial;
     Matter *saddle;
 //    Matter *displacement; 
     Matter *min1;
-    Matter *min2; 
+    Matter *min2;
     Matter *matterTemp; 
 //    SaddleSearch *saddleSearch;
 
@@ -100,55 +98,55 @@ void TestJob::checkFullSearch(void){
 
     if ((diffM1 < tolerance) and
         (diffM2 < tolerance) and
-        (diffSP < tolerance)){
+        (diffSP < tolerance)) {
         ok *= 1;
         printf("OK: Saddle search structural energies\n");
-    }
-    else{
-        if (tolerance < diffSP){
+    } else {
+        if (tolerance < diffSP) {
             ok *= 0;
             printf("WARNING: Saddle point not within energy tolerance: %f\n", diffSP);
         }
-        if (tolerance < diffM2){
+        if (tolerance < diffM2) {
             ok *= 0;
             printf("WARNING: Minimum 2 not within energy tolerance: %f\n", diffM2);
         }
-        if (tolerance < diffM1){
+        if (tolerance < diffM1) {
             ok *= 0;
             printf("WARNING: Minimum 1 not within energy tolerance: %f\n", diffM2);
         }
     }
 
     // checking the structures of the obtained configurations
-    diffM1 = abs((min1->getPositions()).row(384).norm()-19.123375);
-    diffM2 = abs((min2->getPositions()).row(384).norm()-19.527995);
-    diffSP = abs((saddle->getPositions()).row(384).norm()-19.026709);
+    diffM1 = abs((min1->getPositions()).row(384).norm() - 19.123375);
+    diffM2 = abs((min2->getPositions()).row(384).norm() - 19.527995);
+    diffSP = abs((saddle->getPositions()).row(384).norm() - 19.026709);
 
     if ((diffM1 < tolerance) and
         (diffM2 < tolerance) and
         (diffSP < tolerance)){
         ok *= 1;
         printf("OK: Saddle search, adatom positions\n");
-    }
-    else{
-        if (tolerance < diffSP){
+    } else {
+        if (tolerance < diffSP) {
             ok *= 0;
-            printf("WARNING: Saddle point, adatom not within position tolerance: %f\n", diffSP);
+            printf("WARNING: Saddle point, adatom not within position tolerance: %f\n",
+                diffSP);
         }
-        if (tolerance < diffM2){
+        if (tolerance < diffM2) {
             ok *= 0;
-            printf("WARNING: Minimum 2, adatom not within position tolerance: %f\n", diffM2);
+            printf("WARNING: Minimum 2, adatom not within position tolerance: %f\n",
+                diffM2);
         }
-        if (tolerance < diffM1){
+        if (tolerance < diffM1) {
             ok *= 0;
-            printf("WARNING: Minimum 1, adatom not within position tolerance: %f\n", diffM1);
+            printf("WARNING: Minimum 1, adatom not within position tolerance: %f\n",
+                diffM1);
         }
     }
 
     if (ok){
         printf("Saddle search tests all good\n");
-    }
-    else{
+    } else {
         printf("Saddle search tests there were WARNINGS\n");
     }
     printf("SP done\n");
@@ -190,19 +188,19 @@ void TestJob::checkPotentials(void)
         forceDiff = getForceDiff(Potential::POT_LJ, 2.007213);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: LJ force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: LJ\n");
         }
     }
 
     energyDiff = getEnergyDiff(Potential::POT_EMT, 46.086312);
-    if (abs(energyDiff) > tolerance){
+    if (abs(energyDiff) > tolerance) {
         printf("WARNING: EMT energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_EMT, 0.357493);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: EMT force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: EMT\n");
         }
     }
@@ -210,23 +208,23 @@ void TestJob::checkPotentials(void)
     energyDiff = getEnergyDiff(Potential::POT_EDIP ,-1033.250950);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: EDIP energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_EDIP, 7.080115);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: EDIP force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: EDIP\n");
         }
     }
 
-    energyDiff = getEnergyDiff(Potential::POT_TERSOFF_SI,-1035.809985 );
+    energyDiff = getEnergyDiff(Potential::POT_TERSOFF_SI, -1035.809985 );
     if (abs(energyDiff) > tolerance){
         printf("WARNING: Tersoff energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_TERSOFF_SI, 11.145002);
-        if (abs(forceDiff) > tolerance){
+        if (abs(forceDiff) > tolerance) {
             printf("WARNING: Tersoff force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: Tersoff\n");
         }
     }
@@ -234,11 +232,11 @@ void TestJob::checkPotentials(void)
     energyDiff = getEnergyDiff(Potential::POT_SW_SI, -1449.795645);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: SW energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_SW_SI, 2.530904);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: SW force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: SW\n");
         }
     }
@@ -246,23 +244,23 @@ void TestJob::checkPotentials(void)
     energyDiff = getEnergyDiff(Potential::POT_LENOSKY_SI, -1410.679106);
     if (abs(energyDiff) > tolerance){
         printf("Lenosky energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_LENOSKY_SI, 2.320168);
         if (abs(forceDiff) > tolerance){
             printf("Lenosky force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: Lenosky\n");
         }
     }
 
     energyDiff = getEnergyDiff(Potential::POT_EAM_AL, -1206.825825);
-    if (abs(energyDiff) > tolerance){
+    if (abs(energyDiff) > tolerance) {
         printf("WARNING: Aluminum energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_EAM_AL, 0.000246);
-        if (abs(forceDiff) > tolerance){
+        if (abs(forceDiff) > tolerance) {
             printf("WARNING: Aluminum force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: Aluminum\n");
         }
     }
@@ -270,11 +268,11 @@ void TestJob::checkPotentials(void)
     energyDiff = getEnergyDiff(Potential::POT_QSC, -1232.806318);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: QSC energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_QSC, 0.673444);
-        if (abs(forceDiff) > tolerance){
+        if (abs(forceDiff) > tolerance) {
             printf("WARNING: QSC force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: QSC\n");
         }
     } 
@@ -282,15 +280,14 @@ void TestJob::checkPotentials(void)
     energyDiff = getEnergyDiff(Potential::POT_TIP4P, 4063.865115);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: TIP4P energy difference: %f\n", energyDiff);
-    }else{
+    } else {
         forceDiff = getForceDiff(Potential::POT_TIP4P, 73.655248);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: TIP4P force difference: %f\n", forceDiff);
-        }else{
+        } else {
             printf("OK: TIP4P\n");
         }
     }
-
 }
 
 double TestJob::getEnergyDiff(string pot, double refEnergy)
@@ -300,7 +297,7 @@ double TestJob::getEnergyDiff(string pot, double refEnergy)
     Matter *pos = new Matter(parameters);
     pos->con2matter(posFilename);
 //    printf("Energy: %f\n", pos->getPotentialEnergy());
-    return pos->getPotentialEnergy()-refEnergy;
+    return pos->getPotentialEnergy() - refEnergy;
 }
 
 double TestJob::getForceDiff(string pot, double refForce)
@@ -310,6 +307,6 @@ double TestJob::getForceDiff(string pot, double refForce)
     Matter *pos = new Matter(parameters);
     pos->con2matter(posFilename);
 //    printf("Force: %f\n", pos->maxForce());
-    return pos->maxForce()-refForce;
+    return pos->maxForce() - refForce;
 }
 

@@ -10,10 +10,7 @@
 using namespace std;
 using namespace helper_functions;
 
-DynamicsJob::DynamicsJob(Parameters *params)
-{
-    parameters = params;
-}
+DynamicsJob::DynamicsJob(Parameters *params) { parameters = params; }
 
 DynamicsJob::~DynamicsJob() {}
 

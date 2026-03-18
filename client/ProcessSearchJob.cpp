@@ -1,25 +1,22 @@
-
 #include "ProcessSearchJob.h"
-#include "EpiCenters.h"
-#include "Optimizer.h"
-#include "Potential.h"
-#include "Log.h"
-#include "Prefactor.h"
-#include "DynamicsSaddleSearch.h"
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
+#include "DynamicsSaddleSearch.h"
+#include "EpiCenters.h"
+#include "Log.h"
+#include "Optimizer.h"
+#include "Potential.h"
+#include "Prefactor.h"
 #include <stdio.h>
 #include <string>
 //#include <cassert>
 
-ProcessSearchJob::ProcessSearchJob (Parameters *params)
-{
+ProcessSearchJob::ProcessSearchJob (Parameters *params) {
     parameters = params;
     fCallsSaddle = fCallsPrefactors = fCallsMin = 0;
 }
 
-ProcessSearchJob::~ProcessSearchJob()
-{}
+ProcessSearchJob::~ProcessSearchJob() { }
 
 std::vector<std::string> ProcessSearchJob::run(void)
 {
@@ -32,7 +29,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
         parameters->saddleMethod == "basin_hopping" ||
         parameters->saddleMethod == "bgsd") {
         displacement = new Matter(parameters);
-    }else if (parameters->saddleMethod == "dynamics") {
+    } else if (parameters->saddleMethod == "dynamics") {
         displacement = NULL;
     }
     saddle = new Matter(parameters);
@@ -54,7 +51,9 @@ std::vector<std::string> ProcessSearchJob::run(void)
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
-    if (parameters->saddleMethod == "min_mode" || parameters->saddleMethod == "basin_hopping" || parameters->saddleMethod == "bgsd") {
+    if (parameters->saddleMethod == "min_mode" ||
+        parameters->saddleMethod == "basin_hopping" ||
+        parameters->saddleMethod == "bgsd") {
         if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
             // displacement was passed from the server
             if(!saddle->con2matter(displacementFilename)) {
@@ -62,12 +61,12 @@ std::vector<std::string> ProcessSearchJob::run(void)
                 exit(1);
             }
             *min1 = *min2 = *initial;
-        }else{
+        } else {
             // displacement and mode will be made on the client
             // in SaddleSearch->initialize(...)
             *saddle = *min1 = *min2 = *initial;
         }
-    }else{
+    } else { 
         *saddle = *min1 = *min2 = *initial;
     }
 
@@ -79,12 +78,13 @@ std::vector<std::string> ProcessSearchJob::run(void)
             mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms()); 
         }
         saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
-    }else if (parameters->saddleMethod == "basin_hopping") {
+    } else if (parameters->saddleMethod == "basin_hopping") {
         saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, parameters);
-    }else if (parameters->saddleMethod == "dynamics") {
+    } else if (parameters->saddleMethod == "dynamics") {
         saddleSearch = new DynamicsSaddleSearch(saddle, parameters);
-    }else if (parameters->saddleMethod == "bgsd") {
-        saddleSearch = new BiasedGradientSquaredDescent(saddle, initial->getPotentialEnergy(), parameters);
+    } else if (parameters->saddleMethod == "bgsd") {
+        saddleSearch = new BiasedGradientSquaredDescent(saddle,
+            initial->getPotentialEnergy(), parameters);
     }
 
     int status = doProcessSearch();
@@ -95,12 +95,10 @@ std::vector<std::string> ProcessSearchJob::run(void)
     // might have been forced to be equal if the structure passed to the client
     // when determining barrier and the prefactor
 
-    if (min1 != initial) {
+    if (min1 != initial)
         delete initial;
-    }
-    
+
     delete saddleSearch;
-//    delete initial;
     delete displacement;
     delete saddle;
     delete min1;
@@ -113,16 +111,13 @@ int ProcessSearchJob::doProcessSearch(void)
 {
     Matter matterTemp(parameters);
     long status;
-    int f1;
-    f1 = Potential::fcalls;
+    int f1 = Potential::fcalls;
 
-    
     status = saddleSearch->run();
     fCallsSaddle += Potential::fcalls - f1;
 
-    if (status != MinModeSaddleSearch::STATUS_GOOD) {
+    if (status != MinModeSaddleSearch::STATUS_GOOD)
         return status;
-    }
 
     // relax from the saddle point
 
@@ -131,7 +126,8 @@ int ProcessSearchJob::doProcessSearch(void)
 
     *min1 = *saddle;
 
-    displacedPos = posSaddle - saddleSearch->getEigenvector() * parameters->processSearchMinimizationOffset;
+    displacedPos = posSaddle - saddleSearch->getEigenvector() *
+        parameters->processSearchMinimizationOffset;
     min1->setPositions(displacedPos);
 
     Potential::fcalls = 0;
@@ -139,12 +135,12 @@ int ProcessSearchJob::doProcessSearch(void)
     bool converged = min1->relax(false, parameters->writeMovies, false, "min1");
     fCallsMin += Potential::fcalls;
 
-    if (!converged) {
+    if (!converged)
         return MinModeSaddleSearch::STATUS_BAD_MINIMA;
-    }
 
     *min2 = *saddle;
-    displacedPos = posSaddle + saddleSearch->getEigenvector() * parameters->processSearchMinimizationOffset;
+    displacedPos = posSaddle + saddleSearch->getEigenvector() *
+        parameters->processSearchMinimizationOffset;
     min2->setPositions(displacedPos);
 
     Potential::fcalls = 0;
@@ -152,12 +148,11 @@ int ProcessSearchJob::doProcessSearch(void)
     converged = min2->relax(false, parameters->writeMovies, false, "min2");
     fCallsMin += Potential::fcalls;
 
-    if (!converged) {
+    if (!converged)
         return MinModeSaddleSearch::STATUS_BAD_MINIMA;
-    }
 
     // if min2 corresponds to initial state, swap min1 && min2
-    if(!(initial->compare(min1)) && initial->compare(min2)){
+    if (!(initial->compare(min1)) && initial->compare(min2)){
         matterTemp = *min1;
         *min1 = *min2;
         *min2 = matterTemp;
@@ -169,29 +164,25 @@ int ProcessSearchJob::doProcessSearch(void)
     }
 
     if (initial->compare(min2)) {
-        // both minima are the initial state
         log("both minima are the initial state");
         return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
     }
 
     // use the structure passed to the client when determining 
-    // the barrier and prefactor for the forward process    
-    if (!parameters->processSearchMinimizeFirst) {
+    // the barrier and prefactor for the forward process
+    if (!parameters->processSearchMinimizeFirst)
         min1 = initial;
-    }
     
-    // Calculate the barriers
-    barriersValues[0] = saddle->getPotentialEnergy()-min1->getPotentialEnergy();
-    barriersValues[1] = saddle->getPotentialEnergy()-min2->getPotentialEnergy();
+    // calculate the barriers
+    barriersValues[0] = saddle->getPotentialEnergy() - min1->getPotentialEnergy();
+    barriersValues[1] = saddle->getPotentialEnergy() - min2->getPotentialEnergy();
 
-    if((parameters->saddleMaxEnergy < barriersValues[0]) || 
-       (parameters->saddleMaxEnergy < barriersValues[1])) {
+    if((parameters->saddleMaxEnergy < barriersValues[0]) ||
+       (parameters->saddleMaxEnergy < barriersValues[1]))
         return MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER;
-    }
-    
-    if (barriersValues[0] < 0.0 || barriersValues[1] < 0.0) {
+
+    if (barriersValues[0] < 0.0 || barriersValues[1] < 0.0)
         return MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER;
-    }
 
     // calculate the prefactor
     if(!parameters->prefactorDefaultValue)
@@ -200,7 +191,8 @@ int ProcessSearchJob::doProcessSearch(void)
 
         int prefStatus;
         double pref1, pref2;
-        prefStatus = Prefactor::getPrefactors(parameters, min1, saddle, min2, pref1, pref2);
+        prefStatus = Prefactor::getPrefactors(
+            parameters, min1, saddle, min2, pref1, pref2);
         if(prefStatus == -1) {
             printf("Prefactor: bad calculation\n");
             return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;
@@ -208,29 +200,25 @@ int ProcessSearchJob::doProcessSearch(void)
         fCallsPrefactors += Potential::fcalls - f1;
 
         /* Check that the prefactors are in the correct range */
-        if((pref1 > parameters->prefactorMaxValue) ||
-           (pref1 < parameters->prefactorMinValue)){
-            cout<<"Bad reactant-to-saddle prefactor: "<<pref1<<endl;
+        if ((pref1 > parameters->prefactorMaxValue) ||
+            (pref1 < parameters->prefactorMinValue)) {
+            cout <<"Bad reactant-to-saddle prefactor: " <<pref1 <<endl;
             return MinModeSaddleSearch::STATUS_BAD_PREFACTOR;
         }
-        if((pref2 > parameters->prefactorMaxValue) ||
-           (pref2 < parameters->prefactorMinValue)){
+        if ((pref2 > parameters->prefactorMaxValue) ||
+            (pref2 < parameters->prefactorMinValue)) {
             cout<<"Bad product-to-saddle prefactor: "<<pref2<<endl;
             return MinModeSaddleSearch::STATUS_BAD_PREFACTOR;
         }
         prefactorsValues[0] = pref1;
         prefactorsValues[1] = pref2;
-
-    }
-    else
-    {
+    } else {
         // use the default prefactor value specified
         prefactorsValues[0] = parameters->prefactorDefaultValue;
         prefactorsValues[1] = parameters->prefactorDefaultValue;
     }
     return MinModeSaddleSearch::STATUS_GOOD;
 }
-
 
 void ProcessSearchJob::saveData(int status)
 {
@@ -243,28 +231,41 @@ void ProcessSearchJob::saveData(int status)
     //      the minimizer. But right now the minimizers are in
     //      the SaddleSearch object. They will be taken out eventually.
 
-    fprintf(fileResults, "%d termination_reason\n", status);
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
-    fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
-//    fprintf(fileResults, "%ld force_calls_minimization\n", SaddleSearch->forceCallsMinimization + fCallsMin);
+    fprintf(fileResults, "%d termination_reason\n",
+        status);
+    fprintf(fileResults, "%ld random_seed\n",
+        parameters->randomSeed);
+    fprintf(fileResults, "%s potential_type\n",
+        parameters->potential.c_str());
+    fprintf(fileResults, "%d total_force_calls\n",
+        Potential::fcallsTotal);
+    fprintf(fileResults, "%ld force_calls_minimization\n",
+        fCallsMin);
+    // fprintf(fileResults, "%ld force_calls_minimization\n",
+    //    SaddleSearch->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%.12e potential_energy_saddle\n", saddle->getPotentialEnergy());
-    fprintf(fileResults, "%.12e potential_energy_reactant\n", min1->getPotentialEnergy());
-    fprintf(fileResults, "%.12e potential_energy_product\n", min2->getPotentialEnergy());
-    fprintf(fileResults, "%.12e barrier_reactant_to_product\n", barriersValues[0]);
-    fprintf(fileResults, "%.12e barrier_product_to_reactant\n", barriersValues[1]);
+    fprintf(fileResults, "%.12e potential_energy_saddle\n",
+        saddle->getPotentialEnergy());
+    fprintf(fileResults, "%.12e potential_energy_reactant\n",
+        min1->getPotentialEnergy());
+    fprintf(fileResults, "%.12e potential_energy_product\n",
+        min2->getPotentialEnergy());
+    fprintf(fileResults, "%.12e barrier_reactant_to_product\n",
+        barriersValues[0]);
+    fprintf(fileResults, "%.12e barrier_product_to_reactant\n",
+        barriersValues[1]);
     if (parameters->saddleMethod == "min_mode") {
         fprintf(fileResults, "%.12e displacement_saddle_distance\n",
             displacement->perAtomNorm(*saddle));
-    }else{
+    } else {
         fprintf(fileResults, "%.12e displacement_saddle_distance\n", 0.0);
     }
     if (parameters->saddleMethod == "dynamics") {
         DynamicsSaddleSearch *ds = (DynamicsSaddleSearch*)saddleSearch;
-        fprintf(fileResults, "%.12e simulation_time\n", ds->time*parameters->timeUnit);
-        fprintf(fileResults, "%.12e md_temperature\n", parameters->saddleDynamicsTemperature);
+        fprintf(fileResults, "%.12e simulation_time\n",
+            ds->time*parameters->timeUnit);
+        fprintf(fileResults, "%.12e md_temperature\n",
+            parameters->saddleDynamicsTemperature);
     }
     fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
     fprintf(fileResults, "%.12e prefactor_reactant_to_product\n", prefactorsValues[0]);
@@ -301,58 +302,40 @@ void ProcessSearchJob::saveData(int status)
 void ProcessSearchJob::printEndState(int status)
 {
     log("[Saddle Search] Final status: ");
-
     if(status == MinModeSaddleSearch::STATUS_GOOD)
         log("Success\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
         log("Initial displacement unable to reach convex region\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
         log("Barrier too high\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
         log("Too many iterations in concave region\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
         log("Too many iterations\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
         log("Saddle is not connected to initial state\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
         log("Prefactors not within window\n");
-
     else if(status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
         log("Hessian calculation failed\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
         log("Energy barrier not within window\n");
-
     else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
         log("Minimizations from saddle did not converge\n");
-
     else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
         log("Nonnegative initial mode, aborting\n");
-
     else if(status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
         log("Negative barrier detected\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
         log("No reaction found during MD trajectory\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
         log("Converged to stationary point with zero negative modes\n");
-
     else if(status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
         log("No forward barrier was found along minimized band\n");
-
     else if(status == MinModeSaddleSearch::STATUS_ZEROMODE_ABORT)
         log("Zero mode abort.\n");
-
     else if(status == MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
         log("Optimizer error.\n");
-
     else
         log("Unknown status: %i!\n", status);
 

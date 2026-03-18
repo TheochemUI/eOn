@@ -1,11 +1,10 @@
-
 #include "Bundling.h"
 #include "CommandLine.h"
-#include "Parameters.h"
+#include "EpiCenters.h"
+#include "HelperFunctions.h"
 #include "Job.h"
 #include "Log.h"
-#include "HelperFunctions.h"
-#include "EpiCenters.h"
+#include "Parameters.h"
 #include "Potential.h"
 #include "version.h"
 
@@ -14,9 +13,9 @@
 #include <time.h>
 
 #ifdef EONMPI
-    #include <mpi.h>
-    #include <fcntl.h>
     #include <Python.h>
+    #include <fcntl.h>
+    #include <mpi.h>
     #include <stdlib.h>
     #include <sstream>
 #endif
@@ -39,7 +38,35 @@
     #include <unistd.h>
 #endif
 
+#ifdef OSX
+    #include<mach/mach.h>
+#endif
 
+/*
+#ifdef __APPLE__
+    #ifndef __aarch64__
+    #include <mach/mach.h>
+    #include <mach/task_info.h>
+
+    void print_memory_usage() {
+        struct task_basic_info t_info;
+        mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+
+        if (KERN_SUCCESS != task_info(mach_task_self(),
+            TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count)) {
+            printf("Failed to get task info\n");
+            return;
+        }
+
+        unsigned int rss = t_info.resident_size;
+        unsigned int vs = t_info.virtual_size;
+        printf(
+            "\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
+            (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+    }
+    #endif
+#endif
+*/
 void printSystemInfo()
 {
     printf("EON Client\n");
@@ -82,7 +109,7 @@ int main(int argc, char **argv)
                 return 1;
             }
             number_of_clients = atoi(getenv("EON_NUMBER_OF_CLIENTS"));
-        }else{
+        } else {
             number_of_clients = 1;
         }
 
@@ -93,12 +120,12 @@ int main(int argc, char **argv)
         int error;
         string config_file = "config.ini";
         if (client_standalone) {
-            if(helper_functions::existsFile("config_0.ini")) {
+            if (helper_functions::existsFile("config_0.ini")) {
                 config_file = "config_0.ini";
             }
             printf("Loading parameter file %s\n",config_file.c_str());
             error = parameters.load(config_file);
-        }else{
+        } else {
             printf("Loading parameter file %s\n",parameters.iniFilename.c_str());
             error = parameters.load(parameters.iniFilename);
         }
@@ -119,20 +146,20 @@ int main(int argc, char **argv)
 
         process_type = 1;
 
-        MPI::COMM_WORLD.Allgather(&process_type,     1, MPI::INT,
+        MPI::COMM_WORLD.Allgather(&process_type, 1, MPI::INT,
                                   &process_types[0], 1, MPI::INT);
 
-        int i, servers=0, clients=0, potentials=0;
-        int server_rank=-1;
-        int my_client_number=-1;
+        int i, servers = 0, clients = 0, potentials = 0;
+        int server_rank = -1;
+        int my_client_number = -1;
         std::vector<int> client_ranks;
-        for (i=0;i<isize;i++) {
+        for (i = 0; i < isize; i++) {
             switch (process_types[i]) {
                 case 0:
                     servers++;
                     break;
                 case 1:
-                    if (i==irank) {
+                    if (i == irank) {
                         my_client_number = clients;
                     }
                     clients++;
@@ -154,7 +181,7 @@ int main(int argc, char **argv)
         if (parameters.potential == "mpi") {
             int *potential_ranks = new int[potentials];
             int j;
-            for (i=0,j=0; i<isize; i++) {
+            for (i = 0, j = 0; i < isize; i++) {
                 if (process_types[i] == 2) {
                     potential_ranks[j] = i;
                     j++;
@@ -162,7 +189,7 @@ int main(int argc, char **argv)
             }
             int potential_group_size = potentials/clients;
 
-            for (i=0; i<clients; i++) {
+            for (i = 0; i < clients; i++) {
                 MPI::Group orig_group, new_group;
                 orig_group = MPI::COMM_WORLD.Get_group();
                 int offset = i*potential_group_size;
@@ -177,7 +204,7 @@ int main(int argc, char **argv)
         }
 
         #ifdef LAMMPS_POT
-            for (i=0; i<int(client_ranks.size()); i++) {
+            for (i = 0; i < int(client_ranks.size()); i++) {
                 MPI_Group world_group, new_group;
                 MPI_Comm_group(MPI_COMM_WORLD, &world_group);
                 int r = client_ranks[i];
@@ -196,19 +223,10 @@ int main(int argc, char **argv)
             if (my_client_number == number_of_clients) {
                 std::ostringstream oss;
                 oss << client_ranks.at(0);
-                for (i=1;i<number_of_clients;i++) {
+                for (i = 1; i < number_of_clients; i++) {
                     oss << ":" << client_ranks.at(i);
                 }
                 setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
-                /* GH
-                char **py_argv = (char **)malloc(sizeof(char **)*2);
-                py_argv[0] = argv[0];
-                py_argv[1] = getenv("EON_SERVER_PATH");
-                fprintf(stderr, "rank: %i becoming %s\n", irank, py_argv[1]);
-                Py_Initialize();
-                Py_Main(2, py_argv);
-                Py_Finalize();
-                */
                 wchar_t** py_argv = (wchar_t**)malloc(sizeof(wchar_t*)*2);
                 py_argv[0] = Py_DecodeLocale(argv[0], NULL);
                 char* program = getenv("EON_SERVER_PATH");
@@ -217,10 +235,9 @@ int main(int argc, char **argv)
                 Py_Initialize();
                 Py_Main(2, py_argv);
                 Py_FinalizeEx();
-                //GH
                 MPI::Finalize();
                 return 0;
-            }else if (my_client_number > number_of_clients) {
+            } else if (my_client_number > number_of_clients) {
                 MPI::Finalize();
                 return 0;
             }
@@ -255,11 +272,14 @@ int main(int argc, char **argv)
         while (true) {
             chdir(orig_path);
             char *path = new char[1024];
-            int ready=1;
+            int ready = 1;
             if (!client_standalone) {
-                fprintf(stderr, "client: rank %i is ready, posting send to server rank: %i!\n", irank, server_rank);
-                //Tag "1" is to interrupt the main loop and tell the communicator that a client is ready
-                MPI::COMM_WORLD.Isend(&ready,     1, MPI::INT,  server_rank, 1);
+                fprintf(stderr,
+                        "client: rank %i is ready, posting send to server rank: %i!\n",
+                        irank, server_rank);
+                // Tag "1" is to interrupt the main loop and tell the communicator that a
+                // client is ready
+                MPI::COMM_WORLD.Isend(&ready, 1, MPI::INT, server_rank, 1);
 
                 //Get the path we should run in from the server
                 MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
@@ -282,17 +302,18 @@ int main(int argc, char **argv)
     int bundleSize = getBundleSize();
     if (bundleSize == 0) {
         bundleSize = 1;
-    }else if (bundleSize == -1) {
+    } else if (bundleSize == -1) {
         //Not using bundling
         bundleSize = 1;
         bundlingEnabled = false;
     }
     
     std::vector<std::string> bundledFilenames;
-    for (int i=0;i<bundleSize;i++) {
+    for (int i = 0; i < bundleSize; i++) {
         Potential::fcalls = 0;
         Potential::fcallsTotal = 0;
-        if(bundleSize>1) printf("Beginning Job %d of %d\n", i+1, bundleSize);
+        if (bundleSize> 1 )
+            printf("Beginning Job %d of %d\n", i + 1, bundleSize);
         std::vector<std::string> unbundledFilenames;
         if (bundlingEnabled) {
             unbundledFilenames = unbundle(i);
@@ -330,7 +351,7 @@ int main(int argc, char **argv)
         if (bundlingEnabled) {
             bundle(i, filenames, &bundledFilenames);
             deleteUnbundledFiles(unbundledFilenames);
-        }else{
+        } else {
             bundledFilenames = filenames;
         }
 
@@ -350,18 +371,20 @@ int main(int argc, char **argv)
     #endif
 
     // Timing Information
-    double utime=0, stime=0, rtime=0;
+    double utime = 0, stime = 0, rtime = 0;
     helper_functions::getTime(&rtime, &utime, &stime);
     rtime = rtime - beginTime;
 
     if (Potential::totalUserTime > 0) {
-        printf("\ntime not in potential: %.4f%%\n", 100*(1-Potential::totalUserTime/utime));
+        printf("\ntime not in potential: %.4f%%\n",
+            100 * (1 - Potential::totalUserTime / utime));
     }
 
-    printf("timing information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
-           rtime,utime,stime);
+    printf("timing information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  "
+           "%10.3f seconds\n", rtime, utime, stime);
 
     #ifdef OSX
+        #include<mach/mach.h>
         struct task_basic_info t_info;
         mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
@@ -379,7 +402,7 @@ int main(int argc, char **argv)
     #ifdef EONMPI
         if (client_standalone) {
             MPI::COMM_WORLD.Abort(0);
-        }else{
+        } else {
             MPI::Finalize();
         }
     #endif

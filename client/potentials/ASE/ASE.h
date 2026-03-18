@@ -26,6 +26,7 @@ class ASE : public Potential
         py::module_ py_module;  // Member to store the Python module
         py::object calculator;  // Member to store the ASE calculator object
         py::object _calculate;  // Member to store the Python function to calculate forces and energy
+        bool FPE_WAS_ENABLED;  // Used to hold previous FPE checking state
 
     public:
         ASE(Parameters *p);

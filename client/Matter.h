@@ -35,7 +35,7 @@ public:
     Matter(Parameters *parameters); // the number of atoms shall be set later using resize()
     Matter(Parameters *parameters, long int nAtoms); // prepare the object for use with nAtoms atoms
     Matter(const Matter& matter); // create a copy of matter
-    ~Matter(); // Destructor
+    ~Matter(); // Destructormattermattermatter
     const Matter& operator=(const Matter& matter); // copy the matter object
     //bool operator==(const Matter& matter); // true if differences in positions are below differenceDistance
     //bool operator!=(const Matter& matter); // inverse of ==
@@ -117,6 +117,9 @@ public:
     VectorXd getFreeV() const;
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
+    // Element mapping utilities (static methods for global access)
+    static int symbol2atomicNumber(const char *symbol);
+    static const char* atomicNumber2symbol(int atomicNumber);
 
 private:
     Potential *potential; // pointer to function calculating the energy and forces

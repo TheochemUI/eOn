@@ -22,7 +22,7 @@ void minimize(Parameters *parameters, Matter *matter, string confileout)
     matter->relax(false, false);
     if (confileout.length() > 0) {
         printf("saving relaxed structure to %s\n", confileout.c_str());
-    }else{
+    } else {
         printf("no output file specified, not saving\n");
     }
     matter->matter2con(confileout);
@@ -60,7 +60,7 @@ void commandLine(int argc, char **argv)
 
     Parameters *parameters = new Parameters;
 
-    while ((c=getopt(argc,argv,"chsmp:f:o:t:v")) != -1) {
+    while ((c = getopt(argc, argv, "chsmp:f:o:t:v")) != -1) {
         switch (c) {
             case 'c':
                 cflag = true;
@@ -110,7 +110,7 @@ void commandLine(int argc, char **argv)
     if (!pflag && (sflag || mflag)) {
         fprintf(stderr, "Must specify a potential\n");
         exit(2);
-    }else if (!cflag) {
+    } else if (!cflag) {
         for (string::size_type i = 0; i < potential.length(); ++i) {
           potential[i] = tolower(potential[i]);
         }
@@ -121,7 +121,7 @@ void commandLine(int argc, char **argv)
     if (extraArgs < 1) {
         fprintf(stderr, "Only one non-option argument is allowed: the con file\n");
         exit(2);
-    }else{
+    } else {
         confile = argv[optind];
     }
 
@@ -139,19 +139,19 @@ void commandLine(int argc, char **argv)
 
     string confileout;
     if (extraArgs == 2) {
-        confileout = argv[optind+1];
+        confileout = argv[optind + 1];
         if (cflag) matter2->con2matter(confileout);
     }
 
     if (sflag) {
         singlePoint(parameters, matter);
-    }else if (mflag) {
+    } else if (mflag) {
         minimize(parameters, matter, confileout);
-    }else if (cflag) {
+    } else if (cflag) {
         parameters->checkRotation = true;
         if (matter->compare(matter2, true)) {
             printf("structures match\n");
-        }else{
+        } else {
             printf("structures do not match\n");
         }
     }

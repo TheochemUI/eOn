@@ -7,12 +7,12 @@
 #include "Eigen.h"
 
 class FiniteDifferenceJob: public Job {
-    public:
-        FiniteDifferenceJob(Parameters *params);
-        ~FiniteDifferenceJob(void);
-        std::vector<std::string> run(void);
-    private:
-        Parameters *parameters;
+public:
+    FiniteDifferenceJob(Parameters *params);
+    ~FiniteDifferenceJob(void);
+    std::vector<std::string> run(void);
+private:
+    Parameters *parameters;
 };
 
 #endif

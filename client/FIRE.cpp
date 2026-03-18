@@ -21,10 +21,7 @@ FIRE::FIRE(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
     iteration = 0;
 }
 
-FIRE::~FIRE()
-{
-    return;
-}
+FIRE::~FIRE() { return; }
 
 int FIRE::step(double maxMove)
 {
@@ -63,7 +60,7 @@ int FIRE::step(double maxMove)
             dt = min(dt * f_inc, dt_max);
             alpha = alpha * f_a;
         }
-    }else{
+    } else {
         dt = dt * f_dec;
         v = v * 0.0;
         alpha = alpha_start;
@@ -71,7 +68,7 @@ int FIRE::step(double maxMove)
     }
 
     // add a sanity check on dt
-    if(dt<1e-6) {
+    if (dt < 1e-6) {
         cout <<"Error in FIRE\n";
         log_file("[FIRE] error, dt is too small: %.4f\n", dt);
 //        exit(1);
@@ -79,17 +76,17 @@ int FIRE::step(double maxMove)
     }
 
     iteration++;
-    //    return objf->isConverged();
-    if(objf->isConverged()) return 1;
+    if (objf->isConverged())
+        return 1;
     return 0;
 }
 
 int FIRE::run(int maxSteps, double maxMove)
 {
-    while(!objf->isConverged() && iteration < maxSteps) {
+    while (!objf->isConverged() && iteration < maxSteps) {
         step(maxMove);
     }
-//    return objf->isConverged();
-    if(objf->isConverged()) return 1;
+    if(objf->isConverged())
+        return 1;
     return 0;
 }

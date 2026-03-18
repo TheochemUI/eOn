@@ -4,7 +4,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-packages = ['eon']
+packages = ['eon', 'eon.mcamc']
 package_dir = {'eon':'eon'}
 package_data = {'eon': ['config.yaml']}
 

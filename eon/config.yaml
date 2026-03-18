@@ -530,7 +530,17 @@ Basin Hopping:
             kind: boolean
             default: false
 
+        displace_atom_list:
+            kind: string
+            default: ""
 
+        displace_type_list:
+            kind: string
+            default: ""
+
+        displace_all_listed:
+            kind: boolean
+            default: false
 
 ################################################################################
 

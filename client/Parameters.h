@@ -252,6 +252,11 @@ public:
     double basinHoppingTargetRatio;
     bool   basinHoppingWriteUnique;
     double basinHoppingStopEnergy;
+    // Atom selection for displacement (similar to Saddle Search)
+    string basinHoppingDisplaceAtomList;      // comma-separated atom indices (0-based e.g., "0,1,2" or "-1" for last atom)
+    string basinHoppingDisplaceTypeList;      // comma-separated atomic numbers (e.g., "29,28" for Cu,Ni)
+    bool   basinHoppingDisplaceAllListed;     // retained for compatibility; selection now always uses all listed atoms
+    bool   basinHoppingDebug;                 // Enable detailed debug logging for Basin Hopping
 
     // [Global Optimization] //
     string globalOptimizationMoveMethod;

@@ -1,4 +1,3 @@
-
 #include "SaddleSearchJob.h"
 #include "EpiCenters.h"
 #include "Log.h"
@@ -9,14 +8,12 @@
 
 using namespace std;
 
-SaddleSearchJob::SaddleSearchJob(Parameters *params)
-{
+SaddleSearchJob::SaddleSearchJob(Parameters *params) {
     parameters = params;
     fCallsSaddle = 0;
 }
 
-SaddleSearchJob::~SaddleSearchJob()
-{}
+SaddleSearchJob::~SaddleSearchJob() { }
 
 std::vector<std::string> SaddleSearchJob::run(void)
 {
@@ -32,7 +29,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
             displacementFilename = "displacement_cp.con";
             modeFilename = "mode_cp.dat";
             log("Resuming from checkpoint\n");
-        }else{
+        } else {
             log("No checkpoint files found\n");
         }
     }
@@ -46,8 +43,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
     if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // displacement was passed from the server
         saddle->con2matter(displacementFilename);
-    }
-    else {
+    } else {
         // displacement and mode will be made on the client
         // in saddleSearch->initialize(...)
         *saddle = *initial;
@@ -58,7 +54,8 @@ std::vector<std::string> SaddleSearchJob::run(void)
         mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
     }
 
-    saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
+    saddleSearch = new MinModeSaddleSearch(saddle, mode,
+                        initial->getPotentialEnergy(), parameters);
 
     int status;
     status = doSaddleSearch();
@@ -77,14 +74,13 @@ int SaddleSearchJob::doSaddleSearch()
 {
     Matter matterTemp(parameters);
     long status;
-    int f1;
-    f1 = Potential::fcalls;
+    int f1 = Potential::fcalls;
     try {
         status = saddleSearch->run();
-    }catch (int e) {
+    } catch (int e) {
         if (e == 100) {
             status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED; 
-        }else{
+        } else {
             printf("unknown exception: %i\n", e);
             throw e;
         }
@@ -113,10 +109,13 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
     if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
-        fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
-        fprintf(fileResults, "%f final_eigenvalue\n", saddleSearch->getEigenvalue());
+        fprintf(fileResults, "%f potential_energy_saddle\n",
+            saddle->getPotentialEnergy());
+        fprintf(fileResults, "%f final_eigenvalue\n",
+            saddleSearch->getEigenvalue());
     }
-    fprintf(fileResults, "%f potential_energy_reactant\n", initial->getPotentialEnergy());
+    fprintf(fileResults, "%f potential_energy_reactant\n",
+        initial->getPotentialEnergy());
     fclose(fileResults);
 
     std::string modeFilename("mode.dat");

@@ -1,0 +1,22 @@
+{#
+    Modified version of basic/localtoc.html
+#}
+
+<h3><a href="{{ pathto(root_doc)|e }}">{{ _('EON') }}</a></h3>
+<ul class="this-page-menu">
+  <li><a href="{{ pathto('download') }}">{{ _('Download') }}</a></li>
+  <li><a href="{{ pathto('installation') }}">{{ _('Installation') }}</a></li>
+  <li><a href="{{ pathto('documentation') }}">{{ _('Documentation') }}</a></li>
+  <li><a href="{{ pathto('tutorials') }}">{{ _('Tutorials') }}</a></li>
+</ul>
+<h3>Development</h3>
+<ul class="this-page-menu">
+  <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/repository">Source Code Browser</a></li>
+  <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/issues">Bug Tracker</a></li>
+</ul>
+{%- if display_toc and current_page_name not in ['index','contents'] %}
+  <div>
+      <h3>This page</h3>
+      {{ toc }}
+  </div>
+{%- endif %}

@@ -340,21 +340,20 @@ def rot_match(a, b):
     szz = m[2][2]
 
     n = numpy.zeros((4,4))
-    n[0][1] = syz-szy
-    n[0][2] = szx-sxz
-    n[0][3] = sxy-syx
+    n[0][1] = syz - szy
+    n[0][2] = szx - sxz
+    n[0][3] = sxy - syx
 
-    n[1][2] = sxy+syx
-    n[1][3] = szx+sxz
-
+    n[1][2] = sxy + syx
+    n[1][3] = szx + sxz
     n[2][3] = syz + szy
 
     n += n.transpose()
 
-    n[0][0] = sxx + syy + szz
-    n[1][1] = sxx-syy-szz
-    n[2][2] = -sxx + syy -szz
-    n[3][3] = -sxx -syy + szz
+    n[0][0] =  sxx + syy + szz
+    n[1][1] =  sxx - syy - szz
+    n[2][2] = -sxx + syy - szz
+    n[3][3] = -sxx - syy + szz
 
     w,v = numpy.linalg.eig(n)
     maxw = 0

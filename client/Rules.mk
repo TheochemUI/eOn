@@ -92,10 +92,22 @@ else
 endif
 
 ifdef ASE_POT
-   # first -I for pybind11, second -I for Python.h
-   CXXFLAGS += -DASE_POT -I/path/to/python/rootdir/include -I/path/to/python/rootdir/include/python3.xx  # EDIT
-   # for libpython3.xx.so
-   LDFLAGS += -L/path/to/python/rootdir/lib -lpython3.xx  # EDIT
+   # OLD MANUAL METHOD
+   ## first -I for pybind11, second -I for Python.h
+   #CXXFLAGS += -DASE_POT -I/path/to/python/rootdir/include -I/path/to/python/rootdir/include/python3.xx  # EDIT
+   ## for libpython3.xx.so
+   #LDFLAGS += -L/path/to/python/rootdir/lib -lpython3.xx  # EDIT
+
+   # NEW: Automate finding Python and pybind11 paths and flags
+   # Get include paths for both pybind11 and Python.h
+   PYBIND11_INCLUDES := $(shell python3 -m pybind11 --includes)
+   
+   # Get all linker flags needed to embed the Python interpreter
+   PYTHON_LDFLAGS := $(shell python3-config --ldflags --embed)
+   
+   CXXFLAGS += -DASE_POT $(PYBIND11_INCLUDES)
+   LDFLAGS += $(PYTHON_LDFLAGS)
+
    POTDIRS += ./potentials/ASE
    LIBS += ./potentials/ASE/libASE.a
    POTENTIALS += "+ASE"
