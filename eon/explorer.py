@@ -116,7 +116,7 @@ class MinModeExplorer(Explorer):
                     logger.debug("kdb insert: %s", output)
 
     def generate_displacement(self):
-        if config.recycling_on and self.state.number is not 0:
+        if config.recycling_on and self.state.number != 0:
             displacement, mode = self.recycler.make_suggestion()
             if displacement:
                 self.nrecycled += 1

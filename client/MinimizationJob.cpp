@@ -1,11 +1,10 @@
 #include "MinimizationJob.h"
-#include "Optimizer.h"
+#include "HelperFunctions.h"
 #include "Log.h"
 #include "Matter.h"
-#include "HelperFunctions.h"
+#include "Optimizer.h"
 
-MinimizationJob::MinimizationJob(Parameters *params)
-{
+MinimizationJob::MinimizationJob(Parameters *params) {
     parameters = params;
     fcalls = Potential::fcalls;
 }
@@ -23,7 +22,7 @@ std::vector<std::string> MinimizationJob::run(void)
         if (pos != NULL) {
             posInFilename = "pos_cp.con";
             log("[Minimization] Resuming from checkpoint\n");
-        }else{
+        } else {
             log("[Minimization] No checkpoint files found\n");
         }
     }
@@ -41,21 +40,20 @@ std::vector<std::string> MinimizationJob::run(void)
     bool converged;
     try {
         converged = pos->relax(false, parameters->writeMovies, 
-                                    parameters->checkpoint, "minimization", "pos");
+                               parameters->checkpoint, "minimization", "pos");
         if (converged) {
             status = STATUS_GOOD;
             printf("Minimization converged within tolerence\n");
-        }else{
+        } else {
             status = STATUS_MAX_ITERATIONS;
             printf("Minimization did not converge to tolerence!\n"
                    "Maybe try to increase max_iterations?\n");
         }
-    }catch (int e) {
-        if (e == 100) {
+    } catch (int e) {
+        if (e == 100)
             status = STATUS_POTENTIAL_FAILED;
-        }else{
+        else
             throw e;
-        }
     }
 
     printf("Saving result to %s\n", posOutFilename.c_str());

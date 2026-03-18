@@ -1,11 +1,10 @@
 #include "MonteCarloJob.h"
-#include "MonteCarlo.h"
 #include "Log.h"
+#include "MonteCarlo.h"
 #include "Matter.h"
 #include "HelperFunctions.h"
 
-MonteCarloJob::MonteCarloJob(Parameters *params)
-{
+MonteCarloJob::MonteCarloJob(Parameters *params) {
     parameters = params;
 }
 
@@ -22,7 +21,7 @@ std::vector<std::string> MonteCarloJob::run(void)
         if (pos != NULL) {
             posInFilename = "pos_cp.con";
             log("Resuming from checkpoint\n");
-        }else{
+        } else {
             log("No checkpoint files found\n");
         }
     }
@@ -35,11 +34,8 @@ std::vector<std::string> MonteCarloJob::run(void)
 
     //code will go
     MonteCarlo mc = MonteCarlo(matter, parameters);
-    mc.run(parameters->monteCarloSteps, parameters->temperature, 
+    mc.run(parameters->monteCarloSteps, parameters->temperature,
             parameters->monteCarloStepSize);
-
-
-    //FILE *fileResults;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);

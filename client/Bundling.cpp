@@ -18,17 +18,16 @@ int getBundleSize(void)
 
     dir = opendir(".");
 
-    //Find the highest numbered bundle file
-    //and return that number.
-    while ((dp=readdir(dir))) {
+    //Find the highest numbered bundle file and return that number.
+    while ((dp = readdir(dir))) {
         if (dp->d_name[0] == '.') {
             continue;
         }
 
         //If "config" is not in the filename
         //then skip.
-        if (strstr(dp->d_name, "config")==NULL &&
-            strstr(dp->d_name, "ini")==NULL) {
+        if (strstr(dp->d_name, "config") == NULL &&
+            strstr(dp->d_name, "ini") == NULL) {
             continue;
         }
 
@@ -36,7 +35,7 @@ int getBundleSize(void)
         char *ch = strrchr(dp->d_name, '_');
         if (ch == NULL) {
             continue;
-        }else{
+        } else {
             ch += 1;
         }
         //Find the last period
@@ -44,8 +43,8 @@ int getBundleSize(void)
         if (cch == NULL) continue;
         *cch = '\0';
         if (isdigit(*ch)) {
-            int i=atoi(ch)+1;
-            if (i>num_bundle) {
+            int i = atoi(ch) + 1;
+            if (i > num_bundle) {
                 num_bundle = i;
             }
         }
@@ -59,7 +58,7 @@ int getBundleSize(void)
 int strchrcount(char *haystack, char needle)
 {
     int count=0;
-    for (char *ch=haystack;*ch!='\0';ch++) {
+    for (char *ch = haystack; *ch != '\0'; ch++) {
         if (*ch == needle) {
             count++;
         }
@@ -74,7 +73,7 @@ std::vector<std::string> unbundle(int number) {
 
     dir = opendir(".");
 
-    while ((dp=readdir(dir))) {
+    while (dp = readdir(dir)) {
         int bundleNumber;
         std::string originalFilename(dp->d_name);
 
@@ -97,7 +96,7 @@ std::vector<std::string> unbundle(int number) {
         char *ch = strrchr(dp->d_name, '_');
         if (ch == NULL) {
             continue;
-        }else{
+        } else {
             ch += 1;
         }
         //Find the last period
@@ -105,17 +104,17 @@ std::vector<std::string> unbundle(int number) {
         if (cch == NULL) continue;
         *cch = '\0';
         if (isdigit(*ch)) {
-            bundleNumber=atoi(ch);
+            bundleNumber = atoi(ch);
             if (bundleNumber != number) {
                 continue; 
             }
         }
 
-        *(ch-1) = '\0';
+        *(ch - 1) = '\0';
 
         int stringSize = strlen(dp->d_name) + 10;
         char *newFilename = new char[stringSize];
-        snprintf(newFilename, stringSize, "%s.%s", dp->d_name, cch+1);
+        snprintf(newFilename, stringSize, "%s.%s", dp->d_name, cch + 1);
 
         int err;
         err = copyfile((char *)originalFilename.c_str(), newFilename);
@@ -135,7 +134,7 @@ std::vector<std::string> unbundle(int number) {
 int copyfile(char *filenameSrc, char *filenameDest)
 {
     //10kB buffer
-    int buffSize = 1024*10;
+    int buffSize = 1024 * 10;
     char *buff = new char[buffSize];
     FILE *fSrc = fopen(filenameSrc, "rb"); 
     if (fSrc == NULL) {
@@ -155,7 +154,7 @@ int copyfile(char *filenameSrc, char *filenameDest)
         int count = fread(buff, sizeof(char), buffSize, fSrc);
         fwrite(buff, sizeof(char), count, fDest);
     }
-    
+
     delete [] buff;
     fclose(fSrc);
     fclose(fDest);
@@ -165,18 +164,18 @@ int copyfile(char *filenameSrc, char *filenameDest)
 
 void deleteUnbundledFiles(std::vector<std::string> unbundledFilenames)
 {
-    for (unsigned int i=0;i<unbundledFilenames.size();i++) {
+    for (unsigned int i = 0; i < unbundledFilenames.size(); i++) {
         unlink(unbundledFilenames[i].c_str());
     }
 }
 
 void bundle(int number, std::vector<std::string> filenames,
             std::vector<std::string> *bundledFilenames) {
-    for (unsigned int i=0;i<filenames.size();i++) {
+    for (unsigned int i = 0; i < filenames.size(); i++) {
 
         std::string filename = filenames[i];
         //Assumes that bundle numbers wont exceed 100,000,000
-        int stringSize = filename.length()+20;
+        int stringSize = filename.length() + 20;
         char *newFilename;
         newFilename = new char[stringSize];
         strncpy(newFilename, filename.c_str(), stringSize);
@@ -193,7 +192,7 @@ void bundle(int number, std::vector<std::string> filenames,
             strncpy(newFilename, buff, stringSize);
             delete [] fileEnding;
             delete [] buff;
-        }else{
+        } else {
             snprintf(newFilename, stringSize, "%s_%i",
                      newFilename, number);
         }

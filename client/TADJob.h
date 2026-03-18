@@ -28,7 +28,7 @@ class TADJob: public Job
         Matter *reactant;
         Matter *saddle;
         Matter *crossing;
-        Matter *final;
+        Matter *final_state;
         Matter *final_tmp;
         Matter *product;
 

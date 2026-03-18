@@ -13,7 +13,6 @@ void log_init(Parameters *p, char *filename) {
         }else{
             logfile = fopen(filename, "w");
         }
-        //setvbuf(logfile, NULL, _IOLBF, 0);
     }
 }
 
@@ -34,16 +33,14 @@ void log(const char* format, ...) {
         va_start(args, format);
         vfprintf(stdout, format, args);
         va_end(args);
-        //uncomment to ensure that info is saved to log immediately
-        //fflush(logfile);
+        // fflush(logfile);
     }
 
     if (params->writeLog == true) {
         va_start(args, format);
         vfprintf(logfile, format, args);
         va_end(args);
-        //uncomment to ensure that info is saved to log immediately
-        //fflush(logfile);
+        // fflush(logfile);
     }
 }
 
@@ -57,7 +54,6 @@ void log_file(const char* format, ...) {
         va_start(args, format);
         vfprintf(logfile, format, args);
         va_end(args);
-        //uncomment to ensure that info is saved to log immediately
-        //fflush(logfile);
+        // fflush(logfile);
     }
 }

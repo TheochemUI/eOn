@@ -26,7 +26,7 @@ class SafeHyperJob: public Job
         Matter *current;
         Matter *reactant;
         Matter *saddle;
-        Matter *final;
+        Matter *final_state;
         Matter *final_tmp;
         Matter *product;
 

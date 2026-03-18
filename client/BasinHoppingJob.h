@@ -1,10 +1,9 @@
-
 #ifndef BASINHOPPINGJOB_H
 #define BASINHOPPINGJOB_H
 
+#include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "Job.h"
 
 class BasinHoppingJob : public Job {
     public:
@@ -14,7 +13,8 @@ class BasinHoppingJob : public Job {
 
     private:
         VectorXd calculateDistanceFromCenter(Matter *matter);
-        AtomMatrix displaceRandom(double maxDisplacement);
+        std::vector<int> resolveDisplacementTargets();
+        AtomMatrix computeDisplacement(double maxDisplacement, const std::vector<int>& targets);
         void randomSwap(Matter *matter);
         Parameters *parameters;
         Matter *current;
@@ -27,7 +27,12 @@ class BasinHoppingJob : public Job {
         int fcalls;
 
         std::vector<Matter *> uniqueStructures;
-        std::vector<double>   uniqueEnergies;
+        std::vector<double> uniqueEnergies;
+        
+        // Cached atom selection lists (computed once)
+        std::vector<int> cachedAtomList;
+        std::vector<int> cachedTypeList;
+        bool atomListsCached;
 };
 
 #endif

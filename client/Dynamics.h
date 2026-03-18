@@ -1,9 +1,9 @@
 #ifndef DYNAMICS_H
 #define DYNAMICS_H
 
-#include "Optimizer.h"
-#include "Matter.h"
 #include "HelperFunctions.h"
+#include "Matter.h"
+#include "Optimizer.h"
 #include "Parameters.h"
 
 #include "Eigen.h"
@@ -11,7 +11,6 @@
 class Dynamics {
 
 public:
-
     static const char ANDERSEN[];
     static const char NOSE_HOOVER[];
     static const char LANGEVIN[];
@@ -22,7 +21,7 @@ public:
     ~Dynamics();
 
     void setTemperature(double temperature);
-    void oneStep(int stepNumber=-1);
+    void oneStep(int stepNumber = -1);
     void velocityVerlet();
     void run(); 
     void andersenCollision();
@@ -32,7 +31,6 @@ public:
     void langevinVerlet();
 
 private:
-
     long nAtoms, nFreeCoords;
 
     Matter *matter;

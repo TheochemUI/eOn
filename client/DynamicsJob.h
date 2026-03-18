@@ -1,20 +1,17 @@
 #ifndef DYNAMICSJOB_H
 #define DYNAMICSJOB_H
 
+#include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "Job.h"
 
-class DynamicsJob : public Job 
-{
-
-    public:
-
-        DynamicsJob(Parameters *params);
-        ~DynamicsJob(void);
-        std::vector<std::string> run(void);
-        Parameters *parameters;
-        std::vector<std::string> returnFiles;
+class DynamicsJob : public Job {
+public:
+    DynamicsJob(Parameters *params);
+    ~DynamicsJob(void);
+    Parameters *parameters;
+    std::vector<std::string> run(void);
+    std::vector<std::string> returnFiles;
 };
 
 #endif

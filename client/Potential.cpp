@@ -1,9 +1,9 @@
 #include <time.h>
 
+#include "HelperFunctions.h"
+#include "Log.h"
 #include "Potential.h"
 #include "Parameters.h"
-#include "Log.h"
-#include "HelperFunctions.h"
 
 #include "potentials/IMD/IMD.h"
 #include "potentials/EDIP/EDIP.h"
@@ -73,75 +73,74 @@ Potential* Potential::pot = NULL;
 
 Potential *Potential::getPotential(Parameters *parameters)
 {
-    if(pot) {
+    if (pot) {
         return pot;
     }
-    if(parameters->potential == POT_LJ)
+    if (parameters->potential == POT_LJ)
         pot = new LJ();
-    else if(parameters->potential == POT_LJCLUSTER)
+    else if (parameters->potential == POT_LJCLUSTER)
         pot = new LJCluster();
-    else if(parameters->potential == POT_IMD)
+    else if (parameters->potential == POT_IMD)
         pot = new IMD();
-    else if(parameters->potential == POT_MORSE_PT)
+    else if (parameters->potential == POT_MORSE_PT)
         pot = new Morse();
-    else if(parameters->potential == POT_EMT)
+    else if (parameters->potential == POT_EMT)
         pot = new EffectiveMediumTheory(parameters);
-    else if(parameters->potential == POT_QSC)
+    else if (parameters->potential == POT_QSC)
         pot = new QSC();
-    else if(parameters->potential == POT_TIP4P)
+    else if (parameters->potential == POT_TIP4P)
         pot = new Tip4p();
-    else if(parameters->potential == POT_TIP4P_PT)
+    else if (parameters->potential == POT_TIP4P_PT)
         pot = new Tip4p_Pt();
-    else if(parameters->potential == POT_SPCE)
+    else if (parameters->potential == POT_SPCE)
         pot = new SpceCcl();
-    else if(parameters->potential == POT_EXT)
+    else if (parameters->potential == POT_EXT)
         pot = new ExtPot(parameters);
  
 #ifndef NO_FORTRAN
-    else if(parameters->potential == POT_EAM_AL)
+    else if (parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
-    else if(parameters->potential == POT_LENOSKY_SI)
+    else if (parameters->potential == POT_LENOSKY_SI)
         pot = new Lenosky();
-    else if(parameters->potential == POT_SW_SI)
+    else if (parameters->potential == POT_SW_SI)
         pot = new SW();
-    else if(parameters->potential == POT_TERSOFF_SI)
+    else if (parameters->potential == POT_TERSOFF_SI)
         pot = new Tersoff();
-    else if(parameters->potential == POT_EDIP)
+    else if (parameters->potential == POT_EDIP)
         pot = new EDIP();
-    else if(parameters->potential == POT_TIP4P_H)
+    else if (parameters->potential == POT_TIP4P_H)
         pot = new Tip4p_H();
-    else if(parameters->potential == POT_FEHE)
+    else if (parameters->potential == POT_FEHE)
         pot = new FeHe();
- 
 #endif
 
 #ifdef PYAMFF_POT
-    else if(parameters->potential == POT_PYAMFF)
+    else if (parameters->potential == POT_PYAMFF)
         pot = new PyAMFF();
 #endif
 
 #ifdef EONMPI
-    else if(parameters->potential == POT_MPI)
+    else if (parameters->potential == POT_MPI)
         pot = new MPIPot(parameters);
 #endif
 
 #ifdef LAMMPS_POT
-    else if(parameters->potential == POT_LAMMPS)
+    else if (parameters->potential == POT_LAMMPS)
         pot = new lammps(parameters);
 #endif
 
 #ifdef ASE_POT
-    else if(parameters->potential == POT_ASE){
+    else if (parameters->potential == POT_ASE){
         pot = new ASE(parameters);}
 #endif
 
 #ifdef NEW_POT
-    else if(parameters->potential == POT_NEW)
+    else if (parameters->potential == POT_NEW)
         pot = new NewPot(parameters);
 #endif
 
 #ifndef WIN32
-    else if(parameters->potential == POT_VASP)
+    else if (parameters->potential == POT_VASP)
         pot = new VASP();
 #endif
 
@@ -156,7 +155,7 @@ Potential *Potential::getPotential(Parameters *parameters)
 
 int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
-double Potential::totalUserTime=0;
+double Potential::totalUserTime = 0;
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
                             VectorXi atomicNrs, double *energy, Matrix3d box)

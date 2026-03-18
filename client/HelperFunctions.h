@@ -64,6 +64,8 @@ namespace helper_functions {
     AtomMatrix loadMode(string filename, int nAtoms);
     void saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode);
     std::vector<int> split_string_int(std::string s, std::string delim);
+    std::vector<int> parseAtomList(const std::string &atomListStr, int nAtoms, bool verbose = false);
+    std::vector<int> getAtomsByType(const std::string &typeListStr, Matter *matter, bool verbose = false);
 
     bool identical(const Matter* m1, const Matter* m2, const double distanceDifference);
     bool sortedR(const Matter *m1, const Matter *m2, const double distanceDifference);

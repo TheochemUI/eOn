@@ -1,6 +1,5 @@
-
-#include "Quickmin.h"
 #include "HelperFunctions.h"
+#include "Quickmin.h"
 #include <cmath>
 
 Quickmin::Quickmin(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
@@ -13,42 +12,36 @@ Quickmin::Quickmin(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
     iteration = 0;
 }
 
-Quickmin::~Quickmin()
-{
-    return;
-}
+Quickmin::~Quickmin() { return; }
 
 int Quickmin::step(double maxMove)
 {
     VectorXd force = -objf->getGradient();
     if (parameters->optQMSteepestDecent) {
         velocity.setZero();
-    }
-    else {
+    } else {
         if (velocity.dot(force) < 0) {
             velocity.setZero();
-        }
-        else {
+        } else {
             VectorXd f_unit = force/force.norm();
             velocity = velocity.dot(f_unit) * f_unit;
         }
     }
     
     velocity += force * dt;
-    VectorXd dr = helper_functions::maxAtomMotionAppliedV(velocity * dt, parameters->optMaxMove);
+    VectorXd dr = helper_functions::maxAtomMotionAppliedV(velocity * dt,
+        parameters->optMaxMove);
     objf->setPositions(objf->getPositions() + dr);  
     iteration++;
-//    return objf->isConverged();
-    if(objf->isConverged()) return 1;
+    if (objf->isConverged())
+        return 1;
     return 0;
 }
 
-int Quickmin::run(int maxSteps, double maxMove)
-{
-    while(!objf->isConverged() && iteration < maxSteps) {
+int Quickmin::run(int maxSteps, double maxMove) {
+    while (!objf->isConverged() && iteration < maxSteps)
         step(maxMove);
-    }
-//    return objf->isConverged();
-    if(objf->isConverged()) return 1;
+    if(objf->isConverged())
+        return 1;
     return 0;
 }

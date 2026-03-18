@@ -170,7 +170,7 @@ def savecon(fileout, p, w = 'w'):
         con.write(name_order[i]+"\n")
         con.write("Coordinates of component %3i" %(i+1)+"\n")
         for j in range(atom_count[name_order[i]]):
-            con.write("%.6f %.6f %.6f %d %d\n" %( p.r[index][0], p.r[index][1], p.r[index][2], int(not p.free[index]), index+1))
+            con.write("%.6f %.6f %.6f %d %d\n" %( p.r[index][0], p.r[index][1], p.r[index][2], int(not p.free[index]), index))
             index += 1
 
 

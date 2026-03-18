@@ -5,9 +5,7 @@
 
 using namespace helper_functions;
 
-
-FiniteDifferenceJob::FiniteDifferenceJob(Parameters *params)
-{
+FiniteDifferenceJob::FiniteDifferenceJob(Parameters *params) {
     parameters = params;
 }
 
@@ -29,20 +27,17 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     forceA = reactant->getForces();
 
     // Create a random displacement.
-    long epicenter = EpiCenters::minCoordinatedEpiCenter(reactant,parameters->neighborCutoff);
-    AtomMatrix displacement;    
+    long epicenter = EpiCenters::minCoordinatedEpiCenter(reactant,
+                                 parameters->neighborCutoff);
+    AtomMatrix displacement;
     displacement.resize(reactant->numberOfAtoms(), 3);
     displacement.setZero();
     printf("displacing atoms:");
-    for(int i = 0; i < reactant->numberOfAtoms(); i++)
-    {
-        if(reactant->distance(epicenter, i) <= 3.3)
-        {
+    for (int i = 0; i < reactant->numberOfAtoms(); i++) {
+        if (reactant->distance(epicenter, i) <= 3.3) {
             printf(" %i", i);
-            for(int j = 0; j < 3; j++)
-            {
-                if(!reactant->getFixed(i))
-                {
+            for (int j = 0; j < 3; j++) {
+                if (!reactant->getFixed(i)) {
                     displacement(i, j) = randomDouble(1.0);
                 }
             }
@@ -62,7 +57,8 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
         posB = posA + displacement * dRs[dRi];
         reactant->setPositions(posB);
         forceB = reactant->getForces();
-        curvature = ((forceB - forceA).cwise() * displacement).sum() / dRs[dRi];
+        curvature =
+            ((forceB - forceA).array() * displacement.array()).sum() / dRs[dRi];
         fprintf(results, "%14.8f    %14.8f\n", dRs[dRi], curvature);
         printf("%14.8f    %14.8f\n", dRs[dRi], curvature);
         fflush(results);
@@ -72,5 +68,4 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     std::vector<std::string> empty;
     return empty;
 }
-
 

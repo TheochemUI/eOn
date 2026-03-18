@@ -1,8 +1,7 @@
 #include "PointJob.h"
 #include "Matter.h"
 
-PointJob::PointJob(Parameters *params)
-{
+PointJob::PointJob(Parameters *params) {
     parameters = params;
 }
 
