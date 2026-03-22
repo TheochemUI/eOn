@@ -14,191 +14,141 @@
 
 #include <cassert>
 #include <climits>
+#include <memory>
 #include <vector>
-using namespace std;
 
 using namespace eonc::helpers;
-using std::vector;
 
 long eonc::EpiCenters::cnaEpiCenter(const Matter *matter,
                                     double neighborCutoff) {
-  long *cnaList;
-  long j, nAtoms, indexEpiCenter;
-  double tempDouble;
-  nAtoms = matter->numberOfAtoms();
-  cnaList = new long[nAtoms];
-  indexEpiCenter = -2; // initialize to a value that will fail the assert if no
-                       // EpiCenter is found
-  //----- Initialize end -----
-  // std::cout<<"cnaEpiCenter\n";
+  long nAtoms = matter->numberOfAtoms();
+  std::vector<long> cnaList(nAtoms);
+  long indexEpiCenter = -2;
 
-  cna(cnaList, matter, neighborCutoff);
+  cna(cnaList.data(), matter, neighborCutoff);
 
-  // count atoms that are not FCC or HCP and are free to move
-  j = 0;
-  for (int i = 0; i < nAtoms; i++) {
-    if ((cnaList[i] == 2) && !(matter->getFixed(i)))
-      j++;
+  // Count atoms that are not FCC or HCP and are free to move
+  long count = 0;
+  for (long i = 0; i < nAtoms; i++) {
+    if (cnaList[i] == 2 && !matter->getFixed(i))
+      count++;
   }
-  // pick a random atom being both free and not FCC or HCP coordinated
-  tempDouble = randomDouble(j);
-  j = (long)tempDouble + 1;
-  for (int i = 0; i < nAtoms; i++) {
-    if ((cnaList[i] == 2) && !(matter->getFixed(i))) {
-      j--;
-      if (!j) {
+  // Pick a random atom being both free and not FCC or HCP coordinated
+  long pick = static_cast<long>(randomDouble(count)) + 1;
+  for (long i = 0; i < nAtoms; i++) {
+    if (cnaList[i] == 2 && !matter->getFixed(i)) {
+      pick--;
+      if (!pick) {
         indexEpiCenter = i;
         break;
       }
     }
   }
-  delete[] cnaList;
 
-  // make certain the chosen atom index is within the domain of the atom list
   assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return (indexEpiCenter);
+  return indexEpiCenter;
 }
 
 long eonc::EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
                                                double neighborCutoff) {
-  bool *minCoordinatedList;
-  long j, nAtoms, indexEpiCenter, minCoordinationVal;
-  double tempDouble;
-  nAtoms = matter->numberOfAtoms();
-  minCoordinatedList = new bool[nAtoms];
-  indexEpiCenter = -2; // initialize to a value that will fail the assert if no
-                       // EpiCenter is found
-  //----- Initialize end -----
-  // std::cout<<"minCoordinatedEpiCenter\n";
+  long nAtoms = matter->numberOfAtoms();
+  // Can't use vector<bool> (.data() is deleted), use unique_ptr<bool[]>
+  auto minCoordinatedList = std::make_unique<bool[]>(nAtoms);
+  long indexEpiCenter = -2;
 
-  minCoordinationVal = minCoordination(matter, neighborCutoff);
-  coordinationLessOrEqual(minCoordinatedList, minCoordinationVal, matter,
+  long minCoordinationVal = minCoordination(matter, neighborCutoff);
+  coordinationLessOrEqual(minCoordinatedList.get(), minCoordinationVal, matter,
                           neighborCutoff);
 
-  // count all atoms that are minimally coordinated and free to move
-  j = 0;
-  for (int i = 0; i < nAtoms; i++) {
-    if ((minCoordinatedList[i]) && !(matter->getFixed(i)))
-      j++;
+  // Count all atoms that are minimally coordinated and free to move
+  long count = 0;
+  for (long i = 0; i < nAtoms; i++) {
+    if (minCoordinatedList[i] && !matter->getFixed(i))
+      count++;
   }
-  // pick a random atom that is free and minimally coordinated
-  tempDouble = randomDouble(j);
-  j = (long)tempDouble;
-  for (int i = 0; i < nAtoms; i++) {
-    if ((minCoordinatedList[i]) && !(matter->getFixed(i))) {
-      if (!j) {
+  // Pick a random atom that is free and minimally coordinated
+  long pick = static_cast<long>(randomDouble(count));
+  for (long i = 0; i < nAtoms; i++) {
+    if (minCoordinatedList[i] && !matter->getFixed(i)) {
+      if (!pick) {
         indexEpiCenter = i;
         break;
-      } else
-        j--;
-    }
-  }
-  delete[] minCoordinatedList;
-
-  // make certain the chosen atom is in the atom list
-  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return (indexEpiCenter);
-}
-
-long eonc::EpiCenters::lastAtom(const Matter *matter) {
-  long nAtoms, indexEpiCenter;
-  nAtoms = matter->numberOfAtoms();
-  indexEpiCenter = nAtoms - 1;
-
-  // make certain the chosen atom is in the atom list
-  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return (indexEpiCenter);
-}
-
-long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
-  long j, nAtoms, indexEpiCenter;
-  double tempDouble;
-  nAtoms = matter->numberOfAtoms();
-  indexEpiCenter = -2; // initialize to a value that will fail the assert if no
-                       // EpiCenter is found
-  j = 0;
-
-  j = matter->numberOfFreeAtoms() - 1;
-  tempDouble = randomDouble(j);
-  j = (long)tempDouble;
-
-  // pick a random atom that is free
-  for (int i = 0; i < nAtoms; i++) {
-    if (!matter->getFixed(i)) {
-      if (!j) {
-        indexEpiCenter = i;
-        break;
-      } else
-        j--;
-    }
-  }
-  // make certain the chosen atom is in the atom list
-  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return (indexEpiCenter);
-}
-
-// long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter)
-//{
-//     long indexEpiCenter;
-//     long nAtoms = matter->numberOfAtoms();
-//     do
-//     {
-//         indexEpiCenter = (long)randomDouble(nAtoms - 1);
-//     } while (matter->getFixed(indexEpiCenter));
-//     return(indexEpiCenter);
-// }
-
-void eonc::EpiCenters::cna(long *cna, const Matter *matter,
-                           double neighborCutoff) {
-  int a1 = 0;
-  int a2 = 0;
-  int a3 = 0;
-  int nAtoms;
-  int unsigned n = 0;
-  int unsigned n1 = 0;
-  int unsigned n2 = 0;
-  int unsigned m2 = 0;
-  int j1 = 0;
-  int j2 = 0;
-  double diffR;
-  int nBonds = 0;
-  int bondsSum = 0;
-  nAtoms = (int)matter->numberOfAtoms();
-  vector<int> nFCC(nAtoms);
-  vector<int> nHCP(nAtoms);
-  vector<vector<int>> neighborLists(nAtoms);
-  //----- Initialize end -----
-  // std::cout<<"cna\n";
-
-  for (int i = 0; i < nAtoms - 1; i++) {
-    for (int j = i + 1; j < nAtoms; j++) {
-      diffR = matter->distance(i, j);
-      if (diffR < neighborCutoff) {
-        neighborLists[i].push_back(j);
-        neighborLists[j].push_back(i);
+      } else {
+        pick--;
       }
     }
   }
-  for (a2 = 0; a2 < nAtoms; a2++) {
-    vector<int> &nbs2 = neighborLists[a2];
-    for (n2 = 0; n2 < nbs2.size(); n2++) {
-      a1 = nbs2[n2];
+
+  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
+  return indexEpiCenter;
+}
+
+long eonc::EpiCenters::lastAtom(const Matter *matter) {
+  long nAtoms = matter->numberOfAtoms();
+  long indexEpiCenter = nAtoms - 1;
+  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
+  return indexEpiCenter;
+}
+
+long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
+  long nAtoms = matter->numberOfAtoms();
+  long indexEpiCenter = -2;
+
+  long freeCount = matter->numberOfFreeAtoms() - 1;
+  long pick = static_cast<long>(randomDouble(freeCount));
+
+  for (long i = 0; i < nAtoms; i++) {
+    if (!matter->getFixed(i)) {
+      if (!pick) {
+        indexEpiCenter = i;
+        break;
+      } else {
+        pick--;
+      }
+    }
+  }
+  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
+  return indexEpiCenter;
+}
+
+void eonc::EpiCenters::cna(long *cna, const Matter *matter,
+                           double neighborCutoff) {
+  long nAtoms = matter->numberOfAtoms();
+  std::vector<int> nFCC(nAtoms, 0);
+  std::vector<int> nHCP(nAtoms, 0);
+  std::vector<std::vector<int>> neighborLists(nAtoms);
+
+  for (long i = 0; i < nAtoms - 1; i++) {
+    for (long j = i + 1; j < nAtoms; j++) {
+      double diffR = matter->distance(i, j);
+      if (diffR < neighborCutoff) {
+        neighborLists[i].push_back(static_cast<int>(j));
+        neighborLists[j].push_back(static_cast<int>(i));
+      }
+    }
+  }
+
+  for (long a2 = 0; a2 < nAtoms; a2++) {
+    const auto &nbs2 = neighborLists[a2];
+    for (size_t n2 = 0; n2 < nbs2.size(); n2++) {
+      int a1 = nbs2[n2];
       if (a1 < a2) {
-        vector<int> common;
-        vector<int> &nbs1 = neighborLists[a1];
-        for (n1 = 0; n1 < nbs1.size(); n1++) {
-          a3 = nbs1[n1];
-          for (m2 = 0; m2 < nbs2.size(); m2++)
+        std::vector<int> common;
+        const auto &nbs1 = neighborLists[a1];
+        for (size_t n1 = 0; n1 < nbs1.size(); n1++) {
+          int a3 = nbs1[n1];
+          for (size_t m2 = 0; m2 < nbs2.size(); m2++) {
             if (a3 == nbs2[m2])
               common.push_back(a3);
+          }
         }
         if (common.size() == 4) {
-          nBonds = 0;
-          bondsSum = 0;
-          for (j2 = 1; j2 < 4; j2++) {
-            vector<int> &nbs = neighborLists[common[j2]];
-            for (j1 = 0; j1 < j2; j1++) {
-              for (n = 0; n < nbs.size(); n++) {
+          int nBonds = 0;
+          int bondsSum = 0;
+          for (int j2 = 1; j2 < 4; j2++) {
+            const auto &nbs = neighborLists[common[j2]];
+            for (int j1 = 0; j1 < j2; j1++) {
+              for (size_t n = 0; n < nbs.size(); n++) {
                 if (common[j1] == nbs[n]) {
                   nBonds++;
                   bondsSum += j1 + j2;
@@ -221,7 +171,7 @@ void eonc::EpiCenters::cna(long *cna, const Matter *matter,
     }
   }
   // 0: fcc (421), 1: hcp (422), 2: other
-  for (int i = 0; i < nAtoms; i++) {
+  for (long i = 0; i < nAtoms; i++) {
     if (neighborLists[i].size() == 12) {
       if (nFCC[i] == 12)
         cna[i] = 0;
@@ -229,57 +179,42 @@ void eonc::EpiCenters::cna(long *cna, const Matter *matter,
         cna[i] = 1;
       else
         cna[i] = 2;
-    } else
+    } else {
       cna[i] = 2;
+    }
   }
-  return;
 }
 
 void eonc::EpiCenters::coordination(long *coordinationVal, const Matter *matter,
                                     double neighborCutoff) {
-  long nAtoms;
-  double diffR;
-  nAtoms = matter->numberOfAtoms();
-  for (int i = 0; i < nAtoms; i++)
+  long nAtoms = matter->numberOfAtoms();
+  for (long i = 0; i < nAtoms; i++)
     coordinationVal[i] = 0;
-  //----- Initialize end -----
-  // std::cout<<"coordination\n";
 
-  for (int i = 0; i < nAtoms - 1; i++) {
-    for (int j = i + 1; j < nAtoms; j++) {
-      // determine coordination number
-      diffR = matter->distance(i, j);
+  for (long i = 0; i < nAtoms - 1; i++) {
+    for (long j = i + 1; j < nAtoms; j++) {
+      double diffR = matter->distance(i, j);
       if (diffR < neighborCutoff) {
-        coordinationVal[i] = coordinationVal[i] + 1;
-        coordinationVal[j] = coordinationVal[j] + 1;
+        coordinationVal[i]++;
+        coordinationVal[j]++;
       }
     }
   }
-  return;
 }
 
 void eonc::EpiCenters::coordinationLessOrEqual(bool *result,
                                                long coordinationMaxVal,
                                                const Matter *matter,
                                                double neighborCutoff) {
-  long *coordinationVal;
-  long nAtoms;
-  nAtoms = matter->numberOfAtoms();
-  coordinationVal = new long[nAtoms];
-  //----- Initialize end -----
-  // std::cout<<"coordinationLessOrEqual\n";
+  long nAtoms = matter->numberOfAtoms();
+  std::vector<long> coordinationVal(nAtoms);
 
-  coordination(coordinationVal, matter, neighborCutoff);
+  coordination(coordinationVal.data(), matter, neighborCutoff);
 
-  for (int i = 0; i < nAtoms; i++) {
-    if ((coordinationVal[i] < coordinationMaxVal + 1) && !(matter->getFixed(i)))
-      result[i] = true;
-    else
-      result[i] = false;
+  for (long i = 0; i < nAtoms; i++) {
+    result[i] = (coordinationVal[i] <= coordinationMaxVal) &&
+                !matter->getFixed(i);
   }
-  delete[] coordinationVal;
-
-  return;
 }
 
 long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
@@ -293,30 +228,22 @@ long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
     }
   }
   assert(!freeAtoms.empty());
-  long pick = (long)randomDouble((long)(freeAtoms.size() - 1));
+  long pick = static_cast<long>(randomDouble(static_cast<long>(freeAtoms.size() - 1)));
   return freeAtoms[pick];
 }
 
 long eonc::EpiCenters::minCoordination(const Matter *matter,
                                        double neighborCutoff) {
-  long *coordinationVal;
-  long nAtoms;
-  long minCoordinationVal;
-  nAtoms = matter->numberOfAtoms();
-  coordinationVal = new long[nAtoms];
-  //----- Initialize end -----
-  // std::cout<<"minCoordination\n";
+  long nAtoms = matter->numberOfAtoms();
+  std::vector<long> coordinationVal(nAtoms);
 
-  coordination(coordinationVal, matter, neighborCutoff);
-  // LONG_MAX is a the maximal value a long can achieve, from library limits
-  minCoordinationVal = LONG_MAX;
+  coordination(coordinationVal.data(), matter, neighborCutoff);
 
-  for (int i = 0; i < nAtoms; i++) {
-    if ((coordinationVal[i] < minCoordinationVal) && !(matter->getFixed(i))) {
-      minCoordinationVal = coordinationVal[i];
+  long minVal = LONG_MAX;
+  for (long i = 0; i < nAtoms; i++) {
+    if (coordinationVal[i] < minVal && !matter->getFixed(i)) {
+      minVal = coordinationVal[i];
     }
   }
-  delete[] coordinationVal;
-
-  return (minCoordinationVal);
+  return minVal;
 }

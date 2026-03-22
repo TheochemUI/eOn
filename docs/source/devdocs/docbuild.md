@@ -10,9 +10,6 @@ myst:
 `eOn` is a relatively complex project, with both `C++` and `Python` sources,
 along with a large set of options.
 
-```{versionchanged} 3.1_TBA
-The input file format transitioned to TOML from previously being an enhanced INI format.
-```
 
 ## Setup
 

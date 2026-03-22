@@ -7,9 +7,12 @@ myst:
 
 # Paths
 
-<!-- TODO(rg): Are these even honored? Client doesn't seem to care.. -->
-
-This is very rarely altered for most use cases.
+```{admonition} Legacy configuration
+:class: note
+These path settings are primarily used by the server-client architecture.
+For standalone client usage (the common case), the default paths are sufficient
+and this section can be left unconfigured.
+```
 
 ## Configuration
 

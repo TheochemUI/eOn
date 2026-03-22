@@ -30,7 +30,7 @@ The Gaussian Process Regression accelerated dimer in C++ from {cite:t}`dm-goswam
 
 ## Configuration
 
-```{code-block} toml
+```{code-block} ini
 [Dimer]
 ```
 

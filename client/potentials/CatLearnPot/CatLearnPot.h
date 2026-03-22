@@ -28,10 +28,12 @@ public:
   CatLearnPot(const Parameters &a_params);
 
   // Functions
-  void train_optimize(MatrixXd features, MatrixXd targets) override;
+  void train_optimize(const MatrixXd &features,
+                      const MatrixXd &targets) override;
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override;
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
   // Variables [public]
   py::object m_gpmod;
   MatrixXd

@@ -36,10 +36,10 @@ private:
   std::shared_ptr<Matter> trial; // initial configuration
   std::vector<long> getElements(Matter *matter);
   std::vector<std::string> returnFiles;
-  int jump_count; // count of jump moves
-  int disp_count; // count of displacement moves
-  int swap_count; // count of swap moves
-  int fcalls;
+  int jump_count{0}; // count of jump moves
+  int disp_count{0}; // count of displacement moves
+  int swap_count{0}; // count of swap moves
+  int fcalls{0};
 
   std::vector<std::shared_ptr<Matter>> uniqueStructures;
   std::vector<double> uniqueEnergies;

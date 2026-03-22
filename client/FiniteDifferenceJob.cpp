@@ -14,24 +14,20 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 
-using namespace std;
+#include <format>
+#include <fstream>
+
 using namespace eonc::helpers;
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {
-  // No bundling for this job, so bundleNumber is ignored.
-
-  // Load the displacement con file and get the position.
   auto reactant = std::make_unique<Matter>(pot, params);
   reactant->con2matter("pos.con");
-  AtomMatrix posA;
-  posA = reactant->getPositions();
+  AtomMatrix posA = reactant->getPositions();
 
   double dRs[] = {1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1, -1};
 
-  AtomMatrix forceA;
-  forceA = reactant->getForces();
+  AtomMatrix forceA = reactant->getForces();
 
-  // Create a random displacement.
   long epicenter = eonc::EpiCenters::minCoordinatedEpiCenter(
       reactant.get(), params.structure_comparison_options.neighbor_cutoff);
   AtomMatrix displacement;
@@ -51,9 +47,8 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   printf("\n");
   displacement.normalize();
 
-  // Loop over values of dimer dR and print the output to results.dat.
-  FILE *results = fopen("results.dat", "w");
-  fprintf(results, "%14s    %14s\n", "dR", "curvature");
+  std::ofstream results("results.dat");
+  results << std::format("{:>14s}    {:>14s}\n", "dR", "curvature");
   printf("%14s    %14s\n", "dR", "curvature");
   AtomMatrix posB;
   AtomMatrix forceB;
@@ -62,13 +57,11 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     posB = posA + displacement * dRs[dRi];
     reactant->setPositions(posB);
     forceB = reactant->getForces();
-    curvature =
-        ((forceB - forceA).array() * displacement.array()).sum() / dRs[dRi];
-    fprintf(results, "%14.8f    %14.8f\n", dRs[dRi], curvature);
+    curvature = matDot(forceB - forceA, displacement) / dRs[dRi];
+    results << std::format("{:14.8f}    {:14.8f}\n", dRs[dRi], curvature);
     printf("%14.8f    %14.8f\n", dRs[dRi], curvature);
-    fflush(results);
+    results.flush();
   }
-  fclose(results);
 
   std::vector<std::string> empty;
   return empty;

@@ -10,54 +10,25 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "EonLogger.h"
+#include "ReplicaDynamicsJob.h"
 
-#include "Job.h"
-#include "Matter.h"
-#include "Parameters.h"
+#include <vector>
 
 namespace eonc {
 
-class SafeHyperJob : public Job {
+class SafeHyperJob : public ReplicaDynamicsJob {
 public:
   SafeHyperJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+      : ReplicaDynamicsJob(std::move(parameters)) {}
   ~SafeHyperJob(void) = default;
-  std::vector<std::string> run(void);
 
 private:
-  eonc::log::Scoped log;
-  int dynamics();
-  long refine(Matter *mdBuffer[], long length, Matter *reactant);
-  bool checkState(Matter *current, Matter *reactant);
-  void saveData(int status);
-  void dephase();
+  int dynamics() override;
+  void reportResults() override;
 
-  Matter *current;
-  Matter *reactant;
-  Matter *saddle;
-  Matter *final_img;
-  Matter *final_img_tmp;
-  Matter *product;
-
-  bool metaStateFlag;
-  bool newStateFlag;
-
-  long minimizeFCalls;
-  long mdFCalls;
-  long dephaseFCalls;
-  long refineFCalls;
-
-  long transitionStep;
-
-  double time;
-  double minCorrectedTime;
-  double transitionTime;
-  double transitionPot;
-  double *timeBuffer;
-  double *biasBuffer;
-
-  std::vector<std::string> returnFiles;
+  double transitionPot{0.0};
+  std::vector<double> timeBuffer;
+  std::vector<double> biasBuffer;
 };
 
 } // namespace eonc

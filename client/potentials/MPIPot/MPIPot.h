@@ -25,6 +25,6 @@ public:
              double *U, double *variance, const double *box);
 
 private:
-  int potentialRank;
-  double poll_period;
+  int potentialRank{0};
+  double poll_period{0.0};
 };

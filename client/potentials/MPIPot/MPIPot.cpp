@@ -39,9 +39,9 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
   long icwd[1024];
   getcwd(cwd, 1024);
   for (int i = 0; i < 1024; i++) {
-    icwd[i] = (long)cwd[i];
+    icwd[i] = static_cast<long>(cwd[i]);
   }
-  int intn = (int)N;
+  int intn = static_cast<int>(N);
   MPI::COMM_WORLD.Send(&intn, 1, MPI::INT, potentialRank, 0);
   MPI::COMM_WORLD.Send(atomicNrs, N, MPI::INT, potentialRank, 0);
   MPI::COMM_WORLD.Send(R, 3 * N, MPI::DOUBLE, potentialRank, 0);
@@ -51,7 +51,7 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
 
   if (poll_period > 0.0) {
     while (MPI::COMM_WORLD.Iprobe(potentialRank, 0) == false) {
-      usleep((useconds_t)(poll_period / 1000000.0));
+      usleep(static_cast<useconds_t>(poll_period / 1000000.0));
     }
   }
 

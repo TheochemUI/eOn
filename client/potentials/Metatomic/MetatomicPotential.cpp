@@ -27,7 +27,8 @@ static torch::optional<std::string> normalize_variant(const std::string &s) {
 }
 
 MetatomicPotential::MetatomicPotential(const Parameters &params)
-    : Potential(PotType::METATOMIC, params),
+    : Potential(PotType::METATOMIC),
+      m_metatomic_opts{params.metatomic_options},
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {
@@ -39,15 +40,15 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 
   // 1. Load the model from the path specified in parameters
   torch::optional<std::string> extensions_directory = torch::nullopt;
-  if (!m_params.metatomic_options.extensions_directory.empty()) {
-    extensions_directory = m_params.metatomic_options.extensions_directory;
+  if (!m_metatomic_opts.extensions_directory.empty()) {
+    extensions_directory = m_metatomic_opts.extensions_directory;
   }
 
   try {
     QUILL_LOG_INFO(m_log, "[MetatomicPotential] Loading model from '{}'",
-                   m_params.metatomic_options.model_path);
+                   m_metatomic_opts.model_path);
     this->model_ = metatomic_torch::load_atomistic_model(
-        m_params.metatomic_options.model_path, extensions_directory);
+        m_metatomic_opts.model_path, extensions_directory);
   } catch (const std::exception &e) {
     QUILL_LOG_ERROR(m_log, "[MetatomicPotential] Failed to load model: {}",
                     e.what());
@@ -68,8 +69,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 
   // 3. Determine and set up the device (CPU/CUDA/MPS)
   torch::optional<std::string> desired = torch::nullopt;
-  if (!m_params.metatomic_options.device.empty()) {
-    desired = m_params.metatomic_options.device;
+  if (!m_metatomic_opts.device.empty()) {
+    desired = m_metatomic_opts.device;
   }
   device_type_ = metatomic_torch::pick_device(
       this->capabilities_->supported_devices, desired);
@@ -94,16 +95,14 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // 5. Resolve variant keys via pick_output
   auto outputs = this->capabilities_->outputs();
 
-  auto v_base = normalize_variant(m_params.metatomic_options.variant.base);
-  auto v_energy =
-      m_params.metatomic_options.variant.energy.empty()
-          ? v_base
-          : normalize_variant(m_params.metatomic_options.variant.energy);
+  auto v_base = normalize_variant(m_metatomic_opts.variant.base);
+  auto v_energy = m_metatomic_opts.variant.energy.empty()
+                      ? v_base
+                      : normalize_variant(m_metatomic_opts.variant.energy);
   auto v_energy_uq =
-      m_params.metatomic_options.variant.energy_uncertainty.empty()
+      m_metatomic_opts.variant.energy_uncertainty.empty()
           ? v_energy
-          : normalize_variant(
-                m_params.metatomic_options.variant.energy_uncertainty);
+          : normalize_variant(m_metatomic_opts.variant.energy_uncertainty);
 
   this->energy_key_ = metatomic_torch::pick_output("energy", outputs, v_energy);
 
@@ -118,7 +117,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // 6. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
-  evaluations_options_->set_length_unit(m_params.metatomic_options.length_unit);
+  evaluations_options_->set_length_unit(m_metatomic_opts.length_unit);
 
   auto model_output = outputs.at(this->energy_key_);
   auto requested_output =
@@ -132,9 +131,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   evaluations_options_->outputs.insert(this->energy_key_, requested_output);
 
   // 7. Optionally request energy uncertainty if threshold is positive
-  if (m_params.metatomic_options.uncertainty_threshold > 0) {
-    this->uncertainty_threshold_ =
-        m_params.metatomic_options.uncertainty_threshold;
+  if (m_metatomic_opts.uncertainty_threshold > 0) {
+    this->uncertainty_threshold_ = m_metatomic_opts.uncertainty_threshold;
     try {
       this->energy_uncertainty_key_ = metatomic_torch::pick_output(
           "energy_uncertainty", outputs, v_energy_uq);
@@ -171,7 +169,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     }
   }
 
-  this->check_consistency_ = m_params.metatomic_options.check_consistency;
+  this->check_consistency_ = m_metatomic_opts.check_consistency;
   QUILL_LOG_INFO(m_log, "[MetatomicPotential] Initialization complete.");
 
   fpeh.restore_fpe();
@@ -183,6 +181,10 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                                const int *atomicNrs, double *forces,
                                double *energy, double *variance,
                                const double *box) {
+  // Serialize concurrent calls -- PyTorch model inference on the same
+  // Module instance is not thread-safe
+  std::lock_guard<std::mutex> lock(inference_mutex_);
+
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
 
@@ -375,9 +377,9 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     metatomic_torch::NeighborListOptions request, long nAtoms,
     const double *positions, const double *box, const bool periodic[3]) {
 
-  auto cutoff = request->engine_cutoff(m_params.metatomic_options.length_unit);
+  auto cutoff = request->engine_cutoff(m_metatomic_opts.length_unit);
 
-  VesinOptions options;
+  VesinOptions options{}; // zero-initialize all fields (incl. algorithm=0=Auto)
   options.cutoff = cutoff;
   options.full = request->full_list();
   options.return_shifts = true;

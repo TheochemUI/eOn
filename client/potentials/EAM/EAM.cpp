@@ -9,449 +9,335 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include <float.h>
-#include <limits.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "EAM.h"
 #include "Parameters.h"
 
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cfloat>
+#include <climits>
+#include <cmath>
+#include <cstring>
+#include <vector>
+
 void EAM::cleanMemory() {
-  if (initialized) {
-    delete[] celllist_old;
-    delete[] celllist_new;
-    delete[] neigh_list;
-  }
+  // RAII: vectors clean themselves. Nothing to do.
 }
 
-// Calculate here long num_cells, long *num_axis, long *cell_length, //become
-// global variables -long *celllist_old, long *celllist_new, long *neigh_list,
-// long fcalled)
 void EAM::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *fullbox) {
   variance = nullptr;
-  double box[3];
-  box[0] = fullbox[0];
-  box[1] = fullbox[4];
-  box[2] = fullbox[8];
+  std::array<double, 3> box = {fullbox[0], fullbox[4], fullbox[8]};
 
-  /* -- Code starting here only needs to be done once. -- */
-  // num_axis contains the number of cell lengths on each axis
-  long num_axis[3];
-  // cell length contains dimensions of each cell
-  long cell_length[3];
+  std::array<long, 3> num_axis;
+  std::array<long, 3> cell_length;
 
   for (long i = 0; i < 3; i++) {
-    num_axis[i] =
-        (long)(box[i] / rc[i]) +
-        1; // sets num-axis according to box size and optimal dimensions of cell
+    num_axis[i] = static_cast<long>(box[i] / rc_[i]) + 1;
+  }
+  for (long i = 0; i < 3; i++) {
+    cell_length[i] = static_cast<long>(box[i] / (num_axis[i] - 1));
   }
 
-  long num_cells;
-  for (long i = 0; i < 3; i++)
-    cell_length[i] =
-        (long)(box[i] /
-               (num_axis[i] -
-                1)); // from num_axis, find the best fit for dimensions of cell
+  long num_cells = num_axis[0] * num_axis[1] * num_axis[2];
 
-  num_cells = num_axis[0] * num_axis[1] * num_axis[2];
-
-  /* -- Code ending here only needs to be done once. -- */
-
-  if (!initialized) // first time force is called
-  {
-    celllist_old = new long[num_cells * (N + 1)];
-    celllist_new = new long[num_cells * (N + 1)];
-    neigh_list = new long[N * (N + 1)];
+  if (!initialized_) {
+    celllist_old_.assign(num_cells * (N + 1), 0);
+    celllist_new_.assign(num_cells * (N + 1), 0);
+    neigh_list_.assign(N * (N + 1), 0);
   }
 
   *U = 0;
-
-  // Are the passed in forces already initialized?
-  for (long kk = 0; kk < 3 * N; kk++) {
-    F[kk] = 0;
+  for (long k = 0; k < 3 * N; k++) {
+    F[k] = 0.0;
   }
 
-  long xmin = LONG_MAX;
-  long ymin = LONG_MAX;
-  long zmin = LONG_MAX;
+  // Find minimum coordinates for shifting all positions to positive
+  double xmin = std::numeric_limits<double>::max();
+  double ymin = xmin, zmin = xmin;
 
-  // shift of the R values so that all coordinates are positive (makes creating
-  // cell table easier)
-  double *Rtemp = new double[3 * N];
-  double *Rnew = new double[3 * N];
-  double *Rold = new double[3 * N];
+  std::vector<double> Rtemp(3 * N);
+  std::vector<double> Rnew(3 * N);
 
-  // finds the minimum value on each axis. This is necessary because within the
-  // method, the R values will be shifted so all are positive, making the
-  // creation of a cell list really easy.
   for (long i = 0; i < 3 * N; i += 3) {
     Rtemp[i] = R[i];
     Rtemp[i + 1] = R[i + 1];
     Rtemp[i + 2] = R[i + 2];
-    if (R[i] < xmin)
-      xmin = R[i];
-    if (R[i + 1] < ymin)
-      ymin = R[i + 1];
-    if (R[i + 2] < zmin)
-      zmin = R[i + 2];
+    xmin = std::min(xmin, R[i]);
+    ymin = std::min(ymin, R[i + 1]);
+    zmin = std::min(zmin, R[i + 2]);
   }
-  // if no coordinates are less than 0, no shift is necessary
-  if (xmin > 0)
-    xmin = 0;
-  if (ymin > 0)
-    ymin = 0;
-  if (zmin > 0)
-    zmin = 0;
-  // shifting of R
+  // Only shift if coordinates are negative
+  if (xmin > 0) xmin = 0;
+  if (ymin > 0) ymin = 0;
+  if (zmin > 0) zmin = 0;
+
   for (long i = 0; i < 3 * N; i += 3) {
-    Rtemp[i] += abs(xmin);
-    Rtemp[i + 1] += abs(ymin);
-    Rtemp[i + 2] += abs(zmin);
+    Rtemp[i] += std::abs(xmin);
+    Rtemp[i + 1] += std::abs(ymin);
+    Rtemp[i + 2] += std::abs(zmin);
   }
 
-  // enforce periodic boundary conditions
+  // Enforce periodic boundary conditions
   for (long i = 0; i < 3 * N; i++) {
     while (Rtemp[i] > box[i % 3]) {
       Rtemp[i] -= box[i % 3];
     }
   }
 
-  for (long i = 0; i < 3 * N; i++) {
-    Rnew[i] = Rtemp[i];
-  }
+  std::copy(Rtemp.begin(), Rtemp.end(), Rnew.begin());
 
-  if (!initialized) {
-    new_celllist(N, box, num_axis, cell_length, celllist_new, num_cells, Rnew);
-    cell_to_neighbor(N, num_cells, num_axis, cell_length, celllist_new,
-                     neigh_list);
+  if (!initialized_) {
+    new_celllist(N, box.data(), num_axis.data(), cell_length.data(),
+                 celllist_new_.data(), num_cells, Rnew.data());
+    cell_to_neighbor(N, num_cells, num_axis.data(), cell_length.data(),
+                     celllist_new_.data(), neigh_list_.data());
   } else {
-    // only updates cell and neighbor lists if an atom moved cells
-    if (update_cell_list(N, num_cells, num_axis, cell_length, celllist_old,
-                         Rnew) > 0) {
-      new_celllist(N, box, num_axis, cell_length, celllist_new, num_cells,
-                   Rnew);
-      cell_to_neighbor(N, num_cells, num_axis, cell_length, celllist_new,
-                       neigh_list);
+    if (update_cell_list(N, num_cells, num_axis.data(), cell_length.data(),
+                         celllist_old_.data(), Rnew.data()) > 0) {
+      new_celllist(N, box.data(), num_axis.data(), cell_length.data(),
+                   celllist_new_.data(), num_cells, Rnew.data());
+      cell_to_neighbor(N, num_cells, num_axis.data(), cell_length.data(),
+                       celllist_new_.data(), neigh_list_.data());
     }
   }
-  // does force calculations for all atoms
-  calc_force(N, Rnew, atomicNrs, F, U, box);
 
-  for (long i = 0; i < num_cells * (N + 1); i++) {
-    celllist_old[i] = celllist_new[i];
-  }
+  calc_force(N, Rnew.data(), atomicNrs, F, U, box.data());
 
-  // double diff = R[0] - R[3];
-  // if(diff > box[0]/2)
-  //{
-  //     diff = box[0] - diff;
-  // }
-  delete[] Rtemp;
-  delete[] Rnew;
-  delete[] Rold;
-  initialized = true;
+  std::copy(celllist_new_.begin(), celllist_new_.end(), celllist_old_.begin());
+
+  initialized_ = true;
 }
 
 EAM::element_parameters EAM::get_element_parameters(int atomic_number) {
-  bool found = false;
-  int i;
-  for (i = 0; i < NPARAMS; i++) {
+  for (int i = 0; i < NPARAMS; i++) {
     if (el_params[i].Z == atomic_number) {
-      found = true;
-      break;
+      return el_params[i];
     }
   }
-  if (found == false) {
-    /* This sucks. We need to have a way to alert user that the
-     * parameters are missing */
-    throw 14324;
-  }
-  return el_params[i];
+  throw 14324; // Element not found
 }
 
 void EAM::calc_force(long N, double *R, const int *atomicNrs, double *F,
                      double *U, const double *box) {
-  double *drho_dr = new double[3 * N];
-  for (long i = 0; i < 3 * N; i++) {
-    F[i] = 0;
+  std::vector<double> drho_dr(3 * N);
+  for (long k = 0; k < 3 * N; k++) {
+    F[k] = 0.0;
   }
-
   *U = 0;
 
+  // Pre-compute half-box for PBC
+  const double halfBox0 = box[0] * 0.5;
+  const double halfBox1 = box[1] * 0.5;
+  const double halfBox2 = box[2] * 0.5;
+
   for (long i = 0; i < N; i++) {
-    for (long j = 0; j < 3 * N; j++) {
-      drho_dr[j] = 0;
-    }
-    element_parameters params = get_element_parameters(atomicNrs[i]);
+    std::fill(drho_dr.begin(), drho_dr.end(), 0.0);
+    element_parameters epar = get_element_parameters(atomicNrs[i]);
+    const double cutoff2 = epar.r_cut * epar.r_cut;
 
-    double dens = 0; // sum of density for atom 1
-    double phi_r = 0;
+    double dens = 0.0;
+    const double xi = R[3 * i];
+    const double yi = R[3 * i + 1];
+    const double zi = R[3 * i + 2];
 
-    // for (long j=0;j<neigh_list[i*(N+1)+N];j++) //loops through each atom in
-    // atom i's neighbor list
-    //{
-    //     long neigh= neigh_list[i*(N+1)+j];
-    for (long j = 0; j < N;
-         j++) // loops through each atom in atom i's neighbor list
-    {
-      if (i == j) {
-        continue;
-      }
-      phi_r = 0;
-      long neigh = j;
+    for (long j = 0; j < N; j++) {
+      if (i == j) continue;
 
-      // finds distance on each axis between atoms i and j
-      double disx = R[3 * i] - R[3 * neigh];
-      double disy = R[3 * i + 1] - R[3 * neigh + 1];
-      double disz = R[3 * i + 2] - R[3 * neigh + 2];
-      double dirs[] = {disx, disy, disz};
+      double dx = xi - R[3 * j];
+      double dy = yi - R[3 * j + 1];
+      double dz = zi - R[3 * j + 2];
 
-      // finds smallest distance between the two atoms (periodic boundary
-      // conditions)
-      for (long u = 0; u < 3; u++) {
-        if (dirs[u] > box[u] / 2) {
-          dirs[u] = -box[u] + dirs[u];
-        } else if (dirs[u] < -box[u] / 2) {
-          dirs[u] = box[u] + dirs[u];
-        }
-      }
+      // Minimum image convention
+      if (dx > halfBox0) dx -= box[0];
+      else if (dx < -halfBox0) dx += box[0];
+      if (dy > halfBox1) dy -= box[1];
+      else if (dy < -halfBox1) dy += box[1];
+      if (dz > halfBox2) dz -= box[2];
+      else if (dz < -halfBox2) dz += box[2];
 
-      // distance between atoms i and j
-      double r = 0;
+      double r2 = dx * dx + dy * dy + dz * dz;
+      // r^2 cutoff avoids sqrt for far pairs
+      if (r2 > cutoff2) continue;
 
-      for (long k = 0; k < 3; k++) {
-        r += dirs[k] * dirs[k];
-      }
-      r = sqrt(r);
-      if (r > params.r_cut) {
-        continue;
-      }
-      dens += pow(r, 6) *
-              (exp(-params.beta1 * r) + 512 * exp(-2 * params.beta2 * r));
+      double r = std::sqrt(r2);
+
+      // r^6 = (r^2)^3 instead of pow(r, 6)
+      double r6 = r2 * r2 * r2;
+      double exp_b1 = std::exp(-epar.beta1 * r);
+      double exp_b2 = std::exp(-2.0 * epar.beta2 * r);
+      double rho_pair = exp_b1 + 512.0 * exp_b2;
+
+      dens += r6 * rho_pair;
+
+      // r^5 = r^4 * r = (r^2)^2 * r instead of pow(r, 5)
+      double r5 = r2 * r2 * r;
       double mag_force_den =
-          6 * pow(r, 5) *
-              (exp(-params.beta1 * r) + 512 * exp(-2 * params.beta2 * r)) +
-          pow(r, 6) * (-params.beta1 * exp(-params.beta1 * r) -
-                       1024 * params.beta2 * exp(-2 * params.beta2 * r));
-      for (long k = 0; k < 3; k++) {
-        drho_dr[3 * i + k] += dirs[k] / r * -mag_force_den;
-        drho_dr[3 * neigh + k] -= dirs[k] / r * -mag_force_den;
-      }
-      if (neigh > i) {
-        // Morse potential portion of energy
-        phi_r = params.Dm * pow(1 - exp(-params.alphaM * (r - params.Rm)), 2) -
-                params.Dm;
+          6.0 * r5 * rho_pair +
+          r6 * (-epar.beta1 * exp_b1 - 1024.0 * epar.beta2 * exp_b2);
 
-        // magnitude of force from Morse potential
-        double mag_force =
-            2 * params.alphaM * params.Dm *
-            (exp(params.alphaM * r) - exp(params.alphaM * params.Rm)) *
-            (exp(params.alphaM * params.Rm - 2 * params.alphaM * r));
+      double invR = 1.0 / r;
+      double fscale = -mag_force_den * invR;
+      drho_dr[3 * i] += fscale * dx;
+      drho_dr[3 * i + 1] += fscale * dy;
+      drho_dr[3 * i + 2] += fscale * dz;
+      drho_dr[3 * j] -= fscale * dx;
+      drho_dr[3 * j + 1] -= fscale * dy;
+      drho_dr[3 * j + 2] -= fscale * dz;
 
-        // calculates forces on atom i and j because of each other
-        for (long k = 0; k < 3; k++) {
-          F[3 * i + k] -= dirs[k] / r * mag_force;
-          F[3 * neigh + k] += dirs[k] / r * mag_force;
-        }
+      if (j > i) {
+        // Morse pair portion: simplify exp chain
+        double expArg = std::exp(-epar.alphaM * (r - epar.Rm));
+        double d = 1.0 - expArg;
+        double phi_r = epar.Dm * d * d - epar.Dm;
+        // Force: 2*Dm*alpha*d*(d-1) = 2*Dm*alpha*exp(-a*(r-re))*(1-exp(-a*(r-re)))
+        double mag_force = 2.0 * epar.alphaM * epar.Dm * d * (d - 1.0);
+
+        double fcomp_scale = mag_force * invR;
+        F[3 * i] -= fcomp_scale * dx;
+        F[3 * i + 1] -= fcomp_scale * dy;
+        F[3 * i + 2] -= fcomp_scale * dz;
+        F[3 * j] += fcomp_scale * dx;
+        F[3 * j + 1] += fcomp_scale * dy;
+        F[3 * j + 2] += fcomp_scale * dz;
         *U += phi_r;
       }
     }
 
-    double f_of_rho = embedding_function(params.func_coeff, dens);
-    *U += f_of_rho;
-    double dF_drho = embedding_force(params.func_coeff, dens);
-    for (int k = 0; k < 3 * N; k++) {
+    *U += embedding_function(epar.func_coeff, dens);
+    double dF_drho = embedding_force(epar.func_coeff, dens);
+    for (long k = 0; k < 3 * N; k++) {
       F[k] -= dF_drho * drho_dr[k];
     }
   }
-  delete[] drho_dr;
 }
 
-// Creates a new cell list for the first time force is called
-void EAM::new_celllist(long N, const double *box, long *num_axis,
+void EAM::new_celllist(long N, const double * /*box*/, long *num_axis,
                        long *cell_length, long *celllist_new, long num_cells,
                        double *Rnew) {
-  // the cell list is a 1d array - each N+1 indexes correspond to 1 cell. The
-  // last index of each cell holds the number of atoms in that cell
-  long *cell_list = new long[num_cells * (N + 1)];
-
-  for (long i = 0; i < num_cells; i++)
-    for (long j = 0; j < N + 1; j++)
-      if (j % N == 0 && j > 0)
-        cell_list[i * (N + 1) + j] = 0;
-      else
-        cell_list[i * (N + 1) + j] = -1;
-
-  // loop to put each atom into appropriate cell
-  for (long i = 0; i < N; i++) {
-    long *coor = new long[3];
-    for (long j = 0; j < 3; j++)
-      // this calculates, for each axis, how many lengths away from 0,0,0 the
-      // atom is
-      coor[j] = (long)((Rnew[3 * i + j]) / cell_length[j]);
-
-    // this calculates which cell number the atom is in
-    int cell =
-        coor[0] * num_axis[1] * num_axis[2] + coor[1] * num_axis[2] + coor[2];
-
-    // puts atom in appropriate spot of appropriate cell
-    cell_list[cell * (N + 1) + cell_list[cell * (N + 1) + N]] = i;
-    // increases the value that gives number of atoms in that particular cells
-    cell_list[cell * (N + 1) + N]++;
-
-    delete[] coor;
+  std::vector<long> cell_list(num_cells * (N + 1), -1);
+  // Last slot of each cell holds atom count
+  for (long i = 0; i < num_cells; i++) {
+    cell_list[i * (N + 1) + N] = 0;
   }
 
-  for (long i = 0; i < num_cells; i++)
-    for (long j = 0; j < N + 1; j++)
-      celllist_new[i * (N + 1) + j] = cell_list[i * (N + 1) + j];
-  delete[] cell_list;
+  for (long i = 0; i < N; i++) {
+    long cx = static_cast<long>(Rnew[3 * i] / cell_length[0]);
+    long cy = static_cast<long>(Rnew[3 * i + 1] / cell_length[1]);
+    long cz = static_cast<long>(Rnew[3 * i + 2] / cell_length[2]);
+    long cell = cx * num_axis[1] * num_axis[2] + cy * num_axis[2] + cz;
+
+    cell_list[cell * (N + 1) + cell_list[cell * (N + 1) + N]] = i;
+    cell_list[cell * (N + 1) + N]++;
+  }
+
+  std::copy(cell_list.begin(), cell_list.end(), celllist_new);
 }
 
-// creates a neighbor list for each cell from given cell list
-void EAM::cell_to_neighbor(long N, long num_of_cells, long *num_axis,
-                           long *cell_length, long *celllist_new,
+void EAM::cell_to_neighbor(long N, long /*num_of_cells*/, long *num_axis,
+                           long * /*cell_length*/, long *celllist_new,
                            long *neigh_list) {
-  num_of_cells = num_axis[0] * num_axis[1] * num_axis[2];
+  long num_cells = num_axis[0] * num_axis[1] * num_axis[2];
 
-  for (long i2 = 0; i2 < N; i2++)
-    for (long k = 0; k < N + 1; k++)
-      neigh_list[i2 * (N + 1) + k] = -1;
+  for (long i = 0; i < N * (N + 1); i++) {
+    neigh_list[i] = -1;
+  }
+
+  std::vector<long> neighbors(N + 1);
+  std::vector<long> cell_list_copy(num_cells * (N + 1));
 
   for (long j = 0; j < num_axis[0]; j++) {
     for (long j1 = 0; j1 < num_axis[1]; j1++) {
       for (long j2 = 0; j2 < num_axis[2]; j2++) {
-        // last index contains number of atoms in array.
-        long *neighbors = new long[N + 1];
-        for (long i = 0; i < N + 1; i++) {
-          neighbors[i] = -1;
-        }
+        std::fill(neighbors.begin(), neighbors.end(), -1);
 
-        long cur_index = j * num_axis[1] * num_axis[2] + j1 * num_axis[2] +
-                         j2; // converts 3d location of cell to 1d location in
-                             // use in cell_list
+        long cur_index =
+            j * num_axis[1] * num_axis[2] + j1 * num_axis[2] + j2;
 
-        // making a copy of cell list so that no cell is counted twice as a
-        // neighbor of a dif cell in small atom systems
-        long *cell_list_copy = new long[num_of_cells * (N + 1) + N + 1];
-        for (long d1 = 0; d1 < num_of_cells; d1++) {
-          for (long d2 = 0; d2 < N + 1; d2++) {
-            cell_list_copy[d1 * (N + 1) + d2] = celllist_new[d1 * (N + 1) + d2];
-          }
-        }
+        std::copy(celllist_new, celllist_new + num_cells * (N + 1),
+                  cell_list_copy.begin());
 
         if (cell_list_copy[cur_index * (N + 1) + N] == 0) {
-          delete[] cell_list_copy;
-          delete[] neighbors;
-          continue; // if cell size is 0, continues to next cell
+          continue;
         }
 
         for (long d1 = -1; d1 < 2; d1++) {
           for (long d2 = -1; d2 < 2; d2++) {
             for (long d3 = -1; d3 < 2; d3++) {
-              long *pos = new long[3];
-              pos[0] = j - d1;
-              pos[1] = j1 - d2;
-              pos[2] =
-                  j2 -
-                  d3; // 3d location of neighbor cell
-                      // check if pos is within bounds, if not, pos wraps around
-                      // to meet neighbors (periodic boundary conditions)
+              std::array<long, 3> pos = {j - d1, j1 - d2, j2 - d3};
+              // Periodic wrapping
               for (long y = 0; y < 3; y++) {
-                if (pos[y] < 0) {
+                if (pos[y] < 0)
                   pos[y] = num_axis[y] - 1;
-                } else if (pos[y] >= num_axis[y]) {
+                else if (pos[y] >= num_axis[y])
                   pos[y] = 0;
-                }
               }
-              // 1d location of neighbor cell
               long neigh_index = pos[0] * num_axis[1] * num_axis[2] +
                                  pos[1] * num_axis[2] + pos[2];
 
-              // number of atoms in neighbor cell
               long num = cell_list_copy[neigh_index * (N + 1) + N];
               for (long y = 0; y < num; y++) {
-                // makes sure that atom has not already been added to neigbors
-                long check = 0;
-                for (long k = 0; k < N; k++) {
-                  if (neighbors[check] ==
-                      cell_list_copy[neigh_index * (N + 1) + y]) {
-                    check = -1;
+                long candidate = cell_list_copy[neigh_index * (N + 1) + y];
+                // Check not already in neighbors
+                bool already = false;
+                for (long k = 0; k <= neighbors[N]; k++) {
+                  if (neighbors[k] == candidate) {
+                    already = true;
+                    break;
                   }
                 }
-                // if not, add atom to neighbors
-                if (check != -1) {
+                if (!already) {
                   neighbors[N]++;
-                  neighbors[neighbors[N]] =
-                      cell_list_copy[neigh_index * (N + 1) + y];
+                  neighbors[neighbors[N]] = candidate;
                 }
               }
-
-              delete[] pos;
             }
           }
         }
-        // adds all atoms in neighbors to the array of each atom in current cell
+
         for (long i = 0; i < celllist_new[cur_index * (N + 1) + N]; i++) {
-          // atom for which neighbors are being added to neigh_list
           long cur = celllist_new[cur_index * (N + 1) + i];
           neigh_list[cur * (N + 1) + N] = 0;
           for (long temp = 0; temp <= neighbors[N]; temp++) {
-            if (cur != neighbors[temp]) // checks to make sure not same atom
-            {
-
+            if (cur != neighbors[temp]) {
               neigh_list[cur * (N + 1) + neigh_list[cur * (N + 1) + N]] =
                   neighbors[temp];
               neigh_list[cur * (N + 1) + N]++;
             }
           }
         }
-        delete[] neighbors;
-        delete[] cell_list_copy;
       }
     }
   }
 }
 
-// Returns 0 if unchanged, >0 if changed - represents number of atoms that
-// changed lists
 int EAM::update_cell_list(long N, long num_cells, long *num_axis,
                           long *cell_length, long *celllist_old, double *Rnew) {
   int changed = 0;
+  std::vector<long> table(N);
 
-  long *table =
-      new long[N]; // holds the cell number for each atom in the old cell list
-
-  for (long i = 0; i < num_cells; i++)
-    for (long j = 0; j < celllist_old[i * (N + 1) + N]; j++)
+  for (long i = 0; i < num_cells; i++) {
+    for (long j = 0; j < celllist_old[i * (N + 1) + N]; j++) {
       table[celllist_old[i * (N + 1) + j]] = i;
+    }
+  }
 
   for (long i = 0; i < N; i++) {
-    long *coor = new long[3];
-    for (long j = 0; j < 3; j++)
-      // this calculates, for each axis, how many lengths away from 0,0,0 the
-      // atom is
-      coor[j] = (long)((Rnew[3 * i + j]) / cell_length[j]);
-    // this calculates which cell number the atom is in
-    long cell =
-        coor[0] * num_axis[1] * num_axis[2] + coor[1] * num_axis[2] + coor[2];
-    // if cell location is different, changed increments
+    long cx = static_cast<long>(Rnew[3 * i] / cell_length[0]);
+    long cy = static_cast<long>(Rnew[3 * i + 1] / cell_length[1]);
+    long cz = static_cast<long>(Rnew[3 * i + 2] / cell_length[2]);
+    long cell = cx * num_axis[1] * num_axis[2] + cy * num_axis[2] + cz;
     if (cell != table[i]) {
       changed++;
     }
-    delete[] coor;
   }
-  delete[] table;
   return changed;
 }
 
 double EAM::embedding_function(const double *func_coeff, double rho) {
+  // Horner's method for 8th order polynomial
   double result = func_coeff[8];
-  // Evaluate the polynomial using Horner's method.
   for (int i = 7; i >= 0; i--) {
     result = result * rho + func_coeff[i];
   }
@@ -459,8 +345,8 @@ double EAM::embedding_function(const double *func_coeff, double rho) {
 }
 
 double EAM::embedding_force(const double *func_coeff, double rho) {
+  // Derivative of embedding function via Horner's method
   double result = func_coeff[8] * 8;
-  // Evaluate the polynomial using Horner's method.
   for (int i = 7; i >= 1; i--) {
     result = result * rho + i * func_coeff[i];
   }

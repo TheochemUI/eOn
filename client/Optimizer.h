@@ -47,38 +47,54 @@ namespace eonc {
  * Declaration of the optimizer class
  */
 
+/// Configuration extracted from Parameters for the Optimizer hierarchy.
+struct OptimizerConfig {
+  Parameters::optimizer_options_t opts;
+  double finiteDifference{0.01};
+  bool bowlBreakout{false};
+
+  static OptimizerConfig fromParams(const Parameters &p) {
+    return {p.optimizer_options, p.main_options.finiteDifference,
+            p.saddle_search_options.confine_positive.bowl_breakout};
+  }
+};
+
 class Optimizer {
 private:
   const OptType m_otype;
 
 protected:
-  //! Parameters set by the config.init file
-  const Parameters &m_params;
-  //! An objective function relating a certain job method to the conjugate
-  //! gradient optimizer
+  const OptimizerConfig m_optConfig;
   std::shared_ptr<ObjectiveFunction> m_objf;
 
 public:
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf,
-            const Parameters &a_params)
-      : m_otype{a_params.optimizer_options.method},
-        m_params{a_params},
+            const OptimizerConfig &a_config)
+      : m_otype{a_config.opts.method},
+        m_optConfig{a_config},
         m_objf{a_objf} {
     EONC_LOG_WARNING(
         "You should explicitly set an optimizer while constructing the "
         "optimizer!!\n Defaulting to opt_method from the parameters");
   }
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
-            const Parameters &a_params)
+            const OptimizerConfig &a_config)
       : m_otype{a_optype},
-        m_params{a_params},
+        m_optConfig{a_config},
         m_objf{a_objf} {}
-  //! optimizer deconstructor
+
+  // Backward-compat constructors
+  [[deprecated("Pass OptimizerConfig directly")]]
+  Optimizer(std::shared_ptr<ObjectiveFunction> a_objf,
+            const Parameters &a_params)
+      : Optimizer(a_objf, OptimizerConfig::fromParams(a_params)) {}
+  [[deprecated("Pass OptimizerConfig directly")]]
+  Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
+            const Parameters &a_params)
+      : Optimizer(a_objf, a_optype, OptimizerConfig::fromParams(a_params)) {}
+
   virtual ~Optimizer() {};
-  //! Template for stepping the optimizer, returns convergence
   virtual int step(double a_maxMove) = 0;
-  //! Template for running the optimizer; uses a series of steps, checking for
-  //! convergence each time
   virtual int run(size_t a_maxIterations, double a_maxMove) = 0;
 };
 
