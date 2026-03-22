@@ -1,0 +1,1 @@
+Parallel image force evaluation for NEB (requires TBB, ``-Dwith_parallel_neb=true``).

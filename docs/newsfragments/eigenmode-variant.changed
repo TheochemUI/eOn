@@ -1,0 +1,1 @@
+Eigenmode methods (Dimer, ImprovedDimer, Lanczos, GPRDimer) now use ``std::variant`` instead of an abstract base class, eliminating virtual dispatch overhead.
