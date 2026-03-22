@@ -20,8 +20,8 @@ class PrefactorJob : public Job {
 public:
   PrefactorJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)) {}
-  ~PrefactorJob(void) = default;
-  std::vector<std::string> run(void);
+  ~PrefactorJob() = default;
+  std::vector<std::string> run();
   // Ugly but OK for now I guess
   static const char PREFACTOR_REACTANT[];
   static const char PREFACTOR_SADDLE[];

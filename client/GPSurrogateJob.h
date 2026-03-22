@@ -38,8 +38,8 @@ public:
     sys_mod.attr("breakpointhook") = ipdb_mod.attr("set_trace");
 #endif // NDEBUG
   }
-  ~GPSurrogateJob(void) = default;
-  std::vector<std::string> run(void) override;
+  ~GPSurrogateJob() = default;
+  std::vector<std::string> run() override;
 
 private:
   void saveData(NudgedElasticBand::NEBStatus status,

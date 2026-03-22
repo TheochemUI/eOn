@@ -29,33 +29,20 @@
 class EffectiveMediumTheory : public Potential {
 
 private:
-  //	Variables
-  long numberOfAtoms;
-  bool periodicity[3];
-  Atoms *AtomsObj;
-  EMTDefaultParameterProvider *EMTParameterObj;
-  EMT *EMTObj;
-  SuperCell *SuperCellObj;
+  bool emtRasmussen{false};
+  long numberOfAtoms{0};
+  bool periodicity[3]{true, true, true};
+  Atoms *AtomsObj{nullptr};
+  EMTDefaultParameterProvider *EMTParameterObj{nullptr};
+  EMT *EMTObj{nullptr};
+  SuperCell *SuperCellObj{nullptr};
 
 public:
-  // Functions
-  // constructor and destructor
   EffectiveMediumTheory(const Parameters &p)
-      : Potential(p) {
-    // dummy variables
-    AtomsObj = 0;
-    EMTObj = 0;
-    SuperCellObj = 0;
-    EMTParameterObj = 0;
-    numberOfAtoms = 0;
-
-    // should have periodic boundary conditions in all directions
-    periodicity[0] = true;
-    periodicity[1] = true;
-    periodicity[2] = true;
-  };
-  ~EffectiveMediumTheory(void) {};
-  void cleanMemory(void);
+      : Potential(p),
+        emtRasmussen{p.potential_options.EMTRasmussen} {}
+  ~EffectiveMediumTheory() { cleanMemory(); }
+  void cleanMemory();
 
   // To satify interface
   void force(long N, const double *R, const int *atomicNrs, double *F,

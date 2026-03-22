@@ -11,124 +11,94 @@
 */
 #include "MinModeSaddleSearch.h"
 #include "ConjugateGradients.h"
-#include "Dimer.h"
+#include "EigenmodeStrategy.h"
 #include "EonLogger.h"
+#include "EpiCenters.h"
 #include "HelperFunctions.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
-#include "LowestEigenmode.h"
+#include "ObjectiveFunction.h"
 #include "SaddleSearchJob.h"
 #include "eonExceptions.hpp"
-#include <memory>
-#ifdef WITH_GPRD
-#include "AtomicGPDimer.h"
-#endif
-#include "EpiCenters.h"
-#include "ObjectiveFunction.h"
 
-using namespace std;
+#include <cmath>
+#include <memory>
+#include <string>
+
 using namespace eonc::helpers;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
+  std::shared_ptr<Matter> matter;
   AtomMatrix eigenvector;
-  std::shared_ptr<LowestEigenmode> minModeMethod;
-  int iteration;
+  std::shared_ptr<EigenmodeStrategy> minModeMethod;
+  int iteration{0};
 
 public:
-  MinModeObjectiveFunction(std::shared_ptr<Matter> matterPassed,
-                           std::shared_ptr<LowestEigenmode> minModeMethodPassed,
-                           AtomMatrix modePassed,
-                           const Parameters &paramsPassed)
-      : ObjectiveFunction(matterPassed, paramsPassed),
-        minModeMethod{minModeMethodPassed} {
-    eigenvector = modePassed;
-  }
+  MinModeObjectiveFunction(
+      std::shared_ptr<Matter> matterPassed,
+      std::shared_ptr<EigenmodeStrategy> minModeMethodPassed,
+      AtomMatrix modePassed, const Parameters &paramsPassed)
+      : ObjectiveFunction(paramsPassed),
+        matter{std::move(matterPassed)},
+        minModeMethod{minModeMethodPassed},
+        eigenvector{std::move(modePassed)} {}
 
-  ~MinModeObjectiveFunction(void) {}
+  ~MinModeObjectiveFunction() override = default;
 
   VectorXd getGradient(bool fdstep = false) {
-    AtomMatrix proj;
     AtomMatrix force = matter->getForces();
 
     if (!fdstep || iteration == 0) {
-      minModeMethod->compute(matter, eigenvector);
-      // Check if ImprovedDimer lost the mode immediately after compute()
-      auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
+      eonc::eigenmodeCompute(*minModeMethod, matter, eigenvector);
+      // Check if ImprovedDimer lost the mode
+      auto *dimer = eonc::asImprovedDimer(*minModeMethod);
       if (dimer && !dimer->rotationDidConverge) {
-        // Check if it restored to a valid negative curvature state
         if (dimer->getEigenvalue() < 0.0) {
-          // Dimer restored to best state - update eigenvector and continue
-          // but signal that we should probably stop soon
-          eigenvector = minModeMethod->getEigenvector();
+          eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
           EONC_LOG_DEBUG(
               "[MinMode] Dimer restored to best state with C_tau={:.4f}",
               dimer->getEigenvalue());
           throw eonc::DimerModeRestoredException();
         } else {
-          // Truly lost - no valid state to restore to
           throw eonc::DimerModeLostException();
         }
       }
       iteration++;
     }
 
-    eigenvector = minModeMethod->getEigenvector();
-    double eigenvalue = minModeMethod->getEigenvalue();
+    eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
+    double eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);
 
-    proj =
-        (force.array() * eigenvector.array()).sum() * eigenvector.normalized();
+    AtomMatrix proj = matDot(force, eigenvector) * eigenvector.normalized();
 
-    if (0 < eigenvalue) {
+    if (eigenvalue > 0.0) {
       if (params.saddle_search_options.perp_force_ratio > 0.0) {
-        // reverse force parallel to eigenvector, and reduce perpendicular force
-        double const d = params.saddle_search_options.perp_force_ratio;
-        force = d * force - (1. + d) * proj;
-
-        // zero out the smallest forces to keep displacement confined
+        double d = params.saddle_search_options.perp_force_ratio;
+        force = d * force - (1.0 + d) * proj;
       } else if (params.saddle_search_options.confine_positive.enabled) {
         if (params.saddle_search_options.confine_positive.bowl_breakout) {
           AtomMatrix forceTemp = matter->getForces();
-          double *indices_max;
-          indices_max = new double[params.saddle_search_options.confine_positive
-                                       .bowl_active];
+          int nBowlActive =
+              params.saddle_search_options.confine_positive.bowl_active;
+          std::vector<int> indices_max(nBowlActive);
 
-          // determine the force for the x largest component
-          double f_max;
-          int i_max;
-          for (int j = 0;
-               j < params.saddle_search_options.confine_positive.bowl_active;
-               j++) {
-            f_max = forceTemp.row(0).norm();
-            i_max = 0;
-            for (int i = 0; i < matter->numberOfAtoms(); i++) {
+          // Find the nBowlActive atoms with largest forces
+          for (int j = 0; j < nBowlActive; j++) {
+            double f_max = forceTemp.row(0).norm();
+            int i_max = 0;
+            for (long i = 0; i < matter->numberOfAtoms(); i++) {
               if (f_max < forceTemp.row(i).norm()) {
                 f_max = forceTemp.row(i).norm();
-                i_max = i;
+                i_max = static_cast<int>(i);
               }
             }
-            forceTemp(3 * i_max + 0) = 0;
-            forceTemp(3 * i_max + 1) = 0;
-            forceTemp(3 * i_max + 2) = 0;
+            forceTemp.row(i_max).setZero();
             indices_max[j] = i_max;
           }
-          for (int i = 0; i < matter->numberOfAtoms(); i++) {
-            forceTemp(3 * i + 0) = 0.0;
-            forceTemp(3 * i + 1) = 0.0;
-            forceTemp(3 * i + 2) = 0.0;
-          }
-          // only set the projected forces corresponding to the atoms subject to
-          // the largest forces
-          for (int j = 0;
-               j < params.saddle_search_options.confine_positive.bowl_active;
-               j++) {
-            size_t tind = static_cast<size_t>(indices_max[j]);
-            forceTemp(3 * tind + 0) = -proj(3 * tind + 0);
-            forceTemp(3 * tind + 1) = -proj(3 * tind + 1);
-            forceTemp(3 * tind + 2) = -proj(3 * tind + 2);
+          forceTemp.setZero();
+          for (int j = 0; j < nBowlActive; j++) {
+            forceTemp.row(indices_max[j]) = -proj.row(indices_max[j]);
           }
           force = forceTemp;
-          delete[] indices_max;
         } else {
           int sufficientForce = 0;
           double minForce =
@@ -137,14 +107,16 @@ public:
                  params.saddle_search_options.confine_positive.min_active) {
             sufficientForce = 0;
             force = matter->getForces();
-            for (int i = 0; i < 3 * matter->numberOfAtoms(); i++) {
-              if (fabs(force(i)) < minForce)
-                force(i) = 0;
-              else {
-                sufficientForce = sufficientForce + 1;
-                force(i) =
-                    -params.saddle_search_options.confine_positive.boost *
-                    proj(i);
+            for (long i = 0; i < matter->numberOfAtoms(); i++) {
+              for (int k = 0; k < 3; k++) {
+                if (std::abs(force(i, k)) < minForce) {
+                  force(i, k) = 0;
+                } else {
+                  sufficientForce++;
+                  force(i, k) =
+                      -params.saddle_search_options.confine_positive.boost *
+                      proj(i, k);
+                }
               }
             }
             minForce *=
@@ -152,19 +124,18 @@ public:
           }
         }
       } else {
-        // follow eigenmode
         force = -proj;
       }
     } else {
-      // reversing force parallel to eigenmode
-      force += -2. * proj;
+      force += -2.0 * proj;
     }
 
     VectorXd forceV = VectorXd::Map(force.data(), 3 * matter->numberOfAtoms());
     return -forceV;
   }
+
   double getEnergy() { return matter->getPotentialEnergy(); }
-  void setPositions(VectorXd x) { matter->setPositionsV(x); }
+  void setPositions(const VectorXd &x) { matter->setPositionsV(x); }
   VectorXd getPositions() { return matter->getPositionsV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
   bool isConverged() {
@@ -179,13 +150,15 @@ public:
     } else if (params.optimizer_options.convergence_metric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      EONC_LOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
-                     params.optimizer_options.convergence_metric);
+      EONC_LOG_CRITICAL("[MinModeSaddleSearch] unknown convergence metric: {}",
+                        params.optimizer_options.convergence_metric);
       std::exit(1);
     }
   }
 
-  VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
+  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+    return matter->pbcV(a - b);
+  }
 };
 
 MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
@@ -200,42 +173,28 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
   status = STATUS_GOOD;
   iteration = 0;
 
-  if (params.saddle_search_options.minmode_method ==
-      LowestEigenmode::MINMODE_DIMER) {
-    if (params.dimer_options.improved) {
-      minModeMethod = std::make_shared<ImprovedDimer>(matter, params, pot);
-      if (true) { // TODO(rg): convert to param
-        auto dimer = std::static_pointer_cast<ImprovedDimer>(minModeMethod);
+  minModeMethod = eonc::buildEigenmodeStrategy(matter, params, pot);
 
-        // Convert the input AtomMatrix 'mode' to VectorXd
-        VectorXd refVec =
-            VectorXd::Map(mode.data(), 3 * matter->numberOfAtoms());
-        refVec = refVec.array() * matter->getFreeV().array();
-
-        dimer->setReferenceMode(refVec);
-      }
-    } else {
-      minModeMethod = std::make_shared<Dimer>(matter, params, pot);
-    }
-  } else if (params.saddle_search_options.minmode_method ==
-             LowestEigenmode::MINMODE_LANCZOS) {
-    minModeMethod = std::make_shared<Lanczos>(matter, params, pot);
+  // Set reference mode for ImprovedDimer (prevents mode switching)
+  if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
+    VectorXd refVec = VectorXd::Map(mode.data(), 3 * matter->numberOfAtoms());
+    refVec = refVec.array() * matter->getFreeV().array();
+    dimer->setReferenceMode(refVec);
   }
-#ifdef WITH_GPRD
-  else if (params.saddle_search_options.minmode_method ==
-           LowestEigenmode::MINMODE_GPRDIMER) {
-    minModeMethod = std::make_shared<AtomicGPDimer>(matter, params, pot);
-  }
-#endif
 }
 
 int MinModeSaddleSearch::run() {
+  return run(params.saddle_search_options.max_iterations);
+}
+
+int MinModeSaddleSearch::run(long max_iterations_override) {
+  long effectiveMaxIter = max_iterations_override;
   QUILL_LOG_DEBUG(
       log, "Saddle point search started from reactant with energy {} eV.",
       reactantEnergy);
 
   int optStatus;
-  int firstIteration = 1;
+  bool firstIteration = true;
   const char *forceLabel =
       params.optimizer_options.convergence_metric_label.c_str();
 
@@ -243,23 +202,24 @@ int MinModeSaddleSearch::run() {
       LowestEigenmode::MINMODE_GPRDIMER) {
     QUILL_LOG_DEBUG(
         log, "================= Using the GP Dimer Library =================");
-    minModeMethod->compute(matter, mode);
-    if (minModeMethod->getEigenvalue() > 0) {
-      printf("%f\n", minModeMethod->getEigenvalue());
+    eonc::eigenmodeCompute(*minModeMethod, matter, mode);
+    if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
+      QUILL_LOG_DEBUG(log, "GPR eigenvalue: {}",
+                      eonc::eigenmodeGetEigenvalue(*minModeMethod));
       return STATUS_NONNEGATIVE_ABORT;
     }
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
-    if (fabs(minModeMethod->getEigenvalue()) <
+    if (std::abs(eonc::eigenmodeGetEigenvalue(*minModeMethod)) <
         params.saddle_search_options.zero_mode_abort_curvature) {
-      printf("%f\n", minModeMethod->getEigenvalue());
+      QUILL_LOG_DEBUG(log, "Zero mode eigenvalue: {}",
+                      eonc::eigenmodeGetEigenvalue(*minModeMethod));
       status = STATUS_ZEROMODE_ABORT;
     }
-    // These exist only for the gprdimer
-    iteration = minModeMethod->totalIterations;
-    forcecalls = minModeMethod->totalForceCalls;
+    iteration = eonc::eigenmodeTotalIterations(*minModeMethod);
+    forcecalls = eonc::eigenmodeTotalForceCalls(*minModeMethod);
   } else {
 
     if (params.saddle_search_options.minmode_method ==
@@ -285,21 +245,20 @@ int MinModeSaddleSearch::run() {
                      "Torque", "Angle", "Rots");
     }
 
-    ostringstream climb;
-    climb << "climb";
+    std::string climbLabel = "climb";
     if (params.debug_options.write_movies) {
-      matter->matter2con(climb.str(), false);
+      matter->matter2con(climbLabel, false);
     }
 
     AtomMatrix initialPosition = matter->getPositions();
 
     auto objf = std::make_shared<MinModeObjectiveFunction>(
         matter, minModeMethod, mode, params);
-    // objf->getGradient();
     if (params.saddle_search_options.nonnegative_displacement_abort) {
       objf->getGradient();
-      if (minModeMethod->getEigenvalue() > 0) {
-        printf("%f\n", minModeMethod->getEigenvalue());
+      if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
+        QUILL_LOG_DEBUG(log, "Nonnegative eigenvalue: {}",
+                        eonc::eigenmodeGetEigenvalue(*minModeMethod));
         return STATUS_NONNEGATIVE_ABORT;
       }
     }
@@ -311,7 +270,6 @@ int MinModeSaddleSearch::run() {
 
       if (!firstIteration) {
 
-        // Abort if negative mode becomes delocalized
         if (params.saddle_search_options.nonlocal_count_abort != 0) {
           long nm = numAtomsMoved(
               initialPosition - matter->getPositions(),
@@ -322,18 +280,17 @@ int MinModeSaddleSearch::run() {
           }
         }
 
-        // Abort if negative mode becomes zero
-        // cout << "curvature: "<<fabs(minModeMethod->getEigenvalue())<<"\n";
-        if (fabs(minModeMethod->getEigenvalue()) <
+        if (std::abs(eonc::eigenmodeGetEigenvalue(*minModeMethod)) <
             params.saddle_search_options.zero_mode_abort_curvature) {
-          printf("%f\n", minModeMethod->getEigenvalue());
+          QUILL_LOG_DEBUG(log, "Zero mode eigenvalue: {}",
+                          eonc::eigenmodeGetEigenvalue(*minModeMethod));
           status = STATUS_ZEROMODE_ABORT;
           break;
         }
       }
-      firstIteration = 0;
+      firstIteration = false;
 
-      if (iteration >= params.saddle_search_options.max_iterations) {
+      if (iteration >= effectiveMaxIter) {
         status = STATUS_BAD_MAX_ITERATIONS;
         break;
       }
@@ -341,36 +298,19 @@ int MinModeSaddleSearch::run() {
       AtomMatrix pos = matter->getPositions();
 
       try {
-        if (params.saddle_search_options.confine_positive.bowl_breakout) {
-          // use negative step to communicate that the system is the negative
-          // region and a max step should be performed
-          if ((minModeMethod->getEigenvalue() > 0) and
-              (params.optimizer_options.method == OptType::CG)) {
-            optStatus = optim->step(-params.optimizer_options.max_move);
-          } else {
-            optStatus = optim->step(params.optimizer_options.max_move);
-          }
+        if (params.saddle_search_options.confine_positive.bowl_breakout &&
+            eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0 &&
+            params.optimizer_options.method == OptType::CG) {
+          optStatus = optim->step(-params.optimizer_options.max_move);
         } else {
           optStatus = optim->step(params.optimizer_options.max_move);
         }
-      } catch (const eonc::DimerModeRestoredException &e) {
-        // Dimer lost mode but restored to valid negative curvature state
-        // Check if we're now converged
+      } catch (const eonc::DimerModeRestoredException &) {
         QUILL_LOG_DEBUG(
-            log, "Dimer restored to best state.  Checking convergence...");
-
-        // Force might have changed - recompute convergence
-        if (objf->isConverged()) {
-          QUILL_LOG_DEBUG(log, "Converged after dimer restoration.");
-          status = STATUS_GOOD;
-        } else {
-          // Not converged, but we have a valid state - report as partial
-          // success
-          status = STATUS_DIMER_RESTORED_BEST;
-        }
+            log, "Dimer restored to best state. Checking convergence...");
+        status = objf->isConverged() ? STATUS_GOOD : STATUS_DIMER_RESTORED_BEST;
         break;
-      } catch (const eonc::DimerModeLostException &e) {
-        // Truly lost the mode with no valid state
+      } catch (const eonc::DimerModeLostException &) {
         QUILL_LOG_WARNING(log, "Dimer lost mode completely. Aborting.");
         status = STATUS_DIMER_LOST_MODE;
         break;
@@ -382,70 +322,45 @@ int MinModeSaddleSearch::run() {
       }
 
       double de = objf->getEnergy() - reactantEnergy;
-      // should be the total displacement of the system not just a single atom
-      // double stepSize =
-      // eonc::helpers::maxAtomMotion(matter->pbc(matter->getPositions() -
-      // pos));
 
-      double stepSize;
-
-      // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
-      // http://doi.org/10.1021/ct501155k
+      // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
       if (params.saddle_search_options.remove_rotation) {
         rotationRemove(pos, matter);
       }
-      stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
+      double stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
 
       iteration++;
 
+      // Logging
+      double eigenval = eonc::eigenmodeGetEigenvalue(*minModeMethod);
+      double torque = eonc::eigenmodeStatsTorque(*minModeMethod);
+      double angle = eonc::eigenmodeStatsAngle(*minModeMethod);
+      long rotations = eonc::eigenmodeStatsRotations(*minModeMethod);
+      double conv = objf->getConvergence();
+
       if (params.saddle_search_options.minmode_method ==
-          LowestEigenmode::MINMODE_DIMER) {
-        QUILL_LOG_DEBUG(
-            log,
-            "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
-            "  {:6.3f}   {:4}\n",
-            iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
-            objf->getConvergence(), minModeMethod->getEigenvalue(),
-            minModeMethod->statsTorque, minModeMethod->statsAngle,
-            minModeMethod->statsRotations);
-      } else if (params.saddle_search_options.minmode_method ==
-                 LowestEigenmode::MINMODE_LANCZOS) {
+          LowestEigenmode::MINMODE_LANCZOS) {
         QUILL_LOG_DEBUG(
             log,
             "[Lanczos]  {:9} {:9.6f} {:10.4f} {:18.5e} {:9.4f} {:10.6f} "
             "{:7.3f} {:5}\n",
-            iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
-            objf->getConvergence(), minModeMethod->getEigenvalue(),
-            minModeMethod->statsTorque, minModeMethod->statsAngle,
-            minModeMethod->statsRotations);
-      } else if (params.saddle_search_options.minmode_method ==
-                 LowestEigenmode::MINMODE_GPRDIMER) {
+            iteration, stepSize, de, conv, eigenval, torque, angle, rotations);
+      } else {
         QUILL_LOG_DEBUG(
             log,
             "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
             "  {:6.3f}   {:4}\n",
-            iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
-            objf->getConvergence(), minModeMethod->getEigenvalue(),
-            minModeMethod->statsTorque, minModeMethod->statsAngle,
-            minModeMethod->statsRotations);
-      } else {
-        log = eonc::log::traceback();
-        QUILL_LOG_CRITICAL(log,
-                           "[MinModeSaddleSearch] Unknown min_mode_method: {}",
-                           params.saddle_search_options.minmode_method);
-        std::exit(1);
+            iteration, stepSize, de, conv, eigenval, torque, angle, rotations);
       }
 
       if (params.debug_options.write_movies) {
-        matter->matter2con(climb.str(), true);
+        matter->matter2con(climbLabel, true);
       }
 
       if (params.main_options.checkpoint) {
         matter->matter2con("displacement_cp.con", false);
-        FILE *fileMode = fopen("mode_cp.dat", "wb");
-        eonc::helpers::saveMode(fileMode, matter,
-                                minModeMethod->getEigenvector());
-        fclose(fileMode);
+        eonc::helpers::saveMode("mode_cp.dat", matter,
+                                eonc::eigenmodeGetEigenvector(*minModeMethod));
       }
 
       if (de > params.saddle_search_options.max_energy) {
@@ -453,28 +368,23 @@ int MinModeSaddleSearch::run() {
         break;
       }
 
-      if (params.saddle_search_options.minmode_method ==
-          LowestEigenmode::MINMODE_DIMER) {
-        // We need to cast the pointer to access the ImprovedDimer-specific flag
-        auto dimer = std::dynamic_pointer_cast<ImprovedDimer>(minModeMethod);
-
-        if (dimer && !dimer->rotationDidConverge) {
-          // This shouldn't happen if we caught the exceptions above,
-          // but keep as safety check
-          if (dimer->getEigenvalue() < 0.0) {
-            QUILL_LOG_DEBUG(log, "Dimer restored to valid state.  C_tau={:.4f}",
+      // Check ImprovedDimer mode convergence
+      if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
+        if (!dimer->rotationDidConverge) {
+          status = (dimer->getEigenvalue() < 0.0) ? STATUS_DIMER_RESTORED_BEST
+                                                   : STATUS_DIMER_LOST_MODE;
+          if (status == STATUS_DIMER_RESTORED_BEST) {
+            QUILL_LOG_DEBUG(log, "Dimer restored to valid state. C_tau={:.4f}",
                             dimer->getEigenvalue());
-            status = STATUS_DIMER_RESTORED_BEST;
-          } else {
-            status = STATUS_DIMER_LOST_MODE;
           }
           break;
         }
       }
     }
 
-    if (iteration == 0)
-      minModeMethod->compute(matter, mode);
+    if (iteration == 0) {
+      eonc::eigenmodeCompute(*minModeMethod, matter, mode);
+    }
 
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
@@ -486,9 +396,9 @@ int MinModeSaddleSearch::run() {
 }
 
 double MinModeSaddleSearch::getEigenvalue() {
-  return minModeMethod->getEigenvalue();
+  return eonc::eigenmodeGetEigenvalue(*minModeMethod);
 }
 
 AtomMatrix MinModeSaddleSearch::getEigenvector() {
-  return minModeMethod->getEigenvector();
+  return eonc::eigenmodeGetEigenvector(*minModeMethod);
 }

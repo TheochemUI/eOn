@@ -34,8 +34,8 @@ public:
 
 private:
   eonc::log::FileScoped m_log{"sd", "_sd.log"};
-  Eigen::VectorXd getStep(Eigen::VectorXd a_f);
-  size_t iteration;
+  Eigen::VectorXd getStep(const Eigen::VectorXd &a_f);
+  size_t iteration{0};
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
 };

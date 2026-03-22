@@ -11,7 +11,9 @@
 */
 
 #include "IDPPObjectiveFunction.hpp"
-using namespace std;
+
+#include <algorithm>
+#include <cmath>
 
 double IDPPObjectiveFunction::getEnergy() {
   double energy = 0.0;
@@ -31,7 +33,8 @@ double IDPPObjectiveFunction::getEnergy() {
         r = 1e-4;
 
       double diff = r - d_target(i, j);
-      double weight = 1.0 / std::pow(r, 4);
+      double r2 = r * r;
+      double weight = 1.0 / (r2 * r2); // 1/r^4
 
       energy += 0.5 * weight * diff * diff;
     }
@@ -61,7 +64,8 @@ VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
       // dE/dr = (r - d_target)/r^4 - 2(r - d_target)^2 / r^5
       // Simplified: (r - d_target) * (1 - 2(r - d_target)/r) / r^4
 
-      double dEdr = (diff * (1.0 - 2.0 * diff / r)) / std::pow(r, 4);
+      double r4 = r2 * r2;
+      double dEdr = (diff * (1.0 - 2.0 * diff / r)) / r4;
 
       // Force contribution: F = -dE/dr * (dr_vec / r)
       Eigen::RowVector3d f_contribution = -dEdr * (dr_vec / r);
@@ -105,7 +109,9 @@ CollectiveIDPPObjectiveFunction::getIDPPForces(const Matter &m,
 
       double diff = r - dTarget(i, j);
       // SOTA Weighting: w = 1/r^4. Gradient logic matches Smidstrup/ASE
-      double dEdr = (diff / std::pow(r, 5)) * (2.0 * dTarget(i, j) - r);
+      double r2 = r * r;
+      double r5 = r2 * r2 * r;
+      double dEdr = (diff / r5) * (2.0 * dTarget(i, j) - r);
 
       Eigen::RowVector3d f = -dEdr * (dr_vec / r); // -dE/dr * r_hat
       forces.row(i) += f;
@@ -148,7 +154,7 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
     AtomMatrix t = tangents[i];
 
     // Perpendicular Force (IDPP optimization)
-    double f_dot_t = (f.array() * t.array()).sum();
+    double f_dot_t = matDot(f, t);
     AtomMatrix f_perp = f - f_dot_t * t;
 
     // Spring Force (Spacing optimization)

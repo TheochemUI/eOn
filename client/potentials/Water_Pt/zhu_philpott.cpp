@@ -60,7 +60,6 @@ adds the values, otherwise it is simply marked as output.
 #define DEBUG_LEVEL_RETURN(x)
 #endif
 
-using namespace std;
 using namespace forcefields;
 
 template <class P>
@@ -85,13 +84,10 @@ template <class P> ZhuPhilpott<P>::ZhuPhilpott(ZhuPhilpott const &zhuPhilpott) {
 
 template <class P>
 void ZhuPhilpott<P>::operator=(ZhuPhilpott const &zhuPhilpott) {
-  setPlatinum(zhuPhilpott.nPlatinum_, zhuPhilpott.positions_);
+  setPlatinum(zhuPhilpott.nPlatinum_, zhuPhilpott.positions_.data());
 }
 
-template <class P> ZhuPhilpott<P>::~ZhuPhilpott() {
-  delete[] positions_;
-  delete[] forces_;
-}
+template <class P> ZhuPhilpott<P>::~ZhuPhilpott() = default;
 
 /** Compute water-platinum forcefield.
 @param[in] nWater Number of molecules of water.
@@ -170,12 +166,12 @@ void ZhuPhilpott<P>::computeHH_O_(const int nWater, const double r[],
   const double (*const ro)[3] =
       reinterpret_cast<const double (*)[3]>(&r[nWater * 6]);
   const double (*const rPt)[3] =
-      reinterpret_cast<const double (*)[3]>(positions_);
+      reinterpret_cast<const double (*)[3]>(positions_.data());
 
   double (*const fh1)[6] = reinterpret_cast<double (*)[6]>(f);
   double (*const fh2)[6] = reinterpret_cast<double (*)[6]>(&f[3]);
   double (*const fo)[3] = reinterpret_cast<double (*)[3]>(&f[nWater * 6]);
-  double (*const fPt)[3] = reinterpret_cast<double (*)[3]>(forces_);
+  double (*const fPt)[3] = reinterpret_cast<double (*)[3]>(forces_.data());
 
   if (fixed) {
     bool const(*const xh1)[2] = reinterpret_cast<bool const(*)[2]>(fixed);
@@ -203,25 +199,10 @@ Use before calling computeHH_O_().
 template <class P>
 void ZhuPhilpott<P>::setPlatinum(int nPlatinum, double const positions[]) {
   assert(nPlatinum >= 0);
-  if (nPlatinum == 0) {
-    nPlatinum_ = 0;
-    delete[] positions_;
-    positions_ = 0;
-    delete[] forces_;
-    forces_ = 0;
-    return;
-  };
+  nPlatinum_ = nPlatinum;
   int const n = nPlatinum * 3;
-  if (nPlatinum_ != nPlatinum) {
-    nPlatinum_ = nPlatinum;
-    delete[] positions_;
-    positions_ = new double[n];
-    delete[] forces_;
-    forces_ = new double[n];
-  };
-  for (int i = 0; i < n; ++i) {
-    positions_[i] = positions[i];
-  };
+  positions_.assign(positions, positions + n);
+  forces_.assign(n, 0.0);
 }
 
 /// Name of the potential.
@@ -256,16 +237,16 @@ void ZhuPhilpott<P>::computeTemplate(
     calculateCentre(rh1[i], rh2[i], ro[i], centre1);
     Water w1(rh1[i], rh2[i], ro[i], centre1, fh1[i], fh2[i], fo[i]);
     intramolecular(w1, energy);
-    assert(not isnan(energy));
+    assert(not std::isnan(energy));
     DEBUG_LEVEL_RETURN(0)
     // Two next lines for interaction with platinum
     interactWithCorePt(w1, nPt, rPt, fPt,
                        energy); // called Vw-core in Zhu and Philpott
-    assert(not isnan(energy));
+    assert(not std::isnan(energy));
     DEBUG_LEVEL_RETURN(1)
     interactWithImage(w1, w1, energy); // called Vw-cond in Zhu and Philpott
     DEBUG_LEVEL_RETURN(2)
-    assert(not isnan(energy));
+    assert(not std::isnan(energy));
     for (int j = i - 1; j >= 0; --j) {
       bool areFixed = false;
       if (xh1 and xh2 and xo) {
@@ -291,13 +272,13 @@ void ZhuPhilpott<P>::computeTemplate(
     };
 #ifndef NDEBUG
     for (int a = 0; a < 3; a++) {
-      assert(not isnan(fh1[i][a]));
-      assert(not isnan(fh2[i][a]));
-      assert(not isnan(fo[i][a]));
+      assert(not std::isnan(fh1[i][a]));
+      assert(not std::isnan(fh2[i][a]));
+      assert(not std::isnan(fo[i][a]));
     };
 #endif
   };
-  assert(not isnan(energy) and not isinf(energy));
+  assert(not std::isnan(energy) and not std::isinf(energy));
 }
 
 /** Interaction of one molecule of water with the whole platinum.
@@ -412,21 +393,24 @@ void ZhuPhilpott<P>::anisotropic(const double distance[], double force[],
   alpha2 = alpha * alpha;
   double f;
   rho2 = distance[0] * distance[0] + distance[1] * distance[1];
-  rho = sqrt(rho2);
+  rho = std::sqrt(rho2);
   z = distance[2];
   z2 = z * z;
-  a = pow(sigma, 2.0) / (rho2 * alpha2 + z2);
-  b = pow(sigma, 2.0) / (rho2 / alpha2 + z2);
-  A = pow(a, 6.0);
-  B = pow(b, 3.0);
+  double sigma2 = sigma * sigma;
+  a = sigma2 / (rho2 * alpha2 + z2);
+  b = sigma2 / (rho2 / alpha2 + z2);
+  double a2 = a * a, a3 = a2 * a;
+  double b2 = b * b;
+  A = a3 * a3;         // a^6
+  B = b * b2;          // b^3
   energy += 4.0 * epsilon * (A - B);
-  dE_da = 24.0 * epsilon * pow(a, 5.0);
-  dE_db = -12.0 * epsilon * pow(b, 2.0);
-  f = 2.0 * (dE_da * pow(a, 2.0) * alpha2 + dE_db * pow(b, 2.0) / alpha2) /
-      pow(sigma, 2.0);
+  dE_da = 24.0 * epsilon * a2 * a3;   // a^5
+  dE_db = -12.0 * epsilon * b2;       // b^2
+  double invSigma2 = 1.0 / sigma2;
+  f = 2.0 * (dE_da * a2 * alpha2 + dE_db * b2 / alpha2) * invSigma2;
   force[0] += f * distance[0];
   force[1] += f * distance[1];
-  f = 2 * (dE_da * pow(a, 2.0) + dE_db * pow(b, 2.0)) / pow(sigma, 2.0);
+  f = 2.0 * (dE_da * a2 + dE_db * b2) * invSigma2;
   force[2] += f * distance[2];
 }
 

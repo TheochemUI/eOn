@@ -18,11 +18,8 @@
 #include <memory>
 #include <sstream>
 
-using namespace std;
-using namespace std::string_literals; // For ""s
-
-int main(void) {
-  string confile("pos.con");
+int main() {
+  std::string confile("pos.con");
   auto params = std::make_shared<Parameters>();
   eonc::ensure_interpreter();
   params->potential_options.potential = PotType::CatLearn;

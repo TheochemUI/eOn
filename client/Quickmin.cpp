@@ -11,11 +11,10 @@
 */
 #include "Quickmin.h"
 #include "HelperFunctions.h"
-using namespace std;
 
 int Quickmin::step(double a_maxMove) {
   Eigen::VectorXd force = -m_objf->getGradient();
-  if (m_params.optimizer_options.quickmin.steepest_descent) {
+  if (m_optConfig.opts.quickmin.steepest_descent) {
     m_vel.setZero();
   } else {
     if (m_vel.dot(force) < 0) {
@@ -29,7 +28,7 @@ int Quickmin::step(double a_maxMove) {
   m_vel += force * m_dt;
   Eigen::VectorXd dr = eonc::helpers::maxAtomMotionAppliedV(
       m_vel * m_dt,
-      a_maxMove); // used to be m_params.optimizer_options.max_time_step
+      a_maxMove); // used to be m_optConfig.opts.max_time_step
   QUILL_LOG_INFO(m_log, "{} M_Vel.norm() is {}", m_iteration, m_vel.norm());
   m_objf->setPositions(m_objf->getPositions() + dr);
   m_iteration++;

@@ -13,384 +13,234 @@
 #include "BondBoost.h"
 #include "EonLogger.h"
 #include "HelperFunctions.h"
-#include <math.h>
 
-using namespace std;
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
 
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 
 BondBoost::BondBoost(Matter *matt, const Parameters &params)
-    : matter{matt},
-      parameters{params} {
+    : matter{matt}, parameters{params} {
   nAtoms = matter->numberOfAtoms();
-  BAList = nullptr;
-  RAList = nullptr;
-  TABAList = nullptr;
-  BBAList = nullptr;
-  /* Logger initialized via class member */
 }
 
-BondBoost::~BondBoost() {
-  if (BAList != nullptr) {
-    delete[] BAList;
-  }
-  if (RAList != nullptr) {
-    delete[] RAList;
-  }
-  if (TABAList != nullptr) {
-    delete[] TABAList;
-  }
-  if (BBAList != nullptr) {
-    delete[] BBAList;
-  }
-  return;
-}
+BondBoost::~BondBoost() = default;
 
 void BondBoost::initialize() {
-  long i, j, k = 0, count = 0;
-  bool flag = 1;
-  string BALstring; // Boosted Atom List String
-  vector<int> atoms;
-  int leng_strlist;
   nBBs = 0;
   nReg = 1;
-  BALstring = parameters.hyperdynamics_options.boost_atom_list;
-  atoms = eonc::helpers::split_string_int(BALstring, ",");
-  leng_strlist = atoms.size();
-  if (BALstring.c_str() == string("all") or atoms.size() == 0) {
+
+  const std::string &balString = parameters.hyperdynamics_options.boost_atom_list;
+  auto atoms = eonc::helpers::split_string_int(balString, ",");
+
+  if (balString == "all" || atoms.empty()) {
     QUILL_LOG_DEBUG(log, "boost all atoms that are set free\n");
     nBAs = matter->numberOfFreeAtoms();
-    nRAs = nAtoms - nBAs;    // nRestAtoms
-    BAList = new long[nBAs]; // BoostAtomsList
-    RAList = new long[nRAs]; // RestAtomsList
-    for (i = 0; i < nAtoms; i++) {
+    nRAs = nAtoms - nBAs;
+    BAList.resize(nBAs);
+    RAList.resize(nRAs);
+    long k = 0;
+    for (long i = 0; i < nAtoms; i++) {
       if (!matter->getFixed(i)) {
-        BAList[k] = i;
-        k++;
+        BAList[k++] = i;
       }
-    }
-    for (i = 0; i < nAtoms; i++) {
-      flag = 1;
-      for (j = 0; j < nBAs; j++) {
-        if (i == BAList[j]) {
-          flag = 0;
-        }
-      }
-      if (flag == 1) {
-        RAList[count] = i;
-        count++;
-      }
-    }
-    if (count != nRAs) {
-      QUILL_LOG_DEBUG(log,
-                      "Error: nRestAtoms does not equal to counted number!\n");
     }
   } else {
     QUILL_LOG_DEBUG(log, "boost the following selected atoms:");
-    for (i = 0; i < leng_strlist; i++) {
+    for (size_t i = 0; i < atoms.size(); i++) {
       QUILL_LOG_DEBUG(log, "{} ", atoms[i]);
     }
     QUILL_LOG_DEBUG(log, "\n");
-    nBAs = leng_strlist;
-    nRAs = nAtoms - nBAs;    // nRestAtoms
-    BAList = new long[nBAs]; // BoostAtomsList
-    RAList = new long[nRAs]; // RestAtomsList
-    for (i = 0; i < nBAs; i++) {
-      BAList[k] = atoms[i];
-      k++;
-    }
-    for (i = 0; i < nAtoms; i++) {
-      flag = 1;
-      for (j = 0; j < nBAs; j++) {
-        if (i == BAList[j]) {
-          flag = 0;
-        }
-      }
-      if (flag == 1) {
-        RAList[count] = i;
-        count++;
-      }
-    }
-    if (count != nRAs) {
-      QUILL_LOG_DEBUG(log,
-                      "Error: nRestAtoms does not equal to counted number!\n");
+    nBAs = static_cast<long>(atoms.size());
+    nRAs = nAtoms - nBAs;
+    BAList.resize(nBAs);
+    RAList.resize(nRAs);
+    for (long i = 0; i < nBAs; i++) {
+      BAList[i] = atoms[i];
     }
   }
 
-  nTABs = nBAs * (nBAs - 1) / 2 +
-          nBAs * nRAs;            // number of Bonds involved with Tagged Atoms
-  TABAList = new long[2 * nTABs]; // CorrespondingAtomsList of TABLList
+  // Build rest-atoms list (atoms not in BAList)
+  long count = 0;
+  for (long i = 0; i < nAtoms; i++) {
+    bool isBoosted = std::any_of(BAList.begin(), BAList.end(),
+                                 [i](long ba) { return ba == i; });
+    if (!isBoosted) {
+      RAList[count++] = i;
+    }
+  }
+  if (count != nRAs) {
+    QUILL_LOG_DEBUG(log,
+                    "Error: nRestAtoms does not equal counted number!\n");
+  }
+
+  nTABs = nBAs * (nBAs - 1) / 2 + nBAs * nRAs;
+  TABAList.resize(2 * nTABs);
   TABLList.setZero(nTABs, 1);
   QUILL_LOG_DEBUG(log, "BondBoost Used !\n");
-
-  // TEST PRINT
-  /*
-      for(i=0 ;i< nBAs;i++){
-      QUILL_LOG_DEBUG(log, "nBoostAtoms {}: {}\n", i, BAList[i]);
-      }
-
-      for(i=0; i< nRAs;i++){
-      QUILL_LOG_DEBUG(log, "nRestAtoms {}: {}\n", i, RAList[i]);
-      }
-  */
 }
 
 double BondBoost::boost() {
-  long RMDS;
-  double biasPot; // , AVE_Boost_Fact;
-  Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs, 1);
-  bool flag = 0;
-
-  RMDS = int(parameters.hyperdynamics_options.rmd_time /
-             parameters.dynamics_options.time_step);
-  biasPot = 0.0;
+  long RMDS = static_cast<long>(parameters.hyperdynamics_options.rmd_time /
+                                parameters.dynamics_options.time_step);
+  double biasPot = 0.0;
 
   if (nReg <= RMDS) {
-    flag = 0;
-  } else {
-    flag = 1;
-  }
-
-  if (flag == 0) {
-    TABL_tmp = Rmdsteps();
+    // Equilibration phase: accumulate average bond lengths
+    Matrix<double, Eigen::Dynamic, 1> TABL_tmp = Rmdsteps();
     TABLList = TABLList + (1.0 / RMDS) * TABL_tmp;
     nReg++;
-    // TEST PRINT
-    /*  for(long i=nTABs-1;i<nTABs;i++){
-        QUILL_LOG_DEBUG(log, "Distance between Atoms {} and {} is {}\n",
-       TABAList[2 * i], TABAList[2 * i + 1], TABLList(i, 0));
-            }
-
-            QUILL_LOG_DEBUG(log, "\n");
-    */
-    // TEST END
   } else {
-    // QUILL_LOG_DEBUG(log, "nreg = {}; RMDS={}\n", nReg, RMDS);
+    // Boost phase
     if (nReg == RMDS + 1) {
       nBBs = BondSelect();
-
-      //   for (long i=0;i<nBBs;i++){
-      // QUILL_LOG_DEBUG(log, "Equilibrium Distance between Atoms {} and {}
-      // is {}\n", BBAList[2 * i], BBAList[2 * i + 1], EBBLList(i, 0));
-      //    }
     }
-
-    Epsr_Q = new double[nBBs];
+    Epsr_Q.resize(nBBs);
     CBBLList.setZero(nBBs, 1);
     biasPot = Booststeps();
     nReg++;
-    delete Epsr_Q;
+    Epsr_Q.clear();
   }
   return biasPot;
 }
 
+/// Compute bias potential and forces for bond-boost hyperdynamics.
+/// Returns the bias potential energy contribution.
 double BondBoost::Booststeps() {
-  long i, j; //,Mi;
-  long AtomI_1, AtomI_2;
-  double QRR, PRR, Epsr_MAX, A_EPS_M, Sum_V, Boost_Fact, DVMAX;
-  double Dforce, Fact_1, Fact_2; //, Mforce
-  double Ri[3] = {0.0}, R = 0.0;
+  const double QRR = parameters.hyperdynamics_options.qrr;
+  const double PRR = parameters.hyperdynamics_options.prr;
+  const double DVMAX = parameters.hyperdynamics_options.dvmax;
+  const double nBBsD = static_cast<double>(nBBs);
 
-  AtomMatrix Free(nAtoms, 3);
-  AtomMatrix AddForces(nBBs, 3);
+  AtomMatrix addForces(nBBs, 3);
   AtomMatrix TADF(nAtoms, 3);
-  AtomMatrix BiasForces(nAtoms, 3);
-
+  addForces.setZero();
   TADF.setZero();
-  Free.setZero();
-  AddForces.setZero();
-  BiasForces.setZero();
 
-  QRR = parameters.hyperdynamics_options.qrr;
-  PRR = parameters.hyperdynamics_options.prr;
-  DVMAX = parameters.hyperdynamics_options.dvmax;
-  Epsr_MAX = 0.0;
-  A_EPS_M = 0.0;
-  Boost_Fact = 0.0;
-  Sum_V = 0.0;
-  Dforce = 0.0;
-  // Mforce = 0.0;
-  Fact_1 = 0.0;
-  Fact_2 = 0.0;
-
-  for (i = 0; i < nBBs; i++) {
-    AtomI_1 = BBAList[2 * i];
-    AtomI_2 = BBAList[2 * i + 1];
-    CBBLList(i, 0) = matter->distance(AtomI_1, AtomI_2);
+  // Measure current bond lengths
+  for (long i = 0; i < nBBs; i++) {
+    CBBLList(i, 0) = matter->distance(BBAList[2 * i], BBAList[2 * i + 1]);
   }
 
-  for (i = 0; i < nBBs; i++) {
+  // Compute strain parameters and find maximum
+  double epsrMax = 0.0;
+  for (long i = 0; i < nBBs; i++) {
     Epsr_Q[i] = (CBBLList(i, 0) - EBBLList(i, 0)) / EBBLList(i, 0) / QRR;
-    if (abs(Epsr_Q[i]) >= Epsr_MAX) {
-      Epsr_MAX = abs(Epsr_Q[i]);
-      // Mi = i;
+    if (std::abs(Epsr_Q[i]) >= epsrMax) {
+      epsrMax = std::abs(Epsr_Q[i]);
     }
   }
 
-  A_EPS_M = (1.0 - Epsr_MAX * Epsr_MAX) * (1.0 - Epsr_MAX * Epsr_MAX) /
-            (1.0 - PRR * PRR * Epsr_MAX * Epsr_MAX);
-  /*
-      for (i=0;i<nBBs;i++){
-      QUILL_LOG_DEBUG(log, "Boost::Distance between Atoms {} and {} is {},
-     EQ= {}; EPSR_Q={}\n", BBAList[2 * i], BBAList[2 * i + 1], CBBLList(i, 0),
-     EBBLList(i, 0), Epsr_Q[i]);
-      }
+  // Envelope function A(eps_max)
+  double A_eps = (1.0 - epsrMax * epsrMax) * (1.0 - epsrMax * epsrMax) /
+                 (1.0 - PRR * PRR * epsrMax * epsrMax);
 
-      QUILL_LOG_DEBUG(log, "Boost::Epsr_MAX= {}, Atoms {} and {}\n",
-     Epsr_MAX, BBAList[2 * Mi], BBAList[2 * Mi + 1]); QUILL_LOG_DEBUG(log,
-     "Boost::A_EPS_M= {}\n", A_EPS_M);
-  */
-  if (Epsr_MAX < 1.0) {
-    for (i = 0; i < nBBs; i++) {
-      Sum_V += DVMAX * (1.0 - Epsr_Q[i] * Epsr_Q[i]) / double(nBBs);
+  // Sum of individual bias potentials
+  double sumV = 0.0;
+  if (epsrMax < 1.0) {
+    for (long i = 0; i < nBBs; i++) {
+      sumV += DVMAX * (1.0 - Epsr_Q[i] * Epsr_Q[i]) / nBBsD;
     }
-  } else if (Epsr_MAX >= 1.0) {
-    Sum_V = 0.0;
-    A_EPS_M = 0.0;
+  } else {
+    A_eps = 0.0;
   }
 
-  Boost_Fact = A_EPS_M * Sum_V;
-  for (i = 0; i < nBBs; i++) {
-    if (abs(Epsr_Q[i]) < Epsr_MAX) {
-      Fact_1 = 2.0 * A_EPS_M * DVMAX * Epsr_Q[i] / QRR / EBBLList(i, 0) /
-               double(nBBs);
-      Dforce = Fact_1;
-    } else if (abs(Epsr_Q[i]) == Epsr_MAX) {
-      Fact_1 = 2.0 * A_EPS_M * DVMAX * Epsr_Q[i] / QRR / EBBLList(i, 0) /
-               double(nBBs);
-      double Fact_tmp1 = (1.0 - PRR * PRR * Epsr_Q[i] * Epsr_Q[i]);
-      double Fact_tmp2 = (1.0 - Epsr_Q[i] * Epsr_Q[i]);
-      Fact_2 = 2.0 * Fact_tmp2 * Epsr_Q[i] *
-               (2.0 * Fact_tmp1 - PRR * PRR * Fact_tmp2) / QRR /
-               EBBLList(i, 0) / Fact_tmp1 / Fact_tmp1;
-      Dforce = Fact_1 + Sum_V * Fact_2;
+  double boostFact = A_eps * sumV;
+
+  // Compute bias forces per bond, accumulate on atoms
+  for (long i = 0; i < nBBs; i++) {
+    double dforce = 0.0;
+    double fact1 = 2.0 * A_eps * DVMAX * Epsr_Q[i] / QRR /
+                   EBBLList(i, 0) / nBBsD;
+
+    if (std::abs(Epsr_Q[i]) < epsrMax) {
+      dforce = fact1;
+    } else {
+      // Bond at maximum strain: additional envelope derivative
+      double fTmp1 = 1.0 - PRR * PRR * Epsr_Q[i] * Epsr_Q[i];
+      double fTmp2 = 1.0 - Epsr_Q[i] * Epsr_Q[i];
+      double fact2 = 2.0 * fTmp2 * Epsr_Q[i] *
+                     (2.0 * fTmp1 - PRR * PRR * fTmp2) / QRR /
+                     EBBLList(i, 0) / fTmp1 / fTmp1;
+      dforce = fact1 + sumV * fact2;
     }
 
-    AtomI_1 = BBAList[2 * i];
-    AtomI_2 = BBAList[2 * i + 1];
+    long a1 = BBAList[2 * i];
+    long a2 = BBAList[2 * i + 1];
+    double R = CBBLList(i, 0);
 
-    R = CBBLList(i, 0);
-    //    matter->distance(AtomI_1,AtomI_2);
-    // QUILL_LOG_DEBUG(log, "R={}, CLList={}\n", R, CBBLList(i, 0));
-
-    for (j = 0; j < 3; j++) {
-      Ri[j] = matter->pdistance(AtomI_1, AtomI_2, j);
-      AddForces(i, j) = Ri[j] / R * Dforce;
-      TADF(AtomI_1, j) = TADF(AtomI_1, j) + AddForces(i, j);
-      TADF(AtomI_2, j) = TADF(AtomI_2, j) - AddForces(i, j);
+    for (int j = 0; j < 3; j++) {
+      double rij = matter->pdistance(a1, a2, j);
+      double fij = rij / R * dforce;
+      addForces(i, j) = fij;
+      TADF(a1, j) += fij;
+      TADF(a2, j) -= fij;
     }
-    // QUILL_LOG_DEBUG(log, "{} Bond:: Rx={}; Ry={}; Rz={}; Rsum={};
-    // R={}\n", i, Ri[0], Ri[1], Ri[2], std::sqrt(Ri[0] * Ri[0] + Ri[1] * Ri[1]
-    // + Ri[2] * Ri[2]), R);
   }
 
-  // if (i != Mi) {
-  //   QUILL_LOG_DEBUG(
-  //       log, "DeltaF(Epsr_Q = {}) = {}, {}, {}, {}; Atom {} and Atom {}\n",
-  //       Epsr_Q[i], AddForces(i, 0), AddForces(i, 1), AddForces(i, 2),
-  //       BBAList[2 * i], BBAList[2 * i + 1]);
-  // } else {
-  //   QUILL_LOG_DEBUG(
-  //       log, "DeltaF(Epsr_MAX = {}) = {}, {}, {}, {}; Atom {} and Atom {}\n",
-  //       Epsr_MAX, Mforce, AddForces(i, 0), AddForces(i, 1), AddForces(i, 2),
-  //       BBAList[2 * i], BBAList[2 * i + 1]);
-  // }
-
-  // QUILL_LOG_DEBUG(log, "TADF::");
-  // for (i = 0; i < nAtoms; i++) {
-  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", TADF(i, 0), TADF(i, 1),
-  //                       TADF(i, 2));
-  // }
-
-  // QUILL_LOG_DEBUG(log, "OldForces::");
-  // for (i = 0; i < nAtoms; i++) {
-  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", OldForce(i, 0), OldForce(i, 1),
-  //                       OldForce(i, 2));
-  // }
-
-  // QUILL_LOG_DEBUG(log, "NewForces::");
-  // for (i = 0; i < nAtoms; i++) {
-  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", NewForce(i, 0), NewForce(i, 1),
-  //                       NewForce(i, 2));
-  // }
-
-  // OldForce = matter->getForces();
-  // QUILL_LOG_DEBUG(log, "NewSettedForces::");
-  // for (i = 0; i < nAtoms; i++) {
-  //   QUILL_LOG_DEBUG(log, "{}   {}   {}", OldForce(i, 0), OldForce(i, 1),
-  //                       OldForce(i, 2));
-  // }
-
-  // QUILL_LOG_DEBUG(log, "boost_fact= {}, totE= {}\n", Boost_Fact,
-  // Boost_Fact + matter->getKineticEnergy() + matter->getPotentialEnergy());
-  BiasForces = TADF;
-  Free = matter->getFree();
-  BiasForces = BiasForces.array() * Free.array();
-  matter->setBiasForces(BiasForces);
-  return Boost_Fact;
+  // Apply free-atom mask and set bias forces
+  AtomMatrix biasForces = TADF.array() * matter->getFree().array();
+  matter->setBiasForces(biasForces);
+  return boostFact;
 }
 
+/// Measure all tagged-atom bond lengths for the equilibration phase.
 Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
-  Matrix<double, Eigen::Dynamic, 1> TABL_t(nTABs, 1);
-  long count = 0, i, j;
+  Matrix<double, Eigen::Dynamic, 1> bondLengths(nTABs, 1);
+  long count = 0;
 
-  for (i = 0; i < nBAs; i++) {
-    for (j = i + 1; j < nBAs; j++) {
-      // QUILL_LOG_DEBUG(log, "distance = {}\n", matter->distance(BAList[i],
-      // BAList[j]));
-      TABL_t(count, 0) = matter->distance(BAList[i], BAList[j]);
+  // Boost-atom pairs
+  for (long i = 0; i < nBAs; i++) {
+    for (long j = i + 1; j < nBAs; j++) {
+      bondLengths(count, 0) = matter->distance(BAList[i], BAList[j]);
       TABAList[2 * count] = BAList[i];
       TABAList[2 * count + 1] = BAList[j];
       count++;
     }
   }
 
-  for (i = 0; i < nBAs; i++) {
-    for (j = 0; j < nRAs; j++) {
-      // QUILL_LOG_DEBUG(log, "distance = {}\n", matter->distance(BAList[i],
-      // RAList[j]));
-      TABL_t(count, 0) = matter->distance(BAList[i], RAList[j]);
+  // Boost-atom to rest-atom pairs
+  for (long i = 0; i < nBAs; i++) {
+    for (long j = 0; j < nRAs; j++) {
+      bondLengths(count, 0) = matter->distance(BAList[i], RAList[j]);
       TABAList[2 * count] = BAList[i];
       TABAList[2 * count + 1] = RAList[j];
       count++;
     }
   }
-  // QUILL_LOG_DEBUG(log, "count={}\n", count);
+
   if (count != nTABs) {
     QUILL_LOG_DEBUG(
-        log, "Total Involved Bond number does not equal counted number\n");
+        log, "Total involved bond count does not match expected\n");
   }
-
-  // QUILL_LOG_DEBUG(log, "test here");
-  // for (i = count - 1; i < count; i++) {
-  //   QUILL_LOG_DEBUG(log, "test ::Distance between Atoms {} and {} is
-  //   {}\n",
-  //                       TABAList[2 * i], TABAList[2 * i + 1], TABL_t(i, 0));
-  // }
-  return TABL_t;
+  return bondLengths;
 }
 
+/// Select bonds within cutoff distance for boosting.
 long BondBoost::BondSelect() {
-  long count = 0, i, nBBs_tmp = 0;
-  double Qcutoff = parameters.hyperdynamics_options.qcut;
+  const double qCutoff = parameters.hyperdynamics_options.qcut;
 
-  for (i = 0; i < nTABs; i++) {
-    if (TABLList(i, 0) <= Qcutoff) {
-      count++;
+  // Count bonds within cutoff
+  long nSelected = 0;
+  for (long i = 0; i < nTABs; i++) {
+    if (TABLList(i, 0) <= qCutoff) {
+      nSelected++;
     }
   }
-  nBBs_tmp = count;
-  EBBLList.setZero(nBBs_tmp, 1);
-  BBAList = new long[2 * nBBs_tmp];
-  count = 0;
-  for (i = 0; i < nTABs; i++) {
-    if (TABLList(i, 0) <= Qcutoff) {
+
+  EBBLList.setZero(nSelected, 1);
+  BBAList.resize(2 * nSelected);
+  long count = 0;
+  for (long i = 0; i < nTABs; i++) {
+    if (TABLList(i, 0) <= qCutoff) {
       EBBLList(count, 0) = TABLList(i, 0);
       BBAList[2 * count] = TABAList[2 * i];
       BBAList[2 * count + 1] = TABAList[2 * i + 1];
       count++;
     }
   }
-  return nBBs_tmp;
+  return nSelected;
 }

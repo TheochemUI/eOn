@@ -12,11 +12,12 @@
 #include "Matter.h"
 #include "Parameters.h"
 #include <cstdlib>
+#include <string>
 
-using namespace std;
+using namespace std::string_literals;
 
-int main(void) {
-  string confile("pos.con");
+int main() {
+  std::string confile("pos.con");
   Parameters parameters;
   auto pot = eonc::helpers::makePotential(parameters);
   Matter matter(pot, parameters);

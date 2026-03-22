@@ -20,7 +20,8 @@
 #include "SafeMath.h"
 
 #include "EonLogger.h"
-using namespace std;
+
+#include <cmath>
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
                  std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
@@ -94,7 +95,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
 
     beta = r.norm();
 
-    if (beta <= 1e-10 * fabs(alpha)) {
+    if (beta <= 1e-10 * std::fabs(alpha)) {
       /* If Q(0) is an eigenvector (or a linear combination of a subset of
       eignevectors) then the lanczos cannot complete the basis of vector Q.*/
       if (i == 0) {
@@ -110,13 +111,13 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       ew = es.eigenvalues()(0);
       evT = es.eigenvectors().col(0);
       ewAbsRelErr =
-          eonc::safemath::safe_div(fabs(ew - ewOld), fabs(ewOld), 1.0);
+          eonc::safemath::safe_div(std::fabs(ew - ewOld), std::fabs(ewOld), 1.0);
       ewOld = ew;
 
       // Convert eigenvector of T matrix to eigenvector of full Hessian
       evEst = Q.block(0, 0, size, i + 1) * evT;
       evEst.normalize();
-      statsAngle = eonc::safemath::safe_acos(fabs(evEst.dot(evOldEst))) *
+      statsAngle = eonc::safemath::safe_acos(std::fabs(evEst.dot(evOldEst))) *
                    (180 / eonc::helpers::pi);
       statsTorque = ewAbsRelErr;
       evOldEst = evEst;
@@ -139,7 +140,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
         double Cprev = lowestEw;
         double Cnew = u.dot(Q.col(i));
         ewAbsRelErr =
-            eonc::safemath::safe_div(fabs(Cnew - Cprev), fabs(Cprev), 1.0);
+            eonc::safemath::safe_div(std::fabs(Cnew - Cprev), std::fabs(Cprev), 1.0);
         if (ewAbsRelErr <= params.lanczos_options.tolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;

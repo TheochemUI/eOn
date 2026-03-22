@@ -16,19 +16,23 @@
 #include "Potential.h"
 #include "Prefactor.h"
 
-using namespace std;
+#include <cmath>
+#include <format>
+#include <fstream>
+#include <string>
+
 
 const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
 const char PrefactorJob::PREFACTOR_SADDLE[] = "saddle";
 const char PrefactorJob::PREFACTOR_PRODUCT[] = "product";
 
-std::vector<std::string> PrefactorJob::run(void) {
+std::vector<std::string> PrefactorJob::run() {
   std::vector<std::string> returnFiles;
   VectorXd freqs;
 
-  string reactantFilename("reactant.con");
-  string saddleFilename("saddle.con");
-  string productFilename("product.con");
+  std::string reactantFilename("reactant.con");
+  std::string saddleFilename("saddle.con");
+  std::string productFilename("product.con");
 
   auto reactant = std::make_unique<Matter>(pot, params);
   auto saddle = std::make_unique<Matter>(pot, params);
@@ -40,13 +44,10 @@ std::vector<std::string> PrefactorJob::run(void) {
   double pref1, pref2;
   eonc::Prefactor::getPrefactors(params, reactant.get(), saddle.get(),
                                  product.get(), pref1, pref2);
-  // printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
 
   VectorXi atoms;
   if (params.prefactor_options.all_free_atoms) {
-    // it is sufficient to pass the configuration
-    // for which the frequencies should be determined
-    string matterFilename;
+    std::string matterFilename;
     if (params.prefactor_options.configuration ==
         PrefactorJob::PREFACTOR_REACTANT) {
       matterFilename = reactantFilename;
@@ -61,20 +62,17 @@ std::vector<std::string> PrefactorJob::run(void) {
     saddle->con2matter(matterFilename);
     product->con2matter(matterFilename);
 
-    // account for all free atoms
     atoms = eonc::Prefactor::allFreeAtoms(reactant.get());
   } else {
     reactant->con2matter(reactantFilename);
     saddle->con2matter(saddleFilename);
     product->con2matter(productFilename);
 
-    // determine which atoms moved in the process
     atoms = eonc::Prefactor::movedAtoms(params, reactant.get(), saddle.get(),
                                         product.get());
   }
   assert(3 * atoms.rows() > 0);
 
-  // calculate frequencies
   if (params.prefactor_options.configuration ==
       PrefactorJob::PREFACTOR_REACTANT) {
     Hessian hessian(params, reactant.get());
@@ -91,30 +89,28 @@ std::vector<std::string> PrefactorJob::run(void) {
 
   bool failed = freqs.size() != 3 * atoms.rows();
 
-  FILE *fileResults;
-  FILE *fileFreq;
-
   std::string results_file("results.dat");
   std::string freq_file("freq.dat");
-
   returnFiles.push_back(results_file);
   returnFiles.push_back(freq_file);
 
-  fileResults = fopen(results_file.c_str(), "wb");
-  fileFreq = fopen(freq_file.c_str(), "wb");
+  std::ofstream outResults(results_file, std::ios::binary);
+  std::ofstream outFreq(freq_file, std::ios::binary);
 
-  fprintf(fileResults, "%s good\n", failed ? "false" : "true");
-  fprintf(fileResults, "%zu force_calls\n",
-          PotRegistry::get().total_force_calls());
+  if (outResults) {
+    outResults << std::format("{} good\n", failed ? "false" : "true");
+    outResults << std::format("{} force_calls\n",
+                              PotRegistry::get().total_force_calls());
+  }
 
-  if (!failed) {
+  if (outFreq && !failed) {
     for (int i = 0; i < freqs.size(); i++) {
       if (0. < freqs[i]) {
-        fprintf(fileFreq, "%f\n",
-                sqrt(freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
+        outFreq << std::format(
+            "{:f}\n", std::sqrt(freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
       } else {
-        fprintf(fileFreq, "%f\n",
-                -sqrt(-freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
+        outFreq << std::format(
+            "{:f}\n", -std::sqrt(-freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
       }
     }
   }

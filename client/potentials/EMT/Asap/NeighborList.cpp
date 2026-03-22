@@ -34,7 +34,7 @@ NeighborList::NeighborList(Atoms *a, double rCut, double driftfactor,
   // involving a vacuum region would lower the apparent density
   double density = nSize / atoms->GetSuperCell()->GetVolume();
   double PI = 4.0 * atan(1.0);
-  int estNbrsPerAtom = (int)(density * 4 * PI * rCut * rCut * rCut / 3.);
+  int estNbrsPerAtom = static_cast<int>(density * 4 * PI * rCut * rCut * rCut / 3.);
   if (estNbrsPerAtom < defaultNeighborEstimate)
     estNbrsPerAtom = defaultNeighborEstimate;
 
@@ -132,7 +132,7 @@ void NeighborList::MakeList() {
 
   // make space for new neighbor lists slightly bigger than the last one:
   //  nMax += int(0.15 * nMax) + 100;
-  nMax += int(0.25 * nMax) + 100;
+  nMax += static_cast<int>(0.25 * nMax) + 100;
   neighborList = new int[nMax];
 
   // make the new neighbor list and new image atoms:

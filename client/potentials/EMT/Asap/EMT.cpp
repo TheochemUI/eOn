@@ -42,8 +42,6 @@ int verbose = 0;
 #define VERB(x)
 #endif
 
-using namespace std;
-
 // Maximal number of elements in a single simulation
 #define NMAXELEMENTS 10
 // The batch--buffer size.  Avoid powers of 2
@@ -124,14 +122,14 @@ void EMT::Allocate() {
   // atoms have ghosts, otherwise no reallocation will happen.
 
   // First, check if reallocation is necessary.
-  if (nSize != int(Ec.size()) || nAtoms != int(Eas.size())) {
+  if (nSize != static_cast<int>(Ec.size()) || nAtoms != static_cast<int>(Eas.size())) {
     DEBUGPRINT;
     /* Resize/intialize the internal variables. */
     sigma1.resize(nelements);
     sigma2.resize(nelements);
     // Do the reserve trick if the atoms have ghosts.
     if (ghostatoms) {
-      if (int(Ec.capacity()) < nSize) {
+      if (static_cast<int>(Ec.capacity()) < nSize) {
         nSizeRes = nSize + nSize / 20;
         for (i = 0; i < nelements; i++) {
           sigma1[i].reserve(nSizeRes);
@@ -142,7 +140,7 @@ void EMT::Allocate() {
         radius.reserve(nSizeRes);
         id.reserve(nSizeRes);
       }
-      if (int(Eas.capacity()) < nAtoms) {
+      if (static_cast<int>(Eas.capacity()) < nAtoms) {
         nAtomsRes = nAtoms + nAtoms / 20;
         Eas.reserve(nAtomsRes);
         force.reserve(nAtomsRes);
@@ -177,7 +175,7 @@ void EMT::Allocate() {
 // they do not exist, and GetStress is called.
 void EMT::AllocateStress() {
   DEBUGPRINT;
-  if (ghostatoms && (int(stress.capacity()) < 6 * nAtoms))
+  if (ghostatoms && (static_cast<int>(stress.capacity()) < 6 * nAtoms))
     stress.reserve(6 * nAtomsRes);
   stress.resize(6 * nAtoms);
   DEBUGPRINT;
