@@ -5,6 +5,8 @@
 #include "Parameters.h"
 #include <filesystem>
 #include <fstream>
+#include <memory>
+#include <span>
 #include <vector>
 
 #include "EonLogger.h"
@@ -416,6 +418,73 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
 
   resampled.push_back(densePath.back());
   return resampled;
+}
+
+void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path) {
+  size_t n = path.size();
+  if (n < 3)
+    return;
+
+  // Calculate cumulative arc length
+  std::vector<double> arcLength(n, 0.0);
+  for (size_t i = 1; i < n; ++i) {
+    AtomMatrix diff =
+        path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
+    arcLength[i] = arcLength[i - 1] + diff.norm();
+  }
+  double totalLength = arcLength.back();
+  if (totalLength < 1e-12)
+    return;
+
+  // Tangents for cubic interpolation
+  std::vector<AtomMatrix> tangents(n);
+  for (size_t i = 0; i < n; ++i) {
+    AtomMatrix T;
+    if (i == 0) {
+      T = path[i]->pbc(path[i + 1]->getPositions() -
+                        path[i]->getPositions());
+    } else if (i == n - 1) {
+      T = path[i]->pbc(path[i]->getPositions() -
+                        path[i - 1]->getPositions());
+    } else {
+      AtomMatrix dN = path[i]->pbc(path[i + 1]->getPositions() -
+                                    path[i]->getPositions());
+      AtomMatrix dP = path[i]->pbc(path[i]->getPositions() -
+                                    path[i - 1]->getPositions());
+      T = 0.5 * (dN + dP);
+    }
+    if (i > 0 && i < n - 1) {
+      double localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;
+      T = T.normalized() * localScale;
+    }
+    tangents[i] = T;
+  }
+
+  // Store original positions for interpolation source
+  std::vector<AtomMatrix> origPos(n);
+  for (size_t i = 0; i < n; ++i)
+    origPos[i] = path[i]->getPositions();
+
+  // Redistribute interior images at equal arc-length intervals (in-place)
+  size_t nInterior = n - 2;
+  double segLen = totalLength / (nInterior + 1);
+
+  for (size_t i = 1; i <= nInterior; ++i) {
+    double targetArc = i * segLen;
+    size_t lo = 0;
+    for (size_t j = 1; j < n; ++j) {
+      if (arcLength[j] >= targetArc) {
+        lo = j - 1;
+        break;
+      }
+    }
+    size_t hi = lo + 1;
+    double sArc = arcLength[hi] - arcLength[lo];
+    double f = (sArc > 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;
+
+    path[i]->setPositions(
+        cubicInterpolate(origPos[lo], tangents[lo], origPos[hi], tangents[hi], f));
+  }
 }
 
 } // namespace eonc::helpers::neb_paths

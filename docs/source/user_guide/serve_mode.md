@@ -203,6 +203,25 @@ model_path = /path/to/model.pt
 .. autopydantic_model:: eon.schema.ServeConfig
 ```
 
+## JSON configuration
+
+```{versionadded} 2.12
+```
+
+Parameters can also be loaded from JSON strings programmatically, enabling
+serve mode clients to send configuration without INI files:
+
+```{code-block} cpp
+Parameters params;
+params.load_json(R"({
+  "Potential": {"potential": "LJ"},
+  "Serve": {"host": "0.0.0.0", "port": 12345, "replicas": 4}
+})");
+```
+
+The JSON format mirrors the INI section/key structure. See
+{doc}`/devdocs/design/client/parameters` for the full schema.
+
 ## Protocol
 
 The RPC protocol is defined by rgpot's `Potentials.capnp` schema. Each request

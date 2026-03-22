@@ -21,23 +21,23 @@ configuration space of molecular systems and to accelerate the simulation of
 their dynamics over long times. To run `eOn`, a configuration file must be generated
 using the options specified in the documentation. Each section header is denoted
 by square brackets, and is followed by the key/value pairs. For example, to set
-the *job_type* key of the *[Main]* section to the value *process_search*, your
+the *job* key of the *[Main]* section to the value *process_search*, your
 configuration file would include the lines:
 
-```{code-block} toml
+```{code-block} ini
 [Main]
-job_type = "process_search"
-```
-
-```{versionchanged} 3.1_TBA
-The format for the configuration files were changed from INI [to TOML](https://toml.io/en/), where this causes relevant user changes it will be highlighted.
-- The default file is now `config.toml` instead of `config.ini`
+job = process_search
 ```
 
 There are specific options for each method, and a set of general options which
 are shared between methods. Examples of these general options include
-specificion of the interatomic potential and the parameters for doing structural
+specification of the interatomic potential and the parameters for doing structural
 optimizations and comparisons.
+
+```{versionadded} 2.12
+Parameters can also be loaded from JSON strings for programmatic usage.
+See {doc}`/devdocs/design/client/parameters` for the JSON schema.
+```
 
 ````{margin}
 ```{note}
@@ -78,6 +78,7 @@ mpi_potential
 :maxdepth: 1
 :caption: Common
 
+algorithm_selection
 main
 potential
 structure_comparison

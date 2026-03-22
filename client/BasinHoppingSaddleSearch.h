@@ -37,14 +37,14 @@ public:
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
-  double eigenvalue;
+  double eigenvalue{0.0};
   AtomMatrix eigenvector;
 
   std::shared_ptr<Matter> reactant;
   std::shared_ptr<Matter> saddle;
   std::shared_ptr<Matter> product;
 
-  int status;
+  int status{0};
 
 private:
   eonc::log::Scoped log;

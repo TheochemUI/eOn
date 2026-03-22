@@ -48,5 +48,5 @@ jobs:
       - name: Integration Tests
         shell: pixi run bash -e {0}
         run: |
-          cd client/gtests/data/saddle_search/
+          cd client/unit_tests/data/systems/saddle_search/
           eonclient

@@ -63,10 +63,9 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   VectorXd evEst, evT, evOldEst;
 
   VectorXd force1, force2;
-  auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
-  auto tmpMatter = std::make_unique<Matter>(pot, params);
-  *tmpMatter = *matter;
+  // Use the potential passed to LowestEigenmode (via the Matter object),
+  // not a fresh instance -- otherwise force calls aren't tracked.
+  auto tmpMatter = std::make_unique<Matter>(*matter);
   force1 = tmpMatter->getForcesFreeV();
 
   for (i = 0; i < size; i++) {

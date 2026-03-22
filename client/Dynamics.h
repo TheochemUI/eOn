@@ -13,13 +13,43 @@
 
 #include "HelperFunctions.h"
 #include "Matter.h"
-#include "Optimizer.h"
 #include "Parameters.h"
 
 #include "Eigen.h"
 #include "EonLogger.h"
 
 namespace eonc {
+
+/// Configuration extracted from Parameters for Dynamics.
+struct DynamicsConfig {
+  double time_step{0.0};
+  long steps{0};
+  std::string thermostat_kind{"none"};
+  double andersen_alpha{1.0};
+  double andersen_tcol{0.0};
+  double nose_mass{1.0};
+  double langevin_friction{0.0};
+  double kB{8.6173324e-5};
+  double timeUnit{10.1805055};
+  double temperature{300.0};
+  bool write_movies{false};
+  long write_movies_interval{1};
+
+  static DynamicsConfig fromParams(const Parameters &p) {
+    return {p.dynamics_options.time_step,
+            p.dynamics_options.steps,
+            p.thermostat_options.kind,
+            p.thermostat_options.andersen_alpha,
+            p.thermostat_options.andersen_tcol,
+            p.thermostat_options.nose_mass,
+            p.thermostat_options.langevin_friction,
+            p.constants.kB,
+            p.constants.timeUnit,
+            p.main_options.temperature,
+            p.debug_options.write_movies,
+            p.debug_options.write_movies_interval};
+  }
+};
 
 class Dynamics {
 
@@ -29,7 +59,11 @@ public:
   static const char LANGEVIN[];
   static const char NONE[];
 
-  Dynamics(Matter *matter, const Parameters &parameters);
+  Dynamics(Matter *matter, const DynamicsConfig &config);
+
+  [[deprecated("Pass DynamicsConfig directly")]]
+  Dynamics(Matter *matter, const Parameters &parameters)
+      : Dynamics(matter, DynamicsConfig::fromParams(parameters)) {}
 
   ~Dynamics();
 
@@ -44,18 +78,19 @@ public:
   void langevinVerlet();
 
 private:
-  long nAtoms, nFreeCoords;
+  long nAtoms{0}, nFreeCoords{0};
 
   Matter *matter;
-  const Parameters &parameters;
+  DynamicsConfig m_config;
 
-  double dt;
-  double kB;
-  double temperature;
-  double vxi1, vxi2, xi1, xi2;
+  double dt{0.0};
+  double kB{0.0};
+  double temperature{0.0};
+  double vxi1{0.0}, vxi2{0.0}, xi1{0.0}, xi2{0.0};
   eonc::log::Scoped log;
 };
 
 } // namespace eonc
 
 using eonc::Dynamics;
+using eonc::DynamicsConfig;

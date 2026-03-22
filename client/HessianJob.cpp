@@ -14,10 +14,12 @@
 #include "Matter.h"
 #include "Potential.h"
 
-using namespace std;
+#include <format>
+#include <fstream>
+#include <string>
 
 std::vector<std::string> HessianJob::run(void) {
-  string matter_in("pos.con");
+  std::string matter_in("pos.con");
 
   std::vector<std::string> returnFiles;
 
@@ -41,18 +43,14 @@ std::vector<std::string> HessianJob::run(void) {
   moved = moved.head(nMoved);
   hessian.getFreqs(matter.get(), moved);
 
-  FILE *fileResults;
-  //    FILE *fileMode;
-
   std::string results_file("results.dat");
-
   returnFiles.push_back(results_file);
 
-  fileResults = fopen(results_file.c_str(), "wb");
-
-  fprintf(fileResults, "%zu force_calls\n",
-          PotRegistry::get().total_force_calls());
-  fclose(fileResults);
+  std::ofstream out(results_file, std::ios::binary);
+  if (out) {
+    out << std::format("{} force_calls\n",
+                       PotRegistry::get().total_force_calls());
+  }
 
   return returnFiles;
 }

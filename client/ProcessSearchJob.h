@@ -62,11 +62,6 @@ private:
   eonc::log::Scoped log;
   //! Runs the correct saddle search; also checks if the run was successful
   int doProcessSearch(void);
-  //! UNDEFINED
-  /*!
-   * Function is not defined in the cpp file and is marked for deletion.
-   */
-  VectorXi movedAtoms(void);
   //! Logs the run status and makes sure the run was successful
   void printEndState(int status);
   //! Writes the results from the run to file
@@ -94,17 +89,17 @@ private:
 
   //! Array containg the value of the potential barriers from reactant to
   //! product and vice versa
-  double barriersValues[2];
+  double barriersValues[2]{0.0, 0.0};
   //! Array containg the value of the prefactors of the matter from reactant to
   //! product and vice versa
-  double prefactorsValues[2];
+  double prefactorsValues[2]{0.0, 0.0};
 
   //! Force calls to find the saddle
-  size_t fCallsSaddle;
+  size_t fCallsSaddle{0};
   //! Force calls to minimize
-  size_t fCallsMin;
+  size_t fCallsMin{0};
   //! Force calls to find the prefactors
-  size_t fCallsPrefactors;
+  size_t fCallsPrefactors{0};
 };
 
 } // namespace eonc

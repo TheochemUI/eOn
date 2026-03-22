@@ -11,544 +11,63 @@
 */
 #include "HelperFunctions.h"
 #include "EonLogger.h"
+#include "GeometryAnalysis.h"
+#include "ObjectiveFunction.h"
+#include "Optimizer.h"
 #include "SafeMath.h"
 
 #include <cassert>
+#include <cmath>
+#include <cstring>
+#include <ctime>
+#include <filesystem>
+#include <memory>
+#include <format>
+#include <fstream>
 #include <iostream>
-#include <math.h>
-#include <set>
-#include <string.h>
-#include <time.h>
-#include <unordered_map>
+#include <sstream>
 
 #ifndef _WIN32
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif
-using namespace std;
-
-// Random number generator
-
-double eonc::helpers::random(long newSeed) {
-  static long seed = -1;
-  if (newSeed) {
-    seed = -newSeed;
-  }
-  int j;
-  long k;
-  static long seed2 = 123456789;
-  static long iy = 0;
-  static long iv[NTAB];
-  double temp;
-  if (seed <= 0) {
-    if (-(seed) < 1)
-      seed = 3;
-    else
-      seed = -(seed);
-    seed2 = (seed);
-    for (j = NTAB + 7; j >= 0; j--) {
-      k = (seed) / IQ1;
-      seed = IA1 * (seed - k * IQ1) - k * IR1;
-      if (seed < 0)
-        seed += IM1;
-      if (j < NTAB)
-        iv[j] = seed;
-    }
-    iy = iv[0];
-  }
-  k = (seed) / IQ1;
-  seed = IA1 * (seed - k * IQ1) - k * IR1;
-  if (seed < 0)
-    seed += IM1;
-  k = seed2 / IQ2;
-  seed2 = IA2 * (seed2 - k * IQ2) - k * IR2;
-  if (seed2 < 0)
-    seed2 += IM2;
-  j = int(iy / NDIV);
-  iy = iv[j] - seed2;
-  iv[j] = seed;
-  if (iy < 1)
-    iy += IMM1;
-  if ((temp = double(AM * iy)) > RNMX)
-    return RNMX;
-  else
-    return temp;
-}
-
-double eonc::helpers::randomDouble() { return (random()); }
-
-// Random value in interval
-double eonc::helpers::randomDouble(int max) {
-  double dmax = double(max);
-  return (dmax * randomDouble());
-}
-
-double eonc::helpers::randomDouble(long max) {
-  double dmax = double(max);
-  return (dmax * randomDouble());
-}
-
-double eonc::helpers::randomDouble(double dmax) {
-  return (dmax * randomDouble());
-}
-
-long eonc::helpers::randomInt(int lower, int upper) {
-  return lround((upper - lower) * randomDouble() + lower);
-}
-
-double eonc::helpers::gaussRandom(double avg, double std) {
-  double r = 2, v1, v2, l, result;
-  while (r >= 1.0 || r < 1e-300) {
-    v1 = 2.0 * randomDouble() - 1.0;
-    v2 = 2.0 * randomDouble() - 1.0;
-    r = v1 * v1 + v2 * v2;
-  }
-  l = v1 * sqrt(-2.0 * ::log(r) / r);
-  result = avg + std * l;
-  return (result);
-}
+using std::ifstream;
+using std::string;
 
 // Vector functions.
-// All functions 'returning' an array
-// the first argument should be a pointer to the array
-// where the result should be stored.
-double eonc::helpers::dot(const double *v1, const double *v2, long size) {
-  double result = 0;
-  for (int i = 0; i < size; i++)
-    result = result + v1[i] * v2[i];
-  return result;
-}
-
-double eonc::helpers::length(const double *v1, long numFreeCoord) {
-  return (sqrt(dot(v1, v1, numFreeCoord)));
-}
-
-void eonc::helpers::add(double *result, const double *v1, const double *v2,
-                        long size) {
-  for (int i = 0; i < size; i++) {
-    result[i] = v1[i] + v2[i];
-  };
-  return;
-}
-
-void eonc::helpers::subtract(double *result, const double *v1, const double *v2,
-                             long size) {
-  for (int i = 0; i < size; i++)
-    result[i] = v1[i] - v2[i];
-  return;
-}
-
-void eonc::helpers::multiplyScalar(double *result, const double *v1,
-                                   double scalar, long size) {
-  for (int i = 0; i < size; i++) {
-    result[i] = v1[i] * scalar;
-  };
-  return;
-}
-
-void eonc::helpers::divideScalar(double *result, const double *v1,
-                                 double scalar, long size) {
-  for (int i = 0; i < size; i++)
-    result[i] = v1[i] / scalar;
-  return;
-}
-
-void eonc::helpers::copyRightIntoLeft(double *result, const double *v1,
-                                      long size) {
-  for (int i = 0; i < size; i++)
-    result[i] = v1[i];
-  return;
-}
-
-void eonc::helpers::normalize(double *v1, long size) {
-  double const norm = length(v1, size);
-  // XXX: dirty hack while waiting for merge
-  if (norm == 0.0) {
-    throw 14323;
-  }
-  divideScalar(v1, v1, norm, size);
-  return;
-}
-
 // Make v1 orthogonal to v2
 AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
                                          const AtomMatrix v2) {
-  return v1 -
-         (v1.array() * v2.array()).sum() * eonc::safemath::safe_normalized(v2);
-}
-
-// result contains v1 projection on v2
-void eonc::helpers::makeProjection(double *result, const double *v1,
-                                   const double *v2, long size) {
-  double tempDouble = dot(v1, v2, size);
-  multiplyScalar(result, v2, tempDouble, size);
-  return;
-}
-
-RotationMatrix eonc::helpers::rotationExtract(const AtomMatrix r1,
-                                              const AtomMatrix r2) {
-  RotationMatrix R;
-
-  // Determine optimal rotation
-  // Horn, J. Opt. Soc. Am. A, 1987
-  Matrix3d m = r1.transpose() * r2;
-
-  double sxx = m(0, 0);
-  double sxy = m(0, 1);
-  double sxz = m(0, 2);
-  double syx = m(1, 0);
-  double syy = m(1, 1);
-  double syz = m(1, 2);
-  double szx = m(2, 0);
-  double szy = m(2, 1);
-  double szz = m(2, 2);
-
-  Matrix4d n;
-  n.setZero();
-  n(0, 1) = syz - szy;
-  n(0, 2) = szx - sxz;
-  n(0, 3) = sxy - syx;
-
-  n(1, 2) = sxy + syx;
-  n(1, 3) = szx + sxz;
-
-  n(2, 3) = syz + szy;
-
-  n += n.transpose().eval();
-
-  n(0, 0) = sxx + syy + szz;
-  n(1, 1) = sxx - syy - szz;
-  n(2, 2) = -sxx + syy - szz;
-  n(3, 3) = -sxx - syy + szz;
-
-  Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
-  Eigen::Vector4d maxv = es.eigenvectors().col(3);
-
-  double aa = maxv[0] * maxv[0];
-  double bb = maxv[1] * maxv[1];
-  double cc = maxv[2] * maxv[2];
-  double dd = maxv[3] * maxv[3];
-  double ab = maxv[0] * maxv[1];
-  double ac = maxv[0] * maxv[2];
-  double ad = maxv[0] * maxv[3];
-  double bc = maxv[1] * maxv[2];
-  double bd = maxv[1] * maxv[3];
-  double cd = maxv[2] * maxv[3];
-
-  R(0, 0) = aa + bb - cc - dd;
-  R(0, 1) = 2 * (bc - ad);
-  R(0, 2) = 2 * (bd + ac);
-  R(1, 0) = 2 * (bc + ad);
-  R(1, 1) = aa - bb + cc - dd;
-  R(1, 2) = 2 * (cd - ab);
-  R(2, 0) = 2 * (bd - ac);
-  R(2, 1) = 2 * (cd + ab);
-  R(2, 2) = aa - bb - cc + dd;
-
-  // std::cout<<R<<"\n\n";
-
-  return R;
-}
-
-bool eonc::helpers::rotationMatch(const Matter &m1, const Matter &m2,
-                                  const double max_diff) {
-  AtomMatrix r1 = m1.getPositions();
-  AtomMatrix r2 = m2.getPositions();
-
-  // Align centroids
-  Eigen::VectorXd c1(3);
-  Eigen::VectorXd c2(3);
-
-  c1[0] = r1.col(0).sum();
-  c1[1] = r1.col(1).sum();
-  c1[2] = r1.col(2).sum();
-  c2[0] = r2.col(0).sum();
-  c2[1] = r2.col(1).sum();
-  c2[2] = r2.col(2).sum();
-  c1 /= r1.rows();
-  c2 /= r2.rows();
-
-  for (int i = 0; i < r1.rows(); i++) {
-    r1(i, 0) -= c1[0];
-    r1(i, 1) -= c1[1];
-    r1(i, 2) -= c1[2];
-
-    r2(i, 0) -= c2[0];
-    r2(i, 1) -= c2[1];
-    r2(i, 2) -= c2[2];
-  }
-
-  RotationMatrix R = rotationExtract(r1, r2);
-
-  // Eigen is transposed relative to numpy
-  r2 = r2 * R;
-
-  for (int i = 0; i < r1.rows(); i++) {
-    double diff = (r2.row(i) - r1.row(i)).norm();
-    if (diff > max_diff) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// Project out rigid-body translation and rotation from a displacement vector.
-// Uses infinitesimal-rotation basis vectors and modified Gram-Schmidt
-// orthonormalization, following the approach in:
-//   R. Goswami and H. Jónsson, "Adaptive Pruning for Increased Robustness and
-//   Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point
-//   Searches," ChemPhysChem, Nov. 2025, doi: 10.1002/cphc.202500730.
-void eonc::helpers::projectOutRotTrans(Eigen::VectorXd &step,
-                                       const AtomMatrix &positions) {
-  long nAtoms = positions.rows();
-  long dof = nAtoms * 3;
-
-  // 1. Compute center of mass (unweighted geometric center)
-  Eigen::Vector3d com = Eigen::Vector3d::Zero();
-  for (long i = 0; i < nAtoms; ++i) {
-    com(0) += positions(i, 0);
-    com(1) += positions(i, 1);
-    com(2) += positions(i, 2);
-  }
-  com /= static_cast<double>(nAtoms);
-
-  // 2. Construct 6 basis vectors for rigid-body translation and rotation
-  std::vector<Eigen::VectorXd> basis;
-  basis.reserve(6);
-
-  // Translational basis vectors
-  for (int d = 0; d < 3; ++d) {
-    Eigen::VectorXd t = Eigen::VectorXd::Zero(dof);
-    for (long j = 0; j < nAtoms; ++j) {
-      t(3 * j + d) = 1.0;
-    }
-    basis.push_back(t);
-  }
-
-  // Rotational basis vectors (infinitesimal rotations around COM)
-  Eigen::VectorXd rx = Eigen::VectorXd::Zero(dof);
-  Eigen::VectorXd ry = Eigen::VectorXd::Zero(dof);
-  Eigen::VectorXd rz = Eigen::VectorXd::Zero(dof);
-
-  for (long i = 0; i < nAtoms; ++i) {
-    double x = positions(i, 0) - com(0);
-    double y = positions(i, 1) - com(1);
-    double z = positions(i, 2) - com(2);
-    // Rotation around x-axis: cross(xhat, r) = (0, -z, y)
-    rx(3 * i + 1) = -z;
-    rx(3 * i + 2) = y;
-    // Rotation around y-axis: cross(yhat, r) = (z, 0, -x)
-    ry(3 * i + 0) = z;
-    ry(3 * i + 2) = -x;
-    // Rotation around z-axis: cross(zhat, r) = (-y, x, 0)
-    rz(3 * i + 0) = -y;
-    rz(3 * i + 1) = x;
-  }
-  basis.push_back(rx);
-  basis.push_back(ry);
-  basis.push_back(rz);
-
-  // 3. Modified Gram-Schmidt orthonormalization
-  std::vector<Eigen::VectorXd> ortho;
-  ortho.reserve(6);
-
-  for (auto &v : basis) {
-    Eigen::VectorXd u = v;
-    for (const auto &e : ortho) {
-      u -= u.dot(e) * e;
-    }
-    // Handles linear molecules where one rotational mode is degenerate
-    if (u.norm() > 1e-9) {
-      u.normalize();
-      ortho.push_back(u);
-    }
-  }
-
-  // 4. Project out rigid-body components from step
-  for (const auto &e : ortho) {
-    step -= step.dot(e) * e;
-  }
-}
-
-void eonc::helpers::rotationRemove(const AtomMatrix r1_passed,
-                                   std::shared_ptr<Matter> m2) {
-  // Skip for extended systems (slabs/surfaces with frozen atoms).
-  // Rigid-body rotation and translation are not well-defined when the
-  // system is anchored by frozen atoms.
-  if (m2->numberOfFixedAtoms() > 0) {
-    return;
-  }
-
-  AtomMatrix r2 = m2->getPositions();
-  long n = r1_passed.size();
-
-  // Compute displacement as flat 3N vector
-  Eigen::VectorXd step(n);
-  Eigen::Map<const Eigen::VectorXd> r1_flat(r1_passed.data(), n);
-  Eigen::Map<const Eigen::VectorXd> r2_flat(r2.data(), n);
-  step = r2_flat - r1_flat;
-
-  // Project out rigid-body translation and rotation
-  projectOutRotTrans(step, r1_passed);
-
-  // Reconstruct positions: r1 + projected step
-  Eigen::VectorXd result = r1_flat + step;
-  AtomMatrix resultMat(r1_passed.rows(), 3);
-  Eigen::Map<Eigen::VectorXd>(resultMat.data(), n) = result;
-
-  m2->setPositions(resultMat);
-}
-
-void eonc::helpers::rotationRemove(const std::shared_ptr<Matter> m1,
-                                   std::shared_ptr<Matter> m2) {
-  AtomMatrix r1 = m1->getPositions();
-  rotationRemove(r1, m2);
-  return;
-}
-
-void eonc::helpers::translationRemove(Matter &m1, const AtomMatrix r2_passed) {
-  AtomMatrix r1 = m1.getPositions();
-  AtomMatrix r2 = r2_passed;
-
-  // net displacement
-  Eigen::VectorXd disp(3);
-  AtomMatrix r12 = m1.pbc(r2 - r1);
-
-  disp[0] = r12.col(0).sum();
-  disp[1] = r12.col(1).sum();
-  disp[2] = r12.col(2).sum();
-  disp /= r1.rows();
-
-  for (int i = 0; i < r1.rows(); i++) {
-    r1(i, 0) += disp[0];
-    r1(i, 1) += disp[1];
-    r1(i, 2) += disp[2];
-  }
-
-  m1.setPositions(r1);
-  return;
-}
-
-void eonc::helpers::translationRemove(Matter &m1, const Matter &m2) {
-  AtomMatrix r2 = m2.getPositions();
-  translationRemove(m1, r2);
-  return;
-}
-
-double eonc::helpers::maxAtomMotion(const AtomMatrix v1) {
-  return v1.rowwise().norm().maxCoeff();
-}
-
-double eonc::helpers::maxAtomMotionV(const VectorXd v1) {
-  double max = 0.0;
-  for (int i = 0; i < v1.rows(); i += 3) {
-    double norm = v1.segment<3>(i).norm();
-    if (max < norm) {
-      max = norm;
-    }
-  }
-  return max;
-}
-
-long eonc::helpers::numAtomsMoved(const AtomMatrix v1, double cutoff) {
-  long num = 0;
-  for (int i = 0; i < v1.rows(); i++) {
-    double norm = v1.row(i).norm();
-    if (norm >= cutoff) {
-      num += 1;
-    }
-  }
-  return num;
-}
-
-AtomMatrix eonc::helpers::maxAtomMotionApplied(const AtomMatrix v1,
-                                               double maxMotion) {
-  /*
-  Function ensures (by scaling) that there is no single element of the
-  AtomMatrix which is larger than maxMotion.
-  */
-  AtomMatrix v2(v1);
-
-  double max = maxAtomMotion(v1);
-  // double max = v1.norm();
-  if (max > maxMotion) {
-    v2 *= maxMotion / max;
-  }
-  return v2;
-}
-
-VectorXd eonc::helpers::maxAtomMotionAppliedV(const VectorXd v1,
-                                              double maxMotion) {
-  VectorXd v2(v1);
-
-  double max = maxAtomMotionV(v1);
-  if (max > maxMotion) {
-    v2 *= maxMotion / max;
-  }
-  return v2;
-}
-
-AtomMatrix eonc::helpers::maxMotionApplied(const AtomMatrix v1,
-                                           double maxMotion) {
-  /*
-   Function ensures (by scaling) that the norm of the AtomMatrix is not larger
-   than maxMotion.
-   */
-  AtomMatrix v2(v1);
-
-  double max = v1.norm();
-  if (max > maxMotion) {
-    v2 *= maxMotion / max;
-  }
-  return v2;
-}
-
-VectorXd eonc::helpers::maxMotionAppliedV(const VectorXd v1, double maxMotion) {
-  VectorXd v2(v1);
-
-  double max = v1.norm();
-  if (max > maxMotion) {
-    v2 *= maxMotion / max;
-  }
-  return v2;
+  return v1 - matDot(v1, v2) * eonc::safemath::safe_normalized(v2);
 }
 
 void eonc::helpers::getTime(double *real, double *user, double *sys) {
+  // Wall-clock time via C++11 chrono (portable)
+  using namespace std::chrono;
+  auto now = steady_clock::now();
+  *real = duration<double>(now.time_since_epoch()).count();
+
 #ifdef _WIN32
-  *real = (double)time(NULL);
-  if (user != NULL) {
-    *user = 0.0;
-  }
-  if (sys != NULL) {
-    *sys = 0.0;
-  }
+  if (user) *user = 0.0;
+  if (sys) *sys = 0.0;
 #else
-  struct timeval time;
-  gettimeofday(&time, NULL);
-  *real = (double)time.tv_sec + (double)time.tv_usec / 1000000.0;
   struct rusage r_usage;
   if (getrusage(RUSAGE_SELF, &r_usage) != 0) {
-    fprintf(stderr, "problem getting usage info: %s\n", strerror(errno));
+    EONC_LOG_WARNING("problem getting usage info: {}", strerror(errno));
   }
-  if (user != NULL) {
-    *user = (double)r_usage.ru_utime.tv_sec +
-            (double)r_usage.ru_utime.tv_usec / 1000000.0;
+  if (user) {
+    *user = static_cast<double>(r_usage.ru_utime.tv_sec) +
+            static_cast<double>(r_usage.ru_utime.tv_usec) / 1e6;
   }
-  if (sys != NULL) {
-    *sys = (double)r_usage.ru_stime.tv_sec +
-           (double)r_usage.ru_stime.tv_usec / 1000000.0;
+  if (sys) {
+    *sys = static_cast<double>(r_usage.ru_stime.tv_sec) +
+           static_cast<double>(r_usage.ru_stime.tv_usec) / 1e6;
   }
 #endif
 }
 
 bool eonc::helpers::existsFile(string filename) {
-  FILE *fh;
-  fh = fopen(filename.c_str(), "rb");
-  if (fh == NULL) {
-    return 0;
-  } else
-    fclose(fh);
-  return 1;
+  return std::filesystem::exists(filename);
 }
 
 string eonc::helpers::getRelevantFile(string filename) {
@@ -606,15 +125,17 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
 }
 
 AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
-  FILE *modeFile;
-  modeFile = fopen(filename.c_str(), "rb");
+  // Unique FILE* with RAII cleanup
+  auto closer = [](FILE *f) {
+    if (f) std::fclose(f);
+  };
+  std::unique_ptr<FILE, decltype(closer)> modeFile(
+      std::fopen(filename.c_str(), "rb"), closer);
   if (!modeFile) {
     EONC_LOG_CRITICAL("File {} was not found\n Stopping", filename);
     std::exit(1);
   }
-  AtomMatrix mode = loadMode(modeFile, nAtoms);
-  fclose(modeFile);
-  return mode;
+  return loadMode(modeFile.get(), nAtoms);
 }
 
 void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
@@ -630,209 +151,142 @@ void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
   return;
 }
 
+void eonc::helpers::saveMode(const std::string &filename,
+                             std::shared_ptr<Matter> matter, AtomMatrix mode) {
+  std::ofstream out(filename);
+  if (!out)
+    return;
+  long const nAtoms = matter->numberOfAtoms();
+  for (long i = 0; i < nAtoms; ++i) {
+    if (matter->getFixed(i)) {
+      out << "0 0 0\n";
+    } else {
+      out << std::format("{:f}\t{:f} \t{:f}\n", mode(i, 0), mode(i, 1),
+                         mode(i, 2));
+    }
+  }
+}
+
 std::vector<int> eonc::helpers::split_string_int(std::string s,
                                                  std::string delim) {
   std::vector<int> list;
-  if (s.length() == 0)
-    return list;
-  char *pch;
-  char *str;
-  str = (char *)malloc(sizeof(char) * (s.length() + 1));
-  s.copy(str, s.length(), 0);
-  str[s.length()] = '\0';
-  pch = strtok(str, delim.c_str());
+  if (s.empty()) return list;
 
-  while (pch != NULL) {
-    char *endptr;
-    int value = (int)strtol(pch, &endptr, 10);
-    if (strcmp(pch, endptr) == 0) {
-      // Error reading
-      std::vector<int> emptylist;
-      free(str);
-      return emptylist;
+  size_t start = 0;
+  size_t end = s.find_first_of(delim);
+  while (start < s.size()) {
+    auto token = s.substr(start, end - start);
+    if (!token.empty()) {
+      try {
+        list.push_back(std::stoi(token));
+      } catch (const std::exception &) {
+        return {}; // Parse error
+      }
     }
-    list.push_back(value);
-    pch = strtok(NULL, delim.c_str());
+    if (end == std::string::npos) break;
+    start = end + 1;
+    end = s.find_first_of(delim, start);
   }
-  free(str);
   return list;
 }
 
-namespace eonc::helpers {
-struct atom {
-  double r;
-  int z;
-};
-
-struct by_atom {
-  bool operator()(atom const &a, atom const &b) const {
-    if (a.z != b.z) {
-      return a.z < b.z;
+namespace {
+class MatterObjectiveFunction : public ObjectiveFunction {
+  Matter &m_matter; // non-owning reference, avoids copy
+public:
+  MatterObjectiveFunction(Matter &mat, const Parameters &parametersPassed)
+      : ObjectiveFunction(parametersPassed),
+        m_matter{mat} {}
+  ~MatterObjectiveFunction() = default;
+  double getEnergy() { return m_matter.getPotentialEnergy(); }
+  VectorXd getGradient(bool fdstep = false) {
+    return -m_matter.getForcesFreeV();
+  }
+  void setPositions(const VectorXd &x) { m_matter.setPositionsFreeV(x); }
+  VectorXd getPositions() { return m_matter.getPositionsFreeV(); }
+  int degreesOfFreedom() { return 3 * m_matter.numberOfFreeAtoms(); }
+  bool isConverged() {
+    return getConvergence() < params.optimizer_options.converged_force;
+  }
+  double getConvergence() {
+    if (params.optimizer_options.convergence_metric == "norm") {
+      return m_matter.getForcesFreeV().norm();
+    } else if (params.optimizer_options.convergence_metric == "max_atom") {
+      return m_matter.maxForce();
+    } else if (params.optimizer_options.convergence_metric == "max_component") {
+      return m_matter.getForces().maxCoeff();
     } else {
-      return a.r < b.r;
+      EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]",
+                        params.optimizer_options.convergence_metric);
+      std::exit(1);
     }
+  }
+  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+    return m_matter.pbcV(a - b);
   }
 };
-} // namespace eonc::helpers
+} // namespace
 
-double roundUp(double x, double f) { return ceil(x / f); }
+bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
+                                bool quiet, bool writeMovie, bool checkpoint,
+                                std::string prefixMovie,
+                                std::string prefixCheckpoint) {
+  eonc::log::Scoped m_log;
+  auto objf = std::make_shared<MatterObjectiveFunction>(matter, params);
+  auto optim = eonc::helpers::create::mkOptim(
+      objf, params.optimizer_options.method, params);
 
-bool eonc::helpers::identical(const Matter &m1, const Matter &m2,
-                              const double distanceDifference) {
-
-  AtomMatrix r1 = m1.getPositions();
-  AtomMatrix r2 = m2.getPositions();
-
-  std::set<int> matched;
-  double tolerance = distanceDifference;
-
-  if (r1.rows() != r2.rows()) {
-    return false;
+  std::ostringstream min;
+  min << prefixMovie;
+  if (writeMovie) {
+    matter.matter2con(min.str(), false);
   }
-  int N = r1.rows();
 
-  for (int i = 0; i < N; i++) {
-    if (fabs((m1.pbc(r1.row(i) - r2.row(i))).norm()) < tolerance &&
-        m1.getAtomicNr(i) == m2.getAtomicNr(i)) {
-      matched.insert(i);
+  int iteration = 0;
+  if (!quiet) {
+    QUILL_LOG_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
+                    "Iter", "Step size",
+                    params.optimizer_options.convergence_metric_label,
+                    "Energy");
+    QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+                    "[Matter]", iteration, 0.0, objf->getConvergence(),
+                    matter.getPotentialEnergy());
+  }
+
+  while (!objf->isConverged() &&
+         iteration < params.optimizer_options.max_iterations) {
+
+    AtomMatrix pos = matter.getPositions();
+
+    optim->step(params.optimizer_options.max_move);
+    iteration++;
+
+    double stepSize =
+        eonc::geometry::maxAtomMotion(matter.pbc(matter.getPositions() - pos));
+
+    if (!quiet) {
+      QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+                      "[Matter]", iteration, stepSize, objf->getConvergence(),
+                      matter.getPotentialEnergy());
+    }
+
+    if (writeMovie) {
+      matter.matter2con(min.str(), true);
+    }
+
+    if (checkpoint) {
+      std::ostringstream chk;
+      chk << prefixCheckpoint << "_cp";
+      matter.matter2con(chk.str(), false);
     }
   }
 
-  for (int j = 0; j < N; j++) {
-
-    if (matched.count(j) == 1)
-      continue;
-
-    for (int k = 0; k < N; k++) {
-      if (matched.count(j) == 1)
-        break;
-
-      if (fabs((m1.pbc(r1.row(j) - r2.row(k))).norm()) < tolerance &&
-          m1.getAtomicNr(j) == m2.getAtomicNr(k)) {
-        matched.insert(j);
-      }
-    }
-
-    // XXX: can we abort early if no match was found?
-  }
-
-  if (matched.size() == (unsigned)N) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-bool eonc::helpers::sortedR(const Matter &m1, const Matter &m2,
-                            const double distanceDifference) {
-  EONC_LOG_INFO("In sortedR");
-  AtomMatrix r1 = m1.getPositions();
-  AtomMatrix r2 = m2.getPositions();
-  double tolerance = distanceDifference;
-  int matches = 0;
-
-  if (r1.rows() != r2.rows()) {
-    return false;
-  }
-
-  // Allocate memory for rdf1 and rdf2
-  std::vector<std::set<atom, by_atom>> rdf1(r1.rows());
-  std::vector<std::set<atom, by_atom>> rdf2(r2.rows());
-
-  for (int i2 = 0; i2 < r2.rows(); i2++) {
-    rdf2[i2].clear();
-    for (int j2 = 0; j2 < r2.rows(); j2++) {
-      if (j2 == i2)
-        continue;
-      atom a2;
-      a2.r = m2.distance(i2, j2);
-      a2.z = m2.getAtomicNr(j2);
-      rdf2[i2].insert(a2);
-      rdf2[j2].insert(a2);
+  if (iteration == 0) {
+    if (!quiet) {
+      QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}",
+                      "[Matter]", iteration, 0.0, objf->getConvergence(),
+                      matter.getPotentialEnergy());
     }
   }
-
-  for (int i1 = 0; i1 < r1.rows(); i1++) {
-    if (matches == i1 - 2) {
-      return false;
-    }
-    for (int j1 = 0; j1 < r1.rows(); j1++) {
-      if (j1 == i1)
-        continue;
-      atom a;
-      a.r = m1.distance(i1, j1);
-      a.z = m1.getAtomicNr(j1);
-      rdf1[i1].insert(a);
-      rdf1[j1].insert(a);
-    }
-    for (int x = 0; x < r2.rows(); x++) {
-      auto it2 = rdf2[x].begin();
-      auto it = rdf1[i1].begin();
-      int c = 0;
-      int counter = 0;
-      for (; c < r1.rows(); c++) {
-        if (it == rdf1[i1].end() || it2 == rdf2[x].end())
-          break;
-        atom k1 = *it;
-        atom k2 = *it2;
-        if (fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
-          counter++;
-        } else {
-          EONC_LOG_INFO("No match");
-          break;
-        }
-        ++it;
-        ++it2;
-      }
-      if (counter == r1.rows()) {
-        matches++;
-      } else {
-        EONC_LOG_INFO("No match");
-      }
-    }
-  }
-
-  return matches >= r1.rows();
-}
-
-void eonc::helpers::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
-  if (minDistance <= 0)
-    return;
-
-  AtomMatrix r1 = m1->getPositions();
-  AtomMatrix Force(r1.rows(), 3);
-  double f = 0.025;
-  double cut = minDistance;
-  double pushAparts = 500;
-  for (int p = 0; p < r1.rows(); p++) {
-    for (int axis = 0; axis <= 2; axis++) {
-      Force(p, axis) = 0;
-    }
-  }
-  for (int count = 0; count < pushAparts; count++) {
-    int moved = 0;
-    for (int i = 0; i < r1.rows(); i++) {
-      for (int j = i + 1; j < r1.rows(); j++) {
-        double d = m1->distance(i, j);
-        if (d < cut) {
-          moved++;
-          for (int axis = 0; axis <= 2; axis++) {
-            double componant = f * (r1(i, axis) - r1(j, axis)) / d;
-            Force(i, axis) += componant;
-            Force(j, axis) -= componant;
-          }
-        }
-      }
-    }
-    if (moved == 0)
-      break;
-    for (int k = 0; k < r1.rows(); k++) {
-      for (int axis = 0; axis <= 2; axis++) {
-        r1(k, axis) += Force(k, axis);
-        Force(k, axis) = 0;
-      }
-    }
-    m1->setPositions(r1);
-    // m1->matter2con("movie.con", true);
-  }
+  return objf->isConverged();
 }

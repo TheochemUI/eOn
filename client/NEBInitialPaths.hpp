@@ -1,6 +1,8 @@
 #pragma once
 #include "Matter.h"
 #include <filesystem>
+#include <memory>
+#include <span>
 
 namespace eonc {
 
@@ -26,6 +28,12 @@ AtomMatrix cubicInterpolate(const AtomMatrix &P0, const AtomMatrix &T0,
 
 std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
                                  size_t targetCount);
+
+/// In-place path reparameterization for NEB shared_ptr paths.
+/// Redistributes interior images at equal arc-length intervals using
+/// cubic Hermite interpolation, without allocating new Matter objects.
+/// Useful for cheap geometry-based reparameterization during OCINEB.
+void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path);
 
 /**
  * @brief Reads a file where each line contains a path to another file.

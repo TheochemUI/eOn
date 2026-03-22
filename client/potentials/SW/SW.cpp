@@ -12,16 +12,8 @@
 
 #include "SW.h"
 
-void SW::initialize(void) { return; }
-
-void SW::cleanMemory(void) { return; }
-
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// address to supercell size
-void SW::force(long N, const double *R, const int *atomicNrs, double *F,
+void SW::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
                double *U, double *variance, const double *box) {
   variance = nullptr;
   sw_(&N, R, F, U, &box[0], &box[4], &box[8]);
-  return;
 }

@@ -10,10 +10,17 @@ myst:
 ```{versionadded} 2.5
 ```
 
+```{versionchanged} 2.12
+QUIP works through LAMMPS's `pair_style quip`, and LAMMPS is now loaded
+at runtime via `dlopen`. No eOn rebuild is needed -- just install a
+LAMMPS library built with the QUIP package.
+```
+
 ```{admonition} conda-forge availability
 :class: warning
-**Not** included in the `conda-forge` package. Requires building both QUIP and
-LAMMPS from source, then building eOn with `-Dwith_lammps=True`.
+**Not** included in the `conda-forge` package. Requires a LAMMPS library
+built with the QUIP package (`-D PKG_ML-QUIP=yes`). LAMMPS is loaded
+at runtime (no eOn build flag needed).
 ```
 
 In order, we require:
@@ -96,9 +103,9 @@ Assuming we are starting from scratch..
 ```{code-block} bash
 gh repo clone theochemui/eon
 cd eOn
-ln -sf $LMP_BLD_DIR/liblammps* "./client/potentials/LAMMPS/"
-meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib -Dwith_lammps=True --buildtype=release
+meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release
 meson install -C bbdir
+# LAMMPS is loaded at runtime -- just ensure liblammps.so is on LD_LIBRARY_PATH
 ```
 
 At this point both `eonclient` examples and `eon` (e.g. AKMC) examples will run.

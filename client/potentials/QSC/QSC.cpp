@@ -9,115 +9,80 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "stdio.h"
-#include <cassert>
-#include <math.h>
-#include <stdlib.h>
 
-#include "Parameters.h"
+/// @file QSC.cpp
+/// @brief Quantum Sutton-Chen potential implementation.
+///
+/// EAM-type potential with density = (a/r)^m, pair = (a/r)^n,
+/// embedding = c * epsilon * sqrt(rho). Uses Verlet neighbor list
+/// for O(N) force evaluation.
+
 #include "QSC.h"
+#include "Parameters.h"
 
-/*
- * This is an implementation of the Quantum Sutton-Chen Potential,
- * which is an EAM type potential with the following functional form:
- * EAM functional: F_i(rho_i) = c*sqrt(rho_i)
- * EAM density:    rho_i(r_ij) = sum_(i!=j) (a/r_ij)^m
- * Pair potential: V(r_ij) = (a/r_ij)^n
- */
+#include <cassert>
+#include <cmath>
+#include <cstdio>
 
-QSC::~QSC() { cleanMemory(); }
-
-void QSC::initialize(long N, const double *R, const int *atomicNrs,
-                     const double *box) {
-  /* Allocate memory */
-  natomstoclear = N; // this is ugly but i need this in cleanMemory
-  rho = new double[N];
-  sqrtrho = new double[N];
-  vlist = new int *[N];
-  nlist = new int[N];
-  distances = new struct distance *[N];
-  oldR = new double[3 * N];
-  V = new double *[N];
-  phi = new double *[N];
-  for (int i = 0; i < N; i++) {
-    vlist[i] = new int[N];
-    distances[i] = new struct distance[N];
-    V[i] = new double[N];
-    phi[i] = new double[N];
-  }
-
-  init = true;
-}
-
-void QSC::cleanMemory() {
-  if (init == true) {
-    delete rho;
-    delete sqrtrho;
-    delete oldR;
-    delete nlist;
-    for (int i = 0; i < natomstoclear; i++) {
-      delete vlist[i];
-      delete distances[i];
-      delete V[i];
-      delete phi[i];
-    }
-    delete vlist;
-    delete distances;
-    delete V;
-    delete phi;
-
-    init = false;
-  }
+void QSC::initialize(long N) {
+  N_ = N;
+  rho_.assign(N, 0.0);
+  sqrtrho_.assign(N, 0.0);
+  nlist_.assign(N, 0);
+  oldR_.assign(3 * N, 0.0);
+  // Flattened N*N arrays
+  distances_.resize(N * N);
+  vlist_.assign(N * N, 0);
+  V_.assign(N * N, 0.0);
+  phi_.assign(N * N, 0.0);
+  init_ = true;
 }
 
 void QSC::new_vlist(long N, const double *R, const double *box) {
-  double rv = cutoff + verlet_skin;
+  double rv = cutoff_ + verlet_skin_;
 
-  for (int i = 0; i < N; i++) {
-    nlist[i] = 0;
-    for (int j = i + 1; j < N; j++) {
-      calc_distance(box, R, i, R, j, &distances[i][j]);
-      if (distances[i][j].r <= rv) {
-        vlist[i][nlist[i]] = j;
-        nlist[i] += 1;
+  for (long i = 0; i < N; i++) {
+    nlist_[i] = 0;
+    for (long j = i + 1; j < N; j++) {
+      calc_distance(box, R, i, R, j, &distances_[i * N + j]);
+      if (distances_[i * N + j].r <= rv) {
+        vlist_[i * N + nlist_[i]] = static_cast<int>(j);
+        nlist_[i]++;
       }
     }
   }
 
-  for (int i = 0; i < 3 * N; i++) {
-    oldR[i] = R[i];
+  for (long i = 0; i < 3 * N; i++) {
+    oldR_[i] = R[i];
   }
-
   vlist_updates++;
 }
 
 void QSC::update_distances(long N, const double *R, const double *box) {
-  for (int i = 0; i < N; i++) {
-    for (int k = 0; k < nlist[i]; k++) {
-      int j = vlist[i][k];
-      calc_distance(box, R, i, R, j, &distances[i][j]);
+  for (long i = 0; i < N; i++) {
+    for (int k = 0; k < nlist_[i]; k++) {
+      int j = vlist_[i * N + k];
+      calc_distance(box, R, i, R, j, &distances_[i * N + j]);
     }
   }
 }
 
-bool QSC::verlet_needs_update(long N, const double *R, const double *box) {
+bool QSC::verlet_needs_update(long N, const double *R,
+                              const double *box) const {
   distance diff;
-  double dist_max1 = 0;
-  double dist_max2 = 0;
-  double dist_sum;
+  double dist_max1 = 0.0;
+  double dist_max2 = 0.0;
 
-  for (int i = 0; i < N; i++) {
-    calc_distance(box, oldR, i, R, i, &diff);
+  for (long i = 0; i < N; i++) {
+    calc_distance(box, oldR_.data(), i, R, i, &diff);
     if (diff.r > dist_max1) {
       dist_max2 = dist_max1;
       dist_max1 = diff.r;
     } else if (diff.r > dist_max2) {
       dist_max2 = diff.r;
     }
-    dist_sum = dist_max1 + dist_max2;
-    if (dist_sum > verlet_skin) {
+    if (dist_max1 + dist_max2 > verlet_skin_) {
       return true;
-      break;
     }
   }
   return false;
@@ -126,66 +91,57 @@ bool QSC::verlet_needs_update(long N, const double *R, const double *box) {
 void QSC::energy(long N, const double *R, const int *atomicNrs, double *U,
                  const double *box) {
   *U = 0.0;
-  for (int i = 0; i < N; i++) {
-    rho[i] = 0.0;
+  for (long i = 0; i < N; i++) {
+    rho_[i] = 0.0;
   }
 
-  /* Calculate the local density (rho[i]) for each atom
-   * and the potential energy (U). */
-  int prev_i_atomic_number = -1;
-  int prev_j_atomic_number = -1;
-  for (int i = 0; i < N; i++) {
+  int prev_i_Z = -1, prev_j_Z = -1;
+  for (long i = 0; i < N; i++) {
     double pair_term = 0.0;
-    qsc_parameters p_ii;
+    qsc_parameters p_ii{};
 
-    /* Get the parameters for element i */
-    if (prev_i_atomic_number != atomicNrs[i]) {
+    if (prev_i_Z != atomicNrs[i]) {
       p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
     }
-    prev_i_atomic_number = atomicNrs[i];
+    prev_i_Z = atomicNrs[i];
 
-    for (int k = 0; k < nlist[i]; k++) {
-      qsc_parameters p_ij, p_jj;
-      int j = vlist[i][k];
-      if (distances[i][j].r > cutoff)
-        continue;
+    for (int k = 0; k < nlist_[i]; k++) {
+      qsc_parameters p_ij{}, p_jj{};
+      int j = vlist_[i * N + k];
+      double r_ij = distances_[i * N + j].r;
+      if (r_ij > cutoff_) continue;
 
-      if (prev_j_atomic_number != atomicNrs[j]) {
+      if (prev_j_Z != atomicNrs[j]) {
         p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
         p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
       }
-      prev_j_atomic_number = atomicNrs[j];
+      prev_j_Z = atomicNrs[j];
 
-      /* Take care of density */
-      phi[i][j] = pair_potential(distances[i][j].r, p_jj.a, p_jj.m);
-      rho[i] += phi[i][j];
-      phi[j][i] = pair_potential(distances[i][j].r, p_ii.a, p_ii.m);
-      rho[j] += phi[j][i];
+      // Density contributions
+      phi_[i * N + j] = pair_potential(r_ij, p_jj.a, p_jj.m);
+      rho_[i] += phi_[i * N + j];
+      phi_[j * N + i] = pair_potential(r_ij, p_ii.a, p_ii.m);
+      rho_[j] += phi_[j * N + i];
 
-      /* Repulsive pair term */
-      V[i][j] =
-          p_ij.epsilon * pair_potential(distances[i][j].r, p_ij.a, p_ij.n);
-
-      pair_term += V[i][j];
+      // Repulsive pair term
+      V_[i * N + j] = p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
+      pair_term += V_[i * N + j];
     }
-    sqrtrho[i] = sqrt(rho[i]);
-    double embedding_term = p_ii.c * p_ii.epsilon * sqrtrho[i];
-    *U += pair_term - embedding_term;
+    sqrtrho_[i] = std::sqrt(rho_[i]);
+    double embedding = p_ii.c * p_ii.epsilon * sqrtrho_[i];
+    *U += pair_term - embedding;
   }
 }
 
 void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
   variance = nullptr;
-  if (init == false) {
-    initialize(N, R, atomicNrs, box);
+  if (!init_) {
+    initialize(N);
     new_vlist(N, R, box);
-    prev_num_atoms = N;
-  } else if (N != prev_num_atoms) {
-    cleanMemory();
-    initialize(N, R, atomicNrs, box);
+  } else if (N != N_) {
+    initialize(N);
     new_vlist(N, R, box);
-    prev_num_atoms = N;
   } else if (verlet_needs_update(N, R, box)) {
     new_vlist(N, R, box);
   } else {
@@ -194,175 +150,142 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
 
   energy(N, R, atomicNrs, U, box);
 
-  /* Zero out Forces */
-  for (int i = 0; i < 3 * N; i++) {
+  for (long i = 0; i < 3 * N; i++) {
     F[i] = 0.0;
   }
 
-  /* Forces Calculation */
-  int prev_i_atomic_number = -1;
-  int prev_j_atomic_number = -1;
-  for (int i = 0; i < N; i++) {
-    qsc_parameters p_ii;
-    if (prev_i_atomic_number != atomicNrs[i]) {
+  int prev_i_Z = -1, prev_j_Z = -1;
+  for (long i = 0; i < N; i++) {
+    qsc_parameters p_ii{};
+    if (prev_i_Z != atomicNrs[i]) {
       p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
     }
-    prev_i_atomic_number = atomicNrs[i];
-    for (int k = 0; k < nlist[i]; k++) {
-      qsc_parameters p_ij, p_jj;
-      int j = vlist[i][k];
+    prev_i_Z = atomicNrs[i];
 
-      double r_ij = distances[i][j].r;
-      if (r_ij > cutoff)
-        continue;
+    for (int k = 0; k < nlist_[i]; k++) {
+      qsc_parameters p_ij{}, p_jj{};
+      int j = vlist_[i * N + k];
+      double r_ij = distances_[i * N + j].r;
+      if (r_ij > cutoff_) continue;
 
-      if (prev_j_atomic_number != atomicNrs[j]) {
+      if (prev_j_Z != atomicNrs[j]) {
         p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
         p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
       }
-      prev_j_atomic_number = atomicNrs[j];
+      prev_j_Z = atomicNrs[j];
 
-      double Fij;
-      Fij = p_ij.n * V[i][j];
-      Fij -=
-          p_ii.epsilon * p_ii.c * p_jj.m * 0.5 * (1.0 / sqrtrho[i]) * phi[i][j];
-      Fij -=
-          p_jj.epsilon * p_jj.c * p_ii.m * 0.5 * (1.0 / sqrtrho[j]) * phi[j][i];
+      double Fij = p_ij.n * V_[i * N + j];
+      Fij -= p_ii.epsilon * p_ii.c * p_jj.m * 0.5 * (1.0 / sqrtrho_[i]) *
+             phi_[i * N + j];
+      Fij -= p_jj.epsilon * p_jj.c * p_ii.m * 0.5 * (1.0 / sqrtrho_[j]) *
+             phi_[j * N + i];
       Fij /= r_ij;
 
-      double Fijx = Fij * distances[i][j].d[0] / r_ij;
-      double Fijy = Fij * distances[i][j].d[1] / r_ij;
-      double Fijz = Fij * distances[i][j].d[2] / r_ij;
+      const auto &dist = distances_[i * N + j];
+      double fscale = Fij / r_ij;
+      double fx = fscale * dist.d[0];
+      double fy = fscale * dist.d[1];
+      double fz = fscale * dist.d[2];
 
-      F[3 * i] += Fijx;
-      F[3 * i + 1] += Fijy;
-      F[3 * i + 2] += Fijz;
-      F[3 * j] -= Fijx;
-      F[3 * j + 1] -= Fijy;
-      F[3 * j + 2] -= Fijz;
+      F[3 * i] += fx;
+      F[3 * i + 1] += fy;
+      F[3 * i + 2] += fz;
+      F[3 * j] -= fx;
+      F[3 * j + 1] -= fy;
+      F[3 * j + 2] -= fz;
     }
   }
 }
 
 double QSC::dpowi(double x, unsigned n) {
-  double p;
-  double r;
-
-  p = x;
-  r = 1.0;
-
+  double p = x;
+  double r = 1.0;
   while (n > 0) {
-    if (n % 2 == 1)
-      r *= p;
+    if (n % 2 == 1) r *= p;
     p *= p;
     n /= 2;
   }
-
   return r;
 }
 
 double QSC::pair_potential(double r, double a, double n) {
-  double result;
   double x = a / r;
-
-  if ((n - floor(n)) == 0.0 && n > 0) {
-    result = dpowi(x, (unsigned int)n);
-  } else {
-    result = pow(x, n);
+  if ((n - std::floor(n)) == 0.0 && n > 0) {
+    return dpowi(x, static_cast<unsigned>(n));
   }
-
-  return result;
+  return std::pow(x, n);
 }
 
 void QSC::calc_distance(const double *box, const double *R1, int i,
-                        const double *R2, int j, struct distance *d) {
-  double diffRX = R1[3 * i] - R2[3 * j];
-  double diffRY = R1[3 * i + 1] - R2[3 * j + 1];
-  double diffRZ = R1[3 * i + 2] - R2[3 * j + 2];
+                        const double *R2, int j, distance *d) const {
+  double dx = R1[3 * i] - R2[3 * j];
+  double dy = R1[3 * i + 1] - R2[3 * j + 1];
+  double dz = R1[3 * i + 2] - R2[3 * j + 2];
 
-  /* Orthogonal PBC */
-  diffRX = diffRX - box[0] * floor(diffRX / box[0] + 0.5);
-  diffRY = diffRY - box[4] * floor(diffRY / box[4] + 0.5);
-  diffRZ = diffRZ - box[8] * floor(diffRZ / box[8] + 0.5);
+  // Orthogonal PBC
+  dx -= box[0] * std::floor(dx / box[0] + 0.5);
+  dy -= box[4] * std::floor(dy / box[4] + 0.5);
+  dz -= box[8] * std::floor(dz / box[8] + 0.5);
 
-  d->r = sqrt(diffRX * diffRX + diffRY * diffRY + diffRZ * diffRZ);
-  d->d[0] = diffRX;
-  d->d[1] = diffRY;
-  d->d[2] = diffRZ;
+  d->r = std::sqrt(dx * dx + dy * dy + dz * dz);
+  d->d[0] = dx;
+  d->d[1] = dy;
+  d->d[2] = dz;
 }
 
 void QSC::set_verlet_skin(double dr) {
   assert(dr > 0.0);
-  verlet_skin = dr;
+  verlet_skin_ = dr;
 }
 
 void QSC::set_cutoff(double c) {
   assert(c > 0.0);
-  cutoff = c;
+  cutoff_ = c;
 }
 
-double QSC::get_cutoff(void) { return cutoff; }
+double QSC::get_cutoff() const { return cutoff_; }
 
-// Either adds or modifies the parameters list
 void QSC::set_qsc_parameter(int Z, double n, double m, double epsilon, double c,
                             double a) {
-  qsc_parameters p;
-  p.Z = Z;
-  p.n = n;
-  p.m = m;
-  p.epsilon = epsilon;
-  p.c = c;
-  p.a = a;
-
-  bool match = false;
-  for (unsigned int i = 0; i < qsc_params.size(); i++) {
-    if (qsc_params[i].Z == p.Z) {
-      qsc_params[i] = p;
-      match = true;
-      break;
+  qsc_parameters p{Z, n, m, epsilon, c, a};
+  for (auto &existing : qsc_params_) {
+    if (existing.Z == Z) {
+      existing = p;
+      return;
     }
   }
-  if (!match) {
-    qsc_params.push_back(p);
-  }
+  qsc_params_.push_back(p);
 }
 
-QSC::qsc_parameters QSC::get_qsc_parameters(int element_a, int element_b) {
+QSC::qsc_parameters QSC::get_qsc_parameters(int element_a,
+                                             int element_b) const {
   int ia = -1, ib = -1;
-
-  for (unsigned int i = 0; i < qsc_params.size(); i++) {
-    if (element_a == qsc_params[i].Z) {
-      ia = i;
-    }
-
-    if (element_b == qsc_params[i].Z) {
-      ib = i;
-    }
-
-    if (ia != -1 && ib != -1)
-      break;
+  for (size_t i = 0; i < qsc_params_.size(); i++) {
+    if (element_a == qsc_params_[i].Z) ia = static_cast<int>(i);
+    if (element_b == qsc_params_[i].Z) ib = static_cast<int>(i);
+    if (ia != -1 && ib != -1) break;
   }
 
   if (ia == -1) {
-    printf("ERROR: QSC doesn't have parameters for element %i\n", element_a);
+    std::fprintf(stderr, "ERROR: QSC lacks parameters for element %i\n",
+                 element_a);
     throw 1;
-  } else if (ib == -1) {
-    printf("ERROR: QSC doesn't have parameters for element %i\n", element_b);
+  }
+  if (ib == -1) {
+    std::fprintf(stderr, "ERROR: QSC lacks parameters for element %i\n",
+                 element_b);
     throw 1;
   }
 
-  /* Mixing rules */
-  if (ia == ib) {
-    return qsc_params[ia];
-  }
+  if (ia == ib) return qsc_params_[ia];
 
-  qsc_parameters p;
-  p.epsilon = sqrt(qsc_params[ia].epsilon * qsc_params[ib].epsilon);
-  p.a = 0.5 * (qsc_params[ia].a + qsc_params[ib].a);
-  p.m = 0.5 * (qsc_params[ia].m + qsc_params[ib].m);
-  p.n = 0.5 * (qsc_params[ia].n + qsc_params[ib].n);
-  p.c = qsc_params[ia].c;
-  p.Z = 0;
-
-  return p;
+  // Mixing rules
+  return qsc_parameters{
+      0,
+      0.5 * (qsc_params_[ia].n + qsc_params_[ib].n),
+      0.5 * (qsc_params_[ia].m + qsc_params_[ib].m),
+      std::sqrt(qsc_params_[ia].epsilon * qsc_params_[ib].epsilon),
+      qsc_params_[ia].c,
+      0.5 * (qsc_params_[ia].a + qsc_params_[ib].a),
+  };
 }

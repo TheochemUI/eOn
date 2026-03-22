@@ -36,7 +36,7 @@ binary named `eonclient-custom` that either exists in the `$PATH` or in the same
 directory as the configuration file and uses makes use of 8 CPUs.
 
 
-```{code-block} toml
+```{code-block} ini
 [Communicator]
 type = "local"
 client_path = "eonclient-custom"
@@ -86,7 +86,7 @@ Not tested on 2.0
 An example communicator section for the cluster communicator using the provided
 `sge6.2` scripts and a name prefix of `al_diffusion_`:
 
-```{code-block} toml
+```{code-block} ini
 [Communicator]
 type = "cluster"
 name_prefix = "al_diffusion_"

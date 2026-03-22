@@ -29,6 +29,9 @@ public:
     initialized = false;
     env = xtb_newEnvironment();
     xtb_setVerbosity(env, XTB_VERBOSITY_MUTED);
+    // Release the default output unit to prevent Fortran NEWUNIT conflicts
+    // when multiple XTB environments coexist (e.g. per-image NEB potentials)
+    xtb_releaseOutput(env);
     if (!env) {
       throw std::runtime_error("Failed to create xtb environment");
     }
@@ -68,6 +71,7 @@ public:
       xtb_delMolecule(&mol);
     }
     if (env) {
+      xtb_releaseOutput(env);
       xtb_delEnvironment(&env);
     }
     QUILL_LOG_INFO(eonc::log::get(), "[XTB] called potential {} times",
@@ -83,6 +87,17 @@ public:
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+
+  /// XTB Fortran library uses per-instance state (env/calc).
+  /// Thread-safe with separate instances; not safe on same instance.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
+  /// XTB restart.f90 uses global Fortran file units that collide when
+  /// multiple environments exist in one process. Run sequentially with
+  /// a single instance until upstream fixes unit management.
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return false;
+  }
 
 private:
   enum class GFNMethod { GFNFF, GFN0xTB, GFN1xTB, GFN2xTB };

@@ -82,14 +82,19 @@ server:
 ```
 
 
-```{versionchanged} 3.1_TBA
-In TOML, this will be `[Saddle_Search]`
-```
 
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.SaddleSearchConfig
 ```
+
+## See also
+
+- <project:dimer.md> for the eigenmode method used during the saddle search
+- <project:process_search.md> for automated saddle search + minimization
+- <project:neb.md> for finding paths when both endpoints are known
+- {doc}`/devdocs/design/client/neb-modularization` for the eigenmode variant
+  implementation (dimer, improved dimer, Lanczos, GPR dimer)
 
 ## References
 

@@ -15,4 +15,6 @@ Guidelines and rationale for the `C++` core of eOn.
 
 types
 safemath
+parameters
+neb-modularization
 ```

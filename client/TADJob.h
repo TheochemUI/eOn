@@ -10,57 +10,24 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include "EonLogger.h"
-
-#include "Job.h"
-#include "MinModeSaddleSearch.h"
-#include "Parameters.h"
+#include "ReplicaDynamicsJob.h"
 
 namespace eonc {
 
-class TADJob : public Job {
+class TADJob : public ReplicaDynamicsJob {
 public:
   TADJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+      : ReplicaDynamicsJob(std::move(parameters)) {}
   ~TADJob() = default;
-  std::vector<std::string> run(void);
 
 private:
-  int dynamics();
-  long refine(std::vector<std::shared_ptr<Matter>> buff, long length,
-              Matter *reactant);
-  bool checkState(Matter *current, Matter *reactant);
-  void saveData(int status);
-  void dephase();
-  bool saddleSearch(std::shared_ptr<Matter> cross);
+  int dynamics() override;
+  void initExtra() override;
+  void reportResults() override;
 
-  std::shared_ptr<Matter> current;
-  std::shared_ptr<Matter> reactant;
-  std::shared_ptr<Matter> saddle;
   std::shared_ptr<Matter> crossing;
-  std::shared_ptr<Matter> final_state;
-  std::shared_ptr<Matter> final_tmp;
-  std::shared_ptr<Matter> product;
-  eonc::log::Scoped log;
-
-  bool metaStateFlag;
-  bool newStateFlag;
-
-  long minimizeFCalls;
-  long mdFCalls;
-  long dephaseFCalls;
-  long refineFCalls;
-
-  long transitionStep;
-
-  double time;
-  double minCorrectedTime;
-  double transitionTime;
-  double barrier;
-  double *timeBuffer;
-  MinModeSaddleSearch *dimerSearch;
-
-  std::vector<std::string> returnFiles;
+  double barrier{0.0};
+  std::vector<double> timeBuffer;
 };
 
 } // namespace eonc

@@ -1,0 +1,109 @@
+EON Client
+VERSION: rUnversioned directory
+BUILD DATE: Thu Mar 19 12:26:39 PM CET 2026
+
+Hostname: rgx1gen11
+OS: Linux
+Arch: x86_64
+PID: 2207164
+DIR: /home/rgoswami/Git/Github/TheochemUI/eOn/scripts/regression/workdirs/replica_exchange_lj
+
+Loading parameter file config.ini
+* [Main] job: replica_exchange
+* [Main] temperature: 300
+* [Main] random_seed: 42
+* [Potential] potential: lj
+* [Dynamics] time_step: 1.0
+* [Dynamics] time: 50.0
+* [Dynamics] thermostat: andersen
+* [Dynamics] andersen_alpha: 1.0
+* [Replica Exchange] temperature_distribution: exponential
+* [Replica Exchange] replicas: 3
+* [Replica Exchange] sampling_time: 50.0
+* [Replica Exchange] temperature_low: 100.0
+* [Replica Exchange] temperature_high: 500.0
+* [Replica Exchange] exchange_period: 25.0
+
+Running Replica Exchange
+
+Temperature distribution:
+replica: 1 temperature 100
+replica: 2 temperature 224
+replica: 3 temperature 500
+
+Replica Exchange sampling for 50 fs; 50 steps; 3 replicas.
+step: 1 i 0 energy: -39.9654
+step: 1 i 1 energy: -39.9654
+step: 1 i 2 energy: -39.9654
+step: 2 i 0 energy: -39.9654
+step: 2 i 1 energy: -39.9654
+step: 2 i 2 energy: -39.9654
+step: 3 i 0 energy: -39.9654
+step: 3 i 1 energy: -39.9654
+step: 3 i 2 energy: -39.9654
+step: 4 i 0 energy: -39.9654
+step: 4 i 1 energy: -39.9654
+step: 4 i 2 energy: -39.9654
+step: 5 i 0 energy: -39.9654
+step: 5 i 1 energy: -39.9654
+step: 5 i 2 energy: -39.9654
+step: 6 i 0 energy: -39.9449
+step: 6 i 1 energy: -39.9654
+step: 6 i 2 energy: -39.9654
+step: 7 i 0 energy: -39.9373
+step: 7 i 1 energy: -39.9654
+step: 7 i 2 energy: -39.9654
+step: 8 i 0 energy: -39.9126
+step: 8 i 1 energy: -39.9654
+step: 8 i 2 energy: -39.9654
+step: 9 i 0 energy: -39.8885
+step: 9 i 1 energy: -39.9654
+step: 9 i 2 energy: -39.9654
+step: 10 i 0 energy: -39.8732
+step: 10 i 1 energy: -39.9654
+step: 10 i 2 energy: -39.9654
+step: 11 i 0 energy: -39.8514
+step: 11 i 1 energy: -39.9654
+step: 11 i 2 energy: -39.9654
+step: 12 i 0 energy: -39.8316
+step: 12 i 1 energy: -39.9654
+step: 12 i 2 energy: -39.9654
+step: 13 i 0 energy: -39.7951
+step: 13 i 1 energy: -39.9654
+step: 13 i 2 energy: -39.9016
+step: 14 i 0 energy: -39.7939
+step: 14 i 1 energy: -39.9654
+step: 14 i 2 energy: -39.859
+step: 15 i 0 energy: -39.863
+step: 15 i 1 energy: -39.9654
+step: 15 i 2 energy: -39.7867
+step: 16 i 0 energy: -39.9269
+step: 16 i 1 energy: -39.9654
+step: 16 i 2 energy: -39.5922
+step: 17 i 0 energy: -39.8815
+step: 17 i 1 energy: -39.9545
+step: 17 i 2 energy: -39.5292
+step: 18 i 0 energy: -39.6779
+step: 18 i 1 energy: -39.9482
+step: 18 i 2 energy: -39.4023
+step: 19 i 0 energy: -39.3109
+step: 19 i 1 energy: -39.9385
+step: 19 i 2 energy: -39.0887
+step: 20 i 0 energy: -39.1898
+step: 20 i 1 energy: -39.9294
+step: 20 i 2 energy: -38.5063
+step: 21 i 0 energy: -39.4389
+step: 21 i 1 energy: -39.9118
+step: 21 i 2 energy: -38.8522
+step: 22 i 0 energy: -39.5098
+step: 22 i 1 energy: -39.8658
+step: 22 i 2 energy: -38.2906
+step: 23 i 0 energy: -38.4797
+step: 23 i 1 energy: -39.7873
+step: 23 i 2 energy: -37.4531
+step: 24 i 0 energy: -35.7799
+step: 24 i 1 energy: -39.6989
+step: 24 i 2 energy: -36.6866
+step: 25 i 0 energy: -24.801
+step: 25 i 1 energy: -39.6718
+step: 25 i 2 energy: -34.6088

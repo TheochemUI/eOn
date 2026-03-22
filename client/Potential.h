@@ -15,6 +15,7 @@
 #include "Eigen.h"
 #include "Parameters.h"
 #include "PotRegistry.h"
+#include <atomic>
 #include <memory>
 
 namespace eonc {
@@ -22,26 +23,27 @@ namespace eonc {
 class Potential {
 protected:
   PotType ptype;
-  const Parameters &m_params;
 
 private:
   uint64_t m_registry_id;
   PotRegistry::TimePoint m_created_at;
 
 public:
-  size_t forceCallCounter;
+  std::atomic<size_t> forceCallCounter;
 
-  // Main Constructor
-  Potential(PotType a_ptype, const Parameters &a_params)
+  // Main Constructor (no Parameters dependency)
+  explicit Potential(PotType a_ptype)
       : ptype{a_ptype},
-        m_params{a_params},
         m_registry_id{PotRegistry::get().on_created(a_ptype)},
         m_created_at{PotRegistry::Clock::now()},
         forceCallCounter{0} {}
 
-  // Delegating Constructor
+  // Convenience constructor from Parameters (for backward compat)
+  Potential(PotType a_ptype, const Parameters &)
+      : Potential(a_ptype) {}
+
   Potential(const Parameters &a_params)
-      : Potential(a_params.potential_options.potential, a_params) {}
+      : Potential(a_params.potential_options.potential) {}
 
   virtual ~Potential() {
     PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
@@ -57,7 +59,26 @@ public:
   std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix &pos, const VectorXi &atmnrs, const Matrix3d &box);
 
-  [[nodiscard]] PotType getType() { return this->ptype; }
+  [[nodiscard]] PotType getType() const { return this->ptype; }
+
+  /// Whether this is a surrogate (GP) potential. Override in
+  /// SurrogatePotential.
+  [[nodiscard]] virtual bool isSurrogate() const noexcept { return false; }
+
+  /// Whether this potential's force() can be called from multiple threads
+  /// on the SAME instance. Python-based potentials return false.
+  /// Potentials with internal mutex (MetatomicPotential) return true but
+  /// serialize internally -- use needsPerImageInstance() to check if
+  /// separate instances would enable true parallelism.
+  [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
+
+  /// Whether NEB should create separate Potential instances per image
+  /// for true parallel force evaluation. When true, NEB calls
+  /// makePotential() once per image instead of sharing one instance.
+  /// Override in potentials that use internal mutexes (e.g. MetatomicPotential).
+  [[nodiscard]] virtual bool needsPerImageInstance() const noexcept {
+    return false;
+  }
 };
 
 namespace helpers {

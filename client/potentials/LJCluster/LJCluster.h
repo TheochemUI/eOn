@@ -22,10 +22,10 @@ class LJCluster : public Potential {
 private:
   //	Variables
   double u0;
-  double cuttOffR;
-  double psi;
+  double cuttOffR{0.0};
+  double psi{0.0};
 
-  double cuttOffU;
+  double cuttOffU{0.0};
 
 public:
   // Functions

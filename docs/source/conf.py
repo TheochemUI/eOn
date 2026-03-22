@@ -62,17 +62,46 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_book_theme"
+html_theme = "shibuya"
 html_title = "eOn"
 html_static_path = ["_static"]
 html_baseurl = 'https://eondocs.org/'
 
+html_context = {
+    "source_type": "github",
+    "source_user": "TheochemUI",
+    "source_repo": "eOn",
+    "source_version": "main",
+    "source_docs_path": "/docs/source/",
+}
+
 html_theme_options = {
-    "repository_url": "https://github.com/TheochemUI/eOn",
-    "use_repository_button": True,
+    "github_url": "https://github.com/TheochemUI/eOn",
+    "accent_color": "teal",
+    "dark_code": True,
+    "globaltoc_expand_depth": 2,
+    "nav_links": [
+        {
+            "title": "Ecosystem",
+            "children": [
+                {
+                    "title": "rgpycrumbs",
+                    "url": "https://rgpycrumbs.rgoswami.me",
+                    "summary": "Python helpers for eOn workflows",
+                    "external": True,
+                },
+                {
+                    "title": "chemparseplot",
+                    "url": "https://chemparseplot.rgoswami.me",
+                    "summary": "Parsing and plotting for computational chemistry",
+                    "external": True,
+                },
+            ],
+        },
+    ],
     "logo": {
-        "image_light": "_static/logo/ev2_trans.png",
-        "image_dark": "_static/logo/ev2_trans_dark.png",
+        "light": "_static/logo/ev2_trans.png",
+        "dark": "_static/logo/ev2_trans_dark.png",
     },
 }
 

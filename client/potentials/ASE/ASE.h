@@ -19,7 +19,7 @@ namespace py = pybind11;
 class ASE : public Potential {
 
 private:
-  size_t counter;
+  size_t counter{0};
   py::module_ py_module; // Member to store the Python module
   py::object calculator; // Member to store the ASE calculator object
   py::object _calculate; // Member to store the Python function to calculate
@@ -34,4 +34,10 @@ public:
 
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// ASE calculators are independent objects. Most production calculators
+  /// (VASP, Gaussian, ORCA, etc.) spawn subprocesses that release the GIL.
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return true;
+  }
 };

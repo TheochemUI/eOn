@@ -110,18 +110,40 @@ pybind11 = ">=3.0.0,<4"
 [feature.nwchem.pypi-dependencies]
 psutil = ">=7.0.0, <8"
 
+[feature.docs.dependencies]
+sphinx = ">=7"
+shibuya = "*"
+
+[feature.docs.pypi-dependencies]
+myst-parser = ">=3"
+sphinx-design = "*"
+sphinx-copybutton = "*"
+sphinx-togglebutton = "*"
+sphinx-favicon = "*"
+sphinx-contributors = "*"
+sphinx-sitemap = "*"
+sphinxcontrib-bibtex = "*"
+sphinxcontrib-spelling = "*"
+autodoc-pydantic = "*"
+sphinx-autodoc2 = "*"
+
+[feature.docs.tasks.makedocs]
+cmd = "sphinx-build docs/source docs/build/html"
+
 [feature.docs.tasks.srvdocs]
 depends-on = [
   { task = "makedocs", environment = "docs" },
 ]
 cmd = """
-python -m http.server -d html
+cd docs/build/html && python -m http.server 8234
 """
 
 [feature.release.dependencies]
 
 [feature.xtb.dependencies]
 xtb = "*"
+tblite = "*"
+tblite-python = "*"
 
 [feature.serve]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
