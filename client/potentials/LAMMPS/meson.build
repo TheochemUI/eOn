@@ -1,12 +1,10 @@
-lammps_so = dependency('liblammps', required: false)
-if not lammps_so.found()
-    libdir = meson.current_source_dir()
-    lammps_so = cppc.find_library('lammps', dirs: libdir)
-endif
+# LAMMPS potential: loaded at runtime via dlopen, no compile-time dependency
+dl_dep = cppc.find_library('dl', required: false)
 lammps_pot = library('lammps_pot',
-           'LAMMPSPot.cpp',
-           dependencies : [ _deps, lammps_so],
-           cpp_args : _args,
-           link_with : _linkto,
-           include_directories: _incdirs,
-           install : true)
+    'LAMMPSPot.cpp',
+    'LammpsLoader.cpp',
+    dependencies: [_deps, dl_dep],
+    cpp_args: _args,
+    link_with: _linkto,
+    include_directories: _incdirs,
+    install: true)
