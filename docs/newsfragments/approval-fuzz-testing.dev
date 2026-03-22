@@ -1,0 +1,2 @@
+Planned: approval tests (snapshot-based regression) and fuzz testing
+for parser robustness (INI, .con format, command line arguments).

@@ -1,0 +1,1 @@
+Added null ``FILE*`` guard in NEB write_movies to prevent crash when movie writing is disabled.

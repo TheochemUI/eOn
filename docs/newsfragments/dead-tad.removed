@@ -1,0 +1,1 @@
+Removed dead ``TADJob::saddleSearch()`` function and associated ``dimerSearch`` member (dead since 2013).
