@@ -11,32 +11,28 @@
 */
 #include "DynamicsSaddleSearch.h"
 #include "BondBoost.h"
-#include "Dimer.h"
 #include "Dynamics.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
-#include "LowestEigenmode.h"
+#include "EigenmodeStrategy.h"
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
 
-using namespace std;
+#include <cmath>
+#include <filesystem>
+#include <limits>
 
-int DynamicsSaddleSearch::run(void) {
-  std::vector<std::shared_ptr<Matter>> MDSnapshots;
-  std::vector<double> MDTimes;
+int DynamicsSaddleSearch::run() {
+  std::vector<std::shared_ptr<Matter>> mdSnapshots;
+  std::vector<double> mdTimes;
   QUILL_LOG_DEBUG(log, "Starting dynamics NEB saddle search");
 
-  ifstream massFile("masses.dat");
-  if (massFile.is_open()) {
+  if (std::filesystem::exists("masses.dat")) {
     QUILL_LOG_DEBUG(log, "Found mass weights file");
-    massFile.close();
     Eigen::VectorXd masses =
         eonc::helpers::loadMasses("masses.dat", saddle->numberOfAtoms());
     saddle->setMasses(masses);
     QUILL_LOG_DEBUG(log, "Applied mass weights");
   } else {
     QUILL_LOG_DEBUG(log, "No mass weights file found");
-    massFile.close();
   }
 
   Dynamics dyn(saddle.get(), params);
@@ -45,9 +41,9 @@ int DynamicsSaddleSearch::run(void) {
   dyn.setTemperature(params.saddle_search_options.dynamics.temperature);
   dyn.setThermalVelocity();
 
-  int dephaseSteps = int(floor(params.parallel_replica_options.dephase_time /
-                                   params.dynamics_options.time_step +
-                               0.5));
+  int dephaseSteps = static_cast<int>(
+      std::floor(params.parallel_replica_options.dephase_time /
+                 params.dynamics_options.time_step + 0.5));
 
   while (true) {
 
@@ -84,63 +80,58 @@ int DynamicsSaddleSearch::run(void) {
     bondBoost.initialize();
   }
 
-  int checkInterval =
-      int(params.saddle_search_options.dynamics.state_check_interval /
-              params.dynamics_options.time_step +
-          0.5);
-  int recordInterval =
-      int(params.saddle_search_options.dynamics.record_interval /
-              params.dynamics_options.time_step +
-          0.5);
+  int checkInterval = static_cast<int>(
+      params.saddle_search_options.dynamics.state_check_interval /
+          params.dynamics_options.time_step + 0.5);
+  int recordInterval = static_cast<int>(
+      params.saddle_search_options.dynamics.record_interval /
+          params.dynamics_options.time_step + 0.5);
 
-  if (params.debug_options.write_movies == true) {
+  if (params.debug_options.write_movies) {
     saddle->matter2con("dynamics", false);
   }
 
   for (int step = 1; step <= params.dynamics_options.steps; step++) {
     dyn.oneStep(step);
 
-    if (step % recordInterval == 0 && recordInterval != 0) {
+    if (recordInterval != 0 && step % recordInterval == 0) {
       QUILL_LOG_DEBUG(
           log, "recording configuration at step {} time {:.3f}", step,
           step * params.dynamics_options.time_step * params.constants.timeUnit);
-      auto tmp = std::shared_ptr<Matter>(saddle);
-      *tmp = *saddle;
-      MDSnapshots.push_back(tmp);
-      MDTimes.push_back(step * params.dynamics_options.time_step);
+      // BUG FIX: was sharing ownership with saddle instead of copying
+      auto snapshot = std::make_shared<Matter>(*saddle);
+      mdSnapshots.push_back(snapshot);
+      mdTimes.push_back(step * params.dynamics_options.time_step);
     }
 
-    if (params.debug_options.write_movies == true) {
+    if (params.debug_options.write_movies) {
       saddle->matter2con("dynamics", true);
     }
 
     if (step % checkInterval == 0) {
       QUILL_LOG_DEBUG(log, "Minimizing trajectory, step {}", step);
 
-      product = saddle;
+      product = std::make_shared<Matter>(*saddle);
       product->relax(false, false);
 
       if (!product->compare(*reactant)) {
-        // QUILL_LOG_DEBUG(log, "Force calls total: {}",
-        // Potential::fcallsTotal);
         QUILL_LOG_DEBUG(log, "Found new state");
-        int image = refineTransition(MDSnapshots, product);
-        *saddle = *MDSnapshots[image];
+        int image = refineTransition(mdSnapshots, product);
+        *saddle = *mdSnapshots[image];
         QUILL_LOG_DEBUG(log, "Found transition at snapshot image {}", image);
-        for (int ii = 0; ii < (int)MDTimes.size(); ii++)
+        for (int ii = 0; ii < static_cast<int>(mdTimes.size()); ii++) {
           QUILL_LOG_DEBUG(log, "MDTimes[{}] = {:.3f}", ii,
-                          MDTimes[ii] * params.constants.timeUnit);
-        // subtract off half the record interval in order to not introduce a
-        // systematic bias towards longer times.
-        time = MDTimes[image] -
+                          mdTimes[ii] * params.constants.timeUnit);
+        }
+        // Subtract half the record interval to avoid systematic bias
+        time = mdTimes[image] -
                params.saddle_search_options.dynamics.record_interval / 2.0;
         QUILL_LOG_DEBUG(log, "Transition time {:.2f} fs",
                         time * params.constants.timeUnit);
 
         NudgedElasticBand neb(reactant, product, params, pot);
 
-        if (params.saddle_search_options.dynamics.linear_interpolation ==
-            false) {
+        if (!params.saddle_search_options.dynamics.linear_interpolation) {
           QUILL_LOG_DEBUG(
               log, "Interpolating initial band through MD transition state");
           AtomMatrix reactantToSaddle =
@@ -149,21 +140,22 @@ int DynamicsSaddleSearch::run(void) {
               saddle->pbc(product->getPositions() - saddle->getPositions());
           QUILL_LOG_DEBUG(log, "Initial band saved to neb_initial_band.con");
           neb.path[0]->matter2con("neb_initial_band.con", false);
-          for (int image = 1; image <= neb.numImages; image++) {
-            int mid = neb.numImages / 2 + 1;
-            if (image < mid) {
-              double frac = ((double)image) / ((double)mid);
-              neb.path[image]->setPositions(reactant->getPositions() +
-                                            frac * reactantToSaddle);
-            } else if (image > mid) {
-              double frac =
-                  (double)(image - mid) / (double)(neb.numImages - mid + 1);
-              neb.path[image]->setPositions(saddle->getPositions() +
-                                            frac * saddleToProduct);
-            } else if (image == mid) {
-              neb.path[image]->setPositions(saddle->getPositions());
+          int mid = neb.numImages / 2 + 1;
+          for (int img = 1; img <= neb.numImages; img++) {
+            if (img < mid) {
+              double frac = static_cast<double>(img) /
+                            static_cast<double>(mid);
+              neb.path[img]->setPositions(reactant->getPositions() +
+                                          frac * reactantToSaddle);
+            } else if (img > mid) {
+              double frac = static_cast<double>(img - mid) /
+                            static_cast<double>(neb.numImages - mid + 1);
+              neb.path[img]->setPositions(saddle->getPositions() +
+                                          frac * saddleToProduct);
+            } else {
+              neb.path[img]->setPositions(saddle->getPositions());
             }
-            neb.path[image]->matter2con("neb_initial_band.con", true);
+            neb.path[img]->matter2con("neb_initial_band.con", true);
           }
           neb.path[neb.numImages + 1]->matter2con("neb_initial_band.con", true);
         } else {
@@ -177,48 +169,39 @@ int DynamicsSaddleSearch::run(void) {
 
         AtomMatrix mode;
         if (params.neb_options.max_iterations > 0) {
-          LowestEigenmode *minModeMethod;
-          if (params.saddle_search_options.minmode_method ==
-              LowestEigenmode::MINMODE_DIMER) {
-            if (params.dimer_options.improved) {
-              minModeMethod = new ImprovedDimer(saddle, params, pot);
-            } else {
-              minModeMethod = new Dimer(saddle, params, pot);
-            }
-          } else if (params.saddle_search_options.minmode_method ==
-                     LowestEigenmode::MINMODE_LANCZOS) {
-            minModeMethod = new Lanczos(saddle, params, pot);
-          }
+          auto minModeMethod =
+              eonc::buildEigenmodeStrategy(saddle, params, pot);
 
           neb.compute();
           neb.printImageData(true);
           int extremumImage = -1;
-          int j;
-          for (j = 0; j < neb.numExtrema; j++) {
-            //                        if (neb.extremumCurvature[j] < 0.0) {
-            if (neb.extremumCurvature[j] <
+          int jExt = 0;
+          for (jExt = 0; jExt < neb.numExtrema; jExt++) {
+            if (neb.extremumCurvature[jExt] <
                 params.saddle_search_options.dynamics.max_init_curvature) {
-              extremumImage = (int)floor(neb.extremumPosition[j]);
+              extremumImage =
+                  static_cast<int>(std::floor(neb.extremumPosition[jExt]));
               *saddle = *neb.path[extremumImage];
-              double interpDistance =
-                  neb.extremumPosition[j] - (double)extremumImage;
-              AtomMatrix bandDirection =
+              double interpDist =
+                  neb.extremumPosition[jExt] -
+                  static_cast<double>(extremumImage);
+              AtomMatrix bandDir =
                   saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                               neb.path[extremumImage]->getPositions());
-              saddle->setPositions(interpDistance * bandDirection +
+              saddle->setPositions(interpDist * bandDir +
                                    saddle->getPositions());
               mode = saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                                  saddle->getPositions());
               mode.normalize();
-              minModeMethod->compute(saddle, mode);
-              double eigenvalue = minModeMethod->getEigenvalue();
-              QUILL_LOG_DEBUG(log, "extrema #{} has eigenvalue {:.8f}", j + 1,
-                              eigenvalue);
+              eonc::eigenmodeCompute(*minModeMethod, saddle, mode);
+              double ev = eonc::eigenmodeGetEigenvalue(*minModeMethod);
+              QUILL_LOG_DEBUG(log, "extrema #{} has eigenvalue {:.8f}",
+                              jExt + 1, ev);
 
-              if (eigenvalue < 0) {
+              if (ev < 0) {
                 QUILL_LOG_DEBUG(
                     log, "chose image {} (extrema #{}) as extremum image",
-                    extremumImage, j + 1);
+                    extremumImage, jExt + 1);
                 break;
               } else {
                 extremumImage = -1;
@@ -226,17 +209,16 @@ int DynamicsSaddleSearch::run(void) {
             }
           }
 
-          delete minModeMethod;
-
           if (extremumImage != -1) {
             *saddle = *neb.path[extremumImage];
-            double interpDistance =
-                neb.extremumPosition[j] - (double)extremumImage;
-            QUILL_LOG_DEBUG(log, "interpDistance {}", interpDistance);
-            AtomMatrix bandDirection =
+            double interpDist =
+                neb.extremumPosition[jExt] -
+                static_cast<double>(extremumImage);
+            QUILL_LOG_DEBUG(log, "interpDistance {}", interpDist);
+            AtomMatrix bandDir =
                 saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                             neb.path[extremumImage]->getPositions());
-            saddle->setPositions(interpDistance * bandDirection +
+            saddle->setPositions(interpDist * bandDir +
                                  saddle->getPositions());
             mode = saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                                saddle->getPositions());
@@ -244,13 +226,14 @@ int DynamicsSaddleSearch::run(void) {
           } else {
             QUILL_LOG_DEBUG(
                 log, "no maxima found, using max energy non-endpoint image");
-            double maxEnergy = -INFINITY;
-            for (int image = 1; image <= neb.numImages; image++) {
-              double U = neb.path[image]->getPotentialEnergy();
+            double maxEnergy =
+                -std::numeric_limits<double>::infinity();
+            for (int img = 1; img <= neb.numImages; img++) {
+              double U = neb.path[img]->getPotentialEnergy();
               if (U > maxEnergy) {
                 maxEnergy = U;
-                *saddle = *neb.path[image];
-                mode = saddle->pbc(neb.path[image + 1]->getPositions() -
+                *saddle = *neb.path[img];
+                mode = saddle->pbc(neb.path[img + 1]->getPositions() -
                                    saddle->getPositions());
                 mode.normalize();
               }
@@ -283,58 +266,52 @@ int DynamicsSaddleSearch::run(void) {
         double barrier =
             saddle->getPotentialEnergy() - reactant->getPotentialEnergy();
         QUILL_LOG_DEBUG(log, "found barrier of {:.3f}", barrier);
-        MDSnapshots.clear();
-        MDTimes.clear();
-        // QUILL_LOG_DEBUG(log, "Force calls total: {}",
-        // Potential::fcallsTotal);
+        mdSnapshots.clear();
+        mdTimes.clear();
         return MinModeSaddleSearch::STATUS_GOOD;
       } else {
         QUILL_LOG_DEBUG(log, "Still in original state");
-        MDTimes.clear();
-        MDSnapshots.clear();
+        mdTimes.clear();
+        mdSnapshots.clear();
       }
     }
   }
 
-  MDSnapshots.clear();
+  mdSnapshots.clear();
   time = params.dynamics_options.steps * params.dynamics_options.time_step;
   return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }
 
+/// Binary search through MD snapshots to find the transition point.
 int DynamicsSaddleSearch::refineTransition(
-    std::vector<std::shared_ptr<Matter>> MDSnapshots,
-    std::shared_ptr<Matter> product) {
-  int min, max, mid;
-  bool midTest;
-  min = 0;
-  max = MDSnapshots.size() - 1;
-  if (max == 0) {
+    const std::vector<std::shared_ptr<Matter>> &snapshots,
+    std::shared_ptr<Matter> prod) {
+  int lo = 0;
+  int hi = static_cast<int>(snapshots.size()) - 1;
+  if (hi == 0) {
     return 0;
   }
 
   QUILL_LOG_DEBUG(log, "refining transition time");
 
-  while ((max - min) > 1) {
-    mid = min + (max - min) / 2;
+  while ((hi - lo) > 1) {
+    int mid = lo + (hi - lo) / 2;
     QUILL_LOG_DEBUG(log, "minimizing image {}", mid);
-    Matter snapshot(pot, params);
-    snapshot = *MDSnapshots[mid];
+    Matter snap(pot, params);
+    snap = *snapshots[mid];
+    snap.relax(false);
 
-    snapshot.relax(false);
-
-    midTest = snapshot.compare(*reactant);
-
-    if (midTest) {
+    if (snap.compare(*reactant)) {
       QUILL_LOG_DEBUG(log, "image {} minimizes to reactant", mid);
-      min = mid;
+      lo = mid;
     } else {
       QUILL_LOG_DEBUG(log, "image {} minimizes to product", mid);
-      *product = snapshot;
-      max = mid;
+      *prod = snap;
+      hi = mid;
     }
   }
 
-  return (min + max) / 2;
+  return (lo + hi) / 2;
 }
 
 double DynamicsSaddleSearch::getEigenvalue() { return eigenvalue; }

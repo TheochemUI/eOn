@@ -25,26 +25,25 @@
 #include "PotRegistry.h"
 #include "Potential.h"
 #include "version.h"
+#include <fstream>
 
+#include <cerrno>
 #include <chrono>
-#include <errno.h>
+#include <cstring>
+#include <ctime>
 #include <filesystem>
-#include <string.h>
-#include <time.h>
 
 #ifdef EONMPI
 #include <Python.h>
+#include <cstdlib>
 #include <fcntl.h>
 #include <mpi.h>
 #include <sstream>
-#include <stdlib.h>
 #endif
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
 #include "PyGuard.h"
 #endif
-
-using namespace std;
 
 #ifdef EONMPIBGP
 #include <libgen.h>
@@ -86,7 +85,7 @@ void print_memory_usage() {
       log,
       "\nmemory usage:\nresident size (MB): {:8.2f}\nvirtual size (MB):  "
       "{:8.2f}",
-      (double)rss / 1024 / 1024, (double)vs / 1024 / 1024);
+      static_cast<double>(rss) / 1024 / 1024, static_cast<double>(vs) / 1024 / 1024);
 }
 #endif
 #endif
@@ -181,17 +180,17 @@ int main(int argc, char **argv) {
 
 #ifdef EONMPI
   bool client_standalone = false;
-  if (getenv("EON_CLIENT_STANDALONE") != NULL) {
+  if (getenv("EON_CLIENT_STANDALONE") != nullptr) {
     client_standalone = true;
   }
   int number_of_clients;
   if (!client_standalone) {
-    if (getenv("EON_SERVER_PATH") == NULL) {
+    if (getenv("EON_SERVER_PATH") == nullptr) {
       QUILL_LOG_ERROR(logger, "error: must set the env var EON_SERVER_PATH");
       logger->flush_log();
       return 1;
     }
-    if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
+    if (getenv("EON_NUMBER_OF_CLIENTS") == nullptr) {
       QUILL_LOG_ERROR(logger,
                       "error: must set the env var EON_NUMBER_OF_CLIENTS");
       logger->flush_log();
@@ -207,7 +206,7 @@ int main(int argc, char **argv) {
   }
 
   int error;
-  string config_file = "config.ini";
+  std::string config_file = "config.ini";
   if (client_standalone) {
     if (eonc::helpers::existsFile("config_0.ini")) {
       config_file = "config_0.ini";
@@ -231,7 +230,7 @@ int main(int argc, char **argv) {
   int irank = MPI::COMM_WORLD.Get_rank();
   int isize = MPI::COMM_WORLD.Get_size();
 
-  int *process_types = new int[isize];
+  std::vector<int> process_types(isize);
   int process_type;
 
   process_type = 1;
@@ -271,7 +270,7 @@ int main(int argc, char **argv) {
   clients = number_of_clients;
 
   if (parameters.potential_options.potential == "mpi") {
-    int *potential_ranks = new int[potentials];
+    std::vector<int> potential_ranks(potentials);
     int j;
     for (i = 0, j = 0; i < isize; i++) {
       if (process_types[i] == 2) {
@@ -296,20 +295,21 @@ int main(int argc, char **argv) {
     }
   }
 
-#ifdef LAMMPS_POT
-  for (i = 0; i < int(client_ranks.size()); i++) {
-    MPI_Group world_group, new_group;
-    MPI_Comm_group(MPI_COMM_WORLD, &world_group);
-    int r = client_ranks[i];
-    MPI_Group_incl(world_group, 1, &r, &new_group);
-    MPI_Comm new_comm;
-    MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
-    if (new_comm != MPI_COMM_NULL) {
-      parameters.potential_options.MPIClientComm = new_comm;
+  // LAMMPS MPI communicator setup (runtime check, not compile-time)
+  if (parameters.potential_options.potential == PotType::LAMMPS) {
+    for (i = 0; i < static_cast<int>(client_ranks.size()); i++) {
+      MPI_Group world_group, new_group;
+      MPI_Comm_group(MPI_COMM_WORLD, &world_group);
+      int r = client_ranks[i];
+      MPI_Group_incl(world_group, 1, &r, &new_group);
+      MPI_Comm new_comm;
+      MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
+      if (new_comm != MPI_COMM_nullptr) {
+        parameters.potential_options.MPIClientComm = new_comm;
+      }
+      QUILL_LOG_INFO(logger, "creating group with ranks: {}", r);
     }
-    QUILL_LOG_INFO(logger, "creating group with ranks: {}", r);
   }
-#endif
 
   if (!client_standalone) {
     server_rank = client_ranks[number_of_clients];
@@ -321,10 +321,10 @@ int main(int argc, char **argv) {
       }
       setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
 
-      wchar_t **py_argv = (wchar_t **)malloc(sizeof(wchar_t *) * 2);
-      py_argv[0] = Py_DecodeLocale(argv[0], NULL);
+      wchar_t **py_argv = static_cast<wchar_t **>(malloc(sizeof(wchar_t *) * 2));
+      py_argv[0] = Py_DecodeLocale(argv[0], nullptr);
       char *program = getenv("EON_SERVER_PATH");
-      py_argv[1] = Py_DecodeLocale(program, NULL);
+      py_argv[1] = Py_DecodeLocale(program, nullptr);
       QUILL_LOG_INFO(logger, "rank: {} becoming {}", irank, program);
       Py_Initialize();
       Py_Main(2, py_argv);
@@ -356,11 +356,10 @@ int main(int argc, char **argv) {
   char logfilename[1024];
   snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number);
 
-  char *orig_path = new char[1024];
-  getcwd(orig_path, 1024);
+  auto orig_path = std::filesystem::current_path();
   while (true) {
-    chdir(orig_path);
-    char *path = new char[1024];
+    std::filesystem::current_path(orig_path);
+    std::string path(1024, '\0');
     int ready = 1;
     if (!client_standalone) {
       QUILL_LOG_INFO(
@@ -372,15 +371,17 @@ int main(int argc, char **argv) {
 
       // Get the path we should run in from the server
       MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
-      if (strncmp("STOPCAR", path, 1024) == 0) {
+      if (path.starts_with("STOPCAR")) {
         QUILL_LOG_INFO(logger, "rank {} got STOPCAR", irank);
         MPI::Finalize();
         return 0;
       }
       QUILL_LOG_INFO(logger, "client: rank: {} chdir to {}", irank, path);
 
-      if (chdir(path) == -1) {
-        QUILL_LOG_ERROR(logger, "error: chdir: {}", strerror(errno));
+      try {
+        std::filesystem::current_path(path.c_str());
+      } catch (const std::filesystem::filesystem_error &e) {
+        QUILL_LOG_ERROR(logger, "error: chdir: {}", e.what());
       }
     }
 #endif
@@ -409,7 +410,7 @@ int main(int argc, char **argv) {
 
       // check to see if parameters file exists before loading
       int error = 0;
-      string config_file =
+      std::string config_file =
           eonc::helpers::getRelevantFile(parameters.main_options.iniFilename);
       QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
       error = parameters.load(config_file);
@@ -445,6 +446,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
       }
 
+      job.reset(); // Force Potential destruction so PotRegistry records entries
       PotRegistry::get().write_summary();
       filenames.push_back(std::string("client.log"));
 

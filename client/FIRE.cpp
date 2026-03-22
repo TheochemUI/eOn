@@ -12,7 +12,7 @@
 #include "FIRE.h"
 #include "HelperFunctions.h"
 
-using namespace std;
+#include <algorithm>
 
 int FIRE::step(double a_maxMove) {
   double P = 0;
@@ -43,12 +43,12 @@ int FIRE::step(double a_maxMove) {
   if (P >= 0) {
     m_N++;
     if (m_N > m_N_min) {
-      m_dt = min(m_dt * m_f_inc, m_dt_max);
+      m_dt = std::min(m_dt * m_f_inc, m_dt_max);
       m_alpha = m_alpha * m_f_a;
     }
   } else {
     m_dt = m_dt * m_f_dec;
-    m_vel = m_vel * 0.0;
+    m_vel.setZero();
     m_alpha = m_alpha_start;
     m_N = 0;
   }

@@ -33,23 +33,23 @@ public:
   };
   ~DynamicsSaddleSearch() = default;
 
-  int run(void);
+  int run();
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
-  int refineTransition(std::vector<std::shared_ptr<Matter>> MDSnapshots,
+  int refineTransition(const std::vector<std::shared_ptr<Matter>> &snapshots,
                        std::shared_ptr<Matter> product);
 
-  double eigenvalue;
+  double eigenvalue{0.0};
   AtomMatrix eigenvector;
 
-  double time;
+  double time{0.0};
 
   std::shared_ptr<Matter> product;
   std::shared_ptr<Matter> reactant;
   std::shared_ptr<Matter> saddle;
 
-  int status;
+  int status{0};
 
 private:
   eonc::log::Scoped log;

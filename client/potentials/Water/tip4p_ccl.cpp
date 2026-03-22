@@ -23,7 +23,6 @@ University of Iceland
 // distance: Angstrom, time: fs, charge: e).
 #include "tip4p_unit_system.hpp"
 
-using namespace std;
 using namespace forcefields;
 /* defined(FORCEFIELDS_UNIT_SYSTEM_HPP) && \
 ( FORCEFIELDS_UNIT_SYSTEM_HPP !=
@@ -41,7 +40,7 @@ double const epsilon_ =
 double const ron_ =
     0.150 * ANGSTROM; ///< Distance between oxygen and the middle charge N.
 double const rok_ =
-    ::re_ * cos(::thetae_ / 2.0); ///< Distance between oxygen and the centre of
+    ::re_ * std::cos(::thetae_ / 2.0); ///< Distance between oxygen and the centre of
                                   ///< the two hydrogen atoms (point K).
 double const wh_ = ron_ / rok_ * 0.5;
 double const wo_ = (1.0 - wh_ * 2.0);
@@ -198,7 +197,7 @@ void Tip4p::computeTemplate(
     };
     spreadWeightedForce(wo_, wh_, wh_, w1.fo_, w1.fh1_, w1.fh2_, w1.fn_);
   };
-  assert(not isnan(energy) and not isinf(energy));
+  assert(not std::isnan(energy) and not std::isinf(energy));
 }
 
 /** Interactions between two molecules.

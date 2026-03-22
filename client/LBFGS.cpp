@@ -13,10 +13,11 @@
 
 #include "LBFGS.h"
 #include "SafeMath.h"
-using namespace std;
 
-Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
-  double H0 = m_params.optimizer_options.lbfgs.inverse_curvature;
+#include <cmath>
+
+Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
+  double H0 = m_optConfig.opts.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
 
   if (m_iteration > 0) {
@@ -32,18 +33,18 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
       return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
 
-    if (m_params.optimizer_options.lbfgs.auto_scale) {
+    if (m_optConfig.opts.lbfgs.auto_scale) {
       H0 = eonc::safemath::safe_recip(C, -1.0);
       QUILL_LOG_DEBUG(m_log, "[LBFGS] Curvature: {:.4e} eV/A^2", C);
     }
   }
 
-  if (m_iteration == 0 && m_params.optimizer_options.lbfgs.auto_scale) {
-    m_objf->setPositions(r + m_params.main_options.finiteDifference *
+  if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale) {
+    m_objf->setPositions(r + m_optConfig.finiteDifference *
                                  eonc::safemath::safe_normalized(a_f));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
     double C = dg.dot(eonc::safemath::safe_normalized(a_f)) /
-               m_params.main_options.finiteDifference;
+               m_optConfig.finiteDifference;
     H0 = eonc::safemath::safe_recip(C, -1.0);
     m_objf->setPositions(r);
     if (H0 < 0) {
@@ -79,8 +80,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   Eigen::VectorXd d = -z;
 
   double distance = eonc::helpers::maxAtomMotionV(d);
-  if (distance >= a_maxMove &&
-      m_params.optimizer_options.lbfgs.distance_reset) {
+  if (distance >= a_maxMove && m_optConfig.opts.lbfgs.distance_reset) {
     QUILL_LOG_DEBUG(m_log,
                     "[LBFGS] reset memory, proposed step too large: {:.4f}",
                     distance);
@@ -95,7 +95,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   if (vd < -1.0)
     vd = -1.0;
   double angle = eonc::safemath::safe_acos(vd) * (180.0 / eonc::helpers::pi);
-  if (angle > 90.0 && m_params.optimizer_options.lbfgs.angle_reset) {
+  if (angle > 90.0 && m_optConfig.opts.lbfgs.angle_reset) {
     QUILL_LOG_DEBUG(m_log,
                     "[LBFGS] reset memory, angle between LBFGS angle and "
                     "force too large: {:.4f}",
@@ -107,34 +107,35 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, Eigen::VectorXd a_f) {
   return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
 }
 
-void LBFGS::reset(void) {
+void LBFGS::reset() {
   m_s.clear();
   m_y.clear();
   m_rho.clear();
 }
 
-int LBFGS::update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0,
-                  Eigen::VectorXd a_f1, Eigen::VectorXd a_f0) {
+int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
+                  const Eigen::VectorXd &a_f1, const Eigen::VectorXd &a_f0) {
   Eigen::VectorXd s0 = m_objf->difference(a_r1, a_r0);
 
   // y0 is the change in the gradient, not the force
   Eigen::VectorXd y0 = a_f0 - a_f1;
 
-  // GH: added to prevent crashing
-  if (abs(s0.dot(y0)) < LBFGS_EPS) {
-    QUILL_LOG_ERROR(m_log, "[LBFGS] error, s0.y0 is too small: {:.4f}",
-                    s0.dot(y0));
-    return -1;
+  // Skip degenerate curvature update (reset memory instead of aborting)
+  if (std::abs(s0.dot(y0)) < LBFGS_EPS) {
+    QUILL_LOG_WARNING(m_log, "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
+                      s0.dot(y0));
+    reset();
+    return 0;
   }
 
-  m_s.push_back(s0);
-  m_y.push_back(y0);
   m_rho.push_back(eonc::safemath::safe_recip(s0.dot(y0), 0.0));
+  m_s.push_back(std::move(s0));
+  m_y.push_back(std::move(y0));
 
-  if ((int)m_s.size() > m_memory) {
-    m_s.erase(m_s.begin());
-    m_y.erase(m_y.begin());
-    m_rho.erase(m_rho.begin());
+  if (static_cast<int>(m_s.size()) > m_memory) {
+    m_s.pop_front();
+    m_y.pop_front();
+    m_rho.pop_front();
   }
   return 0;
 }

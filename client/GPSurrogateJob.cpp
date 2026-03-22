@@ -19,8 +19,8 @@
 
 #include "EonLogger.h"
 #include <sstream>
-using namespace std;
-std::vector<std::string> GPSurrogateJob::run(void) {
+
+std::vector<std::string> GPSurrogateJob::run() {
   // Start working
   std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename = eonc::helpers::getRelevantFile("product.con");
@@ -62,8 +62,6 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       EONC_LOG_CRITICAL("Whoops, power level of problem too high!!");
       break;
     }
-    // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY ||
-    // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
     EONC_LOG_TRACE("Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
         eonc::helpers::surrogate::getMaxUncertainty(neb->path);
@@ -95,7 +93,6 @@ std::vector<std::string> GPSurrogateJob::run(void) {
       neb->path[i]->matter2con(fileNEB);
     }
     fclose(fileNEB);
-    // } else
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
         eonc::helpers::surrogate::accuratePES(neb->path, pot)) {
       break;
@@ -121,6 +118,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   }
 
   fileResults << static_cast<int>(status) << " termination_reason\n";
+  fileResults << magic_enum::enum_name(status) << " termination_reason_text\n";
   fileResults << magic_enum::enum_name<PotType>(
                      params.potential_options.potential)
               << " potential_type\n";

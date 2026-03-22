@@ -11,12 +11,15 @@
 */
 #include "ConjugateGradients.h"
 #include "SafeMath.h"
-using namespace std;
+
+#include <cmath>
+
+
 
 Eigen::VectorXd ConjugateGradients::getStep() {
-  double a = 0, b = 0, gamma = 0;
-  a = std::fabs(m_force.dot(m_forceOld));
-  b = m_forceOld.squaredNorm();
+  double a = std::fabs(m_force.dot(m_forceOld));
+  double b = m_forceOld.squaredNorm();
+  double gamma = 0.0;
   if (a < 0.5 * b) {
     // Polak-Ribiere way to determine how much to mix in of old direction
     gamma = m_force.dot(m_force - m_forceOld) / b;
@@ -30,14 +33,11 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   m_forceOld = m_force;
 
   // Only if value for max nr of iteration before reset
-  if ((m_params.optimizer_options.cg.max_iter_before_reset > 0) and
-      (m_params.optimizer_options.cg.max_iter_before_reset <= m_cg_i))
-  // or gamma == 0))
-  {
+  if (m_optConfig.opts.cg.max_iter_before_reset > 0 &&
+      m_optConfig.opts.cg.max_iter_before_reset <= m_cg_i) {
     m_cg_i = 0;
-    m_forceOld = m_objf->getPositions() * 0.0; // setZero
-    m_directionOld = m_objf->getPositions() * 0.0;
-    //        std::cout<<"reset\n";
+    m_forceOld.setZero();
+    m_directionOld.setZero();
   }
   m_cg_i += 1;
 
@@ -46,7 +46,7 @@ Eigen::VectorXd ConjugateGradients::getStep() {
 
 int ConjugateGradients::step(double a_maxMove) {
   bool converged;
-  if (m_params.optimizer_options.cg.line_search) {
+  if (m_optConfig.opts.cg.line_search) {
     converged = line_search(a_maxMove);
   } else {
     converged = single_step(a_maxMove);
@@ -73,20 +73,19 @@ int ConjugateGradients::line_search(double a_maxMove) {
 
   // move system an infinitesimal step to determine the optimal step size along
   // the search line
-  posStep = pos + m_directionNorm * m_params.main_options.finiteDifference;
+  posStep = pos + m_directionNorm * m_optConfig.finiteDifference;
   m_objf->setPositions(posStep);
   m_force = -m_objf->getGradient(true);
   projectedForce = m_force.dot(m_directionNorm);
-  stepSize = m_params.main_options.finiteDifference;
+  stepSize = m_optConfig.finiteDifference;
 
   int line_i = 0;
   do {
     // Determine curvature from last step (Secant method)
-    curvature = fabs((projectedForceBeforeStep - projectedForce) / stepSize);
+    curvature = std::fabs((projectedForceBeforeStep - projectedForce) / stepSize);
     stepSize = eonc::safemath::safe_div(projectedForce, curvature, a_maxMove);
-    // stepSize = projectedForceBeforeStep / curvature;
 
-    if (a_maxMove < fabs(stepSize)) {
+    if (a_maxMove < std::fabs(stepSize)) {
       // first part get the sign of stepSize
       stepSize = ((stepSize > 0) - (stepSize < 0)) * a_maxMove;
     }
@@ -103,12 +102,11 @@ int ConjugateGradients::line_search(double a_maxMove) {
 
     // Line search considered converged based in the ratio between the projected
     // force and the norm of the true force
-  } while (m_params.optimizer_options.cg.line_converged <
-               fabs(projectedForce) /
-                   (sqrt(m_force.dot(m_force) +
-                         m_params.optimizer_options.cg.line_converged)) and
-           (line_i < m_params.optimizer_options.cg.line_search_max_iter));
-  //    return objf->isConverged();
+  } while (m_optConfig.opts.cg.line_converged <
+               std::fabs(projectedForce) /
+                   (std::sqrt(m_force.dot(m_force) +
+                              m_optConfig.opts.cg.line_converged)) &&
+           line_i < m_optConfig.opts.cg.line_search_max_iter);
   if (m_objf->isConverged())
     return 1;
   return 0;
@@ -125,15 +123,15 @@ int ConjugateGradients::single_step(double a_maxMove) {
 
   // move system an infinitesimal step to determine the optimal step size along
   // the search line
-  posStep = pos + m_directionNorm * m_params.main_options.finiteDifference;
+  posStep = pos + m_directionNorm * m_optConfig.finiteDifference;
   m_objf->setPositions(posStep);
   forceAfterStep = -m_objf->getGradient(true);
 
   // Determine curvature
   double projectedForce1 = m_force.dot(m_directionNorm);
   double projectedForce2 = forceAfterStep.dot(m_directionNorm);
-  double curvature = (projectedForce1 - projectedForce2) /
-                     m_params.main_options.finiteDifference;
+  double curvature =
+      (projectedForce1 - projectedForce2) / m_optConfig.finiteDifference;
 
   double stepSize = a_maxMove;
 
@@ -141,14 +139,13 @@ int ConjugateGradients::single_step(double a_maxMove) {
     stepSize = projectedForce1 / curvature;
   }
 
-  if (m_params.saddle_search_options.confine_positive.bowl_breakout and
-      a_maxMove < 0.0) {
+  if (m_optConfig.bowlBreakout && a_maxMove < 0.0) {
     stepSize = -a_maxMove;
     a_maxMove = -a_maxMove;
   }
 
-  if (!m_params.optimizer_options.cg.no_overshooting) {
-    if (m_params.saddle_search_options.confine_positive.bowl_breakout) {
+  if (!m_optConfig.opts.cg.no_overshooting) {
+    if (m_optConfig.bowlBreakout) {
       // max displacement is based on system not single atom
       pos += eonc::helpers::maxMotionAppliedV(stepSize * m_directionNorm,
                                               a_maxMove);
@@ -162,8 +159,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
     // in opposite directions
     double passedMinimum = -1.;
     double forceChange = 0.;
-    while (passedMinimum < 0. and
-           (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
+    while (passedMinimum < 0.0 &&
+           0.1 * std::fabs(projectedForce1) < std::fabs(projectedForce2)) {
       posStep = pos + eonc::helpers::maxAtomMotionAppliedV(
                           stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
@@ -171,8 +168,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
       projectedForce2 = forceAfterStep.dot(m_directionNorm);
 
       passedMinimum = projectedForce1 * projectedForce2;
-      if (passedMinimum < 0. and
-          (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
+      if (passedMinimum < 0.0 &&
+          0.1 * std::fabs(projectedForce1) < std::fabs(projectedForce2)) {
         forceChange = (projectedForce1 - projectedForce2);
         stepSize = (projectedForce1 / forceChange) * stepSize;
         QUILL_LOG_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
@@ -180,11 +177,11 @@ int ConjugateGradients::single_step(double a_maxMove) {
       }
     }
   }
-  if (m_params.optimizer_options.cg.knock_out_max_move) {
+  if (m_optConfig.opts.cg.knock_out_max_move) {
     if (stepSize >= a_maxMove) {
       // knockout old search direction
-      m_directionOld = m_objf->getPositions() * 0.0;
-      m_forceOld = m_objf->getPositions() * 0.0;
+      m_directionOld.setZero();
+      m_forceOld.setZero();
       QUILL_LOG_DEBUG(m_log, "Resetting the old search direction");
     }
   }

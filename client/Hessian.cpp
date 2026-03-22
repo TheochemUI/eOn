@@ -14,7 +14,8 @@
 #include "HelperFunctions.h"
 #include "SafeMath.h"
 
-using namespace std;
+#include <cmath>
+#include <fstream>
 
 Hessian::Hessian(const Parameters &params, Matter *matter)
     : matter{matter},
@@ -24,10 +25,9 @@ Hessian::Hessian(const Parameters &params, Matter *matter)
   /* Logger initialized via class member */
 }
 
-Hessian::~Hessian() {}
-
-MatrixXd Hessian::getHessian(Matter *matterIn, VectorXi atomsIn) {
-  if ((matter != matterIn) || (atoms != atomsIn) || (hessian.rows() == 0)) {
+MatrixXd Hessian::getHessian(Matter *matterIn, const VectorXi &atomsIn) {
+  if ((matter != matterIn) || (atoms.size() != atomsIn.size()) ||
+      (atoms != atomsIn) || (hessian.rows() == 0)) {
     hessian.resize(0, 0);
     matter = matterIn;
     atoms = atomsIn;
@@ -39,8 +39,9 @@ MatrixXd Hessian::getHessian(Matter *matterIn, VectorXi atomsIn) {
   return hessian;
 }
 
-VectorXd Hessian::getFreqs(Matter *matterIn, VectorXi atomsIn) {
-  if ((matter != matterIn) || (atoms != atomsIn) || (hessian.rows() == 0)) {
+VectorXd Hessian::getFreqs(Matter *matterIn, const VectorXi &atomsIn) {
+  if ((matter != matterIn) || (atoms.size() != atomsIn.size()) ||
+      (atoms != atomsIn) || (hessian.rows() == 0)) {
     hessian.resize(0, 0);
     matter = matterIn;
     atoms = atomsIn;
@@ -52,7 +53,7 @@ VectorXd Hessian::getFreqs(Matter *matterIn, VectorXi atomsIn) {
   return freqs;
 }
 
-bool Hessian::calculate(void) {
+bool Hessian::calculate() {
   int nAtoms = matter->numberOfAtoms();
 
   // Determine the Hessian size
@@ -76,9 +77,8 @@ bool Hessian::calculate(void) {
   //    Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian(size, size);
   hessian.resize(size, size);
 
-  int i, j;
   force1 = matterTemp.getForces();
-  for (i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++) {
     posDisplace.setZero();
 
     // Displacing one coordinate
@@ -99,12 +99,11 @@ bool Hessian::calculate(void) {
     force1 = matterTemp.getForces();
     */
 
-    for (j = 0; j < size; j++) {
+    for (int j = 0; j < size; j++) {
       hessian(i, j) =
           -(force2(atoms(j / 3), j % 3) - force1(atoms(j / 3), j % 3)) / dr;
-      // get the effective mass of the moving atoms
       double effMass =
-          sqrt(matter->getMass(atoms(j / 3)) * matter->getMass(atoms(i / 3)));
+          std::sqrt(matter->getMass(atoms(j / 3)) * matter->getMass(atoms(i / 3)));
       hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
     }
   }
@@ -115,8 +114,8 @@ bool Hessian::calculate(void) {
   // cannot be used, messes up the lower trianguler
   // transpose does not seem to be a hardcopy, rather just an index manipulation
 
-  for (i = 0; i < size; i++) {
-    for (j = 0; j < i; j++) {
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < i; j++) {
       hessian(i, j) = (hessian(i, j) + hessian(j, i)) / 2;
       hessian(j, i) = hessian(i, j);
     }
@@ -124,17 +123,17 @@ bool Hessian::calculate(void) {
 
   if (!parameters.main_options.quiet) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
-    ofstream hessfile;
+    std::ofstream hessfile;
     hessfile.open("hessian.dat");
     hessfile << hessian;
     hessfile.close();
   }
 
   double t0, t1;
-  eonc::helpers::getTime(&t0, NULL, NULL);
+  eonc::helpers::getTime(&t0, nullptr, nullptr);
   QUILL_LOG_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
-  eonc::helpers::getTime(&t1, NULL, NULL);
+  eonc::helpers::getTime(&t1, nullptr, nullptr);
   QUILL_LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
                   t1 - t0);
   freqs = es.eigenvalues();
@@ -150,7 +149,7 @@ bool Hessian::calculate(void) {
 // XXX: what happens if the entire particle rotates about one atom or a line of
 // atoms?
 
-VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
+VectorXd Hessian::removeZeroFreqs(const VectorXd &freqs) {
   QUILL_LOG_DEBUG(log, "[Hessian] removing zero frequency modes");
   int size = freqs.size();
   if (size != 3 * matter->numberOfAtoms()) {
@@ -160,7 +159,7 @@ VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
   newfreqs.resize(size);
   int nremoved = 0;
   for (int i = 0; i < size; i++) {
-    if (abs(freqs(i)) > parameters.hessian_options.zero_freq_value) {
+    if (std::abs(freqs(i)) > parameters.hessian_options.zero_freq_value) {
       newfreqs(i - nremoved) = freqs(i);
     } else {
       nremoved++;

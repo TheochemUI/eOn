@@ -9,33 +9,31 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include <algorithm>
-#include <cstdlib>
-
+#include "ParallelReplicaJob.h"
+#include "BaseStructures.h"
 #include "BondBoost.h"
 #include "Dynamics.h"
+#include "ForceCallTimer.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
-#include "ParallelReplicaJob.h"
 
-using namespace std;
+#include <cmath>
+#include <format>
+#include <fstream>
 
-std::vector<std::string> ParallelReplicaJob::run(void) {
-  // load pos.con
-  reactant = new Matter(pot, params);
+std::vector<std::string> ParallelReplicaJob::run() {
+  reactant = std::make_shared<Matter>(pot, params);
   reactant->con2matter(
       eonc::helpers::getRelevantFile(params.main_options.conFilename));
 
-  // minimize the initial reactant
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Minimizing initial position");
   reactant->relax();
   reactant->matter2con("reactant.con");
 
-  // trajectory is the matter object for the current MD configuration
-  Matter *trajectory = new Matter(pot, params);
+  auto trajectory = std::make_shared<Matter>(pot, params);
   *trajectory = *reactant;
-  Dynamics dynamics(trajectory, params);
-  BondBoost bondBoost(trajectory, params);
+  Dynamics dynamics(trajectory.get(), params);
+  BondBoost bondBoost(trajectory.get(), params);
 
   if (params.hyperdynamics_options.bias_potential ==
       Hyperdynamics::BOND_BOOST) {
@@ -43,25 +41,23 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
     trajectory->setBiasPotential(&bondBoost);
   }
 
-  dephase(trajectory);
+  dephase(*trajectory);
 
-  // convert from simulation times to number of steps
-  int stateCheckInterval =
-      int(floor(params.parallel_replica_options.state_check_interval /
-                    params.dynamics_options.time_step +
-                0.5));
-  int recordInterval =
-      int(floor(params.parallel_replica_options.record_interval /
-                    params.dynamics_options.time_step +
-                0.5));
+  int stateCheckInterval = static_cast<int>(
+      std::floor(params.parallel_replica_options.state_check_interval /
+                     params.dynamics_options.time_step +
+                 0.5));
+  int recordInterval = static_cast<int>(
+      std::floor(params.parallel_replica_options.record_interval /
+                     params.dynamics_options.time_step +
+                 0.5));
 
-  std::vector<Matter *> MDSnapshots;
-  std::vector<double> MDTimes;
+  std::vector<std::shared_ptr<Matter>> mdSnapshots;
+  std::vector<double> mdTimes;
   double transitionTime = 0;
   Matter transitionStructure(pot, params);
-  int refineForceCalls = 0;
+  size_t refineForceCalls = 0;
 
-  // Main MD loop
   double simulationTime = 0.0;
   if (params.hyperdynamics_options.bias_potential == Hyperdynamics::NONE) {
     QUILL_LOG_DEBUG(
@@ -73,6 +69,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
         "[ParallelReplica] {:>8} {:>12} {:>10} {:>10} {:>12} {:>12} {:>10}",
         "Step", "Time (s)", "Boost", "KE", "PE", "TE", "KinT");
   }
+
   for (int step = 1; step <= params.dynamics_options.steps; step++) {
     dynamics.oneStep();
     double boost = 1.0;
@@ -80,8 +77,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
         Hyperdynamics::BOND_BOOST) {
       double boostPotential = bondBoost.boost();
       double kB = params.constants.kB;
-      boost = exp(boostPotential / kB / params.main_options.temperature);
-
+      boost = std::exp(boostPotential / kB / params.main_options.temperature);
       simulationTime += params.dynamics_options.time_step * boost;
     } else {
       simulationTime += params.dynamics_options.time_step;
@@ -111,43 +107,37 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
       }
     }
 
-    // Snapshots of the trajectory used for the refinement
+    // Snapshots for refinement
     if (step % recordInterval == 0 &&
         params.parallel_replica_options.refine_transition) {
-      Matter *tmp = new Matter(pot, params);
-      *tmp = *trajectory;
-      MDSnapshots.push_back(tmp);
-      MDTimes.push_back(simulationTime);
+      auto snap = std::make_shared<Matter>(pot, params);
+      *snap = *trajectory;
+      mdSnapshots.push_back(std::move(snap));
+      mdTimes.push_back(simulationTime);
     }
 
-    // check for a transition every stateCheckInterval or at the end of the
-    // simulation
+    // Check for transition
     if (step % stateCheckInterval == 0 ||
         step == params.dynamics_options.steps) {
       QUILL_LOG_DEBUG(log, "[ParallelReplica] Checking for transition");
 
-      Matter min(pot, params);
-      min = *trajectory;
-      min.relax();
+      Matter minimized(pot, params);
+      minimized = *trajectory;
+      minimized.relax();
 
-      // only check for a transition if one has yet to occur
-      if (!min.compare(*reactant) && transitionTime == 0) {
+      if (!minimized.compare(*reactant) && transitionTime == 0) {
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition occurred");
 
-        // perform the binary search for the transition structure
         if (params.parallel_replica_options.refine_transition) {
           QUILL_LOG_DEBUG(log, "[ParallelReplica] Refining transition time");
-          int tmpFcalls = PotRegistry::get().total_force_calls();
-          int snapshotIndex = refineTransition(MDSnapshots);
+          int snapshotIndex;
+          {
+            eonc::ForceCallTimer timer(refineForceCalls);
+            snapshotIndex = refineTransition(mdSnapshots);
+          }
 
-          refineForceCalls +=
-              PotRegistry::get().total_force_calls() - tmpFcalls;
-
-          transitionTime = MDTimes[snapshotIndex];
-          transitionStructure = *MDSnapshots[snapshotIndex];
-
-          // if not using refinement use the current configuration as the
-          // transition structure
+          transitionTime = mdTimes[snapshotIndex];
+          transitionStructure = *mdSnapshots[snapshotIndex];
         } else {
           transitionStructure = *trajectory;
           transitionTime = simulationTime;
@@ -155,39 +145,33 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition time: {:.3e} s",
                         transitionTime * params.constants.timeUnit * 1e-15);
 
-        // at the end of the simulation perform the refinement if it hasn't
-        // happened yet this ensures that if a transition isn't seen that the
-        // same number of force calls will be performed on average
       } else if (step + 1 == params.dynamics_options.steps &&
                  transitionTime == 0) {
-
-        // fake refinement
+        // Fake refinement to prevent force-call bias
         if (params.parallel_replica_options.refine_transition) {
           QUILL_LOG_DEBUG(
               log,
               "[ParallelReplica] Simulation ended without seeing a transition");
           QUILL_LOG_DEBUG(
               log, "[ParallelReplica] Refining anyways to prevent bias...");
-          int tmpFcalls = PotRegistry::get().total_force_calls();
-          refineTransition(MDSnapshots, true);
-          refineForceCalls +=
-              PotRegistry::get().total_force_calls() - tmpFcalls;
+          {
+            eonc::ForceCallTimer timer(refineForceCalls);
+            refineTransition(mdSnapshots, true);
+          }
         }
         transitionStructure = *trajectory;
       }
 
-      for (unsigned int i = 0; i < MDSnapshots.size(); i++) {
-        delete MDSnapshots[i];
-      }
-      MDSnapshots.clear();
-      MDTimes.clear();
+      mdSnapshots.clear();
+      mdTimes.clear();
     }
   }
 
-  // start the decorrelation dynamics from the transition structure
-  int decorrelationSteps = int(floor(params.parallel_replica_options.corr_time /
-                                         params.dynamics_options.time_step +
-                                     0.5));
+  // Decorrelation dynamics
+  int decorrelationSteps =
+      static_cast<int>(std::floor(params.parallel_replica_options.corr_time /
+                                      params.dynamics_options.time_step +
+                                  0.5));
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Decorrelating: {} steps",
                   decorrelationSteps);
   for (int step = 1; step <= decorrelationSteps; step++) {
@@ -195,83 +179,78 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   }
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Decorrelation complete");
 
-  // minimize the final structure
+  // Minimize final structure
   Matter product(pot, params);
   product = *trajectory;
   product.relax();
   product.matter2con("product.con");
 
-  // report the results
-  FILE *fileResults;
+  // Write results
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%f potential_energy_reactant\n",
-          reactant->getPotentialEnergy());
-  fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
-  fprintf(fileResults, "%zu total_force_calls\n",
-          PotRegistry::get().total_force_calls());
+  {
+    std::ofstream out(resultsFilename, std::ios::binary);
+    if (out) {
+      out << std::format(
+          "{} potential_type\n",
+          magic_enum::enum_name<PotType>(params.potential_options.potential));
+      out << std::format("{} random_seed\n", params.main_options.randomSeed);
+      out << std::format("{:f} potential_energy_reactant\n",
+                         reactant->getPotentialEnergy());
+      out << std::format("{} force_calls_refine\n", refineForceCalls);
+      out << std::format("{} total_force_calls\n",
+                         PotRegistry::get().total_force_calls());
 
-  if (transitionTime == 0) {
-    fprintf(fileResults, "0 transition_found\n");
-    fprintf(fileResults, "%e simulation_time_s\n",
-            simulationTime * params.constants.timeUnit * 1.0e-15);
-  } else {
-    fprintf(fileResults, "1 transition_found\n");
-    fprintf(fileResults, "%e transition_time_s\n",
-            transitionTime * params.constants.timeUnit * 1.0e-15);
-    fprintf(fileResults, "%e correlation_time_s\n",
-            params.parallel_replica_options.corr_time *
-                params.constants.timeUnit * 1.0e-15);
-    fprintf(fileResults, "%lf potential_energy_product\n",
-            product.getPotentialEnergy());
+      if (transitionTime == 0) {
+        out << "0 transition_found\n";
+        out << std::format("{:e} simulation_time_s\n",
+                           simulationTime * params.constants.timeUnit *
+                               1.0e-15);
+      } else {
+        out << "1 transition_found\n";
+        out << std::format("{:e} transition_time_s\n",
+                           transitionTime * params.constants.timeUnit *
+                               1.0e-15);
+        out << std::format("{:e} correlation_time_s\n",
+                           params.parallel_replica_options.corr_time *
+                               params.constants.timeUnit * 1.0e-15);
+        out << std::format("{:f} potential_energy_product\n",
+                           product.getPotentialEnergy());
+      }
+      out << std::format("{:f} speedup\n",
+                         simulationTime / (params.dynamics_options.steps *
+                                           params.dynamics_options.time_step));
+    }
   }
-  fprintf(fileResults, "%lf speedup\n",
-          simulationTime / (params.dynamics_options.steps *
-                            params.dynamics_options.time_step));
-
-  fclose(fileResults);
-
-  MDSnapshots.clear();
-  MDTimes.clear();
-  delete trajectory;
-  delete reactant;
 
   return returnFiles;
 }
 
-void ParallelReplicaJob::dephase(Matter *trajectory) {
-  Dynamics dynamics(trajectory, params);
+void ParallelReplicaJob::dephase(Matter &trajectory) {
+  Dynamics dynamics(&trajectory, params);
 
-  int dephaseSteps = int(floor(params.parallel_replica_options.dephase_time /
-                                   params.dynamics_options.time_step +
-                               0.5));
+  int dephaseSteps =
+      static_cast<int>(std::floor(params.parallel_replica_options.dephase_time /
+                                      params.dynamics_options.time_step +
+                                  0.5));
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Dephasing: {} steps", dephaseSteps);
 
   Matter initial(pot, params);
-  initial = *trajectory;
+  initial = trajectory;
 
   while (true) {
-    // always start from the initial configuration
-    *trajectory = initial;
+    trajectory = initial;
     dynamics.setThermalVelocity();
 
-    // Dephase MD trajectory
     for (int step = 1; step <= dephaseSteps; step++) {
       dynamics.oneStep(step);
     }
 
-    // Check to see if a transition occured
-    Matter min(pot, params);
-    min = *trajectory;
-    min.relax();
+    Matter minimized(pot, params);
+    minimized = trajectory;
+    minimized.relax();
 
-    if (min.compare(*reactant)) {
+    if (minimized.compare(*reactant)) {
       QUILL_LOG_DEBUG(log, "[ParallelReplica] Dephasing successful");
       break;
     } else {
@@ -282,32 +261,29 @@ void ParallelReplicaJob::dephase(Matter *trajectory) {
   }
 }
 
-int ParallelReplicaJob::refineTransition(std::vector<Matter *> MDSnapshots,
-                                         bool fake) {
-  int min, max, mid;
-  bool midTest;
-  min = 0;
-  max = MDSnapshots.size() - 1;
+int ParallelReplicaJob::refineTransition(
+    const std::vector<std::shared_ptr<Matter>> &snapshots, bool fake) {
+  int lo = 0;
+  int hi = static_cast<int>(snapshots.size()) - 1;
 
-  while ((max - min) > 1) {
-    mid = min + (max - min) / 2;
-    Matter *snapshot = MDSnapshots[mid];
-    snapshot->relax(true);
+  while ((hi - lo) > 1) {
+    int mid = lo + (hi - lo) / 2;
+    Matter snapshot(*snapshots[mid]);
+    snapshot.relax(true);
 
-    if (fake == false) {
-      midTest = snapshot->compare(*reactant);
+    bool stillReactant;
+    if (!fake) {
+      stillReactant = snapshot.compare(*reactant);
     } else {
-      // if we are faking the refinement just generate a random answer
-      // for the comparison test
-      midTest = bool(eonc::helpers::randomInt(0, 1));
+      stillReactant = static_cast<bool>(eonc::helpers::randomInt(0, 1));
     }
 
-    if (midTest) {
-      min = mid;
+    if (stillReactant) {
+      lo = mid;
     } else {
-      max = mid;
+      hi = mid;
     }
   }
 
-  return (min + max) / 2 + 1;
+  return (lo + hi) / 2 + 1;
 }

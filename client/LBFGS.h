@@ -18,6 +18,8 @@
 #include "Optimizer.h"
 #include "Parameters.h"
 
+#include <deque>
+
 namespace eonc {
 
 #define LBFGS_EPS 1e-30
@@ -36,19 +38,19 @@ public:
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
-  int update(Eigen::VectorXd a_r1, Eigen::VectorXd a_r0, Eigen::VectorXd a_f1,
-             Eigen::VectorXd a_f0);
+  int update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
+             const Eigen::VectorXd &a_f1, const Eigen::VectorXd &a_f0);
   void reset(void);
 
 private:
-  Eigen::VectorXd getStep(double a_maxMove, Eigen::VectorXd a_f);
+  Eigen::VectorXd getStep(double a_maxMove, const Eigen::VectorXd &a_f);
 
   int m_iteration;
   int m_memory;
 
-  std::vector<Eigen::VectorXd> m_s;
-  std::vector<Eigen::VectorXd> m_y;
-  std::vector<double> m_rho;
+  std::deque<Eigen::VectorXd> m_s;
+  std::deque<Eigen::VectorXd> m_y;
+  std::deque<double> m_rho;
 
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
