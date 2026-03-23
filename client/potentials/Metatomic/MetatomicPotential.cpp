@@ -208,36 +208,22 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   bool periodic[3] = {torch_pbc[0].item<bool>(), torch_pbc[1].item<bool>(),
                       torch_pbc[2].item<bool>()};
 
-  bool types_changed = false;
-  if (static_cast<size_t>(nAtoms) != last_atomic_nrs_.size()) {
-    types_changed = true;
-  } else if (nAtoms > 0 && std::memcmp(atomicNrs, last_atomic_nrs_.data(),
-                                       nAtoms * sizeof(int)) != 0) {
-    types_changed = true;
+  // Recreate atomic types tensor on every call (no caching).
+  // Caching atomic_types_ between calls caused per-image MetatomicPotential
+  // instances to produce different results than a shared instance, because
+  // the JIT compilation state diverged between fresh and cached paths.
+  if (!atomicNrs) {
+    throw std::runtime_error(
+        "[MetatomicPotential] `atomicNrs` must be provided.");
   }
-
-  if (types_changed) {
-    QUILL_LOG_TRACE_L1(
-        m_log, "[MetatomicPotential] Atomic numbers changed, re-creating "
-               "types tensor.");
-    if (!atomicNrs) {
-      throw std::runtime_error(
-          "[MetatomicPotential] `atomicNrs` must be provided.");
-    }
-    std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
-    // XXX(rg): Reordering of labels might take place for non-conservative
-    // forces / per atom energies
-    this->atomic_types_ =
-        torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
-            .to(this->device_);
-
-    // Update the cache
-    last_atomic_nrs_.assign(atomicNrs, atomicNrs + nAtoms);
-  }
+  std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
+  auto atomic_types =
+      torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
+          .to(this->device_);
 
   // 2. Create the metatomic::System object
   auto system = torch::make_intrusive<metatomic_torch::SystemHolder>(
-      this->atomic_types_, torch_positions, torch_cell, torch_pbc);
+      atomic_types, torch_positions, torch_cell, torch_pbc);
 
   // 3. Compute and add neighbor lists to the system
   for (const auto &request : this->nl_requests_) {
@@ -450,4 +436,14 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
       pair_vectors.to(this->dtype_).to(this->device_), neighbor_samples,
       std::vector<metatensor_torch::Labels>{neighbor_component},
       neighbor_properties);
+}
+
+std::shared_ptr<Potential>
+MetatomicPotential::clone(const Parameters &params) const {
+  // Clone the PyTorch model to share weights but have independent
+  // inference state. This ensures per-image potentials produce
+  // identical results to the shared instance.
+  auto cloned = std::make_shared<MetatomicPotential>(params);
+  cloned->model_ = this->model_.clone();
+  return cloned;
 }

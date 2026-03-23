@@ -60,10 +60,6 @@ private:
   c10::DeviceType device_type_;
   torch::Device device_;
   bool check_consistency_;
-  // --- Cached Tensors and Data for Performance ---
-  torch::Tensor atomic_types_;
-  std::vector<int> last_atomic_nrs_;
-
   // -- Variants
   std::string energy_key_;
   std::string energy_uncertainty_key_;
@@ -129,10 +125,15 @@ public:
   [[nodiscard]] bool isThreadSafe() const noexcept override { return true; }
 
   /// NEB should create separate model instances per image for true
-  /// parallel force evaluation (each loads its own PyTorch model copy).
+  /// parallel force evaluation via clone().
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
   }
+
+  /// Clone this potential by cloning the PyTorch model.
+  /// Ensures identical weights and JIT state across per-image instances.
+  [[nodiscard]] std::shared_ptr<Potential>
+  clone(const Parameters &params) const override;
 
 private:
   mutable std::mutex inference_mutex_;

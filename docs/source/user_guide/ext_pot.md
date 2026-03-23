@@ -20,10 +20,9 @@ build, including the `conda-forge` package.
 ```{tip}
 If you installed eOn from `conda-forge` and want to use an MLIP (DeePMD, MACE,
 etc.) that is not available through the [Metatomic](project:metatomic_pot.md)
-interface, `ext_pot` is the recommended path. The
-[LAMMPS](project:lammps_pot.md) and [ASE](project:ase_pot.md) potentials require
-additional compile-time flags that are **not** enabled in the `conda-forge`
-build.
+interface, `ext_pot` or [LAMMPS](project:lammps_pot.md) is the recommended path. 
+The [ASE](project:ase_pot.md) potentials require additional compile-time flags 
+that are **not** enabled in the `conda-forge` build.
 ```
 
 ## Protocol
