@@ -151,9 +151,11 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(std::move(initPath[i]));
 
-    // Give each image its own potential instance for true parallelism
+    // Give each image its own potential instance for true parallelism.
+    // Use clone() instead of makePotential() to ensure identical model
+    // weights and JIT state across instances.
     if (perImagePotentials_) {
-      auto imagePot = eonc::helpers::makePotential(params);
+      auto imagePot = pot->clone(params);
       path[i]->setPotential(imagePot);
     }
 

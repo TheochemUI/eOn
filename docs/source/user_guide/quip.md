@@ -16,13 +16,6 @@ at runtime via `dlopen`. No eOn rebuild is needed -- just install a
 LAMMPS library built with the QUIP package.
 ```
 
-```{admonition} conda-forge availability
-:class: warning
-**Not** included in the `conda-forge` package. Requires a LAMMPS library
-built with the QUIP package (`-D PKG_ML-QUIP=yes`). LAMMPS is loaded
-at runtime (no eOn build flag needed).
-```
-
 In order, we require:
 - QUIP as a library (`quippy` is not required)
   + SOAP needs to be compiled in, [documented here](https://github.com/HaoZeke/quip-nix)
