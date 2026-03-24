@@ -66,10 +66,9 @@ public:
   [[nodiscard]] virtual bool isSurrogate() const noexcept { return false; }
 
   /// Whether this potential's force() can be called from multiple threads
-  /// on the SAME instance. Python-based potentials return false.
-  /// Potentials with internal mutex (MetatomicPotential) return true but
-  /// serialize internally -- use needsPerImageInstance() to check if
-  /// separate instances would enable true parallelism.
+  /// on the SAME instance. Most simple potentials (LJ, Morse, EAM) are
+  /// stateless and thread-safe. Override to false for potentials with
+  /// mutable internal state that isn't mutex-protected.
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
   /// Whether NEB should create separate Potential instances per image

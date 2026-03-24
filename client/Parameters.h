@@ -55,7 +55,7 @@ public:
     double finiteDifference{0.01};
     long maxForceCalls{0};
     bool removeNetForce{true};
-    bool parallel{true}; // parallel force evaluation via std::jthread
+    bool parallel{false}; // parallel force evaluation via std::thread
   } main_options;
 
   // [Potential] //
