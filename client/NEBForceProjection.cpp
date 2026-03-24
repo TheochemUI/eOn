@@ -90,10 +90,9 @@ AtomMatrix computeDNEB(const AtomMatrix &forceSpring, const AtomMatrix &tangent,
         forceSpringPerp -
         matDot(forceSpringPerp, forcePerpNormalized) * forcePerpNormalized;
 
-    double switching =
-        2.0 / eonc::helpers::pi *
-        std::atan(forcePerpNorm * forcePerpNorm /
-                  (forceSpringPerpNorm * forceSpringPerpNorm));
+    double switching = 2.0 / eonc::helpers::pi *
+                       std::atan(forcePerpNorm * forcePerpNorm /
+                                 (forceSpringPerpNorm * forceSpringPerpNorm));
     dneb *= switching;
     return dneb;
   }

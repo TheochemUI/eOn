@@ -14,6 +14,8 @@
 #include "../../fpe_handler.h"
 #include "vesin.h"
 
+#include <torch/csrc/jit/runtime/graph_executor.h>
+
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -32,6 +34,15 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {
+
+  // Disable JIT profiling-guided optimization. The JIT profiler specializes
+  // the graph after the first few forward passes, which causes a fresh model
+  // instance to produce slightly different results (~ULP level) than an
+  // instance that has already processed other inputs. With profiling disabled,
+  // all instances use the unoptimized interpreter and produce bitwise-identical
+  // results regardless of call history. This is critical for parallel NEB where
+  // per-image potentials must match a shared instance.
+  torch::jit::getProfilingMode() = false;
 
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
@@ -78,9 +89,10 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   device_ = torch::Device(device_type_);
   QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using device: {}", device_.str());
 
-  this->model_.to(this->device_);
-
-  // 4. Set data type (float32/float64) based on model capabilities
+  // 4. Set data type. Default: model's declared dtype.
+  // Override via config `dtype = float64` for batched reproducibility
+  // (float32 batching has ~1e-6 force differences vs sequential due to
+  // different reduction order; float64 eliminates this).
   if (this->capabilities_->dtype() == "float64") {
     this->dtype_ = torch::kFloat64;
   } else if (this->capabilities_->dtype() == "float32") {
@@ -89,8 +101,45 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     throw std::runtime_error("Unsupported dtype: " +
                              this->capabilities_->dtype());
   }
-  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
-                 this->capabilities_->dtype().c_str());
+  if (!m_metatomic_opts.dtype_override.empty()) {
+    if (m_metatomic_opts.dtype_override == "float64") {
+      this->dtype_ = torch::kFloat64;
+    } else if (m_metatomic_opts.dtype_override == "float32") {
+      this->dtype_ = torch::kFloat32;
+    }
+    QUILL_LOG_INFO(
+        m_log, "[MetatomicPotential] dtype overridden to {} (model: {})",
+        m_metatomic_opts.dtype_override, this->capabilities_->dtype().c_str());
+  } else {
+    QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
+                   this->capabilities_->dtype().c_str());
+  }
+
+  this->model_.to(this->device_);
+  // Only move to non-default dtype if the model supports it.
+  // Some models (e.g. PET-MAD) have embedding layers that break with
+  // to(float64) because integer indices get cast. Only attempt dtype
+  // override if explicitly requested AND different from model default.
+  if (!m_metatomic_opts.dtype_override.empty() &&
+      this->dtype_ != (this->capabilities_->dtype() == "float64"
+                           ? torch::kFloat64
+                           : torch::kFloat32)) {
+    try {
+      this->model_.to(this->dtype_);
+    } catch (const std::exception &e) {
+      // Fall back to model's default dtype
+      QUILL_LOG_WARNING(
+          m_log,
+          "[MetatomicPotential] dtype override to {} failed ({}), "
+          "using model default",
+          m_metatomic_opts.dtype_override, e.what());
+      if (this->capabilities_->dtype() == "float64") {
+        this->dtype_ = torch::kFloat64;
+      } else {
+        this->dtype_ = torch::kFloat32;
+      }
+    }
+  }
 
   // 5. Resolve variant keys via pick_output
   auto outputs = this->capabilities_->outputs();
@@ -208,10 +257,8 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   bool periodic[3] = {torch_pbc[0].item<bool>(), torch_pbc[1].item<bool>(),
                       torch_pbc[2].item<bool>()};
 
-  // Recreate atomic types tensor on every call (no caching).
-  // Caching atomic_types_ between calls caused per-image MetatomicPotential
-  // instances to produce different results than a shared instance, because
-  // the JIT compilation state diverged between fresh and cached paths.
+  // Recreate atomic types tensor on every call. The cost is negligible
+  // (small int32 tensor) and avoids carrying cached state between calls.
   if (!atomicNrs) {
     throw std::runtime_error(
         "[MetatomicPotential] `atomicNrs` must be provided.");
@@ -438,12 +485,3 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
       neighbor_properties);
 }
 
-std::shared_ptr<Potential>
-MetatomicPotential::clone(const Parameters &params) const {
-  // Clone the PyTorch model to share weights but have independent
-  // inference state. This ensures per-image potentials produce
-  // identical results to the shared instance.
-  auto cloned = std::make_shared<MetatomicPotential>(params);
-  cloned->model_ = this->model_.clone();
-  return cloned;
-}

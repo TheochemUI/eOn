@@ -109,8 +109,8 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0, 0, i + 1, i + 1));
       ew = es.eigenvalues()(0);
       evT = es.eigenvectors().col(0);
-      ewAbsRelErr =
-          eonc::safemath::safe_div(std::fabs(ew - ewOld), std::fabs(ewOld), 1.0);
+      ewAbsRelErr = eonc::safemath::safe_div(std::fabs(ew - ewOld),
+                                             std::fabs(ewOld), 1.0);
       ewOld = ew;
 
       // Convert eigenvector of T matrix to eigenvector of full Hessian
@@ -138,8 +138,8 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       if (lowestEw != 0.0 && params.lanczos_options.quit_early) {
         double Cprev = lowestEw;
         double Cnew = u.dot(Q.col(i));
-        ewAbsRelErr =
-            eonc::safemath::safe_div(std::fabs(Cnew - Cprev), std::fabs(Cprev), 1.0);
+        ewAbsRelErr = eonc::safemath::safe_div(std::fabs(Cnew - Cprev),
+                                               std::fabs(Cprev), 1.0);
         if (ewAbsRelErr <= params.lanczos_options.tolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;

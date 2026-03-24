@@ -329,6 +329,8 @@ public:
     std::string extensions_directory;
     bool check_consistency{false};
     double uncertainty_threshold{-1.0};
+    /// Override model dtype ("float64" for batched reproducibility, empty=auto)
+    std::string dtype_override;
     struct variants_t {
       std::string base;
       std::string energy;

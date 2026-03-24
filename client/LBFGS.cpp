@@ -122,7 +122,8 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
 
   // Skip degenerate curvature update (reset memory instead of aborting)
   if (std::abs(s0.dot(y0)) < LBFGS_EPS) {
-    QUILL_LOG_WARNING(m_log, "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
+    QUILL_LOG_WARNING(m_log,
+                      "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
                       s0.dot(y0));
     reset();
     return 0;

@@ -28,7 +28,8 @@ void tersoff_(const long int *N, const double *R, double *F, double *U,
 /// Tersoff potential for Si (Fortran implementation).
 class Tersoff final : public Potential {
 public:
-  explicit Tersoff(const Parameters &p) : Potential(p) {}
+  explicit Tersoff(const Parameters &p)
+      : Potential(p) {}
   ~Tersoff() override = default;
 
   void force(long N, const double *R, const int *atomicNrs, double *F,

@@ -23,7 +23,8 @@ const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 
 BondBoost::BondBoost(Matter *matt, const Parameters &params)
-    : matter{matt}, parameters{params} {
+    : matter{matt},
+      parameters{params} {
   nAtoms = matter->numberOfAtoms();
 }
 
@@ -33,7 +34,8 @@ void BondBoost::initialize() {
   nBBs = 0;
   nReg = 1;
 
-  const std::string &balString = parameters.hyperdynamics_options.boost_atom_list;
+  const std::string &balString =
+      parameters.hyperdynamics_options.boost_atom_list;
   auto atoms = eonc::helpers::split_string_int(balString, ",");
 
   if (balString == "all" || atoms.empty()) {
@@ -73,8 +75,7 @@ void BondBoost::initialize() {
     }
   }
   if (count != nRAs) {
-    QUILL_LOG_DEBUG(log,
-                    "Error: nRestAtoms does not equal counted number!\n");
+    QUILL_LOG_DEBUG(log, "Error: nRestAtoms does not equal counted number!\n");
   }
 
   nTABs = nBAs * (nBAs - 1) / 2 + nBAs * nRAs;
@@ -153,8 +154,8 @@ double BondBoost::Booststeps() {
   // Compute bias forces per bond, accumulate on atoms
   for (long i = 0; i < nBBs; i++) {
     double dforce = 0.0;
-    double fact1 = 2.0 * A_eps * DVMAX * Epsr_Q[i] / QRR /
-                   EBBLList(i, 0) / nBBsD;
+    double fact1 =
+        2.0 * A_eps * DVMAX * Epsr_Q[i] / QRR / EBBLList(i, 0) / nBBsD;
 
     if (std::abs(Epsr_Q[i]) < epsrMax) {
       dforce = fact1;
@@ -163,8 +164,8 @@ double BondBoost::Booststeps() {
       double fTmp1 = 1.0 - PRR * PRR * Epsr_Q[i] * Epsr_Q[i];
       double fTmp2 = 1.0 - Epsr_Q[i] * Epsr_Q[i];
       double fact2 = 2.0 * fTmp2 * Epsr_Q[i] *
-                     (2.0 * fTmp1 - PRR * PRR * fTmp2) / QRR /
-                     EBBLList(i, 0) / fTmp1 / fTmp1;
+                     (2.0 * fTmp1 - PRR * PRR * fTmp2) / QRR / EBBLList(i, 0) /
+                     fTmp1 / fTmp1;
       dforce = fact1 + sumV * fact2;
     }
 
@@ -213,8 +214,7 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
   }
 
   if (count != nTABs) {
-    QUILL_LOG_DEBUG(
-        log, "Total involved bond count does not match expected\n");
+    QUILL_LOG_DEBUG(log, "Total involved bond count does not match expected\n");
   }
   return bondLengths;
 }

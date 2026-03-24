@@ -21,7 +21,6 @@
 #include <fstream>
 #include <string>
 
-
 const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
 const char PrefactorJob::PREFACTOR_SADDLE[] = "saddle";
 const char PrefactorJob::PREFACTOR_PRODUCT[] = "product";
@@ -106,11 +105,13 @@ std::vector<std::string> PrefactorJob::run() {
   if (outFreq && !failed) {
     for (int i = 0; i < freqs.size(); i++) {
       if (0. < freqs[i]) {
-        outFreq << std::format(
-            "{:f}\n", std::sqrt(freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
+        outFreq << std::format("{:f}\n",
+                               std::sqrt(freqs[i]) /
+                                   (2 * eonc::helpers::pi * 10.18e-15));
       } else {
-        outFreq << std::format(
-            "{:f}\n", -std::sqrt(-freqs[i]) / (2 * eonc::helpers::pi * 10.18e-15));
+        outFreq << std::format("{:f}\n",
+                               -std::sqrt(-freqs[i]) /
+                                   (2 * eonc::helpers::pi * 10.18e-15));
       }
     }
   }

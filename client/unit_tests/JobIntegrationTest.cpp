@@ -1085,8 +1085,7 @@ TEST_CASE("makeJob creates correct job type for each JobType",
 // -----------------------------------------------------------------------
 
 #ifdef WITH_FORTRAN
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "PointJob SW Si matches SVN reference",
+TEST_CASE_METHOD(JobIntegrationFixture, "PointJob SW Si matches SVN reference",
                  "[job][point][sw][integration][fortran]") {
   copyTestData("../si_diamond");
   writeConfig(R"(

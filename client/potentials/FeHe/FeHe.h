@@ -35,7 +35,8 @@ void feforce_(const long int *N, const double *RX, const double *RY,
 /// Fe-He interatomic potential (Fortran implementation).
 class FeHe final : public Potential {
 public:
-  explicit FeHe(const Parameters &params) : Potential(params) {}
+  explicit FeHe(const Parameters &params)
+      : Potential(params) {}
   ~FeHe() override = default;
 
   void force(long N, const double *R, const int *atomicNrs, double *F,

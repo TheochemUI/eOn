@@ -420,6 +420,7 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.GetBoolean("Metatomic", "check_consistency", false);
     params.metatomic_options.uncertainty_threshold =
         ini.GetReal("Metatomic", "uncertainty_threshold", -1.0);
+    params.metatomic_options.dtype_override = ini.Get("Metatomic", "dtype", "");
     auto &_variant = params.metatomic_options.variant;
     _variant.base = ini.Get("Metatomic", "variant_base", "");
     _variant.energy = ini.Get("Metatomic", "variant_energy", "");
@@ -713,8 +714,8 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetReal(neb_section, "sidpp_growth_alpha", init.sidpp_alpha);
   init.sidpp_frontier_tol =
       ini.GetReal(neb_section, "sidpp_frontier_tol", init.sidpp_frontier_tol);
-  init.sidpp_reparam = ini.GetBoolean(neb_section, "sidpp_reparameterize",
-                                      init.sidpp_reparam);
+  init.sidpp_reparam =
+      ini.GetBoolean(neb_section, "sidpp_reparameterize", init.sidpp_reparam);
   init.sidpp_ideal_ksp =
       ini.GetBoolean(neb_section, "sidpp_ideal_ksp", init.sidpp_ideal_ksp);
   auto neb_ipath_optMethod =
@@ -917,7 +918,8 @@ int load_ini(INIReader &ini, Parameters &params) {
   }
   // Parse comma-separated atom list
   {
-    std::string atomListStr = ini.Get("Saddle Search", "displace_atom_list", "");
+    std::string atomListStr =
+        ini.Get("Saddle Search", "displace_atom_list", "");
     if (!atomListStr.empty()) {
       std::stringstream ss(atomListStr);
       std::string token;

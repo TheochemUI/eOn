@@ -85,7 +85,8 @@ void print_memory_usage() {
       log,
       "\nmemory usage:\nresident size (MB): {:8.2f}\nvirtual size (MB):  "
       "{:8.2f}",
-      static_cast<double>(rss) / 1024 / 1024, static_cast<double>(vs) / 1024 / 1024);
+      static_cast<double>(rss) / 1024 / 1024,
+      static_cast<double>(vs) / 1024 / 1024);
 }
 #endif
 #endif
@@ -321,7 +322,8 @@ int main(int argc, char **argv) {
       }
       setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
 
-      wchar_t **py_argv = static_cast<wchar_t **>(malloc(sizeof(wchar_t *) * 2));
+      wchar_t **py_argv =
+          static_cast<wchar_t **>(malloc(sizeof(wchar_t *) * 2));
       py_argv[0] = Py_DecodeLocale(argv[0], nullptr);
       char *program = getenv("EON_SERVER_PATH");
       py_argv[1] = Py_DecodeLocale(program, nullptr);

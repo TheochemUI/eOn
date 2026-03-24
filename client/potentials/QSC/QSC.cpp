@@ -109,7 +109,8 @@ void QSC::energy(long N, const double *R, const int *atomicNrs, double *U,
       qsc_parameters p_ij{}, p_jj{};
       int j = vlist_[i * N + k];
       double r_ij = distances_[i * N + j].r;
-      if (r_ij > cutoff_) continue;
+      if (r_ij > cutoff_)
+        continue;
 
       if (prev_j_Z != atomicNrs[j]) {
         p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
@@ -166,7 +167,8 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
       qsc_parameters p_ij{}, p_jj{};
       int j = vlist_[i * N + k];
       double r_ij = distances_[i * N + j].r;
-      if (r_ij > cutoff_) continue;
+      if (r_ij > cutoff_)
+        continue;
 
       if (prev_j_Z != atomicNrs[j]) {
         p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
@@ -201,7 +203,8 @@ double QSC::dpowi(double x, unsigned n) {
   double p = x;
   double r = 1.0;
   while (n > 0) {
-    if (n % 2 == 1) r *= p;
+    if (n % 2 == 1)
+      r *= p;
     p *= p;
     n /= 2;
   }
@@ -258,12 +261,15 @@ void QSC::set_qsc_parameter(int Z, double n, double m, double epsilon, double c,
 }
 
 QSC::qsc_parameters QSC::get_qsc_parameters(int element_a,
-                                             int element_b) const {
+                                            int element_b) const {
   int ia = -1, ib = -1;
   for (size_t i = 0; i < qsc_params_.size(); i++) {
-    if (element_a == qsc_params_[i].Z) ia = static_cast<int>(i);
-    if (element_b == qsc_params_[i].Z) ib = static_cast<int>(i);
-    if (ia != -1 && ib != -1) break;
+    if (element_a == qsc_params_[i].Z)
+      ia = static_cast<int>(i);
+    if (element_b == qsc_params_[i].Z)
+      ib = static_cast<int>(i);
+    if (ia != -1 && ib != -1)
+      break;
   }
 
   if (ia == -1) {
@@ -277,7 +283,8 @@ QSC::qsc_parameters QSC::get_qsc_parameters(int element_a,
     throw 1;
   }
 
-  if (ia == ib) return qsc_params_[ia];
+  if (ia == ib)
+    return qsc_params_[ia];
 
   // Mixing rules
   return qsc_parameters{

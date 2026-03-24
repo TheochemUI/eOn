@@ -65,9 +65,10 @@ int TADJob::dynamics() {
   factor = std::log(1.0 / delta) / minmu;
   StateCheckInterval =
       static_cast<long>(params.parallel_replica_options.state_check_interval /
-          params.dynamics_options.time_step);
-  RecordInterval = static_cast<long>(params.parallel_replica_options.record_interval /
-                       params.dynamics_options.time_step);
+                        params.dynamics_options.time_step);
+  RecordInterval =
+      static_cast<long>(params.parallel_replica_options.record_interval /
+                        params.dynamics_options.time_step);
   Temp = params.main_options.temperature;
   newStateFlag = metaStateFlag = false;
 
@@ -196,10 +197,10 @@ int TADJob::dynamics() {
 
     if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
-      QUILL_LOG_DEBUG(log,
-                      "progress: {:.0f}%, max displacement: {:.3f}, step {}/{}",
-                      static_cast<double>(100.0 * step) / params.dynamics_options.steps,
-                      maxAtomDistance, step, params.dynamics_options.steps);
+      QUILL_LOG_DEBUG(
+          log, "progress: {:.0f}%, max displacement: {:.3f}, step {}/{}",
+          static_cast<double>(100.0 * step) / params.dynamics_options.steps,
+          maxAtomDistance, step, params.dynamics_options.steps);
     }
 
     if (step == params.dynamics_options.steps) {

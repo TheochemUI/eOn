@@ -36,8 +36,6 @@
 // hence the separate translation unit.
 #include "Potentials.capnp.h"
 
-
-
 namespace {
 
 /**

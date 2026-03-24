@@ -28,7 +28,10 @@ public:
 
   LJ(PotType ptype, const Parameters &params, double u0_in, double cutoff_in,
      double psi_in)
-      : Potential(ptype, params), u0{u0_in}, cuttOffR{cutoff_in}, psi{psi_in} {
+      : Potential(ptype, params),
+        u0{u0_in},
+        cuttOffR{cutoff_in},
+        psi{psi_in} {
     double r6 = std::pow(psi / cuttOffR, 6);
     cuttOffU = 4.0 * u0 * r6 * (r6 - 1.0);
   }

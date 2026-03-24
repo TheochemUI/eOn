@@ -14,9 +14,9 @@
 /// These tests verify the dlopen-based loader interface works correctly
 /// regardless of whether LAMMPS is actually installed.
 
+#include "potentials/LAMMPS/LammpsLoader.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "potentials/LAMMPS/LammpsLoader.h"
 
 namespace tests {
 
@@ -29,8 +29,7 @@ TEST_CASE("LammpsLoader: singleton returns consistent instance",
   REQUIRE(&a == &b);
 }
 
-TEST_CASE("LammpsLoader: is_loaded reflects availability",
-          "[lammps][loader]") {
+TEST_CASE("LammpsLoader: is_loaded reflects availability", "[lammps][loader]") {
   auto &loader = eonc::LammpsLoader::instance();
   // We cannot control whether LAMMPS is installed in the test environment,
   // but we can verify the interface is consistent.

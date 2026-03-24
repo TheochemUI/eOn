@@ -19,8 +19,6 @@
 #include <format>
 #include <fstream>
 
-
-
 int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                                    Matter *saddle, Matter *min2, double &pref1,
                                    double &pref2) {
@@ -153,8 +151,10 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
       pref2 = pref2 * (std::sinh(temp * (std::sqrt(min2Freqs[i]) / 10.18e-15)));
 
       if (saddleFreqs[i] > 0) {
-        pref1 = pref1 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
-        pref2 = pref2 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
+        pref1 =
+            pref1 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
+        pref2 =
+            pref2 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
       }
     }
     pref1 = 2. * kB_T / (h)*pref1;

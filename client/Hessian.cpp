@@ -102,8 +102,8 @@ bool Hessian::calculate() {
     for (int j = 0; j < size; j++) {
       hessian(i, j) =
           -(force2(atoms(j / 3), j % 3) - force1(atoms(j / 3), j % 3)) / dr;
-      double effMass =
-          std::sqrt(matter->getMass(atoms(j / 3)) * matter->getMass(atoms(i / 3)));
+      double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
+                                 matter->getMass(atoms(i / 3)));
       hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
     }
   }

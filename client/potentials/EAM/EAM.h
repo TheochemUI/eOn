@@ -27,7 +27,8 @@ class EAM
 {
 public:
   explicit EAM(const Parameters &params)
-      : Potential(PotType::EAM_AL, params), rc_{6.0, 6.0, 6.0} {}
+      : Potential(PotType::EAM_AL, params),
+        rc_{6.0, 6.0, 6.0} {}
 
   ~EAM() override = default;
 

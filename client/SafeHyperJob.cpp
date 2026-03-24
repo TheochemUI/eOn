@@ -47,9 +47,10 @@ int SafeHyperJob::dynamics() {
   minCorrectedTime = 1.0e200;
   StateCheckInterval =
       static_cast<long>(params.parallel_replica_options.state_check_interval /
-          params.dynamics_options.time_step);
-  RecordInterval = static_cast<long>(params.parallel_replica_options.record_interval /
-                       params.dynamics_options.time_step);
+                        params.dynamics_options.time_step);
+  RecordInterval =
+      static_cast<long>(params.parallel_replica_options.record_interval /
+                        params.dynamics_options.time_step);
   Temp = params.main_options.temperature;
   newStateFlag = metaStateFlag = false;
 
@@ -161,7 +162,8 @@ int SafeHyperJob::dynamics() {
       transitionTime = transitionTime_current - transitionTime_pre;
       transitionTime_pre = transitionTime_current;
       transitionPot = biasBuffer[refineStep];
-      correctedTime = transitionTime * std::exp((-1) * transitionPot / kB / Temp);
+      correctedTime =
+          transitionTime * std::exp((-1) * transitionPot / kB / Temp);
       sumCorrectedTime += correctedTime;
       if (nState == 1) {
         firstTransitionTime = transitionTime;

@@ -30,28 +30,29 @@ namespace eonc::dynlib {
 #ifdef _WIN32
 using Handle = HMODULE;
 
-inline Handle open(const char *name) noexcept {
-  return LoadLibraryA(name);
-}
+inline Handle open(const char *name) noexcept { return LoadLibraryA(name); }
 
 inline void *sym(Handle h, const char *name) noexcept {
   return reinterpret_cast<void *>(GetProcAddress(h, name));
 }
 
 inline void close(Handle h) noexcept {
-  if (h) FreeLibrary(h);
+  if (h)
+    FreeLibrary(h);
 }
 
 inline std::string error() {
   DWORD err = GetLastError();
-  if (err == 0) return {};
+  if (err == 0)
+    return {};
   LPSTR buf = nullptr;
   FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                      FORMAT_MESSAGE_IGNORE_INSERTS,
                  nullptr, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                  reinterpret_cast<LPSTR>(&buf), 0, nullptr);
   std::string msg(buf ? buf : "unknown error");
-  if (buf) LocalFree(buf);
+  if (buf)
+    LocalFree(buf);
   return msg;
 }
 
@@ -62,12 +63,11 @@ inline Handle open(const char *name) noexcept {
   return dlopen(name, RTLD_NOW | RTLD_LOCAL);
 }
 
-inline void *sym(Handle h, const char *name) noexcept {
-  return dlsym(h, name);
-}
+inline void *sym(Handle h, const char *name) noexcept { return dlsym(h, name); }
 
 inline void close(Handle h) noexcept {
-  if (h) dlclose(h);
+  if (h)
+    dlclose(h);
 }
 
 inline std::string error() {
@@ -80,14 +80,14 @@ inline std::string error() {
 inline Handle openFirst(const char *const names[]) noexcept {
   for (const char *const *name = names; *name; ++name) {
     Handle h = open(*name);
-    if (h) return h;
+    if (h)
+      return h;
   }
   return {};
 }
 
 /// Load a symbol and cast to a function pointer type.
-template <typename Fn>
-Fn loadSym(Handle h, const char *name) noexcept {
+template <typename Fn> Fn loadSym(Handle h, const char *name) noexcept {
   return reinterpret_cast<Fn>(sym(h, name));
 }
 

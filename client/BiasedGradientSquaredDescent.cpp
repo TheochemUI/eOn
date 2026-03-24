@@ -23,7 +23,6 @@
 #include <cstring>
 #include <map>
 
-
 class BGSDObjectiveFunction : public ObjectiveFunction {
   Matter &matter;
 

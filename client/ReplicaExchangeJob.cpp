@@ -49,9 +49,7 @@ std::vector<std::string> ReplicaExchangeJob::run() {
   // the potential requires it (e.g. ML potentials with internal state)
   const bool perImage = pot->needsPerImageInstance();
   for (long i = 0; i < nReplicas; i++) {
-    auto replicaPot = perImage
-        ? eonc::helpers::makePotential(params.potential_options.potential, params)
-        : pot;
+    auto replicaPot = perImage ? eonc::helpers::makePotential(params) : pot;
     replica[i] = std::make_shared<Matter>(replicaPot, params);
     *replica[i] = *pos;
     replicaDynamics[i] = std::make_unique<Dynamics>(replica[i].get(), params);

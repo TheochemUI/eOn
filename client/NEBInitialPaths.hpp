@@ -32,7 +32,12 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
 /// In-place path reparameterization for NEB shared_ptr paths.
 /// Redistributes interior images at equal arc-length intervals using
 /// cubic Hermite interpolation, without allocating new Matter objects.
-/// Useful for cheap geometry-based reparameterization during OCINEB.
+///
+/// @param path The FULL path including endpoints. path[0] and path[n-1]
+///             are treated as fixed endpoints and are never modified.
+///             Interior images path[1] through path[n-2] are repositioned.
+///             Pass the entire NEB path vector, not a sub-span of
+///             intermediate images.
 void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path);
 
 /**

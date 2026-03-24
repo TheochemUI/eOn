@@ -23,8 +23,8 @@ namespace tests {
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 /// Load a Matter from the test data directory (meson test sets CWD).
-static std::shared_ptr<Matter> loadMatter(PotType potType,
-                                          const std::string &conFile = "reactant.con") {
+static std::shared_ptr<Matter>
+loadMatter(PotType potType, const std::string &conFile = "reactant.con") {
   auto params = std::make_shared<Parameters>();
   params->potential_options.potential = potType;
   auto pot = eonc::helpers::makePotential(*params);

@@ -69,9 +69,12 @@ void EAM::force(long N, const double *R, const int *atomicNrs, double *F,
     zmin = std::min(zmin, R[i + 2]);
   }
   // Only shift if coordinates are negative
-  if (xmin > 0) xmin = 0;
-  if (ymin > 0) ymin = 0;
-  if (zmin > 0) zmin = 0;
+  if (xmin > 0)
+    xmin = 0;
+  if (ymin > 0)
+    ymin = 0;
+  if (zmin > 0)
+    zmin = 0;
 
   for (long i = 0; i < 3 * N; i += 3) {
     Rtemp[i] += std::abs(xmin);
@@ -143,23 +146,31 @@ void EAM::calc_force(long N, double *R, const int *atomicNrs, double *F,
     const double zi = R[3 * i + 2];
 
     for (long j = 0; j < N; j++) {
-      if (i == j) continue;
+      if (i == j)
+        continue;
 
       double dx = xi - R[3 * j];
       double dy = yi - R[3 * j + 1];
       double dz = zi - R[3 * j + 2];
 
       // Minimum image convention
-      if (dx > halfBox0) dx -= box[0];
-      else if (dx < -halfBox0) dx += box[0];
-      if (dy > halfBox1) dy -= box[1];
-      else if (dy < -halfBox1) dy += box[1];
-      if (dz > halfBox2) dz -= box[2];
-      else if (dz < -halfBox2) dz += box[2];
+      if (dx > halfBox0)
+        dx -= box[0];
+      else if (dx < -halfBox0)
+        dx += box[0];
+      if (dy > halfBox1)
+        dy -= box[1];
+      else if (dy < -halfBox1)
+        dy += box[1];
+      if (dz > halfBox2)
+        dz -= box[2];
+      else if (dz < -halfBox2)
+        dz += box[2];
 
       double r2 = dx * dx + dy * dy + dz * dz;
       // r^2 cutoff avoids sqrt for far pairs
-      if (r2 > cutoff2) continue;
+      if (r2 > cutoff2)
+        continue;
 
       double r = std::sqrt(r2);
 
@@ -191,7 +202,8 @@ void EAM::calc_force(long N, double *R, const int *atomicNrs, double *F,
         double expArg = std::exp(-epar.alphaM * (r - epar.Rm));
         double d = 1.0 - expArg;
         double phi_r = epar.Dm * d * d - epar.Dm;
-        // Force: 2*Dm*alpha*d*(d-1) = 2*Dm*alpha*exp(-a*(r-re))*(1-exp(-a*(r-re)))
+        // Force: 2*Dm*alpha*d*(d-1) =
+        // 2*Dm*alpha*exp(-a*(r-re))*(1-exp(-a*(r-re)))
         double mag_force = 2.0 * epar.alphaM * epar.Dm * d * (d - 1.0);
 
         double fcomp_scale = mag_force * invR;
@@ -252,8 +264,7 @@ void EAM::cell_to_neighbor(long N, long /*num_of_cells*/, long *num_axis,
       for (long j2 = 0; j2 < num_axis[2]; j2++) {
         std::fill(neighbors.begin(), neighbors.end(), -1);
 
-        long cur_index =
-            j * num_axis[1] * num_axis[2] + j1 * num_axis[2] + j2;
+        long cur_index = j * num_axis[1] * num_axis[2] + j1 * num_axis[2] + j2;
 
         std::copy(celllist_new, celllist_new + num_cells * (N + 1),
                   cell_list_copy.begin());

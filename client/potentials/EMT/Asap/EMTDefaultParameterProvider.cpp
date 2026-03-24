@@ -253,14 +253,16 @@ void EMTDefaultParameterProvider::calc_cutoff() {
     if ((*i)->seq > maxseq)
       maxseq = (*i)->seq;
 
-  cutoff =
-      0.5 * maxseq * Beta * (std::sqrt(static_cast<double>(shell0)) + std::sqrt(static_cast<double>(shell0 + 1)));
+  cutoff = 0.5 * maxseq * Beta *
+           (std::sqrt(static_cast<double>(shell0)) +
+            std::sqrt(static_cast<double>(shell0 + 1)));
   // The cutoff slope is set (rather arbitrarily) to the same value
   // used in the original ARTwork code.  The idea of this
   // expression is that the slope is such that the Fermi function
   // has the value 1e-5 where the neighbor list is cut off.
   r = cutoff * 2.0 * std::sqrt(static_cast<double>(shell0 + 1)) /
-      (std::sqrt(static_cast<double>(shell0)) + std::sqrt(static_cast<double>(shell0 + 1)));
+      (std::sqrt(static_cast<double>(shell0)) +
+       std::sqrt(static_cast<double>(shell0 + 1)));
   cutslope = std::log(9999.0) / (r - cutoff);
 #if 0
   cerr << "cutoff " << cutoff << endl;
