@@ -75,11 +75,11 @@ public:
   /// Whether NEB should create separate Potential instances per image
   /// for true parallel force evaluation. When true, NEB calls
   /// makePotential() once per image instead of sharing one instance.
-  /// Override in potentials that use internal mutexes (e.g. MetatomicPotential).
+  /// Override in potentials that use internal mutexes (e.g.
+  /// MetatomicPotential).
   [[nodiscard]] virtual bool needsPerImageInstance() const noexcept {
     return false;
   }
-
 };
 
 namespace helpers {

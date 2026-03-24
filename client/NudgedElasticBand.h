@@ -72,7 +72,8 @@ public:
 
   std::size_t maxEnergyImage{0};
   bool movedAfterForceCall{false};
-  bool perImagePotentials_{false}; ///< Whether per-image potential instances exist
+  bool perImagePotentials_{
+      false}; ///< Whether per-image potential instances exist
   double ksp{0.0};
   double k_u{0.0}; // Upper-bound value for the spring constant
   double k_l{0.0}; // Lower-bound value for the spring constant

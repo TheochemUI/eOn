@@ -141,10 +141,12 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   numExtrema = 0;
 
   // Create per-image potentials if needed for true parallel force evaluation
-  perImagePotentials_ = pot->needsPerImageInstance() && params.main_options.parallel;
+  perImagePotentials_ =
+      pot->needsPerImageInstance() && params.main_options.parallel;
   if (perImagePotentials_) {
-    QUILL_LOG_INFO(log, "NEB: Creating per-image potential instances for "
-                        "parallel force evaluation ({} images)",
+    QUILL_LOG_INFO(log,
+                   "NEB: Creating per-image potential instances for "
+                   "parallel force evaluation ({} images)",
                    numImages + 2);
   }
 

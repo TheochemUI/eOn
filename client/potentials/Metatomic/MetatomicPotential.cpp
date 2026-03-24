@@ -484,4 +484,3 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
       std::vector<metatensor_torch::Labels>{neighbor_component},
       neighbor_properties);
 }
-

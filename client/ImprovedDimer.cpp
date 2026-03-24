@@ -33,10 +33,9 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   // Each dimer image gets its own potential for lock-free parallel evaluation
-  auto x1Pot =
-      (pot->needsPerImageInstance() && params.main_options.parallel)
-          ? eonc::helpers::makePotential(params)
-          : pot;
+  auto x1Pot = (pot->needsPerImageInstance() && params.main_options.parallel)
+                   ? eonc::helpers::makePotential(params)
+                   : pot;
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(x1Pot, params);
   *x0 = *matter;
@@ -110,7 +109,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   }
 
   VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;
-  double phi_tol = eonc::helpers::pi * (params.dimer_options.converged_angle / 180.0);
+  double phi_tol =
+      eonc::helpers::pi * (params.dimer_options.converged_angle / 180.0);
   double phi_prime = 0.0;
   double phi_min = 0.0;
 
@@ -205,11 +205,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         z += s[i] * (alpha[i] - bv);
       }
 
-      double vd = std::clamp(
-          -eonc::safemath::safe_normalized(z).dot(
-              eonc::safemath::safe_normalized(F_R)),
-          -1.0, 1.0);
-      double angle = eonc::safemath::safe_acos(vd) * (180.0 / eonc::helpers::pi);
+      double vd = std::clamp(-eonc::safemath::safe_normalized(z).dot(
+                                 eonc::safemath::safe_normalized(F_R)),
+                             -1.0, 1.0);
+      double angle =
+          eonc::safemath::safe_acos(vd) * (180.0 / eonc::helpers::pi);
 
       if (angle > 87.0) {
         s.clear();
@@ -243,7 +243,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     // Estimate optimum rotation angle
     double d_C_tau_d_phi = 2.0 * (g1 - g0).dot(theta) / delta;
     phi_prime = -0.5 * eonc::safemath::safe_atan_ratio(
-                            d_C_tau_d_phi, 2.0 * std::abs(C_tau), 0.0);
+                           d_C_tau_d_phi, 2.0 * std::abs(C_tau), 0.0);
     statsAngle = phi_prime * (180.0 / eonc::helpers::pi);
 
     double alignment = std::abs(tau.dot(referenceMode));
@@ -273,8 +273,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       double a0 = 2.0 * (C_tau - a1);
       phi_min = 0.5 * eonc::safemath::safe_atan_ratio(b1, a1, 0.0);
 
-      double C_tau_min =
-          0.5 * a0 + a1 * std::cos(2.0 * phi_min) + b1 * std::sin(2.0 * phi_min);
+      double C_tau_min = 0.5 * a0 + a1 * std::cos(2.0 * phi_min) +
+                         b1 * std::sin(2.0 * phi_min);
 
       // If curvature is being maximized, push over pi/2
       if (C_tau_min > C_tau) {
@@ -310,9 +310,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       // Interpolate g1 at phi_min from g1 and g1_prime (saves one force call)
       double sin_pp = std::sin(phi_prime);
-      g1 = g1 * eonc::safemath::safe_div(std::sin(phi_prime - phi_min), sin_pp, 0.0) +
+      g1 = g1 * eonc::safemath::safe_div(std::sin(phi_prime - phi_min), sin_pp,
+                                         0.0) +
            g1_prime * eonc::safemath::safe_div(std::sin(phi_min), sin_pp, 0.0) +
-           g0 * (1.0 - std::cos(phi_min) - std::sin(phi_min) * std::tan(phi_prime * 0.5));
+           g0 * (1.0 - std::cos(phi_min) -
+                 std::sin(phi_min) * std::tan(phi_prime * 0.5));
 
       statsTorque = F_R.norm() / (2.0 * delta);
       statsRotations += 1;
@@ -343,9 +345,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
         x0->setPositionsV(bestX0Positions);
         x1->setPositionsV(bestX0Positions + delta * bestTau);
         *matter = *x0;
-        QUILL_LOG_DEBUG(log,
-                        "Restored best negative curvature state: C_tau={:.4f}",
-                        C_tau);
+        QUILL_LOG_DEBUG(
+            log, "Restored best negative curvature state: C_tau={:.4f}", C_tau);
         throw eonc::DimerModeRestoredException();
       } else {
         QUILL_LOG_WARNING(

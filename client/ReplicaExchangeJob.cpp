@@ -24,12 +24,14 @@
 #include <thread>
 
 std::vector<std::string> ReplicaExchangeJob::run() {
-  long samplingSteps = static_cast<long>(
-      params.replica_exchange_options.sampling_time /
-          params.dynamics_options.time_step + 0.5);
-  long exchangePeriodSteps = static_cast<long>(
-      params.replica_exchange_options.exchange_period /
-          params.dynamics_options.time_step + 0.5);
+  long samplingSteps =
+      static_cast<long>(params.replica_exchange_options.sampling_time /
+                            params.dynamics_options.time_step +
+                        0.5);
+  long exchangePeriodSteps =
+      static_cast<long>(params.replica_exchange_options.exchange_period /
+                            params.dynamics_options.time_step +
+                        0.5);
   const double kB = params.constants.kB;
 
   std::string posFilename =
@@ -73,9 +75,8 @@ std::vector<std::string> ReplicaExchangeJob::run() {
                             params.replica_exchange_options.temperature_low) /
                    static_cast<double>(nReplicas - 1);
     for (long i = 0; i < nReplicas; i++) {
-      replicaTemperature[i] =
-          params.replica_exchange_options.temperature_low *
-          std::exp(kTemp * static_cast<double>(i));
+      replicaTemperature[i] = params.replica_exchange_options.temperature_low *
+                              std::exp(kTemp * static_cast<double>(i));
       replicaDynamics[i]->setTemperature(replicaTemperature[i]);
       QUILL_LOG_DEBUG(log, "replica: {} temperature {:.0f}", i + 1,
                       replicaTemperature[i]);
@@ -88,8 +89,8 @@ std::vector<std::string> ReplicaExchangeJob::run() {
       params.replica_exchange_options.replicas);
 
   // Parallel replica dynamics when enabled and potential supports it
-  const bool canParallel = params.main_options.parallel &&
-                           (pot->isThreadSafe() || perImage);
+  const bool canParallel =
+      params.main_options.parallel && (pot->isThreadSafe() || perImage);
 
   for (long step = 1; step <= samplingSteps; step++) {
     if (canParallel && nReplicas > 1) {
@@ -117,10 +118,10 @@ std::vector<std::string> ReplicaExchangeJob::run() {
         double energyHigh = replica[i + 1]->getPotentialEnergy();
         double kbTLow = kB * replicaTemperature[i];
         double kbTHigh = kB * replicaTemperature[i + 1];
-        double pAcc = std::min(
-            1.0, std::exp((energyHigh - energyLow) *
-                          (eonc::safemath::safe_recip(kbTHigh, 0.0) -
-                           eonc::safemath::safe_recip(kbTLow, 0.0))));
+        double pAcc =
+            std::min(1.0, std::exp((energyHigh - energyLow) *
+                                   (eonc::safemath::safe_recip(kbTHigh, 0.0) -
+                                    eonc::safemath::safe_recip(kbTLow, 0.0))));
         double rnd = eonc::helpers::randomDouble();
         QUILL_LOG_INFO(log,
                        "step: {} trial swap, i {}, elow: {:.5f}, ehigh: "
