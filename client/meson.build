@@ -238,7 +238,8 @@ _deps += nlohmann_json_dep
 
 # Highway SIMD (optional, for vectorized potentials)
 hwy_dep = dependency('libhwy', required: false)
-if not hwy_dep.found()
+if not hwy_dep.found() and host_machine.system() != 'windows'
+    # cmake subproject produces .a archives that MSVC link.exe cannot read
     message('Highway: system libhwy not found, trying cmake subproject...')
     hwy_opts = cmake.subproject_options()
     hwy_opts.add_cmake_defines({
