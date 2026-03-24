@@ -42,10 +42,9 @@ std::vector<std::string> ProcessSearchJob::run() {
   }
   saddle = std::make_shared<Matter>(pot, params);
   // Give min2 its own potential for parallel endpoint minimization
-  auto min2Pot =
-      (pot->needsPerImageInstance() && params.main_options.parallel)
-          ? eonc::helpers::makePotential(params)
-          : pot;
+  auto min2Pot = (pot->needsPerImageInstance() && params.main_options.parallel)
+                     ? eonc::helpers::makePotential(params)
+                     : pot;
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
 
