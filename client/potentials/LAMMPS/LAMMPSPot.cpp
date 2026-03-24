@@ -127,8 +127,8 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
         "LAMMPS library found but lacks MPI support (lammps_open not found).\n"
         "Install an MPI-enabled LAMMPS build.");
   }
-  LAMMPSObj = lmp.open_mpi(lmpargc, const_cast<char **>(lmpargv), mpiComm,
-                           nullptr);
+  LAMMPSObj =
+      lmp.open_mpi(lmpargc, const_cast<char **>(lmpargv), mpiComm, nullptr);
 #else
   const char *lmpargv[] = {"liblammps", "-log",    "none", "-echo",
                            "log",       "-screen", "none"};
@@ -168,9 +168,9 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lmp.command(LAMMPSObj, "neigh_modify delay 1");
 
   // Define periodic cell (prism for non-orthorhombic)
-  std::string region_cmd = std::format(
-      "region cell prism 0 {} 0 {} 0 {} {} {} {} units box",
-      box[0], box[4], box[8], box[3], box[6], box[7]);
+  std::string region_cmd =
+      std::format("region cell prism 0 {} 0 {} 0 {} {} {} {} units box", box[0],
+                  box[4], box[8], box[3], box[6], box[7]);
   lmp.command(LAMMPSObj, region_cmd.c_str());
 
   std::string create_box_cmd = std::format("create_box {} cell", ntypes);
@@ -178,9 +178,9 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
 
   // Initialize atoms
   for (long i = 0; i < N; i++) {
-    std::string atom_cmd = std::format(
-        "create_atoms {} single {} {} {} units box",
-        type_map[atomicNrs[i]], 0.0, 0.0, 0.0);
+    std::string atom_cmd =
+        std::format("create_atoms {} single {} {} {} units box",
+                    type_map[atomicNrs[i]], 0.0, 0.0, 0.0);
     lmp.command(LAMMPSObj, atom_cmd.c_str());
   }
 

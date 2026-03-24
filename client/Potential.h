@@ -80,13 +80,6 @@ public:
     return false;
   }
 
-  /// Create an independent clone of this potential for parallel evaluation.
-  /// Default: calls makePotential() (loads from scratch).
-  /// Override in potentials that can clone more efficiently (e.g. model clone).
-  [[nodiscard]] virtual std::shared_ptr<Potential>
-  clone(const Parameters &params) const {
-    return eonc::helpers::makePotential(params);
-  }
 };
 
 namespace helpers {

@@ -12,8 +12,8 @@
 
 /// Ported from legacy unittests/utHelperFunctions.cpp to Catch2.
 
-#include "Eigen.h"
 #include "HelperFunctions.h"
+#include "Eigen.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 

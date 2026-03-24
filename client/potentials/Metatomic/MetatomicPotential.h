@@ -130,11 +130,6 @@ public:
     return true;
   }
 
-  /// Clone this potential by cloning the PyTorch model.
-  /// Ensures identical weights and JIT state across per-image instances.
-  [[nodiscard]] std::shared_ptr<Potential>
-  clone(const Parameters &params) const override;
-
 private:
   mutable std::mutex inference_mutex_;
 };

@@ -401,11 +401,11 @@ void ZhuPhilpott<P>::anisotropic(const double distance[], double force[],
   b = sigma2 / (rho2 / alpha2 + z2);
   double a2 = a * a, a3 = a2 * a;
   double b2 = b * b;
-  A = a3 * a3;         // a^6
-  B = b * b2;          // b^3
+  A = a3 * a3; // a^6
+  B = b * b2;  // b^3
   energy += 4.0 * epsilon * (A - B);
-  dE_da = 24.0 * epsilon * a2 * a3;   // a^5
-  dE_db = -12.0 * epsilon * b2;       // b^2
+  dE_da = 24.0 * epsilon * a2 * a3; // a^5
+  dE_db = -12.0 * epsilon * b2;     // b^2
   double invSigma2 = 1.0 / sigma2;
   f = 2.0 * (dE_da * a2 * alpha2 + dE_db * b2 / alpha2) * invSigma2;
   force[0] += f * distance[0];

@@ -34,8 +34,6 @@
 #include <thread>
 #include <vector>
 
-
-
 namespace eonc {
 namespace {
 

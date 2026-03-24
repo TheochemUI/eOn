@@ -14,8 +14,6 @@
 
 #include <cmath>
 
-
-
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = std::fabs(m_force.dot(m_forceOld));
   double b = m_forceOld.squaredNorm();
@@ -82,7 +80,8 @@ int ConjugateGradients::line_search(double a_maxMove) {
   int line_i = 0;
   do {
     // Determine curvature from last step (Secant method)
-    curvature = std::fabs((projectedForceBeforeStep - projectedForce) / stepSize);
+    curvature =
+        std::fabs((projectedForceBeforeStep - projectedForce) / stepSize);
     stepSize = eonc::safemath::safe_div(projectedForce, curvature, a_maxMove);
 
     if (a_maxMove < std::fabs(stepSize)) {

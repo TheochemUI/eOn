@@ -22,7 +22,8 @@ const char Dynamics::LANGEVIN[] = "langevin";
 const char Dynamics::NONE[] = "none";
 
 Dynamics::Dynamics(Matter *matter_in, const DynamicsConfig &config)
-    : matter{matter_in}, m_config{config} {
+    : matter{matter_in},
+      m_config{config} {
   dt = m_config.time_step;
   nAtoms = matter->numberOfAtoms();
   nFreeCoords = matter->numberOfFreeAtoms() * 3;
@@ -116,8 +117,7 @@ void Dynamics::run() {
                       potE, kinE + potE, kinT);
     }
 
-    if (m_config.write_movies &&
-        (step % m_config.write_movies_interval == 0)) {
+    if (m_config.write_movies && (step % m_config.write_movies_interval == 0)) {
       matter->matter2con("dynamics", true);
     }
   }
@@ -253,9 +253,8 @@ void Dynamics::langevinVerlet() {
   for (long i = 0; i < nAtoms; i++) {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
-        noise(i, j) =
-            std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
-            gaussRandom(0.0, 1.0);
+        noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
+                      gaussRandom(0.0, 1.0);
       }
     }
   }
@@ -271,9 +270,8 @@ void Dynamics::langevinVerlet() {
   for (long i = 0; i < nAtoms; i++) {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
-        noise(i, j) =
-            std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
-            gaussRandom(0.0, 1.0);
+        noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
+                      gaussRandom(0.0, 1.0);
       }
     }
   }

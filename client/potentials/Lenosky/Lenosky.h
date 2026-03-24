@@ -28,7 +28,8 @@ void lenosky_(const long int *N, const double *R, double *F, double *U,
 /// Lenosky potential for Si (Fortran implementation).
 class Lenosky final : public Potential {
 public:
-  explicit Lenosky(const Parameters &params) : Potential(params) {}
+  explicit Lenosky(const Parameters &params)
+      : Potential(params) {}
   ~Lenosky() override = default;
 
   void force(long N, const double *R, const int *atomicNrs, double *F,

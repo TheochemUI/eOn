@@ -372,7 +372,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
         if (!dimer->rotationDidConverge) {
           status = (dimer->getEigenvalue() < 0.0) ? STATUS_DIMER_RESTORED_BEST
-                                                   : STATUS_DIMER_LOST_MODE;
+                                                  : STATUS_DIMER_LOST_MODE;
           if (status == STATUS_DIMER_RESTORED_BEST) {
             QUILL_LOG_DEBUG(log, "Dimer restored to valid state. C_tau={:.4f}",
                             dimer->getEigenvalue());

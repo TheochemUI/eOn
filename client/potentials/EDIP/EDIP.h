@@ -28,7 +28,8 @@ void edip_(const long int *N, const double *R, double *F, double *U,
 /// EDIP potential for Si (Fortran implementation).
 class EDIP final : public Potential {
 public:
-  explicit EDIP(const Parameters &params) : Potential(PotType::EDIP, params) {}
+  explicit EDIP(const Parameters &params)
+      : Potential(PotType::EDIP, params) {}
   ~EDIP() override = default;
 
   void force(long N, const double *R, const int *atomicNrs, double *F,

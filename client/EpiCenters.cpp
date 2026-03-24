@@ -212,8 +212,8 @@ void eonc::EpiCenters::coordinationLessOrEqual(bool *result,
   coordination(coordinationVal.data(), matter, neighborCutoff);
 
   for (long i = 0; i < nAtoms; i++) {
-    result[i] = (coordinationVal[i] <= coordinationMaxVal) &&
-                !matter->getFixed(i);
+    result[i] =
+        (coordinationVal[i] <= coordinationMaxVal) && !matter->getFixed(i);
   }
 }
 
@@ -228,7 +228,8 @@ long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
     }
   }
   assert(!freeAtoms.empty());
-  long pick = static_cast<long>(randomDouble(static_cast<long>(freeAtoms.size() - 1)));
+  long pick =
+      static_cast<long>(randomDouble(static_cast<long>(freeAtoms.size() - 1)));
   return freeAtoms[pick];
 }
 

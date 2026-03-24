@@ -28,7 +28,8 @@ void sw_(const long int *N, const double *R, double *F, double *U,
 /// Stillinger-Weber potential for Si (Fortran implementation).
 class SW final : public Potential {
 public:
-  explicit SW(const Parameters &p) : Potential(p) {}
+  explicit SW(const Parameters &p)
+      : Potential(p) {}
   ~SW() override = default;
 
   void force(long N, const double *R, const int *atomicNrs, double *F,

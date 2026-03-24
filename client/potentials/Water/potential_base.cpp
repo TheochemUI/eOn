@@ -167,7 +167,7 @@ void PotentialBase::restrainAngle(double const r1[], double const r2[],
   cosa = -dotProduct(r12, r23) / r12_1 / r23_1;
   a = std::acos(cosa);
   u += k * (a - aeq) * (a - aeq);
-  m = -2 * k * (a - aeq);          // moment
+  m = -2 * k * (a - aeq);               // moment
   m /= -1 * std::sqrt(1 - cosa * cosa); //*d(a)/d(cos a)
   for (int i = 0; i < 3; ++i) {
     d12 = -cosa * r12[i] / r12_2 - r23[i] / r12_1 / r23_1; // d(cos a)/d(r12)

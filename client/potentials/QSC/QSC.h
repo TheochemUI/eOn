@@ -35,7 +35,8 @@ public:
       i++;
     }
   }
-  QSC() : QSC(Parameters{}) {}
+  QSC()
+      : QSC(Parameters{}) {}
   ~QSC() override = default;
 
   void force(long N, const double *R, const int *atomicNrs, double *F,

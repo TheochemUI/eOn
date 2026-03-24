@@ -220,8 +220,9 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
   auto log = eonc::log::get();
   const auto &init = params.neb_options.initialization;
-  QUILL_LOG_INFO(log, "Generating initial path using S-IDPP{} ({} images, "
-                      "alpha={:.2f}, frontier_tol={:.4f})...",
+  QUILL_LOG_INFO(log,
+                 "Generating initial path using S-IDPP{} ({} images, "
+                 "alpha={:.2f}, frontier_tol={:.4f})...",
                  use_zbl ? "-ZBL" : "", target_nimgs, init.sidpp_alpha,
                  init.sidpp_frontier_tol);
 
@@ -243,8 +244,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
   // Helper: create IDPP objective with optional ZBL wrapping
   auto makeIDPP = [&]() -> std::shared_ptr<ObjectiveFunction> {
-    auto objf =
-        std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+    auto objf = std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
     if (use_zbl && zbl_pot) {
       return std::make_shared<ZBLRepulsiveIDPPObjective>(objf, zbl_pot, path,
                                                          params, 1.0);
@@ -255,8 +255,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   // Helper: relax current path on IDPP surface
   auto relaxPath = [&](int maxSteps) -> double {
     auto objf = makeIDPP();
-    auto optim =
-        eonc::helpers::create::mkOptim(objf, init.opt_method, params);
+    auto optim = eonc::helpers::create::mkOptim(objf, init.opt_method, params);
     int step = 0;
     while (step < maxSteps) {
       optim->run(5, init.max_move);
@@ -301,15 +300,13 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
     // before adding more images (up to max_iterations total)
     if (residual > init.sidpp_frontier_tol) {
       double residual2 = relaxPath(init.max_iterations - init.nsteps);
-      QUILL_LOG_DEBUG(log,
-                      "S-IDPP: Extended relaxation {:.4f} -> {:.4f}",
+      QUILL_LOG_DEBUG(log, "S-IDPP: Extended relaxation {:.4f} -> {:.4f}",
                       residual, residual2);
       residual = residual2;
     }
 
-    QUILL_LOG_DEBUG(log,
-                    "S-IDPP: {} images | Residual: {:.4f}",
-                    nIntermediate, residual);
+    QUILL_LOG_DEBUG(log, "S-IDPP: {} images | Residual: {:.4f}", nIntermediate,
+                    residual);
   }
 
   // 3. Reparameterize: redistribute images evenly along arc length
@@ -441,16 +438,14 @@ void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path) {
   for (size_t i = 0; i < n; ++i) {
     AtomMatrix T;
     if (i == 0) {
-      T = path[i]->pbc(path[i + 1]->getPositions() -
-                        path[i]->getPositions());
+      T = path[i]->pbc(path[i + 1]->getPositions() - path[i]->getPositions());
     } else if (i == n - 1) {
-      T = path[i]->pbc(path[i]->getPositions() -
-                        path[i - 1]->getPositions());
+      T = path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
     } else {
-      AtomMatrix dN = path[i]->pbc(path[i + 1]->getPositions() -
-                                    path[i]->getPositions());
-      AtomMatrix dP = path[i]->pbc(path[i]->getPositions() -
-                                    path[i - 1]->getPositions());
+      AtomMatrix dN =
+          path[i]->pbc(path[i + 1]->getPositions() - path[i]->getPositions());
+      AtomMatrix dP =
+          path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
       T = 0.5 * (dN + dP);
     }
     if (i > 0 && i < n - 1) {
@@ -482,8 +477,8 @@ void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path) {
     double sArc = arcLength[hi] - arcLength[lo];
     double f = (sArc > 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;
 
-    path[i]->setPositions(
-        cubicInterpolate(origPos[lo], tangents[lo], origPos[hi], tangents[hi], f));
+    path[i]->setPositions(cubicInterpolate(origPos[lo], tangents[lo],
+                                           origPos[hi], tangents[hi], f));
   }
 }
 

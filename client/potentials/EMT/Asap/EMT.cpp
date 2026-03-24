@@ -122,7 +122,8 @@ void EMT::Allocate() {
   // atoms have ghosts, otherwise no reallocation will happen.
 
   // First, check if reallocation is necessary.
-  if (nSize != static_cast<int>(Ec.size()) || nAtoms != static_cast<int>(Eas.size())) {
+  if (nSize != static_cast<int>(Ec.size()) ||
+      nAtoms != static_cast<int>(Eas.size())) {
     DEBUGPRINT;
     /* Resize/intialize the internal variables. */
     sigma1.resize(nelements);

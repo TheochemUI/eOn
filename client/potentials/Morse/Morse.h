@@ -25,7 +25,11 @@
 class Morse final : public Potential {
 public:
   explicit Morse(const Parameters &params)
-      : Potential(params), De_{0.7102}, a_{1.6047}, re_{2.8970}, cutoff_{9.5} {
+      : Potential(params),
+        De_{0.7102},
+        a_{1.6047},
+        re_{2.8970},
+        cutoff_{9.5} {
     setParameters(De_, a_, re_, cutoff_);
   }
 

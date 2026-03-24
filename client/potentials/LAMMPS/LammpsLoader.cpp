@@ -35,19 +35,21 @@ LammpsLoader::LammpsLoader() {
   }
 
   // Load required symbols
-  open_no_mpi      = dynlib::loadSym<open_no_mpi_fn>(m_handle, "lammps_open_no_mpi");
-  close            = dynlib::loadSym<close_fn>(m_handle, "lammps_close");
-  command          = dynlib::loadSym<command_fn>(m_handle, "lammps_command");
-  file             = dynlib::loadSym<file_fn>(m_handle, "lammps_file");
-  scatter_atoms    = dynlib::loadSym<scatter_atoms_fn>(m_handle, "lammps_scatter_atoms");
-  extract_variable = dynlib::loadSym<extract_var_fn>(m_handle, "lammps_extract_variable");
+  open_no_mpi = dynlib::loadSym<open_no_mpi_fn>(m_handle, "lammps_open_no_mpi");
+  close = dynlib::loadSym<close_fn>(m_handle, "lammps_close");
+  command = dynlib::loadSym<command_fn>(m_handle, "lammps_command");
+  file = dynlib::loadSym<file_fn>(m_handle, "lammps_file");
+  scatter_atoms =
+      dynlib::loadSym<scatter_atoms_fn>(m_handle, "lammps_scatter_atoms");
+  extract_variable =
+      dynlib::loadSym<extract_var_fn>(m_handle, "lammps_extract_variable");
 
 #ifdef EONMPI
   open_mpi = dynlib::loadSym<open_mpi_fn>(m_handle, "lammps_open");
 #endif
 
-  if (!open_no_mpi || !close || !command || !file ||
-      !scatter_atoms || !extract_variable) {
+  if (!open_no_mpi || !close || !command || !file || !scatter_atoms ||
+      !extract_variable) {
     std::cerr << "[LAMMPS] Library loaded but missing required symbols\n";
     dynlib::close(m_handle);
     m_handle = {};
@@ -57,9 +59,7 @@ LammpsLoader::LammpsLoader() {
   m_loaded = true;
 }
 
-LammpsLoader::~LammpsLoader() {
-  dynlib::close(m_handle);
-}
+LammpsLoader::~LammpsLoader() { dynlib::close(m_handle); }
 
 void LammpsLoader::require_loaded() const {
   if (!m_loaded) {

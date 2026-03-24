@@ -41,9 +41,10 @@ int DynamicsSaddleSearch::run() {
   dyn.setTemperature(params.saddle_search_options.dynamics.temperature);
   dyn.setThermalVelocity();
 
-  int dephaseSteps = static_cast<int>(
-      std::floor(params.parallel_replica_options.dephase_time /
-                 params.dynamics_options.time_step + 0.5));
+  int dephaseSteps =
+      static_cast<int>(std::floor(params.parallel_replica_options.dephase_time /
+                                      params.dynamics_options.time_step +
+                                  0.5));
 
   while (true) {
 
@@ -82,10 +83,12 @@ int DynamicsSaddleSearch::run() {
 
   int checkInterval = static_cast<int>(
       params.saddle_search_options.dynamics.state_check_interval /
-          params.dynamics_options.time_step + 0.5);
-  int recordInterval = static_cast<int>(
-      params.saddle_search_options.dynamics.record_interval /
-          params.dynamics_options.time_step + 0.5);
+          params.dynamics_options.time_step +
+      0.5);
+  int recordInterval =
+      static_cast<int>(params.saddle_search_options.dynamics.record_interval /
+                           params.dynamics_options.time_step +
+                       0.5);
 
   if (params.debug_options.write_movies) {
     saddle->matter2con("dynamics", false);
@@ -143,8 +146,7 @@ int DynamicsSaddleSearch::run() {
           int mid = neb.numImages / 2 + 1;
           for (int img = 1; img <= neb.numImages; img++) {
             if (img < mid) {
-              double frac = static_cast<double>(img) /
-                            static_cast<double>(mid);
+              double frac = static_cast<double>(img) / static_cast<double>(mid);
               neb.path[img]->setPositions(reactant->getPositions() +
                                           frac * reactantToSaddle);
             } else if (img > mid) {
@@ -182,9 +184,8 @@ int DynamicsSaddleSearch::run() {
               extremumImage =
                   static_cast<int>(std::floor(neb.extremumPosition[jExt]));
               *saddle = *neb.path[extremumImage];
-              double interpDist =
-                  neb.extremumPosition[jExt] -
-                  static_cast<double>(extremumImage);
+              double interpDist = neb.extremumPosition[jExt] -
+                                  static_cast<double>(extremumImage);
               AtomMatrix bandDir =
                   saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                               neb.path[extremumImage]->getPositions());
@@ -212,22 +213,19 @@ int DynamicsSaddleSearch::run() {
           if (extremumImage != -1) {
             *saddle = *neb.path[extremumImage];
             double interpDist =
-                neb.extremumPosition[jExt] -
-                static_cast<double>(extremumImage);
+                neb.extremumPosition[jExt] - static_cast<double>(extremumImage);
             QUILL_LOG_DEBUG(log, "interpDistance {}", interpDist);
             AtomMatrix bandDir =
                 saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                             neb.path[extremumImage]->getPositions());
-            saddle->setPositions(interpDist * bandDir +
-                                 saddle->getPositions());
+            saddle->setPositions(interpDist * bandDir + saddle->getPositions());
             mode = saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                                saddle->getPositions());
             mode.normalize();
           } else {
             QUILL_LOG_DEBUG(
                 log, "no maxima found, using max energy non-endpoint image");
-            double maxEnergy =
-                -std::numeric_limits<double>::infinity();
+            double maxEnergy = -std::numeric_limits<double>::infinity();
             for (int img = 1; img <= neb.numImages; img++) {
               double U = neb.path[img]->getPotentialEnergy();
               if (U > maxEnergy) {

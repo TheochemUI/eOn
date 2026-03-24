@@ -21,10 +21,10 @@
 #include <cstring>
 #include <ctime>
 #include <filesystem>
-#include <memory>
 #include <format>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 
 #ifndef _WIN32
@@ -48,8 +48,10 @@ void eonc::helpers::getTime(double *real, double *user, double *sys) {
   *real = duration<double>(now.time_since_epoch()).count();
 
 #ifdef _WIN32
-  if (user) *user = 0.0;
-  if (sys) *sys = 0.0;
+  if (user)
+    *user = 0.0;
+  if (sys)
+    *sys = 0.0;
 #else
   struct rusage r_usage;
   if (getrusage(RUSAGE_SELF, &r_usage) != 0) {
@@ -127,7 +129,8 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
 AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
   // Unique FILE* with RAII cleanup
   auto closer = [](FILE *f) {
-    if (f) std::fclose(f);
+    if (f)
+      std::fclose(f);
   };
   std::unique_ptr<FILE, decltype(closer)> modeFile(
       std::fopen(filename.c_str(), "rb"), closer);
@@ -170,7 +173,8 @@ void eonc::helpers::saveMode(const std::string &filename,
 std::vector<int> eonc::helpers::split_string_int(std::string s,
                                                  std::string delim) {
   std::vector<int> list;
-  if (s.empty()) return list;
+  if (s.empty())
+    return list;
 
   size_t start = 0;
   size_t end = s.find_first_of(delim);
@@ -183,7 +187,8 @@ std::vector<int> eonc::helpers::split_string_int(std::string s,
         return {}; // Parse error
       }
     }
-    if (end == std::string::npos) break;
+    if (end == std::string::npos)
+      break;
     start = end + 1;
     end = s.find_first_of(delim, start);
   }

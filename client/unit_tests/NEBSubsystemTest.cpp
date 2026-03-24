@@ -135,7 +135,8 @@ TEST_CASE("ImprovedTangent: maximum uses energy-weighted combination",
   // energyDiffPrev = 2-5 = -3, energyDiffNext = 1-5 = -4
   // |energyDiffPrev| = 3, |energyDiffNext| = 4
   // min = 3, max = 4
-  // energyDiffPrev(-3) > energyDiffNext(-4) => tang = diffNext*min + diffPrev*max
+  // energyDiffPrev(-3) > energyDiffNext(-4) => tang = diffNext*min +
+  // diffPrev*max
   //   = diffNext*3 + diffPrev*4
   AtomMatrix tang = strat.compute(diffNext, diffPrev, 5.0, 2.0, 1.0);
   REQUIRE(tang.norm() == Catch::Approx(1.0).epsilon(1e-12));
@@ -197,8 +198,7 @@ TEST_CASE("climbingImageForce: reverses parallel component", "[neb]") {
   AtomMatrix force = make3({3, 4, 0, 0, 0, 0, 0, 0, 0});
   AtomMatrix forceDNEB = AtomMatrix::Zero(3, 3);
 
-  AtomMatrix fCI =
-      eonc::neb::climbingImageForce(force, tangent, forceDNEB);
+  AtomMatrix fCI = eonc::neb::climbingImageForce(force, tangent, forceDNEB);
 
   // F_CI = F - 2*(F.t)*t = (3,4,0,...) - 2*3*(1,0,0,...) = (-3,4,0,...)
   REQUIRE(fCI(0, 0) == Catch::Approx(-3.0));
@@ -212,8 +212,7 @@ TEST_CASE("climbingImageForce: includes DNEB contribution", "[neb]") {
   AtomMatrix force = make3({3, 0, 0, 0, 0, 0, 0, 0, 0});
   AtomMatrix forceDNEB = make3({0, 1, 0, 0, 0, 0, 0, 0, 0});
 
-  AtomMatrix fCI =
-      eonc::neb::climbingImageForce(force, tangent, forceDNEB);
+  AtomMatrix fCI = eonc::neb::climbingImageForce(force, tangent, forceDNEB);
 
   // F_CI = (3,0,...) - 2*3*(1,0,...) + (0,1,...) = (-3, 1, 0, ...)
   REQUIRE(fCI(0, 0) == Catch::Approx(-3.0));
@@ -261,8 +260,7 @@ TEST_CASE("computeDNEB: switching function behavior", "[neb]") {
   // projected out of fPerpDir: (0,0,2) - dot((0,0,2),(0,1,0))*(0,1,0) =
   // (0,0,2). switching = (2/pi)*atan(|fPerp|^2/|springPerp|^2) =
   // (2/pi)*atan(1/4)
-  double expectedSwitch =
-      2.0 / eonc::helpers::pi * std::atan(1.0 / 4.0);
+  double expectedSwitch = 2.0 / eonc::helpers::pi * std::atan(1.0 / 4.0);
   // DNEB = (0,0,2,...) * switching
   REQUIRE(dneb(0, 2) == Catch::Approx(2.0 * expectedSwitch).epsilon(1e-10));
   // Other components should be zero (no y or x contribution)
@@ -326,8 +324,7 @@ TEST_CASE("UniformSpring: unequal spacing gives nonzero parallel spring force",
   // forceSpringPar = ksp * (distNext - distPrev) * tangent = 5 * tangent
   AtomMatrix forceSpringPar = ksp * (distNext - distPrev) * tangent;
   AtomMatrix expected = ksp * 1.0 * tangent;
-  REQUIRE_THAT(forceSpringPar,
-               eonc::helpers::test::IsApprox(expected, 1e-12));
+  REQUIRE_THAT(forceSpringPar, eonc::helpers::test::IsApprox(expected, 1e-12));
 }
 
 // ===== WeightedSpring ======================================================
@@ -344,7 +341,8 @@ TEST_CASE("WeightedSpring: energy-weighted spring force", "[neb]") {
   double distPrev = 2.0;
 
   // forceSpringPar = (kspNext*distNext - kspPrev*distPrev) * tangent
-  //                = (4.0*3.0 - 2.0*2.0) * tangent = (12 - 4) * tangent = 8*tangent
+  //                = (4.0*3.0 - 2.0*2.0) * tangent = (12 - 4) * tangent =
+  //                8*tangent
   auto result = spring.compute(1, tangent, distNext, distPrev);
 
   AtomMatrix expected = 8.0 * tangent;
@@ -383,8 +381,7 @@ struct CubicInterval {
 
 } // namespace
 
-TEST_CASE("findExtrema: parabolic barrier has one extremum in [0,1]",
-          "[neb]") {
+TEST_CASE("findExtrema: parabolic barrier has one extremum in [0,1]", "[neb]") {
   // Construct a cubic polynomial that mimics a barrier between two images.
   // U1 = 0.0 at f=0, U2 = 0.0 at f=1, F1 = -1.0 (force along tangent),
   // F2 = 1.0 (force along tangent).
@@ -399,9 +396,9 @@ TEST_CASE("findExtrema: parabolic barrier has one extremum in [0,1]",
 
   CubicInterval seg;
   seg.a = U1;
-  seg.b = -F1;        // 1.0
+  seg.b = -F1;                             // 1.0
   seg.c = 3.0 * (U2 - U1) + 2.0 * F1 + F2; // -1.0
-  seg.d = -2.0 * (U2 - U1) - (F1 + F2);     // 0.0
+  seg.d = -2.0 * (U2 - U1) - (F1 + F2);    // 0.0
 
   // d=0, so this is a quadratic: b + 2*c*f = 0 => f = -b/(2c) = 1/2
   REQUIRE(seg.d == Catch::Approx(0.0).margin(1e-15));
@@ -429,9 +426,9 @@ TEST_CASE("findExtrema: asymmetric cubic has two roots, may have extrema in "
 
   CubicInterval seg;
   seg.a = U1;
-  seg.b = -F1;                                // 2.0
-  seg.c = 3.0 * (U2 - U1) + 2.0 * F1 + F2;  // 1.5 - 4.0 + 0.5 = -2.0
-  seg.d = -2.0 * (U2 - U1) - (F1 + F2);      // -1.0 + 1.5 = 0.5
+  seg.b = -F1;                             // 2.0
+  seg.c = 3.0 * (U2 - U1) + 2.0 * F1 + F2; // 1.5 - 4.0 + 0.5 = -2.0
+  seg.d = -2.0 * (U2 - U1) - (F1 + F2);    // -1.0 + 1.5 = 0.5
 
   // dE/df = 3*d*f^2 + 2*c*f + b = 1.5*f^2 - 4*f + 2
   // Discriminant = (2c)^2 - 4*(3d)*b = 16 - 12 = 4
@@ -466,9 +463,9 @@ TEST_CASE("findExtrema: no extremum when derivative has no real root in [0,1]",
 
   CubicInterval seg;
   seg.a = U1;
-  seg.b = -F1;                                // 20
-  seg.c = 3.0 * (U2 - U1) + 2.0 * F1 + F2;  // 30 - 40 - 20 = -30
-  seg.d = -2.0 * (U2 - U1) - (F1 + F2);      // -20 + 40 = 20
+  seg.b = -F1;                             // 20
+  seg.c = 3.0 * (U2 - U1) + 2.0 * F1 + F2; // 30 - 40 - 20 = -30
+  seg.d = -2.0 * (U2 - U1) - (F1 + F2);    // -20 + 40 = 20
 
   // dE/df = 60*f^2 - 60*f + 20 = 20*(3f^2 - 3f + 1)
   // disc of quadratic: 9-12 = -3 < 0 => no real roots

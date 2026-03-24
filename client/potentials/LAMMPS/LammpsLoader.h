@@ -34,28 +34,28 @@ namespace eonc {
 class LammpsLoader {
 public:
   // LAMMPS C API function pointer types (from library.h)
-  using open_no_mpi_fn  = void *(*)(int, char **, void **);
-  using close_fn        = void (*)(void *);
-  using command_fn      = char *(*)(void *, const char *);
-  using file_fn         = void (*)(void *, const char *);
+  using open_no_mpi_fn = void *(*)(int, char **, void **);
+  using close_fn = void (*)(void *);
+  using command_fn = char *(*)(void *, const char *);
+  using file_fn = void (*)(void *, const char *);
   using scatter_atoms_fn = void (*)(void *, const char *, int, int, void *);
-  using extract_var_fn  = void *(*)(void *, const char *, const char *);
+  using extract_var_fn = void *(*)(void *, const char *, const char *);
 #ifdef EONMPI
-  using open_mpi_fn     = void *(*)(int, char **, MPI_Comm, void **);
+  using open_mpi_fn = void *(*)(int, char **, MPI_Comm, void **);
 #endif
 
   /// Thread-safe singleton accessor (Meyer's pattern).
   static LammpsLoader &instance();
 
   // Loaded function pointers (null if library not found)
-  open_no_mpi_fn  open_no_mpi{nullptr};
-  close_fn        close{nullptr};
-  command_fn      command{nullptr};
-  file_fn         file{nullptr};
+  open_no_mpi_fn open_no_mpi{nullptr};
+  close_fn close{nullptr};
+  command_fn command{nullptr};
+  file_fn file{nullptr};
   scatter_atoms_fn scatter_atoms{nullptr};
-  extract_var_fn  extract_variable{nullptr};
+  extract_var_fn extract_variable{nullptr};
 #ifdef EONMPI
-  open_mpi_fn     open_mpi{nullptr};
+  open_mpi_fn open_mpi{nullptr};
 #endif
 
   /// True if liblammps was successfully loaded.
@@ -75,8 +75,7 @@ private:
   dynlib::Handle m_handle{};
 
   /// Try to load a symbol; returns nullptr on failure.
-  template <typename Fn>
-  Fn load_sym(const char *name) {
+  template <typename Fn> Fn load_sym(const char *name) {
     return reinterpret_cast<Fn>(dynlib::sym(m_handle, name));
   }
 };

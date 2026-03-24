@@ -134,7 +134,8 @@ std::vector<std::string> BasinHoppingJob::run() {
       if (deltaE <= 0.0) {
         p = 1.0;
       } else {
-        p = std::exp(-deltaE / (params.main_options.temperature * 8.6173324e-5));
+        p = std::exp(-deltaE /
+                     (params.main_options.temperature * 8.6173324e-5));
       }
     }
 
@@ -251,7 +252,8 @@ std::vector<std::string> BasinHoppingJob::run() {
     double adjustFraction = params.basin_hopping_options.adjust_fraction;
     if ((step + 1) % nadjust == 0 &&
         params.basin_hopping_options.adjust_displacement) {
-      double recentRatio = static_cast<double>(recentAccept) / static_cast<double>(nadjust);
+      double recentRatio =
+          static_cast<double>(recentAccept) / static_cast<double>(nadjust);
       if (recentRatio > params.basin_hopping_options.target_ratio) {
         curDisplacement *= 1.0 + adjustFraction;
       } else {

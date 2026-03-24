@@ -31,7 +31,8 @@ std::vector<std::string> NudgedElasticBandJob::run() {
   std::shared_ptr<Matter> transitionState = nullptr;
   if (params.neb_options.initialization.method == NEBInit::FILE &&
       std::filesystem::exists("ts.con")) {
-    std::string transitionStateFilename = eonc::helpers::getRelevantFile("ts.con");
+    std::string transitionStateFilename =
+        eonc::helpers::getRelevantFile("ts.con");
     transitionState = std::make_shared<Matter>(pot, params);
     tsInterpolate = true;
     transitionState->con2matter(transitionStateFilename);
@@ -110,8 +111,8 @@ std::vector<std::string> NudgedElasticBandJob::run() {
         neb->path[image]->setPositions(initial->getPositions() +
                                        frac * reactantToTS);
       } else if (image > mid) {
-        double frac =
-            static_cast<double>(image - mid) / static_cast<double>(neb->numImages - mid + 1);
+        double frac = static_cast<double>(image - mid) /
+                      static_cast<double>(neb->numImages - mid + 1);
         neb->path[image]->setPositions(transitionState->getPositions() +
                                        frac * TSToProduct);
       } else if (image == mid) {

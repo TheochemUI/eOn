@@ -115,7 +115,8 @@ void commandLine(int argc, char **argv) {
                  .handler([&]() {
                    // Format help with color
                    auto helpText = parser.formatHelp(progname);
-                   std::cout << colorizer.heading("eOn Client - Help") << "\n\n";
+                   std::cout << colorizer.heading("eOn Client - Help")
+                             << "\n\n";
                    std::cout << helpText;
                    std::exit(EXIT_SUCCESS);
                  }));
@@ -207,18 +208,20 @@ void commandLine(int argc, char **argv) {
                        "(use with -p and --replicas)")
                  .handler([&]() { gateway = true; }));
 
-  parser.add(
-      Option("--config")
-          .argName("FILE")
-          .help("Config file for potential parameters (INI format, "
-                "e.g. [Metatomic] model_path=model.pt)")
-          .handler([&](const std::string_view &value) { config_path = value; }));
+  parser.add(Option("--config")
+                 .argName("FILE")
+                 .help("Config file for potential parameters (INI format, "
+                       "e.g. [Metatomic] model_path=model.pt)")
+                 .handler([&](const std::string_view &value) {
+                   config_path = value;
+                 }));
 #endif
 
-  parser.add(Positional("confile")
-                 .help("Input structure file")
-                 .occurs(zeroOrMoreTimes)
-                 .handler([&](const std::string_view &value) { confile = value; }));
+  parser.add(
+      Positional("confile")
+          .help("Input structure file")
+          .occurs(zeroOrMoreTimes)
+          .handler([&](const std::string_view &value) { confile = value; }));
 
   parser.add(Positional("confileout")
                  .help("Output structure file (optional)")
@@ -279,7 +282,7 @@ void commandLine(int argc, char **argv) {
     std::ifstream config_file(config_path.value());
     if (!config_file.is_open()) {
       std::cerr << colorizer.error("Cannot open config file: ")
-           << config_path.value() << '\n';
+                << config_path.value() << '\n';
       std::exit(EXIT_FAILURE);
     }
     params.load(config_path.value());
@@ -290,7 +293,7 @@ void commandLine(int argc, char **argv) {
     auto endpoints = parseServeSpec(serve_spec.value());
     if (endpoints.empty()) {
       std::cerr << colorizer.error("No valid serve endpoints in spec: ")
-           << serve_spec.value() << '\n';
+                << serve_spec.value() << '\n';
       std::exit(EXIT_FAILURE);
     }
     serveMultiple(endpoints, params);
