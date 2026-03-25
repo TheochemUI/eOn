@@ -12,6 +12,7 @@
 #pragma once
 
 #include "Parameters.h"
+#include "Eigen.h"
 
 namespace eonc {
 class NudgedElasticBand; // forward declaration
@@ -31,8 +32,6 @@ public:
     long max_steps;
     long ci_stability_count;
     double angle_tol;
-    double penalty_strength;
-    double penalty_base;
     double force_tolerance;
   };
 
@@ -64,6 +63,10 @@ private:
   long previousClimbingImage_{-1};
   int ciStabilityCounter_{0};
   int mmf_iterations_used_{0};
+
+  // Warm-start: cache converged eigenvector for next dimer call
+  bool has_cached_mode_{false};
+  AtomMatrix cached_mode_;
 
   int runDimer(eonc::NudgedElasticBand &neb, double &alignment);
   void updateThresholdSuccess(double convForce, double newForce);
