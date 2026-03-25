@@ -103,13 +103,25 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
                     mmfResult, convForce, newForce, newForce / baseline_force_,
                     current_threshold_);
   } else {
+    // On positive curvature (status=-2), the CI is at a minimum, not a
+    // saddle. Restore to pre-MMF position to prevent catastrophic force
+    // explosion. For other failures (alignment loss, force increase),
+    // let the NEB recover naturally -- the CI position may still be
+    // closer to the saddle than before.
+    if (mmfResult == -2) {
+      neb.path[neb.climbingImage]->setPositions(savedPositions);
+      neb.movedAfterForceCall = true;
+      has_cached_mode_ = false;
+      newForce = convForce;
+    }
     updateThresholdBackoff(alignment);
     QUILL_LOG_DEBUG(
         log,
         "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
-        "Alignment:  {:.3f}. New threshold: {:.4f} ({:.2f}x baseline)",
-        mmfResult, convForce, newForce, alignment, current_threshold_,
-        current_threshold_ / baseline_force_);
+        "Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)",
+        mmfResult, convForce, newForce, alignment,
+        mmfResult == -2 ? "Restored CI. " : "",
+        current_threshold_, current_threshold_ / baseline_force_);
   }
 
   bool shouldReset =
