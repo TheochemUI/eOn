@@ -105,6 +105,7 @@ public:
 
 private:
   AtomMatrix mode;
+  AtomMatrix initialTangent_;
   std::shared_ptr<Matter> matter;
   std::shared_ptr<EigenmodeStrategy>
       minModeMethod; // shared with the objective func
