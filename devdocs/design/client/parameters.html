@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="teal" data-content_root="../../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Parameters system - eOn</title><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+      <link rel="canonical" href="https://eondocs.org/devdocs/design/client/parameters.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_contributors.css?v=f079e67e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c1ed689c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://eondocs.org/devdocs/design/client/parameters.html"/>
+  <meta property="og:title" content="Parameters system"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../../index.html">
+      
+      
+      <strong>eOn</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Ecosystem</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="https://rgpycrumbs.rgoswami.me">
+                <span>rgpycrumbs</span>
+                <small>Python helpers for eOn workflows</small>
+              </a></li><li><a href="https://chemparseplot.rgoswami.me">
+                <span>chemparseplot</span>
+                <small>Parsing and plotting for computational chemistry</small>
+              </a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../team.html">eOn Team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../install/index.html">Installation</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../install/index.html#obtaining-sources">Obtaining sources</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../install/index.html#licenses">Licenses</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/ext_pot.html">External Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/quip.html">QUIP with LAMMPS</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/serve_mode.html">Serve Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../index.html">Development Documentation</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../testing.html">Tests</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../parallel-potentials.html">Parallel Force Evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../svn.html">Subversion</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../release.html">Checklist</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../apidocs/index.html">API Reference</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../../releases/index.html">Releases</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.12.0/index.html">[v2.12.0] - 2026-03-08</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.12.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.11.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.10.2/index.html">[v2.10.2] - 2026-02-22</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.10.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.10.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.10.0/index.html">[v2.10.0] - 2026-02-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.10.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.9.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.9.0/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#architecture">Architecture</a></li>
+<li><a class="reference internal" href="#nsdmi-defaults">NSDMI defaults</a></li>
+<li><a class="reference internal" href="#cross-group-dependencies">Cross-group dependencies</a></li>
+<li><a class="reference internal" href="#narrow-parameter-passing">Narrow parameter passing</a></li>
+<li><a class="reference internal" href="#json-serialization">JSON serialization</a></li>
+<li><a class="reference internal" href="#history">History</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
+  data-type="github" data-user="TheochemUI" data-repo="eOn">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>TheochemUI/eOn</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/TheochemUI/eOn/blob/main/docs/source/devdocs/design/client/parameters.md">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">eOn</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Parameters system</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <div class="copy-page-wrapper relative pb-4 lg:absolute lg:top-8 lg:right-6 xl:right-12">
+  <div id="copy-page-trigger">
+    <button
+      type="button"
+      class="js-copy px-3 py-1 inline-flex items-center gap-1"
+      data-url="https://eondocs.org/_sources/devdocs/design/client/parameters.md.txt"
+    >
+      <i class="i-lucide" data-icon="copy"></i>
+      <span>Copy page</span>
+    </button>
+    <button class="js-menu px-2 py-1" type="button" aria-label="More actions"
+      aria-haspopup="menu" aria-expanded="false" aria-controls="copy-page-content">
+      <i class="i-lucide chevron-down"></i>
+    </button>
+  </div>
+  <div id="copy-page-content" role="menu" aria-orientation="vertical" aria-hidden="true">
+    <div role="presentation">
+      <div class="flex flex-col" role="group">
+        <button class="js-copy" type="button" role="menuitem"
+          data-url="https://eondocs.org/_sources/devdocs/design/client/parameters.md.txt">
+          <span class="iconify-icon">
+            <i class="i-lucide" data-icon="copy"></i>
+          </span>
+          <span>Copy page</span>
+        </button>
+        <a role="menuitem" href="https://eondocs.org/_sources/devdocs/design/client/parameters.md.txt" target="_blank" rel="nofollow"><iconify-icon icon="bi:markdown"></iconify-icon>
+            <span>View as Markdown</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//eondocs.org/_sources/devdocs/design/client/parameters.md.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:openai"></iconify-icon>
+          <span>Open in ChatGPT</span>
+        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//eondocs.org/_sources/devdocs/design/client/parameters.md.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:claude"></iconify-icon>
+          <span>Open in Claude</span>
+        </a></div>
+    </div>
+  </div>
+</div><article class="yue dark-code" role="main">
+          <section id="parameters-system">
+<h1>Parameters system<a class="headerlink" href="#parameters-system" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> class manages all runtime configuration for the eOn client.
+This page documents the design decisions behind its decomposition.</p>
+<section id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
+<p>The system has three layers:</p>
+<ol class="arabic simple">
+<li><p><strong>Option-group structs</strong> (<code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code>): 33 structs with C++20 NSDMI
+defaults. Each struct is independently constructable without parsing.</p></li>
+<li><p><strong>INI parser</strong> (<code class="docutils literal notranslate"><span class="pre">ParametersINI.cpp</span></code>): reads <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> via
+<a class="reference external" href="https://github.com/benhoyt/inih">inih</a> and populates option groups.</p></li>
+<li><p><strong>JSON serializer</strong> (<code class="docutils literal notranslate"><span class="pre">ParametersJSON.cpp</span></code>): provides <code class="docutils literal notranslate"><span class="pre">to_json()</span></code>/<code class="docutils literal notranslate"><span class="pre">from_json()</span></code>
+for library usage, RPC transport, and debugging.</p></li>
+</ol>
+<p>A <code class="docutils literal notranslate"><span class="pre">validate_and_link()</span></code> function resolves cross-group dependencies (time unit
+conversions, default inheritance) after loading from any source.</p>
+</section>
+<section id="nsdmi-defaults">
+<h2>NSDMI defaults<a class="headerlink" href="#nsdmi-defaults" title="Link to this heading">¶</a></h2>
+<p>All ~290 configuration fields have default values as Non-Static Data Member
+Initializers directly on the struct members:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">struct</span><span class="w"> </span><span class="nc">main_options_t</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="n">JobType</span><span class="w"> </span><span class="n">job</span><span class="p">{</span><span class="n">JobType</span><span class="o">::</span><span class="n">Process_Search</span><span class="p">};</span>
+</span><span data-line="3"><span class="w">  </span><span class="kt">long</span><span class="w"> </span><span class="n">randomSeed</span><span class="p">{</span><span class="mi">-1</span><span class="p">};</span>
+</span><span data-line="4"><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">temperature</span><span class="p">{</span><span class="mf">300.0</span><span class="p">};</span>
+</span><span data-line="5"><span class="w">  </span><span class="c1">// ...</span>
+</span><span data-line="6"><span class="p">}</span><span class="w"> </span><span class="n">main_options</span><span class="p">;</span>
+</span></pre></div>
+</div>
+<p>The constructor calls only <code class="docutils literal notranslate"><span class="pre">validate_and_link()</span></code> to resolve computed fields
+(time unit conversions). This means a default-constructed <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> object
+is immediately usable.</p>
+</section>
+<section id="cross-group-dependencies">
+<h2>Cross-group dependencies<a class="headerlink" href="#cross-group-dependencies" title="Link to this heading">¶</a></h2>
+<p>Some fields depend on values from other groups. These are resolved in
+<code class="docutils literal notranslate"><span class="pre">validate_and_link()</span></code> after all groups have their raw values:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Dependent field</p></th>
+<th class="head"><p>Source</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">optimizer_options.time_step</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">time_step_input</span> <span class="pre">/</span> <span class="pre">constants.timeUnit</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">neb_options.force_tolerance</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">optimizer_options.converged_force</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">process_search_options.minimization_offset</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">optimizer_options.max_move</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dynamics_options.steps</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">floor(time</span> <span class="pre">/</span> <span class="pre">time_step)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>All <code class="docutils literal notranslate"><span class="pre">*_time</span></code> fields</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">*_time_input</span> <span class="pre">/</span> <span class="pre">constants.timeUnit</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="narrow-parameter-passing">
+<h2>Narrow parameter passing<a class="headerlink" href="#narrow-parameter-passing" title="Link to this heading">¶</a></h2>
+<p>Core classes receive only the option groups they need via config structs:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Config struct</p></th>
+<th class="head"><p>Fields</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Matter</span></code></p></td>
+<td><p>Direct members</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">removeNetForce</span></code>, <code class="docutils literal notranslate"><span class="pre">structComp</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Optimizer</span></code> hierarchy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OptimizerConfig</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">optimizer_options_t</span></code> + 2 extras</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Dynamics</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DynamicsConfig</span></code></p></td>
+<td><p>12 fields from 5 groups</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Potential</span></code> base</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PotType</span></code> only</p></td>
+<td><p>No Parameters dependency</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Deprecated backward-compatibility constructors are retained for callers that
+still pass the full <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> object.</p>
+</section>
+<section id="json-serialization">
+<h2>JSON serialization<a class="headerlink" href="#json-serialization" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ParametersJSON.cpp</span></code> provides round-trip JSON serialization using
+<a class="reference external" href="https://github.com/nlohmann/json">nlohmann/json</a>. This enables:</p>
+<ul class="simple">
+<li><p><strong>Library usage</strong>: configure eOn programmatically without INI files</p></li>
+<li><p><strong>RPC transport</strong>: send config as JSON text via capnp serve mode</p></li>
+<li><p><strong>Debugging</strong>: dump current config to human-readable JSON</p></li>
+</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">Parameters</span><span class="w"> </span><span class="n">params</span><span class="p">;</span>
+</span><span data-line="2"><span class="n">params</span><span class="p">.</span><span class="n">load_json</span><span class="p">(</span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">(</span><span class="s">{&quot;Main&quot;: {&quot;job&quot;: &quot;Nudged_Elastic_Band&quot;, &quot;temperature&quot;: 500}}</span><span class="dl">)</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span data-line="3"><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">params</span><span class="p">.</span><span class="n">to_json</span><span class="p">();</span><span class="w"> </span><span class="c1">// pretty-printed JSON</span>
+</span></pre></div>
+</div>
+</section>
+<section id="history">
+<h2>History<a class="headerlink" href="#history" title="Link to this heading">¶</a></h2>
+<p>The v3c branch (2024) attempted to switch from INI to TOML and restructure
+all parameters simultaneously. It was abandoned because it changed too many
+axes at once. The current approach is incremental: extract defaults (Phase 1),
+narrow passing (Phase 2), add JSON (Phase 3). Each step is independently
+mergeable.</p>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, the eOn developers</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../_static/documentation_options.js?v=84389e84"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/shibuya.js?v=cac61aee"></script></body>
+</html>
