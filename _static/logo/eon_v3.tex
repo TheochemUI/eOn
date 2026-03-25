@@ -1,0 +1,67 @@
+\documentclass[tikz,border=2pt]{standalone}
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+
+\definecolor{RuhiTeal}{HTML}{004D40}
+\definecolor{RuhiCoral}{HTML}{FF655D}
+
+\begin{document}
+\begin{tikzpicture}
+\useasboundingbox (-0.1,-0.4) rectangle (4.3,1.8);
+
+% "e" -- tight against the O
+\node[font=\sffamily\bfseries\fontsize{32}{32}\selectfont,
+      text=RuhiTeal, anchor=base east, inner sep=0] at (1.0, 0) {e};
+
+% "O" ring
+\draw[RuhiTeal, line width=2.0pt] (1.85, 0.38) circle (0.72);
+
+\begin{scope}
+  \clip (1.85, 0.38) circle (0.67);
+
+  % Barrier contours
+  \draw[RuhiTeal, line width=0.25pt, opacity=0.12]
+    plot[domain=-0.65:0.65, samples=45, smooth]
+    ({1.85+\x}, {-0.22 + 1.15*exp(-4.5*\x*\x)});
+  \draw[RuhiTeal, line width=0.3pt, opacity=0.22]
+    plot[domain=-0.65:0.65, samples=45, smooth]
+    ({1.85+\x}, {-0.12 + 1.05*exp(-4.5*\x*\x)});
+  \draw[RuhiTeal, line width=0.2pt, opacity=0.09]
+    plot[domain=-0.65:0.65, samples=45, smooth]
+    ({1.85+\x}, {-0.32 + 1.25*exp(-4.5*\x*\x)});
+
+  % Fill
+  \fill[RuhiTeal, opacity=0.04]
+    plot[domain=-0.65:0.65, samples=45, smooth]
+    ({1.85+\x}, {-0.22 + 1.15*exp(-4.5*\x*\x)}) -- (2.5, -0.4) -- (1.2, -0.4) -- cycle;
+
+  % MEP dashed
+  \draw[RuhiTeal, line width=0.3pt, opacity=0.3, dashed]
+    plot[domain=-0.52:0.52, samples=35, smooth]
+    ({1.85+\x}, {-0.16 + 1.1*exp(-4.5*\x*\x)});
+
+  % NEB beads ascending
+  \foreach \dx/\op in {-0.42/0.25, -0.26/0.4, -0.12/0.55} {
+    \fill[RuhiTeal, opacity=\op]
+      ({1.85+\dx}, {-0.16 + 1.1*exp(-4.5*\dx*\dx)}) circle (0.038);
+  }
+
+  % Saddle point
+  \pgfmathsetmacro{\saddley}{-0.16 + 1.1}
+  \fill[RuhiCoral, opacity=0.08] (1.85, \saddley) circle (0.16);
+  \fill[RuhiCoral, opacity=0.85] (1.85, \saddley) circle (0.07);
+  \draw[RuhiCoral, line width=0.15pt, opacity=0.15] (1.85, \saddley) circle (0.15);
+
+  % NEB beads descending
+  \foreach \dx/\op in {0.12/0.55, 0.26/0.4, 0.42/0.25} {
+    \fill[RuhiTeal, opacity=\op]
+      ({1.85+\dx}, {-0.16 + 1.1*exp(-4.5*\dx*\dx)}) circle (0.038);
+  }
+\end{scope}
+
+% "n" -- tight against the O
+\node[font=\sffamily\bfseries\fontsize{32}{32}\selectfont,
+      text=RuhiTeal, anchor=base west, inner sep=0] at (2.75, 0) {n};
+
+\end{tikzpicture}
+\end{document}

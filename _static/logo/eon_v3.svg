@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 160" width="460" height="160">
+  <defs>
+    <linearGradient id="teal" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#003D33"/>
+      <stop offset="100%" stop-color="#00897B"/>
+    </linearGradient>
+    <linearGradient id="coral" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF7B6F"/>
+      <stop offset="100%" stop-color="#FF655D"/>
+    </linearGradient>
+    <clipPath id="oMask">
+      <circle cx="230" cy="80" r="48"/>
+    </clipPath>
+  </defs>
+
+  <!-- "e" - open arc + crossbar that extends right to show the opening -->
+  <!-- Arc: starts upper-right, sweeps around to lower-right (270 degrees) -->
+  <path d="M 88,52 A 38,38 0 1 0 88,108"
+        fill="none" stroke="url(#teal)" stroke-width="16"
+        stroke-linecap="round"/>
+  <!-- Crossbar: from left edge through center to right, defines the "e" opening -->
+  <line x1="12" y1="80" x2="88" y2="80"
+        stroke="url(#teal)" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- "O" ring -->
+  <circle cx="230" cy="80" r="48" fill="none" stroke="url(#teal)" stroke-width="11"/>
+
+  <!-- Energy barrier inside O: saddle at TOP is the transition state -->
+  <g clip-path="url(#oMask)">
+    <!-- Filled area -->
+    <path d="M 182,118 Q 198,118 208,78 Q 218,42 230,42
+             Q 242,42 252,78 Q 262,118 278,118 L 278,130 L 182,130 Z"
+          fill="url(#teal)" opacity="0.07"/>
+    <!-- Barrier curve -->
+    <path d="M 182,118 Q 198,118 208,78 Q 218,42 230,42
+             Q 242,42 252,78 Q 262,118 278,118"
+          fill="none" stroke="#004D40" stroke-width="1.8" opacity="0.35"/>
+    <!-- NEB beads ascending -->
+    <circle cx="194" cy="112" r="2.8" fill="#004D40" opacity="0.3"/>
+    <circle cx="205" cy="90" r="2.8" fill="#004D40" opacity="0.45"/>
+    <circle cx="216" cy="62" r="3" fill="#004D40" opacity="0.6"/>
+    <!-- Transition state -->
+    <circle cx="230" cy="44" r="4.5" fill="url(#coral)"/>
+    <!-- NEB beads descending -->
+    <circle cx="244" cy="62" r="3" fill="#004D40" opacity="0.6"/>
+    <circle cx="255" cy="90" r="2.8" fill="#004D40" opacity="0.45"/>
+    <circle cx="266" cy="112" r="2.8" fill="#004D40" opacity="0.3"/>
+  </g>
+
+  <!-- "n" -->
+  <path d="M 332,120 L 332,76 Q 332,50 358,50 Q 384,50 384,76 L 384,120"
+        fill="none" stroke="url(#teal)" stroke-width="16"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

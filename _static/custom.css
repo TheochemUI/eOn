@@ -1,0 +1,7 @@
+/* Fix transparent-background images in dark mode */
+html[data-theme="dark"] .figure img,
+html[data-theme="dark"] figure img {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    padding: 8px;
+}
