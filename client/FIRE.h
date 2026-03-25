@@ -20,7 +20,7 @@ class FIRE : public Optimizer {
 
 public:
   FIRE(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
-      : Optimizer(a_objf, OptType::FIRE, a_params),
+      : Optimizer(a_objf, OptType::FIRE, OptimizerConfig::fromParams(a_params)),
         m_dt{a_params.optimizer_options.time_step},
         m_dt_max{a_params.optimizer_options.max_time_step},
         m_max_move{a_params.optimizer_options.max_move},

@@ -1,0 +1,1 @@
+Fixed ``confine_positive`` Eigen indexing (flat ``3*i+0`` replaced with proper ``(i,k)`` row-column access) and replaced raw ``new[]/delete[]`` with ``std::vector``.

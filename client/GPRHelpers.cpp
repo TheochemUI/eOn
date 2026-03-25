@@ -17,7 +17,6 @@
 #include <map>
 #include <set>
 #include <unordered_map>
-using namespace std;
 
 gpr::InputParameters
 eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
@@ -85,43 +84,6 @@ eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
 
 // FIXME: Take in the active / inactive pairs / atomtypes
 gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
-  //   AtomsConfiguration a;
-  //   aux::ProblemSetUp problem_setup;
-  //   std::vector<int> atomnrs;
-  //   a.positions.resize(matter->getPositions().rows(),
-  //                      matter->getPositions().cols());
-  //   a.is_frozen.resize(matter->numberOfAtoms());
-  //   a.id.resize(matter->numberOfAtoms());
-  //   a.positions.assignFromEigenMatrix(matter->getPositions());
-  //   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-  //     atomnrs.push_back(matter->getAtomicNr(i));
-  //     a.is_frozen[i] = matter->getFixed(i);
-  //     a.id[i] = i + 1;
-  //   }
-  //   a.atoms_froz_active.clear();
-  //   a.atoms_mov.resize(matter->numberOfFreeAtoms());
-  //   // FIXME: Might have more than one kind of freely moving atom
-  //   a.atoms_mov.type.set(0); // Corresponds to H in the CuH example, 0 for Pt
-  //   a.atoms_froz_active.clear();
-  //   // Atomtypes
-  //   Index_t n_at = std::set<int>(atomnrs.begin(), atomnrs.end()).size();
-  //   a.pairtype.resize(n_at, n_at);
-  //   std::cout << "n_at: " << n_at << "\n";
-  //   a.pairtype.set(EMPTY);
-  //   a.n_pt = 0;
-  //   problem_setup.setPairtypeForMovingAtoms(a.atoms_mov.type, a.n_pt,
-  //   a.pairtype); a.atoms_froz_inactive.resize(3 *
-  //   matter->numberOfFixedAtoms()); for (auto i = 0; i <
-  //   matter->numberOfFixedAtoms(); ++i) {
-  //     a.atoms_froz_inactive.positions.set(0, i,
-  //                               {matter->getPosition(i, 0),
-  //                                matter->getPosition(i, 1),
-  //                                matter->getPosition(i, 2)});
-  //   }
-  //   // FIXME: Might have more than one kind OR the SAME KIND (Pt)
-  //   a.atoms_froz_inactive.type.set(0); // 1 for Cu in the example, 0 for Pt
-  //   return a;
-
   gpr::AtomsConfiguration atoms_config;
   aux::ProblemSetUp problem_setup;
   gpr::Index_t number_of_mov_atoms;
@@ -244,10 +206,6 @@ gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
   // active pairtypes)
   problem_setup.setPairtypeForMovingAtoms(
       atoms_config.atoms_mov.type, atoms_config.n_pt, atoms_config.pairtype);
-
-  // // Activate frozen atoms within activation distance
-  // problem_setup.activateFrozenAtoms(R_init, parameters.actdist_fro.value,
-  //                                 atoms_config);
 
   return atoms_config;
 }

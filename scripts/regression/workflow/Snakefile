@@ -1,0 +1,39 @@
+# -*- mode: snakemake; -*-
+"""
+Regression Reference Data Generator
+
+Builds eonclient from a git tag (or uses a provided binary) and runs
+each job type to generate reference results.dat files for regression
+testing.
+
+Usage:
+    snakemake -c4                                  # default config
+    snakemake -c4 --config eonclient=/path/to/bin  # custom binary
+    snakemake -c4 --config git_tag=v2.11.0         # different tag
+"""
+
+import os
+from pathlib import Path
+
+configfile: "config/config.yaml"
+
+JOBS = config.get("jobs", {})
+OUTPUT_DIR = Path(config["output_dir"])
+DATA_DIR = Path(config["data_dir"])
+EONCLIENT = config.get("eonclient", "")
+GIT_TAG = config.get("git_tag", "svn-Jul_01_2024")
+
+# If no binary provided, build from tag
+if not EONCLIENT:
+    include: "rules/build_from_tag.smk"
+    EONCLIENT = f"build/{GIT_TAG}/client/eonclient"
+
+include: "rules/run_job.smk"
+
+rule all:
+    input:
+        expand(str(OUTPUT_DIR / "{job}.dat"), job=JOBS.keys())
+
+rule clean:
+    shell:
+        "rm -rf workdirs/ build/"

@@ -32,82 +32,82 @@
 
 #ifdef WITH_GP_SURROGATE
 #include "GPSurrogateJob.h"
-using namespace std;
 #endif
 
 namespace eonc::helpers {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
   switch (params->main_options.job) {
-  case JobType::Process_Search: {
+    using enum JobType;
+  case Process_Search: {
     return (std::make_unique<ProcessSearchJob>(std::move(params)));
     break;
   }
-  case JobType::Saddle_Search: {
+  case Saddle_Search: {
     return (std::make_unique<SaddleSearchJob>(std::move(params)));
     break;
   }
-  case JobType::Minimization: {
+  case Minimization: {
     return (std::make_unique<MinimizationJob>(std::move(params)));
     break;
   }
-  case JobType::Point: {
+  case Point: {
     return (std::make_unique<PointJob>(std::move(params)));
     break;
   }
-  case JobType::Parallel_Replica: {
+  case Parallel_Replica: {
     return (std::make_unique<ParallelReplicaJob>(std::move(params)));
     break;
   }
-  case JobType::Safe_Hyperdynamics: {
+  case Safe_Hyperdynamics: {
     return (std::make_unique<SafeHyperJob>(std::move(params)));
     break;
   }
-  case JobType::TAD: {
+  case TAD: {
     return (std::make_unique<TADJob>(std::move(params)));
     break;
   }
-  case JobType::Replica_Exchange: {
+  case Replica_Exchange: {
     return (std::make_unique<ReplicaExchangeJob>(std::move(params)));
     break;
   }
-  case JobType::Basin_Hopping: {
+  case Basin_Hopping: {
     return (std::make_unique<BasinHoppingJob>(std::move(params)));
     break;
   }
-  case JobType::Hessian: {
+  case Hessian: {
     return (std::make_unique<HessianJob>(std::move(params)));
     break;
   }
-  case JobType::Finite_Difference: {
+  case Finite_Difference: {
     return (std::make_unique<FiniteDifferenceJob>(std::move(params)));
     break;
   }
-  case JobType::Nudged_Elastic_Band: {
+  case Nudged_Elastic_Band: {
     return (std::make_unique<NudgedElasticBandJob>(std::move(params)));
     break;
   }
-  case JobType::Dynamics: {
+  case Dynamics: {
     return (std::make_unique<DynamicsJob>(std::move(params)));
     break;
   }
-  case JobType::Prefactor: {
+  case Prefactor: {
     return (std::make_unique<PrefactorJob>(std::move(params)));
     break;
   }
-  case JobType::Global_Optimization: {
+  case Global_Optimization: {
     return (std::make_unique<GlobalOptimizationJob>(std::move(params)));
     break;
   }
-  case JobType::Structure_Comparison: {
+  case Structure_Comparison: {
     return (std::make_unique<StructureComparisonJob>(std::move(params)));
     break;
   }
-  case JobType::Monte_Carlo: {
+  case Monte_Carlo: {
     return (std::make_unique<MonteCarloJob>(std::move(params)));
     break;
   }
 #ifdef WITH_GP_SURROGATE
-  case JobType::GP_Surrogate: {
+  case GP_Surrogate: {
     return (std::make_unique<GPSurrogateJob>(std::move(params)));
     break;
   }

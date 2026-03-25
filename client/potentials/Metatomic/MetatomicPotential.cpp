@@ -14,6 +14,8 @@
 #include "../../fpe_handler.h"
 #include "vesin.h"
 
+#include <torch/csrc/jit/runtime/graph_executor.h>
+
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -27,10 +29,20 @@ static torch::optional<std::string> normalize_variant(const std::string &s) {
 }
 
 MetatomicPotential::MetatomicPotential(const Parameters &params)
-    : Potential(PotType::METATOMIC, params),
+    : Potential(PotType::METATOMIC),
+      m_metatomic_opts{params.metatomic_options},
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {
+
+  // Disable JIT profiling-guided optimization. The JIT profiler specializes
+  // the graph after the first few forward passes, which causes a fresh model
+  // instance to produce slightly different results (~ULP level) than an
+  // instance that has already processed other inputs. With profiling disabled,
+  // all instances use the unoptimized interpreter and produce bitwise-identical
+  // results regardless of call history. This is critical for parallel NEB where
+  // per-image potentials must match a shared instance.
+  torch::jit::getProfilingMode() = false;
 
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
@@ -39,15 +51,15 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 
   // 1. Load the model from the path specified in parameters
   torch::optional<std::string> extensions_directory = torch::nullopt;
-  if (!m_params.metatomic_options.extensions_directory.empty()) {
-    extensions_directory = m_params.metatomic_options.extensions_directory;
+  if (!m_metatomic_opts.extensions_directory.empty()) {
+    extensions_directory = m_metatomic_opts.extensions_directory;
   }
 
   try {
     QUILL_LOG_INFO(m_log, "[MetatomicPotential] Loading model from '{}'",
-                   m_params.metatomic_options.model_path);
+                   m_metatomic_opts.model_path);
     this->model_ = metatomic_torch::load_atomistic_model(
-        m_params.metatomic_options.model_path, extensions_directory);
+        m_metatomic_opts.model_path, extensions_directory);
   } catch (const std::exception &e) {
     QUILL_LOG_ERROR(m_log, "[MetatomicPotential] Failed to load model: {}",
                     e.what());
@@ -68,8 +80,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 
   // 3. Determine and set up the device (CPU/CUDA/MPS)
   torch::optional<std::string> desired = torch::nullopt;
-  if (!m_params.metatomic_options.device.empty()) {
-    desired = m_params.metatomic_options.device;
+  if (!m_metatomic_opts.device.empty()) {
+    desired = m_metatomic_opts.device;
   }
   device_type_ = metatomic_torch::pick_device(
       this->capabilities_->supported_devices, desired);
@@ -77,9 +89,10 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   device_ = torch::Device(device_type_);
   QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using device: {}", device_.str());
 
-  this->model_.to(this->device_);
-
-  // 4. Set data type (float32/float64) based on model capabilities
+  // 4. Set data type. Default: model's declared dtype.
+  // Override via config `dtype = float64` for batched reproducibility
+  // (float32 batching has ~1e-6 force differences vs sequential due to
+  // different reduction order; float64 eliminates this).
   if (this->capabilities_->dtype() == "float64") {
     this->dtype_ = torch::kFloat64;
   } else if (this->capabilities_->dtype() == "float32") {
@@ -88,22 +101,57 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     throw std::runtime_error("Unsupported dtype: " +
                              this->capabilities_->dtype());
   }
-  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
-                 this->capabilities_->dtype().c_str());
+  if (!m_metatomic_opts.dtype_override.empty()) {
+    if (m_metatomic_opts.dtype_override == "float64") {
+      this->dtype_ = torch::kFloat64;
+    } else if (m_metatomic_opts.dtype_override == "float32") {
+      this->dtype_ = torch::kFloat32;
+    }
+    QUILL_LOG_INFO(
+        m_log, "[MetatomicPotential] dtype overridden to {} (model: {})",
+        m_metatomic_opts.dtype_override, this->capabilities_->dtype().c_str());
+  } else {
+    QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
+                   this->capabilities_->dtype().c_str());
+  }
+
+  this->model_.to(this->device_);
+  // Only move to non-default dtype if the model supports it.
+  // Some models (e.g. PET-MAD) have embedding layers that break with
+  // to(float64) because integer indices get cast. Only attempt dtype
+  // override if explicitly requested AND different from model default.
+  if (!m_metatomic_opts.dtype_override.empty() &&
+      this->dtype_ != (this->capabilities_->dtype() == "float64"
+                           ? torch::kFloat64
+                           : torch::kFloat32)) {
+    try {
+      this->model_.to(this->dtype_);
+    } catch (const std::exception &e) {
+      // Fall back to model's default dtype
+      QUILL_LOG_WARNING(
+          m_log,
+          "[MetatomicPotential] dtype override to {} failed ({}), "
+          "using model default",
+          m_metatomic_opts.dtype_override, e.what());
+      if (this->capabilities_->dtype() == "float64") {
+        this->dtype_ = torch::kFloat64;
+      } else {
+        this->dtype_ = torch::kFloat32;
+      }
+    }
+  }
 
   // 5. Resolve variant keys via pick_output
   auto outputs = this->capabilities_->outputs();
 
-  auto v_base = normalize_variant(m_params.metatomic_options.variant.base);
-  auto v_energy =
-      m_params.metatomic_options.variant.energy.empty()
-          ? v_base
-          : normalize_variant(m_params.metatomic_options.variant.energy);
+  auto v_base = normalize_variant(m_metatomic_opts.variant.base);
+  auto v_energy = m_metatomic_opts.variant.energy.empty()
+                      ? v_base
+                      : normalize_variant(m_metatomic_opts.variant.energy);
   auto v_energy_uq =
-      m_params.metatomic_options.variant.energy_uncertainty.empty()
+      m_metatomic_opts.variant.energy_uncertainty.empty()
           ? v_energy
-          : normalize_variant(
-                m_params.metatomic_options.variant.energy_uncertainty);
+          : normalize_variant(m_metatomic_opts.variant.energy_uncertainty);
 
   this->energy_key_ = metatomic_torch::pick_output("energy", outputs, v_energy);
 
@@ -118,7 +166,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // 6. Set up evaluation options to request total energy
   this->evaluations_options_ =
       torch::make_intrusive<metatomic_torch::ModelEvaluationOptionsHolder>();
-  evaluations_options_->set_length_unit(m_params.metatomic_options.length_unit);
+  evaluations_options_->set_length_unit(m_metatomic_opts.length_unit);
 
   auto model_output = outputs.at(this->energy_key_);
   auto requested_output =
@@ -132,9 +180,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   evaluations_options_->outputs.insert(this->energy_key_, requested_output);
 
   // 7. Optionally request energy uncertainty if threshold is positive
-  if (m_params.metatomic_options.uncertainty_threshold > 0) {
-    this->uncertainty_threshold_ =
-        m_params.metatomic_options.uncertainty_threshold;
+  if (m_metatomic_opts.uncertainty_threshold > 0) {
+    this->uncertainty_threshold_ = m_metatomic_opts.uncertainty_threshold;
     try {
       this->energy_uncertainty_key_ = metatomic_torch::pick_output(
           "energy_uncertainty", outputs, v_energy_uq);
@@ -171,7 +218,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     }
   }
 
-  this->check_consistency_ = m_params.metatomic_options.check_consistency;
+  this->check_consistency_ = m_metatomic_opts.check_consistency;
   QUILL_LOG_INFO(m_log, "[MetatomicPotential] Initialization complete.");
 
   fpeh.restore_fpe();
@@ -183,6 +230,10 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                                const int *atomicNrs, double *forces,
                                double *energy, double *variance,
                                const double *box) {
+  // Serialize concurrent calls -- PyTorch model inference on the same
+  // Module instance is not thread-safe
+  std::lock_guard<std::mutex> lock(inference_mutex_);
+
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
 
@@ -206,36 +257,20 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   bool periodic[3] = {torch_pbc[0].item<bool>(), torch_pbc[1].item<bool>(),
                       torch_pbc[2].item<bool>()};
 
-  bool types_changed = false;
-  if (static_cast<size_t>(nAtoms) != last_atomic_nrs_.size()) {
-    types_changed = true;
-  } else if (nAtoms > 0 && std::memcmp(atomicNrs, last_atomic_nrs_.data(),
-                                       nAtoms * sizeof(int)) != 0) {
-    types_changed = true;
+  // Recreate atomic types tensor on every call. The cost is negligible
+  // (small int32 tensor) and avoids carrying cached state between calls.
+  if (!atomicNrs) {
+    throw std::runtime_error(
+        "[MetatomicPotential] `atomicNrs` must be provided.");
   }
-
-  if (types_changed) {
-    QUILL_LOG_TRACE_L1(
-        m_log, "[MetatomicPotential] Atomic numbers changed, re-creating "
-               "types tensor.");
-    if (!atomicNrs) {
-      throw std::runtime_error(
-          "[MetatomicPotential] `atomicNrs` must be provided.");
-    }
-    std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
-    // XXX(rg): Reordering of labels might take place for non-conservative
-    // forces / per atom energies
-    this->atomic_types_ =
-        torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
-            .to(this->device_);
-
-    // Update the cache
-    last_atomic_nrs_.assign(atomicNrs, atomicNrs + nAtoms);
-  }
+  std::vector<int32_t> types_vec(atomicNrs, atomicNrs + nAtoms);
+  auto atomic_types =
+      torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
+          .to(this->device_);
 
   // 2. Create the metatomic::System object
   auto system = torch::make_intrusive<metatomic_torch::SystemHolder>(
-      this->atomic_types_, torch_positions, torch_cell, torch_pbc);
+      atomic_types, torch_positions, torch_cell, torch_pbc);
 
   // 3. Compute and add neighbor lists to the system
   for (const auto &request : this->nl_requests_) {
@@ -375,9 +410,9 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     metatomic_torch::NeighborListOptions request, long nAtoms,
     const double *positions, const double *box, const bool periodic[3]) {
 
-  auto cutoff = request->engine_cutoff(m_params.metatomic_options.length_unit);
+  auto cutoff = request->engine_cutoff(m_metatomic_opts.length_unit);
 
-  VesinOptions options;
+  VesinOptions options{}; // zero-initialize all fields (incl. algorithm=0=Auto)
   options.cutoff = cutoff;
   options.full = request->full_list();
   options.return_shifts = true;

@@ -26,9 +26,8 @@ public:
   std::vector<std::string> run(void);
 
 private:
-  double tolerance;
+  double tolerance{0.0};
   void checkFullSearch(void);
-  void checkMode(void);
   void checkPotentials(void);
   double getEnergyDiff(std::string potTag, double refEnergy);
   double getForceDiff(std::string potTag, double refForce);

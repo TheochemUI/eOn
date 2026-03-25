@@ -9,36 +9,14 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include <cstdlib>
-
-#include "BaseStructures.h"
-#include "Dynamics.h"
-#include "Matter.h"
-#include "Optimizer.h"
 #include "TADJob.h"
+#include "Dynamics.h"
+#include "ForceCallTimer.h"
 
-using namespace std;
+#include <cmath>
 
-std::vector<std::string> TADJob::run(void) {
-  current = std::make_shared<Matter>(pot, params);
-  reactant = std::make_shared<Matter>(pot, params);
-  saddle = std::make_shared<Matter>(pot, params);
+void TADJob::initExtra() {
   crossing = std::make_shared<Matter>(pot, params);
-  product = std::make_shared<Matter>(pot, params);
-  final_state = std::make_shared<Matter>(pot, params);
-  final_tmp = std::make_shared<Matter>(pot, params);
-
-  minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
-  time = 0.0;
-  string reactantFilename =
-      eonc::helpers::getRelevantFile(params.main_options.conFilename);
-  current->con2matter(reactantFilename);
-
-  QUILL_LOG_DEBUG(log, "Minimizing initial reactant");
-  long refFCalls = PotRegistry::get().total_force_calls();
-  *reactant = *current;
-  reactant->relax();
-  minimizeFCalls += (PotRegistry::get().total_force_calls() - refFCalls);
 
   QUILL_LOG_DEBUG(log, "Temperature Accelerated Dynamics, running");
   QUILL_LOG_DEBUG(log,
@@ -46,11 +24,9 @@ std::vector<std::string> TADJob::run(void) {
                   "simulate dynamics at {:.2f} K",
                   params.main_options.temperature,
                   params.tad_options.low_temperature);
+}
 
-  int status = dynamics();
-
-  saveData(status);
-
+void TADJob::reportResults() {
   if (newStateFlag) {
     QUILL_LOG_DEBUG(log, "Transition time: {:.2e} s",
                     minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
@@ -60,8 +36,6 @@ std::vector<std::string> TADJob::run(void) {
                     params.dynamics_options.steps,
                     time * 1.0e-15 * params.constants.timeUnit);
   }
-
-  return returnFiles;
 }
 
 int TADJob::dynamics() {
@@ -69,8 +43,7 @@ int TADJob::dynamics() {
        firstTransitFlag = false;
   long nFreeCoord = reactant->numberOfFreeAtoms() * 3;
   long mdBufferLength;
-  long step = 0, refineStep,
-       newStateStep = 0; // check that newStateStep is set before used
+  long step = 0, refineStep, newStateStep = 0;
   long nCheck = 0, nRecord = 0, nState = 0;
   long StateCheckInterval, RecordInterval;
   double kinE, kinT, avgT, varT;
@@ -83,7 +56,6 @@ int TADJob::dynamics() {
   double delta, minmu, factor, highT, lowT;
 
   AtomMatrix velocity;
-  AtomMatrix reducedForces;
 
   minCorrectedTime = 1.0e200;
   lowT = params.tad_options.low_temperature;
@@ -92,28 +64,28 @@ int TADJob::dynamics() {
   minmu = params.tad_options.min_prefactor;
   factor = std::log(1.0 / delta) / minmu;
   StateCheckInterval =
-      int(params.parallel_replica_options.state_check_interval /
-          params.dynamics_options.time_step);
-  RecordInterval = int(params.parallel_replica_options.record_interval /
-                       params.dynamics_options.time_step);
+      static_cast<long>(params.parallel_replica_options.state_check_interval /
+                        params.dynamics_options.time_step);
+  RecordInterval =
+      static_cast<long>(params.parallel_replica_options.record_interval /
+                        params.dynamics_options.time_step);
   Temp = params.main_options.temperature;
   newStateFlag = metaStateFlag = false;
 
-  mdBufferLength = long(StateCheckInterval / RecordInterval);
-  std::vector<std::shared_ptr<Matter>> mdBuffer;
-  mdBuffer.resize(mdBufferLength);
+  mdBufferLength = static_cast<long>(StateCheckInterval / RecordInterval);
+  std::vector<std::shared_ptr<Matter>> mdBuffer(mdBufferLength);
   for (long i = 0; i < mdBufferLength; i++) {
     mdBuffer[i] = std::make_shared<Matter>(pot, params);
   }
-  timeBuffer = new double[mdBufferLength];
+  timeBuffer.resize(mdBufferLength);
 
   Dynamics TAD(current.get(), params);
   TAD.setThermalVelocity();
 
-  // dephase the trajectory so that it is thermal and independent of others
-  long refFCalls = PotRegistry::get().total_force_calls();
-  dephase();
-  dephaseFCalls = PotRegistry::get().total_force_calls() - refFCalls;
+  {
+    eonc::ForceCallTimer timer(dephaseFCalls);
+    dephase();
+  }
 
   QUILL_LOG_DEBUG(
       log,
@@ -128,63 +100,58 @@ int TADJob::dynamics() {
   QUILL_LOG_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
   long tenthSteps = params.dynamics_options.steps / 10;
-  // This prevents and edge case division by zero if mdSteps is < 10
   if (tenthSteps == 0) {
     tenthSteps = params.dynamics_options.steps;
   }
 
-  // loop dynamics iterations until some condition tells us to stop
   while (!stopFlag) {
-
     kinE = current->getKineticEnergy();
     kinT = (2.0 * kinE / nFreeCoord / kB);
     sumT += kinT;
     sumT2 += kinT * kinT;
-    // SPDLOG_LOGGER_DEBUG(log, "steps = {:10d} temp = {:10.5f} ", step, kinT);
+    QUILL_LOG_TRACE_L1(log, "steps = {:10d} temp = {:10.5f} ", step, kinT);
 
     TAD.oneStep();
     mdFCalls++;
 
     time += params.dynamics_options.time_step;
-    nCheck++; // count up to params.parrepStateCheckInterval before checking
-              // for a transition
+    nCheck++;
     step++;
-    // SPDLOG_LOGGER_DEBUG(log, "step = {:4d}, time= {:10.4f}", step, time);
-    //  standard conditions; record mater object in the transition buffer
+    QUILL_LOG_TRACE_L1(log, "step = {:4d}, time= {:10.4f}", step, time);
+
     if (params.parallel_replica_options.refine_transition && recordFlag &&
         !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
         *mdBuffer[nRecord] = *current;
         timeBuffer[nRecord] = time;
-        nRecord++; // current location in the buffer
+        nRecord++;
       }
     }
 
-    // time to do a state check; if a transiton if found, stop recording
     if ((nCheck == StateCheckInterval) && !newStateFlag) {
-      nCheck = 0;  // reinitialize check state counter
-      nRecord = 0; // restart the buffer
-      refFCalls = PotRegistry::get().total_force_calls();
-      transitionFlag = checkState(current.get(), reactant.get());
-      minimizeFCalls += PotRegistry::get().total_force_calls() - refFCalls;
-      if (transitionFlag == true) {
+      nCheck = 0;
+      nRecord = 0;
+      {
+        eonc::ForceCallTimer timer(minimizeFCalls);
+        transitionFlag = checkState(current.get(), reactant.get());
+      }
+      if (transitionFlag) {
         nState++;
         QUILL_LOG_DEBUG(log, "New State {}: ", nState);
-        *final_tmp = *current;
+        *finalStateTmp = *current;
         transitionTime = time;
-        newStateStep = step; // remember the step when we are in a new state
+        newStateStep = step;
         transitionStep = newStateStep;
         firstTransitFlag = 1;
       }
     }
-    // printf("step=%ld, time=%lf, biasPot=%lf",step,time,boostPotential);
-    // Refine transition step
 
     if (transitionFlag) {
-      // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
-      // time.");
-      refFCalls = PotRegistry::get().total_force_calls();
-      refineStep = refine(mdBuffer, mdBufferLength, reactant.get());
+      QUILL_LOG_TRACE_L1(log, "Refining transition time.");
+      {
+        eonc::ForceCallTimer timer(refineFCalls);
+        refineStep = refine(mdBuffer, reactant.get());
+      }
 
       transitionStep =
           newStateStep - StateCheckInterval + refineStep * RecordInterval;
@@ -194,11 +161,10 @@ int TADJob::dynamics() {
       transitionTime_previous = transitionTime_current;
       barrier = crossing->getPotentialEnergy() - reactant->getPotentialEnergy();
       QUILL_LOG_DEBUG(log, "barrier= {:.3f}", barrier);
-      correctionFactor = 1.0 * exp(barrier / kB * (1.0 / lowT - 1.0 / highT));
+      correctionFactor = std::exp(barrier / kB * (1.0 / lowT - 1.0 / highT));
       correctedTime = transitionTime * correctionFactor;
       sumSimulatedTime += transitionTime;
 
-      // reverse the momentum;
       *current = *mdBuffer[refineStep - 1];
       velocity = current->getVelocities();
       velocity = velocity * (-1);
@@ -207,9 +173,9 @@ int TADJob::dynamics() {
       if (correctedTime < minCorrectedTime) {
         minCorrectedTime = correctedTime;
         *saddle = *crossing;
-        *final_state = *final_tmp;
+        *finalState = *finalStateTmp;
       }
-      stopTime = factor * pow(minCorrectedTime / factor, lowT / highT);
+      stopTime = factor * std::pow(minCorrectedTime / factor, lowT / highT);
       QUILL_LOG_DEBUG(
           log,
           "tranisitonTime= {:.3e} s, Barrier= {:.3f} eV, correctedTime= {:.3e} "
@@ -221,23 +187,20 @@ int TADJob::dynamics() {
           minCorrectedTime * 1.0e-15 * params.constants.timeUnit,
           stopTime * 1.0e-15 * params.constants.timeUnit);
 
-      refineFCalls += PotRegistry::get().total_force_calls() - refFCalls;
       transitionFlag = false;
     }
 
-    // we have run enough md steps; time to stop
     if (firstTransitFlag && sumSimulatedTime >= stopTime) {
       stopFlag = true;
       newStateFlag = true;
     }
 
-    // stdout Progress
     if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
-      QUILL_LOG_DEBUG(log,
-                      "progress: {:.0f}%, max displacement: {:.3f}, step {}/{}",
-                      (double)100.0 * step / params.dynamics_options.steps,
-                      maxAtomDistance, step, params.dynamics_options.steps);
+      QUILL_LOG_DEBUG(
+          log, "progress: {:.0f}%, max displacement: {:.3f}, step {}/{}",
+          static_cast<double>(100.0 * step) / params.dynamics_options.steps,
+          maxAtomDistance, step, params.dynamics_options.steps);
     }
 
     if (step == params.dynamics_options.steps) {
@@ -250,219 +213,24 @@ int TADJob::dynamics() {
     }
   }
 
-  // calculate avearges
   avgT = sumT / step;
   varT = sumT2 / step - avgT * avgT;
 
   QUILL_LOG_DEBUG(log,
                   "Temperature : Average = {} ; Stddev = {} ; Factor = {}; "
                   "Average_Boost = {}",
-                  avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
+                  avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
                   minCorrectedTime / step / params.dynamics_options.time_step);
-  if (isfinite(avgT) == 0) {
+  if (std::isfinite(avgT) == 0) {
     QUILL_LOG_DEBUG(log, "Infinite average temperature, something went wrong!");
     newStateFlag = false;
   }
 
-  *product = *final_state;
-  // new state was detected; determine refined transition time
-  delete[] timeBuffer;
+  *product = *finalState;
 
   if (newStateFlag) {
     return 1;
   } else {
     return 0;
   }
-}
-
-void TADJob::saveData(int status) {
-  FILE *fileResults, *fileReactant;
-
-  std::string resultsFilename("results.dat");
-  returnFiles.push_back(resultsFilename);
-
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
-
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%lf potential_energy_reactant\n",
-          reactant->getPotentialEnergy());
-  fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
-  fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
-  fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
-  fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
-  fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
-
-  //    fprintf(fileResults, "%d termination_reason\n", status);
-  fprintf(fileResults, "%d transition_found\n", (newStateFlag) ? 1 : 0);
-
-  if (newStateFlag) {
-    fprintf(fileResults, "%e transition_time_s\n",
-            minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
-    fprintf(fileResults, "%lf potential_energy_product\n",
-            product->getPotentialEnergy());
-    fprintf(fileResults, "%lf moved_distance\n",
-            product->distanceTo(*reactant));
-  }
-
-  fprintf(fileResults, "%e simulation_time_s\n",
-          time * 1.0e-15 * params.constants.timeUnit);
-  fprintf(fileResults, "%lf speedup\n",
-          time / params.dynamics_options.steps /
-              params.dynamics_options.time_step);
-
-  fclose(fileResults);
-
-  std::string reactantFilename("reactant.con");
-  returnFiles.push_back(reactantFilename);
-  fileReactant = fopen(reactantFilename.c_str(), "wb");
-  reactant->matter2con(fileReactant);
-  fclose(fileReactant);
-
-  if (newStateFlag) {
-    FILE *fileProduct;
-    std::string productFilename("product.con");
-    returnFiles.push_back(productFilename);
-
-    fileProduct = fopen(productFilename.c_str(), "wb");
-    product->matter2con(fileProduct);
-    fclose(fileProduct);
-
-    if (params.parallel_replica_options.refine_transition) {
-      FILE *fileSaddle;
-      std::string saddleFilename("saddle.con");
-      returnFiles.push_back(saddleFilename);
-
-      fileSaddle = fopen(saddleFilename.c_str(), "wb");
-      saddle->matter2con(fileSaddle);
-      fclose(fileSaddle);
-    }
-  }
-  return;
-}
-
-void TADJob::dephase() {
-  bool transitionFlag = false;
-  long step, stepNew, loop;
-  long DephaseSteps;
-  long dephaseBufferLength, dephaseRefineStep;
-  AtomMatrix velocity;
-
-  DephaseSteps = int(params.parallel_replica_options.dephase_time /
-                     params.dynamics_options.time_step);
-  Dynamics dephaseDynamics(current.get(), params);
-  QUILL_LOG_DEBUG(log, "Dephasing for {:.2f} fs",
-                  params.parallel_replica_options.dephase_time *
-                      params.constants.timeUnit);
-
-  step = stepNew = loop = 0;
-
-  while (step < DephaseSteps) {
-    // this should be allocated once, and of length DephaseSteps
-    dephaseBufferLength = DephaseSteps - step;
-    loop++;
-    std::vector<std::shared_ptr<Matter>> dephaseBuffer(dephaseBufferLength);
-
-    for (long i = 0; i < dephaseBufferLength; i++) {
-      dephaseBuffer[i] = std::make_shared<Matter>(pot, params);
-      dephaseDynamics.oneStep();
-      *dephaseBuffer[i] = *current;
-    }
-
-    transitionFlag = checkState(current.get(), reactant.get());
-
-    if (transitionFlag) {
-      dephaseRefineStep =
-          refine(dephaseBuffer, dephaseBufferLength, reactant.get());
-      QUILL_LOG_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
-                      dephaseRefineStep);
-      transitionStep = dephaseRefineStep - 1; // check that this is correct
-      transitionStep = (transitionStep > 0) ? transitionStep : 0;
-      QUILL_LOG_DEBUG(
-          log,
-          "Dephasing warning: in a new state, inverse the momentum and restart "
-          "from step {}",
-          step + transitionStep);
-      *current = *dephaseBuffer[transitionStep];
-      velocity = current->getVelocities();
-      velocity = velocity * (-1);
-      current->setVelocities(velocity);
-      step = step + transitionStep;
-    } else {
-      step = step + dephaseBufferLength;
-      // SPDLOG_LOGGER_DEBUG(log, "Successful dephasing for {.2f} steps ",
-      // step);
-    }
-
-    if ((params.parallel_replica_options.dephase_loop_stop) &&
-        (loop > params.parallel_replica_options.dephase_loop_max)) {
-      QUILL_LOG_DEBUG(
-          log,
-          "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",
-          step);
-      break;
-    }
-    QUILL_LOG_DEBUG(log, "Successfully Dephased for {:.2f} fs",
-                    step * params.dynamics_options.time_step *
-                        params.constants.timeUnit);
-  }
-}
-
-bool TADJob::checkState(Matter *current, Matter *reactant) {
-  Matter tmp(pot, params);
-  tmp = *current;
-  tmp.relax(true);
-  if (tmp.compare(*reactant)) {
-    return false;
-  }
-  return true;
-}
-
-bool TADJob::saddleSearch(std::shared_ptr<Matter> cross) {
-  AtomMatrix mode;
-  long status;
-  mode = cross->getPositions() - reactant->getPositions();
-  mode.normalize();
-  dimerSearch = NULL;
-  // TODO: Unhandled .get()
-  dimerSearch = new MinModeSaddleSearch(
-      cross, mode, reactant->getPotentialEnergy(), params, pot);
-  status = dimerSearch->run();
-  QUILL_LOG_DEBUG(log, "dimer search status {}", status);
-  if (status != MinModeSaddleSearch::STATUS_GOOD) {
-    return false;
-  }
-  return false;
-}
-
-long TADJob::refine(std::vector<std::shared_ptr<Matter>> buff, long length,
-                    Matter *reactant) {
-  // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition time.");
-
-  bool midTest;
-  long min, max, mid;
-
-  min = 0;
-  max = length - 1;
-
-  while ((max - min) > 1) {
-
-    mid = min + (max - min) / 2;
-    midTest = checkState(buff[mid].get(), reactant);
-
-    if (midTest == false) {
-      min = mid;
-    } else if (midTest == true) {
-      max = mid;
-    } else {
-      QUILL_LOG_DEBUG(log, "Refine step failed!");
-      exit(1);
-    }
-  }
-
-  return (min + max) / 2 + 1;
 }

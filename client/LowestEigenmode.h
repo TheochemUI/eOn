@@ -17,21 +17,23 @@
 
 namespace eonc {
 
-/* Define the interface for the lowest eigenvalue determination algorithm */
+/// Base for eigenmode solvers. Holds shared state (pot, params, stats).
+/// Concrete classes (Dimer, ImprovedDimer, Lanczos, AtomicGPDimer) inherit
+/// this and provide compute(), getEigenvalue(), getEigenvector() as regular
+/// (non-virtual) member functions. Dispatch is via std::variant
+/// (EigenmodeStrategy) rather than virtual dispatch.
 class LowestEigenmode {
 protected:
-  // make const
   std::shared_ptr<Potential> pot;
   const Parameters &params;
 
 public:
-  // stats information
-  long totalForceCalls;
-  double statsTorque;
-  double statsCurvature;
-  double statsAngle;
-  long statsRotations;
-  long totalIterations; // Only set by the gpr dimer
+  long totalForceCalls{0};
+  double statsTorque{0.0};
+  double statsCurvature{0.0};
+  double statsAngle{0.0};
+  long statsRotations{0};
+  long totalIterations{0};
   static const char MINMODE_DIMER[];
   static const char MINMODE_GPRDIMER[];
   static const char MINMODE_LANCZOS[];
@@ -40,14 +42,7 @@ public:
                   const Parameters &parameters)
       : pot{potPassed},
         params{parameters} {}
-  virtual ~LowestEigenmode() {}
-
-  // void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
-  virtual void compute(std::shared_ptr<Matter> matter,
-                       AtomMatrix direction) = 0;
-
-  virtual double getEigenvalue() = 0;
-  virtual AtomMatrix getEigenvector() = 0;
+  ~LowestEigenmode() = default;
 };
 
 } // namespace eonc

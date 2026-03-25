@@ -13,41 +13,32 @@
 
 #include "../../Potential.h"
 
-/** External function implemented in Fortran
-@param[in]	N           number of atoms
-@param[in]	RX          array of x positions of the atoms in Angstrom
-@param[in]	RY          array of x positions of the atoms in Angstrom
-@param[in]	RZ          array of x positions of the atoms in Angstrom
-@param[in]	ISPEC       array of species itentifiers; Fe = 0, He = 1
-@param[out]	FX          array used to return the x forces between atoms, in
-eV/Angstrom
-@param[out]	FY          array used to return the y forces between atoms, in
-eV/Angstrom
-@param[out]	FZ          array used to return the z forces between atoms, in
-eV/Angstrom
-@param[out]	U           pointer to energy in eV
+/** Fortran interface for the Fe-He potential.
+@param[in]  N           number of atoms
+@param[in]  RX          array of x positions of the atoms in Angstrom
+@param[in]  RY          array of y positions of the atoms in Angstrom
+@param[in]  RZ          array of z positions of the atoms in Angstrom
+@param[in]  ISPEC       array of species identifiers; Fe = 0, He = 1
+@param[out] FX          array of x forces between atoms, in eV/Angstrom
+@param[out] FY          array of y forces between atoms, in eV/Angstrom
+@param[out] FZ          array of z forces between atoms, in eV/Angstrom
+@param[out] U           pointer to energy in eV
 @param[in]  bx, by, bz  pointer to box dimensions in Angstrom
 */
-
 extern "C" {
 void feforce_(const long int *N, const double *RX, const double *RY,
               const double *RZ, const int *ISPEC, double *FX, double *FY,
               double *FZ, double *U, const double *bx, const double *by,
               const double *bz);
 }
-/* No potential initialization
-extern "C"
-{
-    void potinit_();
-}
-*/
-/** FeHe potential.*/
-class FeHe : public Potential {
+
+/// Fe-He interatomic potential (Fortran implementation).
+class FeHe final : public Potential {
 public:
-  FeHe(const Parameters &params)
+  explicit FeHe(const Parameters &params)
       : Potential(params) {}
-  ~FeHe(void) {};
-  // To satisfy interface
+  ~FeHe() override = default;
+
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };

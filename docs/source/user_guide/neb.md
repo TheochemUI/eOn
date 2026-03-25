@@ -23,6 +23,13 @@ In order to run a nudged elastic band calculation, set **job** to
 *nudged_elastic_band* in the **[Main]** section. Details of the optimizer can be
 set as per the <project:optimizer.md> document.
 
+```{tip}
+For a step-by-step walkthrough contrasting ASE's NEB with eOn's advanced
+features (energy-weighted springs, dimer refinement), see the
+[atomistic-cookbook tutorial](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
+on oxadiazole formation with a PET-MAD metatomic potential.
+```
+
 ## Variants
 
 - Classic nudged elastic band of {cite:t}`neb-millsQuantumThermalEffects1994` and {cite:t}`neb-schenterReversibleWorkBased1994`.
@@ -42,16 +49,67 @@ set as per the <project:optimizer.md> document.
 Via the surrogate potential interface, a native C++ implementation of the Gaussian Process accelerated NEB first described in {cite:t}`neb-koistinenNudgedElasticBand2017` and {cite:t}`neb-koistinenNudgedElasticBand2019`.
 ```
 
+```{versionadded} 2.12
+- Onsager-Machlup action-based NEB for minimum action paths.
+- OCINEB (Off-Path Climbing Image NEB) {cite:t}`neb-goswamiEnhancedClimbingImage2026`: hybrid CI-NEB + Min-Mode Following with hessian eigenmode alignment for automated saddle point refinement.
+- Parallel image force evaluation (requires TBB, `-Dwith_parallel_neb=true`).
+- IDPP (Image Dependent Pair Potential) path initialization.
+- Modular strategy pattern for tangent, projection, and spring force components.
+```
+
+### Onsager-Machlup NEB
+
+The Onsager-Machlup variant replaces the standard spring force with an
+action-based spring that adapts per-image based on the local force magnitude.
+Enable with `onsager_machlup = true` in the NEB section.
+
+### OCINEB (hybrid dimer refinement)
+
+OCINEB {cite:t}`neb-goswamiEnhancedClimbingImage2026` activates a Min-Mode
+Following (dimer) search on the climbing image after it stabilizes, using
+hessian eigenmode alignment to refine the saddle point to higher accuracy
+without additional NEB iterations. Enable with `ci_mmf = true`.
+
+### Parallel evaluation
+
+When compiled with TBB support (`-Dwith_parallel_neb=true`), image forces are
+evaluated in parallel. Python-based potentials automatically fall back to serial
+evaluation.
+
 ## Configuration
+
+The NEB section can be specified in `config.ini`:
+
+```{code-block} ini
+[Nudged Elastic Band]
+images = 7
+converged_force = 0.01
+climbing_image_method = true
+```
+
+Or programmatically via [rgpycrumbs](https://rgpycrumbs.rgoswami.me):
+
+```python
+from rgpycrumbs.eon.helpers import write_eon_config
+
+config = {
+    "Main": {"job": "nudged_elastic_band"},
+    "Nudged Elastic Band": {
+        "images": 7,
+        "converged_force": 0.01,
+        "climbing_image_method": True,
+    },
+}
+write_eon_config(config, Path("config.ini"))
+```
+
+See {doc}`/tutorials/dict_config` for the full programmatic workflow.
 
 ```{code-block} ini
 [Nudged Elastic Band]
 ```
 
 
-```{versionchanged} 3.1_TBA
-In TOML, this will be `[NEB]`
-```
 
 
 ```{eval-rst}

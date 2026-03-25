@@ -14,10 +14,10 @@
 #include "Hessian.h"
 
 #include "EonLogger.h"
+#include <algorithm>
+#include <cmath>
 #include <format>
 #include <fstream>
-
-using namespace std;
 
 int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                                    Matter *saddle, Matter *min2, double &pref1,
@@ -74,21 +74,22 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   }
 
   // check Hessian sizes
+  // BUG FIX: original checked min1 vs saddle twice, never min2
   if ((min1Freqs.size() != saddleFreqs.size()) ||
-      (min1Freqs.size() != saddleFreqs.size())) {
+      (min2Freqs.size() != saddleFreqs.size())) {
     if (!parameters.main_options.quiet) {
       EONC_LOG_ERROR("[Prefactor] Bad prefactor: Hessian sizes do not match");
     }
     return -1;
   }
 
-  logFreqs(min1Freqs, (char *)"minimum 1");
-  logFreqs(saddleFreqs, (char *)"saddle");
-  logFreqs(min2Freqs, (char *)"minimum 2");
+  logFreqs(min1Freqs, "minimum 1");
+  logFreqs(saddleFreqs, "saddle");
+  logFreqs(min2Freqs, "minimum 2");
 
   // check for correct number of negative modes
-  int i, numNegFreq = 0;
-  for (i = 0; i < size; i++) {
+  int numNegFreq = 0;
+  for (int i = 0; i < size; i++) {
     if (min1Freqs(i) < 0) {
       EONC_LOG_DEBUG("[Prefactor] min1 had negative mode of {}", min1Freqs(i));
       numNegFreq++;
@@ -100,7 +101,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   }
 
   numNegFreq = 0;
-  for (i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++) {
     if (saddleFreqs(i) < 0) {
       numNegFreq++;
     }
@@ -111,7 +112,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   }
 
   numNegFreq = 0;
-  for (i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++) {
     if (min2Freqs(i) < 0) {
       numNegFreq++;
     }
@@ -136,22 +137,24 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
         pref2 /= saddleFreqs[i];
       }
     }
-    pref1 = sqrt(pref1) / (2 * eonc::helpers::pi * 10.18e-15);
-    pref2 = sqrt(pref2) / (2 * eonc::helpers::pi * 10.18e-15);
+    pref1 = std::sqrt(pref1) / (2 * eonc::helpers::pi * 10.18e-15);
+    pref2 = std::sqrt(pref2) / (2 * eonc::helpers::pi * 10.18e-15);
   } else if (parameters.prefactor_options.rate ==
              eonc::Prefactor::RATE_QQHTST) {
-    float kB_T = parameters.main_options.temperature * 8.617332e-5; // eV
-    float h_bar = 6.582119e-16;                                     // eV*s
-    float h = 4.135667e-15;                                         // eV*s
-    float temp = (h_bar / (2. * kB_T));
+    double kB_T = parameters.main_options.temperature * 8.617332e-5; // eV
+    double h_bar = 6.582119e-16;                                     // eV*s
+    double h = 4.135667e-15;                                         // eV*s
+    double temp = (h_bar / (2.0 * kB_T));
 
     for (int i = 0; i < min1Freqs.size(); i++) {
-      pref1 = pref1 * (sinh(temp * (sqrt(min1Freqs[i]) / 10.18e-15)));
-      pref2 = pref2 * (sinh(temp * (sqrt(min2Freqs[i]) / 10.18e-15)));
+      pref1 = pref1 * (std::sinh(temp * (std::sqrt(min1Freqs[i]) / 10.18e-15)));
+      pref2 = pref2 * (std::sinh(temp * (std::sqrt(min2Freqs[i]) / 10.18e-15)));
 
       if (saddleFreqs[i] > 0) {
-        pref1 = pref1 / (sinh(temp * (sqrt(saddleFreqs[i]) / 10.18e-15)));
-        pref2 = pref2 / (sinh(temp * (sqrt(saddleFreqs[i]) / 10.18e-15)));
+        pref1 =
+            pref1 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
+        pref2 =
+            pref2 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
       }
     }
     pref1 = 2. * kB_T / (h)*pref1;
@@ -162,14 +165,13 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   return 0;
 }
 
-void eonc::Prefactor::logFreqs(VectorXd freqs, char *name) {
+void eonc::Prefactor::logFreqs(const VectorXd &freqs, const char *name) {
   std::ofstream outFile("freqs.dat", std::ios::app);
   if (!outFile.is_open())
     return;
 
   outFile << std::format("[Prefactor] Frequencies at {}\n", name);
-  int i;
-  for (i = 0; i < freqs.size(); i++) {
+  for (int i = 0; i < freqs.size(); i++) {
     outFile << "\n" << std::format("{:10.6f} ", freqs(i));
     if ((i + 1) % 5 == 0) {
       outFile << "\n";
@@ -216,7 +218,7 @@ VectorXi eonc::Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
       }
     }
   }
-  return (VectorXi)moved.block(0, 0, nMoved, 1);
+  return moved.head(nMoved);
 }
 
 VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
@@ -246,7 +248,7 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
   double sum = 0.0;
   int mini = 0;
   for (int i = 0; i < nAtoms; i++) {
-    diff[i] = max(diffMin1.row(i).norm(), diffMin2.row(i).norm());
+    diff[i] = std::max(diffMin1.row(i).norm(), diffMin2.row(i).norm());
     sum += diff[i];
     if (diff[i] <= diff[mini]) {
       mini = i;
@@ -294,7 +296,7 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
   EONC_LOG_DEBUG("[Prefactor] including {} atoms in the hessian ({} moved + {} "
                  "neighbors)",
                  totalAtoms, nMoved, totalAtoms - nMoved);
-  return (VectorXi)moved.block(0, 0, totalAtoms, 1);
+  return moved.head(totalAtoms);
 }
 
 VectorXi eonc::Prefactor::allFreeAtoms(Matter *matter) {

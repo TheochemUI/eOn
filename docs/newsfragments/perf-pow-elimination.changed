@@ -1,0 +1,4 @@
+Eliminated ``std::pow()`` with integer exponents from all hot-path force
+loops: LJ (pow(x,6) -> x*x*x), EAM (pow(r,5/6), simplified Morse pair
+from 3 exp to 1), IDPP (pow(r,4/5)), NEB spline (Horner's method),
+Water_Pt (11 pow calls replaced with explicit multiplies).

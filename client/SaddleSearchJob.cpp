@@ -14,21 +14,19 @@
 #include "HelperFunctions.h"
 #include "Potential.h"
 
-#include <stdio.h>
+#include <filesystem>
+#include <format>
+#include <fstream>
 #include <string>
 
-using namespace std;
-
-std::vector<std::string> SaddleSearchJob::run(void) {
-  string reactantFilename("pos.con");
-  string displacementFilename("displacement.con");
-  string modeFilename("direction.dat");
+std::vector<std::string> SaddleSearchJob::run() {
+  std::string reactantFilename("pos.con");
+  std::string displacementFilename("displacement.con");
+  std::string modeFilename("direction.dat");
 
   if (params.main_options.checkpoint) {
-    FILE *disp, *mode;
-    disp = fopen("displacement_cp.con", "r");
-    mode = fopen("mode_cp.dat", "r");
-    if (disp != NULL && mode != NULL) {
+    if (std::filesystem::exists("displacement_cp.con") &&
+        std::filesystem::exists("mode_cp.dat")) {
       displacementFilename = "displacement_cp.con";
       modeFilename = "mode_cp.dat";
       QUILL_LOG_DEBUG(log, "Resuming from checkpoint");
@@ -45,17 +43,13 @@ std::vector<std::string> SaddleSearchJob::run(void) {
 
   if (params.saddle_search_options.displace_type ==
       eonc::EpiCenters::DISP_LOAD) {
-    // displacement was passed from the server
     saddle->con2matter(displacementFilename);
   } else {
-    // displacement and mode will be made on the client
-    // in saddleSearch->initialize(...)
     *saddle = *initial;
   }
   AtomMatrix mode;
   if (params.saddle_search_options.displace_type ==
       eonc::EpiCenters::DISP_LOAD) {
-    // mode was passed from the server
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
@@ -88,8 +82,7 @@ int SaddleSearchJob::doSaddleSearch() {
 
   if (params.saddle_search_options.minmode_method ==
       LowestEigenmode::MINMODE_GPRDIMER) {
-    fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this
-    // works
+    fCallsSaddle = saddleSearch->forcecalls - f1;
   } else {
     fCallsSaddle += this->pot->forceCallCounter - f1;
   }
@@ -98,114 +91,57 @@ int SaddleSearchJob::doSaddleSearch() {
 }
 
 void SaddleSearchJob::saveData(int status) {
-  FILE *fileResults, *fileSaddle, *fileMode;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  /// XXX: min_fcalls isn't quite right it should get them from
-  //      the minimizer. But right now the minimizers are in
-  //      the SaddleSearch object. They will be taken out eventually.
 
-  fprintf(fileResults, "%d termination_reason\n", status);
-  fprintf(fileResults, "saddle_search job_type\n");
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  if (params.saddle_search_options.minmode_method ==
-      LowestEigenmode::MINMODE_GPRDIMER) {
-    fprintf(fileResults, "%zu total_force_calls\n",
-            this->pot->forceCallCounter);
-    fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
-  } else {
-    fprintf(fileResults, "%zu total_force_calls\n",
-            this->pot->forceCallCounter);
-    fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
+  std::ofstream out(resultsFilename, std::ios::binary);
+  if (out) {
+    out << std::format("{} termination_reason\n", status);
+    out << std::format("{} termination_reason_text\n",
+                       magic_enum::enum_name(
+                           static_cast<MinModeSaddleSearch::Status>(status)));
+    out << "saddle_search job_type\n";
+    out << std::format("{} random_seed\n", params.main_options.randomSeed);
+    out << std::format(
+        "{} potential_type\n",
+        magic_enum::enum_name<PotType>(params.potential_options.potential));
+    out << std::format("{} total_force_calls\n",
+                       this->pot->forceCallCounter.load());
+    out << std::format("{} force_calls_saddle\n", fCallsSaddle);
+    out << std::format("{} iterations\n", saddleSearch->iteration);
+    if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
+      out << std::format("{:f} potential_energy_saddle\n",
+                         saddle->getPotentialEnergy());
+      out << std::format("{:f} final_eigenvalue\n",
+                         saddleSearch->getEigenvalue());
+    }
+    out << std::format("{:f} potential_energy_reactant\n",
+                       initial->getPotentialEnergy());
   }
-  if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
-    fprintf(fileResults, "%f potential_energy_saddle\n",
-            saddle->getPotentialEnergy());
-    fprintf(fileResults, "%f final_eigenvalue\n",
-            saddleSearch->getEigenvalue());
-  }
-  fprintf(fileResults, "%f potential_energy_reactant\n",
-          initial->getPotentialEnergy());
-  fclose(fileResults);
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
-  fileMode = fopen(modeFilename.c_str(), "wb");
-  eonc::helpers::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
-  fclose(fileMode);
+  {
+    std::ofstream modeOut(modeFilename, std::ios::binary);
+    if (modeOut) {
+      auto eigenvec = saddleSearch->getEigenvector();
+      for (long row = 0; row < eigenvec.rows(); ++row) {
+        modeOut << std::format("{:12.6f} {:12.6f} {:12.6f}\n", eigenvec(row, 0),
+                               eigenvec(row, 1), eigenvec(row, 2));
+      }
+    }
+  }
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);
-  fileSaddle = fopen(saddleFilename.c_str(), "wb");
-  saddle->matter2con(fileSaddle);
-  fclose(fileSaddle);
+  saddle->matter2con(saddleFilename);
 }
 
 void SaddleSearchJob::printEndState(int status) {
-  QUILL_LOG_DEBUG(log, "[Saddle Search] Final status: ");
-
-  if (status == MinModeSaddleSearch::STATUS_GOOD)
-    QUILL_LOG_DEBUG(log, "Success");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
-    QUILL_LOG_DEBUG(log, "Initial displacement unable to reach convex region");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
-    QUILL_LOG_DEBUG(log, "Barrier too high");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-    QUILL_LOG_DEBUG(log, "Too many iterations in concave region");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-    QUILL_LOG_DEBUG(log, "Too many iterations");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
-    QUILL_LOG_DEBUG(log, "Saddle is not connected to initial state");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
-    QUILL_LOG_DEBUG(log, "Prefactors not within window");
-
-  else if (status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
-    QUILL_LOG_DEBUG(log, "Hessian calculation failed");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
-    QUILL_LOG_DEBUG(log, "Energy barrier not within window");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
-    QUILL_LOG_DEBUG(log, "Minimizations from saddle did not converge");
-
-  else if (status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-    QUILL_LOG_DEBUG(log, "Nonnegative initial mode, aborting");
-
-  else if (status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
-    QUILL_LOG_DEBUG(log, "Negative barrier detected");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
-    QUILL_LOG_DEBUG(log, "No reaction found during MD trajectory");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
-    QUILL_LOG_DEBUG(log,
-                    "Converged to stationary point with zero negative modes");
-
-  else if (status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
-    QUILL_LOG_DEBUG(log, "No forward barrier was found along minimized band");
-
-  else if (status == MinModeSaddleSearch::STATUS_ZEROMODE_ABORT)
-    QUILL_LOG_DEBUG(log, "Zero mode abort.");
-
-  else if (status == MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
-    QUILL_LOG_DEBUG(log, "Optimizer error.");
-
-  else
-    QUILL_LOG_DEBUG(log, "Unknown status: {}!", status);
-
-  return;
+  auto msg = MinModeSaddleSearch::statusMessage(status);
+  if (status == MinModeSaddleSearch::STATUS_GOOD) {
+    QUILL_LOG_DEBUG(log, "[Saddle Search] {}", msg);
+  } else {
+    QUILL_LOG_WARNING(log, "[Saddle Search] {}", msg);
+  }
 }

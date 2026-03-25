@@ -16,10 +16,10 @@
 #include "LowestEigenmode.h"
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
-#include <stdio.h>
-using namespace std;
+#include <cmath>
+#include <cstdio>
 
-int BasinHoppingSaddleSearch::run(void) {
+int BasinHoppingSaddleSearch::run() {
   // minimize "saddle"
   saddle->relax(false, true, false, "displacementmin");
   product = std::make_shared<Matter>(pot, params);
@@ -33,7 +33,7 @@ int BasinHoppingSaddleSearch::run(void) {
   double kB = params.constants.kB;
   double Temperature = params.main_options.temperature;
   double arg = -de / (kB * Temperature);
-  double p = exp(arg);
+  double p = std::exp(arg);
   double r = eonc::helpers::random();
   if (ereactant < eproduct) {
     if (r > p) { // reject

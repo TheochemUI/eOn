@@ -1,0 +1,1 @@
+Fixed ``convergenceForce()`` loop variable mutation that could skip images.

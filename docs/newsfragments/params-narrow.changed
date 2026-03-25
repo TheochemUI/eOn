@@ -1,0 +1,1 @@
+Narrowed parameter passing: Matter, Potential base, Optimizer hierarchy (``OptimizerConfig``), and Dynamics (``DynamicsConfig``) no longer require the full ``Parameters`` object. NEB no longer mutates its Parameters copy.

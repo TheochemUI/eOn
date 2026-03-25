@@ -50,7 +50,7 @@ public:
   VectorXd tau;               // Dimer direction
   VectorXd theta;             // Dimer rotation direction
   VectorXd F_R;               // Dimer rotational force
-  double C_tau;               // Curvature along tau
+  double C_tau{0.0};          // Curvature along tau
   // For use when called as part of the NEB-MMF
   void setReferenceMode(const VectorXd &ref);
   void clearReferenceMode();
@@ -59,13 +59,13 @@ public:
   // parameters used for conjugate gradients
   VectorXd F_R_Old;
   VectorXd thetaOld;
-  double a, b, gamma;
-  bool init_cg;
+  double a{0.0}, b{0.0}, gamma{0.0};
+  bool init_cg{false};
 
   // variables for LBFGS
   std::vector<VectorXd> s, y;
   std::vector<double> rho;
-  bool init_lbfgs;
+  bool init_lbfgs{false};
   VectorXd rPrev;
 
   std::vector<VectorXd> gradients;

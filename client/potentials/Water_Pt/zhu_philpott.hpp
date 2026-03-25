@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include <vector>
 /** @file
 Potential for water and Platinum
 @author Jean-Claude C. Berthet
@@ -64,8 +65,9 @@ private:
                          double const relativePermittivity);
   void coulombFull(Water &w1, Water &w2, double &U,
                    double const relativePermittivity);
-  int nPlatinum_;
-  double *positions_, *forces_;
+  int nPlatinum_{0};
+  std::vector<double> positions_;
+  std::vector<double> forces_;
 };
 template class ZhuPhilpott<zhu_philpott_parameters::Standard>;
 template class ZhuPhilpott<zhu_philpott_parameters::Iceland>;

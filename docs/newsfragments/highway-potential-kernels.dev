@@ -1,0 +1,3 @@
+Highway SIMD kernels for Morse, LJ, and EAM pair-potential force loops.
+Subproject builds and -DWITH_HIGHWAY is set; needs actual vectorized
+inner loop implementations using HWY_DYNAMIC_DISPATCH.

@@ -34,3 +34,13 @@ using Matrix3d = Eigen::Matrix<double, 3, 3, eOnStorageOrder>;
 using Matrix4d = Eigen::Matrix<double, 4, 4, eOnStorageOrder>;
 using AtomMatrix = Eigen::Matrix<double, Eigen::Dynamic, 3, eOnStorageOrder>;
 using RotationMatrix = Eigen::Matrix<double, 3, 3, eOnStorageOrder>;
+
+/// SIMD-optimized dot product for contiguous Eigen matrices.
+/// Maps both operands as flat VectorXd and uses Eigen's optimized .dot()
+/// which leverages SSE/AVX intrinsics, avoiding the element-wise temporary
+/// that (a.array() * b.array()).sum() creates.
+inline double matDot(const AtomMatrix &a, const AtomMatrix &b) {
+  const auto n = a.size();
+  return Eigen::Map<const VectorXd>(a.data(), n)
+      .dot(Eigen::Map<const VectorXd>(b.data(), n));
+}

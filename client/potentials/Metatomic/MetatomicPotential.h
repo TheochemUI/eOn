@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../../Potential.h"
+#include <mutex>
 
 // Metatomic and torch headers
 // These pragmas are included to suppress warnings from third-party libraries
@@ -48,6 +49,7 @@
 class MetatomicPotential : public Potential {
 private:
   eonc::log::Scoped m_log;
+  Parameters::metatomic_options_t m_metatomic_opts;
   // --- Metatomic and Torch members ---
   metatensor_torch::Module model_;
   metatomic_torch::ModelCapabilities capabilities_;
@@ -58,10 +60,6 @@ private:
   c10::DeviceType device_type_;
   torch::Device device_;
   bool check_consistency_;
-  // --- Cached Tensors and Data for Performance ---
-  torch::Tensor atomic_types_;
-  std::vector<int> last_atomic_nrs_;
-
   // -- Variants
   std::string energy_key_;
   std::string energy_uncertainty_key_;
@@ -122,4 +120,16 @@ public:
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override;
+
+  /// PyTorch model uses internal mutex for thread safety on same instance.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return true; }
+
+  /// NEB should create separate model instances per image for true
+  /// parallel force evaluation via clone().
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return true;
+  }
+
+private:
+  mutable std::mutex inference_mutex_;
 };

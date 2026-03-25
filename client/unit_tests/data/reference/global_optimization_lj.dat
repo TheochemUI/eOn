@@ -1,0 +1,61 @@
+EON Client
+VERSION: rUnversioned directory
+BUILD DATE: Thu Mar 19 12:26:39 PM CET 2026
+
+Hostname: rgx1gen11
+OS: Linux
+Arch: x86_64
+PID: 2207028
+DIR: /home/rgoswami/Git/Github/TheochemUI/eOn/scripts/regression/workdirs/global_optimization_lj
+
+Loading parameter file config.ini
+* [Main] job: global_optimization
+* [Main] temperature: 300.0
+* [Main] random_seed: 42
+* [Potential] potential: lj
+* [Optimizer] opt_method: lbfgs
+* [Optimizer] converged_force: 0.001
+* [Optimizer] max_iterations: 200
+* [Basin Hopping] displacement: 0.5
+* [Basin Hopping] push_apart_distance: 0.4
+* [Global Optimization] move_method: random
+* [Global Optimization] decision_method: boltzmann
+* [Global Optimization] steps: 10
+
+Beginning minima hopping of pos.con
+[Matter]       Iter       Step size           ||Force||         Energy
+[Matter]          0     0.00000e+00         1.03406e-02      -39.96535
+[Matter]          1     2.34592e-05         6.63147e-03      -39.96535
+[Matter]          2     1.35712e-05         4.15353e-03      -39.96535
+[Matter]          3     2.89625e-05         2.54369e-03      -39.96535
+[Matter]          4     1.74816e-05         2.95055e-03      -39.96535
+[Matter]          5     7.92590e-06         1.45773e-03      -39.96535
+[Matter]          6     5.29045e-06         1.13463e-03      -39.96535
+[Matter]          7     7.79399e-06         1.05237e-03      -39.96535
+[Matter]          8     9.44433e-06         1.51287e-03      -39.96535
+[Matter]          9     2.21576e-06         4.94274e-04      -39.96535
+converged TRUE
+converged TRUE
+JLO=     0     1.22770
+converged TRUE
+JLO=     1     0.30768
+converged TRUE
+JLO=     1     0.40982
+converged TRUE
+new lowest: nlmin, epot_hop, dE       1       -44.32677   -4.36142
+JLO=     0     4.36142
+converged TRUE
+converged TRUE
+JLO=     1     1.47922
+converged TRUE
+JLO=     4     0.09769
+converged TRUE
+JLO=     2     0.57591
+converged TRUE
+JLO=     6     0.07272
+converged TRUE
+JLO=     1     0.02738
+timing information:
+real      0.010 seconds
+user      0.011 seconds
+sys       0.003 seconds

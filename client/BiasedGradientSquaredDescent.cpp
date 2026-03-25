@@ -10,10 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "BiasedGradientSquaredDescent.h"
-#include "Dimer.h"
+#include "EigenmodeStrategy.h"
 #include "HelperFunctions.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
@@ -22,47 +20,49 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 #include <map>
-#include <string.h>
-using namespace std;
 
 class BGSDObjectiveFunction : public ObjectiveFunction {
+  Matter &matter;
+
 public:
-  BGSDObjectiveFunction(std::shared_ptr<Matter> matterPassed,
-                        double reactantEnergyPassed, double bgsdAlphaPassed,
+  BGSDObjectiveFunction(Matter &matterRef, double reactantEnergyPassed,
+                        double bgsdAlphaPassed,
                         const Parameters &parametersPassed)
-      : ObjectiveFunction(matterPassed, parametersPassed) {
+      : ObjectiveFunction(parametersPassed),
+        matter{matterRef} {
     bgsdAlpha = bgsdAlphaPassed;
     reactantEnergy = reactantEnergyPassed;
   }
 
-  ~BGSDObjectiveFunction(void) = default;
+  ~BGSDObjectiveFunction() = default;
 
   double getEnergy() {
-    VectorXd Vforce = matter->getForcesFreeV();
+    VectorXd Vforce = matter.getForcesFreeV();
     double Henergy = 0.5 * Vforce.dot(Vforce) +
                      0.5 * bgsdAlpha *
-                         (matter->getPotentialEnergy() -
+                         (matter.getPotentialEnergy() -
                           (reactantEnergy + params.bgsd_options.beta)) *
-                         (matter->getPotentialEnergy() -
+                         (matter.getPotentialEnergy() -
                           (reactantEnergy + params.bgsd_options.beta));
     return Henergy;
   }
 
   VectorXd getGradient(bool fdstep = false) {
-    VectorXd Vforce = matter->getForcesFreeV();
+    VectorXd Vforce = matter.getForcesFreeV();
     double magVforce = Vforce.norm();
     VectorXd normVforce = Vforce / magVforce;
-    VectorXd Vpositions = matter->getPositionsFreeV();
-    matter->setPositionsFreeV(
-        matter->getPositionsFreeV() -
+    VectorXd Vpositions = matter.getPositionsFreeV();
+    matter.setPositionsFreeV(
+        matter.getPositionsFreeV() -
         normVforce * params.bgsd_options.gradient_finite_difference);
-    VectorXd Vforcenew = matter->getForcesFreeV();
-    matter->setPositionsFreeV(Vpositions);
+    VectorXd Vforcenew = matter.getForcesFreeV();
+    matter.setPositionsFreeV(Vpositions);
     VectorXd Hforce = magVforce * (Vforcenew - Vforce) /
                           params.bgsd_options.gradient_finite_difference +
                       bgsdAlpha *
-                          (matter->getPotentialEnergy() -
+                          (matter.getPotentialEnergy() -
                            (reactantEnergy + params.bgsd_options.beta)) *
                           Vforce;
     return -Hforce;
@@ -74,9 +74,9 @@ public:
     return Hnorm;
   }
 
-  void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
-  VectorXd getPositions() { return matter->getPositionsFreeV(); }
-  int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
+  void setPositions(const VectorXd &x) { matter.setPositionsFreeV(x); }
+  VectorXd getPositions() { return matter.getPositionsFreeV(); }
+  int degreesOfFreedom() { return 3 * matter.numberOfFreeAtoms(); }
   bool isConverged() { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
     return getConvergenceH() < params.bgsd_options.h_force_convergence;
@@ -91,17 +91,18 @@ public:
   double getConvergence() { return getEnergy() && getGradient().norm(); }
   double getConvergenceH() { return getGradient().norm(); }
   double getConvergenceV() { return getEnergy(); }
-  VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
+  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+    return matter.pbcV(a - b);
+  }
 
 private:
-  Matter *matter;
   double reactantEnergy;
   double bgsdAlpha;
 };
 
 int BiasedGradientSquaredDescent::run() {
   auto objf = std::make_shared<BGSDObjectiveFunction>(
-      saddle, reactantEnergy, params.bgsd_options.alpha, params);
+      *saddle, reactantEnergy, params.bgsd_options.alpha, params);
   auto optim = eonc::helpers::create::mkOptim(
       objf, params.optimizer_options.method, params);
   int iteration = 0;
@@ -118,7 +119,7 @@ int BiasedGradientSquaredDescent::run() {
                     saddle->getPotentialEnergy());
     iteration++;
   }
-  auto objf2 = std::make_shared<BGSDObjectiveFunction>(saddle, reactantEnergy,
+  auto objf2 = std::make_shared<BGSDObjectiveFunction>(*saddle, reactantEnergy,
                                                        0.0, params);
   auto optim2 = eonc::helpers::create::mkOptim(
       objf2, params.optimizer_options.method, params);
@@ -135,21 +136,8 @@ int BiasedGradientSquaredDescent::run() {
     iteration++;
   }
 
-  LowestEigenmode *minModeMethod;
-  if (params.saddle_search_options.minmode_method ==
-      LowestEigenmode::MINMODE_DIMER) {
-    if (params.dimer_options.improved) {
-      minModeMethod = new ImprovedDimer(saddle, params, pot);
-    } else {
-      minModeMethod = new Dimer(saddle, params, pot);
-    }
-  } else if (params.saddle_search_options.minmode_method ==
-             LowestEigenmode::MINMODE_LANCZOS) {
-    minModeMethod = new Lanczos(saddle, params, pot);
-  }
+  auto minModeMethod = eonc::buildEigenmodeStrategy(saddle, params, pot);
 
-  //   eigenvector.setZero();
-  //   eigenvector(384,0) = 1.;
   eigenvector.setRandom();
   for (int i = 0; i < saddle->numberOfAtoms(); i++) {
     for (int j = 0; j < 3; j++) {
@@ -159,9 +147,9 @@ int BiasedGradientSquaredDescent::run() {
     }
   }
   eigenvector.normalize();
-  minModeMethod->compute(saddle, eigenvector);
-  eigenvector = minModeMethod->getEigenvector();
-  eigenvalue = minModeMethod->getEigenvalue();
+  eonc::eigenmodeCompute(*minModeMethod, saddle, eigenvector);
+  eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
+  eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);
   QUILL_LOG_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
   if (objf2->isConvergedV()) {
     return 0;

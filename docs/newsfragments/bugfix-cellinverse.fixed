@@ -1,0 +1,1 @@
+``cellInverse`` now recomputed in ``Matter::setCell()`` (was stale after cell changes).

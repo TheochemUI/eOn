@@ -26,7 +26,7 @@ class ASEOrcaPot : public Potential {
 private:
   py::object calc;
   py::object ase;
-  size_t counter;
+  size_t counter{0};
 
 public:
   ASEOrcaPot(const Parameters &a_params);
@@ -38,4 +38,9 @@ public:
   // Functions
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// ORCA runs as external subprocess; separate instances are independent.
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return true;
+  }
 };

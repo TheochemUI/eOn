@@ -1,0 +1,524 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#include "GeometryAnalysis.h"
+#include "EonLogger.h"
+#include "Matter.h"
+#include "SafeMath.h"
+
+#include <cmath>
+#include <set>
+#include <vector>
+
+RotationMatrix eonc::geometry::rotationExtract(const AtomMatrix r1,
+                                               const AtomMatrix r2) {
+  RotationMatrix R;
+
+  // Determine optimal rotation
+  // Horn, J. Opt. Soc. Am. A, 1987
+  Matrix3d m = r1.transpose() * r2;
+
+  double sxx = m(0, 0);
+  double sxy = m(0, 1);
+  double sxz = m(0, 2);
+  double syx = m(1, 0);
+  double syy = m(1, 1);
+  double syz = m(1, 2);
+  double szx = m(2, 0);
+  double szy = m(2, 1);
+  double szz = m(2, 2);
+
+  Matrix4d n;
+  n.setZero();
+  n(0, 1) = syz - szy;
+  n(0, 2) = szx - sxz;
+  n(0, 3) = sxy - syx;
+
+  n(1, 2) = sxy + syx;
+  n(1, 3) = szx + sxz;
+
+  n(2, 3) = syz + szy;
+
+  n += n.transpose().eval();
+
+  n(0, 0) = sxx + syy + szz;
+  n(1, 1) = sxx - syy - szz;
+  n(2, 2) = -sxx + syy - szz;
+  n(3, 3) = -sxx - syy + szz;
+
+  Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
+  Eigen::Vector4d maxv = es.eigenvectors().col(3);
+
+  double aa = maxv[0] * maxv[0];
+  double bb = maxv[1] * maxv[1];
+  double cc = maxv[2] * maxv[2];
+  double dd = maxv[3] * maxv[3];
+  double ab = maxv[0] * maxv[1];
+  double ac = maxv[0] * maxv[2];
+  double ad = maxv[0] * maxv[3];
+  double bc = maxv[1] * maxv[2];
+  double bd = maxv[1] * maxv[3];
+  double cd = maxv[2] * maxv[3];
+
+  R(0, 0) = aa + bb - cc - dd;
+  R(0, 1) = 2 * (bc - ad);
+  R(0, 2) = 2 * (bd + ac);
+  R(1, 0) = 2 * (bc + ad);
+  R(1, 1) = aa - bb + cc - dd;
+  R(1, 2) = 2 * (cd - ab);
+  R(2, 0) = 2 * (bd - ac);
+  R(2, 1) = 2 * (cd + ab);
+  R(2, 2) = aa - bb - cc + dd;
+
+  return R;
+}
+
+bool eonc::geometry::rotationMatch(const Matter &m1, const Matter &m2,
+                                   const double max_diff) {
+  AtomMatrix r1 = m1.getPositions();
+  AtomMatrix r2 = m2.getPositions();
+
+  // Align centroids
+  Eigen::VectorXd c1(3);
+  Eigen::VectorXd c2(3);
+
+  c1[0] = r1.col(0).sum();
+  c1[1] = r1.col(1).sum();
+  c1[2] = r1.col(2).sum();
+  c2[0] = r2.col(0).sum();
+  c2[1] = r2.col(1).sum();
+  c2[2] = r2.col(2).sum();
+  c1 /= r1.rows();
+  c2 /= r2.rows();
+
+  for (int i = 0; i < r1.rows(); i++) {
+    r1(i, 0) -= c1[0];
+    r1(i, 1) -= c1[1];
+    r1(i, 2) -= c1[2];
+
+    r2(i, 0) -= c2[0];
+    r2(i, 1) -= c2[1];
+    r2(i, 2) -= c2[2];
+  }
+
+  RotationMatrix R = rotationExtract(r1, r2);
+
+  // Eigen is transposed relative to numpy
+  r2 = r2 * R;
+
+  for (int i = 0; i < r1.rows(); i++) {
+    double diff = (r2.row(i) - r1.row(i)).norm();
+    if (diff > max_diff) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Project out rigid-body translation and rotation from a displacement vector.
+// Uses infinitesimal-rotation basis vectors and modified Gram-Schmidt
+// orthonormalization, following the approach in:
+//   R. Goswami and H. Jonsson, "Adaptive Pruning for Increased Robustness and
+//   Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point
+//   Searches," ChemPhysChem, Nov. 2025, doi: 10.1002/cphc.202500730.
+void eonc::geometry::projectOutRotTrans(Eigen::VectorXd &step,
+                                        const AtomMatrix &positions) {
+  long nAtoms = positions.rows();
+  long dof = nAtoms * 3;
+
+  // 1. Compute center of mass (unweighted geometric center)
+  Eigen::Vector3d com = Eigen::Vector3d::Zero();
+  for (long i = 0; i < nAtoms; ++i) {
+    com(0) += positions(i, 0);
+    com(1) += positions(i, 1);
+    com(2) += positions(i, 2);
+  }
+  com /= static_cast<double>(nAtoms);
+
+  // 2. Construct 6 basis vectors for rigid-body translation and rotation
+  std::vector<Eigen::VectorXd> basis;
+  basis.reserve(6);
+
+  // Translational basis vectors
+  for (int d = 0; d < 3; ++d) {
+    Eigen::VectorXd t = Eigen::VectorXd::Zero(dof);
+    for (long j = 0; j < nAtoms; ++j) {
+      t(3 * j + d) = 1.0;
+    }
+    basis.push_back(t);
+  }
+
+  // Rotational basis vectors (infinitesimal rotations around COM)
+  Eigen::VectorXd rx = Eigen::VectorXd::Zero(dof);
+  Eigen::VectorXd ry = Eigen::VectorXd::Zero(dof);
+  Eigen::VectorXd rz = Eigen::VectorXd::Zero(dof);
+
+  for (long i = 0; i < nAtoms; ++i) {
+    double x = positions(i, 0) - com(0);
+    double y = positions(i, 1) - com(1);
+    double z = positions(i, 2) - com(2);
+    // Rotation around x-axis: cross(xhat, r) = (0, -z, y)
+    rx(3 * i + 1) = -z;
+    rx(3 * i + 2) = y;
+    // Rotation around y-axis: cross(yhat, r) = (z, 0, -x)
+    ry(3 * i + 0) = z;
+    ry(3 * i + 2) = -x;
+    // Rotation around z-axis: cross(zhat, r) = (-y, x, 0)
+    rz(3 * i + 0) = -y;
+    rz(3 * i + 1) = x;
+  }
+  basis.push_back(rx);
+  basis.push_back(ry);
+  basis.push_back(rz);
+
+  // 3. Modified Gram-Schmidt orthonormalization
+  std::vector<Eigen::VectorXd> ortho;
+  ortho.reserve(6);
+
+  for (auto &v : basis) {
+    Eigen::VectorXd u = v;
+    for (const auto &e : ortho) {
+      u -= u.dot(e) * e;
+    }
+    // Handles linear molecules where one rotational mode is degenerate
+    if (u.norm() > 1e-9) {
+      u.normalize();
+      ortho.push_back(u);
+    }
+  }
+
+  // 4. Project out rigid-body components from step
+  for (const auto &e : ortho) {
+    step -= step.dot(e) * e;
+  }
+}
+
+void eonc::geometry::rotationRemove(const AtomMatrix r1_passed,
+                                    std::shared_ptr<Matter> m2) {
+  // Skip for extended systems (slabs/surfaces with frozen atoms).
+  // Rigid-body rotation and translation are not well-defined when the
+  // system is anchored by frozen atoms.
+  if (m2->numberOfFixedAtoms() > 0) {
+    return;
+  }
+
+  AtomMatrix r2 = m2->getPositions();
+  long n = r1_passed.size();
+
+  // Compute displacement as flat 3N vector
+  Eigen::VectorXd step(n);
+  Eigen::Map<const Eigen::VectorXd> r1_flat(r1_passed.data(), n);
+  Eigen::Map<const Eigen::VectorXd> r2_flat(r2.data(), n);
+  step = r2_flat - r1_flat;
+
+  // Project out rigid-body translation and rotation
+  projectOutRotTrans(step, r1_passed);
+
+  // Reconstruct positions: r1 + projected step
+  Eigen::VectorXd result = r1_flat + step;
+  AtomMatrix resultMat(r1_passed.rows(), 3);
+  Eigen::Map<Eigen::VectorXd>(resultMat.data(), n) = result;
+
+  m2->setPositions(resultMat);
+}
+
+void eonc::geometry::rotationRemove(const std::shared_ptr<Matter> m1,
+                                    std::shared_ptr<Matter> m2) {
+  AtomMatrix r1 = m1->getPositions();
+  rotationRemove(r1, m2);
+  return;
+}
+
+void eonc::geometry::translationRemove(Matter &m1, const AtomMatrix r2_passed) {
+  AtomMatrix r1 = m1.getPositions();
+  AtomMatrix r2 = r2_passed;
+
+  // net displacement
+  Eigen::VectorXd disp(3);
+  AtomMatrix r12 = m1.pbc(r2 - r1);
+
+  disp[0] = r12.col(0).sum();
+  disp[1] = r12.col(1).sum();
+  disp[2] = r12.col(2).sum();
+  disp /= r1.rows();
+
+  for (int i = 0; i < r1.rows(); i++) {
+    r1(i, 0) += disp[0];
+    r1(i, 1) += disp[1];
+    r1(i, 2) += disp[2];
+  }
+
+  m1.setPositions(r1);
+  return;
+}
+
+void eonc::geometry::translationRemove(Matter &m1, const Matter &m2) {
+  AtomMatrix r2 = m2.getPositions();
+  translationRemove(m1, r2);
+  return;
+}
+
+double eonc::geometry::maxAtomMotion(const AtomMatrix v1) {
+  return v1.rowwise().norm().maxCoeff();
+}
+
+double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
+  double max = 0.0;
+  long n = v1.rows();
+  if (n < 3) {
+    // Vector too short for 3D atom grouping; treat as single displacement
+    return v1.norm();
+  }
+  for (long i = 0; i + 3 <= n; i += 3) {
+    double norm = v1.segment<3>(i).norm();
+    if (max < norm) {
+      max = norm;
+    }
+  }
+  // Handle trailing elements (vector size not multiple of 3)
+  long rem = n % 3;
+  if (rem > 0) {
+    double norm = v1.tail(rem).norm();
+    if (max < norm) {
+      max = norm;
+    }
+  }
+  return max;
+}
+
+long eonc::geometry::numAtomsMoved(const AtomMatrix v1, double cutoff) {
+  long num = 0;
+  for (int i = 0; i < v1.rows(); i++) {
+    double norm = v1.row(i).norm();
+    if (norm >= cutoff) {
+      num += 1;
+    }
+  }
+  return num;
+}
+
+AtomMatrix eonc::geometry::maxAtomMotionApplied(const AtomMatrix v1,
+                                                double maxMotion) {
+  AtomMatrix v2(v1);
+
+  double max = maxAtomMotion(v1);
+  if (max > maxMotion) {
+    v2 *= maxMotion / max;
+  }
+  return v2;
+}
+
+VectorXd eonc::geometry::maxAtomMotionAppliedV(const VectorXd v1,
+                                               double maxMotion) {
+  VectorXd v2(v1);
+
+  double max = maxAtomMotionV(v1);
+  if (max > maxMotion) {
+    v2 *= maxMotion / max;
+  }
+  return v2;
+}
+
+AtomMatrix eonc::geometry::maxMotionApplied(const AtomMatrix v1,
+                                            double maxMotion) {
+  AtomMatrix v2(v1);
+
+  double max = v1.norm();
+  if (max > maxMotion) {
+    v2 *= maxMotion / max;
+  }
+  return v2;
+}
+
+VectorXd eonc::geometry::maxMotionAppliedV(const VectorXd v1,
+                                           double maxMotion) {
+  VectorXd v2(v1);
+
+  double max = v1.norm();
+  if (max > maxMotion) {
+    v2 *= maxMotion / max;
+  }
+  return v2;
+}
+
+namespace eonc::geometry {
+struct atom {
+  double r;
+  int z;
+};
+
+struct by_atom {
+  bool operator()(atom const &a, atom const &b) const {
+    if (a.z != b.z) {
+      return a.z < b.z;
+    } else {
+      return a.r < b.r;
+    }
+  }
+};
+} // namespace eonc::geometry
+
+bool eonc::geometry::identical(const Matter &m1, const Matter &m2,
+                               const double distanceDifference) {
+
+  AtomMatrix r1 = m1.getPositions();
+  AtomMatrix r2 = m2.getPositions();
+
+  std::set<int> matched;
+  double tolerance = distanceDifference;
+
+  if (r1.rows() != r2.rows()) {
+    return false;
+  }
+  int N = r1.rows();
+
+  for (int i = 0; i < N; i++) {
+    if (std::fabs((m1.pbc(r1.row(i) - r2.row(i))).norm()) < tolerance &&
+        m1.getAtomicNr(i) == m2.getAtomicNr(i)) {
+      matched.insert(i);
+    }
+  }
+
+  for (int j = 0; j < N; j++) {
+
+    if (matched.count(j) == 1)
+      continue;
+
+    for (int k = 0; k < N; k++) {
+      if (matched.count(j) == 1)
+        break;
+
+      if (std::fabs((m1.pbc(r1.row(j) - r2.row(k))).norm()) < tolerance &&
+          m1.getAtomicNr(j) == m2.getAtomicNr(k)) {
+        matched.insert(j);
+      }
+    }
+  }
+
+  if (matched.size() == static_cast<unsigned>(N)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
+                             const double distanceDifference) {
+  EONC_LOG_INFO("In sortedR");
+  AtomMatrix r1 = m1.getPositions();
+  AtomMatrix r2 = m2.getPositions();
+  double tolerance = distanceDifference;
+  int matches = 0;
+
+  if (r1.rows() != r2.rows()) {
+    return false;
+  }
+
+  // Allocate memory for rdf1 and rdf2
+  std::vector<std::set<atom, by_atom>> rdf1(r1.rows());
+  std::vector<std::set<atom, by_atom>> rdf2(r2.rows());
+
+  for (int i2 = 0; i2 < r2.rows(); i2++) {
+    rdf2[i2].clear();
+    for (int j2 = 0; j2 < r2.rows(); j2++) {
+      if (j2 == i2)
+        continue;
+      atom a2;
+      a2.r = m2.distance(i2, j2);
+      a2.z = m2.getAtomicNr(j2);
+      rdf2[i2].insert(a2);
+      rdf2[j2].insert(a2);
+    }
+  }
+
+  for (int i1 = 0; i1 < r1.rows(); i1++) {
+    if (matches == i1 - 2) {
+      return false;
+    }
+    for (int j1 = 0; j1 < r1.rows(); j1++) {
+      if (j1 == i1)
+        continue;
+      atom a;
+      a.r = m1.distance(i1, j1);
+      a.z = m1.getAtomicNr(j1);
+      rdf1[i1].insert(a);
+      rdf1[j1].insert(a);
+    }
+    for (int x = 0; x < r2.rows(); x++) {
+      auto it2 = rdf2[x].begin();
+      auto it = rdf1[i1].begin();
+      int c = 0;
+      int counter = 0;
+      for (; c < r1.rows(); c++) {
+        if (it == rdf1[i1].end() || it2 == rdf2[x].end())
+          break;
+        atom k1 = *it;
+        atom k2 = *it2;
+        if (std::fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
+          counter++;
+        } else {
+          EONC_LOG_INFO("No match");
+          break;
+        }
+        ++it;
+        ++it2;
+      }
+      if (counter == r1.rows()) {
+        matches++;
+      } else {
+        EONC_LOG_INFO("No match");
+      }
+    }
+  }
+
+  return matches >= r1.rows();
+}
+
+void eonc::geometry::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
+  if (minDistance <= 0)
+    return;
+
+  AtomMatrix r1 = m1->getPositions();
+  AtomMatrix Force(r1.rows(), 3);
+  double f = 0.025;
+  double cut = minDistance;
+  double pushAparts = 500;
+  for (int p = 0; p < r1.rows(); p++) {
+    for (int axis = 0; axis <= 2; axis++) {
+      Force(p, axis) = 0;
+    }
+  }
+  for (int count = 0; count < pushAparts; count++) {
+    int moved = 0;
+    for (int i = 0; i < r1.rows(); i++) {
+      for (int j = i + 1; j < r1.rows(); j++) {
+        double d = m1->distance(i, j);
+        if (d < cut) {
+          moved++;
+          for (int axis = 0; axis <= 2; axis++) {
+            double componant = f * (r1(i, axis) - r1(j, axis)) / d;
+            Force(i, axis) += componant;
+            Force(j, axis) -= componant;
+          }
+        }
+      }
+    }
+    if (moved == 0)
+      break;
+    for (int k = 0; k < r1.rows(); k++) {
+      for (int axis = 0; axis <= 2; axis++) {
+        r1(k, axis) += Force(k, axis);
+        Force(k, axis) = 0;
+      }
+    }
+    m1->setPositions(r1);
+  }
+}

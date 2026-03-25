@@ -21,23 +21,22 @@ namespace eonc {
 class Hessian {
 public:
   Hessian(const Parameters &params, Matter *matter);
-  ~Hessian();
+  ~Hessian() = default;
 
-  MatrixXd getHessian(Matter *matterIn, VectorXi atomsIn);
-  VectorXd getFreqs(Matter *matterIn, VectorXi atomsIn);
+  MatrixXd getHessian(Matter *matterIn, const VectorXi &atomsIn);
+  VectorXd getFreqs(Matter *matterIn, const VectorXi &atomsIn);
   //    VectorXd getModes(Matter *matterIn, VectorXi atomsIn);
-  VectorXd removeZeroFreqs(VectorXd freqs);
+  VectorXd removeZeroFreqs(const VectorXd &freqs);
 
 private:
   Matter *matter;
   const Parameters &parameters;
 
   MatrixXd hessian;
-  //    VectorXd modes;
   VectorXd freqs;
 
   VectorXi atoms;
-  bool calculate(void);
+  bool calculate();
   eonc::log::Scoped log;
 };
 

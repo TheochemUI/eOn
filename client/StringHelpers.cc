@@ -1,7 +1,10 @@
 #include "StringHelpers.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <type_traits>
+
+using namespace std::string_literals;
 
 namespace eonc::helpers {
 template <typename T>

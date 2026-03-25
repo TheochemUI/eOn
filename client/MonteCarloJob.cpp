@@ -13,16 +13,18 @@
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "MonteCarlo.h"
-using namespace std;
+
+#include <filesystem>
+#include <format>
+#include <fstream>
+#include <string>
 
 std::vector<std::string> MonteCarloJob::run(void) {
-  string posInFilename("pos.con");
-  string posOutFilename("out.con");
+  std::string posInFilename("pos.con");
+  std::string posOutFilename("out.con");
 
   if (params.main_options.checkpoint) {
-    FILE *pos;
-    pos = fopen("pos_cp.con", "r");
-    if (pos != NULL) {
+    if (std::filesystem::exists("pos_cp.con")) {
       posInFilename = "pos_cp.con";
       QUILL_LOG_DEBUG(log, "Resuming from checkpoint\n");
     } else {
@@ -36,22 +38,22 @@ std::vector<std::string> MonteCarloJob::run(void) {
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(posInFilename);
 
-  // code will go
   MonteCarlo mc = MonteCarlo(matter, params);
   mc.run(params.monte_carlo_options.steps, params.main_options.temperature,
          params.monte_carlo_options.step_size);
 
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  FILE *fileResults = fopen(resultsFilename.c_str(), "wb");
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  fprintf(fileResults, "%zu total_force_calls\n",
-          PotRegistry::get().total_force_calls());
-  fprintf(fileResults, "%f potential_energy\n", matter->getPotentialEnergy());
-  fclose(fileResults);
+
+  std::ofstream out(resultsFilename, std::ios::binary);
+  if (out) {
+    out << std::format(
+        "{} potential_type\n",
+        magic_enum::enum_name<PotType>(params.potential_options.potential));
+    out << std::format("{} total_force_calls\n",
+                       PotRegistry::get().total_force_calls());
+    out << std::format("{:f} potential_energy\n", matter->getPotentialEnergy());
+  }
 
   return returnFiles;
 }

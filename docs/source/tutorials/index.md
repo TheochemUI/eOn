@@ -11,6 +11,14 @@ myst:
 We provide several full tutorials which demonstrate the usage of `eOn` (both
 server and client).
 
+```{tip}
+The [atomistic-cookbook](https://atomistic-cookbook.org/) provides additional
+self-contained tutorials with Jupyter notebooks and visualization:
+- [Finding Reaction Paths with eOn and a Metatomic Potential](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html):
+  NEB for oxadiazole formation (N2O + ethylene) using PET-MAD, contrasting
+  ASE's standard NEB with eOn's energy-weighted springs and dimer refinement
+```
+
 ```{toctree}
 :maxdepth: 2
 :caption: Contents

@@ -1,0 +1,1 @@
+All 33 Parameters option-group structs now use C++20 NSDMI (Non-Static Data Member Initialization) for defaults. The constructor shrunk from 481 to 3 lines.

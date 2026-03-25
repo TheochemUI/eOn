@@ -22,11 +22,14 @@
 namespace eonc {
 
 class IDPPObjectiveFunction : public ObjectiveFunction {
+  std::shared_ptr<Matter> matter;
+
 public:
   IDPPObjectiveFunction(std::shared_ptr<Matter> matterPassed,
                         const Parameters &paramsPassed,
                         const MatrixXd &targetDistances)
-      : ObjectiveFunction(matterPassed, paramsPassed),
+      : ObjectiveFunction(paramsPassed),
+        matter{std::move(matterPassed)},
         d_target(targetDistances) {
 
     // Initialize working variables to avoid re-allocation
@@ -41,7 +44,7 @@ public:
   VectorXd getGradient(bool fdstep = false) override;
 
   // Standard Interface Plumbing
-  void setPositions(VectorXd x) override {
+  void setPositions(const VectorXd &x) override {
     // Map 3N vector back to Matter
     matter->setPositions(AtomMatrix::Map(x.data(), matter->numberOfAtoms(), 3));
   }
@@ -65,7 +68,7 @@ public:
   }
 
   // Handles PBC difference correctly using the Matter object
-  VectorXd difference(VectorXd a, VectorXd b) override {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return matter->pbcV(a - b);
   }
 
@@ -77,8 +80,7 @@ class CollectiveIDPPObjectiveFunction : public ObjectiveFunction {
 public:
   CollectiveIDPPObjectiveFunction(std::vector<Matter> &pathRef,
                                   const Parameters &paramsPassed)
-      : ObjectiveFunction(
-            nullptr, paramsPassed), // We manage a vector, not single Matter
+      : ObjectiveFunction(paramsPassed),
         path(pathRef) {
 
     // Initialize distances for endpoints
@@ -93,7 +95,7 @@ public:
   VectorXd getGradient(bool fdstep = false) override;
 
   // Plumbing to map the entire path (all images) to one vector
-  void setPositions(VectorXd x) override {
+  void setPositions(const VectorXd &x) override {
     int atoms = path[0].numberOfAtoms();
     // Skip endpoints (0 and N+1)
     for (size_t i = 1; i < path.size() - 1; ++i) {
@@ -125,7 +127,7 @@ public:
 
   double getConvergence() override { return lastMaxForce; }
 
-  VectorXd difference(VectorXd a, VectorXd b) override {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     // Simple difference for this purpose, assuming pre-aligned or handling PBC
     // inside
     return a - b;
@@ -151,7 +153,7 @@ public:
                             std::shared_ptr<Potential> zbl,
                             std::vector<Matter> &p, const Parameters &params,
                             double weight = 1.0)
-      : ObjectiveFunction(nullptr, params),
+      : ObjectiveFunction(params),
         idpp_obj(idpp),
         zbl_pot(zbl),
         path(p),
@@ -192,13 +194,13 @@ public:
   }
 
   // Delegate other methods
-  void setPositions(VectorXd x) override { idpp_obj->setPositions(x); }
+  void setPositions(const VectorXd &x) override { idpp_obj->setPositions(x); }
   VectorXd getPositions() override { return idpp_obj->getPositions(); }
   int degreesOfFreedom() override { return idpp_obj->degreesOfFreedom(); }
   bool isConverged() override { return idpp_obj->isConverged(); }
   double getConvergence() override { return idpp_obj->getConvergence(); }
 
-  VectorXd difference(VectorXd a, VectorXd b) override {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return idpp_obj->difference(a, b);
   }
 };

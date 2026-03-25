@@ -8,6 +8,8 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 version = "2.12.0"
 
 [tasks]
+gen-ref = { cmd = "cd scripts/regression && snakemake -c4", description = "Generate SVN regression reference data (default: svn-Jul_01_2024)" }
+gen-ref-clean = { cmd = "cd scripts/regression && snakemake clean", description = "Clean regression build artifacts" }
 
 [dependencies]
 eigen = ">=3.4,<3.5"
@@ -42,7 +44,6 @@ extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
 index-strategy = "unsafe-best-match"
 
 [environments]
-# TODO(rg): Flesh out the rest of these
 metatomic = {features = ["metatomic"]}
 dev-lite = {features = ["lint", "develop"]}
 dev-xtb = {features = ["lint", "develop", "xtb"]}
@@ -56,6 +57,10 @@ docs = {features = ["docs"]}
 rel = {features = ["metatomic", "release"]}
 serve = {features = ["serve"]}
 dev-serve-mta = {features = ["serve", "metatomic", "develop"]}
+# CI environments: minimal deps + specific potential for integration tests
+ci-lammps = {features = ["develop", "lammps"]}
+ci-xtb = {features = ["develop", "xtb"]}
+ci-mta = {features = ["develop", "metatomic"]}
 
 [feature.metatomic]
 # vesin torch has a wheel issue with macos x86_64
@@ -105,18 +110,40 @@ pybind11 = ">=3.0.0,<4"
 [feature.nwchem.pypi-dependencies]
 psutil = ">=7.0.0, <8"
 
+[feature.docs.dependencies]
+sphinx = ">=7"
+shibuya = "*"
+
+[feature.docs.pypi-dependencies]
+myst-parser = ">=3"
+sphinx-design = "*"
+sphinx-copybutton = "*"
+sphinx-togglebutton = "*"
+sphinx-favicon = "*"
+sphinx-contributors = "*"
+sphinx-sitemap = "*"
+sphinxcontrib-bibtex = "*"
+sphinxcontrib-spelling = "*"
+autodoc-pydantic = "*"
+sphinx-autodoc2 = "*"
+
+[feature.docs.tasks.makedocs]
+cmd = "sphinx-build docs/source docs/build/html"
+
 [feature.docs.tasks.srvdocs]
 depends-on = [
   { task = "makedocs", environment = "docs" },
 ]
 cmd = """
-python -m http.server -d html
+cd docs/build/html && python -m http.server 8234
 """
 
 [feature.release.dependencies]
 
 [feature.xtb.dependencies]
 xtb = "*"
+tblite = "*"
+tblite-python = "*"
 
 [feature.serve]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]

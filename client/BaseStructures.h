@@ -59,8 +59,6 @@ enum class PotType {
   MPI,
   PYAMFF,
   QSC,
-  BOPFOX, // unused?
-  BOP,    // unused?
   // Add newer entries here
   AMS,
   AMS_IO,

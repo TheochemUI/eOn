@@ -1,0 +1,3 @@
+Fixed ``maxAtomMotionV`` out-of-bounds read when vector size < 3 elements
+(e.g. 2D optimizer objectives). Valgrind caught ``segment<3>`` reading past
+buffer, causing silent data corruption with ``MALLOC_PERTURB_`` enabled.

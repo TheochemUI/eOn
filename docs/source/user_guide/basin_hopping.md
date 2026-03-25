@@ -35,9 +35,6 @@ At each basin hopping step the client will print out:
 [Basin Hopping]
 ```
 
-```{versionchanged} 3.1_TBA
-In TOML, this will be `[Basin_Hopping]`
-```
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.BasinHoppingConfig

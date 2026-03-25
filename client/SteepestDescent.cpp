@@ -14,20 +14,19 @@
 
 #include "SteepestDescent.h"
 #include "SafeMath.h"
-using namespace std;
 
 int SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
 
   Eigen::VectorXd dr;
-  double alpha = m_params.optimizer_options.sd.alpha;
-  if (m_params.optimizer_options.sd.two_point == true && iteration > 0) {
+  double alpha = m_optConfig.opts.sd.alpha;
+  if (m_optConfig.opts.sd.two_point && iteration > 0) {
     Eigen::VectorXd dx = r - m_rPrev;
     Eigen::VectorXd dg = -f + m_fPrev;
     alpha = eonc::safemath::safe_div(dx.dot(dx), dx.dot(dg), 0.0);
     if (alpha < 0) {
-      alpha = m_params.optimizer_options.sd.alpha;
+      alpha = m_optConfig.opts.sd.alpha;
     }
     QUILL_LOG_DEBUG(m_log, "[SD] alpha: {:.4e}", alpha);
   }

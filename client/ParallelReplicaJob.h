@@ -13,7 +13,10 @@
 #include "EonLogger.h"
 
 #include "Job.h"
-#include "Parameters.h"
+#include "Matter.h"
+
+#include <memory>
+#include <vector>
 
 namespace eonc {
 
@@ -21,15 +24,16 @@ class ParallelReplicaJob : public Job {
 public:
   ParallelReplicaJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)) {}
-  ~ParallelReplicaJob(void) = default;
-  std::vector<std::string> run(void);
+  ~ParallelReplicaJob() = default;
+  std::vector<std::string> run() override;
 
 private:
   std::vector<std::string> returnFiles;
-  Matter *reactant;
+  std::shared_ptr<Matter> reactant;
 
-  void dephase(Matter *trajectory);
-  int refineTransition(std::vector<Matter *> MDSnapshots, bool fake = false);
+  void dephase(Matter &trajectory);
+  int refineTransition(const std::vector<std::shared_ptr<Matter>> &snapshots,
+                       bool fake = false);
   eonc::log::Scoped log;
 };
 

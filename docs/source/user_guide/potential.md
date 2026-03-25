@@ -95,7 +95,7 @@ bopfox
 
 ## Configuration
 
-```{code-block} toml
+```{code-block} ini
 [Potential]
 ```
 
