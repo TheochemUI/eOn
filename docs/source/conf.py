@@ -65,6 +65,7 @@ exclude_patterns = []
 html_theme = "shibuya"
 html_title = "eOn"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_baseurl = 'https://eondocs.org/'
 
 html_context = {
@@ -100,8 +101,8 @@ html_theme_options = {
         },
     ],
     "logo": {
-        "light": "_static/logo/ev2_trans.png",
-        "dark": "_static/logo/ev2_trans_dark.png",
+        "light": "_static/logo/eon_v3_light.svg",
+        "dark": "_static/logo/eon_v3_dark.svg",
     },
 }
 
