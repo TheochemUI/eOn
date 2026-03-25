@@ -121,14 +121,26 @@ public:
              double *forces, double *energy, double *variance,
              const double *box) override;
 
-  /// PyTorch model uses internal mutex for thread safety on same instance.
-  [[nodiscard]] bool isThreadSafe() const noexcept override { return true; }
-
-  /// NEB should create separate model instances per image for true
-  /// parallel force evaluation via clone().
+  /// Single shared instance, serialized via mutex. Sequential evaluation
+  /// through computePotential() ensures correct force counting, removeNetForce,
+  /// and PotRegistry bookkeeping. JIT profiling is disabled so all calls on
+  /// the same instance produce deterministic results.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return false;
+  }
+
+  /// Batched evaluation via single shared instance. Processes each system
+  /// sequentially through the same model (identical to N force() calls but
+  /// bypasses Matter::computePotential overhead). Forces, energies, and
+  /// forceCallCounter are handled correctly.
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
     return true;
   }
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override;
 
 private:
   mutable std::mutex inference_mutex_;

@@ -66,18 +66,44 @@ public:
   [[nodiscard]] virtual bool isSurrogate() const noexcept { return false; }
 
   /// Whether this potential's force() can be called from multiple threads
-  /// on the SAME instance. Most simple potentials (LJ, Morse, EAM) are
-  /// stateless and thread-safe. Override to false for potentials with
-  /// mutable internal state that isn't mutex-protected.
+  /// on the SAME instance. Python-based potentials return false.
+  /// Potentials with internal mutex (MetatomicPotential) return true but
+  /// serialize internally -- use needsPerImageInstance() to check if
+  /// separate instances would enable true parallelism.
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
   /// Whether NEB should create separate Potential instances per image
   /// for true parallel force evaluation. When true, NEB calls
   /// makePotential() once per image instead of sharing one instance.
-  /// Override in potentials that use internal mutexes (e.g.
-  /// MetatomicPotential).
+  /// Override in potentials that use internal mutexes (e.g. MetatomicPotential).
   [[nodiscard]] virtual bool needsPerImageInstance() const noexcept {
     return false;
+  }
+
+  /// Whether this potential supports batched evaluation of N systems in a
+  /// single call. When true, callers (NEB, Dimer) should use forceBatch()
+  /// instead of N individual force() calls for better GPU utilization.
+  [[nodiscard]] virtual bool supportsBatchEvaluation() const noexcept {
+    return false;
+  }
+
+  /// Evaluate forces for N systems in a single call. Default: loops over
+  /// force(). Override in potentials that support native batching (e.g.
+  /// MetatomicPotential uses a single model.forward() for all N systems).
+  virtual void forceBatch(long nSystems, long nAtoms,
+                          const double *const *positions,
+                          const int *const *atomicNrs, double *const *forces,
+                          double *energies, double *variances,
+                          const double *const *boxes) {
+    for (long i = 0; i < nSystems; i++) {
+      double var = 0;
+      force(nAtoms, positions[i], atomicNrs[i], forces[i], &energies[i], &var,
+            boxes[i]);
+      if (variances)
+        variances[i] = var;
+      forceCallCounter++;
+      PotRegistry::get().on_force_call(ptype);
+    }
   }
 };
 
