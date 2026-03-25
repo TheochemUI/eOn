@@ -28,5 +28,6 @@ public:
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
-  bool new_pyamff;
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  bool new_pyamff{false};
 };

@@ -1,0 +1,1 @@
+INI parsing extracted from ``Parameters.cpp`` into ``ParametersINI.cpp`` with a ``validate_and_link()`` function for cross-group dependency resolution.

@@ -15,6 +15,9 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+#include <fstream>
+#include <memory>
+
 namespace eonc {
 
 class GlobalOptimizationJob : public Job {
@@ -33,28 +36,23 @@ public:
         fcallsMove{0},
         firstStep{true},
         fcallsRelax{0},
-        monfile{fopen("monitoring.dat", "w")},
-        earrfile{fopen("earr.dat", "w")} {}
-  // etoler = parameters->globalOptimizationEtoler;
-  // decisionMethod = "NPEW";
-  ~GlobalOptimizationJob(void) {
-    fclose(monfile);
-    fclose(earrfile);
-  };
-  void hoppingStep(long, Matter *, Matter *);
-  void decisionStep(Matter *, Matter *);
-  void report(Matter *);
-  void acceptRejectNPEW(Matter *, Matter *);
-  void acceptRejectBoltzmann(Matter *, Matter *);
-  void analyze(Matter *, Matter *);
-  void examineEscape(Matter *, Matter *);
+        monfile{"monitoring.dat"},
+        earrfile{"earr.dat"} {}
+  ~GlobalOptimizationJob(void) = default;
+  void hoppingStep(long, Matter &, Matter &);
+  void decisionStep(Matter &, Matter &);
+  void report(Matter &);
+  void acceptRejectNPEW(Matter &, Matter &);
+  void acceptRejectBoltzmann(Matter &, Matter &);
+  void analyze(Matter &, Matter &);
+  void examineEscape(Matter &, Matter &);
   void applyMoveFeedbackMD(void);
   void applyDecisionFeedback(void);
-  void mdescape(Matter *);
-  void randomMove(Matter *);
-  void insert(Matter *);
+  void mdescape(Matter &);
+  void randomMove(Matter &);
+  void insert(Matter &);
   size_t hunt(double);
-  void velopt(Matter *);
+  void velopt(Matter &);
   std::vector<std::string> run(void);
   double beta1;
   double beta2;
@@ -76,8 +74,8 @@ private:
   // std::string decisionMethod;
   std::string decisionResult;
   std::string hoppingResult;
-  FILE *monfile;
-  FILE *earrfile;
+  std::ofstream monfile;
+  std::ofstream earrfile;
   eonc::log::Scoped log;
 };
 

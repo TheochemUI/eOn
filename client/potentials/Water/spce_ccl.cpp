@@ -21,7 +21,6 @@ University of Iceland
 #include <iostream>
 // #include "unit_system.hpp"
 
-using namespace std;
 using namespace forcefields;
 
 #if defined(FORCEFIELDS_UNIT_SYSTEM_HPP) &&                                    \
@@ -30,14 +29,14 @@ using namespace forcefields;
 using namespace unit_system;
 const double SpceCcl::roh_ = 1.0 * ANGSTROM;
 const double SpceCcl::theta_ =
-    acos(-1.0 / 3.0); // tetrahedron about 109.47*DEGREE
+    std::acos(-1.0 / 3.0); // tetrahedron about 109.47*DEGREE
 const double SpceCcl::rhh_ = isoscelesBase(roh_, theta_);
 const double SpceCcl::charge_ = 0.4238 * ECHARGE;
 const double SpceCcl::charge2_ = charge_ * charge_;
 // Definition of A and B are inverted compared to original publication by
 // Berendsen
-const double SpceCcl::A_ = pow(0.3428 * NM, 12.0) * KJ_PER_MOL;
-const double SpceCcl::B_ = pow(0.37122 * NM, 6.0) * KJ_PER_MOL;
+const double SpceCcl::A_ = std::pow(0.3428 * NM, 12.0) * KJ_PER_MOL;
+const double SpceCcl::B_ = std::pow(0.37122 * NM, 6.0) * KJ_PER_MOL;
 const double SpceCcl::sigma_ = sigma(A_, B_);
 const double SpceCcl::epsilon_ = epsilon(A_, B_);
 const double SpceCcl::polarisationEnergy_ = 5.22 * KJ_PER_MOL;
@@ -213,5 +212,5 @@ void SpceCcl::computeTemplate(
       };
     };
   };
-  assert(not isnan(energy) and not isinf(energy));
+  assert(not std::isnan(energy) and not std::isinf(energy));
 }

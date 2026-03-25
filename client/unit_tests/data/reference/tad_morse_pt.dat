@@ -1,0 +1,11 @@
+morse_pt potential_type
+42 random_seed
+-1775.791160 potential_energy_reactant
+1227 total_force_calls
+1022 force_calls_dephase
+100 force_calls_dynamics
+105 force_calls_minimize
+0 force_calls_refine
+0 transition_found
+1.000000e-13 simulation_time_s
+1.000000 speedup

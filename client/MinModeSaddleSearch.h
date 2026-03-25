@@ -12,7 +12,7 @@
 #pragma once
 
 #include "Eigen.h"
-#include "LowestEigenmode.h"
+#include "EigenmodeStrategy.h"
 #include "Matter.h"
 #include "Optimizer.h"
 #include "SaddleSearchMethod.h"
@@ -24,7 +24,7 @@ namespace eonc {
 class MinModeSaddleSearch : public SaddleSearchMethod {
 
 public:
-  enum {
+  enum Status : int {
     // DO NOT CHANGE THE ORDER OF THIS LIST
     STATUS_GOOD,                           // 0
     STATUS_INIT,                           // 1
@@ -50,6 +50,38 @@ public:
     STATUS_DIMER_RESTORED_BEST             // 21
   };
 
+  /// Human-readable message for a status code.
+  static constexpr std::string_view statusMessage(int status) {
+    constexpr std::string_view msgs[] = {
+        "Success",                                                // 0
+        "Initialized",                                            // 1
+        "Initial displacement unable to reach convex region",     // 2
+        "Barrier too high",                                       // 3
+        "Too many iterations in concave region",                  // 4
+        "Too many iterations",                                    // 5
+        "Saddle is not connected to initial state",               // 6
+        "Prefactors not within window",                           // 7
+        "Energy barrier not within window",                       // 8
+        "Minimizations from saddle did not converge",             // 9
+        "Hessian calculation failed",                             // 10
+        "Potential evaluation failed",                            // 11
+        "Nonnegative initial mode, aborting",                     // 12
+        "Nonlocal abort",                                         // 13
+        "Negative barrier detected",                              // 14
+        "No reaction found during MD trajectory",                 // 15
+        "Converged to stationary point with zero negative modes", // 16
+        "No forward barrier found along minimized band",          // 17
+        "Zero mode abort",                                        // 18
+        "Optimizer error",                                        // 19
+        "Dimer lost mode",                                        // 20
+        "Dimer restored best",                                    // 21
+    };
+    if (status >= 0 &&
+        status < static_cast<int>(sizeof(msgs) / sizeof(msgs[0])))
+      return msgs[status];
+    return "Unknown status";
+  }
+
   MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
                       AtomMatrix modePassed, double reactantEnergyPassed,
                       const Parameters &parametersPassed,
@@ -58,16 +90,17 @@ public:
   AtomMatrix getEigenvector(); // lowest eigenmode
   double getEigenvalue();      // estimate for the lowest eigenvalue
 
-  int run();
+  int run() override;
+  int run(long max_iterations_override);
 
-  int forcecalls;
-  int iteration;
-  int status;
+  int forcecalls{0};
+  int iteration{0};
+  int status{0};
 
 private:
   AtomMatrix mode;
   std::shared_ptr<Matter> matter;
-  std::shared_ptr<LowestEigenmode>
+  std::shared_ptr<EigenmodeStrategy>
       minModeMethod; // shared with the objective func
   double reactantEnergy;
   eonc::log::Scoped log;

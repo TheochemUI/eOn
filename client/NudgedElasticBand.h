@@ -16,16 +16,23 @@
 #include "Eigen.h"
 #include "EonLogger.h"
 
+#include "EigenmodeStrategy.h"
 #include "HelperFunctions.h"
-#include "LowestEigenmode.h"
 #include "Matter.h"
+#include "NEBProjection.h"
+#include "NEBTangent.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
+
+namespace eonc::neb {
+class OCINEBController;
+}
 
 namespace eonc {
 
 // NEB method for determining a minimum energy path between two matter objects
 class NudgedElasticBand {
+  friend class eonc::neb::OCINEBController;
 
 public:
   enum class NEBStatus {
@@ -46,14 +53,16 @@ public:
 
   NudgedElasticBand::NEBStatus compute(void);
   NudgedElasticBand::NEBStatus getStatus() { return this->status; };
-  void updateForces(void);
+  void updateForces(bool ci_active);
+  void updateForces(void) { updateForces(ci_enabled_); }
+  void setCIEnabled(bool enabled) { ci_enabled_ = enabled; }
   double convergenceForce(void);
   void findExtrema(void);
   void printImageData(bool writeToFile = false, size_t idx = 0);
-  std::vector<std::shared_ptr<LowestEigenmode>> eigenmode_solvers;
+  std::vector<std::shared_ptr<EigenmodeStrategy>> eigenmode_solvers;
 
-  int atoms;
-  long numImages, climbingImage, numExtrema;
+  int atoms{0};
+  long numImages{0}, climbingImage{0}, numExtrema{0};
   std::vector<std::shared_ptr<Matter>> path; // NEB images
   std::vector<std::shared_ptr<AtomMatrix>> tangent;
   std::vector<std::shared_ptr<AtomMatrix>> projectedForce;
@@ -61,31 +70,34 @@ public:
   std::vector<double> extremumPosition;
   std::vector<double> extremumCurvature;
 
-  std::size_t maxEnergyImage;
-  bool movedAfterForceCall;
-  double ksp;
-  double k_u;   // Upper-bound value for the spring constant
-  double k_l;   // Lower-bound value for the spring constant
+  std::size_t maxEnergyImage{0};
+  bool movedAfterForceCall{false};
+  bool perImagePotentials_{
+      false}; ///< Whether per-image potential instances exist
+  double ksp{0.0};
+  double k_u{0.0}; // Upper-bound value for the spring constant
+  double k_l{0.0}; // Lower-bound value for the spring constant
   double E_ref; // Reference energy chosen to be equal to the max energy of the
                 // reactant or product energy minimum
 
 private:
-  int runMMFRefinement(double &alignment);
-  double current_mmf_threshold{-1.0};
+  bool ci_enabled_{false}; // runtime CI state, set by compute()
   double baseline_force{-1.0};
   Parameters params;
   std::shared_ptr<Potential> pot;
   NEBStatus status;
   eonc::log::Scoped log;
-  bool mmf_active{false};
-  int mmf_iterations_used{0};
+
+  // Cached strategies (constant across iterations)
+  neb::TangentStrategy tangentStrat_;
+  neb::ProjectionStrategy projectionStrat_;
 };
 
 class NEBObjectiveFunction : public ObjectiveFunction {
 public:
   NEBObjectiveFunction(NudgedElasticBand *nebPassed,
                        const Parameters &parametersPassed)
-      : ObjectiveFunction(nullptr, parametersPassed),
+      : ObjectiveFunction(parametersPassed),
         neb{nebPassed} {}
   // This is the odd one out, doesn't take a Matter so we null it
 
@@ -93,13 +105,13 @@ public:
 
   VectorXd getGradient(bool fdstep = false);
   double getEnergy();
-  void setPositions(VectorXd x);
+  void setPositions(const VectorXd &x);
   VectorXd getPositions();
   int degreesOfFreedom();
   bool isConverged();
   bool isUncertain();
   double getConvergence();
-  VectorXd difference(VectorXd a, VectorXd b);
+  VectorXd difference(const VectorXd &a, const VectorXd &b);
   NudgedElasticBand::NEBStatus status;
 
 private:

@@ -1,0 +1,3 @@
+Removed all ``using namespace std;`` from the entire client codebase
+(60+ files). All standard library symbols now explicitly qualified with
+``std::``, preventing ADL-related bugs and improving code clarity.

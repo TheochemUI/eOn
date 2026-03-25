@@ -1,0 +1,1 @@
+Removed 9 dead legacy pointer+size math functions from HelperFunctions (``dot``, ``length``, ``add``, ``subtract``, ``multiplyScalar``, ``divideScalar``, ``copyRightIntoLeft``, ``normalize``, ``makeProjection``), all superseded by Eigen.

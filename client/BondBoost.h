@@ -13,6 +13,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+#include <vector>
+
 #include "Eigen.h"
 #include "EonLogger.h"
 
@@ -37,24 +39,25 @@ private:
   Matrix<double, Eigen::Dynamic, 1> Rmdsteps();
   long BondSelect();
   double Booststeps();
-  long nAtoms;    ///< Number of free coordinates.
-  Matter *matter; ///< Pointer to atom object \b outside the scope of the class.
+  long nAtoms{0}; ///< Number of free coordinates.
+  Matter *matter{
+      nullptr}; ///< Pointer to atom object \b outside the scope of the class.
   const Parameters &parameters; ///< Reference to a structure outside the scope
                                 ///< of the class containing runtime parameters.
-  long *BAList;
-  long *RAList;
-  long *TABAList;
-  long *BBAList;
-  double *Epsr_Q;
+  std::vector<long> BAList;
+  std::vector<long> RAList;
+  std::vector<long> TABAList;
+  std::vector<long> BBAList;
+  std::vector<double> Epsr_Q;
   Matrix<double, Eigen::Dynamic, 1>
       TABLList; // EquilibriumTaggedAtomInvolvedBondLengthList;
   Matrix<double, Eigen::Dynamic, 1> EBBLList; // EquilibriumBoostBondLengthList
   Matrix<double, Eigen::Dynamic, 1> CBBLList; // CurrentBoostBondLengthList
-  long nBAs;
-  long nRAs;
-  long nTABs;
-  long nReg;
-  long nBBs;
+  long nBAs{0};
+  long nRAs{0};
+  long nTABs{0};
+  long nReg{0};
+  long nBBs{0};
   eonc::log::Scoped log;
 };
 

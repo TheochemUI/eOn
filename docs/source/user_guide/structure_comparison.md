@@ -13,9 +13,6 @@ myst:
 [Structure Comparison]
 ```
 
-```{versionchanged} 3.1_TBA
-In TOML, this will be `[Structure_Comparison]`
-```
 
 
 ```{eval-rst}

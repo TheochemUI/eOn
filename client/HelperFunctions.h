@@ -11,29 +11,13 @@
 */
 #pragma once
 #include "Eigen.h"
+#include "GeometryAnalysis.h"
 #include "Matter.h"
+#include "RandomNumbers.h"
 #include <string>
 #include <vector>
 
 namespace eonc {
-
-// Random number generator constants
-
-constexpr double IM = 2147483647.0;
-constexpr double AM = 1.0 / IM;
-constexpr int NTAB = 32;
-constexpr int NDIV = 1 + (IM / NTAB);
-constexpr double EPS = 1.2e-7;
-constexpr double RNMX = 1.0 - EPS;
-constexpr long IM1 = 2147483563;
-constexpr long IM2 = 2147483399;
-constexpr long IMM1 = IM1 - 1;
-constexpr long IA1 = 40014;
-constexpr long IA2 = 40692;
-constexpr long IQ1 = 53668;
-constexpr long IQ2 = 52774;
-constexpr long IR1 = 12211;
-constexpr long IR2 = 3791;
 
 /* Collection of supporting functions that handle arrays of doubles as vectors
  * and different random number generators */
@@ -41,48 +25,36 @@ namespace helpers {
 
 inline constexpr double pi = 3.14159265358979323846;
 
-double
-random(long newSeed = 0);     // random number generator from numerical recipies
-double randomDouble();        // random value between 0 and 1
-double randomDouble(int max); // random value between 0 and max
-double randomDouble(long max);   // random value between 0 and max
-double randomDouble(double max); // random value between 0 and max
-long randomInt(int lower, int upper);
-double gaussRandom(double avg,
-                   double std); // Gaussion random number with avg and std;
-double dot(const double *v1, const double *v2, long size); // dot product
-double length(const double *v1, long size); // length of vector v1
-void add(double *result, const double *v1, const double *v2,
-         long size); // v1 + v2
-void subtract(double *result, const double *v1, const double *v2,
-              long size); // v1 - v2
-void multiplyScalar(double *result, const double *v1, double scalar,
-                    long size); // scalar * v1
-void divideScalar(double *result, const double *v1, double scalar,
-                  long size); // (1/scalar) * v1
-void copyRightIntoLeft(double *result, const double *v1,
-                       long size);     // copy v2 into v1
-void normalize(double *v1, long size); // v1 / |v1|
+// Backward-compatible wrappers delegating to eonc::rng
+using eonc::rng::gaussRandom;
+using eonc::rng::random;
+using eonc::rng::randomDouble;
+using eonc::rng::randomInt;
+
+// Backward-compatible wrappers delegating to eonc::geometry
+using eonc::geometry::identical;
+using eonc::geometry::maxAtomMotion;
+using eonc::geometry::maxAtomMotionApplied;
+using eonc::geometry::maxAtomMotionAppliedV;
+using eonc::geometry::maxAtomMotionV;
+using eonc::geometry::maxMotionApplied;
+using eonc::geometry::maxMotionAppliedV;
+using eonc::geometry::numAtomsMoved;
+using eonc::geometry::projectOutRotTrans;
+using eonc::geometry::pushApart;
+using eonc::geometry::rotationExtract;
+using eonc::geometry::rotationMatch;
+using eonc::geometry::rotationRemove;
+using eonc::geometry::sortedR;
+using eonc::geometry::translationRemove;
+
 AtomMatrix makeOrthogonal(
     const AtomMatrix v1,
     const AtomMatrix v2); // return orthogonal component of v1 from v2
-void makeProjection(double *result, const double *v1, const double *v2,
-                    long size); // result = projection of v1 on v2
-RotationMatrix rotationExtract(const AtomMatrix r1, const AtomMatrix r2);
-bool rotationMatch(const Matter &m1, const Matter &m2, const double max_diff);
-void projectOutRotTrans(Eigen::VectorXd &step, const AtomMatrix &positions);
-void rotationRemove(const AtomMatrix r1, std::shared_ptr<Matter> m2);
-void rotationRemove(const std::shared_ptr<Matter> m1,
-                    std::shared_ptr<Matter> m2);
-void translationRemove(Matter &m1, const AtomMatrix r1);
-void translationRemove(Matter &m1, const Matter &m2);
-double maxAtomMotion(const AtomMatrix v1);
-double maxAtomMotionV(const VectorXd v1);
-long numAtomsMoved(const AtomMatrix v1, double cutoff);
-AtomMatrix maxAtomMotionApplied(const AtomMatrix v1, double maxMotion);
-VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion);
-AtomMatrix maxMotionApplied(const AtomMatrix v1, double maxMotion);
-VectorXd maxMotionAppliedV(const VectorXd v1, double maxMotion);
+bool relaxMatter(Matter &matter, const Parameters &params, bool quiet = false,
+                 bool writeMovie = false, bool checkpoint = false,
+                 std::string prefixMovie = std::string(),
+                 std::string prefixCheckpoint = std::string());
 void getTime(double *real, double *user, double *sys);
 bool existsFile(std::string filename); // does filename exist
 std::string
@@ -92,13 +64,9 @@ VectorXd loadMasses(std::string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
 AtomMatrix loadMode(std::string filename, int nAtoms);
 void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
+void saveMode(const std::string &filename, std::shared_ptr<Matter> matter,
+              AtomMatrix mode);
 std::vector<int> split_string_int(std::string s, std::string delim);
-
-bool identical(const Matter &m1, const Matter &m2,
-               const double distanceDifference);
-bool sortedR(const Matter &m1, const Matter &m2,
-             const double distanceDifference);
-void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
 } // namespace helpers
 

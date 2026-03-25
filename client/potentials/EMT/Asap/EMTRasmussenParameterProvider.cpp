@@ -27,7 +27,7 @@
 #include <iostream>
 #include <string.h>
 
-using namespace std;
+using std::string;
 
 emt_parameters *EMTRasmussenParameterProvider::GetNewParameters(int element) {
   double E0, S0, n0, V0, eta2, kappa, lambda, mass;
@@ -130,7 +130,7 @@ emt_parameters *EMTRasmussenParameterProvider::GetNewParameters(int element) {
   p->Z = Z;
   //  assert(element == Z);
   p->name = name;
-  p->lengthscale = ls / sqrt(2.0) * bohr;
+  p->lengthscale = ls / std::sqrt(2.0) * bohr;
 
   return p;
 }

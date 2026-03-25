@@ -14,25 +14,28 @@
 #include "NEBInitialPaths.hpp"
 #include "Potential.h"
 
-using namespace std;
+#include <filesystem>
+#include <format>
+#include <fstream>
 
-std::vector<std::string> NudgedElasticBandJob::run(void) {
+std::vector<std::string> NudgedElasticBandJob::run() {
   NudgedElasticBand::NEBStatus status;
   size_t f1;
 
-  string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
-  string productFilename = eonc::helpers::getRelevantFile("product.con");
+  std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
+  std::string productFilename = eonc::helpers::getRelevantFile("product.con");
 
-  string transitionStateFilename = eonc::helpers::getRelevantFile("ts.con");
+  // TS interpolation: only when initializer is FILE (explicit path loading).
+  // Previously, any ts.con in CWD would silently override SIDPP/IDPP paths.
   bool tsInterpolate = false;
-  auto transitionState = std::make_shared<Matter>(pot, params);
-  FILE *fhTransitionState = fopen("ts.con", "r");
-  if (fhTransitionState != nullptr) {
+  std::shared_ptr<Matter> transitionState = nullptr;
+  if (params.neb_options.initialization.method == NEBInit::FILE &&
+      std::filesystem::exists("ts.con")) {
+    std::string transitionStateFilename =
+        eonc::helpers::getRelevantFile("ts.con");
+    transitionState = std::make_shared<Matter>(pot, params);
     tsInterpolate = true;
-    fclose(fhTransitionState);
     transitionState->con2matter(transitionStateFilename);
-  } else {
-    transitionState = nullptr;
   }
 
   auto initial = std::make_shared<Matter>(pot, params);
@@ -104,12 +107,12 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
     for (int image = 1; image <= neb->numImages; image++) {
       int mid = neb->numImages / 2 + 1;
       if (image < mid) {
-        double frac = ((double)image) / ((double)mid);
+        double frac = static_cast<double>(image) / static_cast<double>(mid);
         neb->path[image]->setPositions(initial->getPositions() +
                                        frac * reactantToTS);
       } else if (image > mid) {
-        double frac =
-            (double)(image - mid) / (double)(neb->numImages - mid + 1);
+        double frac = static_cast<double>(image - mid) /
+                      static_cast<double>(neb->numImages - mid + 1);
         neb->path[image]->setPositions(transitionState->getPositions() +
                                        frac * TSToProduct);
       } else if (image == mid) {
@@ -135,58 +138,63 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
 
 void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
                                     NudgedElasticBand *neb) {
-  FILE *fileResults, *fileNEB;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
-  if (!fileResults) {
-    QUILL_LOG_ERROR(m_log, "Failed to open {} for writing", resultsFilename);
-    return;
+
+  {
+    std::ofstream out(resultsFilename, std::ios::binary);
+    if (!out) {
+      QUILL_LOG_ERROR(m_log, "Failed to open {} for writing", resultsFilename);
+      return;
+    }
+
+    out << std::format("{} termination_reason\n", static_cast<int>(status));
+    out << std::format("{} termination_reason_text\n",
+                       magic_enum::enum_name(status));
+    out << std::format(
+        "{} potential_type\n",
+        magic_enum::enum_name<PotType>(params.potential_options.potential));
+    out << std::format("{} total_force_calls\n",
+                       PotRegistry::get().total_force_calls());
+    out << std::format("{} force_calls_neb\n", fCallsNEB);
+    out << std::format("{:f} energy_reference\n",
+                       neb->path[0]->getPotentialEnergy());
+    out << std::format("{} number_of_images\n", neb->numImages);
+
+    for (long i = 0; i <= neb->numImages + 1; i++) {
+      out << std::format("{:f} image{}_energy\n",
+                         neb->path[i]->getPotentialEnergy() -
+                             neb->path[0]->getPotentialEnergy(),
+                         i);
+      out << std::format("{:f} image{}_force\n",
+                         neb->path[i]->getForces().norm(), i);
+      double proj_norm = (i >= 1 && i <= neb->numImages)
+                             ? neb->projectedForce[i]->norm()
+                             : 0.0;
+      out << std::format("{:f} image{}_projected_force\n", proj_norm, i);
+    }
+
+    long safeNumExtrema = std::min(
+        neb->numExtrema, static_cast<long>(neb->extremumPosition.size()));
+    out << std::format("{} number_of_extrema\n", safeNumExtrema);
+    for (long i = 0; i < safeNumExtrema; i++) {
+      out << std::format("{:f} extremum{}_position\n", neb->extremumPosition[i],
+                         i);
+      out << std::format("{:f} extremum{}_energy\n", neb->extremumEnergy[i], i);
+    }
   }
-
-  fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
-  fprintf(fileResults, "%s potential_type\n",
-          std::string{magic_enum::enum_name<PotType>(
-                          params.potential_options.potential)}
-              .c_str());
-  fprintf(fileResults, "%zu total_force_calls\n",
-          PotRegistry::get().total_force_calls());
-  fprintf(fileResults, "%zu force_calls_neb\n", fCallsNEB);
-  fprintf(fileResults, "%f energy_reference\n",
-          neb->path[0]->getPotentialEnergy());
-  fprintf(fileResults, "%li number_of_images\n", neb->numImages);
-
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    fprintf(fileResults, "%f image%li_energy\n",
-            neb->path[i]->getPotentialEnergy() -
-                neb->path[0]->getPotentialEnergy(),
-            i);
-    fprintf(fileResults, "%f image%li_force\n",
-            neb->path[i]->getForces().norm(), i);
-
-    // Only interior images have a meaningful projected force
-    double proj_norm =
-        (i >= 1 && i <= neb->numImages) ? neb->projectedForce[i]->norm() : 0.0;
-    fprintf(fileResults, "%f image%li_projected_force\n", proj_norm, i);
-  }
-
-  fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
-  for (long i = 0; i < neb->numExtrema; i++) {
-    fprintf(fileResults, "%f extremum%li_position\n", neb->extremumPosition[i],
-            i);
-    fprintf(fileResults, "%f extremum%li_energy\n", neb->extremumEnergy[i], i);
-  }
-  fclose(fileResults);
 
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
-  fileNEB = fopen(nebFilename.c_str(), "wb");
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    neb->path[i]->matter2con(fileNEB);
+  // matter2con(FILE*) still needed for multi-image writes to single file
+  FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
+  if (fileNEB) {
+    for (long i = 0; i <= neb->numImages + 1; i++) {
+      neb->path[i]->matter2con(fileNEB);
+    }
+    fclose(fileNEB);
   }
-  fclose(fileNEB);
 
   // Save Discrete Saddle Point (Highest Energy Image)
   std::string spFilename("sp.con");
@@ -226,14 +234,16 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 
         std::string peakModeFile =
             std::format("peak{:02d}_mode.dat", peakCount);
-        FILE *fMode = fopen(peakModeFile.c_str(), "w");
-        if (fMode) {
-          for (int row = 0; row < peakMode.rows(); ++row) {
-            fprintf(fMode, "%12.6f %12.6f %12.6f\n", peakMode(row, 0),
-                    peakMode(row, 1), peakMode(row, 2));
+        {
+          std::ofstream modeOut(peakModeFile);
+          if (modeOut) {
+            for (long row = 0; row < peakMode.rows(); ++row) {
+              modeOut << std::format("{:12.6f} {:12.6f} {:12.6f}\n",
+                                     peakMode(row, 0), peakMode(row, 1),
+                                     peakMode(row, 2));
+            }
+            returnFiles.push_back(peakModeFile);
           }
-          fclose(fMode);
-          returnFiles.push_back(peakModeFile);
         }
 
         QUILL_LOG_INFO(

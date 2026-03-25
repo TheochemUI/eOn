@@ -20,17 +20,20 @@ class LAMMPSPot : public Potential {
 
 public:
   LAMMPSPot(const Parameters &p);
-  ~LAMMPSPot(void);
-  void initialize() {};
-  void cleanMemory(void);
+  ~LAMMPSPot();
+  void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
 
 private:
-  long numberOfAtoms;
-  double oldBox[9];
-  void *LAMMPSObj;
+  int lammpsThr{0};
+#ifdef EONMPI
+  MPI_Comm mpiComm;
+#endif
+  long numberOfAtoms{0};
+  double oldBox[9]{};
+  void *LAMMPSObj{nullptr};
   void makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                      const double *box);
-  bool realunits;
+  bool realunits{false};
 };

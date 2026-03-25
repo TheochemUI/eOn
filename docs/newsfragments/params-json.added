@@ -1,0 +1,1 @@
+JSON serialization for Parameters via `nlohmann/json <https://github.com/nlohmann/json>`_. New ``load_json()`` and ``to_json()`` methods enable programmatic configuration for library usage and RPC transport.

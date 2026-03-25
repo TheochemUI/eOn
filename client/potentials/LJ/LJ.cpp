@@ -11,72 +11,73 @@
 */
 
 #include "LJ.h"
+#include <cmath>
 
-// LJ::LJ(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
-//     this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
-//     return;
-// }
-
-// General Functions
-void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
-                       double psiRecieved) {
-  u0 = u0Recieved;
-  psi = psiRecieved;
-
-  cuttOffR = cuttOffRRecieved;
-  cuttOffU = 4 * u0 * (pow(psi / cuttOffR, 12) - pow(psi / cuttOffR, 6));
-  return;
+void LJ::setParameters(double u0In, double cutoffIn, double psiIn) {
+  u0 = u0In;
+  psi = psiIn;
+  cuttOffR = cutoffIn;
+  double sr = psi / cuttOffR;
+  double sr2 = sr * sr;
+  double r6 = sr2 * sr2 * sr2;
+  cuttOffU = 4.0 * u0 * r6 * (r6 - 1.0);
 }
 
-// pointer to number of atoms, pointer to array of positions
-// pointer to array of forces, pointer to internal energy
-// address to supercell size
-void LJ::force(long N, const double *R, const int *atomicNrs, double *F,
+void LJ::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
                double *U, double *variance, const double *box) {
   variance = nullptr;
-  double diffR = 0, diffRX, diffRY, diffRZ, dU, a, b;
-  *U = 0;
-  for (int i = 0; i < N; i++) {
-    F[3 * i] = 0;
-    F[3 * i + 1] = 0;
-    F[3 * i + 2] = 0;
+  *U = 0.0;
+  for (long i = 0; i < 3 * N; i++) {
+    F[i] = 0.0;
   }
-  // Initializing end
 
-  for (int i = 0; i < N - 1; i++) {
-    for (int j = i + 1; j < N; j++) {
-      diffRX = R[3 * i] - R[3 * j];
-      diffRY = R[3 * i + 1] - R[3 * j + 1];
-      diffRZ = R[3 * i + 2] - R[3 * j + 2];
+  // Pre-compute reciprocals for PBC and cutoff
+  const double invBox0 = 1.0 / box[0];
+  const double invBox4 = 1.0 / box[4];
+  const double invBox8 = 1.0 / box[8];
+  const double cutoff2 = cuttOffR * cuttOffR;
+  const double psi2 = psi * psi;
 
-      diffRX =
-          diffRX -
-          box[0] *
-              floor(diffRX / box[0] +
-                    0.5); // floor = largest integer value less than argument
-      diffRY = diffRY - box[4] * floor(diffRY / box[4] + 0.5);
-      diffRZ = diffRZ - box[8] * floor(diffRZ / box[8] + 0.5);
+  for (long i = 0; i < N - 1; i++) {
+    const double xi = R[3 * i];
+    const double yi = R[3 * i + 1];
+    const double zi = R[3 * i + 2];
 
-      diffR = sqrt(diffRX * diffRX + diffRY * diffRY + diffRZ * diffRZ);
+    for (long j = i + 1; j < N; j++) {
+      double dx = xi - R[3 * j];
+      double dy = yi - R[3 * j + 1];
+      double dz = zi - R[3 * j + 2];
 
-      if (diffR < cuttOffR) {
-        // 4u0((psi/r0)^12-(psi/r0)^6)
-        a = pow(psi / diffR, 6);
-        b = 4 * u0 * a;
+      // Minimum image convention (hoisted reciprocals)
+      dx -= box[0] * std::floor(dx * invBox0 + 0.5);
+      dy -= box[4] * std::floor(dy * invBox4 + 0.5);
+      dz -= box[8] * std::floor(dz * invBox8 + 0.5);
 
-        *U = *U + b * (a - 1) - cuttOffU;
+      double r2 = dx * dx + dy * dy + dz * dz;
 
-        dU = -6 * b / diffR * (2 * a - 1);
-        // F is the negative derivative
-        F[3 * i] = F[3 * i] - dU * diffRX / diffR;
-        F[3 * i + 1] = F[3 * i + 1] - dU * diffRY / diffR;
-        F[3 * i + 2] = F[3 * i + 2] - dU * diffRZ / diffR;
+      // r^2 cutoff avoids sqrt for pairs outside cutoff
+      if (r2 < cutoff2) {
+        // Compute (sigma/r)^6 without pow(): sr2^3
+        double invR2 = 1.0 / r2;
+        double sr2 = psi2 * invR2;
+        double sr6 = sr2 * sr2 * sr2;
+        double e = 4.0 * u0 * sr6;
 
-        F[3 * j] = F[3 * j] + dU * diffRX / diffR;
-        F[3 * j + 1] = F[3 * j + 1] + dU * diffRY / diffR;
-        F[3 * j + 2] = F[3 * j + 2] + dU * diffRZ / diffR;
+        *U += e * (sr6 - 1.0) - cuttOffU;
+
+        // Force: -dU/dr * (1/r) * dr_vec = fscale * dr_vec
+        double fscale = 6.0 * e * invR2 * (2.0 * sr6 - 1.0);
+        double fx = fscale * dx;
+        double fy = fscale * dy;
+        double fz = fscale * dz;
+
+        F[3 * i] += fx;
+        F[3 * i + 1] += fy;
+        F[3 * i + 2] += fz;
+        F[3 * j] -= fx;
+        F[3 * j + 1] -= fy;
+        F[3 * j + 2] -= fz;
       }
     }
   }
-  return;
 }

@@ -11,8 +11,9 @@
 */
 
 #include "EonLogger.h"
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <format>
+#include <fstream>
 #include <string>
 
 #include "BasinHoppingJob.h"
@@ -22,10 +23,9 @@
 #include "Optimizer.h"
 #include "Potential.h"
 
-using namespace std;
 using namespace eonc::helpers;
 
-std::vector<std::string> BasinHoppingJob::run(void) {
+std::vector<std::string> BasinHoppingJob::run() {
   bool swapMove;
   double swap_accept = 0.0;
   jump_count = 0; // count of jump movies
@@ -36,11 +36,11 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   std::unique_ptr<Matter> minTrial = std::make_unique<Matter>(pot, params);
   std::unique_ptr<Matter> swapTrial = std::make_unique<Matter>(pot, params);
 
-  string conFilename = getRelevantFile(params.main_options.conFilename);
+  std::string conFilename = getRelevantFile(params.main_options.conFilename);
   current->con2matter(conFilename);
 
   // Sanity Check
-  vector<long> Elements;
+  std::vector<long> Elements;
   Elements = getElements(current.get());
   if (params.basin_hopping_options.swap_probability > 0 &&
       Elements.size() == 1) {
@@ -84,8 +84,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   int nsteps = params.basin_hopping_options.steps +
                params.basin_hopping_options.quenching_steps;
   long totalfc;
-  FILE *pFile;
-  pFile = fopen("bh.dat", "w");
+  std::ofstream bhFile("bh.dat");
 
   QUILL_LOG_DEBUG(
       log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
@@ -117,7 +116,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       *minTrial = *trial;
     }
 
-    if (params.debug_options.write_movies == true) {
+    if (params.debug_options.write_movies) {
       trial->matter2con("trials", true);
     }
 
@@ -135,7 +134,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       if (deltaE <= 0.0) {
         p = 1.0;
       } else {
-        p = exp(-deltaE / (params.main_options.temperature * 8.6173324e-5));
+        p = std::exp(-deltaE /
+                     (params.main_options.temperature * 8.6173324e-5));
       }
     }
 
@@ -168,11 +168,11 @@ std::vector<std::string> BasinHoppingJob::run(void) {
         for (unsigned int i = 0; i < uniqueEnergies.size(); i++) {
           // if minTrial has a different energy or a different structure
           // it is new, otherwise it is old
-          if (fabs(currentEnergy - uniqueEnergies[i]) <
+          if (std::fabs(currentEnergy - uniqueEnergies[i]) <
               params.structure_comparison_options.energy_difference) {
             if (current->compare(*uniqueStructures[i],
                                  params.structure_comparison_options
-                                     .indistinguishable_atoms) == true) {
+                                     .indistinguishable_atoms)) {
               newStructure = false;
             }
           }
@@ -191,9 +191,11 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
           snprintf(fname, 128, "energy_%.5i.dat", step + 1);
           returnFiles.push_back(fname);
-          FILE *fh = fopen(fname, "w");
-          fprintf(fh, "%.10e\n", currentEnergy);
-          fclose(fh);
+          {
+            std::ofstream fh(fname);
+            if (fh)
+              fh << std::format("{:.10e}\n", currentEnergy);
+          }
         }
       }
 
@@ -202,7 +204,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       consecutive_rejected_trials++;
     }
 
-    if (params.debug_options.write_movies == true) {
+    if (params.debug_options.write_movies) {
       minTrial->matter2con("movie", true);
     }
 
@@ -249,8 +251,9 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     int nadjust = params.basin_hopping_options.adjust_period;
     double adjustFraction = params.basin_hopping_options.adjust_fraction;
     if ((step + 1) % nadjust == 0 &&
-        params.basin_hopping_options.adjust_displacement == true) {
-      double recentRatio = ((double)recentAccept) / ((double)nadjust);
+        params.basin_hopping_options.adjust_displacement) {
+      double recentRatio =
+          static_cast<double>(recentAccept) / static_cast<double>(nadjust);
       if (recentRatio > params.basin_hopping_options.target_ratio) {
         curDisplacement *= 1.0 + adjustFraction;
       } else {
@@ -262,44 +265,44 @@ std::vector<std::string> BasinHoppingJob::run(void) {
       recentAccept = 0;
     }
   }
-  fclose(pFile);
+  bhFile.close();
 
   /* Save Results */
 
-  FILE *fileResults, *fileProduct;
-
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
-  fileResults = fopen(resultsFilename.c_str(), "wb");
 
-  if (params.debug_options.write_movies == true) {
+  if (params.debug_options.write_movies) {
     std::string movieFilename("movie.xyz");
     returnFiles.push_back(movieFilename);
   }
 
-  fprintf(fileResults, "%d termination_reason\n", 0);
-  fprintf(fileResults, "%.6f minimum_energy\n", minimumEnergy);
-  fprintf(fileResults, "%ld random_seed\n", params.main_options.randomSeed);
-  fprintf(fileResults, "%.3f acceptance_ratio\n",
-          totalAccept / params.basin_hopping_options.steps);
-  if (params.basin_hopping_options.swap_probability > 0) {
-    fprintf(fileResults, "%.3f swap_acceptance_ratio\n",
-            swap_accept / double(swap_count));
+  {
+    std::ofstream out(resultsFilename, std::ios::binary);
+    if (out) {
+      out << std::format("{} termination_reason\n", 0);
+      out << "GOOD termination_reason_text\n";
+      out << std::format("{:.6f} minimum_energy\n", minimumEnergy);
+      out << std::format("{} random_seed\n", params.main_options.randomSeed);
+      out << std::format("{:.3f} acceptance_ratio\n",
+                         totalAccept / params.basin_hopping_options.steps);
+      if (params.basin_hopping_options.swap_probability > 0) {
+        out << std::format("{:.3f} swap_acceptance_ratio\n",
+                           swap_accept / static_cast<double>(swap_count));
+      }
+      out << std::format("{} total_normal_displacement_steps\n",
+                         disp_count - jump_count -
+                             params.basin_hopping_options.quenching_steps);
+      out << std::format("{} total_jump_steps\n", jump_count);
+      out << std::format("{} total_swap_steps\n", swap_count);
+      out << std::format("{} total_force_calls\n",
+                         PotRegistry::get().total_force_calls());
+    }
   }
-  fprintf(fileResults, "%ld total_normal_displacement_steps\n",
-          disp_count - jump_count -
-              params.basin_hopping_options.quenching_steps);
-  fprintf(fileResults, "%d total_jump_steps\n", jump_count);
-  fprintf(fileResults, "%d total_swap_steps\n", swap_count);
-  fprintf(fileResults, "%zu total_force_calls\n",
-          PotRegistry::get().total_force_calls());
-  fclose(fileResults);
 
   std::string productFilename("min.con");
   returnFiles.push_back(productFilename);
-  fileProduct = fopen(productFilename.c_str(), "wb");
-  minimumEnergyStructure->matter2con(fileProduct);
-  fclose(fileProduct);
+  minimumEnergyStructure->matter2con(productFilename);
 
   std::string bhFilename("bh.dat");
   returnFiles.push_back(bhFilename);
@@ -366,7 +369,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
 
 void BasinHoppingJob::randomSwap(Matter *matter) {
   swap_count++;
-  vector<long> Elements;
+  std::vector<long> Elements;
   Elements = getElements(matter);
 
   long ela;
@@ -404,7 +407,7 @@ void BasinHoppingJob::randomSwap(Matter *matter) {
   matter->setPosition(changerb, 2, posaz);
 }
 
-vector<long> BasinHoppingJob::getElements(Matter *matter) {
+std::vector<long> BasinHoppingJob::getElements(Matter *matter) {
   std::array<int, 118> allElements{};
   std::vector<long> elements;
 
@@ -429,7 +432,7 @@ VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
   Vector3d cen(0, 0, 0);
   int num = matter->numberOfAtoms();
 
-  cen = pos.colwise().sum() / (double)num;
+  cen = pos.colwise().sum() / static_cast<double>(num);
 
   VectorXd dist(num);
 

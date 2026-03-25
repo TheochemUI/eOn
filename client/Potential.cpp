@@ -11,8 +11,8 @@
 */
 #include "EonLogger.h"
 #include <csignal>
+#include <ctime>
 #include <limits>
-#include <time.h>
 #include <utility>
 
 #include "HelperFunctions.h"
@@ -66,9 +66,7 @@
 #include "potentials/MPIPot/MPIPot.h"
 #endif
 
-#ifdef LAMMPS_POT
 #include "potentials/LAMMPS/LAMMPSPot.h"
-#endif
 
 #ifdef NEW_POT
 #include "potentials/NewPot/NewPot.h"
@@ -117,7 +115,6 @@
 #endif
 
 #include <limits>
-using namespace std;
 
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
                                                  const VectorXi &atmnrs,
@@ -234,12 +231,9 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #endif
-#ifdef LAMMPS_POT
   case PotType::LAMMPS: {
-    return (std::make_shared<LAMMPSPot>(params));
-    break;
+    return std::make_shared<LAMMPSPot>(params);
   }
-#endif
 #ifdef EONMPI
   case PotType::MPI: {
     return (std::make_shared<MPIPot>(params));
@@ -264,15 +258,6 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   //   break;
   // }
 #endif
-  // Unused
-  // case PotType::BOPFOX: {
-  //   return "bopfox"s;
-  //   break;
-  // }
-  // case PotType::BOP: {
-  //   return "bop"s;
-  //   break;
-  // }
 #ifdef WITH_AMS
   case PotType::AMS: {
     return (std::make_shared<AMS>(params));

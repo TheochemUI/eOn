@@ -34,7 +34,7 @@ public:
   }
   ~BiasedGradientSquaredDescent() = default;
 
-  int run(void);
+  int run();
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
@@ -48,7 +48,6 @@ public:
 private:
   double reactantEnergy;
   eonc::log::Scoped log;
-  //        double bgsdAlpha;
 };
 
 } // namespace eonc

@@ -31,7 +31,6 @@ Thorsten Schnabel, Jadran Vrabec , Hans Hasse, Institut fur Technische
 Thermodynamik und Thermische Verfahrenstechnik, Universitat Stuttgart, D-70550
 Stuttgart, Germany, http://www.itt.uni-stuttgart.de/~schnabel/CR.pdf.
 */
-using namespace std;
 using namespace forcefields;
 
 /** Non bond interaction cutoff.
@@ -50,8 +49,8 @@ PotentialBase::PotentialBase(double cutoff, double switchingWidth)
     : cutoff_(cutoff),
       switchingWidth_(switchingWidth) {
   if (switchingWidth_ > cutoff_) {
-    cerr << "Error: getSwitchingWidth() > getCutoff()" << endl;
-    exit(EXIT_FAILURE);
+    std::cerr << "Error: getSwitchingWidth() > getCutoff()" << std::endl;
+    std::exit(EXIT_FAILURE);
   };
   periods_[0] = 0.0;
   periods_[1] = 0.0;
@@ -84,10 +83,10 @@ void PotentialBase::setSwitchingWidth(double width) { switchingWidth_ = width; }
 @param[in] period Period of the coordinates.
 */
 double PotentialBase::applyPeriodicity0(double r, double const period) {
-  if (not isinf(period)) {
+  if (not std::isinf(period)) {
     double n = r / period + 0.5;
     // This is slightly more efficient than using function floor().
-    int m = (int)n;
+    int m = static_cast<int>(n);
     if (n < 0)
       --m;
     r -= m * period;
@@ -115,7 +114,7 @@ can calculate the length of the third side.
 @param[in]  angle       Angle between the two equal side in radiant.
 */
 double PotentialBase::isoscelesBase(double length, double angle) {
-  return 2.0 * length * sin(angle / 2.0);
+  return 2.0 * length * std::sin(angle / 2.0);
 }
 
 /** Compute quadratic restraints between two atoms.
@@ -166,10 +165,10 @@ void PotentialBase::restrainAngle(double const r1[], double const r2[],
   distance(r2, r1, r12, r12_1, r12_2);
   distance(r3, r2, r23, r23_1, r23_2);
   cosa = -dotProduct(r12, r23) / r12_1 / r23_1;
-  a = acos(cosa);
+  a = std::acos(cosa);
   u += k * (a - aeq) * (a - aeq);
-  m = -2 * k * (a - aeq);          // moment
-  m /= -1 * sqrt(1 - cosa * cosa); //*d(a)/d(cos a)
+  m = -2 * k * (a - aeq);               // moment
+  m /= -1 * std::sqrt(1 - cosa * cosa); //*d(a)/d(cos a)
   for (int i = 0; i < 3; ++i) {
     d12 = -cosa * r12[i] / r12_2 - r23[i] / r12_1 / r23_1; // d(cos a)/d(r12)
     d23 = -cosa * r23[i] / r23_2 - r12[i] / r12_1 / r23_1; // d(cos a)/d(r23)
@@ -210,7 +209,7 @@ void PotentialBase::calculateWeightedCentre(double const w1, double const w2,
                                             double const w3, double const r1[],
                                             double const r2[],
                                             double const r3[], double rc[]) {
-  assert(fabs(w1 + w2 + w3 - 1.0) < 1e-9);
+  assert(std::fabs(w1 + w2 + w3 - 1.0) < 1e-9);
   for (int i = 0; i < 3; ++i) {
     rc[i] = w1 * r1[i] + w2 * unBreak1(r2[i], r1[i], i) +
             w3 * unBreak1(r3[i], r1[i], i);
@@ -422,7 +421,7 @@ whereas the functions lennardJones() use the expression:
 The function calculates the parameter @a sigma.
 */
 double PotentialBase::sigma(double const A, double const B) {
-  return pow(A / B, 1.0 / 6.0);
+  return std::pow(A / B, 1.0 / 6.0);
 }
 
 /** Smith and Kong combination rules.
@@ -433,13 +432,13 @@ double PotentialBase::sigma(double const A, double const B) {
 @see smithKongSigma()*/
 double PotentialBase::smithKongEpsilon(double sigma1, double epsilon1,
                                        double sigma2, double epsilon2) {
-  double sa6, sb6, n, d;
-  sa6 = pow(sigma1, 6.0);
-  sb6 = pow(sigma2, 6.0);
-  n = pow(2.0, 13.0) * epsilon1 * sa6 * epsilon2 * sb6;
-  d = pow(epsilon1 * sa6 * sa6, 1.0 / 13.0) +
-      pow(epsilon2 * sb6 * sb6, 1.0 / 13.0);
-  d = pow(d, 13);
+  double n, d;
+  double s1_2 = sigma1 * sigma1, sa6 = s1_2 * s1_2 * s1_2;
+  double s2_2 = sigma2 * sigma2, sb6 = s2_2 * s2_2 * s2_2;
+  n = 8192.0 * epsilon1 * sa6 * epsilon2 * sb6; // 2^13 = 8192
+  d = std::pow(epsilon1 * sa6 * sa6, 1.0 / 13.0) +
+      std::pow(epsilon2 * sb6 * sb6, 1.0 / 13.0);
+  d = std::pow(d, 13);
   return n / d;
 }
 
@@ -455,14 +454,16 @@ Combination of unlike Lennard-Jones parameters
 */
 double PotentialBase::smithKongSigma(double sigma1, double epsilon1,
                                      double sigma2, double epsilon2) {
-  double const sa6 = pow(sigma1, 6.0);
-  double const sb6 = pow(sigma2, 6.0);
+  double s1_2 = sigma1 * sigma1;
+  double const sa6 = s1_2 * s1_2 * s1_2;
+  double s2_2 = sigma2 * sigma2;
+  double const sb6 = s2_2 * s2_2 * s2_2;
   double n, d;
-  n = pow(epsilon1 * sa6 * sa6, 1.0 / 13.0) +
-      pow(epsilon2 * sb6 * sb6, 1.0 / 13);
-  n = pow(n, 13.0);
-  d = pow(2.0, 13.0) * sqrt(epsilon1 * sa6 * epsilon2 * sb6);
-  return pow(n / d, 1.0 / 6.0);
+  n = std::pow(epsilon1 * sa6 * sa6, 1.0 / 13.0) +
+      std::pow(epsilon2 * sb6 * sb6, 1.0 / 13.0);
+  n = std::pow(n, 13.0);
+  d = 8192.0 * std::sqrt(epsilon1 * sa6 * epsilon2 * sb6); // 2^13 = 8192
+  return std::pow(n / d, 1.0 / 6.0);
 }
 
 /** Smooth cutoff switch off.
@@ -560,7 +561,7 @@ void PotentialBase::distance(const double x[], const double y[], double z[],
     z[i] = x[i] - y[i];
   applyPeriodicity1(z);
   z2 = z[0] * z[0] + z[1] * z[1] + z[2] * z[2];
-  z1 = sqrt(z2);
+  z1 = std::sqrt(z2);
 }
 
 /** Distance.

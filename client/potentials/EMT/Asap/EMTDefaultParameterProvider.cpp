@@ -7,7 +7,10 @@
 #include <iostream>
 #include <string.h>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
 
 const int EMTDefaultParameterProvider::shell0 = 3;
 const int EMTDefaultParameterProvider::shell1 = 4;
@@ -230,7 +233,7 @@ emt_parameters *EMTDefaultParameterProvider::GetNewParameters(int element) {
   p->Z = Z;
   assert(element == Z);
   p->name = name;
-  p->lengthscale = ls / sqrt(2.0) * bohr;
+  p->lengthscale = ls / std::sqrt(2.0) * bohr;
 
   return p;
 }
@@ -250,15 +253,17 @@ void EMTDefaultParameterProvider::calc_cutoff() {
     if ((*i)->seq > maxseq)
       maxseq = (*i)->seq;
 
-  cutoff =
-      0.5 * maxseq * Beta * (sqrt((double)shell0) + sqrt((double)shell0 + 1));
+  cutoff = 0.5 * maxseq * Beta *
+           (std::sqrt(static_cast<double>(shell0)) +
+            std::sqrt(static_cast<double>(shell0 + 1)));
   // The cutoff slope is set (rather arbitrarily) to the same value
   // used in the original ARTwork code.  The idea of this
   // expression is that the slope is such that the Fermi function
   // has the value 1e-5 where the neighbor list is cut off.
-  r = cutoff * 2.0 * sqrt((double)shell0 + 1) /
-      (sqrt((double)shell0) + sqrt((double)shell0 + 1));
-  cutslope = log(9999.0) / (r - cutoff);
+  r = cutoff * 2.0 * std::sqrt(static_cast<double>(shell0 + 1)) /
+      (std::sqrt(static_cast<double>(shell0)) +
+       std::sqrt(static_cast<double>(shell0 + 1)));
+  cutslope = std::log(9999.0) / (r - cutoff);
 #if 0
   cerr << "cutoff " << cutoff << endl;
   cerr << "maxseq " << maxseq << endl;
@@ -282,13 +287,13 @@ void EMTDefaultParameterProvider::calc_gammas() {
     //    for (int is = 0; is < shell1 && is < 5; is++)
     for (int is = 0; is < shell1 - 1 && is < 5; is++) // !!!!! xxxxx
     {
-      d = sqrt((double)(is + 1)) * Beta * e->seq;
-      w = 1. / (1. + exp(cutslope * (d - cutoff)));
-      e->gamma1 += w * shellpop[is] * exp(-d * e->eta2);
-      e->gamma2 += w * shellpop[is] * exp(-d * e->kappa / Beta);
+      d = std::sqrt(static_cast<double>(is + 1)) * Beta * e->seq;
+      w = 1. / (1. + std::exp(cutslope * (d - cutoff)));
+      e->gamma1 += w * shellpop[is] * std::exp(-d * e->eta2);
+      e->gamma2 += w * shellpop[is] * std::exp(-d * e->kappa / Beta);
     }
-    e->gamma1 /= shellpop[0] * exp(-Beta * e->seq * e->eta2);
-    e->gamma2 /= shellpop[0] * exp(-e->seq * e->kappa);
+    e->gamma1 /= shellpop[0] * std::exp(-Beta * e->seq * e->eta2);
+    e->gamma2 /= shellpop[0] * std::exp(-e->seq * e->kappa);
   }
 }
 

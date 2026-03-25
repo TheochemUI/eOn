@@ -1,0 +1,239 @@
+# Regression Data Generator Configuration
+# ==========================================
+# Generates reference outputs from a specified eonclient binary.
+# Default: build from svn-Jul_01_2024 tag.
+
+# Path to eonclient binary. If empty, builds from git_tag.
+eonclient: ""
+
+# Git tag to build from (if eonclient is empty)
+git_tag: "svn-Jul_01_2024"
+
+# Output directory for reference data
+output_dir: "../../client/unit_tests/data/reference"
+
+# Test data directory
+data_dir: "../../client/unit_tests/data/systems"
+
+# Job definitions: each entry generates one reference file
+jobs:
+  point_lj:
+    data_source: "neb_morse"
+    pos_file: "reactant.con"
+    config: |
+      [Main]
+      job = point
+      random_seed = 42
+      [Potential]
+      potential = lj
+
+  minimization_lj:
+    data_source: "neb_morse"
+    pos_file: "reactant.con"
+    config: |
+      [Main]
+      job = minimization
+      random_seed = 42
+      [Potential]
+      potential = lj
+      [Optimizer]
+      opt_method = lbfgs
+      converged_force = 0.001
+      max_iterations = 500
+
+  finite_difference_lj:
+    data_source: "neb_morse"
+    pos_file: "reactant.con"
+    config: |
+      [Main]
+      job = finite_difference
+      random_seed = 42
+      [Potential]
+      potential = lj
+
+  saddle_search_morse_pt:
+    data_source: "saddle_search"
+    # Uses all files from saddle_search dir (pos.con, direction.dat, etc.)
+
+  hessian_lj:
+    data_source: "neb_morse"
+    pos_file: "reactant.con"
+    config: |
+      [Main]
+      job = hessian
+      random_seed = 42
+      [Potential]
+      potential = lj
+
+  point_morse_pt:
+    data_source: "saddle_search"
+    config: |
+      [Main]
+      job = point
+      random_seed = 42
+      [Potential]
+      potential = morse_pt
+
+  minimization_morse_pt:
+    data_source: "Pt_Heptamer_FrozenLayers"
+    config: |
+      [Main]
+      job = minimization
+      random_seed = 42
+      [Potential]
+      potential = morse_pt
+      [Optimizer]
+      opt_method = lbfgs
+      converged_force = 0.01
+      max_iterations = 200
+
+  neb_lj:
+    data_source: "neb_morse"
+    config: |
+      [Main]
+      job = nudged_elastic_band
+      random_seed = 42
+      [Potential]
+      potential = lj
+      [Nudged Elastic Band]
+      images = 3
+      spring = 5.0
+      max_iterations = 200
+      [Optimizer]
+      opt_method = lbfgs
+      converged_force = 0.01
+      max_iterations = 200
+      max_move = 0.2
+
+  basin_hopping_lj:
+    data_source: "neb_morse"
+    pos_file: "reactant.con"
+    config: |
+      [Main]
+      job = basin_hopping
+      random_seed = 42
+      [Potential]
+      potential = lj
+      [Basin Hopping]
+      steps = 20
+      temperature = 300.0
+      displacement = 0.5
+      push_apart_distance = 0.4
+      [Optimizer]
+      opt_method = lbfgs
+      converged_force = 0.001
+      max_iterations = 200
+
+  global_optimization_lj:
+    data_source: "neb_morse"
+    pos_file: "reactant.con"
+    config: |
+      [Main]
+      job = global_optimization
+      random_seed = 42
+      temperature = 300.0
+      [Potential]
+      potential = lj
+      [Global Optimization]
+      move_method = random
+      decision_method = boltzmann
+      steps = 10
+      [Basin Hopping]
+      displacement = 0.5
+      push_apart_distance = 0.4
+      [Optimizer]
+      opt_method = lbfgs
+      converged_force = 0.001
+      max_iterations = 200
+
+  parallel_replica_morse_pt:
+    data_source: "Pt_Heptamer_FrozenLayers"
+    config: |
+      [Main]
+      job = parallel_replica
+      temperature = 300
+      random_seed = 42
+      [Potential]
+      potential = morse_pt
+      [Dynamics]
+      time_step = 1.0
+      time = 100.0
+      thermostat = andersen
+      andersen_collision_steps = 10
+      andersen_alpha = 1.0
+      [Parallel Replica]
+      dephase_time = 20.0
+      state_check_interval = 20.0
+      record_interval = 5.0
+      refine_transition = true
+      corr_time = 10.0
+
+  replica_exchange_lj:
+    data_source: "neb_morse"
+    pos_file: "reactant.con"
+    config: |
+      [Main]
+      job = replica_exchange
+      temperature = 300
+      random_seed = 42
+      [Potential]
+      potential = lj
+      [Dynamics]
+      time_step = 1.0
+      time = 50.0
+      thermostat = andersen
+      andersen_collision_steps = 10
+      andersen_alpha = 1.0
+      [Replica Exchange]
+      replicas = 3
+      temperature_distribution = exponential
+      temperature_low = 100.0
+      temperature_high = 500.0
+      sampling_time = 50.0
+      exchange_period = 25.0
+
+  tad_morse_pt:
+    data_source: "Pt_Heptamer_FrozenLayers"
+    config: |
+      [Main]
+      job = tad
+      temperature = 600
+      random_seed = 42
+      [Potential]
+      potential = morse_pt
+      [Dynamics]
+      time_step = 1.0
+      time = 100.0
+      thermostat = andersen
+      andersen_collision_steps = 10
+      andersen_alpha = 1.0
+      [TAD]
+      low_temperature = 300
+      min_prefactor = 0.001
+      confidence = 0.001
+      [Parallel Replica]
+      state_check_interval = 20.0
+      record_interval = 5.0
+      refine_transition = true
+
+  safe_hyper_morse_pt:
+    data_source: "Pt_Heptamer_FrozenLayers"
+    config: |
+      [Main]
+      job = safe_hyper
+      temperature = 300
+      random_seed = 42
+      [Potential]
+      potential = morse_pt
+      [Dynamics]
+      time_step = 1.0
+      time = 100.0
+      thermostat = andersen
+      andersen_collision_steps = 10
+      andersen_alpha = 1.0
+      [Hyperdynamics]
+      bias_potential = bond_boost
+      [Parallel Replica]
+      state_check_interval = 20.0
+      record_interval = 5.0
+      refine_transition = true

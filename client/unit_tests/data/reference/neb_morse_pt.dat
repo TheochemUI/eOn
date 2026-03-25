@@ -1,0 +1,17 @@
+2 termination_reason
+morse_pt potential_type
+2507 total_force_calls
+2505 force_calls_neb
+7483.116620 energy_reference
+5 number_of_images
+0.000000 image0_energy
+-6763.719926 image1_energy
+-7467.895933 image2_energy
+-7511.875853 image3_energy
+-7452.972166 image4_energy
+-6628.370833 image5_energy
+1321.467055 image6_energy
+3 number_of_extrema
+-28.758873 extremum0_energy
+-29.352893 extremum1_energy
+-29.009597 extremum2_energy

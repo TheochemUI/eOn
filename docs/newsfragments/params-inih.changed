@@ -1,0 +1,1 @@
+Replaced vendored 724-line ``CIniFile`` INI parser with `inih <https://github.com/benhoyt/inih>`_ (r62) via meson wrap.

@@ -12,11 +12,8 @@
 #pragma once
 
 #include "BaseStructures.h"
-#include <cstring>
-#include <ctype.h>
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
+#include <cstdio>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -33,49 +30,44 @@ class Parameters {
 public:
   Parameters();
   ~Parameters() = default;
-  // TODO: Is this complete?
   Parameters(const Parameters &) = default;
   int load(std::string filename);
   int load(FILE *file);
-
-  /** string constants: declared here, defined in Parameters.cpp. **/
-
-  // potentials //
-  // jobs //
+  int load_json(const std::string &json_str);
+  std::string to_json() const;
 
   // Physical Constants
   struct constants_t {
-    double kB;
-    double timeUnit;
+    double kB{8.6173324e-5};     // eV/K
+    double timeUnit{10.1805055}; // fs
   } constants;
-
-  /** input parameters **/
 
   // [Main] //
   struct main_options_t {
-    JobType job;
-    long randomSeed;
-    double temperature;
-    bool quiet;
-    bool writeLog;
-    bool checkpoint;
-    std::string iniFilename;
-    std::string conFilename;
-    double finiteDifference;
-    long maxForceCalls;
-    bool removeNetForce;
+    JobType job{JobType::Process_Search};
+    long randomSeed{-1};
+    double temperature{300.0};
+    bool quiet{false};
+    bool writeLog{true};
+    bool checkpoint{false};
+    std::string iniFilename{"config.ini"};
+    std::string conFilename{"pos.con"};
+    double finiteDifference{0.01};
+    long maxForceCalls{0};
+    bool removeNetForce{true};
+    bool parallel{false}; // parallel force evaluation via std::thread
   } main_options;
 
   // [Potential] //
   struct potential_options_t {
-    PotType potential;
-    double MPIPollPeriod;
-    bool LAMMPSLogging;
-    int LAMMPSThreads;
-    bool EMTRasmussen;
-    bool LogPotential;
-    std::string extPotPath;
-    int MPIPotentialRank;
+    PotType potential{PotType::LJ};
+    double MPIPollPeriod{0.25};
+    bool LAMMPSLogging{false};
+    int LAMMPSThreads{0};
+    bool EMTRasmussen{false};
+    bool LogPotential{false};
+    std::string extPotPath{"./ext_pot"};
+    int MPIPotentialRank{-1};
 #ifdef EONMPI
     MPI_Comm MPIClientComm;
 #endif
@@ -83,12 +75,12 @@ public:
 
   // [AMS] and [AMS_IO] //
   struct ams_options_t {
-    std::string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
-    std::string forcefield; // OPt.ff etc. (REAXFF)
-    std::string model;      // Model hamiltonian (MOPAC)
-    std::string resources;  // DFTB
-    std::string xc;         // Exchange (BAND, ADF)
-    std::string basis;      // Basis (BAND, ADF)
+    std::string engine;
+    std::string forcefield;
+    std::string model;
+    std::string resources;
+    std::string xc;
+    std::string basis;
     struct env_t {
       std::string amshome;
       std::string scm_tmpdir;
@@ -101,506 +93,488 @@ public:
 
   // [XTBPot] //
   struct xtb_options_t {
-    std::string paramset;
-    double elec_temperature;
-    size_t maxiter;
-    double acc;
-    double charge;
-    int uhf;
+    std::string paramset{"GFNFF"};
+    double elec_temperature{0.0};
+    size_t maxiter{250};
+    double acc{1.0};
+    double charge{0.0};
+    int uhf{0};
   } xtb_options;
 
   // [ZBLPot] //
   struct zbl_options_t {
-    double cut_inner;
-    double cut_global;
+    double cut_inner{2.0};
+    double cut_global{2.5};
   } zbl_options;
 
   // [SocketNWChemPot] //
   struct socket_nwchem_options_t {
-    std::string host;
-    int port;
-    int mem_in_gb;
-    std::string nwchem_settings;
-    std::string unix_socket_path;
-    bool unix_socket_mode;
-    bool make_template_input;
+    std::string host{"127.0.0.1"};
+    int port{9999};
+    int mem_in_gb{2};
+    std::string nwchem_settings{"nwchem_settings.nwi"};
+    std::string unix_socket_path{"eon_nwchem"};
+    bool unix_socket_mode{false};
+    bool make_template_input{true};
   } socket_nwchem_options;
 
   // [Structure Comparison] //
   struct structure_comparison_options_t {
-    double distance_difference;
-    double neighbor_cutoff;
-    bool check_rotation;
-    bool indistinguishable_atoms;
-    double energy_difference;
-    bool remove_translation;
+    double distance_difference{0.1};
+    double neighbor_cutoff{3.3};
+    bool check_rotation{false};
+    bool indistinguishable_atoms{true};
+    double energy_difference{0.01};
+    bool remove_translation{true};
   } structure_comparison_options;
 
   // [Process Search] //
   struct process_search_options_t {
-    bool minimize_first;
-    double minimization_offset;
+    bool minimize_first{true};
+    double minimization_offset{0.2}; // resolved to optimizer_options.max_move
   } process_search_options;
 
   // [Saddle Search] //
   struct saddle_search_options_t {
-    long max_jump_attempts;
-    long max_iterations;
-    std::string method;
-    std::string minmode_method;
-    std::string displace_type;
+    long max_jump_attempts{0};
+    long max_iterations{1000};
+    std::string method{"min_mode"};
+    std::string minmode_method{"dimer"};
+    std::string displace_type{"load"};
     std::vector<long> displace_atom_list;
-    double max_energy;
-    double displace_magnitude;
-    double max_single_displace;
-    double displace_radius;
-    double converged_force;
-    double perp_force_ratio;
-    bool nonnegative_displacement_abort;
-    long nonlocal_count_abort;
-    double nonlocal_distance_abort;
-    bool remove_rotation;
-    double zero_mode_abort_curvature;
+    double max_energy{20.0};
+    double displace_magnitude{0.1};
+    double max_single_displace{10.0};
+    double displace_radius{4.0};
+    double converged_force{0.0};
+    double perp_force_ratio{0.0};
+    bool nonnegative_displacement_abort{false};
+    long nonlocal_count_abort{0};
+    double nonlocal_distance_abort{0.0};
+    bool remove_rotation{false};
+    double zero_mode_abort_curvature{0.0};
     struct dynamics_t {
-      double temperature;
-      double state_check_interval_input;
-      double state_check_interval;
-      double record_interval_input;
-      double record_interval;
-      bool linear_interpolation;
-      double max_init_curvature;
+      double temperature{0.0};
+      double state_check_interval_input{100.0};
+      double state_check_interval{0.0}; // computed: input / timeUnit
+      double record_interval_input{10.0};
+      double record_interval{0.0}; // computed
+      bool linear_interpolation{true};
+      double max_init_curvature{0.0};
     } dynamics;
     struct confine_positive_t {
-      bool enabled;
-      bool bowl_breakout;
-      long bowl_active;
-      double min_force;
-      double scale_ratio;
-      double boost;
-      long min_active;
+      bool enabled{false};
+      bool bowl_breakout{false};
+      long bowl_active{20};
+      double min_force{0.5};
+      double scale_ratio{0.9};
+      double boost{10.0};
+      long min_active{30};
     } confine_positive;
   } saddle_search_options;
 
   // [Optimizer] //
   struct optimizer_options_t {
-    OptType method;
-    std::string convergence_metric; // norm, max_atom, max_component
+    OptType method{OptType::CG};
+    std::string convergence_metric{"norm"};
     std::string convergence_metric_label;
-    size_t max_iterations;
-    double max_move;
-    double converged_force;
-    double time_step_input;
-    double time_step;
-    double max_time_step_input;
-    double max_time_step;
+    size_t max_iterations{1000};
+    double max_move{0.2};
+    double converged_force{0.01};
+    double time_step_input{1.0};
+    double time_step{0.0}; // computed: input / timeUnit
+    double max_time_step_input{2.5};
+    double max_time_step{0.0}; // computed: input / timeUnit
     struct refine_t {
-      OptType method;
-      double threshold;
+      OptType method{OptType::None};
+      double threshold{0.5};
     } refine;
     struct lbfgs_t {
-      long memory;
-      double inverse_curvature;
-      double max_inverse_curvature;
-      bool auto_scale;
-      bool angle_reset;
-      bool distance_reset;
+      long memory{20};
+      double inverse_curvature{0.01};
+      double max_inverse_curvature{0.0};
+      bool auto_scale{true};
+      bool angle_reset{true};
+      bool distance_reset{true};
     } lbfgs;
     struct cg_t {
-      bool no_overshooting;
-      bool knock_out_max_move;
-      bool line_search;
-      double line_converged;
-      long line_search_max_iter;
-      long max_iter_before_reset;
+      bool no_overshooting{false};
+      bool knock_out_max_move{false};
+      bool line_search{false};
+      double line_converged{0.1};
+      long line_search_max_iter{10};
+      long max_iter_before_reset{0};
     } cg;
     struct quickmin_t {
-      bool steepest_descent;
+      bool steepest_descent{false};
     } quickmin;
     struct sd_t {
-      double alpha;
-      bool two_point;
+      double alpha{0.1};
+      bool two_point{false};
     } sd;
   } optimizer_options;
 
   // [Dimer] //
   struct dimer_options_t {
-    double rotation_angle;
-    bool improved;
-    double converged_angle;
-    long max_iterations;
-    std::string opt_method;
-    long rotations_max;
-    long rotations_min;
-    double torque_max;
-    double torque_min;
-    bool remove_rotation;
+    double rotation_angle{0.005};
+    bool improved{true};
+    double converged_angle{5.0};
+    long max_iterations{1000};
+    std::string opt_method{"cg"};
+    long rotations_max{10};
+    long rotations_min{1};
+    double torque_max{1.0};
+    double torque_min{0.1};
+    bool remove_rotation{false};
   } dimer_options;
 
   // [GPR Dimer] //
   struct gpr_dimer_options_t {
-    double rotation_angle;
-    double converged_angle;
-    double relax_conv_angle;
-    long init_rotations_max;
-    long relax_rotations_max;
-    long divisor_t_dimer_gp;
-    long max_outer_iterations;
-    long max_inner_iterations;
-    double midpoint_max_disp;
-    std::string rot_opt_method;
-    std::string trans_opt_method;
-    double active_radius;
-    double dimer_sep;
-    double conv_step;
-    double max_step;
-    double ratio_at_limit;
-    bool init_rot_gp;
-    bool init_trans_gp;
-    bool many_iterations;
+    double rotation_angle{0.005};
+    double converged_angle{0.08};
+    double relax_conv_angle{0.001};
+    long init_rotations_max{6};
+    long relax_rotations_max{10};
+    long divisor_t_dimer_gp{10};
+    long max_outer_iterations{300};
+    long max_inner_iterations{1000};
+    double midpoint_max_disp{0.5};
+    std::string rot_opt_method{"lbfgs"};
+    std::string trans_opt_method{"lbfgs"};
+    double active_radius{5.0};
+    double dimer_sep{0.01};
+    double conv_step{0.1};
+    double max_step{0.1};
+    double ratio_at_limit{0.66667};
+    bool init_rot_gp{false};
+    bool init_trans_gp{false};
+    bool many_iterations{true};
     struct gpr_params_t {
-      std::string hyper_opt_method;
-      double sigma2;
-      double jitter_sigma2;
-      double noise_sigma2;
-      double prior_mu;
-      double prior_sigma2;
-      long prior_nu;
+      std::string hyper_opt_method{"scg"};
+      double sigma2{1e-8};
+      double jitter_sigma2{0.0};
+      double noise_sigma2{1e-8};
+      double prior_mu{0.0};
+      double prior_sigma2{1.0};
+      long prior_nu{20};
     } gpr_params;
     struct opt_params_t {
-      bool check_derivatives;
-      int max_iterations;
-      double tol_func;
-      double tol_sol;
-      long lambda_limit;
-      long lambda_init;
+      bool check_derivatives{false};
+      int max_iterations{400};
+      double tol_func{1e-4};
+      double tol_sol{1e-4};
+      long lambda_limit{static_cast<long>(1e17)};
+      long lambda_init{10};
     } opt_params;
     struct prune_params_t {
-      bool use_prune;
-      int begin;
-      int n_vals;
-      double threshold;
+      bool use_prune{false};
+      int begin{8};
+      int n_vals{3};
+      double threshold{0.5};
     } prune_params;
     struct debug_params_t {
-      int report_level;
-      int debug_level;
-      std::string out_dir;
-      std::string pos_file;
-      std::string energy_file;
-      std::string grad_file;
-      std::string out_ext;
-      double offset_mid_point;
-      double dy;
-      double dz;
+      int report_level{1};
+      int debug_level{2};
+      std::string out_dir{"output"};
+      std::string pos_file{"position"};
+      std::string energy_file{"energy"};
+      std::string grad_file{"gradient"};
+      std::string out_ext{"dat"};
+      double offset_mid_point{3.0};
+      double dy{0.1};
+      double dz{0.1};
     } debug_params;
   } gpr_dimer_options;
 
   // [GP Surrogate] //
   struct gp_surrogate_options_t {
-    bool enabled;
-    JobType sub_job;
-    double uncertainty;
-    bool linear_path_always;
-    PotType potential;
+    bool enabled{false};
+    JobType sub_job{JobType::Unknown};
+    double uncertainty{0.05};
+    bool linear_path_always{false};
+    PotType potential{PotType::CatLearn};
   } gp_surrogate_options;
 
   // [CatLearn] //
   struct catlearn_options_t {
     std::string path;
-    std::string model;
-    std::string prior;
-    bool use_deriv;
-    bool use_fingerprint;
-    bool parallel;
+    std::string model{"gp"};
+    std::string prior{"median"};
+    bool use_deriv{true};
+    bool use_fingerprint{false};
+    bool parallel{false};
   } catlearn_options;
 
   // [ASE_ORCA] //
   struct ase_orca_options_t {
     std::string path;
-    std::string nproc;
+    std::string nproc{"1"};
     std::string simpleinput;
   } ase_orca_options;
 
   // [ASE_NWCHEM] //
   struct ase_nwchem_options_t {
     std::string path;
-    std::string nproc;
+    std::string nproc{"1"};
     std::string multiplicity;
-    double scf_thresh;
-    long scf_maxiter;
+    double scf_thresh{1e-5};
+    long scf_maxiter{200};
   } ase_nwchem_options;
 
   // [Metatomic] //
   struct metatomic_options_t {
-    std::string model_path;  // Path to the TorchScript model file.
-    std::string device;      // "cpu", "cuda", "mps", or empty to auto-detect.
-    std::string length_unit; // The unit of length used in the simulation (e.g.,
-                             // "angstrom").
-    std::string extensions_directory; // Path for TorchScript extensions.
-    bool check_consistency;           // To enable model's internal checks.
-    double uncertainty_threshold;     // Threshold for uncertainty reporting.
-                                      // also used to populate the variance
-                                      // -1 to disable, 100meV/atom default
+    std::string model_path;
+    std::string device{"cpu"};
+    std::string length_unit{"angstrom"};
+    std::string extensions_directory;
+    bool check_consistency{false};
+    double uncertainty_threshold{-1.0};
+    /// Override model dtype ("float64" for batched reproducibility, empty=auto)
+    std::string dtype_override;
     struct variants_t {
-      std::string base;               // global key for energy and forces
-      std::string energy;             // override for energy variant
-      std::string energy_uncertainty; // override for variant on the
-                                      // energy uncertainty
+      std::string base;
+      std::string energy;
+      std::string energy_uncertainty;
     } variant;
   } metatomic_options;
 
   // [Lanczos] //
   struct lanczos_options_t {
-    double tolerance;
-    long max_iterations;
-    bool quit_early;
+    double tolerance{0.01};
+    long max_iterations{20};
+    bool quit_early{true};
   } lanczos_options;
 
   // [Prefactor] //
   struct prefactor_options_t {
-    double default_value;
-    double max_value;
-    double min_value;
-    double within_radius;
-    double min_displacement;
-    std::string rate;
-    std::string configuration;
-    bool all_free_atoms;
-    std::string filter_scheme;
-    double filter_fraction;
+    double default_value{0.0};
+    double max_value{1e+21};
+    double min_value{1e+9};
+    double within_radius{3.3};
+    double min_displacement{0.25};
+    std::string rate{"htst"};
+    std::string configuration{"reactant"};
+    bool all_free_atoms{false};
+    std::string filter_scheme{"fraction"};
+    double filter_fraction{0.90};
   } prefactor_options;
 
   // [Hessian] //
   struct hessian_options_t {
-    std::string atom_list;
-    double zero_freq_value;
+    std::string atom_list{"All"};
+    double zero_freq_value{1e-6};
   } hessian_options;
 
   // [Nudged Elastic Band] //
   struct neb_options_t {
-    // Core parameters for the chain-of-states simulation
-    long image_count;    // Number of replicas along the reaction coordinate
-    long max_iterations; // Maximum steps for the path optimization
-    OptType opt_method; // Optimization algorithm (e.g., QuickMin, FIRE, L-BFGS)
-    double
-        force_tolerance; // Convergence criterion for the root-mean-square force
+    long image_count{5};
+    long max_iterations{1000};
+    OptType opt_method{OptType::LBFGS};
+    double force_tolerance{
+        0.01}; // resolved to optimizer_options.converged_force
     struct mmf_peak_options_t {
-      bool enabled;     // Initialize mode estimates for each peak
-      double tolerance; // Cutoff for generating peaks
+      bool enabled{true};
+      double tolerance{0.05};
     } mmf_peaks;
 
     struct spring_options_t {
-      double constant;       // The spring constant (k) connecting images
-      bool use_elastic_band; // Toggle for the elastic band projection
-      bool doubly_nudged;    // Inclusion of the perpendicular spring force
-                             // components
-      bool use_switching;    // Switching function for doubly nudged NEB
+      double constant{5.0};
+      bool use_elastic_band{false};
+      bool doubly_nudged{false};
+      bool use_switching{false};
 
       struct energy_weighting_t {
-        bool
-            enabled; // Adjusts spring constants based on image potential energy
-        double trigger; // Threshold to activate energy weighted springs
-        double k_min;   // Minimum spring constant for low-energy regions
-        double k_max; // Maximum spring constant for high-energy barrier regions
+        bool enabled{false};
+        double trigger{10.0};
+        double k_min{0.97};
+        double k_max{9.7};
       } weighting;
       struct onsager_machlup_t {
-        bool enabled; // Main toggle for OM-NEB
-
-        // Adaptive Spring Constant Logic
-        bool optimize_k; // Re-calculate k_om every step?
-        double k_scale;  // Scaling factor for the heuristic (dimensionless)
-
-        // Optional: Safety bounds to prevent numerical explosions
-        double k_min;
-        double k_max;
+        bool enabled{false};
+        bool optimize_k{true};
+        double k_scale{1.0};
+        double k_min{0.1};
+        double k_max{100.0};
       } om;
     } spring;
 
     struct climbing_image_options_t {
-      bool enabled; // Enables the Climbing Image (CI-NEB) modification
-      bool
-          converged_only; // Wait for initial MEP convergence before starting CI
-      bool use_old_tangent;  // Algorithm choice for the local tangent estimate
-      double trigger_force;  // Force threshold to activate the CI-NEB algorithm
-      double trigger_factor; // relative factor
+      bool enabled{true};
+      bool converged_only{true};
+      bool use_old_tangent{false};
+      double trigger_force{std::numeric_limits<double>::infinity()};
+      double trigger_factor{0.0};
 
       struct hybrid_dimer_t {
-        bool use_mmf; // Integrates Min-Mode Following (MMF) for saddle point
-                      // refinement
-        double trigger_force; // Force threshold to activate hybrid dimer search
-        long max_steps;       // Maximum steps for the MMF refinement phase
-        long ci_stability_count; // Number of stable iterations before settling
-                                 // on a CI for MMF
-        double angle_tol;        // Angular tolerance for the dimer rotation
-        double trigger_factor;   // relative factor
-        struct roneb_penalty_t {
-          // penalty_factor = base + (strength * alignment);
-          // std::abs(finalMode.normalized().dot(currentTangent.normalized()))
-          double strength; // amount by which the threshold is reduced
-          double base;     // baseline
+        bool use_mmf{false};
+        double trigger_force{0.1};
+        long max_steps{1000};
+        long ci_stability_count{5};
+        double angle_tol{0.8};
+        double trigger_factor{0.0};
+        struct ocineb_penalty_t {
+          double strength{0.5};
+          double base{0.1};
         } penalty;
-      } roneb;
+      } ocineb;
     } climbing_image;
 
     struct path_initialization_t {
-      NEBInit method; // Method for generating the initial guess (e.g., IDPP)
-      std::string
-          input_path;     // Path to a file containing initial image coordinates
-      int max_iterations; // Maximum iterations for the path pre-optimizer
-      int nsteps;         // Iterations for the path pre-optimizer
-      double max_move;    // Maximum displacement per step during initialization
-      double force_tolerance; // Convergence criterion for the initial path
-                              // generation
-      double sidpp_alpha; // Growth parameter for Steepest Intensity Decent Path
-                          // Probing
-      OptType opt_method; // for the IDPP
-      bool oversampling;
-      int oversampling_factor;
+      NEBInit method{NEBInit::LINEAR};
+      std::string input_path;
+      int max_iterations{5000};
+      int nsteps{250};
+      double max_move{0.1};
+      double force_tolerance{0.001};
+      double sidpp_alpha{0.33};
+      double sidpp_frontier_tol{0.01}; ///< Convergence tol before adding images
+      bool sidpp_reparam{true};        ///< Reparameterize after growth complete
+      bool sidpp_ideal_ksp{false};     ///< Scale spring constant during growth
+      OptType opt_method{OptType::LBFGS};
+      bool oversampling{false};
+      int oversampling_factor{3};
     } initialization;
 
     struct endpoint_options_t {
-      bool minimize; // Flag to optimize the reactant and product geometries
-                     // first
-      bool use_path_file; // Pull endpoint geometries from the initial path file
+      bool minimize{true};
+      bool use_path_file{false};
     } endpoints;
 
   } neb_options;
 
   // [Molecular Dynamics] //
   struct dynamics_options_t {
-    double time_step_input;
-    double time_step;
-    double time_input;
-    double time;
-    long steps;
+    double time_step_input{1.0};
+    double time_step{0.0}; // computed: input / timeUnit
+    double time_input{1000.0};
+    double time{0.0}; // computed: input / timeUnit
+    long steps{0};    // computed: time / time_step
   } dynamics_options;
 
   // [Parallel Replica] //
   struct parallel_replica_options_t {
-    bool refine_transition;
-    bool auto_stop;
-    bool dephase_loop_stop;
-    double dephase_time_input;
-    double dephase_time;
-    long dephase_loop_max;
-    double state_check_interval_input;
-    double state_check_interval;
-    double record_interval_input;
-    double record_interval;
-    double corr_time_input;
-    double corr_time;
+    bool refine_transition{true};
+    bool auto_stop{false};
+    bool dephase_loop_stop{false};
+    double dephase_time_input{1000.0};
+    double dephase_time{0.0}; // computed: input / timeUnit
+    long dephase_loop_max{5};
+    double state_check_interval_input{1000.0};
+    double state_check_interval{0.0}; // computed
+    double record_interval_input{50.0};
+    double record_interval{0.0}; // computed
+    double corr_time_input{1000.0};
+    double corr_time{0.0}; // computed
   } parallel_replica_options;
 
   // [Temperature Accelerated Dynamics] //
   struct tad_options_t {
-    double low_temperature;
-    double min_prefactor;
-    double confidence;
+    double low_temperature{300.0};
+    double min_prefactor{0.001};
+    double confidence{0.001};
   } tad_options;
 
   // [Thermostat] //
   struct thermostat_options_t {
-    std::string kind;
-    double andersen_alpha;
-    double andersen_tcol_input;
-    double andersen_tcol;
-    double nose_mass;
-    double langevin_friction_input;
-    double langevin_friction;
+    std::string kind{"none"};
+    double andersen_alpha{1.0};
+    double andersen_tcol_input{100.0};
+    double andersen_tcol{0.0}; // computed
+    double nose_mass{1.0};
+    double langevin_friction_input{0.01};
+    double langevin_friction{0.0}; // computed: input * timeUnit
   } thermostat_options;
 
   // [Replica Exchange] //
   struct replica_exchange_options_t {
-    std::string temperature_distribution;
-    long replicas;
-    long exchange_trials;
-    double sampling_time_input;
-    double sampling_time;
-    double temperature_high;
-    double temperature_low;
-    double exchange_period_input;
-    double exchange_period;
+    std::string temperature_distribution{"exponential"};
+    long replicas{10};
+    long exchange_trials{10}; // resolved to replicas
+    double sampling_time_input{1000.0};
+    double sampling_time{0.0}; // computed
+    double temperature_high{0.0};
+    double temperature_low{0.0};
+    double exchange_period_input{100.0};
+    double exchange_period{0.0}; // computed
   } replica_exchange_options;
 
   // [Bond Boost / Hyperdynamics] //
   struct hyperdynamics_options_t {
-    std::string bias_potential;
-    std::string boost_atom_list;
-    double rmd_time_input;
-    double rmd_time;
-    double dvmax;
-    double qrr;
-    double prr;
-    double qcut;
+    std::string bias_potential{"none"};
+    std::string boost_atom_list{"All"};
+    double rmd_time_input{100.0};
+    double rmd_time{0.0}; // computed
+    double dvmax{0.0};
+    double qrr{0.2};
+    double prr{0.95};
+    double qcut{3.0};
   } hyperdynamics_options;
 
   // [Basin Hopping] //
   struct basin_hopping_options_t {
-    double displacement;
-    double initial_random_structure_probability;
-    double push_apart_distance;
-    long steps;
-    long quenching_steps;
-    bool significant_structure;
-    bool single_atom_displace;
-    std::string displacement_algorithm;
-    std::string displacement_distribution;
-    double swap_probability;
-    long jump_max;
-    long jump_steps;
-    bool adjust_displacement;
-    long adjust_period;
-    double adjust_fraction;
-    double target_ratio;
-    bool write_unique;
-    double stop_energy;
+    double displacement{0.5};
+    double initial_random_structure_probability{0.0};
+    double push_apart_distance{0.4};
+    long steps{10000};
+    long quenching_steps{0};
+    bool significant_structure{true};
+    bool single_atom_displace{false};
+    std::string displacement_algorithm{"standard"};
+    std::string displacement_distribution{"uniform"};
+    double swap_probability{0.0};
+    long jump_max{10};
+    long jump_steps{0};
+    bool adjust_displacement{true};
+    long adjust_period{10};
+    double adjust_fraction{0.05};
+    double target_ratio{0.5};
+    bool write_unique{false};
+    double stop_energy{-std::numeric_limits<double>::max()};
   } basin_hopping_options;
 
   // [Global Optimization] //
   struct global_optimization_options_t {
-    std::string move_method;
-    std::string decision_method;
-    long steps;
-    double beta;
-    double alpha;
-    long mdmin;
-    double target_energy;
+    std::string move_method{"md"};
+    std::string decision_method{"npew"};
+    long steps{10000};
+    double beta{1.05};
+    double alpha{1.02};
+    long mdmin{3};
+    double target_energy{-1.0e50};
   } global_optimization_options;
 
   // [Monte Carlo] //
   struct monte_carlo_options_t {
-    double step_size;
-    int steps;
+    double step_size{0.005};
+    int steps{1000};
   } monte_carlo_options;
 
   // [BGSD] //
   struct bgsd_options_t {
-    double alpha;
-    double beta;
-    double gradient_finite_difference;
-    double h_force_convergence;
-    double grad2energy_convergence;
-    double grad2force_convergence;
+    double alpha{10.0};
+    double beta{0.2};
+    double gradient_finite_difference{0.000001};
+    double h_force_convergence{0.01};
+    double grad2energy_convergence{0.000001};
+    double grad2force_convergence{0.0001};
   } bgsd_options;
 
   // [Serve] //
   struct serve_options_t {
-    std::string host;
-    uint16_t port;
-    size_t replicas;
-    uint16_t gateway_port; // 0 = disabled
-    std::string endpoints; // "pot:port,pot:host:port,..." spec string
+    std::string host{"localhost"};
+    uint16_t port{12345};
+    size_t replicas{1};
+    uint16_t gateway_port{0};
+    std::string endpoints;
   } serve_options;
 
   // [Debug] //
   struct debug_options_t {
-    bool write_movies;
-    long write_movies_interval;
-    bool estimate_neb_eigenvalues;
-    std::string neb_mmf;
+    bool write_movies{false};
+    long write_movies_interval{1};
+    bool estimate_neb_eigenvalues{false};
+    std::string neb_mmf{"dimer"};
   } debug_options;
-
-private:
-  std::string toLowerCase(std::string s);
 };
 
 } // namespace eonc

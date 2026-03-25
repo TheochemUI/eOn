@@ -21,7 +21,6 @@ University of Iceland
 #include <cmath>
 // #include "unit_system.hpp"
 
-using namespace std;
 using namespace forcefields;
 namespace {
 #if defined(FORCEFIELDS_UNIT_SYSTEM_HPP) &&                                    \
@@ -210,11 +209,11 @@ void Ccl::initialiseRho(Vector3 const &v, Rho &ro) {
 void Ccl::initialiseDtheta(Vector3 const &v1, Vector3 const &v2, Dtheta &dth,
                            double const thetaEquilibrium) {
   double const cos_theta = dotProduct(v1.v, v2.v) / v1._1 / v2._1;
-  double const theta = acos(cos_theta);
+  double const theta = std::acos(cos_theta);
   dth._1 = theta - thetaEquilibrium;
   dth._2 = dth._1 * dth._1;
   dth._3 = dth._2 * dth._1;
-  double const d_theta = -1.0 / sqrt(1.0 - cos_theta * cos_theta);
+  double const d_theta = -1.0 / std::sqrt(1.0 - cos_theta * cos_theta);
   for (int k = 0; k < 3; ++k) {
     dth.n1[k] = 0.0;
     dth.n2[k] = 0.0;
@@ -344,7 +343,7 @@ void Ccl::computeTemplate(
       intramolecular(rh1[i], rh2[i], ro[i], fh1[i], fh2[i], fo[i], energy);
     };
   };
-  assert(not isnan(energy) and not isinf(energy));
+  assert(not std::isnan(energy) and not std::isinf(energy));
 }
 
 // --------------------------------------------- Square

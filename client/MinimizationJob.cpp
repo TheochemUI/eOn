@@ -19,16 +19,13 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-using namespace std;
 
-std::vector<std::string> MinimizationJob::run(void) {
-  string posInFilename("pos.con");
-  string posOutFilename("min.con");
+std::vector<std::string> MinimizationJob::run() {
+  std::string posInFilename("pos.con");
+  std::string posOutFilename("min.con");
 
   if (params.main_options.checkpoint) {
-    FILE *pos_file;
-    pos_file = fopen("pos_cp.con", "r");
-    if (pos_file != NULL) {
+    if (std::filesystem::exists("pos_cp.con")) {
       posInFilename = "pos_cp.con";
       QUILL_LOG_DEBUG(log, "[Minimization] Resuming from checkpoint");
     } else {
@@ -84,13 +81,14 @@ std::vector<std::string> MinimizationJob::run(void) {
     return returnFiles;
   }
 
+  fileResults << static_cast<int>(status) << " termination_reason\n";
   fileResults << magic_enum::enum_name<RunStatus>(status)
-              << " termination_reason\n";
+              << " termination_reason_text\n";
   fileResults << "minimization job_type\n";
   fileResults << magic_enum::enum_name<PotType>(
                      params.potential_options.potential)
               << " potential_type\n";
-  fileResults << this->pot->forceCallCounter << " total_force_calls\n";
+  fileResults << this->pot->forceCallCounter.load() << " total_force_calls\n";
 
   if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
     fileResults << pos->getPotentialEnergy() << " potential_energy\n";

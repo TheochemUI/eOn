@@ -10,17 +10,41 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
+#include "ConFileIO.h"
 #include "Eigen.h"
 #include "EonLogger.h"
 #include "Parameters.h"
 #include "Potential.h"
 #include "SurrogatePotential.h"
+#include <array>
 #include <memory>
 #include <string>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 namespace eonc {
 class BondBoost;
+
+namespace pbc {
+
+inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
+                        const Matrix3d &cellInverse) {
+  // Transform to fractional coordinates, wrap to [-0.5, 0.5), transform back.
+  // Uses floor(x + 0.5) instead of double-fmod: single x86 vroundsd instruction
+  // vs expensive fmod library call. Vectorized via Eigen .array() operations.
+  AtomMatrix frac = diff * cellInverse;
+  frac.array() -= (frac.array() + 0.5).floor();
+  return frac * cell;
+}
+
+inline VectorXd applyV(const VectorXd &diffVector, const Matrix3d &cell,
+                       const Matrix3d &cellInverse) {
+  AtomMatrix pbcMatrix =
+      apply(AtomMatrix::Map(diffVector.data(), diffVector.size() / 3, 3), cell,
+            cellInverse);
+  return VectorXd(VectorXd::Map(pbcMatrix.data(), diffVector.size()));
+}
+
+} // namespace pbc
 
 /* Data describing an atomic structure. This class has been devised to handle
  * information about an atomic structure such as positions, velocities, masses,
@@ -37,6 +61,8 @@ public:
         usePeriodicBoundaries{true},
         recomputePotential{true},
         forceCalls{0},
+        removeNetForce{params.main_options.removeNetForce},
+        structComp{params.structure_comparison_options},
         parameters{&params},
         nAtoms{0},
         positions{MatrixXd::Zero(0, 3)},
@@ -52,14 +78,8 @@ public:
         energyVariance{0.0},
         potentialEnergy{0.0} {} // the number of atoms shall be set later
   // using resize()
-  // Matter(Parameters *parameters,
-  //        long int nAtoms);      // prepare the object for use with nAtoms
-  //        atoms
   Matter(const Matter &matter);                  // create a copy of matter
   const Matter &operator=(const Matter &matter); // copy the matter object
-  // bool operator==(const Matter& matter); // true if differences in positions
-  // are below differenceDistance bool operator!=(const Matter& matter); //
-  // inverse of ==
   bool compare(const Matter &matter, bool indistinguishable = false);
 
   double
@@ -85,8 +105,12 @@ public:
              bool checkpoint = false, std::string prefixMovie = std::string(),
              std::string prefixCheckpoint = std::string());
 
-  AtomMatrix pbc(const AtomMatrix &diff) const;
-  VectorXd pbcV(const VectorXd &diff) const;
+  AtomMatrix pbc(const AtomMatrix &diff) const {
+    return eonc::pbc::apply(diff, cell, cellInverse);
+  }
+  VectorXd pbcV(const VectorXd &diff) const {
+    return eonc::pbc::applyV(diff, cell, cellInverse);
+  }
 
   size_t getPotentialCalls() const;
   const AtomMatrix &getPositions() const; // return coordinates of atoms
@@ -111,9 +135,10 @@ public:
   void setForces(const AtomMatrix &f);
   AtomMatrix getAccelerations();
 
-  AtomMatrix getForces(); // return forces applied on all atoms in array force
+  const AtomMatrix &getForces() const;
+  const AtomMatrix &getForcesRaw() const;
   AtomMatrix getBiasForces();
-  VectorXd getForcesV();
+  VectorXd getForcesV() const;
   AtomMatrix getForcesFree();
   VectorXd getForcesFreeV();
 
@@ -132,14 +157,10 @@ public:
       const; // return true if the atom is fixed, false if it is movable
   void setFixed(long int atom,
                 int isFixed); // set the atom to fixed (true) or movable (false)
-  // void setPotentialEnergy(double);
-  double getEnergyVariance();
-  // Eigen::VectorXd getForceVariance();
-  // double getMaxVariance();
-  double getPotentialEnergy();
+  double getEnergyVariance() const;
+  double getPotentialEnergy() const;
   double getKineticEnergy() const;
-  double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic
-                                // plus potential energy)
+  double getMechanicalEnergy() const;
 
   double distance(long index1, long index2)
       const; // return the distance between two atoms in same configuration
@@ -155,34 +176,42 @@ public:
   getForceCalls() const; // return how many force calls that have been performed
   void resetForceCalls(); // zeroing the value of force calls
 
-  double maxForce(void);
+  double maxForce(void) const;
 
-  void writeTibble(std::string filename);
-  bool con2matter(std::string filename); // read con file into Matter, return
-                                         // true if successful
-  bool con2matter(FILE *file); // read con file and load data into Matter,
-                               // return true if successful
-  bool
-  convel2matter(std::string filename); // read con file with both coordinates
-                                       // and velocities into Matter
-  bool convel2matter(FILE *file); // read con file with both coordinates and
-                                  // velocities and load data into Matter
-  bool
-  matter2con(std::string filename,
-             bool append = false); // print con file from data in Class Matter
-  bool matter2con(FILE *file);     // print con file from data in Class Matter
-  bool
-  matter2convel(std::string filename); // print con file with both coordinates
-                                       // and velocities  in Class Matter
-  bool matter2convel(FILE *file); // print con file with both coordinates and
-                                  // velocities from data in Class Matter
-  void matter2xyz(std::string filename,
-                  bool append = false); // print xyz file from data in Matter
+  // I/O delegates to eonc::io free functions
+  void writeTibble(std::string filename) { io::writeTibble(*this, filename); }
+  bool con2matter(std::string filename) {
+    return io::con2matter(*this, filename);
+  }
+  bool con2matter(FILE *file) { return io::con2matter(*this, file); }
+  bool convel2matter(std::string filename) {
+    return io::convel2matter(*this, filename);
+  }
+  bool convel2matter(FILE *file) { return io::convel2matter(*this, file); }
+  bool matter2con(std::string filename, bool append = false) {
+    return io::matter2con(*this, filename, append);
+  }
+  bool matter2con(FILE *file) { return io::matter2con(*this, file); }
+  bool matter2convel(std::string filename) {
+    return io::matter2convel(*this, filename);
+  }
+  bool matter2convel(FILE *file) { return io::matter2convel(*this, file); }
+  void matter2xyz(std::string filename, bool append = false) {
+    io::matter2xyz(*this, filename, append);
+  }
+
   AtomMatrix getFree() const;
   VectorXd getFreeV() const;
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
+  // Friend declarations for eonc::io free functions that need private access
+  friend bool io::con2matter(Matter &, FILE *);
+  friend bool io::convel2matter(Matter &, FILE *);
+  friend bool io::matter2con(Matter &, FILE *);
+  friend bool io::matter2convel(Matter &, FILE *);
+  friend void io::matter2xyz(Matter &, std::string, bool);
+
   eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
@@ -192,29 +221,34 @@ private:
   mutable long
       forceCalls; // keep track of how many force calls have been performed
 
-  // CON file header information, which is not used in the eon code
-  char headerCon1[512];
-  char headerCon2[512];
-  char headerCon4[512];
-  char headerCon5[512];
-  char headerCon6[512];
+  // CON file header lines (indices 0-4 map to old headerCon1,2,4,5,6)
+  std::array<std::string, 5> headerCon;
 
-  void computePotential();
+  void computePotential() const;
   void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);
 
-  // Stuff which used to be in MatterPrivateData
+  // Narrowed from Parameters: only fields Matter actually reads
+  bool removeNetForce{true};
+  Parameters::structure_comparison_options_t structComp;
+  // Full Parameters pointer retained solely for relax() delegation
   const Parameters *parameters;
   long nAtoms;
   AtomMatrix positions;
   AtomMatrix velocities;
-  AtomMatrix forces;
+  mutable AtomMatrix forces;
   AtomMatrix biasForces;
   BondBoost *biasPotential;
   VectorXd masses;
   VectorXi atomicNrs;
-  VectorXi isFixed; // array of bool, false for movable atom, true for fixed
+  VectorXi isFixed;   // array of bool, false for movable atom, true for fixed
+  VectorXi atomIndex; // original atom index from .con column 5
+  mutable AtomMatrix freeMask; // cached Nx3 mask (1.0 for free, 0.0 for fixed)
+  mutable AtomMatrix maskedForces;      // cached forces with fixed atoms zeroed
+  mutable std::vector<int> freeIndices; // cached indices of free atoms
+  mutable bool recomputeFreeMask{true};
+  mutable bool recomputeMaskedForces{true};
   Matrix3d cell;
   Matrix3d cellInverse;
   mutable double energyVariance;

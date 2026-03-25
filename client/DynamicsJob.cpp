@@ -9,7 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include <stdio.h>
 #include <string>
 
 #include "Dynamics.h"
@@ -17,9 +16,6 @@
 #include "HelperFunctions.h"
 #include "Parameters.h"
 #include "Potential.h"
-using namespace std;
-
-using namespace eonc::helpers;
 
 std::vector<std::string> DynamicsJob::run(void) {
   auto R = std::make_shared<Matter>(pot, params);
@@ -27,20 +23,14 @@ std::vector<std::string> DynamicsJob::run(void) {
   R->con2matter("pos.con");
   *F = *R;
 
-  Dynamics *d = new Dynamics(R.get(), params);
+  auto d = std::make_unique<Dynamics>(R.get(), params);
   d->run();
 
   *F = *R;
-  FILE *fileProduct;
   std::string productFilename("final.con");
-  returnFiles.push_back(productFilename);
-
-  fileProduct = fopen(productFilename.c_str(), "wb");
-  F->matter2con(fileProduct);
-  fclose(fileProduct);
-
-  delete d;
+  F->matter2con(productFilename);
 
   std::vector<std::string> returnFiles;
+  returnFiles.push_back(productFilename);
   return returnFiles;
 }

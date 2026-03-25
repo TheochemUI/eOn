@@ -10,7 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "MonteCarlo.h"
-using namespace std;
+
+#include <cmath>
+#include <iostream>
 
 using namespace eonc::helpers;
 
@@ -55,7 +57,7 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
       continue;
     }
 
-    double p = exp(arg);
+    double p = std::exp(arg);
     if (r < p) {
       QUILL_LOG_DEBUG(log, "{}: accept r<p\n", steps);
       accepts++;
@@ -65,5 +67,5 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
       QUILL_LOG_DEBUG(log, "{}: reject\n", steps);
     }
   }
-  cout << accepts << "\n";
+  QUILL_LOG_INFO(log, "accepts: {}", accepts);
 }

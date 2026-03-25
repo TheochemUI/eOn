@@ -1,0 +1,67 @@
+#+TITLE: Test Data and Regression Reference
+
+* Overview
+
+Test data for the eOn C++ client Catch2 test suite. Each subdirectory
+under =systems/= contains input files (config.ini, pos.con, etc.) for
+a specific test fixture.
+
+* Regenerating Reference Data
+
+Reference values in the tests are derived from the SVN eOn baseline
+(tag =svn-Jul_01_2024= in the git repo). To regenerate:
+
+#+begin_src bash
+# Build SVN baseline from tag
+git worktree add /tmp/svn_build svn-Jul_01_2024
+cd /tmp/svn_build/client
+mkdir -p potentials/QSC && echo '#pragma once
+#include "../../Potential.h"
+class QSC : public Potential { public: void initialize() override {}
+void force(long n, const double *r, const int *a, double *f,
+double *e, const double *b) override { *e=0; for(long i=0;i<3*n;i++) f[i]=0; }
+};' > potentials/QSC/QSC.h
+echo 'all: libQSC.a
+libQSC.a:
+	ar cru libQSC.a
+	ranlib libQSC.a' > potentials/QSC/Makefile
+NO_FORTRAN=1 CXXFLAGS="-O2 -I$CONDA_PREFIX/include/eigen3" make -j4 eonclient
+
+# Run each job type and capture reference output
+for dir in point minimization saddle_search finite_difference neb; do
+  mkdir -p /tmp/ref_$dir
+  cp <appropriate data files> /tmp/ref_$dir/
+  cd /tmp/ref_$dir && /tmp/svn_build/client/eonclient
+  # Compare results.dat against test assertions
+done
+#+end_src
+
+* Key Reference Values
+
+| Job | System | Potential | Reference Energy | Source |
+|-----+--------+-----------+------------------+--------|
+| point | 2-atom LJ | LJ | -39.965351 eV | SVN Jul 2024 |
+| minimization | 2-atom LJ | LJ | -39.965352 eV | SVN Jul 2024 |
+| saddle_search | 336-atom Pt | morse_pt | -1462.008706 eV | SVN Jul 2024 |
+| neb (5 img) | 337-atom Pt | morse_pt | barrier 0.6011 eV | SVN Jul 2024 |
+
+* Test Data Directories
+
+| Directory | Used By | Contents |
+|-----------+---------+----------|
+| neb_morse | Most tests | 2-atom LJ cluster (reactant.con) |
+| saddle_search | test_impldim, test_saddle | 336-atom Pt slab with adatom |
+| Pt_Heptamer_FrozenLayers | test_epicenters | 343-atom Pt slab, 337 fixed |
+| extpot | test_extpot | External potential test with scripts |
+| au_si | test_zbl | Au-Si pair for ZBL potential |
+| cineb_xtb | test_cineb_xtb | CI-NEB with XTB (reactant + product) |
+| sulfolene | test_xtb | Sulfolene molecule for XTB |
+| lj38 | test_mta | 38-atom LJ cluster for metatomic |
+
+* SVN Bugs Found During Testing
+
+The SVN codebase has verified bugs (see scripts/verify_rot_trans_projection.py):
+1. Translation leakage in rotationRemove
+2. Wrong centroid restoration (c2 instead of c1)
+3. No linear molecule handling in rotation removal
+4. String bounds violation under _GLIBCXX_ASSERTIONS

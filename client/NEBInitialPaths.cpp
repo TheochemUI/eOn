@@ -5,10 +5,11 @@
 #include "Parameters.h"
 #include <filesystem>
 #include <fstream>
+#include <memory>
+#include <span>
 #include <vector>
 
 #include "EonLogger.h"
-using namespace std;
 namespace fs = std::filesystem;
 
 namespace eonc::helpers::neb_paths {
@@ -218,138 +219,107 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
                               bool use_zbl) {
 
   auto log = eonc::log::get();
-  if (use_zbl) {
-    QUILL_LOG_INFO(
-        log, "Generating initial path using Sequential IDPP-ZBL (S-IDPP)...");
-  } else {
-    QUILL_LOG_INFO(log,
-                   "Generating initial path using Sequential IDPP (S-IDPP)...");
-  }
+  const auto &init = params.neb_options.initialization;
+  QUILL_LOG_INFO(log,
+                 "Generating initial path using S-IDPP{} ({} images, "
+                 "alpha={:.2f}, frontier_tol={:.4f})...",
+                 use_zbl ? "-ZBL" : "", target_nimgs, init.sidpp_alpha,
+                 init.sidpp_frontier_tol);
 
-  // 1. Start with [Init, Final]
+  // 1. Start with endpoints [Reactant, Product]
   std::vector<Matter> path;
   path.push_back(initImg);
   path.push_back(finalImg);
 
-  // Initialize ZBL potential if requested (created once to be efficient)
   std::shared_ptr<Potential> zbl_pot = nullptr;
   if (use_zbl) {
     zbl_pot = createZBLPotential();
   }
 
-  // Track how many images we have added to the Reactant (left) and Product
-  // (right) sides In ORCA this is nR and nP. We start with 0 intermediate
-  // images.
+  // Track frontier counts: nLeft images from reactant, nRight from product
   int nLeft = 0;
   int nRight = 0;
   int nIntermediate = 0;
+  bool addToLeft = true; // Alternate L/R, starting with left
 
-  // 2. Growth Loop
-  while (nIntermediate < target_nimgs) {
+  // Helper: create IDPP objective with optional ZBL wrapping
+  auto makeIDPP = [&]() -> std::shared_ptr<ObjectiveFunction> {
+    auto objf = std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
+    if (use_zbl && zbl_pot) {
+      return std::make_shared<ZBLRepulsiveIDPPObjective>(objf, zbl_pot, path,
+                                                         params, 1.0);
+    }
+    return objf;
+  };
 
-    // --- STEP A: ADD IMAGES ---
-    // We add images if we haven't reached the target yet.
-    // Strategy: Add one to left, one to right (if space permits)
+  // Helper: relax current path on IDPP surface
+  auto relaxPath = [&](int maxSteps) -> double {
+    auto objf = makeIDPP();
+    auto optim = eonc::helpers::create::mkOptim(objf, init.opt_method, params);
+    int step = 0;
+    while (step < maxSteps) {
+      optim->run(5, init.max_move);
+      step += 5;
+      if (objf->isConverged())
+        break;
+    }
+    return objf->getConvergence();
+  };
 
-    // Add to Left (Reaction side)
-    if (nIntermediate < target_nimgs) {
-      // Insert after the last "Left" image (index nLeft)
-      // Interpolate between path[nLeft] and path[nLeft+1] (which is the first
-      // "Right" image) For the very first step, this interpolates between Init
-      // and Final.
+  // 2. Sequential growth loop: alternate adding images from L and R
+  while (nIntermediate < static_cast<int>(target_nimgs)) {
 
-      // We place it close to the frontier (e.g., 20% of the way to the next
-      // image) effectively "growing" slowly.
-      Matter frontier = path[nLeft];
-      Matter next = path[nLeft + 1];
-      Matter newImg = interpolateImage(
-          frontier, next, params.neb_options.initialization.sidpp_alpha);
-
+    if (addToLeft && nIntermediate < static_cast<int>(target_nimgs)) {
+      // Add to left (reactant) frontier
+      Matter &frontier = path[nLeft];
+      Matter &next = path[nLeft + 1];
+      Matter newImg = interpolateImage(frontier, next, init.sidpp_alpha);
       path.insert(path.begin() + nLeft + 1, newImg);
       nLeft++;
       nIntermediate++;
-      QUILL_LOG_DEBUG(log, "S-IDPP: Added Left Frontier. Total: {}",
-                      nIntermediate);
-    }
-
-    // Add to Right (Product side)
-    if (nIntermediate < target_nimgs) {
-      // Insert before the first "Right" image.
-      // Current indices: [0 ... nLeft] [NEW] [nLeft+1 ... END]
-      // We want to insert before the last element (Final).
-
-      int rightFrontierIdx = path.size() - 1 - nRight;
-      Matter frontier = path[rightFrontierIdx];
-      Matter prev = path[rightFrontierIdx - 1];
-
-      // Grow backwards from product
-      Matter newImg = interpolateImage(
-          frontier, prev, params.neb_options.initialization.sidpp_alpha);
-
-      path.insert(path.begin() + rightFrontierIdx, newImg);
+      QUILL_LOG_DEBUG(log, "S-IDPP: +L frontier (nL={}, nR={}, total={})",
+                      nLeft, nRight, nIntermediate);
+    } else if (nIntermediate < static_cast<int>(target_nimgs)) {
+      // Add to right (product) frontier
+      int rightIdx = static_cast<int>(path.size()) - 1 - nRight;
+      Matter &frontier = path[rightIdx];
+      Matter &prev = path[rightIdx - 1];
+      Matter newImg = interpolateImage(frontier, prev, init.sidpp_alpha);
+      path.insert(path.begin() + rightIdx, newImg);
       nRight++;
       nIntermediate++;
-      QUILL_LOG_DEBUG(log, "S-IDPP: Added Right Frontier. Total: {}",
-                      nIntermediate);
+      QUILL_LOG_DEBUG(log, "S-IDPP: +R frontier (nL={}, nR={}, total={})",
+                      nLeft, nRight, nIntermediate);
+    }
+    addToLeft = !addToLeft; // Alternate sides
+
+    // Optimize current path on IDPP surface
+    double residual = relaxPath(init.nsteps);
+
+    // Frontier convergence gating: if not converged, keep relaxing
+    // before adding more images (up to max_iterations total)
+    if (residual > init.sidpp_frontier_tol) {
+      double residual2 = relaxPath(init.max_iterations - init.nsteps);
+      QUILL_LOG_DEBUG(log, "S-IDPP: Extended relaxation {:.4f} -> {:.4f}",
+                      residual, residual2);
+      residual = residual2;
     }
 
-    // --- STEP B: OPTIMIZE CURRENT SET ---
-    int steps = params.neb_options.initialization.nsteps;
-
-    // Create Base IDPP Objective
-    std::shared_ptr<ObjectiveFunction> idpp_objf =
-        std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
-
-    // Apply ZBL Wrapper if enabled
-    if (use_zbl && zbl_pot) {
-      idpp_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(
-          idpp_objf, zbl_pot, path, params, 1.0);
-    }
-
-    // TODO(rg): this is a headache, since it uses the optimizer stanza but with
-    // the NEB OptType
-    auto optim = eonc::helpers::create::mkOptim(
-        idpp_objf, params.neb_options.initialization.opt_method, params);
-
-    // Relax the current intermediate path until it meets the tolerance
-    int growthRelaxSteps = params.neb_options.initialization.max_iterations;
-    int step = 0;
-    while (step < growthRelaxSteps) {
-      optim->run(5, params.optimizer_options.max_move); // Run small batches
-      step += 5;
-      if (idpp_objf->isConverged())
-        break;
-    }
-
-    QUILL_LOG_DEBUG(
-        log,
-        "S-IDPP Frontier Relaxed: {} images | Steps: {} | Residual: {:.4f}",
-        nIntermediate, step, idpp_objf->getConvergence());
-
-    QUILL_LOG_DEBUG(log, "S-IDPP: Relaxed with {} images. Residual: {:.4f}",
-                    nIntermediate, idpp_objf->getConvergence());
+    QUILL_LOG_DEBUG(log, "S-IDPP: {} images | Residual: {:.4f}", nIntermediate,
+                    residual);
   }
 
-  // 3. Final Interpolation / Alignment
-  // The path now has size target_nimgs + 2.
-  // However, the "growth" heuristic might have left the middle gap uneven.
-  // It is good practice to run one final IDPP on the FULL path to evenly space
-  // everything.
+  // 3. Reparameterize: redistribute images evenly along arc length
+  if (init.sidpp_reparam && path.size() > 3) {
+    QUILL_LOG_INFO(log, "S-IDPP: Reparameterizing {} images along arc length",
+                   path.size() - 2);
+    path = resamplePath(path, target_nimgs);
+  }
 
+  // 4. Final relaxation of the complete path
   QUILL_LOG_INFO(log, "S-IDPP: Final relaxation of full path...");
-
-  std::shared_ptr<ObjectiveFunction> final_objf =
-      std::make_shared<CollectiveIDPPObjectiveFunction>(path, params);
-
-  // Apply ZBL Wrapper for final relaxation as well
-  if (use_zbl && zbl_pot) {
-    final_objf = std::make_shared<ZBLRepulsiveIDPPObjective>(
-        final_objf, zbl_pot, path, params, 1.0);
-  }
-
-  auto final_optim =
-      eonc::helpers::create::mkOptim(final_objf, OptType::LBFGS, params);
-  final_optim->run(500, params.optimizer_options.max_move);
+  double finalResidual = relaxPath(init.max_iterations);
+  QUILL_LOG_INFO(log, "S-IDPP: Final residual: {:.4f}", finalResidual);
 
   return path;
 }
@@ -445,6 +415,71 @@ std::vector<Matter> resamplePath(const std::vector<Matter> &densePath,
 
   resampled.push_back(densePath.back());
   return resampled;
+}
+
+void resamplePathInPlace(std::span<std::shared_ptr<Matter>> path) {
+  size_t n = path.size();
+  if (n < 3)
+    return;
+
+  // Calculate cumulative arc length
+  std::vector<double> arcLength(n, 0.0);
+  for (size_t i = 1; i < n; ++i) {
+    AtomMatrix diff =
+        path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
+    arcLength[i] = arcLength[i - 1] + diff.norm();
+  }
+  double totalLength = arcLength.back();
+  if (totalLength < 1e-12)
+    return;
+
+  // Tangents for cubic interpolation
+  std::vector<AtomMatrix> tangents(n);
+  for (size_t i = 0; i < n; ++i) {
+    AtomMatrix T;
+    if (i == 0) {
+      T = path[i]->pbc(path[i + 1]->getPositions() - path[i]->getPositions());
+    } else if (i == n - 1) {
+      T = path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
+    } else {
+      AtomMatrix dN =
+          path[i]->pbc(path[i + 1]->getPositions() - path[i]->getPositions());
+      AtomMatrix dP =
+          path[i]->pbc(path[i]->getPositions() - path[i - 1]->getPositions());
+      T = 0.5 * (dN + dP);
+    }
+    if (i > 0 && i < n - 1) {
+      double localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;
+      T = T.normalized() * localScale;
+    }
+    tangents[i] = T;
+  }
+
+  // Store original positions for interpolation source
+  std::vector<AtomMatrix> origPos(n);
+  for (size_t i = 0; i < n; ++i)
+    origPos[i] = path[i]->getPositions();
+
+  // Redistribute interior images at equal arc-length intervals (in-place)
+  size_t nInterior = n - 2;
+  double segLen = totalLength / (nInterior + 1);
+
+  for (size_t i = 1; i <= nInterior; ++i) {
+    double targetArc = i * segLen;
+    size_t lo = 0;
+    for (size_t j = 1; j < n; ++j) {
+      if (arcLength[j] >= targetArc) {
+        lo = j - 1;
+        break;
+      }
+    }
+    size_t hi = lo + 1;
+    double sArc = arcLength[hi] - arcLength[lo];
+    double f = (sArc > 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;
+
+    path[i]->setPositions(cubicInterpolate(origPos[lo], tangents[lo],
+                                           origPos[hi], tangents[hi], f));
+  }
 }
 
 } // namespace eonc::helpers::neb_paths

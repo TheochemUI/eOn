@@ -1,5 +1,7 @@
 _incdirs += [include_directories('thirdparty')]
 
+cmake = import('cmake')
+
 # Argum (C++20 argument parser) - single header in thirdparty
 
 add_languages('c', required: true)
@@ -97,6 +99,21 @@ endif
 # Safer, saner default, can be turned off in release
 if get_option('buildtype') != 'release'
     _args += ['-DEON_CHECKS=TRUE']
+endif
+
+# Release optimization flags
+if get_option('buildtype') == 'release' or get_option('buildtype') == 'debugoptimized'
+    _opt_args = cppc.get_supported_arguments(['-O3', '-flto=auto'])
+    _args += _opt_args
+    if get_option('native_arch')
+        _args += cppc.get_supported_arguments(['-march=native'])
+    endif
+    if get_option('fast_math')
+        _args += cppc.get_supported_arguments(['-ffast-math'])
+        if cppc.get_id() == 'msvc'
+            _args += cppc.get_supported_arguments(['/fp:fast'])
+        endif
+    endif
 endif
 
 
@@ -197,7 +214,56 @@ quill_dep = dependency('quill', required: true)
 _deps += quill_dep
 _args += ['-DQUILL_DISABLE_NON_PREFIXED_MACROS']
 
-eoncbase_sources = ['INIFile.cpp', 'fpe_handler.cpp', 'PotRegistry.cpp']
+inireader_dep = dependency('INIReader', required: false)
+if not inireader_dep.found()
+    inireader_dep = dependency(
+        'inireader',
+        fallback: ['inih', 'INIReader_dep'],
+        required: true,
+        default_options: ['default_library=static'],
+    )
+endif
+_deps += inireader_dep
+
+nlohmann_json_dep = dependency('nlohmann_json', required: false)
+if not nlohmann_json_dep.found()
+    nlohmann_json_dep = dependency(
+        'nlohmann_json',
+        fallback: ['nlohmann_json', 'nlohmann_json_dep'],
+        required: true,
+        default_options: ['default_library=static'],
+    )
+endif
+_deps += nlohmann_json_dep
+
+# Highway SIMD (optional, for vectorized potentials)
+hwy_dep = dependency('libhwy', required: false)
+if not hwy_dep.found() and host_machine.system() != 'windows'
+    # cmake subproject produces .a archives that MSVC link.exe cannot read
+    message('Highway: system libhwy not found, trying cmake subproject...')
+    hwy_opts = cmake.subproject_options()
+    hwy_opts.add_cmake_defines({
+        'HWY_ENABLE_TESTS': 'OFF',
+        'HWY_ENABLE_EXAMPLES': 'OFF',
+        'HWY_ENABLE_INSTALL': 'OFF',
+        'HWY_SYSTEM_GTEST': 'OFF',
+        'BUILD_TESTING': 'OFF',
+        'HWY_ENABLE_CONTRIB': 'ON',
+    })
+    hwy_proj = cmake.subproject('highway', required: false, options: hwy_opts)
+    if hwy_proj.found()
+        hwy_dep = hwy_proj.dependency('hwy')
+    endif
+endif
+if hwy_dep.found()
+    _deps += hwy_dep
+    _args += ['-DWITH_HIGHWAY']
+    message('Highway SIMD: enabled')
+else
+    message('Highway SIMD: disabled (not found)')
+endif
+
+eoncbase_sources = ['fpe_handler.cpp', 'PotRegistry.cpp']
 
 eoncbase = library(
     'eoncbase',
@@ -241,6 +307,10 @@ endif
 
 eonclib_sources = [
     'Parameters.cpp',
+    'ParametersINI.cpp',
+    'ParametersJSON.cpp',
+    'ConFileIO.cpp',
+    'GeometryAnalysis.cpp',
     'Optimizer.cpp',
     'IDPPObjectiveFunction.cpp',
     'PrefactorJob.cpp',
@@ -261,10 +331,18 @@ eonclib_sources = [
     'FiniteDifferenceJob.cpp',
     'Lanczos.cpp',
     'HessianJob.cpp',
+    'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
     'ProcessSearchJob.cpp',
     'Bundling.cpp',
     'NEBInitialPaths.cpp',
+    'NEBForceProjection.cpp',
+    'NEBObjectiveFunction.cpp',
+    'NEBProjection.cpp',
+    'NEBOcinebController.cpp',
+    'NEBSplineExtrema.cpp',
+    'NEBSpringForce.cpp',
+    'NEBTangent.cpp',
     'NudgedElasticBand.cpp',
     'MonteCarloJob.cpp',
     'DynamicsJob.cpp',
@@ -273,7 +351,8 @@ eonclib_sources = [
     'NudgedElasticBandJob.cpp',
     'DynamicsSaddleSearch.cpp',
     'HelperFunctions.cpp',
-    # 'StringHelpers.cc', # Template
+    'RandomNumbers.cpp',
+    'StringHelpers.cc',
     'MatrixHelpers.hpp',  # Template
     'Dimer.cpp',
     'Dynamics.cpp',
@@ -383,11 +462,9 @@ if get_option('with_xtb')
     _args += ['-DWITH_XTB']
 endif
 
-if get_option('with_lammps')
-    subdir('potentials/LAMMPS')
-    potentials += [lammps_pot]
-    _args += ['-DLAMMPS_POT']
-endif
+# LAMMPS: always compiled, loaded at runtime via dlopen
+subdir('potentials/LAMMPS')
+potentials += [lammps_pot]
 
 if py_embed
     _args += ['-DEMBED_PYTHON']
@@ -612,6 +689,12 @@ if get_option('with_metatomic')
     _args += ['-DWITH_METATOMIC']
 endif
 
+if get_option('with_parallel_neb')
+    tbb_dep = dependency('tbb', required : true)
+    _deps += [tbb_dep]
+    _args += ['-DEON_PARALLEL_NEB']
+endif
+
 if get_option('with_serve')
     # rgpot-compatible RPC serve mode: wraps any eOn potential and serves it
     # over Cap'n Proto RPC using the rgpot Potentials.capnp schema.
@@ -694,25 +777,44 @@ if get_option('with_tests')
     test_deps = _deps
     testMain = library(
         'TestMain',
-        ['gtests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
+        ['unit_tests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
         dependencies: test_deps,
         include_directories: _incdirs,
         cpp_args: test_args,
         link_with: _linkto,
     )
     test_array = [  #
-        # ['test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
-        # ['strparse_run', 'StringHelpersTest.cpp', ''],
-        # ['test_matter', 'MatterTest.cpp', 'sulfolene'],
-        # ['test_pot', 'PotTest.cpp', 'sulfolene'],
+        ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
+        ['strparse_run', 'StringHelpersTest.cpp', ''],
+        ['test_matter', 'MatterTest.cpp', 'neb_morse'],
+        ['test_pot', 'PotTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
-        # ['neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
         ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
         ['test_extpot', 'ExtPotTest.cpp', 'extpot'],
         ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
+        ['test_helpers', 'HelperFunctionsTest.cpp', ''],
+        ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_pot_registry', 'PotRegistryTest.cpp', ''],
+        ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
+        ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_morse'],
+        ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
+        ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
+        ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],
+        ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
+        ['test_optimizer', 'OptimizerTest.cpp', ''],
+        ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
+        ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
+        ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
+        ['test_si_pot', 'SiPotTest.cpp', 'si_diamond'],
+        ['test_eam_al', 'EAMAlTest.cpp', 'al_fcc'],
+        ['test_fehe', 'FeHeTest.cpp', 'fe_bcc'],
+        ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
+        ['test_params_json', 'ParametersJSONTest.cpp', ''],
+        ['test_bondboost', 'BondBoostTest.cpp', 'neb_morse'],
+        ['test_emt_cu', 'EMTCuTest.cpp', 'cu_fcc'],
+        ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
     ]
     if get_option('with_ase')
         test_array += [['test_ase_pot', 'ASEPotTest.cpp', 'ase_pot']]
@@ -722,18 +824,19 @@ if get_option('with_tests')
     endif
     if get_option('with_xtb')
         test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
-        test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb']]
+        test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb', 120]]
     endif
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif
     foreach test : test_array
+        test_timeout = test.get(3, 30)
         test(
             test.get(0),
             executable(
                 test.get(0),
                 sources: [
-                    'gtests/' + test.get(1),
+                    'unit_tests/' + test.get(1),
                     'thirdparty/catch2/catch_amalgamated.cpp',
                 ],
                 dependencies: test_deps,
@@ -741,9 +844,10 @@ if get_option('with_tests')
                 cpp_args: test_args,
                 link_with: _linkto,
             ),
-            workdir: meson.project_source_root() + '/client/gtests/data/systems/' + test.get(
+            workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
                 2,
             ),
+            timeout: test_timeout,
         )
     endforeach
     # Special handling for the nwchem test (due to the client server bit)
@@ -754,7 +858,7 @@ if get_option('with_tests')
         test_socket_nwchem_exe = executable(
             'test_socket_nwchem',
             sources: [
-                'gtests/SocketNWChemPotTest.cpp',
+                'unit_tests/SocketNWChemPotTest.cpp',
                 'thirdparty/catch2/catch_amalgamated.cpp',
             ],
             dependencies: test_deps,
@@ -763,13 +867,13 @@ if get_option('with_tests')
             link_with: _linkto,
         )
 
-        test_workdir = meson.project_source_root() + '/client/gtests/data/systems/nwchem_test'
+        test_workdir = meson.project_source_root() + '/client/unit_tests/data/systems/nwchem_test'
 
         test(
             'test_socket_nwchem',
             bash_exe,
             args: [
-                meson.project_source_root() + '/client/gtests/run_nwchem_test.sh',
+                meson.project_source_root() + '/client/unit_tests/run_nwchem_test.sh',
                 'eonclient',
                 nwchem_exe,
                 'nwchem_socket.nwi',  # The input file for the client
@@ -781,4 +885,22 @@ if get_option('with_tests')
     else
         message('NWChem executable not found, skipping SocketNWChemPotTest.')
     endif
+
+    # Benchmarks (not in default test suite -- run via: meson test --benchmark)
+    bench_pot_exe = executable('bench_pot',
+        [
+            'unit_tests/PotBenchmark.cpp',
+            'unit_tests/TestMain.cpp',
+            'thirdparty/catch2/catch_amalgamated.cpp',
+        ],
+        dependencies: test_deps,
+        include_directories: _incdirs,
+        cpp_args: test_args,
+        link_with: _linkto,
+    )
+    benchmark('bench_pot', bench_pot_exe,
+        args: ['[.benchmark]'],
+        workdir: meson.project_source_root() + '/client/unit_tests/data/systems/neb_morse',
+        timeout: 120,
+    )
 endif

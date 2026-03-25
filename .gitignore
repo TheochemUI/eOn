@@ -658,7 +658,7 @@ compile_commands.json
 !/.vscode/launch.json
 !/.vscode/extensions.json
 !/.vscode/*.code-snippets
-!/client/gtests
+!/client/unit_tests
 
 # pixi environments
 .pixi
@@ -668,3 +668,5 @@ html/
 # Runtime test outputs
 pos.con
 examples/*/states/
+scripts/regression/.snakemake/
+scripts/regression/workdirs/

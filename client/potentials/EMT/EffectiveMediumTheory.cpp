@@ -11,27 +11,19 @@
 */
 
 #include "EffectiveMediumTheory.h"
-#include <string.h>
 
-// General Functions
-void EffectiveMediumTheory::cleanMemory(void) {
-  if (EMTObj != 0) {
-    delete EMTObj;
-    EMTObj = 0;
-  }
-  if (SuperCellObj != 0) {
-    delete SuperCellObj;
-    SuperCellObj = 0;
-  }
-  if (AtomsObj != 0) {
-    delete AtomsObj;
-    AtomsObj = 0;
-  }
-  if (EMTParameterObj != 0) {
-    delete EMTParameterObj;
-    EMTParameterObj = 0;
-  }
-  return;
+#include <cstring>
+#include <vector>
+
+void EffectiveMediumTheory::cleanMemory() {
+  delete EMTObj;
+  EMTObj = nullptr;
+  delete SuperCellObj;
+  SuperCellObj = nullptr;
+  delete AtomsObj;
+  AtomsObj = nullptr;
+  delete EMTParameterObj;
+  EMTParameterObj = nullptr;
 }
 
 // pointer to number of atoms, pointer to array of positions
@@ -41,64 +33,48 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
                                   double *F, double *U, double *variance,
                                   const double *box) {
   variance = nullptr;
-  int i, j;
-  double *pos;
 
-  pos = new double[3 * N];
+  // Copy positions (Asap may modify them internally)
+  std::vector<double> pos(R, R + 3 * N);
 
-  for (i = 0; i < 3 * N; i++)
-    pos[i] = R[i];
-
-  // an atom has been deposited
+  // Reinitialize if atom count changed
   if (numberOfAtoms != N) {
     numberOfAtoms = N;
     cleanMemory();
-    int *atomicNrsTemp;
-    atomicNrsTemp = new int[N];
 
-    // create new atoms / emt potential with N atoms
-    Vec tempBasisX(box[0], box[1], box[2]);
-    Vec tempBasisY(box[3], box[4], box[5]);
-    Vec tempBasisZ(box[6], box[7], box[8]);
-    Vec tempBasis[3];
-    tempBasis[0] = tempBasisX;
-    tempBasis[1] = tempBasisY;
-    tempBasis[2] = tempBasisZ;
+    Vec tempBasis[3] = {
+        Vec(box[0], box[1], box[2]),
+        Vec(box[3], box[4], box[5]),
+        Vec(box[6], box[7], box[8]),
+    };
 
     SuperCellObj = new SuperCell(tempBasis, periodicity);
-    AtomsObj = new Atoms((Vec *)pos, N, SuperCellObj);
+    AtomsObj = new Atoms(reinterpret_cast<Vec *>(pos.data()), N, SuperCellObj);
 
-    for (j = 0; j < N; j++)
-      atomicNrsTemp[j] = int(atomicNrs[j]);
+    std::vector<int> atomicNrsTemp(atomicNrs, atomicNrs + N);
+    AtomsObj->SetAtomicNumbers(atomicNrsTemp.data());
 
-    AtomsObj->SetAtomicNumbers(atomicNrsTemp);
-
-    if (m_params.potential_options.EMTRasmussen) {
+    if (emtRasmussen) {
       EMTParameterObj = new EMTRasmussenParameterProvider();
       EMTObj = new EMT(EMTParameterObj);
-    } else
-      EMTObj = new EMT(NULL);
-
+    } else {
+      EMTObj = new EMT(nullptr);
+    }
     AtomsObj->SetCalculator(EMTObj);
-    delete[] atomicNrsTemp;
   }
-  AtomsObj->SetCartesianPositions((Vec *)pos);
-  // update the box
-  Vec tempBasisX(box[0], box[1], box[2]);
-  Vec tempBasisY(box[3], box[4], box[5]);
-  Vec tempBasisZ(box[6], box[7], box[8]);
-  Vec tempBasis[3];
-  tempBasis[0] = tempBasisX;
-  tempBasis[1] = tempBasisY;
-  tempBasis[2] = tempBasisZ;
+
+  AtomsObj->SetCartesianPositions(reinterpret_cast<Vec *>(pos.data()));
+
+  // Update the box
+  Vec tempBasis[3] = {
+      Vec(box[0], box[1], box[2]),
+      Vec(box[3], box[4], box[5]),
+      Vec(box[6], box[7], box[8]),
+  };
   AtomsObj->SetUnitCell(tempBasis, true);
 
   *U = EMTObj->GetPotentialEnergy();
 
-  // converts data from EMT to suit eOn
   const Vec *tempF = EMTObj->GetCartesianForces();
-  memcpy(F, tempF, N * sizeof(Vec));
-
-  delete[] pos;
-  return;
+  std::memcpy(F, tempF, N * sizeof(Vec));
 }

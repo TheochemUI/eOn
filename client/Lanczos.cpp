@@ -20,7 +20,8 @@
 #include "SafeMath.h"
 
 #include "EonLogger.h"
-using namespace std;
+
+#include <cmath>
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
                  std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
@@ -62,10 +63,9 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   VectorXd evEst, evT, evOldEst;
 
   VectorXd force1, force2;
-  auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
-  auto tmpMatter = std::make_unique<Matter>(pot, params);
-  *tmpMatter = *matter;
+  // Use the potential passed to LowestEigenmode (via the Matter object),
+  // not a fresh instance -- otherwise force calls aren't tracked.
+  auto tmpMatter = std::make_unique<Matter>(*matter);
   force1 = tmpMatter->getForcesFreeV();
 
   for (i = 0; i < size; i++) {
@@ -94,7 +94,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
 
     beta = r.norm();
 
-    if (beta <= 1e-10 * fabs(alpha)) {
+    if (beta <= 1e-10 * std::fabs(alpha)) {
       /* If Q(0) is an eigenvector (or a linear combination of a subset of
       eignevectors) then the lanczos cannot complete the basis of vector Q.*/
       if (i == 0) {
@@ -109,14 +109,14 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0, 0, i + 1, i + 1));
       ew = es.eigenvalues()(0);
       evT = es.eigenvectors().col(0);
-      ewAbsRelErr =
-          eonc::safemath::safe_div(fabs(ew - ewOld), fabs(ewOld), 1.0);
+      ewAbsRelErr = eonc::safemath::safe_div(std::fabs(ew - ewOld),
+                                             std::fabs(ewOld), 1.0);
       ewOld = ew;
 
       // Convert eigenvector of T matrix to eigenvector of full Hessian
       evEst = Q.block(0, 0, size, i + 1) * evT;
       evEst.normalize();
-      statsAngle = eonc::safemath::safe_acos(fabs(evEst.dot(evOldEst))) *
+      statsAngle = eonc::safemath::safe_acos(std::fabs(evEst.dot(evOldEst))) *
                    (180 / eonc::helpers::pi);
       statsTorque = ewAbsRelErr;
       evOldEst = evEst;
@@ -138,8 +138,8 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       if (lowestEw != 0.0 && params.lanczos_options.quit_early) {
         double Cprev = lowestEw;
         double Cnew = u.dot(Q.col(i));
-        ewAbsRelErr =
-            eonc::safemath::safe_div(fabs(Cnew - Cprev), fabs(Cprev), 1.0);
+        ewAbsRelErr = eonc::safemath::safe_div(std::fabs(Cnew - Cprev),
+                                               std::fabs(Cprev), 1.0);
         if (ewAbsRelErr <= params.lanczos_options.tolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;

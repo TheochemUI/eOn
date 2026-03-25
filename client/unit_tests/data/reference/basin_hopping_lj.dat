@@ -1,0 +1,8 @@
+0 termination_reason
+-44.326774 minimum_energy
+42 random_seed
+0.500 acceptance_ratio
+20 total_normal_displacement_steps
+0 total_jump_steps
+0 total_swap_steps
+1685 total_force_calls

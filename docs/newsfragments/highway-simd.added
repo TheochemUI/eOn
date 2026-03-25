@@ -1,0 +1,2 @@
+Added Highway SIMD as optional subproject (cmake wrap). When available,
+compiles with ``-DWITH_HIGHWAY`` flag for vectorized potential kernels.

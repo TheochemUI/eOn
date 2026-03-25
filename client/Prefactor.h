@@ -32,7 +32,7 @@ VectorXi movedAtomsPct(const Parameters &parameters, Matter *min1,
                        Matter *saddle, Matter *min2);
 VectorXi allFreeAtoms(Matter *matter);
 VectorXd removeZeroFreqs(const Parameters &parameters, VectorXd freqs);
-void logFreqs(VectorXd freqs, char *name);
+void logFreqs(const VectorXd &freqs, const char *name);
 } // namespace Prefactor
 
 } // namespace eonc

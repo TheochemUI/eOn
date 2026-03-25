@@ -55,7 +55,7 @@ private:
   std::string generate_run(const Parameters &p);
   // Environment
   boost::process::native_environment nativenv;
-  int amsevals;
+  int amsevals{0};
   bool first_run, can_restart;
   std::string cjob, pjob;
   std::ofstream restartFrom;

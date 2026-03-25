@@ -11,101 +11,22 @@
 */
 #include "NudgedElasticBand.h"
 #include "BaseStructures.h"
+#include "EigenmodeStrategy.h"
 #include "IDPPObjectiveFunction.hpp"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
-#include "MinModeSaddleSearch.h"
+#include "NEBForceProjection.h"
 #include "NEBInitialPaths.hpp"
+#include "NEBOcinebController.h"
+#include "NEBProjection.h"
+#include "NEBSplineExtrema.h"
+#include "NEBSpringForce.h"
+#include "NEBTangent.h"
 #include "Optimizer.h"
-#include "SafeMath.h"
-#include "eonExceptions.hpp"
 #include "magic_enum/magic_enum.hpp"
 
 #include "EonLogger.h"
-#include <fstream>
-using namespace std;
+#include <thread>
 using namespace eonc::helpers;
 namespace fs = std::filesystem;
-
-// NEBObjectiveFunction definitions
-VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
-  VectorXd forceV;
-  forceV.resize(3 * neb->atoms * neb->numImages);
-  if (neb->movedAfterForceCall)
-    neb->updateForces();
-  for (long i = 1; i <= neb->numImages; i++) {
-    forceV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
-        VectorXd::Map(neb->projectedForce[i]->data(), 3 * neb->atoms);
-  }
-  return -forceV;
-}
-
-double NEBObjectiveFunction::getEnergy() {
-  double Energy{0};
-  for (long i = 1; i <= neb->numImages; i++) {
-    Energy += neb->path[i]->getPotentialEnergy();
-  }
-  return Energy;
-}
-
-void NEBObjectiveFunction::setPositions(VectorXd x) {
-  neb->movedAfterForceCall = true;
-  for (long i = 1; i <= neb->numImages; i++) {
-    neb->path[i]->setPositions(AtomMatrix::Map(
-        x.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms).data(), neb->atoms,
-        3));
-  }
-}
-
-VectorXd NEBObjectiveFunction::getPositions() {
-  VectorXd posV;
-  posV.resize(3 * neb->atoms * neb->numImages);
-  for (long i = 1; i <= neb->numImages; i++) {
-    posV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
-        VectorXd::Map(neb->path[i]->getPositions().data(), 3 * neb->atoms);
-  }
-  return posV;
-}
-
-int NEBObjectiveFunction::degreesOfFreedom() {
-  return 3 * neb->numImages * neb->atoms;
-}
-
-bool NEBObjectiveFunction::isUncertain() {
-  double maxMaxUnc = std::numeric_limits<double>::lowest();
-  double currentMaxUnc{0};
-  for (long idx = 0; idx <= neb->numImages; idx++) {
-    currentMaxUnc = neb->path[idx]->getEnergyVariance();
-    if (currentMaxUnc > maxMaxUnc) {
-      maxMaxUnc = currentMaxUnc;
-    }
-  }
-  bool unc_conv{maxMaxUnc > params.gp_surrogate_options.uncertainty};
-  if (unc_conv) {
-    this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY;
-  }
-  return unc_conv;
-}
-
-bool NEBObjectiveFunction::isConverged() {
-  bool force_conv = getConvergence() < params.neb_options.force_tolerance;
-  return force_conv;
-}
-
-double NEBObjectiveFunction::getConvergence() {
-  return neb->convergenceForce();
-}
-
-VectorXd NEBObjectiveFunction::difference(VectorXd a, VectorXd b) {
-  VectorXd pbcDiff(3 * neb->numImages * neb->atoms);
-  for (int i = 1; i <= neb->numImages; i++) {
-    int n = (i - 1) * 3 * neb->atoms;
-    int m = 3 * neb->atoms;
-    pbcDiff.segment(n, m) =
-        neb->path[i]->pbcV(a.segment(n, m) - b.segment(n, m));
-  }
-  return pbcDiff;
-}
 
 // Nudged Elastic Band definitions
 // First constructor: Now delegates to the second constructor
@@ -200,11 +121,10 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
 NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
                                      const Parameters &parametersPassed,
                                      std::shared_ptr<Potential> potPassed)
-    : params{parametersPassed},
+    : ci_enabled_{parametersPassed.neb_options.climbing_image.enabled},
+      params{parametersPassed},
       pot{potPassed},
-      E_ref{0.0},
-      mmf_active{false},
-      mmf_iterations_used{0} {
+      E_ref{0.0} {
 
   log = eonc::log::get();
   this->status = NEBStatus::INIT;
@@ -220,8 +140,26 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
 
+  // Create per-image potentials if needed for true parallel force evaluation
+  perImagePotentials_ =
+      pot->needsPerImageInstance() && params.main_options.parallel;
+  if (perImagePotentials_) {
+    QUILL_LOG_INFO(log,
+                   "NEB: Creating per-image potential instances for "
+                   "parallel force evaluation ({} images)",
+                   numImages + 2);
+  }
+
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(std::move(initPath[i]));
+
+    // Give each INTERMEDIATE image its own potential for true parallelism.
+    // Endpoints (i=0, i=numImages+1) keep the shared pot -- they are only
+    // evaluated once during initialization and never in parallel.
+    if (perImagePotentials_ && i > 0 && i <= numImages) {
+      path[i]->setPotential(eonc::helpers::makePotential(params));
+    }
+
     tangent[i] = std::make_shared<AtomMatrix>();
     tangent[i]->resize(atoms, 3);
     tangent[i]->setZero();
@@ -245,42 +183,23 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
     ksp = params.neb_options.spring.constant;
   }
 
+  // Cache strategies that are constant across iterations
+  tangentStrat_ = eonc::neb::buildTangentStrategy(params);
+  projectionStrat_ = eonc::neb::buildProjectionStrategy(params);
+
   // Optional debugging setup
   if (params.debug_options.estimate_neb_eigenvalues) {
     eigenmode_solvers.resize(numImages + 2);
     for (long i = 0; i <= numImages + 1; i++) {
-      if (params.debug_options.neb_mmf == LowestEigenmode::MINMODE_DIMER) {
-        eigenmode_solvers[i] =
-            std::make_shared<ImprovedDimer>(path[i], parametersPassed, pot);
-      } else if (params.debug_options.neb_mmf ==
-                 LowestEigenmode::MINMODE_LANCZOS) {
-        eigenmode_solvers[i] =
-            std::make_shared<Lanczos>(path[i], parametersPassed, pot);
-      } else {
-        log = eonc::log::traceback();
-        QUILL_LOG_CRITICAL(log, "[Debug] unknown neb_mmf_estimator: {}",
-                           params.debug_options.neb_mmf);
-        std::exit(1);
-      }
+      eigenmode_solvers[i] =
+          eonc::buildEigenmodeStrategy(path[i], parametersPassed, pot);
     }
   }
 }
 
-NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
-  if (current_mmf_threshold < 0) {
-    current_mmf_threshold =
-        params.neb_options.climbing_image.roneb.trigger_force;
-  }
+NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   long iteration = 0;
   this->status = NEBStatus::RUNNING;
-  mmf_active = false;
-  mmf_iterations_used = 0;
-
-  long previousClimbingImage = -1;
-  int ciStabilityCounter = 0;
-  // Number of stable iterations required
-  const int stability_threshold =
-      params.neb_options.climbing_image.roneb.ci_stability_count;
 
   QUILL_LOG_DEBUG(log, "Nudged elastic band calculation started.");
 
@@ -293,7 +212,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
 
   bool switched{false};
-  // TODO(rg): clear up the refine stanza with it's own opt method, use pre_post
   auto optim = eonc::helpers::create::mkOptim(
       objf, params.neb_options.opt_method, params);
   std::unique_ptr<Optimizer> refine_optim{nullptr};
@@ -301,43 +219,39 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     refine_optim = eonc::helpers::create::mkOptim(
         objf, params.optimizer_options.refine.method, params);
   }
+
+  // OCINEB controller
+  auto ocinebCfg = eonc::neb::OCINEBController::fromParams(params);
+  eonc::neb::OCINEBController ocineb(ocinebCfg);
+
   while (this->status != NEBStatus::GOOD) {
-    if (params.debug_options.write_movies) {
+    if (params.debug_options.write_movies &&
+        (iteration % params.debug_options.write_movies_interval == 0)) {
       bool append = (iteration != 0);
       path[maxEnergyImage]->matter2con("neb_maximage.con", append);
       std::string nebFilename(std::format("neb_path_{:03d}.con", iteration));
       FILE *fileNEBPath = fopen(nebFilename.c_str(), "wb");
-      for (long idx = 0; idx <= numImages + 1; idx++) {
-        path[idx]->matter2con(fileNEBPath);
+      if (fileNEBPath) {
+        for (long idx = 0; idx <= numImages + 1; idx++) {
+          path[idx]->matter2con(fileNEBPath);
+        }
+        fclose(fileNEBPath);
       }
-      fclose(fileNEBPath);
       printImageData(true, iteration);
     }
 
     VectorXd pos = objf->getPositions();
     double convForce = convergenceForce();
 
-    // convergenceForce() calls updateForces(), which updates 'climbingImage'
-    if (climbingImage == previousClimbingImage) {
-      ciStabilityCounter++;
-    } else {
-      ciStabilityCounter = 0;
-      previousClimbingImage = climbingImage;
-    }
-    // -------------------------------------
+    ocineb.updateStability(climbingImage);
 
     if (iteration == 0) {
       baseline_force = convForce;
-      // Initialize MMF threshold based on baseline
-      current_mmf_threshold =
-          baseline_force *
-          params.neb_options.climbing_image.roneb.trigger_factor;
+      ocineb.initBaseline(convForce);
 
-      // --- Improved Logging Start ---
+      // Log configuration banner
       auto &ci_opt = params.neb_options.climbing_image;
-      auto &mmf_opt = ci_opt.roneb;
-
-      // Helper to format infinity
+      auto &mmf_opt = ci_opt.ocineb;
       auto fmt_trigger = [](double val) -> std::string {
         if (val > 1e100)
           return "INF";
@@ -353,7 +267,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
           "===============================================================");
       QUILL_LOG_INFO(log, " {:<25} : {:.4f}", "Baseline Force", baseline_force);
 
-      // Climbing Image Logs
       std::string ci_status = ci_opt.enabled ? "ENABLED" : "DISABLED";
       QUILL_LOG_INFO(log, " {:<25} : {}", "Climbing Image (CI)", ci_status);
       if (ci_opt.enabled) {
@@ -367,13 +280,12 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                        ci_opt.converged_only);
       }
 
-      // RONEB / MMF Logs
       std::string mmf_status =
           (ci_opt.enabled && mmf_opt.use_mmf) ? "ENABLED" : "DISABLED";
-      QUILL_LOG_INFO(log, " {:<25} : {}", "Hybrid MMF (RONEB)", mmf_status);
+      QUILL_LOG_INFO(log, " {:<25} : {}", "Hybrid MMF (OCINEB)", mmf_status);
       if (ci_opt.enabled && mmf_opt.use_mmf) {
         QUILL_LOG_INFO(log, "   - {:<21} : {:.4f} (Factor: {:.2f})",
-                       "Initial Threshold", current_mmf_threshold,
+                       "Initial Threshold", ocineb.threshold(),
                        mmf_opt.trigger_factor);
         QUILL_LOG_INFO(log, "   - {:<21} : {:.4f}", "Absolute Floor",
                        mmf_opt.trigger_force);
@@ -386,10 +298,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       QUILL_LOG_INFO(
           log,
           "---------------------------------------------------------------");
-      // --- Improved Logging End ---
-    }
-
-    if (iteration == 0) {
 
       EONC_LOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
                      "step size",
@@ -408,116 +316,19 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
          convForce < params.neb_options.climbing_image.trigger_force);
 
     if (iteration) {
-      // MMF triggering
-      if (params.neb_options.climbing_image.roneb.use_mmf && ci_active &&
-          climbingImage > 0 && climbingImage <= numImages &&
-          (ciStabilityCounter > stability_threshold) &&
-          (convForce < current_mmf_threshold ||
-           convForce < params.neb_options.climbing_image.roneb.trigger_force) &&
-          convForce > params.neb_options.force_tolerance) {
+      // MMF triggering via controller
+      if (ocineb.shouldTrigger(convForce, ci_active, climbingImage, numImages,
+                               ocineb.stabilityCount())) {
+        auto result = ocineb.run(*this, convForce);
 
-        QUILL_LOG_DEBUG(log,
-                        "Triggering MMF.  Force: {:.4f}, Threshold: {:.4f} "
-                        "({:.2f}x baseline)",
-                        convForce, current_mmf_threshold,
-                        current_mmf_threshold / baseline_force);
-
-        // Save climbing image state before MMF
-        AtomMatrix savedPositions = path[climbingImage]->getPositions();
-
-        // Run MMF and get alignment info
-        double alignment = 0.0;
-        int mmfResult = runMMFRefinement(alignment);
-
-        // Always update forces after MMF - it moved the climbing image
-        movedAfterForceCall = true;
-        updateForces();
-        double newForce = convergenceForce();
-
-        // Check if we're done
-        if (newForce < params.neb_options.force_tolerance) {
-          QUILL_LOG_DEBUG(log, "NEB converged after MMF. Force: {:.4f}",
-                          newForce);
+        if (result.convergedAfterMMF) {
           status = NEBStatus::GOOD;
           break;
         }
-
-        // Evaluate whether MMF helped, regardless of its internal status
-        bool mmfHelped = (newForce < convForce) && mmfResult != -2;
-
-        if (mmfHelped) {
-          // MMF made progress - set threshold relative to baseline
-          double progress_ratio = newForce / baseline_force;
-          // Allow retry when force drops to ~50-90% of current level
-          current_mmf_threshold =
-              newForce * (0.5 + 0.4 * (newForce / convForce));
-
-          // But never above the initial MMF trigger
-          double max_threshold =
-              baseline_force *
-              params.neb_options.climbing_image.roneb.trigger_factor;
-          current_mmf_threshold =
-              std::min(current_mmf_threshold, max_threshold);
-
-          QUILL_LOG_DEBUG(log,
-                          "MMF helped (status={}). Force: {:.4f} -> {:.4f} "
-                          "({:.2f}x baseline). New threshold: {:.4f}",
-                          mmfResult, convForce, newForce,
-                          newForce / baseline_force, current_mmf_threshold);
-        } else {
-          // MMF didn't help - apply backoff relative to baseline
-          double strength =
-              params.neb_options.climbing_image.roneb.penalty.strength;
-          double base = params.neb_options.climbing_image.roneb.penalty.base;
-
-          // Ensure alignment stays within a physically meaningful [0, 1] range
-          double alpha = std::clamp(alignment, 0.0, 1.0);
-
-          // penalty_factor:  how much of the baseline trigger to use
-          // Good alignment (1.0) -> factor approaches 1.0 (use full trigger)
-          // Poor alignment (0.0) -> factor approaches 'base' (reduced trigger)
-          double penalty_factor =
-              base + (1.0 - base) * std::pow(alpha, strength);
-
-          // Clamp the factor to ensure the threshold never increases
-          penalty_factor = std::clamp(penalty_factor, base, 1.0);
-
-          // New threshold as fraction of baseline
-          double trigger_factor =
-              params.neb_options.climbing_image.roneb.trigger_factor;
-          current_mmf_threshold =
-              baseline_force * trigger_factor * penalty_factor;
-
-          // Floor at 2x force tolerance
-          double min_threshold = params.neb_options.force_tolerance * 2.0;
-          current_mmf_threshold =
-              std::max(current_mmf_threshold, min_threshold);
-
-          QUILL_LOG_DEBUG(
-              log,
-              "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
-              "Alignment:  {:.3f}. New threshold: {:.4f} ({:.2f}x baseline)",
-              mmfResult, convForce, newForce, alignment, current_mmf_threshold,
-              current_mmf_threshold / baseline_force);
-
-          // NOTE(rg): Doesn't really help anyway
-          // Only revert if MMF made things much worse
-          // if (newForce > convForce * 2) {
-          //   QUILL_LOG_DEBUG(log, "Reverting to older position.");
-          //   path[climbingImage]->setPositions(savedPositions);
-          // }
-        }
-        if ((savedPositions - path[climbingImage]->getPositions()).norm() >
-            params.optimizer_options.max_move *
-                params.neb_options.image_count) {
-          // Reset optimizer after MMF - history is stale
-          QUILL_LOG_DEBUG(log, "Resetting optimization history.");
+        if (result.shouldResetOptimizer) {
           optim = eonc::helpers::create::mkOptim(
               objf, params.neb_options.opt_method, params);
         }
-
-        // Reset stability counter since MMF moved the image
-        ciStabilityCounter = 0;
       }
 
       if (iteration >= params.neb_options.max_iterations) {
@@ -525,27 +336,25 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         break;
       }
 
-      // Take optimizer step with CI enabled/disabled based on threshold
-      bool originalCIflag = params.neb_options.climbing_image.enabled;
-      params.neb_options.climbing_image.enabled = ci_active;
+      // Set CI state so updateForces() inside the optimizer step
+      // applies the correct force projection.
+      setCIEnabled(ci_active);
 
-      if (refine_optim) {
-        if (optim && convForce > params.optimizer_options.refine.threshold) {
-          optim->step(params.optimizer_options.max_move);
-        } else {
-          if (!switched) {
-            switched = true;
-            EONC_LOG_DEBUG("Switched to {}",
-                           magic_enum::enum_name<OptType>(
-                               params.optimizer_options.refine.method));
-          }
-          refine_optim->step(params.optimizer_options.max_move);
-        }
-      } else {
-        optim->step(params.optimizer_options.max_move);
+      auto &activeOptim =
+          (refine_optim &&
+           convForce <= params.optimizer_options.refine.threshold)
+              ? refine_optim
+              : optim;
+      if (refine_optim &&
+          convForce <= params.optimizer_options.refine.threshold && !switched) {
+        switched = true;
+        EONC_LOG_DEBUG("Switched to {}",
+                       magic_enum::enum_name<OptType>(
+                           params.optimizer_options.refine.method));
       }
+      activeOptim->step(params.optimizer_options.max_move);
 
-      params.neb_options.climbing_image.enabled = originalCIflag;
+      setCIEnabled(params.neb_options.climbing_image.enabled);
     }
 
     iteration++;
@@ -579,117 +388,29 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   return status;
 }
 
-// Modified signature to return alignment
-int NudgedElasticBand::runMMFRefinement(double &alignment) {
-  alignment = 0.0;
-
-  if (climbingImage <= 0 || climbingImage > numImages) {
-    QUILL_LOG_WARNING(log, "Invalid climbing image for MMF:  {}",
-                      climbingImage);
-    return -1;
-  }
-
-  // Get the current tangent as initial mode guess
-  AtomMatrix initialMode = *tangent[climbingImage];
-
-  // Verify tangent is valid
-  double tangentNorm = initialMode.norm();
-  if (tangentNorm < 1e-8) {
-    QUILL_LOG_WARNING(log, "Tangent too small for MMF initialization");
-    return -1;
-  }
-  initialMode /= tangentNorm;
-
-  auto tempMinModeSearch = std::make_shared<MinModeSaddleSearch>(
-      path[climbingImage], initialMode,
-      path[climbingImage]->getPotentialEnergy(), params, pot);
-
-  // Save and override saddle search parameters
-  auto originalSaddleMaxIterations =
-      params.saddle_search_options.max_iterations;
-
-  params.saddle_search_options.max_iterations =
-      params.neb_options.climbing_image.roneb.max_steps;
-
-  int minModeStatus;
-  try {
-    minModeStatus = tempMinModeSearch->run();
-  } catch (const eonc::DimerModeRestoredException &e) {
-    // Dimer restored to valid state - treat as partial success
-    minModeStatus = MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST;
-    QUILL_LOG_DEBUG(log, "MMF:  Dimer restored to best state");
-  } catch (const eonc::DimerModeLostException &e) {
-    minModeStatus = MinModeSaddleSearch::STATUS_DIMER_LOST_MODE;
-    QUILL_LOG_WARNING(log, "Dimer lost mode during MMF refinement");
-  }
-
-  // Restore original parameters
-  params.saddle_search_options.max_iterations = originalSaddleMaxIterations;
-
-  // Track iterations used
-  mmf_iterations_used += tempMinModeSearch->iteration;
-
-  double eigenvalue = tempMinModeSearch->getEigenvalue();
-
-  // If the surface is convex (positive curvature), MMF will drag us to a
-  // minimum. We only want to refine if we are in a saddle region (negative
-  // curvature).
-  if (eigenvalue > 0.0) {
-    QUILL_LOG_WARNING(log,
-                      "MMF skipped: Positive curvature detected (eig={:.4f}).",
-                      eigenvalue);
-    return -2;
-  }
-
-  // Calculate alignment for all outcomes
-  AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
-  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * atoms);
-  VectorXd currentTangent =
-      VectorXd::Map(tangent[climbingImage]->data(), 3 * atoms);
-  alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));
-
-  if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD ||
-      minModeStatus == MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST) {
-    // Check alignment - if mode drifted too far, treat as failure
-    if (alignment < params.neb_options.climbing_image.roneb.angle_tol) {
-      QUILL_LOG_WARNING(
-          log,
-          "MMF converged/restored but mode drifted (alignment={:.3f} < {:.3f})",
-          alignment, params.neb_options.climbing_image.roneb.angle_tol);
-      return -1;
-    }
-    return 0;
-  } else if (minModeStatus == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
-    return 1;
-  } else {
-    QUILL_LOG_WARNING(log, "MMF failed.  Mode-tangent alignment: {:.3f}",
-                      alignment);
-    return -1;
-  }
-}
-
 // generate the force value that is compared to the convergence criterion
-double NudgedElasticBand::convergenceForce(void) {
+double NudgedElasticBand::convergenceForce() {
   if (movedAfterForceCall)
     updateForces();
   double fmax = 0;
 
-  for (long i = 1; i <= numImages; i++) {
+  // Determine which images to check for convergence
+  bool ciOnly = params.neb_options.climbing_image.converged_only &&
+                ci_enabled_ && climbingImage != 0;
+  long iStart = ciOnly ? climbingImage : 1;
+  long iEnd = ciOnly ? climbingImage : numImages;
 
-    if (params.neb_options.climbing_image.converged_only == true &&
-        params.neb_options.climbing_image.enabled && climbingImage != 0) {
-      i = climbingImage;
-    }
+  for (long i = iStart; i <= iEnd; i++) {
     if (params.optimizer_options.convergence_metric == "norm") {
-      fmax = max(fmax, projectedForce[i]->norm());
+      fmax = std::max(fmax, projectedForce[i]->norm());
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
       for (int j = 0; j < path[0]->numberOfAtoms(); j++) {
         if (path[0]->getFixed(j))
           continue;
-        fmax = max(fmax, projectedForce[i]->row(j).norm());
+        fmax = std::max(fmax, projectedForce[i]->row(j).norm());
       }
     } else if (params.optimizer_options.convergence_metric == "max_component") {
-      fmax = max(fmax, projectedForce[i]->maxCoeff());
+      fmax = std::max(fmax, projectedForce[i]->maxCoeff());
     } else {
       log = eonc::log::traceback();
       QUILL_LOG_CRITICAL(
@@ -697,41 +418,29 @@ double NudgedElasticBand::convergenceForce(void) {
           params.optimizer_options.convergence_metric);
       std::exit(1);
     }
-    if (params.neb_options.climbing_image.converged_only == true &&
-        params.neb_options.climbing_image.enabled && climbingImage != 0) {
-      break;
-    }
   }
   return fmax;
 }
 
 // Update the forces, do the projections, and add spring forces
-void NudgedElasticBand::updateForces(void) {
-  // variables for tangent
-  double maxDiffEnergy, minDiffEnergy;
-  double energyDiffPrev, energyDiffNext;
-  double energy, energyPrev, energyNext;
-
-  // variables for climbing image
-  double maxEnergy;
-
-  // variables for the energy weighted springs
-  k_l = params.neb_options.spring.weighting.k_min;
-  k_u = params.neb_options.spring.weighting.k_max;
-  std::vector<double> springConstants(numImages + 2, k_l);
-
-  // variables for force projections
-  AtomMatrix force(atoms, 3), forcePerp(atoms, 3), forcePar(atoms, 3);
-  AtomMatrix forceSpringPar(atoms, 3), forceSpring(atoms, 3),
-      forceSpringPerp(atoms, 3);
-  AtomMatrix forceDNEB(atoms, 3);
-  AtomMatrix pos(atoms, 3), posNext(atoms, 3), posPrev(atoms, 3),
-      posDiffNext(atoms, 3), posDiffPrev(atoms, 3);
-  double distNext, distPrev;
-
-  // Update forces for all intermediate images FIRST
-  for (long i = 1; i <= numImages; i++) {
-    path[i]->getForces();
+void NudgedElasticBand::updateForces(bool ci_active) {
+  // Update forces for all intermediate images.
+  // Each image has its own Matter+Potential, so force evaluations are
+  // independent. Parallelize when: (a) potential is thread-safe on same
+  // instance, OR (b) per-image instances were created (separate models).
+  bool canParallel = pot->isThreadSafe() || perImagePotentials_;
+  if (numImages > 1 && params.main_options.parallel && canParallel) {
+    std::vector<std::thread> threads;
+    threads.reserve(static_cast<size_t>(numImages));
+    for (long i = 1; i <= numImages; i++) {
+      threads.emplace_back([this, i] { path[i]->getForcesRaw(); });
+    }
+    for (auto &t : threads)
+      t.join();
+  } else {
+    for (long i = 1; i <= numImages; i++) {
+      path[i]->getForcesRaw();
+    }
   }
 
   // Find the highest energy non-endpoint image
@@ -743,483 +452,106 @@ void NudgedElasticBand::updateForces(void) {
         return a->getPotentialEnergy() < b->getPotentialEnergy();
       });
   maxEnergyImage = std::distance(path.begin(), it);
-  maxEnergy = (*it)->getPotentialEnergy();
+  double maxEnergy = (*it)->getPotentialEnergy();
 
-  // Update E_ref for energy weighting (use current endpoint energies)
+  // Update E_ref for energy weighting
   if (params.neb_options.spring.weighting.enabled) {
     E_ref = std::min(path[0]->getPotentialEnergy(),
                      path[numImages + 1]->getPotentialEnergy());
   }
 
-  // Reset climbing image if CI is disabled
-  if (!params.neb_options.climbing_image.enabled) {
+  if (!ci_active) {
     climbingImage = 0;
   }
 
-  // Onsager-Machlup (OM) Action Logic
-  // Mandelli & Parrinello (2021)
-  // L_i = (1 / 2k) * Force_i
-  bool omActive = params.neb_options.spring.om.enabled;
-  std::vector<AtomMatrix> L_vecs;
+  // Spring strategy must be rebuilt each iteration (depends on maxEnergy,
+  // E_ref). Tangent and projection strategies are cached as members.
+  auto spring = eonc::neb::buildSpringStrategy(params, path, numImages, atoms,
+                                               maxEnergy, E_ref);
 
-  if (omActive) {
-    // Reuse the standard spring constant as k_OM
-    double base_k = params.neb_options.spring.constant;
-    if (params.neb_options.spring.om.optimize_k) {
-      // Method A: Physical estimation (assuming v*dt=1)
-      // base_k = m / (2 * dt^2). With v*dt=1, v = 1/dt.
-      // base_k = m * (1/dt) / (2 * dt) = m / (2 * dt^2).
-      // This requires a valid timestep 'dt'.
-      // If dt is not reliable, we use Method B (Force Balancing).
+  // Pre-allocate temporaries outside the loop to avoid repeated heap
+  // allocation of Nx3 matrices (each ~8KB for 337 atoms).
+  AtomMatrix posDiffNext(atoms, 3), posDiffPrev(atoms, 3);
 
-      // Method B: Force Balancing (Heuristic)
-      // We want F_spring ~ F_potential on average.
-      // F_spring_OM ~ base_k * <|R_{i+1} + R_{i-1} - 2R_i|>
-      // F_potential ~ <|Force|>
-      // base_k = <|Force|> / <|2nd_derivative_finite_diff|>
-
-      double avgPotForce = 0.0;
-      double avgPathCurvature = 0.0;
-      int count = 0;
-
-      for (long j = 1; j <= numImages; j++) {
-        avgPotForce += path[j]->getForces().norm();
-
-        // Calculate finite difference curvature (R_{i+1} + R_{i-1} - 2R_i)
-        // Need to handle PBC carefully
-        AtomMatrix next = path[j + 1]->getPositions();
-        AtomMatrix prev = path[j - 1]->getPositions();
-        AtomMatrix curr = path[j]->getPositions();
-
-        AtomMatrix curvVec = path[j]->pbc(next + prev - 2.0 * curr);
-        avgPathCurvature += curvVec.norm();
-        count++;
-      }
-
-      if (count > 0 && avgPathCurvature > 1e-6) { // Avoid division by zero
-        avgPotForce /= count;
-        avgPathCurvature /= count;
-
-        // Scale factor can be a tuning parameter, default 1.0
-        double scale = params.neb_options.spring.om.k_scale;
-        base_k = scale * (avgPotForce / avgPathCurvature);
-
-        // Optional: Clamp base_k to reasonable bounds to prevent instability
-        base_k = std::max(base_k, params.neb_options.spring.om.k_min);
-        base_k = std::min(base_k, params.neb_options.spring.om.k_max);
-      }
-
-      // Log the optimized k for debugging
-      // TODO(rg): refactor and log separately
-      // QUILL_LOG_DEBUG(log, "Optimized OM k: {}", base_k);
-    }
-    // Pre-calculate L vectors for all images (including endpoints)
-    L_vecs.resize(numImages + 2);
-
-    for (long j = 0; j <= numImages + 1; j++) {
-      L_vecs[j].resize(atoms, 3);
-      // Endpoints might not have updated forces if fixed, assume 0 (minima)
-      if (j == 0 || j == numImages + 1) {
-        L_vecs[j].setZero();
-      } else {
-        AtomMatrix forces = path[j]->getForces();
-        for (int k = 0; k < atoms; k++) {
-          // Apply 1/m scaling as per Eq (12)
-          double alpha_k = eonc::safemath::safe_recip(2.0 * base_k, 0.0);
-          L_vecs[j].row(k) = alpha_k * forces.row(k);
-        }
-      }
-    }
-  } else if (params.neb_options.spring.weighting.enabled) {
-    // Energy weighted springs
-    // Protect against division by zero
-    double energyRange = maxEnergy - E_ref;
-    if (energyRange < 1e-10) {
-      // All images at same energy - use uniform springs
-      std::fill(springConstants.begin(), springConstants.end(), k_l);
-    } else {
-      for (int idx = 1; idx <= numImages + 1; idx++) {
-        double Ei = std::max(path[idx]->getPotentialEnergy(),
-                             path[idx - 1]->getPotentialEnergy());
-        if (Ei > E_ref) {
-          double alpha_i = (maxEnergy - Ei) / energyRange;
-          // Clamp alpha to [0, 1] for numerical safety
-          alpha_i = std::max(0.0, std::min(1.0, alpha_i));
-          springConstants[idx - 1] = (1.0 - alpha_i) * k_u + alpha_i * k_l;
-        } else {
-          springConstants[idx - 1] = k_l;
-        }
-      }
-    }
-  } else {
-    // If CI is not yet active, use the standard uniform spring constant
-    std::fill(springConstants.begin(), springConstants.end(),
-              params.neb_options.spring.constant);
-  }
-
-  // Projection Loop
   for (long i = 1; i <= numImages; i++) {
-    // Zero out temporary force matrices
-    forceSpring.setZero();
-    forceSpringPar.setZero();
-    forceSpringPerp.setZero();
-    forceDNEB.setZero();
+    const AtomMatrix &force = path[i]->getForces();
+    const AtomMatrix &pos = path[i]->getPositions();
+    const AtomMatrix &posPrev = path[i - 1]->getPositions();
+    const AtomMatrix &posNext = path[i + 1]->getPositions();
+    double energy = path[i]->getPotentialEnergy();
+    double energyPrev = path[i - 1]->getPotentialEnergy();
+    double energyNext = path[i + 1]->getPotentialEnergy();
+    posDiffNext.noalias() = posNext - pos;
+    posDiffNext = path[i]->pbc(posDiffNext);
+    posDiffPrev.noalias() = pos - posPrev;
+    posDiffPrev = path[i]->pbc(posDiffPrev);
+    double distNext = posDiffNext.norm();
+    double distPrev = posDiffPrev.norm();
 
-    // set local variables
-    force = path[i]->getForces();
-    pos = path[i]->getPositions();
-    posPrev = path[i - 1]->getPositions();
-    posNext = path[i + 1]->getPositions();
-    energy = path[i]->getPotentialEnergy();
-    energyPrev = path[i - 1]->getPotentialEnergy();
-    energyNext = path[i + 1]->getPotentialEnergy();
-    posDiffNext = path[i]->pbc(posNext - pos); // R[i+1] - R[i]
-    posDiffPrev = path[i]->pbc(pos - posPrev); // R[i] - R[i-1]
-    distNext = posDiffNext.norm();             // Distance to next image
-    distPrev = posDiffPrev.norm();             // Distance to previous image
+    // Tangent via strategy dispatch
+    *tangent[i] = std::visit(
+        [&](auto &t) {
+          return t.compute(posDiffNext, posDiffPrev, energy, energyPrev,
+                           energyNext);
+        },
+        tangentStrat_);
 
-    // determine the tangent
-    if (params.neb_options.climbing_image.use_old_tangent) {
-      // old tangent
-      *tangent[i] = posDiffNext;
-    } else {
-      // new improved tangent
-      // higherEnergyPrev = energyPrev > energyNext;
-      // higherEnergyNext = energyNext > energyPrev;
+    // Spring forces via strategy dispatch
+    eonc::neb::SpringResult springResult = std::visit(
+        [&](auto &s) -> eonc::neb::SpringResult {
+          using T = std::decay_t<decltype(s)>;
+          if constexpr (std::is_same_v<T, eonc::neb::UniformSpring>) {
+            this->ksp = s.ksp;
+            return s.compute(i, *tangent[i], distNext, distPrev, posDiffNext,
+                             posDiffPrev, path[i]);
+          } else if constexpr (std::is_same_v<T, eonc::neb::WeightedSpring>) {
+            return s.compute(i, *tangent[i], distNext, distPrev);
+          } else {
+            return s.compute(i, *tangent[i], posNext, posPrev, pos, path[i]);
+          }
+        },
+        spring);
 
-      if (energyNext > energy && energy > energyPrev) {
-        *tangent[i] = posDiffNext;
-      } else if (energy > energyNext && energyPrev > energy) {
-        *tangent[i] = posDiffPrev;
-      } else {
-        // we are at an extremum
-        energyDiffPrev = energyPrev - energy;
-        energyDiffNext = energyNext - energy;
-
-        // calculate the energy difference to neighboring numImages
-        minDiffEnergy = min(abs(energyDiffPrev), abs(energyDiffNext));
-        maxDiffEnergy = max(abs(energyDiffPrev), abs(energyDiffNext));
-
-        // use these energy differences to weight the tangent
-        if (energyDiffPrev > energyDiffNext) {
-          *tangent[i] = posDiffNext * minDiffEnergy;
-          *tangent[i] += posDiffPrev * maxDiffEnergy;
-        } else {
-          *tangent[i] = posDiffNext * maxDiffEnergy;
-          *tangent[i] += posDiffPrev * minDiffEnergy;
-        }
-      }
-    }
-
-    // Normalize tangent with safety check
-    double tangentNorm = tangent[i]->norm();
-    if (tangentNorm > 1e-10) {
-      *tangent[i] /= tangentNorm;
-    } else {
-      // Fallback:  use direction to next image
-      *tangent[i] = posDiffNext;
-      tangentNorm = tangent[i]->norm();
-      if (tangentNorm > 1e-10) {
-        *tangent[i] /= tangentNorm;
-      }
-    }
-
-    // Calculate the force perpendicular to the tangent
-    forcePerp =
-        force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
-
-    // Calculate spring forces
-    if (omActive) {
-      double base_k = params.neb_options.spring.constant;
-      if (params.neb_options.spring.om.optimize_k) {
-        // This is recalculated unnecessarily here, could be cached if
-        // optimizing k But for clarity and following the logic:
-        double avgPotForce = 0.0;
-        double avgPathCurvature = 0.0;
-        int count = 0;
-        for (long j = 1; j <= numImages; j++) {
-          avgPotForce += path[j]->getForces().norm();
-          AtomMatrix next = path[j + 1]->getPositions();
-          AtomMatrix prev = path[j - 1]->getPositions();
-          AtomMatrix curr = path[j]->getPositions();
-          AtomMatrix curvVec = path[j]->pbc(next + prev - 2.0 * curr);
-          avgPathCurvature += curvVec.norm();
-          count++;
-        }
-        if (count > 0 && avgPathCurvature > 1e-6) {
-          double scale = params.neb_options.spring.om.k_scale;
-          base_k = scale * (avgPotForce / avgPathCurvature);
-          base_k = std::max(base_k, params.neb_options.spring.om.k_min);
-          base_k = std::min(base_k, params.neb_options.spring.om.k_max);
-        }
-      }
-
-      // Mandelli Eq. 13: k * ( R(i+1) + R(i-1) - 2R(i) + L(i-1) - L(i) )
-      AtomMatrix diff = path[i]->pbc(posNext + posPrev - 2.0 * pos +
-                                     L_vecs[i + 1] - L_vecs[i]);
-
-      // Removed incorrect mass multiplication. base_k is stiffness
-      // (Force/Length), so base_k * diff (Length) = Force.
-
-      // Now multiply by the global tuning constant
-      AtomMatrix f_om_vec = base_k * diff;
-
-      // Mandelli Eq. 15: Project onto tangent
-      forceSpringPar =
-          (f_om_vec.array() * (*tangent[i]).array()).sum() * *tangent[i];
-
-    } else if (params.neb_options.spring.weighting.enabled) {
-      // Use energy-weighted constants if trigger is met
-      // Spring for segment (i) -> (i+1)
-      double kspNext = springConstants[i];
-      // Spring for segment (i-1) -> (i)
-      double kspPrev = springConstants[i - 1];
-      forceSpringPar =
-          ((kspNext * distNext) - (kspPrev * distPrev)) * *tangent[i];
-    } else {
-      // Use uniform spring constant during initial relaxation
-      this->ksp = params.neb_options.spring.constant;
-      forceSpringPar = this->ksp * (distNext - distPrev) * *tangent[i];
-      forceSpring = this->ksp * path[i]->pbc((posNext - pos) - (pos - posPrev));
-    }
-
-    // DNEB forces
-    if (params.neb_options.spring.doubly_nudged && !omActive &&
-        !params.neb_options.spring.weighting.enabled) {
-      forceSpringPerp =
-          forceSpring -
-          (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
-
-      double forceSpringPerpNorm = forceSpringPerp.norm();
-      double forcePerpNorm = forcePerp.norm();
-
-      if (forceSpringPerpNorm > 1e-10 && forcePerpNorm > 1e-10) {
-        AtomMatrix forcePerpNormalized = forcePerp / forcePerpNorm;
-        forceDNEB =
-            forceSpringPerp -
-            (forceSpringPerp.array() * forcePerpNormalized.array()).sum() *
-                forcePerpNormalized;
-
-        double switching =
-            2.0 / eonc::helpers::pi *
-            atan(std::pow(forcePerpNorm, 2) / std::pow(forceSpringPerpNorm, 2));
-        forceDNEB *= switching;
-      } else {
-        // Force norms too small for stable DNEB calculation
-        forceDNEB.setZero();
-      }
-    } else {
-      forceDNEB.setZero();
-    }
-
-    // Apply the Climbing Image projection or standard NEB force
-    // Note: CI only activates if both the parameter is enabled AND the trigger
-    // is met
-    if (params.neb_options.climbing_image.enabled && i == maxEnergyImage) {
+    // Climbing image or projected force
+    if (ci_active && i == static_cast<long>(maxEnergyImage)) {
       climbingImage = maxEnergyImage;
-      // Climbing image:  invert force component along tangent
+      // CI force: F - 2*(F.t)*t, plus DNEB correction if active
+      AtomMatrix forceDNEB = AtomMatrix::Zero(atoms, 3);
+      if (std::holds_alternative<eonc::neb::DNEB_Projection>(
+              projectionStrat_)) {
+        AtomMatrix fPerp = eonc::neb::forcePerp(force, *tangent[i]);
+        forceDNEB = eonc::neb::computeDNEBComponent(springResult.forceSpring,
+                                                    *tangent[i], fPerp);
+      }
       *projectedForce[i] =
-          force -
-          (2.0 * (force.array() * (*tangent[i]).array()).sum() * *tangent[i]) +
-          forceDNEB;
-    } else { // non-climbing images
-      // Regular image
-      // sum the spring and potential forces for the neb force
-      if (params.neb_options.spring.use_elastic_band && !omActive &&
-          !params.neb_options.spring.weighting.enabled) {
-        *projectedForce[i] = forceSpring + force;
-      } else {
-        *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
-      }
+          eonc::neb::climbingImageForce(force, *tangent[i], forceDNEB);
+    } else {
+      eonc::neb::ImageForceData data{force, *tangent[i], springResult,
+                                     path[i]->numberOfFreeAtoms(),
+                                     path[i]->numberOfAtoms()};
+      *projectedForce[i] = std::visit([&](auto &p) { return p.project(data); },
+                                      projectionStrat_);
     }
 
-    // Zero net translational force (if all atoms are free)
-    if (path[i]->numberOfFreeAtoms() == path[i]->numberOfAtoms()) {
-      for (int j = 0; j <= 2; j++) {
-        double translationMag = projectedForce[i]->col(j).sum();
-        int natoms = projectedForce[i]->col(j).size();
-        projectedForce[i]->col(j).array() -= translationMag / ((double)natoms);
-      }
-    }
+    eonc::neb::zeroTranslation(*projectedForce[i], path[i]->numberOfFreeAtoms(),
+                               path[i]->numberOfAtoms());
   }
 
-  // Flag that forces are fresh
   movedAfterForceCall = false;
-  return;
 }
 
-// Print NEB image data
+// Thin wrappers delegating to eonc::neb:: free functions
+
 void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
-  double dist, distTotal = 0;
-  AtomMatrix tangentStart =
-      path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
-  AtomMatrix tangentEnd = path[numImages]->pbc(
-      path[numImages + 1]->getPositions() - path[numImages]->getPositions());
-  AtomMatrix tang;
-  std::string header;
-  if (params.debug_options.estimate_neb_eigenvalues) {
-    header = std::format("{:>3s} {:>12s} {:>12s} {:>12s} {:>12s}", "img",
-                         "rxn_coord", "energy", "f_para", "eigval");
-  } else {
-    header = std::format("{:>3s} {:>12s} {:>12s} {:>12s}", "img", "rxn_coord",
-                         "energy", "f_para");
-  }
-
-  // Endpoint tangents must be normalized for a correct projection
-  tangentStart.normalize();
-  tangentEnd.normalize();
-
-  std::ofstream fileLogger;
-  if (writeToFile) {
-    // If idx is SIZE_MAX, treat this as the dedicated final output file
-    // "neb.dat". This avoids overwriting iteration files named neb_000.dat,
-    // neb_001.dat, ...
-    std::string neb_dat_fs;
-    if (idx == std::numeric_limits<size_t>::max()) {
-      neb_dat_fs = "neb.dat";
-    } else {
-      neb_dat_fs = std::format("neb_{:03}.dat", idx);
-    }
-    if (fs::exists(neb_dat_fs)) {
-      fs::remove(neb_dat_fs);
-    }
-    fileLogger.open(neb_dat_fs);
-    if (fileLogger.is_open()) {
-      fileLogger << header << "\n";
-    }
-  }
-  const double energy_reactant = path[0]->getPotentialEnergy();
-
-  for (long i = 0; i <= numImages + 1; i++) {
-    if (i == 0) {
-      tang = tangentStart;
-    } else if (i == numImages + 1) {
-      tang = tangentEnd;
-    } else {
-      tang = *tangent[i];
-    }
-
-    if (i > 0) {
-      dist = path[i]->distanceTo(*path[i - 1]);
-      distTotal += dist;
-    }
-
-    // Calculate standard values for logging
-    double relative_energy = path[i]->getPotentialEnergy() - energy_reactant;
-    double parallel_force = (path[i]->getForces().array() * tang.array()).sum();
-
-    // Conditionally run an MMF and log the eigenvalue
-    if (params.debug_options.estimate_neb_eigenvalues) {
-      eigenmode_solvers[i]->compute(path[i], tang);
-      double lowest_eigenvalue = eigenmode_solvers[i]->getEigenvalue();
-      if (fileLogger.is_open()) {
-        fileLogger << std::format(
-            "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}\n", i, distTotal,
-            relative_energy, parallel_force, lowest_eigenvalue);
-      } else {
-        QUILL_LOG_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f} {:>12.6f}", i,
-                        distTotal, relative_energy, parallel_force,
-                        lowest_eigenvalue);
-      }
-    } else { // Standard output without the eigenvalue
-      if (fileLogger.is_open()) {
-        fileLogger << std::format("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}\n", i,
-                                  distTotal, relative_energy, parallel_force);
-      } else {
-        QUILL_LOG_DEBUG(log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i,
-                        distTotal, relative_energy, parallel_force);
-      }
-    }
-  }
+  eonc::neb::printImageData(path, tangent, eigenmode_solvers, numImages,
+                            params.debug_options.estimate_neb_eigenvalues,
+                            writeToFile, idx, log);
 }
 
-// Estimate the barrier using a cubic spline
-void NudgedElasticBand::findExtrema(void) {
-  // calculate the cubic parameters for each interval (a,b,c,d)
-
-  AtomMatrix tangentEndpoint;
-  std::vector<double> a(numImages + 1), b(numImages + 1), c(numImages + 1),
-      d(numImages + 1);
-  double F1, F2, U1, U2, dist;
-
-  for (long i = 0; i <= numImages; i++) {
-    dist = path[i]->distanceTo(*path[i + 1]);
-    if (i == 0) {
-      tangentEndpoint =
-          path[i]->pbc(path[1]->getPositions() - path[0]->getPositions());
-      tangentEndpoint.normalize();
-      F1 =
-          (path[i]->getForces().array() * tangentEndpoint.array()).sum() * dist;
-    } else {
-      F1 = (path[i]->getForces().array() * (*tangent[i]).array()).sum() * dist;
-    }
-    if (i == numImages) {
-      tangentEndpoint = path[i + 1]->pbc(path[numImages + 1]->getPositions() -
-                                         path[numImages]->getPositions());
-      tangentEndpoint.normalize();
-      F2 = (path[i + 1]->getForces().array() * tangentEndpoint.array()).sum() *
-           dist;
-    } else {
-      F2 =
-          (path[i + 1]->getForces().array() * (*tangent[i + 1]).array()).sum() *
-          dist;
-    }
-    U1 = path[i]->getPotentialEnergy();
-    U2 = path[i + 1]->getPotentialEnergy();
-    a[i] = U1;
-    b[i] = -F1;
-    c[i] = 3. * (U2 - U1) + 2. * F1 + F2;
-    d[i] = -2. * (U2 - U1) - (F1 + F2);
-  }
-
-  // finding extrema along the MEP
-
-  //    long numExtrema = 0;
-  //    double extremaEnergy[2*(numImages+1)]; // the maximum number of
-  //    extrema double extremaPosition[2*(numImages+1)];
-  double discriminant, f;
-
-  for (long i = 0; i <= numImages; i++) {
-    discriminant = std::pow(c[i], 2) - 3. * b[i] * d[i];
-    if (discriminant >= 0) {
-      f = -1;
-
-      // quadratic case
-      if ((d[i] == 0) && (c[i] != 0)) {
-        f = (-b[i] / (2. * c[i]));
-      }
-      // cubic case 1
-      else if (d[i] != 0) {
-        f = -(c[i] + sqrt(discriminant)) / (3. * d[i]);
-      }
-      if ((f >= 0) && (f <= 1)) {
-        extremumPosition[numExtrema] = i + f;
-        extremumEnergy[numExtrema] =
-            d[i] * std::pow(f, 3) + c[i] * std::pow(f, 2) + b[i] * f + a[i];
-        extremumCurvature[numExtrema] = 6.0 * d[i] * f + 2 * c[i];
-        numExtrema++;
-      }
-      // cubic case 2
-      if (d[i] != 0) {
-        f = (-(c[i] - sqrt(discriminant)) / (3. * d[i]));
-      }
-      if ((f >= 0) && (f <= 1)) {
-        extremumPosition[numExtrema] = i + f;
-        extremumEnergy[numExtrema] =
-            d[i] * std::pow(f, 3) + c[i] * std::pow(f, 2) + b[i] * f + a[i];
-        extremumCurvature[numExtrema] = 6 * d[i] * f + 2 * c[i];
-        numExtrema++;
-      }
-    }
-  }
-
-  QUILL_LOG_DEBUG(log, "Found {} extrema", numExtrema);
-  QUILL_LOG_DEBUG(log, "Energy reference: {}", path[0]->getPotentialEnergy());
-  for (long i = 0; i < numExtrema; i++) {
-    QUILL_LOG_DEBUG(
-        log, "extrema #{} at image position {} with energy {} and curvature {}",
-        i + 1, extremumPosition[i],
-        extremumEnergy[i] - path[0]->getPotentialEnergy(),
-        extremumCurvature[i]);
-  }
+void NudgedElasticBand::findExtrema() {
+  auto result = eonc::neb::findSplineExtrema(path, tangent, numImages);
+  numExtrema = result.numExtrema;
+  extremumPosition = std::move(result.positions);
+  extremumEnergy = std::move(result.energies);
+  extremumCurvature = std::move(result.curvatures);
 }

@@ -18,13 +18,12 @@
 #include <cstring>
 #include <filesystem>
 #include <iostream>
-using namespace std;
 
 namespace fs = std::filesystem;
 
 namespace eonc {
 
-int getBundleSize(void) {
+int getBundleSize() {
   int num_bundle = -1;
 
   for (const auto &entry : fs::directory_iterator(".")) {
