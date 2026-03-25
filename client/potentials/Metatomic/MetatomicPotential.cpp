@@ -44,6 +44,20 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // per-image potentials must match a shared instance.
   torch::jit::getProfilingMode() = false;
 
+  // Deterministic CUDA: cuBLAS matmul in vesin neighbor lists and
+  // index_add_ accumulation produce ULP-level different results per
+  // call without this, accumulating over NEB iterations into divergent
+  // trajectories. Strict mode (warn_only=false) requires the env var
+  // CUBLAS_WORKSPACE_CONFIG to be set (e.g. :4096:8).
+  {
+    bool strict = (std::getenv("CUBLAS_WORKSPACE_CONFIG") != nullptr);
+    at::globalContext().setDeterministicAlgorithms(true, /*warn_only=*/!strict);
+    at::globalContext().setBenchmarkCuDNN(false);
+    if (strict) {
+      QUILL_LOG_INFO(m_log, "[MetatomicPotential] Strict CUDA determinism enabled");
+    }
+  }
+
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
 
