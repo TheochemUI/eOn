@@ -88,11 +88,9 @@ std::vector<std::string> GPSurrogateJob::run() {
 
     std::string nebFilename(std::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
-    FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
     for (long i = 0; i <= neb->numImages + 1; i++) {
-      neb->path[i]->matter2con(fileNEB);
+      neb->path[i]->matter2con(nebFilename, /*append=*/i > 0);
     }
-    fclose(fileNEB);
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
         eonc::helpers::surrogate::accuratePES(neb->path, pot)) {
       break;

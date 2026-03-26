@@ -183,19 +183,18 @@ public:
   bool con2matter(std::string filename) {
     return io::con2matter(*this, filename);
   }
-  bool con2matter(FILE *file) { return io::con2matter(*this, file); }
+  bool con2matter(const readcon::ConFrame &frame) {
+    return io::con2matter(*this, frame);
+  }
   bool convel2matter(std::string filename) {
     return io::convel2matter(*this, filename);
   }
-  bool convel2matter(FILE *file) { return io::convel2matter(*this, file); }
   bool matter2con(std::string filename, bool append = false) {
     return io::matter2con(*this, filename, append);
   }
-  bool matter2con(FILE *file) { return io::matter2con(*this, file); }
   bool matter2convel(std::string filename) {
     return io::matter2convel(*this, filename);
   }
-  bool matter2convel(FILE *file) { return io::matter2convel(*this, file); }
   void matter2xyz(std::string filename, bool append = false) {
     io::matter2xyz(*this, filename, append);
   }
@@ -206,11 +205,12 @@ public:
 
 private:
   // Friend declarations for eonc::io free functions that need private access
-  friend bool io::con2matter(Matter &, FILE *);
-  friend bool io::convel2matter(Matter &, FILE *);
-  friend bool io::matter2con(Matter &, FILE *);
-  friend bool io::matter2convel(Matter &, FILE *);
+  friend bool io::con2matter(Matter &, const readcon::ConFrame &);
+  friend bool io::matter2con(Matter &, std::string, bool);
+  friend bool io::matter2convel(Matter &, std::string);
   friend void io::matter2xyz(Matter &, std::string, bool);
+  friend std::pair<std::array<double, 3>, std::array<double, 3>>
+  io::cell_to_lengths_angles(const Matter &);
 
   eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
