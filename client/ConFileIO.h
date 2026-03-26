@@ -10,8 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #pragma once
-#include <cstdio>
+#include <array>
+#include <readcon-core.hpp>
 #include <string>
+#include <utility>
 
 namespace eonc {
 class Matter;
@@ -20,17 +22,18 @@ namespace io {
 
 // Reading
 bool con2matter(Matter &m, std::string filename);
-bool con2matter(Matter &m, FILE *file);
+bool con2matter(Matter &m, const readcon::ConFrame &frame);
 bool convel2matter(Matter &m, std::string filename);
-bool convel2matter(Matter &m, FILE *file);
 
 // Writing
 bool matter2con(Matter &m, std::string filename, bool append = false);
-bool matter2con(Matter &m, FILE *file);
 bool matter2convel(Matter &m, std::string filename);
-bool matter2convel(Matter &m, FILE *file);
 void matter2xyz(Matter &m, std::string filename, bool append = false);
 void writeTibble(Matter &m, std::string filename);
+
+// Helper
+std::pair<std::array<double, 3>, std::array<double, 3>>
+cell_to_lengths_angles(const Matter &m);
 
 } // namespace io
 } // namespace eonc
