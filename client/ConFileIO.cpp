@@ -55,18 +55,15 @@ cell_to_lengths_angles(const Matter &m) {
   lengths[1] = m.cell.row(1).norm();
   lengths[2] = m.cell.row(2).norm();
   std::array<double, 3> angles;
-  angles[0] =
-      eonc::safemath::safe_acos(eonc::safemath::safe_div(
-          m.cell.row(0).dot(m.cell.row(1)), lengths[0] * lengths[1])) *
-      180.0 / eonc::helpers::pi;
-  angles[1] =
-      eonc::safemath::safe_acos(eonc::safemath::safe_div(
-          m.cell.row(0).dot(m.cell.row(2)), lengths[0] * lengths[2])) *
-      180.0 / eonc::helpers::pi;
-  angles[2] =
-      eonc::safemath::safe_acos(eonc::safemath::safe_div(
-          m.cell.row(1).dot(m.cell.row(2)), lengths[1] * lengths[2])) *
-      180.0 / eonc::helpers::pi;
+  angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  m.cell.row(0).dot(m.cell.row(1)), lengths[0] * lengths[1])) *
+              180.0 / eonc::helpers::pi;
+  angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  m.cell.row(0).dot(m.cell.row(2)), lengths[0] * lengths[2])) *
+              180.0 / eonc::helpers::pi;
+  angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
+                  m.cell.row(1).dot(m.cell.row(2)), lengths[1] * lengths[2])) *
+              180.0 / eonc::helpers::pi;
   return {lengths, angles};
 }
 
@@ -213,8 +210,8 @@ bool matter2convel(Matter &m, std::string filename) {
     builder.add_atom_with_velocity(
         atomicNumber2symbol(m.getAtomicNr(i)), m.getPosition(i, 0),
         m.getPosition(i, 1), m.getPosition(i, 2), m.getFixed(i) != 0,
-        static_cast<uint64_t>(m.atomIndex(i)), m.getMass(i),
-        m.velocities(i, 0), m.velocities(i, 1), m.velocities(i, 2));
+        static_cast<uint64_t>(m.atomIndex(i)), m.getMass(i), m.velocities(i, 0),
+        m.velocities(i, 1), m.velocities(i, 2));
   }
 
   auto frame = builder.build();

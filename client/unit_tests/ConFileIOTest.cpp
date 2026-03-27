@@ -136,22 +136,20 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ output is finite and non-empty",
   std::remove(tmpfile.c_str());
 }
 
-TEST_CASE_METHOD(ConFileIOFixture, "FILE* interface matches string interface",
+TEST_CASE_METHOD(ConFileIOFixture,
+                 "String interface write-read roundtrip preserves geometry",
                  "[confileio]") {
-  // Write via FILE*
-  FILE *f = fopen("_test_fptr.con", "wb");
-  REQUIRE(f != nullptr);
-  eonc::io::matter2con(*original, f);
-  fclose(f);
+  // Write via string interface
+  eonc::io::matter2con(*original, "_test_str.con");
 
-  // Read back via string interface
+  // Read back
   auto loaded = std::make_shared<Matter>(pot, params);
-  loaded->con2matter(std::string("_test_fptr.con"));
+  loaded->con2matter(std::string("_test_str.con"));
 
   REQUIRE(loaded->numberOfAtoms() == original->numberOfAtoms());
   REQUIRE(loaded->getPositions().isApprox(original->getPositions(), 1e-6));
 
-  std::remove("_test_fptr.con");
+  std::remove("_test_str.con");
 }
 
 TEST_CASE_METHOD(ConFileIOFixture,
@@ -206,12 +204,9 @@ TEST_CASE("ConFileIO multiple writes accumulate in append mode",
   auto tmppath = std::filesystem::temp_directory_path() / "_test_append.con";
   std::string tmpfile = tmppath.string();
 
-  // Write twice in append mode using FILE*
-  FILE *fp = fopen(tmpfile.c_str(), "wb");
-  REQUIRE(fp != nullptr);
-  m->matter2con(fp);
-  m->matter2con(fp);
-  fclose(fp);
+  // Write twice in append mode
+  m->matter2con(tmpfile, false);
+  m->matter2con(tmpfile, true);
 
   // File should be roughly double the size of single write
   auto fsize = std::filesystem::file_size(tmpfile);
