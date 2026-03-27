@@ -726,7 +726,21 @@ readcon_proj = subproject(
     },
 )
 readcon_dep = readcon_proj.get_variable('readcon_dep')
-_deps += [readcon_dep]
+if is_windows
+    # On Windows, readcon_dep's sources (custom_target .lib) get passed to
+    # llvm-ar which misinterprets the .lib as the archive output name.
+    # Strip sources and link_args for the static library; the full dep
+    # with link_args goes to executables via _exe_deps.
+    # Build ordering is ensured by the `depends` kwarg on the library target.
+    readcon_compile_dep = readcon_dep.partial_dependency(
+        includes: true,
+        compile_args: true,
+    )
+    _deps += [readcon_compile_dep]
+    # No need for explicit depends: cbindgen in-tree header already exists
+else
+    _deps += [readcon_dep]
+endif
 
 # --------------------- Library
 
@@ -743,12 +757,15 @@ eclib = library(
 
 _linkto += eclib
 
+# Full deps including readcon link_args (for executables and tests only)
+_exe_deps = _deps + [readcon_dep]
+
 # Export variable
 eclib_dep = declare_dependency(
     link_with: [eclib, _linkto],
     include_directories: _incdirs,
     compile_args: _fargs + _args,
-    dependencies: _deps,
+    dependencies: _exe_deps,
 )
 
 # ---------------------- Executable
@@ -757,7 +774,7 @@ ec = executable(
     'eonclient',
     sources: eonclient_sources,
     include_directories: _incdirs,
-    dependencies: _deps,
+    dependencies: _exe_deps,
     link_with: _linkto,
     cpp_args: [_args, '-w'],
     link_args: _linkargs,
@@ -778,7 +795,7 @@ if get_option('with_tests')
         'testWriteR',
         'testWriteR.cpp',
         include_directories: _incdirs,
-        dependencies: _deps,
+        dependencies: _exe_deps,
         link_with: _linkto,
     )
 endif
@@ -786,11 +803,11 @@ endif
 
 if get_option('with_tests')
     test_args = _args
-    test_deps = _deps
+    test_deps = _exe_deps
     testMain = library(
         'TestMain',
         ['unit_tests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
-        dependencies: test_deps,
+        dependencies: _deps,  # static lib: use _deps (no readcon link_args)
         include_directories: _incdirs,
         cpp_args: test_args,
         link_with: _linkto,
