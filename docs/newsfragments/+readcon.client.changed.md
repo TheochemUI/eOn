@@ -1,0 +1,1 @@
+Replaced all FILE*-based con/convel I/O in the C++ client with readcon-core. Reading uses `readcon::read_first_frame()` (mmap). Writing uses `ConFrameBuilder` + `ConFrameWriter` with 17-digit precision for positions. All FILE* overloads removed; callers now pass filenames directly.
