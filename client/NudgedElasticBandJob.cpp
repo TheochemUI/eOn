@@ -187,13 +187,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
-  // matter2con(FILE*) still needed for multi-image writes to single file
-  FILE *fileNEB = fopen(nebFilename.c_str(), "wb");
-  if (fileNEB) {
-    for (long i = 0; i <= neb->numImages + 1; i++) {
-      neb->path[i]->matter2con(fileNEB);
-    }
-    fclose(fileNEB);
+  for (long i = 0; i <= neb->numImages + 1; i++) {
+    neb->path[i]->matter2con(nebFilename, /*append=*/i > 0);
   }
 
   // Save Discrete Saddle Point (Highest Energy Image)
