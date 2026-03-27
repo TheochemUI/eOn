@@ -54,7 +54,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     at::globalContext().setDeterministicAlgorithms(true, /*warn_only=*/!strict);
     at::globalContext().setBenchmarkCuDNN(false);
     if (strict) {
-      QUILL_LOG_INFO(m_log, "[MetatomicPotential] Strict CUDA determinism enabled");
+      QUILL_LOG_INFO(m_log,
+                     "[MetatomicPotential] Strict CUDA determinism enabled");
     }
   }
 
@@ -468,11 +469,11 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
 // model.forward({sys0..sysN}) is a future optimization (see #if 0 block below).
 
 void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
-                                     const double *const *positions,
-                                     const int *const *atomicNrs,
-                                     double *const *forces, double *energies,
-                                     double *variances,
-                                     const double *const *boxes) {
+                                    const double *const *positions,
+                                    const int *const *atomicNrs,
+                                    double *const *forces, double *energies,
+                                    double *variances,
+                                    const double *const *boxes) {
   // Sequential evaluation through force() -- numerically identical to
   // N individual computePotential() calls. The mutex inside force()
   // serializes, and all calls share the same model instance + JIT state.

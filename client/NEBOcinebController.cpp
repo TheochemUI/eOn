@@ -120,8 +120,8 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
         "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
         "Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)",
         mmfResult, convForce, newForce, alignment,
-        mmfResult == -2 ? "Restored CI. " : "",
-        current_threshold_, current_threshold_ / baseline_force_);
+        mmfResult == -2 ? "Restored CI. " : "", current_threshold_,
+        current_threshold_ / baseline_force_);
   }
 
   bool shouldReset =
