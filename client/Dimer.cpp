@@ -23,10 +23,9 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   // Give matterDimer its own potential for parallel force evaluation
-  auto dimerPot =
-      (pot->needsPerImageInstance() && params.main_options.parallel)
-          ? eonc::helpers::makePotential(params)
-          : pot;
+  auto dimerPot = (pot->needsPerImageInstance() && params.main_options.parallel)
+                      ? eonc::helpers::makePotential(params)
+                      : pot;
   matterCenter = std::make_shared<Matter>(pot, params);
   matterDimer = std::make_shared<Matter>(dimerPot, params);
   *matterCenter = *matter;
@@ -95,11 +94,10 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
           (rotForce1 - rotForce2) / params.dimer_options.rotation_angle;
       double forceDimer = (rotForce1 + rotForce2) / 2.0;
 
-      rotationAngle =
-          eonc::safemath::safe_atan_ratio(2.0 * forceDimer, rotForceChange,
-                                          0.0) /
-              2.0 -
-          params.dimer_options.rotation_angle / 2.0;
+      rotationAngle = eonc::safemath::safe_atan_ratio(2.0 * forceDimer,
+                                                      rotForceChange, 0.0) /
+                          2.0 -
+                      params.dimer_options.rotation_angle / 2.0;
 
       if (rotForceChange < 0) {
         rotationAngle += eonc::helpers::pi / 2.0;
