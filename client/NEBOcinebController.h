@@ -11,8 +11,8 @@
 */
 #pragma once
 
-#include "Parameters.h"
 #include "Eigen.h"
+#include "Parameters.h"
 
 namespace eonc {
 class NudgedElasticBand; // forward declaration

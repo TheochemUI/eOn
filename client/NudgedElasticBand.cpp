@@ -141,10 +141,12 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   numExtrema = 0;
 
   // Create per-image potentials if needed for true parallel force evaluation
-  perImagePotentials_ = pot->needsPerImageInstance() && params.main_options.parallel;
+  perImagePotentials_ =
+      pot->needsPerImageInstance() && params.main_options.parallel;
   if (perImagePotentials_) {
-    QUILL_LOG_INFO(log, "NEB: Creating per-image potential instances for "
-                        "parallel force evaluation ({} images)",
+    QUILL_LOG_INFO(log,
+                   "NEB: Creating per-image potential instances for "
+                   "parallel force evaluation ({} images)",
                    numImages + 2);
   }
 
@@ -436,8 +438,9 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   // instance, or (b) per-image instances were created (separate models).
   if (pot->supportsBatchEvaluation() && numImages > 1) {
     // Collect only images that need recomputation (positions changed).
-    // Store temporaries to keep data alive (getAtomicNrs/getCell return by value)
-    std::vector<long> dirty;         // indices into path[] (1-based)
+    // Store temporaries to keep data alive (getAtomicNrs/getCell return by
+    // value)
+    std::vector<long> dirty; // indices into path[] (1-based)
     std::vector<VectorXi> nrsStore;
     std::vector<Matrix3d> boxStore;
     std::vector<const double *> posVec, boxVec;
