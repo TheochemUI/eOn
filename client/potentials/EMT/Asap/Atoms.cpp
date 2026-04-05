@@ -4,7 +4,7 @@
 #include "SuperCell.h"
 // #include "Timing.h"
 #include <assert.h>
-#include <math.h>
+#include <cmath>
 #include <string.h>
 
 extern int verbose;
