@@ -568,6 +568,21 @@ public:
     std::string endpoints;
   } serve_options;
 
+  // [ARTn] //
+  struct artn_options_t {
+    double push_step_size{0.3};
+    double init_step_size{0.1};
+    double force_threshold{0.05};
+    int max_iterations{500};
+  } artn_options;
+
+  // [IRA] //
+  struct ira_options_t {
+    double distance_threshold{0.3};
+    double symmetry_threshold{0.1};
+    bool use_pbc{false};
+  } ira_options;
+
   // [Debug] //
   struct debug_options_t {
     bool write_movies{false};

@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "SaddleSearchJob.h"
+#include "ARTnSaddleSearch.h"
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Potential.h"
@@ -53,11 +54,15 @@ std::vector<std::string> SaddleSearchJob::run() {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
-  saddleSearch = std::make_unique<MinModeSaddleSearch>(
-      saddle, mode, initial->getPotentialEnergy(), params, pot);
+  if (params.saddle_search_options.minmode_method == "artn") {
+    saddleSearch =
+        std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
+  } else {
+    saddleSearch = std::make_unique<MinModeSaddleSearch>(
+        saddle, mode, initial->getPotentialEnergy(), params, pot);
+  }
 
-  int status;
-  status = doSaddleSearch();
+  int status = doSaddleSearch();
   printEndState(status);
   saveData(status);
 
@@ -81,8 +86,9 @@ int SaddleSearchJob::doSaddleSearch() {
   }
 
   if (params.saddle_search_options.minmode_method ==
-      LowestEigenmode::MINMODE_GPRDIMER) {
-    fCallsSaddle = saddleSearch->forcecalls - f1;
+          LowestEigenmode::MINMODE_GPRDIMER ||
+      params.saddle_search_options.minmode_method == "artn") {
+    fCallsSaddle = saddleSearch->forcecalls;
   } else {
     fCallsSaddle += this->pot->forceCallCounter - f1;
   }

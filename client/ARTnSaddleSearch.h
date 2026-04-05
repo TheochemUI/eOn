@@ -1,0 +1,65 @@
+/*
+ * This file is part of eOn.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Copyright (c) 2010--present, eOn Development Team
+ * All rights reserved.
+ *
+ * Repo:
+ * https://github.com/TheochemUI/eOn
+ */
+
+#pragma once
+
+#include "EonLogger.h"
+#include "Matter.h"
+#include "Parameters.h"
+#include "SaddleSearchMethod.h"
+
+// Include the ARTn resource for thread-local access
+#ifdef WITH_ARTN
+#include "libs/ARTn/ARTnResource.h"
+#endif
+
+namespace eonc {
+
+/*
+ * ARTn integration with thread-local dynamic loading
+ */
+#ifdef WITH_ARTN
+
+// Constants
+constexpr double ARTN_MODE_TOLERANCE = 1e-10;
+constexpr double ARTN_SMALL_DISPLACEMENT = 1e-6;
+
+// WARNING: All ARTn operations are serialized through a global mutex
+// due to the non-thread-safe Fortran backend. This can be a performance
+// bottleneck in multi-threaded contexts. Consider process-level parallelism
+// if true concurrent ARTn operations are required.
+
+#endif // WITH_ARTN
+
+/// Saddle search method using the Activation-Relaxation Technique nouveau.
+/// Wraps the pARTn Fortran library via its C API (artn.h).
+class ARTnSaddleSearch : public SaddleSearchMethod {
+public:
+  ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
+                   std::shared_ptr<Potential> potPassed, AtomMatrix modeInitial,
+                   const Parameters &paramsPassed);
+  ~ARTnSaddleSearch() override;
+
+  int run() override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
+
+private:
+  std::shared_ptr<Matter> matter;
+  double eigenvalue{0.0};
+  AtomMatrix eigenvector, mode;
+  eonc::log::Scoped log;
+};
+
+} // namespace eonc
+
+using eonc::ARTnSaddleSearch;
