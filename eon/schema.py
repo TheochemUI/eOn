@@ -803,7 +803,7 @@ class AMSEnvConfig(BaseModel):
 class SaddleSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    method: Literal["min_mode", "dynamics"] = Field(
+    method: Literal["min_mode", "dynamics", "artn"] = Field(
         default="min_mode", description="Method to locate the saddle point."
     )
     """
@@ -813,6 +813,9 @@ class SaddleSearchConfig(BaseModel):
       - ``dynamics``: Experimental method that uses molecular dynamics to find
         new states and then runs a climbing image NEB calculation to find the
         saddle and a dimer calculation to estimate the eigenmode at the saddle.
+      - ``artn``: Use the Activation-Relaxation Technique nouveau. ARTn
+        handles its own push from the minimum, Lanczos eigenmode estimation,
+        and perpendicular relaxation internally.
     """
     min_mode_method: Literal["dimer", "lanczos", "gprdimer", "artn"] = Field(
         default="dimer", description="Min-mode method to use."
@@ -822,7 +825,8 @@ class SaddleSearchConfig(BaseModel):
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
      - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`
      - ``gprdimer``: Use the GP accelerated dimer method.
-     - ``artn``: Use the Activation-Relaxation Technique nouveau (ARTn).
+     - ``artn``: Use ARTn as a drop-in for min-mode search. eOn's displacement
+       seeds the initial mode; ARTn takes over from the displaced structure.
      """
     max_energy: float = Field(
         default=20.0,
