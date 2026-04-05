@@ -257,7 +257,10 @@ int ARTnSaddleSearch::run() {
                                                       // missing value
       }
 
-      // Retrieve eigenvector
+      // Retrieve eigenvector (3*nat flat array, column-major from Fortran).
+      // get_data allocates via c_malloc and writes the pointer to cval.
+      // The C header says void* but the Fortran intent(out) semantics
+      // require void** (see artn_c_wrappers.f90:324 and LAMMPS example).
       double *evec_ptr = nullptr;
       int result_evec = res.get_get_data_fn()(
           "eigen_sad", reinterpret_cast<void **>(&evec_ptr));
