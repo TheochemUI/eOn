@@ -138,6 +138,14 @@ increases in speed compared to file or ASE interfaces
 .. autopydantic_model:: eon.schema.SocketNWChemPot
 ```
 
+```{warning}
+NWChem's Fortran i-PI socket driver truncates UNIX socket names to approximately
+30 characters. The full socket path is ``/tmp/ipi_<unix_socket_path>``, so
+``unix_socket_path`` should be kept short (under ~20 characters). For example,
+``eon_nwchem`` works but ``eon_nwchem_test_socket`` will be silently truncated,
+causing a connection failure with no clear error message.
+```
+
 An older ASE interface exists as well.
 
 ### ASE potentials
