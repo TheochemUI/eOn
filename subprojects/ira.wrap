@@ -1,0 +1,8 @@
+[wrap-git]
+directory=ira
+url=https://github.com/HaoZeke/IterativeRotationsAssignments.git
+revision=master
+depth=1
+
+[provide]
+ira=ira_dep
