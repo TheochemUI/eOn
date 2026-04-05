@@ -1690,7 +1690,19 @@ class ARTnConfig(BaseModel):
     )
     ninit: int = Field(
         default=0,
-        description="Number of initial push steps before Lanczos eigenmode estimation. 0 skips the push phase and goes directly to Lanczos (appropriate when eOn provides the displacement direction). Larger values let ARTn explore further from the minimum before computing eigenvalues.",
+        description="Number of initial push steps before Lanczos eigenmode estimation. 0 skips the push phase and goes directly to Lanczos. Larger values let ARTn explore further from the minimum.",
+    )
+    nperp_limitation: str = Field(
+        default="default",
+        description="Comma-separated ints controlling max perp-relax steps per Lanczos cycle. 'default' uses pARTn defaults. '-1' for unlimited (smooth potentials). '20,30' for ML potentials.",
+    )
+    lanczos_min_size: int = Field(
+        default=-1,
+        description="Minimum Lanczos iterations before convergence check. -1 uses pARTn default (3). Set to 1 for refinement near a known saddle.",
+    )
+    nsmooth: int = Field(
+        default=-1,
+        description="Number of smooth interpolation steps between push and eigenvector. -1 uses pARTn default. 0 disables smoothing.",
     )
 
 

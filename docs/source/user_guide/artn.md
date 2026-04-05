@@ -97,10 +97,20 @@ max_iterations = 500
   pARTn's ``forc_thr``.
 - **`max_iterations`**: Maximum number of ARTn steps.
 - **`ninit`**: Number of initial push steps before Lanczos eigenmode estimation.
-  Default 0 skips the push phase and goes directly to Lanczos (appropriate when
-  eOn provides the displacement direction). Larger values let ARTn explore
-  further from the minimum before computing eigenvalues. Maps to pARTn's
-  ``ninit``.
+  Default 0 skips the push and goes directly to Lanczos. Larger values let ARTn
+  explore further from the minimum. Maps to pARTn's ``ninit``.
+- **`nperp_limitation`**: Comma-separated integers controlling the maximum number
+  of perpendicular relaxation steps per Lanczos cycle. ``default`` uses pARTn
+  defaults (tuned for exploration from a minimum). ``-1`` for unlimited
+  perp-relax (smooth potentials in refinement). ``20,30`` limits steps
+  (recommended for corrugated/ML potentials). Maps to pARTn's
+  ``nperp_limitation``.
+- **`lanczos_min_size`**: Minimum Lanczos iterations before convergence check.
+  Default ``-1`` uses pARTn default (3). Set to ``1`` for refinement near a
+  known saddle. Maps to pARTn's ``lanczos_min_size``.
+- **`nsmooth`**: Number of smooth interpolation steps between push direction and
+  eigenvector. ``-1`` uses pARTn default. ``0`` disables smoothing. Maps to
+  pARTn's ``nsmooth``.
 
 ## Build requirements
 
