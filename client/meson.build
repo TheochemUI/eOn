@@ -904,7 +904,7 @@ if get_option('with_tests')
             bash_exe,
             args: [
                 meson.project_source_root() + '/client/unit_tests/run_nwchem_test.sh',
-                'eonclient',
+                ec,
                 nwchem_exe,
                 'nwchem_socket.nwi',  # The input file for the client
                 test_workdir,
