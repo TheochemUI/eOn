@@ -12,6 +12,7 @@
 #include "ARTnSaddleSearch.h"
 #include "Eigen.h"
 
+#include <cstdlib>
 #include <filesystem>
 #include <limits>
 namespace eonc {
@@ -218,8 +219,9 @@ int ARTnSaddleSearch::run() {
       QUILL_LOG_WARNING(log, "get_data(has_error) failed with code {}",
                         result_has_error);
       has_error_ptr = nullptr;
-    } else {
-      has_error = has_error_ptr ? *has_error_ptr : false;
+    } else if (has_error_ptr) {
+      has_error = *has_error_ptr;
+      std::free(has_error_ptr);
     }
 
     int result_has_sad = res.get_get_data_fn()(
@@ -227,9 +229,9 @@ int ARTnSaddleSearch::run() {
     if (result_has_sad != 0) {
       QUILL_LOG_WARNING(log, "get_data(has_sad) failed with code {}",
                         result_has_sad);
-      has_sad_ptr = nullptr;
-    } else {
-      has_sad = has_sad_ptr ? *has_sad_ptr : false;
+    } else if (has_sad_ptr) {
+      has_sad = *has_sad_ptr;
+      std::free(has_sad_ptr);
     }
 
     // If a saddle was found, accept it even if force didn't fully converge
@@ -245,6 +247,7 @@ int ARTnSaddleSearch::run() {
           "eigval_sad", reinterpret_cast<void **>(&eigval_ptr));
       if (result_eigval == 0 && eigval_ptr) {
         eigenvalue = *eigval_ptr;
+        std::free(eigval_ptr);
       } else {
         QUILL_LOG_WARNING(
             log, "Failed to retrieve eigenvalue (result={}, ptr_valid={})",
@@ -263,11 +266,8 @@ int ARTnSaddleSearch::run() {
         eigenvector = eonc::from_fortran_layout_vector(
             std::vector<double>(evec_ptr, evec_ptr + 3 * nat), nat);
 
-        // WARNING: Do NOT free evec_ptr - ARTn may have allocated it with
-        // Fortran ALLOCATE Calling std::free() on Fortran-allocated memory
-        // causes segfaults Memory must be freed by ARTn library via exposed
-        // deallocation function For now, we must rely on ARTn to manage this
-        // memory internally
+        // get_data allocates via c_malloc (artn_c_wrappers.f90), safe to free
+        std::free(evec_ptr);
       } else {
         QUILL_LOG_ERROR(
             log, "Failed to retrieve eigenvector (result={}, ptr_valid={})",
