@@ -1,9 +1,0 @@
-[
-  {
-    "id": 1,
-    "type": "SocketNWChem",
-    "created_at": "2026-04-05T19:56:01.675925",
-    "destroyed_at": "2026-04-05T19:56:13.904204",
-    "force_calls": 1
-  }
-]
