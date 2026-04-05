@@ -12,6 +12,7 @@
 #include "ARTnSaddleSearch.h"
 #include "Eigen.h"
 
+#include <filesystem>
 #include <limits>
 namespace eonc {
 
@@ -79,11 +80,15 @@ int ARTnSaddleSearch::run() {
                       result_force);
     }
 
+    // Only set filin if the input file exists; pARTn fails setup if the
+    // file is specified but missing.
     const char *filin = "artn_input.dat";
-    int result_filin = res.get_set_param_fn()("filin", 0, &size0, filin);
-    if (result_filin != 0) {
-      QUILL_LOG_ERROR(log, "set_param(filin) failed with code {}",
-                      result_filin);
+    if (std::filesystem::exists(filin)) {
+      int result_filin = res.get_set_param_fn()("filin", 0, &size0, filin);
+      if (result_filin != 0) {
+        QUILL_LOG_ERROR(log, "set_param(filin) failed with code {}",
+                        result_filin);
+      }
     }
 
     int verbosity = 3;
@@ -106,7 +111,7 @@ int ARTnSaddleSearch::run() {
     bool cerr = false;
     res.get_setup_fn()(nat, &cerr);
     if (cerr) {
-      QUILL_LOG_ERROR(log, "ARTn setup failed");
+      QUILL_LOG_ERROR(log, "ARTn setup failed (nat={})", nat);
       return -1;
     }
   }

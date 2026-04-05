@@ -950,7 +950,7 @@ if get_option('with_tests')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif
     if get_option('with_artn')
-        test_array += [['test_artn', 'ARTnTest.cpp', 'saddle_search']]
+        test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
     endif
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
