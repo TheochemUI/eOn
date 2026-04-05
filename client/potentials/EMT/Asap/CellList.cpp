@@ -4,8 +4,8 @@
 #include "GhostAtoms.h"
 #include "Image.h"
 #include "SuperCell.h"
+#include <cmath>
 #include <map>
-#include <math.h>
 using std::map;
 #include <assert.h>
 using std::cerr;

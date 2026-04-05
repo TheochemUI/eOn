@@ -5,10 +5,6 @@ concurrency:
 on:
   pull_request:
     branches: [main]
-
-env:
-  SCCACHE_GHA_ENABLED: "true"
-
 jobs:
   benchmark:
     strategy:
@@ -46,13 +42,6 @@ jobs:
         shell: bash
         run: command -v cbindgen || cargo install cbindgen
       - uses: astral-sh/setup-uv@v5
-
-      - name: Configure sccache
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Build
         run: |
