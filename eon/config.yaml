@@ -1061,6 +1061,46 @@ Lanczos:
 
 ################################################################################
 
+ARTn:
+
+    options:
+
+        push_step_size:
+            kind: float
+            default: 0.3
+
+        init_step_size:
+            kind: float
+            default: 0.1
+
+        force_threshold:
+            kind: float
+            default: 0.05
+
+        max_iterations:
+            kind: int
+            default: 500
+
+################################################################################
+
+IRA:
+
+    options:
+
+        distance_threshold:
+            kind: float
+            default: 0.3
+
+        symmetry_threshold:
+            kind: float
+            default: 0.1
+
+        use_pbc:
+            kind: boolean
+            default: false
+
+################################################################################
+
 AKMC:
 
     options:
@@ -1224,6 +1264,7 @@ Saddle Search:
             values:
                 - dimer
                 - lanczos
+                - artn
                 - gprdimer
 
         displace_random_weight:

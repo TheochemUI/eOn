@@ -859,6 +859,24 @@ if get_option('with_tests')
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif
+    if get_option('with_artn')
+        test_array += [['test_artn', 'ARTnTest.cpp', 'saddle_search']]
+    endif
+    if get_option('with_ira')
+        test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
+    endif
+    # Collect rpath dirs for cmake-built Fortran subprojects (artn, ira)
+    _test_rpath = []
+    artn_cmake_libdir = meson.project_build_root() / 'subprojects' / '_artn_cmake_build'
+    ira_cmake_libdir = meson.project_build_root() / 'subprojects' / '_ira_cmake_build' / 'src'
+    ira_cmake_libdir2 = meson.project_source_root() / 'subprojects' / 'ira' / 'lib'
+    if get_option('with_artn') and get_option('artn_libdir') == ''
+        _test_rpath += artn_cmake_libdir
+    endif
+    if get_option('with_ira') and get_option('ira_libdir') == ''
+        _test_rpath += [ira_cmake_libdir, ira_cmake_libdir2]
+    endif
+
     foreach test : test_array
         test_timeout = test.get(3, 30)
         test(

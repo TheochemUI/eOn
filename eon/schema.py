@@ -814,7 +814,7 @@ class SaddleSearchConfig(BaseModel):
         new states and then runs a climbing image NEB calculation to find the
         saddle and a dimer calculation to estimate the eigenmode at the saddle.
     """
-    min_mode_method: Literal["dimer", "lanczos", "gprdimer"] = Field(
+    min_mode_method: Literal["dimer", "lanczos", "gprdimer", "artn"] = Field(
         default="dimer", description="Min-mode method to use."
     )
     """
@@ -822,6 +822,7 @@ class SaddleSearchConfig(BaseModel):
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
      - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`
      - ``gprdimer``: Use the GP accelerated dimer method.
+     - ``artn``: Use the Activation-Relaxation Technique nouveau (ARTn).
      """
     max_energy: float = Field(
         default=20.0,
@@ -1668,6 +1669,44 @@ class LanczosConfig(BaseModel):
     )
 
 
+class ARTnConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    push_step_size: float = Field(
+        default=0.3,
+        description="Step size for the initial push away from the minimum, in Angstroms.",
+    )
+    init_step_size: float = Field(
+        default=0.1,
+        description="Initial step size for mode-orthogonal motion.",
+    )
+    force_threshold: float = Field(
+        default=0.05,
+        description="Force convergence criterion for saddle point, in eV/Angstrom.",
+    )
+    max_iterations: int = Field(
+        default=500,
+        description="Maximum number of ARTn iterations.",
+    )
+
+
+class IRAConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    distance_threshold: float = Field(
+        default=0.3,
+        description="Distance threshold for atom matching in structure comparison.",
+    )
+    symmetry_threshold: float = Field(
+        default=0.1,
+        description="Threshold for symmetry detection (SOFI algorithm).",
+    )
+    use_pbc: bool = Field(
+        default=False,
+        description="Use periodic boundary conditions for structure comparison.",
+    )
+
+
 class HessianConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     atom_list: Union[str, list[int]] = Field(
@@ -1890,6 +1929,8 @@ class Config(BaseModel):
     optimizer: OptimizerConfig
     distributed_replica: DistributedReplicaConfig
     gprdimer: GPRDimerConfig
+    artn: ARTnConfig
+    ira: IRAConfig
     debug: DebugConfig
     serve: ServeConfig
 
