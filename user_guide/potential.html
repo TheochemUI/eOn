@@ -456,6 +456,14 @@ Optimal transport Gaussian Process
 <span id="id18">[<a class="reference internal" href="#id40" title="Rohit Goswami and Hannes Jónsson. Adaptive Pruning for Increased Robustness and Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point Searches. ChemPhysChem, November 2025. doi:10.1002/cphc.202500730.">POT_GJonsson25</a>]</span>, and can lead to manyfold
 increases in speed compared to file or ASE interfaces
 <span id="id19">[<a class="reference internal" href="#id42" title="Rohit Goswami. Efficient exploration of chemical kinetics. October 2025. arXiv:2510.21368, doi:10.48550/arXiv.2510.21368.">POT_Gos25</a>]</span>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>NWChem’s Fortran i-PI socket driver truncates UNIX socket names to approximately
+30 characters. The full socket path is <code class="docutils literal notranslate"><span class="pre">/tmp/ipi_&lt;unix_socket_path&gt;</span></code>, so
+<code class="docutils literal notranslate"><span class="pre">unix_socket_path</span></code> should be kept short (under ~20 characters). For example,
+<code class="docutils literal notranslate"><span class="pre">eon_nwchem</span></code> works but <code class="docutils literal notranslate"><span class="pre">eon_nwchem_test_socket</span></code> will be silently truncated,
+causing a connection failure with no clear error message.</p>
+</div>
 <p>An older ASE interface exists as well.</p>
 </section>
 <section id="ase-potentials">
