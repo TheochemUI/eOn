@@ -32,6 +32,8 @@ public:
   virtual AtomMatrix getEigenvector() = 0;
 
   int status{0};
+  int iteration{0};  // Number of iterations (for reporting)
+  int forcecalls{0}; // Force calls during saddle search
 };
 
 } // namespace eonc
