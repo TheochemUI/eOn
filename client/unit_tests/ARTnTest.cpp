@@ -18,6 +18,9 @@
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "TestUtils.hpp"
+#ifdef WITH_ARTN
+#include "libs/ARTn/ARTnResource.h"
+#endif
 #include "catch2/catch_amalgamated.hpp"
 
 namespace tests {
@@ -81,6 +84,8 @@ protected:
 TEST_CASE_METHOD(ARTnVsDimerFixture,
                  "ARTn and Dimer find saddle with comparable energy",
                  "[artn][dimer][comparison]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
   // --- Run Dimer saddle search ---
   double initialEnergy = matter_dimer->getPotentialEnergy();
   auto dimerSearch = std::make_shared<MinModeSaddleSearch>(
@@ -137,6 +142,8 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
 TEST_CASE_METHOD(ARTnVsDimerFixture,
                  "ARTn produces negative eigenvalue at saddle",
                  "[artn][eigenvalue]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
   int status = artnSearch->run();

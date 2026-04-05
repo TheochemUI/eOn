@@ -10,7 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "SaddleSearchJob.h"
+#ifdef WITH_ARTN
 #include "ARTnSaddleSearch.h"
+#endif
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Potential.h"
@@ -54,10 +56,13 @@ std::vector<std::string> SaddleSearchJob::run() {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
+#ifdef WITH_ARTN
   if (params.saddle_search_options.minmode_method == "artn") {
     saddleSearch =
         std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
-  } else {
+  } else
+#endif
+  {
     saddleSearch = std::make_unique<MinModeSaddleSearch>(
         saddle, mode, initial->getPotentialEnergy(), params, pot);
   }

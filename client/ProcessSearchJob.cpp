@@ -10,7 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ProcessSearchJob.h"
+#ifdef WITH_ARTN
 #include "ARTnSaddleSearch.h"
+#endif
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
 #include "DynamicsSaddleSearch.h"
@@ -90,11 +92,13 @@ std::vector<std::string> ProcessSearchJob::run() {
         eonc::EpiCenters::DISP_LOAD) {
       mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
-    // Use ARTn if configured, otherwise use MinModeSaddleSearch (dimer/lanczos)
+#ifdef WITH_ARTN
     if (params.saddle_search_options.minmode_method == "artn") {
       saddleSearch =
           std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
-    } else {
+    } else
+#endif
+    {
       saddleSearch = std::make_unique<MinModeSaddleSearch>(
           saddle, mode, initial->getPotentialEnergy(), params, pot);
     }

@@ -20,6 +20,9 @@
 #include "PotRegistry.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#ifdef WITH_ARTN
+#include "libs/ARTn/ARTnResource.h"
+#endif
 
 #include <filesystem>
 #include <fstream>
@@ -928,9 +931,12 @@ max_energy = 10.0
   REQUIRE(barrier == Catch::Approx(0.158077).epsilon(1e-3));
 }
 
+#ifdef WITH_ARTN
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob ARTn converges on Morse Pt",
                  "[job][saddle_search][artn][integration]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -988,6 +994,8 @@ max_iterations = 500
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "ProcessSearchJob ARTn converges on Morse Pt",
                  "[job][process_search][artn][integration]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -1043,6 +1051,7 @@ max_spawns = 5
   // Reactant energy must match
   REQUIRE(reactantE == Catch::Approx(-1462.166783).epsilon(1e-4));
 }
+#endif // WITH_ARTN
 
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob ARTn parameters parsed correctly",
