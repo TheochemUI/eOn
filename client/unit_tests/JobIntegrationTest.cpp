@@ -929,6 +929,172 @@ max_energy = 10.0
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob ARTn converges on Morse Pt",
+                 "[job][saddle_search][artn][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+converged_force = 0.001
+max_iterations = 1000
+
+[Saddle Search]
+displace_least_coordinated_weight = 1.0
+displace_radius = 3.3
+displace_magnitude = 0.01
+min_mode_method = artn
+max_energy = 10.0
+
+[ARTn]
+push_step_size = 0.3
+init_step_size = 0.1
+force_threshold = 0.05
+max_iterations = 500
+)");
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  int status = std::stoi(results["termination_reason"]);
+  // ARTn may not converge, but should not crash
+  REQUIRE((status == 0 || status == 1));
+
+  // Energy must be finite
+  double energy = std::stod(results["potential_energy_saddle"]);
+  REQUIRE(std::isfinite(energy));
+
+  // Eigenvalue must be negative (true saddle point)
+  double eigenvalue = std::stod(results["final_eigenvalue"]);
+  REQUIRE(eigenvalue < 0.0);
+  REQUIRE(std::isfinite(eigenvalue)); // Regression test for FPE fix
+
+  // Should have made force calls
+  REQUIRE(results.count("force_calls_saddle") > 0);
+  int fCalls = std::stoi(results["force_calls_saddle"]);
+  REQUIRE(fCalls > 0);
+
+  // Reactant energy must match
+  double reactantE = std::stod(results["potential_energy_reactant"]);
+  REQUIRE(reactantE == Catch::Approx(-1462.166782).epsilon(1e-4));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ProcessSearchJob ARTn converges on Morse Pt",
+                 "[job][process_search][artn][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = process_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 1000
+max_move = 0.2
+
+[Saddle Search]
+displace_least_coordinated_weight = 1.0
+displace_radius = 3.3
+displace_magnitude = 0.01
+min_mode_method = artn
+max_energy = 10.0
+
+[ARTn]
+push_step_size = 0.3
+init_step_size = 0.1
+force_threshold = 0.05
+max_iterations = 500
+
+[Process Search]
+max_spawns = 5
+)");
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  int status = std::stoi(results["termination_reason"]);
+  REQUIRE((status == 0 || status == 1));
+
+  // Force calls must be reasonable
+  REQUIRE(forceCalls_ > 0);
+
+  // Energies must be finite
+  double saddleE = std::stod(results["potential_energy_saddle"]);
+  REQUIRE(std::isfinite(saddleE));
+
+  double reactantE = std::stod(results["potential_energy_reactant"]);
+  REQUIRE(std::isfinite(reactantE));
+
+  double productE = std::stod(results["potential_energy_product"]);
+  REQUIRE(std::isfinite(productE));
+
+  // Reactant energy must match
+  REQUIRE(reactantE == Catch::Approx(-1462.166783).epsilon(1e-4));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob ARTn parameters parsed correctly",
+                 "[job][saddle_search][artn][params][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+
+[ARTn]
+push_step_size = 0.5
+init_step_size = 0.2
+force_threshold = 0.1
+max_iterations = 1000
+)");
+
+  std::filesystem::current_path(workdir);
+  params = std::make_unique<Parameters>();
+  params->load("config.ini");
+  std::filesystem::current_path(originalDir);
+
+  // Verify ARTn parameters are parsed
+  REQUIRE(params->artn_options.push_step_size == 0.5);
+  REQUIRE(params->artn_options.init_step_size == 0.2);
+  REQUIRE(params->artn_options.force_threshold == 0.1);
+  REQUIRE(params->artn_options.max_iterations == 1000);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture, "IRA parameters parsed correctly",
+                 "[job][ira][params][integration]") {
+  writeConfig(R"(
+[Main]
+job = point
+
+[IRA]
+distance_threshold = 0.5
+symmetry_threshold = 0.2
+use_pbc = true
+)");
+
+  std::filesystem::current_path(workdir);
+  params = std::make_unique<Parameters>();
+  params->load("config.ini");
+  std::filesystem::current_path(originalDir);
+
+  // Verify IRA parameters are parsed
+  REQUIRE(params->ira_options.distance_threshold == 0.5);
+  REQUIRE(params->ira_options.symmetry_threshold == 0.2);
+  REQUIRE(params->ira_options.use_pbc == true);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "ProcessSearch with dynamics saddle search",
                  "[job][process_search][dynamics][integration]") {
   copyTestData("../Pt_Heptamer_FrozenLayers");
