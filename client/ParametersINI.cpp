@@ -457,12 +457,12 @@ int load_ini(INIReader &ini, Parameters &params) {
   // [ARTn] //
   params.artn_options.push_step_size =
       ini.GetReal("ARTn", "push_step_size", params.artn_options.push_step_size);
-  params.artn_options.init_step_size =
-      ini.GetReal("ARTn", "init_step_size", params.artn_options.init_step_size);
   params.artn_options.force_threshold = ini.GetReal(
       "ARTn", "force_threshold", params.artn_options.force_threshold);
   params.artn_options.max_iterations = ini.GetInteger(
       "ARTn", "max_iterations", params.artn_options.max_iterations);
+  params.artn_options.ninit =
+      ini.GetInteger("ARTn", "ninit", params.artn_options.ninit);
 
   // [IRA] //
   params.ira_options.distance_threshold = ini.GetReal(

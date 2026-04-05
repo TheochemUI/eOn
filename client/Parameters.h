@@ -570,10 +570,11 @@ public:
 
   // [ARTn] //
   struct artn_options_t {
-    double push_step_size{0.3};
-    double init_step_size{0.1};
-    double force_threshold{0.05};
+    double push_step_size{0.3};   // maps to pARTn "push_step_size"
+    double force_threshold{0.05}; // maps to pARTn "forc_thr"
     int max_iterations{500};
+    int ninit{0}; // maps to pARTn "ninit": number of initial push steps
+                  // before Lanczos. 0 = skip push, go straight to Lanczos
   } artn_options;
 
   // [IRA] //
