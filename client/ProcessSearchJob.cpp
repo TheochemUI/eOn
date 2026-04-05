@@ -109,8 +109,7 @@ std::vector<std::string> ProcessSearchJob::run() {
   } else if (params.saddle_search_options.method == "artn") {
     // ARTn handles its own push from the minimum, eigenmode estimation,
     // and perpendicular relaxation internally.
-    AtomMatrix artnMode =
-        AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+    AtomMatrix artnMode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
     if (params.saddle_search_options.displace_type ==
         eonc::EpiCenters::DISP_LOAD) {
       artnMode =

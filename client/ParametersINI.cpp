@@ -455,10 +455,10 @@ int load_ini(INIReader &ini, Parameters &params) {
       "Lanczos", "quit_early", params.lanczos_options.quit_early);
 
   // [ARTn] //
-  params.artn_options.push_step_size = ini.GetReal(
-      "ARTn", "push_step_size", params.artn_options.push_step_size);
-  params.artn_options.init_step_size = ini.GetReal(
-      "ARTn", "init_step_size", params.artn_options.init_step_size);
+  params.artn_options.push_step_size =
+      ini.GetReal("ARTn", "push_step_size", params.artn_options.push_step_size);
+  params.artn_options.init_step_size =
+      ini.GetReal("ARTn", "init_step_size", params.artn_options.init_step_size);
   params.artn_options.force_threshold = ini.GetReal(
       "ARTn", "force_threshold", params.artn_options.force_threshold);
   params.artn_options.max_iterations = ini.GetInteger(

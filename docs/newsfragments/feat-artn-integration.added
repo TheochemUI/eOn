@@ -1,0 +1,6 @@
+Added ARTn (Activation-Relaxation Technique nouveau) saddle search method via
+the pARTn Fortran library. Supports two modes: ``method = artn`` (standalone,
+ARTn handles push + Lanczos + FIRE relaxation) and ``min_mode_method = artn``
+(drop-in, eOn's displacement seeds the mode). Configurable via ``[ARTn]``
+section with ``push_step_size``, ``force_threshold``, ``max_iterations``,
+and ``optimizer`` parameters. Requires ``-Dwith_artn=true`` at build time.
