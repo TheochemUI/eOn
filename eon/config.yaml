@@ -1257,6 +1257,7 @@ Saddle Search:
                 - min_mode
                 - dynamics
                 - basin_hopping
+                - artn
 
         min_mode_method:
             kind: string
@@ -1264,8 +1265,8 @@ Saddle Search:
             values:
                 - dimer
                 - lanczos
-                - artn
                 - gprdimer
+                - artn
 
         displace_random_weight:
             kind: float

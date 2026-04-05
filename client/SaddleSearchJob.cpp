@@ -57,7 +57,8 @@ std::vector<std::string> SaddleSearchJob::run() {
   }
 
 #ifdef WITH_ARTN
-  if (params.saddle_search_options.minmode_method == "artn") {
+  if (params.saddle_search_options.method == "artn" ||
+      params.saddle_search_options.minmode_method == "artn") {
     saddleSearch =
         std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
   } else
@@ -92,6 +93,7 @@ int SaddleSearchJob::doSaddleSearch() {
 
   if (params.saddle_search_options.minmode_method ==
           LowestEigenmode::MINMODE_GPRDIMER ||
+      params.saddle_search_options.method == "artn" ||
       params.saddle_search_options.minmode_method == "artn") {
     fCallsSaddle = saddleSearch->forcecalls;
   } else {

@@ -56,13 +56,34 @@ much lower.
 ARTn requires the `artn-plugin` Fortran subproject (built automatically via
 cmake at configure time when `-Dwith_artn=true` is set).
 
+ARTn can be used in two ways:
+
+**As a standalone method** (``method = artn``): ARTn handles its own push from
+the minimum, internal Lanczos eigenmode estimation, and perpendicular relaxation
+(FIRE). An optional initial mode from ``direction.dat`` biases the push direction.
+
 ```{code-block} ini
 [Saddle Search]
+method = artn
+
+[ARTn]
+push_step_size = 0.3
+force_threshold = 0.05
+max_iterations = 500
+```
+
+**As a min-mode drop-in** (``min_mode_method = artn``): eOn's displacement and
+epicenter logic seeds the initial structure and mode, then ARTn takes over from
+the displaced configuration. This is useful when eOn's displacement strategy
+(e.g. least-coordinated weighting) should control where the search starts.
+
+```{code-block} ini
+[Saddle Search]
+method = min_mode
 min_mode_method = artn
 
 [ARTn]
 push_step_size = 0.3
-init_step_size = 0.1
 force_threshold = 0.05
 max_iterations = 500
 ```

@@ -955,7 +955,7 @@ max_iterations = 1000
 displace_least_coordinated_weight = 1.0
 displace_radius = 3.3
 displace_magnitude = 0.01
-min_mode_method = artn
+method = artn
 max_energy = 10.0
 
 [ARTn]
@@ -1016,7 +1016,7 @@ max_move = 0.2
 displace_least_coordinated_weight = 1.0
 displace_radius = 3.3
 displace_magnitude = 0.01
-min_mode_method = artn
+method = artn
 max_energy = 10.0
 
 [ARTn]

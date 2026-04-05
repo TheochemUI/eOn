@@ -82,6 +82,7 @@ std::vector<std::string> ProcessSearchJob::run() {
       *saddle = *min1 = *min2 = *initial;
     }
   } else {
+    // ARTn and dynamics start from the initial minimum
     *saddle = *min1 = *min2 = *initial;
   }
 
@@ -93,6 +94,8 @@ std::vector<std::string> ProcessSearchJob::run() {
       mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
 #ifdef WITH_ARTN
+    // ARTn as a min-mode drop-in: eOn displaces, seeds the mode, ARTn
+    // takes over from the displaced structure.
     if (params.saddle_search_options.minmode_method == "artn") {
       saddleSearch =
           std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
@@ -102,6 +105,20 @@ std::vector<std::string> ProcessSearchJob::run() {
       saddleSearch = std::make_unique<MinModeSaddleSearch>(
           saddle, mode, initial->getPotentialEnergy(), params, pot);
     }
+#ifdef WITH_ARTN
+  } else if (params.saddle_search_options.method == "artn") {
+    // ARTn handles its own push from the minimum, eigenmode estimation,
+    // and perpendicular relaxation internally.
+    AtomMatrix artnMode =
+        AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+    if (params.saddle_search_options.displace_type ==
+        eonc::EpiCenters::DISP_LOAD) {
+      artnMode =
+          eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
+    }
+    saddleSearch =
+        std::make_unique<ARTnSaddleSearch>(saddle, pot, artnMode, params);
+#endif
   } else if (params.saddle_search_options.method == "basin_hopping") {
     saddleSearch =
         std::make_unique<BasinHoppingSaddleSearch>(min1, saddle, pot, params);
