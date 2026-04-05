@@ -1081,6 +1081,18 @@ ARTn:
             kind: int
             default: 0
 
+        nperp_limitation:
+            kind: string
+            default: default
+
+        lanczos_min_size:
+            kind: int
+            default: -1
+
+        nsmooth:
+            kind: int
+            default: -1
+
 ################################################################################
 
 IRA:

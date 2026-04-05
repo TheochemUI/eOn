@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <limits>
+#include <sstream>
 namespace eonc {
 
 ARTnSaddleSearch::ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
@@ -108,6 +109,41 @@ int ARTnSaddleSearch::run() {
     if (result_ninit != 0) {
       QUILL_LOG_ERROR(log, "set_param(ninit) failed with code {}",
                       result_ninit);
+    }
+
+    // nperp_limitation: controls perp-relax steps per Lanczos cycle.
+    // pARTn defaults are tuned for exploration from minimum. For refinement
+    // near a saddle, -1 (unlimited) or 20-30 (for ML potentials) is better.
+    if (params.artn_options.nperp_limitation != "default") {
+      // Parse comma-separated integers into a vector
+      std::vector<int> nperp_vals;
+      std::istringstream ss(params.artn_options.nperp_limitation);
+      std::string token;
+      while (std::getline(ss, token, ',')) {
+        nperp_vals.push_back(std::stoi(token));
+      }
+      if (!nperp_vals.empty()) {
+        int nperp_size = static_cast<int>(nperp_vals.size());
+        int result_nperp = res.get_set_param_fn()(
+            "nperp_limitation", 1, &nperp_size, nperp_vals.data());
+        if (result_nperp != 0) {
+          QUILL_LOG_WARNING(log, "set_param(nperp_limitation) failed: {}",
+                            result_nperp);
+        }
+      }
+    }
+
+    // lanczos_min_size: minimum Lanczos iterations before convergence check.
+    // Default 3 for exploration; 1 for refinement near a saddle.
+    if (params.artn_options.lanczos_min_size >= 0) {
+      int lms = params.artn_options.lanczos_min_size;
+      res.get_set_param_fn()("lanczos_min_size", 0, &size0, &lms);
+    }
+
+    // nsmooth: number of smooth interpolation steps. 0 disables.
+    if (params.artn_options.nsmooth >= 0) {
+      int ns = params.artn_options.nsmooth;
+      res.get_set_param_fn()("nsmooth", 0, &size0, &ns);
     }
 
     // Setup

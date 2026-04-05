@@ -573,8 +573,12 @@ public:
     double push_step_size{0.3};   // maps to pARTn "push_step_size"
     double force_threshold{0.05}; // maps to pARTn "forc_thr"
     int max_iterations{500};
-    int ninit{0}; // maps to pARTn "ninit": number of initial push steps
-                  // before Lanczos. 0 = skip push, go straight to Lanczos
+    int ninit{0}; // maps to pARTn "ninit": number of initial push
+                  // steps before Lanczos. 0 = skip push
+    std::string nperp_limitation{"default"}; // maps to pARTn "nperp_limitation"
+    int lanczos_min_size{
+        -1};         // maps to pARTn "lanczos_min_size" (-1 = use default)
+    int nsmooth{-1}; // maps to pARTn "nsmooth" (-1 = use default)
   } artn_options;
 
   // [IRA] //

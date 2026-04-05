@@ -463,6 +463,12 @@ int load_ini(INIReader &ini, Parameters &params) {
       "ARTn", "max_iterations", params.artn_options.max_iterations);
   params.artn_options.ninit =
       ini.GetInteger("ARTn", "ninit", params.artn_options.ninit);
+  params.artn_options.nperp_limitation =
+      ini.Get("ARTn", "nperp_limitation", params.artn_options.nperp_limitation);
+  params.artn_options.lanczos_min_size = ini.GetInteger(
+      "ARTn", "lanczos_min_size", params.artn_options.lanczos_min_size);
+  params.artn_options.nsmooth =
+      ini.GetInteger("ARTn", "nsmooth", params.artn_options.nsmooth);
 
   // [IRA] //
   params.ira_options.distance_threshold = ini.GetReal(
