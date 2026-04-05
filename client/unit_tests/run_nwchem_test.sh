@@ -5,7 +5,7 @@ set -e
 
 # --- Configuration ---
 # Arguments passed from Meson
-TEST_EXECUTABLE=$1
+TEST_EXECUTABLE=$(realpath "$1")
 NWCHEM_EXECUTABLE=$2
 NWCHEM_INPUT_FILE=$3
 TEST_WORKDIR=$4
@@ -33,15 +33,25 @@ trap cleanup EXIT
 cd "$TEST_WORKDIR"
 echo "--- Running test in: $(pwd) ---"
 rm -f results.dat
+rm -f /tmp/ipi_eon_nwchem
 
 # 2. Start the eOn test server in the background
 echo "--- Starting eOn test server in background ---"
 "$TEST_EXECUTABLE" &
 SERVER_PID=$! # Capture the Process ID of the server
 
-# 3. Wait for a moment to ensure the server is up and listening
-#  A more robust solution would poll for the socket file, but a short sleep is usually enough.
-sleep 1
+# 3. Wait for the server socket to appear (up to 10 seconds)
+SOCKET_PATH="/tmp/ipi_eon_nwchem"
+for i in $(seq 1 20); do
+    if [ -S "$SOCKET_PATH" ]; then
+        break
+    fi
+    sleep 0.5
+done
+if [ ! -S "$SOCKET_PATH" ]; then
+    echo "ERROR: Server socket $SOCKET_PATH did not appear within 10 seconds"
+    exit 1
+fi
 
 # 4. Run the NWChem client in the foreground
 #    It will connect to the server, do its work, and exit.

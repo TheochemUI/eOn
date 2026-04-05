@@ -5,7 +5,7 @@
  * Vectorized mathematica functions from the IBM mass library.
  */
 
-#include <math.h>
+#include <cmath>
 
 inline void vsqrt(double res[], const double a[], const int *n) {
   int nn = *n;

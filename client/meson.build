@@ -55,20 +55,21 @@ if is_windows
     # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.
 endif
 
-_args += cppc.get_supported_arguments(
-    [
-        # C++ only
-        '-Wno-class-memaccess',
-        '-Wno-unused-function',
-        # Common
-        '-Wno-reorder',
-        '-Wno-sign-compare',
-        '-Wno-unused-but-set-parameter',
-        '-Wno-unused-but-set-variable',
-        '-Wno-unused-parameter',
-        '-Wno-unused-result',
-        '-Wno-unused-variable',
-    ],
+add_project_arguments(
+    cppc.get_supported_arguments(
+        [
+            '-Wno-class-memaccess',
+            '-Wno-unused-function',
+            '-Wno-reorder',
+            '-Wno-sign-compare',
+            '-Wno-unused-but-set-parameter',
+            '-Wno-unused-but-set-variable',
+            '-Wno-unused-parameter',
+            '-Wno-unused-result',
+            '-Wno-unused-variable',
+        ],
+    ),
+    language: 'cpp',
 )
 
 # TODO(rg): use fc.get_supported_arguments and add more compiler support
@@ -903,7 +904,7 @@ if get_option('with_tests')
             bash_exe,
             args: [
                 meson.project_source_root() + '/client/unit_tests/run_nwchem_test.sh',
-                'eonclient',
+                ec,
                 nwchem_exe,
                 'nwchem_socket.nwi',  # The input file for the client
                 test_workdir,

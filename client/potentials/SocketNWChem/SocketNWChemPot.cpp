@@ -42,8 +42,22 @@ SocketNWChemPot::SocketNWChemPot(const Parameters &p)
 
   if (unix_socket_mode) {
     unix_socket_basename = p.socket_nwchem_options.unix_socket_path;
-    // NWChem client hardcodes this prefix
+    // NWChem's Fortran i-PI driver truncates the socket name to ~30 chars.
+    // The full path is /tmp/ipi_<basename>, so basename must be short.
     server_address = "/tmp/ipi_" + unix_socket_basename;
+    if (server_address.size() > 30) {
+      std::cerr << "ERROR: UNIX socket path '" << server_address << "' is "
+                << server_address.size()
+                << " characters, which exceeds NWChem's ~30 character limit.\n"
+                << "NWChem will silently truncate it, causing a connection "
+                   "failure.\n"
+                << "Shorten unix_socket_path (currently '"
+                << unix_socket_basename << "') to at most " << (30 - 9)
+                << " characters.\n";
+      throw std::runtime_error(
+          "unix_socket_path too long for NWChem (max ~21 chars, got " +
+          std::to_string(unix_socket_basename.size()) + ")");
+    }
     port = -1;
     std::cout << "SocketNWChemPot: Initializing in UNIX mode." << std::endl;
     std::cout << "Listening on socket file: " << server_address << std::endl;
