@@ -99,8 +99,10 @@ int ARTnSaddleSearch::run() {
                       result_verbose);
     }
 
-    // Go directly to Lanczos - the mode will be used as the starting guess
-    int ninit = 0;
+    // ninit controls initial push steps before Lanczos eigenmode estimation.
+    // 0 = skip push, go straight to Lanczos (appropriate when eOn provides
+    // the displacement direction via push_init).
+    int ninit = params.artn_options.ninit;
     int result_ninit = res.get_set_param_fn()("ninit", 0, &size0, &ninit);
     if (result_ninit != 0) {
       QUILL_LOG_ERROR(log, "set_param(ninit) failed with code {}",

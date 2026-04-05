@@ -75,7 +75,6 @@ protected:
 
     // ARTn parameters for LJ cluster
     params.artn_options.push_step_size = 0.3;
-    params.artn_options.init_step_size = 0.1;
     params.artn_options.force_threshold = 0.05;
     params.artn_options.max_iterations = 500;
   }

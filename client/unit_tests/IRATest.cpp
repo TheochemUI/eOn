@@ -107,14 +107,14 @@ TEST_CASE_METHOD(IRAFixture,
   REQUIRE(result.hausdorffDistance > 0.1);
 }
 
-// SOFI (symmetry detection) currently segfaults due to internal Fortran
-// memory allocation issues. Disabled until debugged with valgrind.
-// TEST_CASE_METHOD(IRAFixture, "IRA findSymmetry returns valid point group",
-//                  "[ira][symmetry]") {
-//   auto result = eonc::IRACompare::findSymmetry(*m1, 0.1);
-//   REQUIRE(result.error == 0);
-//   REQUIRE(result.nOperations >= 1);
-//   REQUIRE(!result.pointGroup.empty());
-// }
+TEST_CASE_METHOD(IRAFixture, "IRA findSymmetry returns valid point group",
+                 "[ira][symmetry]") {
+  auto result = eonc::IRACompare::findSymmetry(*m1, 0.1);
+
+  REQUIRE(result.error == 0);
+  // Every structure has at least the identity operation
+  REQUIRE(result.nOperations >= 1);
+  REQUIRE(!result.pointGroup.empty());
+}
 
 } /* namespace tests */

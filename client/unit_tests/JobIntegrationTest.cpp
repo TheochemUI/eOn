@@ -960,7 +960,6 @@ max_energy = 10.0
 
 [ARTn]
 push_step_size = 0.3
-init_step_size = 0.1
 force_threshold = 0.05
 max_iterations = 500
 )");
@@ -1021,7 +1020,6 @@ max_energy = 10.0
 
 [ARTn]
 push_step_size = 0.3
-init_step_size = 0.1
 force_threshold = 0.05
 max_iterations = 500
 
@@ -1063,7 +1061,6 @@ job = saddle_search
 
 [ARTn]
 push_step_size = 0.5
-init_step_size = 0.2
 force_threshold = 0.1
 max_iterations = 1000
 )");
@@ -1075,7 +1072,7 @@ max_iterations = 1000
 
   // Verify ARTn parameters are parsed
   REQUIRE(params->artn_options.push_step_size == 0.5);
-  REQUIRE(params->artn_options.init_step_size == 0.2);
+  REQUIRE(params->artn_options.ninit == 0);
   REQUIRE(params->artn_options.force_threshold == 0.1);
   REQUIRE(params->artn_options.max_iterations == 1000);
 }

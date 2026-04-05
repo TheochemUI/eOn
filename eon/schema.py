@@ -1680,17 +1680,17 @@ class ARTnConfig(BaseModel):
         default=0.3,
         description="Step size for the initial push away from the minimum, in Angstroms.",
     )
-    init_step_size: float = Field(
-        default=0.1,
-        description="Initial step size for mode-orthogonal motion.",
-    )
     force_threshold: float = Field(
         default=0.05,
-        description="Force convergence criterion for saddle point, in eV/Angstrom.",
+        description="Force convergence criterion for saddle point, in eV/Angstrom. Maps to pARTn's forc_thr.",
     )
     max_iterations: int = Field(
         default=500,
         description="Maximum number of ARTn iterations.",
+    )
+    ninit: int = Field(
+        default=0,
+        description="Number of initial push steps before Lanczos eigenmode estimation. 0 skips the push phase and goes directly to Lanczos (appropriate when eOn provides the displacement direction). Larger values let ARTn explore further from the minimum before computing eigenvalues.",
     )
 
 

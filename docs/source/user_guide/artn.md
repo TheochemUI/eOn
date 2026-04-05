@@ -91,10 +91,16 @@ max_iterations = 500
 ### Parameters
 
 - **`push_step_size`**: Step size (Angstrom) for the initial push away from the
-  minimum. Larger values explore further but risk instability on clusters.
-- **`init_step_size`**: Initial step size for the mode-orthogonal motion.
-- **`force_threshold`**: Force convergence criterion (eV/Angstrom).
+  minimum. Maps to pARTn's ``push_step_size``. Larger values explore further
+  but risk instability on clusters.
+- **`force_threshold`**: Force convergence criterion (eV/Angstrom). Maps to
+  pARTn's ``forc_thr``.
 - **`max_iterations`**: Maximum number of ARTn steps.
+- **`ninit`**: Number of initial push steps before Lanczos eigenmode estimation.
+  Default 0 skips the push phase and goes directly to Lanczos (appropriate when
+  eOn provides the displacement direction). Larger values let ARTn explore
+  further from the minimum before computing eigenvalues. Maps to pARTn's
+  ``ninit``.
 
 ## Build requirements
 

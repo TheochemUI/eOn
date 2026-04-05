@@ -1069,10 +1069,6 @@ ARTn:
             kind: float
             default: 0.3
 
-        init_step_size:
-            kind: float
-            default: 0.1
-
         force_threshold:
             kind: float
             default: 0.05
@@ -1080,6 +1076,10 @@ ARTn:
         max_iterations:
             kind: int
             default: 500
+
+        ninit:
+            kind: int
+            default: 0
 
 ################################################################################
 
