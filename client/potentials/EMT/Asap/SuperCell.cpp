@@ -2,8 +2,8 @@
 #include "Atoms.h"
 #include "Exception.h"
 #include "Potential.h"
+#include <cmath>
 #include <iostream>
-#include <math.h>
 
 SuperCell::SuperCell(const Vec v[3], const bool p[3]) {
   atoms = 0;

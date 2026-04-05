@@ -11,8 +11,8 @@
 */
 #pragma once
 
+#include <cmath>
 #include <iostream>
-#include <math.h>
 // #include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
 
