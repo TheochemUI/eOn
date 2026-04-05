@@ -52,44 +52,11 @@ inline double matDot(const AtomMatrix &a, const AtomMatrix &b) {
       .dot(Eigen::Map<const VectorXd>(b.data(), b.size()));
 }
 
-/// Zero-copy reinterpretation: RowMajor(N,3) -> ColMajor(3,N).
-inline AtomMatrixF to_fortran_layout(const AtomMatrix &row_major) {
-  return Eigen::Map<const AtomMatrixF>(row_major.data(), 3, row_major.rows());
-}
-
-/// Zero-copy reinterpretation: ColMajor(3,N) -> RowMajor(N,3).
-inline AtomMatrix from_fortran_layout(const AtomMatrixF &col_major) {
-  return Eigen::Map<const AtomMatrix>(col_major.data(), col_major.cols(), 3);
-}
-
 namespace eonc {
 
-/// Map flat vector data directly to Eigen types without copying.
-inline Eigen::Map<const AtomMatrixF>
-map_from_flat_colmajor(const std::vector<double> &flat_data, int nat) {
-  assert(flat_data.size() >= static_cast<size_t>(3 * nat));
-  return {flat_data.data(), 3, nat};
-}
-
-inline Eigen::Map<AtomMatrix>
-map_from_flat_rowmajor(std::vector<double> &flat_data, int nat) {
-  assert(flat_data.size() >= static_cast<size_t>(3 * nat));
-  return {flat_data.data(), nat, 3};
-}
-
-inline Eigen::Map<const AtomMatrix>
-map_from_flat_rowmajor(const std::vector<double> &flat_data, int nat) {
-  assert(flat_data.size() >= static_cast<size_t>(3 * nat));
-  return {flat_data.data(), nat, 3};
-}
-
-/// Copy AtomMatrix data into a flat vector (contiguous memcpy).
-inline void to_fortran_layout_vector(const AtomMatrix &row_major,
-                                     std::vector<double> &out_flat) {
-  out_flat.assign(row_major.data(), row_major.data() + row_major.size());
-}
-
-/// Reconstruct AtomMatrix from a flat column-major vector.
+/// Reconstruct AtomMatrix from a flat column-major vector (e.g. from Fortran).
+/// RowMajor(N,3) and ColMajor(3,N) share the same contiguous memory layout,
+/// so this is effectively a reinterpretation of the flat data.
 inline AtomMatrix
 from_fortran_layout_vector(const std::vector<double> &flat_colmajor, int nat) {
   assert(flat_colmajor.size() >= static_cast<size_t>(3 * nat));
