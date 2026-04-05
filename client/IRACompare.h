@@ -45,7 +45,8 @@ public:
   static MatchResult match(const Matter &m1, const Matter &m2,
                            double distThreshold);
 
-  /// Match with periodic boundary conditions.
+  /// Atom assignment under periodic boundary conditions (CShDA only, no
+  /// rotation/SVD). Returns permutation and per-atom distances.
   static MatchResult matchPBC(const Matter &m1, const Matter &m2,
                               double distThreshold);
 

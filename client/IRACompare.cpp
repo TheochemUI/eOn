@@ -59,8 +59,8 @@ IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
   Eigen::Map<const AtomMatrixF> coords1_map(pos1.data(), 3, nat1);
   Eigen::Map<const AtomMatrixF> coords2_map(pos2.data(), 3, nat2);
 
-  // Use libira_match (following the C example pattern)
-  // Candidate arrays: -1 means "use all atoms" (equal-size structures)
+  // Candidate arrays: -1 means "use geometric center as origin" (good
+  // initial guess for translation with equal-size structures)
   std::vector<int> cand1(nat1, 0), cand2(nat2, 0);
   if (nat1 == nat2) {
     cand1[0] = -1;
@@ -154,9 +154,15 @@ IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
     for (int j = 0; j < 3; j++)
       lat[j * 3 + i] = cell(i, j);
 
-  int *found_ptr = nullptr;
-  double *dists_ptr = nullptr;
+  // Caller must pre-allocate output arrays; Fortran receives pointers only
+  std::vector<int> found_buf(nat1);
+  std::vector<double> dists_buf(nat1);
+  int *found_ptr = found_buf.data();
+  double *dists_ptr = dists_buf.data();
 
+  // NOTE: this calls cshda_pbc only (assignment, no rotation/SVD matching).
+  // It finds the best atom assignment under PBC but does not compute the
+  // optimal rotation or translation.
   res.get_cshda_pbc_fn()(nat1, typ1.data(), coords1_map.data(), nat2,
                          typ2.data(), coords2_map.data(), lat, distThreshold,
                          &found_ptr, &dists_ptr);
@@ -169,10 +175,6 @@ IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
   result.rotation = Eigen::Matrix3d::Identity();
   result.translation = Eigen::Vector3d::Zero();
   result.error = 0;
-
-  // WARNING: Do NOT free found_ptr and dists_ptr - they may be allocated by
-  // Fortran Calling std::free() on Fortran-allocated memory causes segfaults
-  // Memory must be freed by IRA library via its own cleanup mechanisms
 #else
   result.error = -1;
 #endif
