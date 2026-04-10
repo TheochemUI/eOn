@@ -143,7 +143,14 @@ int ProcessSearchJob::doProcessSearch() {
 
   fctmp = pot->forceCallCounter;
   status = saddleSearch->run();
-  fCallsSaddle += pot->forceCallCounter - fctmp;
+  if (params.saddle_search_options.minmode_method ==
+          LowestEigenmode::MINMODE_GPRDIMER ||
+      params.saddle_search_options.method == "artn" ||
+      params.saddle_search_options.minmode_method == "artn") {
+    fCallsSaddle += saddleSearch->forcecalls;
+  } else {
+    fCallsSaddle += pot->forceCallCounter - fctmp;
+  }
   EONC_LOG_DEBUG("Got {} calls in the saddle search, with previous {}",
                  fCallsSaddle, fctmp);
 
@@ -271,8 +278,7 @@ void ProcessSearchJob::saveData(int status) {
   if (out) {
     out << std::format("{} termination_reason\n", status);
     out << std::format("{} termination_reason_text\n",
-                       magic_enum::enum_name(
-                           static_cast<MinModeSaddleSearch::Status>(status)));
+                       saddleSearch->describeStatus(status));
     out << std::format("{} random_seed\n", params.main_options.randomSeed);
     out << std::format(
         "{} potential_type\n",
@@ -329,7 +335,7 @@ void ProcessSearchJob::saveData(int status) {
 }
 
 void ProcessSearchJob::printEndState(int status) {
-  auto msg = MinModeSaddleSearch::statusMessage(status);
+  auto msg = saddleSearch->describeStatus(status);
   if (status == MinModeSaddleSearch::STATUS_GOOD) {
     QUILL_LOG_DEBUG(log, "[Saddle Search] {}", msg);
   } else {

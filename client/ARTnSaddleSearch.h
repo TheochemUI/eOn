@@ -14,8 +14,10 @@
 
 #include "EonLogger.h"
 #include "Matter.h"
+#include "MinModeSaddleSearch.h"
 #include "Parameters.h"
 #include "SaddleSearchMethod.h"
+#include <limits>
 
 // Include the ARTn resource for thread-local access
 #ifdef WITH_ARTN
@@ -44,6 +46,11 @@ constexpr double ARTN_SMALL_DISPLACEMENT = 1e-6;
 /// Wraps the pARTn Fortran library via its C API (artn.h).
 class ARTnSaddleSearch : public SaddleSearchMethod {
 public:
+  static constexpr int STATUS_GOOD = 0;
+  static constexpr int STATUS_BAD_MAX_ITERATIONS =
+      MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS;
+  static constexpr int STATUS_BAD_ARTN_ERROR = 22;
+
   ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
                    std::shared_ptr<Potential> potPassed, AtomMatrix modeInitial,
                    const Parameters &paramsPassed);
@@ -52,10 +59,11 @@ public:
   int run() override;
   double getEigenvalue() override;
   AtomMatrix getEigenvector() override;
+  std::string_view describeStatus(int status) const override;
 
 private:
   std::shared_ptr<Matter> matter;
-  double eigenvalue{0.0};
+  double eigenvalue{std::numeric_limits<double>::quiet_NaN()};
   AtomMatrix eigenvector, mode;
   eonc::log::Scoped log;
 };

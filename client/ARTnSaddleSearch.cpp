@@ -43,6 +43,10 @@ int ARTnSaddleSearch::run() {
   auto &res = get_artn_resource();
   const int nat = matter->numberOfAtoms();
 
+  if (mode.rows() != nat || mode.cols() != 3) {
+    mode = AtomMatrix::Zero(nat, 3);
+  }
+
   // 1. Library Initialization & Configuration (Locked)
   {
     std::lock_guard<std::mutex> lock(res.library_mutex);
@@ -51,7 +55,8 @@ int ARTnSaddleSearch::run() {
       res.require_loaded();
     } catch (const std::exception &e) {
       QUILL_LOG_ERROR(log, "ARTn library not available: {}", e.what());
-      return -1;
+      status = STATUS_BAD_ARTN_ERROR;
+      return status;
     }
 
     res.get_create_fn()();
@@ -151,7 +156,8 @@ int ARTnSaddleSearch::run() {
     res.get_setup_fn()(nat, &cerr);
     if (cerr) {
       QUILL_LOG_ERROR(log, "ARTn setup failed (nat={})", nat);
-      return -1;
+      status = STATUS_BAD_ARTN_ERROR;
+      return status;
     }
   }
 
@@ -277,6 +283,22 @@ int ARTnSaddleSearch::run() {
           "ARTn found saddle after {} iterations (has_error={}, has_sad={})",
           this->iteration, has_error, has_sad);
 
+      // Retrieve the saddle coordinates tracked internally by pARTn so the
+      // Matter object matches the reported eigenpair and subsequent endpoint
+      // minimizations start from the actual saddle.
+      double *tau_sad_ptr = nullptr;
+      int result_tau_sad = res.get_get_data_fn()(
+          "tau_sad", reinterpret_cast<void **>(&tau_sad_ptr));
+      if (result_tau_sad == 0 && tau_sad_ptr) {
+        matter->setPositions(eonc::from_fortran_layout_vector(
+            std::vector<double>(tau_sad_ptr, tau_sad_ptr + 3 * nat), nat));
+        std::free(tau_sad_ptr);
+      } else {
+        QUILL_LOG_WARNING(
+            log, "Failed to retrieve tau_sad (result={}, ptr_valid={})",
+            result_tau_sad, tau_sad_ptr != nullptr);
+      }
+
       // Retrieve eigenvalue
       double *eigval_ptr = nullptr;
       int result_eigval = res.get_get_data_fn()(
@@ -315,34 +337,35 @@ int ARTnSaddleSearch::run() {
         eigenvector = AtomMatrix::Zero(nat, 3);
       }
 
-      status = 0;           // GOOD
+      status = STATUS_GOOD;
       res.get_clean_fn()(); // Clean up before releasing lock
-      return 0;
+      return status;
     }
 
     // No saddle found - this is a real error
     QUILL_LOG_WARNING(
         log, "ARTn stopped after {} iterations (has_error={}, has_sad={})",
         iteration, has_error, has_sad);
-    status = 2;           // BAD_ARTN_ERROR
+    status = STATUS_BAD_ARTN_ERROR;
     res.get_clean_fn()(); // Clean up before releasing lock
-    return 2;
+    return status;
   }
 
   QUILL_LOG_WARNING(log, "ARTn did not converge after {} iterations",
                     iteration);
-  status = 1; // BAD_MAX_ITERATIONS
+  status = STATUS_BAD_MAX_ITERATIONS;
 
   // Clean up in all cases
   {
     std::lock_guard<std::mutex> lock(res.library_mutex);
     res.get_clean_fn()();
   }
-  return 1;
+  return status;
 
 #else
   QUILL_LOG_ERROR(log, "ARTn support not compiled");
-  return -1;
+  status = STATUS_BAD_ARTN_ERROR;
+  return status;
 #endif
 }
 
@@ -358,6 +381,19 @@ AtomMatrix ARTnSaddleSearch::getEigenvector() {
     QUILL_LOG_WARNING(log, "Requesting uninitialized eigenvector");
   }
   return eigenvector;
+}
+
+std::string_view ARTnSaddleSearch::describeStatus(int status) const {
+  switch (status) {
+  case STATUS_GOOD:
+    return "Success";
+  case STATUS_BAD_MAX_ITERATIONS:
+    return "Too many iterations";
+  case STATUS_BAD_ARTN_ERROR:
+    return "ARTn backend error";
+  default:
+    return "Unknown status";
+  }
 }
 
 } // namespace eonc

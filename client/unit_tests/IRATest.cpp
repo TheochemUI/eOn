@@ -115,6 +115,8 @@ TEST_CASE_METHOD(IRAFixture, "IRA findSymmetry returns valid point group",
   // Every structure has at least the identity operation
   REQUIRE(result.nOperations >= 1);
   REQUIRE(!result.pointGroup.empty());
+  REQUIRE(result.operations.size() == static_cast<size_t>(result.nOperations));
+  REQUIRE(result.axes.size() == static_cast<size_t>(result.nOperations));
 }
 
 } /* namespace tests */

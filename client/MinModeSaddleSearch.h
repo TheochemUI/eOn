@@ -89,6 +89,9 @@ public:
   ~MinModeSaddleSearch() = default;
   AtomMatrix getEigenvector(); // lowest eigenmode
   double getEigenvalue();      // estimate for the lowest eigenvalue
+  std::string_view describeStatus(int status) const override {
+    return statusMessage(status);
+  }
 
   int run() override;
   int run(long max_iterations_override);

@@ -44,15 +44,19 @@ std::vector<std::string> SaddleSearchJob::run() {
 
   initial->con2matter(reactantFilename);
 
-  if (params.saddle_search_options.displace_type ==
-      eonc::EpiCenters::DISP_LOAD) {
+  const bool standaloneARTn = params.saddle_search_options.method == "artn";
+
+  if (!standaloneARTn &&
+      params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
     saddle->con2matter(displacementFilename);
   } else {
     *saddle = *initial;
   }
-  AtomMatrix mode;
-  if (params.saddle_search_options.displace_type ==
-      eonc::EpiCenters::DISP_LOAD) {
+
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  const bool canLoadMode =
+      params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD;
+  if (canLoadMode && std::filesystem::exists(modeFilename)) {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
@@ -111,8 +115,7 @@ void SaddleSearchJob::saveData(int status) {
   if (out) {
     out << std::format("{} termination_reason\n", status);
     out << std::format("{} termination_reason_text\n",
-                       magic_enum::enum_name(
-                           static_cast<MinModeSaddleSearch::Status>(status)));
+                       saddleSearch->describeStatus(status));
     out << "saddle_search job_type\n";
     out << std::format("{} random_seed\n", params.main_options.randomSeed);
     out << std::format(
@@ -151,7 +154,7 @@ void SaddleSearchJob::saveData(int status) {
 }
 
 void SaddleSearchJob::printEndState(int status) {
-  auto msg = MinModeSaddleSearch::statusMessage(status);
+  auto msg = saddleSearch->describeStatus(status);
   if (status == MinModeSaddleSearch::STATUS_GOOD) {
     QUILL_LOG_DEBUG(log, "[Saddle Search] {}", msg);
   } else {
