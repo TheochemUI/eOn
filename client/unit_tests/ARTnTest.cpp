@@ -112,8 +112,10 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   double artnEigenvalue = artnSearch->getEigenvalue();
   int artnIters = artnSearch->iteration;
 
-  // ARTn should not crash (0=good, 1=max_iterations, 2=artn_error)
-  REQUIRE((artnStatus == 0 || artnStatus == 1 || artnStatus == 2));
+  // ARTn should not crash (0=good, 5=max_iterations, 22=artn_error)
+  REQUIRE((artnStatus == ARTnSaddleSearch::STATUS_GOOD ||
+           artnStatus == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
+           artnStatus == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
   REQUIRE(std::isfinite(artnSaddleEnergy));
 
   INFO("ARTn: status=" << artnStatus << " energy=" << artnSaddleEnergy
@@ -155,6 +157,9 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
     // Eigenvector should be normalized and non-zero
     AtomMatrix evec = artnSearch->getEigenvector();
     REQUIRE(evec.norm() > 1e-10);
+  } else {
+    // Failed ARTn runs should not report a fake zero eigenvalue.
+    REQUIRE(std::isnan(artnSearch->getEigenvalue()));
   }
 
   // Should have used force calls

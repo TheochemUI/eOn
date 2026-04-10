@@ -37,6 +37,9 @@ public:
   int run();
   double getEigenvalue();
   AtomMatrix getEigenvector();
+  std::string_view describeStatus(int status) const override {
+    return MinModeSaddleSearch::statusMessage(status);
+  }
 
   double eigenvalue;
   AtomMatrix eigenvector;

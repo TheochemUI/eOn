@@ -258,7 +258,7 @@ IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
       result.angles.assign(angle_data, angle_data + n_mat);
     }
     if (ax_data) {
-      result.axes.resize(nat);
+      result.axes.resize(n_mat);
       for (int k = 0; k < n_mat; k++) {
         result.axes[k] = Eigen::Map<const Vector3d>(&ax_data[k * 3]);
       }

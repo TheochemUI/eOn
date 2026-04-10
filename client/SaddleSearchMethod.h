@@ -14,6 +14,8 @@
 #include "Parameters.h"
 #include "Potential.h"
 
+#include <string_view>
+
 namespace eonc {
 
 class SaddleSearchMethod {
@@ -30,6 +32,7 @@ public:
   virtual int run() = 0;
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
+  virtual std::string_view describeStatus(int status) const = 0;
 
   int status{0};
   int iteration{0};  // Number of iterations (for reporting)

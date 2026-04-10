@@ -814,8 +814,10 @@ class SaddleSearchConfig(BaseModel):
         new states and then runs a climbing image NEB calculation to find the
         saddle and a dimer calculation to estimate the eigenmode at the saddle.
       - ``artn``: Use the Activation-Relaxation Technique nouveau. ARTn
-        handles its own push from the minimum, Lanczos eigenmode estimation,
-        and perpendicular relaxation internally.
+        starts from ``pos.con``, ignores ``displacement.con``, and performs
+        its own push, Lanczos eigenmode estimation, and perpendicular
+        relaxation internally. ``direction.dat`` is optional and only biases
+        the initial push when present.
     """
     min_mode_method: Literal["dimer", "lanczos", "gprdimer", "artn"] = Field(
         default="dimer", description="Min-mode method to use."

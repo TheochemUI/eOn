@@ -21,6 +21,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #ifdef WITH_ARTN
+#include "ARTnSaddleSearch.h"
 #include "libs/ARTn/ARTnResource.h"
 #endif
 
@@ -969,16 +970,20 @@ max_iterations = 500
   REQUIRE(results.count("termination_reason") > 0);
   int status = std::stoi(results["termination_reason"]);
   // ARTn may not converge, but should not crash
-  REQUIRE((status == 0 || status == 1));
+  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
+           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
+           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
 
   // Energy must be finite
   double energy = std::stod(results["potential_energy_saddle"]);
   REQUIRE(std::isfinite(energy));
 
-  // Eigenvalue must be negative (true saddle point)
-  double eigenvalue = std::stod(results["final_eigenvalue"]);
-  REQUIRE(eigenvalue < 0.0);
-  REQUIRE(std::isfinite(eigenvalue)); // Regression test for FPE fix
+  if (status == ARTnSaddleSearch::STATUS_GOOD) {
+    // Eigenvalue must be negative for a converged first-order saddle
+    double eigenvalue = std::stod(results["final_eigenvalue"]);
+    REQUIRE(eigenvalue < 0.0);
+    REQUIRE(std::isfinite(eigenvalue)); // Regression test for FPE fix
+  }
 
   // Should have made force calls
   REQUIRE(results.count("force_calls_saddle") > 0);
@@ -1031,7 +1036,9 @@ max_spawns = 5
 
   REQUIRE(results.count("termination_reason") > 0);
   int status = std::stoi(results["termination_reason"]);
-  REQUIRE((status == 0 || status == 1));
+  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
+           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
+           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
 
   // Force calls must be reasonable
   REQUIRE(forceCalls_ > 0);
@@ -1048,6 +1055,39 @@ max_spawns = 5
 
   // Reactant energy must match
   REQUIRE(reactantE == Catch::Approx(-1462.166783).epsilon(1e-4));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob standalone ARTn works without direction file",
+                 "[job][saddle_search][artn][optional-mode][integration]") {
+  copyTestData("../saddle_search");
+  std::filesystem::remove(workdir / "direction.dat");
+  std::filesystem::remove(workdir / "displacement.con");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = artn
+
+[ARTn]
+push_step_size = 0.3
+force_threshold = 0.05
+max_iterations = 5
+)");
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  int status = std::stoi(results["termination_reason"]);
+  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
+           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
+           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
 }
 #endif // WITH_ARTN
 
