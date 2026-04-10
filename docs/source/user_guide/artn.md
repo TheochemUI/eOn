@@ -37,7 +37,8 @@ Each ARTn step (one call to `artn_step`) requires exactly 1 external force
 evaluation. However, ARTn typically needs more total steps than Lanczos because
 of the push and perpendicular relaxation overhead.
 
-Benchmark on LJ38 TS optimization (100 near-saddle structures, OptBench):
+Illustrative benchmark on LJ38 TS optimization (100 near-saddle structures,
+OptBench):
 
 | Method | Avg force calls | Median | Failed/100 |
 |---------|-----------------|--------|------------|
@@ -45,22 +46,27 @@ Benchmark on LJ38 TS optimization (100 near-saddle structures, OptBench):
 | ARTn | 426 | 269 | 10 |
 | Dimer | 523 | 359 | 0 |
 
-ARTn is faster than Dimer when it converges but less robust on non-periodic
-clusters (10% failure rate from the push phase causing "box explosion" on
-systems without periodic boundary conditions). For periodic bulk and surface
-systems, which are ARTn's design target, the failure rate is expected to be
-much lower.
+On this benchmark ARTn is faster than Dimer when it converges but less robust
+on non-periodic clusters (10% failure rate from the push phase causing "box
+explosion" on systems without periodic boundary conditions). Treat these
+numbers as workload-specific rather than universal performance guarantees; for
+periodic bulk and surface systems, which are ARTn's design target, the failure
+rate is expected to be lower.
 
 ## Usage
 
-ARTn requires the `artn-plugin` Fortran subproject (built automatically via
-cmake at configure time when `-Dwith_artn=true` is set).
+ARTn requires the `artn-plugin` Fortran subproject source to be available under
+`subprojects/` (for example via `meson subprojects download artn-plugin`). When
+present, eOn builds it via CMake at configure time as a workaround for Meson's
+current Fortran submodule scanner limitations.
 
 ARTn can be used in two ways:
 
-**As a standalone method** (``method = artn``): ARTn handles its own push from
-the minimum, internal Lanczos eigenmode estimation, and perpendicular relaxation
-(FIRE). An optional initial mode from ``direction.dat`` biases the push direction.
+**As a standalone method** (``method = artn``): ARTn starts directly from
+``pos.con`` and handles its own push, internal Lanczos eigenmode estimation,
+and perpendicular relaxation (FIRE). ``displacement.con`` is ignored in this
+mode, and an optional initial mode from ``direction.dat`` biases the push
+direction when present.
 
 ```{code-block} ini
 [Saddle Search]
@@ -114,8 +120,8 @@ max_iterations = 500
 
 ## Build requirements
 
-ARTn requires a Fortran compiler and LAPACK. The pARTn library is fetched and
-built automatically:
+ARTn requires a Fortran compiler and LAPACK. Download the subproject first, then
+let eOn build it automatically at configure time:
 
 ```{code-block} shell
 meson subprojects download artn-plugin
