@@ -112,6 +112,13 @@ The full listing of options is found in the `meson_options.txt` file. These can
 all be turned on and off at the command line. As an example see the [LAMMPS
 integration instructions](project:../user_guide/lammps_pot.md).
 
+For optional wrapped dependencies such as ARTn and IRA, make sure the
+subproject sources are present before configuring:
+
+```{code-block} bash
+meson subprojects download artn-plugin ira
+```
+
 # Licenses
 
 `eOn` is released under the [BSD 3-Clause
