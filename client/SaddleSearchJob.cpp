@@ -20,6 +20,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 std::vector<std::string> SaddleSearchJob::run() {
@@ -60,14 +61,29 @@ std::vector<std::string> SaddleSearchJob::run() {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
+  const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
+  const bool useARTnAsMinMode =
+      params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method == "artn";
+
 #ifdef WITH_ARTN
-  if (params.saddle_search_options.method == "artn" ||
-      params.saddle_search_options.minmode_method == "artn") {
+  if (useStandaloneARTn || useARTnAsMinMode) {
     saddleSearch =
         std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
   } else
 #endif
   {
+#ifndef WITH_ARTN
+    if (useStandaloneARTn) {
+      throw std::runtime_error(
+          "saddle_search.method=artn requires a build with ARTn support");
+    }
+    if (useARTnAsMinMode) {
+      throw std::runtime_error(
+          "saddle_search.minmode_method=artn requires a build with ARTn "
+          "support");
+    }
+#endif
     saddleSearch = std::make_unique<MinModeSaddleSearch>(
         saddle, mode, initial->getPotentialEnergy(), params, pot);
   }
@@ -95,11 +111,12 @@ int SaddleSearchJob::doSaddleSearch() {
     }
   }
 
-  if (params.saddle_search_options.minmode_method ==
-          LowestEigenmode::MINMODE_GPRDIMER ||
-      params.saddle_search_options.method == "artn" ||
-      params.saddle_search_options.minmode_method == "artn") {
-    fCallsSaddle = saddleSearch->forcecalls;
+  if (params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method ==
+          LowestEigenmode::MINMODE_GPRDIMER) {
+    fCallsSaddle = saddleSearch->getForceCalls();
+  } else if (params.saddle_search_options.method == "artn") {
+    fCallsSaddle = saddleSearch->getForceCalls();
   } else {
     fCallsSaddle += this->pot->forceCallCounter - f1;
   }
@@ -124,7 +141,7 @@ void SaddleSearchJob::saveData(int status) {
     out << std::format("{} total_force_calls\n",
                        this->pot->forceCallCounter.load());
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
-    out << std::format("{} iterations\n", saddleSearch->iteration);
+    out << std::format("{} iterations\n", saddleSearch->getIterationCount());
     if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
       out << std::format("{:f} potential_energy_saddle\n",
                          saddle->getPotentialEnergy());

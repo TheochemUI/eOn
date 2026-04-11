@@ -60,11 +60,17 @@ public:
   double getEigenvalue() override;
   AtomMatrix getEigenvector() override;
   std::string_view describeStatus(int status) const override;
+  int getStatus() const override { return status; }
+  int getIterationCount() const override { return iteration; }
+  int getForceCalls() const override { return forcecalls; }
 
 private:
   std::shared_ptr<Matter> matter;
   double eigenvalue{std::numeric_limits<double>::quiet_NaN()};
   AtomMatrix eigenvector, mode;
+  int status{0};
+  int iteration{0};
+  int forcecalls{0};
   eonc::log::Scoped log;
 };
 

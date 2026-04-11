@@ -92,6 +92,9 @@ public:
   std::string_view describeStatus(int status) const override {
     return statusMessage(status);
   }
+  int getStatus() const override { return status; }
+  int getIterationCount() const override { return iteration; }
+  int getForceCalls() const override { return forcecalls; }
 
   int run() override;
   int run(long max_iterations_override);

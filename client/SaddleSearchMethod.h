@@ -33,10 +33,9 @@ public:
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
   virtual std::string_view describeStatus(int status) const = 0;
-
-  int status{0};
-  int iteration{0};  // Number of iterations (for reporting)
-  int forcecalls{0}; // Force calls during saddle search
+  virtual int getStatus() const { return 0; }
+  virtual int getIterationCount() const { return 0; }
+  virtual int getForceCalls() const { return 0; }
 };
 
 } // namespace eonc

@@ -26,6 +26,7 @@
 #include <format>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 #include "EonLogger.h"
@@ -87,6 +88,9 @@ std::vector<std::string> ProcessSearchJob::run() {
   }
 
   AtomMatrix mode;
+  const bool useARTnAsMinMode =
+      params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method == "artn";
 
   if (params.saddle_search_options.method == "min_mode") {
     if (params.saddle_search_options.displace_type ==
@@ -96,12 +100,19 @@ std::vector<std::string> ProcessSearchJob::run() {
 #ifdef WITH_ARTN
     // ARTn as a min-mode drop-in: eOn displaces, seeds the mode, ARTn
     // takes over from the displaced structure.
-    if (params.saddle_search_options.minmode_method == "artn") {
+    if (useARTnAsMinMode) {
       saddleSearch =
           std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
     } else
 #endif
     {
+#ifndef WITH_ARTN
+      if (useARTnAsMinMode) {
+        throw std::runtime_error(
+            "saddle_search.minmode_method=artn requires a build with ARTn "
+            "support");
+      }
+#endif
       saddleSearch = std::make_unique<MinModeSaddleSearch>(
           saddle, mode, initial->getPotentialEnergy(), params, pot);
     }
@@ -128,6 +139,13 @@ std::vector<std::string> ProcessSearchJob::run() {
         saddle, initial->getPotentialEnergy(), params);
   }
 
+#ifndef WITH_ARTN
+  if (params.saddle_search_options.method == "artn") {
+    throw std::runtime_error(
+        "saddle_search.method=artn requires a build with ARTn support");
+  }
+#endif
+
   int status = doProcessSearch();
 
   printEndState(status);
@@ -143,11 +161,12 @@ int ProcessSearchJob::doProcessSearch() {
 
   fctmp = pot->forceCallCounter;
   status = saddleSearch->run();
-  if (params.saddle_search_options.minmode_method ==
-          LowestEigenmode::MINMODE_GPRDIMER ||
-      params.saddle_search_options.method == "artn" ||
-      params.saddle_search_options.minmode_method == "artn") {
-    fCallsSaddle += saddleSearch->forcecalls;
+  if (params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method ==
+          LowestEigenmode::MINMODE_GPRDIMER) {
+    fCallsSaddle += saddleSearch->getForceCalls();
+  } else if (params.saddle_search_options.method == "artn") {
+    fCallsSaddle += saddleSearch->getForceCalls();
   } else {
     fCallsSaddle += pot->forceCallCounter - fctmp;
   }
