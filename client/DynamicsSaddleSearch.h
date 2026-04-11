@@ -39,6 +39,7 @@ public:
   std::string_view describeStatus(int status) const override {
     return MinModeSaddleSearch::statusMessage(status);
   }
+  int getStatus() const override { return status; }
 
   int refineTransition(const std::vector<std::shared_ptr<Matter>> &snapshots,
                        std::shared_ptr<Matter> product);
