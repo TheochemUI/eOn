@@ -1,4 +1,5 @@
 _incdirs += [include_directories('thirdparty')]
+_runtime_rpath = []
 
 cmake = import('cmake')
 
@@ -719,6 +720,7 @@ if get_option('with_artn')
         else
             artn_incbase = ''
         endif
+        _runtime_rpath += [artn_libdir]
         if artn_incbase != ''
             artn_dep = declare_dependency(
                 dependencies: meson.get_compiler('cpp').find_library('artn',
@@ -755,27 +757,45 @@ if get_option('with_ira')
                 '-DCMAKE_BUILD_TYPE=Release',
                 check: true)
             run_command('cmake', '--build', ira_bld, '--parallel', '4', check: true)
-            ira_libdir = ira_bld / 'src'
-            ira_lib_fallback = ira_src / 'lib'
-            if run_command('test', '-f', ira_libdir / 'libira.so', check: false).returncode() != 0
-                ira_libdir = ira_lib_fallback
-            endif
             ira_incdir = 'interface'
             ira_incbase = ira_src
+            ira_candidates = [ira_bld / 'src', ira_src / 'lib']
+            ira_lib = not_found
+            foreach candidate : ira_candidates
+                ira_lib = meson.get_compiler('cpp').find_library(
+                    'ira',
+                    dirs: [candidate],
+                    required: false,
+                )
+                if ira_lib.found()
+                    ira_libdir = candidate
+                    break
+                endif
+            endforeach
+            if not ira_lib.found()
+                error('IRA enabled but libira was not found in the built or vendored library directories')
+            endif
         else
             ira_incbase = ''
+            ira_lib = meson.get_compiler('cpp').find_library(
+                'ira',
+                dirs: [ira_libdir],
+                required: false,
+            )
+            if not ira_lib.found()
+                error('IRA enabled but libira was not found in ira_libdir=' + ira_libdir)
+            endif
         endif
+        _runtime_rpath += [ira_libdir]
         if ira_incbase != ''
             ira_dep = declare_dependency(
-                dependencies: meson.get_compiler('cpp').find_library('ira',
-                    dirs: [ira_libdir]),
+                dependencies: ira_lib,
                 include_directories: include_directories(
                     '..' / 'subprojects' / 'ira' / ira_incdir),
             )
         else
             ira_dep = declare_dependency(
-                dependencies: meson.get_compiler('cpp').find_library('ira',
-                    dirs: [ira_libdir]),
+                dependencies: ira_lib,
                 include_directories: include_directories(ira_incdir),
             )
         endif
@@ -843,6 +863,8 @@ eclib = library(
     link_with: _linkto,
     cpp_args: _args,
     link_args: _linkargs,
+    build_rpath: ':'.join(_runtime_rpath),
+    install_rpath: ':'.join(_runtime_rpath),
     install: true,
 )
 
@@ -869,6 +891,8 @@ ec = executable(
     link_with: _linkto,
     cpp_args: [_args, '-w'],
     link_args: _linkargs,
+    build_rpath: ':'.join(_runtime_rpath),
+    install_rpath: ':'.join(_runtime_rpath),
     install: true,
 )
 
@@ -955,18 +979,6 @@ if get_option('with_tests')
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     endif
-    # Collect rpath dirs for cmake-built Fortran subprojects (artn, ira)
-    _test_rpath = []
-    artn_cmake_libdir = meson.project_build_root() / 'subprojects' / '_artn_cmake_build'
-    ira_cmake_libdir = meson.project_build_root() / 'subprojects' / '_ira_cmake_build' / 'src'
-    ira_cmake_libdir2 = meson.project_source_root() / 'subprojects' / 'ira' / 'lib'
-    if get_option('with_artn') and get_option('artn_libdir') == ''
-        _test_rpath += artn_cmake_libdir
-    endif
-    if get_option('with_ira') and get_option('ira_libdir') == ''
-        _test_rpath += [ira_cmake_libdir, ira_cmake_libdir2]
-    endif
-
     foreach test : test_array
         test_timeout = test.get(3, 30)
         test(
@@ -981,7 +993,7 @@ if get_option('with_tests')
                 include_directories: _incdirs,
                 cpp_args: test_args,
                 link_with: _linkto,
-                build_rpath: ':'.join(_test_rpath),
+                build_rpath: ':'.join(_runtime_rpath),
             ),
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
                 2,
