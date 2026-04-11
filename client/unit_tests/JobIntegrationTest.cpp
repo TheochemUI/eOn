@@ -1091,6 +1091,70 @@ max_iterations = 5
 }
 #endif // WITH_ARTN
 
+#ifndef WITH_ARTN
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob rejects standalone ARTn when not compiled",
+                 "[job][saddle_search][artn][config][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = artn
+)");
+
+  REQUIRE_THROWS_WITH(runJob(),
+                      Catch::Matchers::ContainsSubstring(
+                          "saddle_search.method=artn requires a build with ARTn support"));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob rejects ARTn min-mode when not compiled",
+                 "[job][saddle_search][artn][min_mode][config][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = min_mode
+min_mode_method = artn
+)");
+
+  REQUIRE_THROWS_WITH(
+      runJob(),
+      Catch::Matchers::ContainsSubstring(
+          "saddle_search.minmode_method=artn requires a build with ARTn support"));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ProcessSearchJob rejects standalone ARTn when not compiled",
+                 "[job][process_search][artn][config][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = process_search
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = artn
+)");
+
+  REQUIRE_THROWS_WITH(runJob(),
+                      Catch::Matchers::ContainsSubstring(
+                          "saddle_search.method=artn requires a build with ARTn support"));
+}
+#endif
+
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob ARTn parameters parsed correctly",
                  "[job][saddle_search][artn][params][integration]") {

@@ -93,7 +93,7 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   int dimerStatus = dimerSearch->run();
   double dimerSaddleEnergy = matter_dimer->getPotentialEnergy();
   double dimerEigenvalue = dimerSearch->getEigenvalue();
-  int dimerIters = dimerSearch->iteration;
+  int dimerIters = dimerSearch->getIterationCount();
 
   // Dimer should not crash (may converge, hit max iters, or abort on
   // nonnegative eigenvalue depending on the starting displacement)
@@ -110,7 +110,7 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   int artnStatus = artnSearch->run();
   double artnSaddleEnergy = matter_artn->getPotentialEnergy();
   double artnEigenvalue = artnSearch->getEigenvalue();
-  int artnIters = artnSearch->iteration;
+  int artnIters = artnSearch->getIterationCount();
 
   // ARTn should not crash (0=good, 5=max_iterations, 22=artn_error)
   REQUIRE((artnStatus == ARTnSaddleSearch::STATUS_GOOD ||
@@ -163,7 +163,7 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   }
 
   // Should have used force calls
-  REQUIRE(artnSearch->forcecalls > 0);
+  REQUIRE(artnSearch->getForceCalls() > 0);
 }
 
 } /* namespace tests */
