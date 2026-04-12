@@ -156,6 +156,7 @@ int ARTnSaddleSearch::run() {
     res.get_setup_fn()(nat, &cerr);
     if (cerr) {
       QUILL_LOG_ERROR(log, "ARTn setup failed (nat={})", nat);
+      res.get_destroy_fn()();
       status = STATUS_BAD_ARTN_ERROR;
       return status;
     }
