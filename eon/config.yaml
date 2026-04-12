@@ -1113,6 +1113,36 @@ IRA:
 
 ################################################################################
 
+BGSD:
+
+    options:
+
+        alpha:
+            kind: float
+            default: 10.0
+
+        beta:
+            kind: float
+            default: 0.2
+
+        gradientfinitedifference:
+            kind: float
+            default: 0.000001
+
+        Hforceconvergence:
+            kind: float
+            default: 0.01
+
+        grad2energyconvergence:
+            kind: float
+            default: 0.000001
+
+        grad2forceconvergence:
+            kind: float
+            default: 0.0001
+
+################################################################################
+
 AKMC:
 
     options:
@@ -1269,6 +1299,7 @@ Saddle Search:
                 - min_mode
                 - dynamics
                 - basin_hopping
+                - bgsd
                 - artn
 
         min_mode_method:
@@ -1325,15 +1356,12 @@ Saddle Search:
             kind: string
             default: random
             values:
+                - load
                 - random
+                - last_atom
+                - least_coordinated
+                - not_fcc_hcp_coordinated
                 - listed_atoms
-                - listed_types
-                - under
-                - least
-                - not_FCC_HCP
-                - not_TCP_BCC
-                - not_TCP
-                - water
 
         displace_1d:
             kind: boolean
