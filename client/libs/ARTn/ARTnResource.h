@@ -41,6 +41,7 @@ public:
                            const double *lat, const int *if_pos, int *disp_code,
                            double *disp_vec, bool *lconv);
   using clean_artn_fn = void (*)();
+  using artn_destroy_fn = void (*)();
   using set_param_fn = int (*)(const char *const name, const int crank,
                                const int *csize, const void *cval);
   using get_param_fn = int (*)(const char *name, void *cval);
@@ -70,6 +71,7 @@ public:
   setup_artn_fn get_setup_fn() const { return setup_artn_; }
   artn_fn get_artn_fn() const { return artn_; }
   clean_artn_fn get_clean_fn() const { return clean_artn_; }
+  artn_destroy_fn get_destroy_fn() const { return artn_destroy_; }
   set_param_fn get_set_param_fn() const { return set_param_; }
   get_param_fn get_get_param_fn() const { return get_param_; }
   get_runparam_fn get_get_runparam_fn() const { return get_runparam_; }
@@ -93,6 +95,7 @@ private:
   setup_artn_fn setup_artn_{nullptr};
   artn_fn artn_{nullptr};
   clean_artn_fn clean_artn_{nullptr};
+  artn_destroy_fn artn_destroy_{nullptr};
   set_param_fn set_param_{nullptr};
   get_param_fn get_param_{nullptr};
   get_runparam_fn get_runparam_{nullptr};

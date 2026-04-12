@@ -338,7 +338,7 @@ int ARTnSaddleSearch::run() {
       }
 
       status = STATUS_GOOD;
-      res.get_clean_fn()(); // Clean up before releasing lock
+      res.get_destroy_fn()();
       return status;
     }
 
@@ -347,7 +347,7 @@ int ARTnSaddleSearch::run() {
         log, "ARTn stopped after {} iterations (has_error={}, has_sad={})",
         iteration, has_error, has_sad);
     status = STATUS_BAD_ARTN_ERROR;
-    res.get_clean_fn()(); // Clean up before releasing lock
+    res.get_destroy_fn()();
     return status;
   }
 
@@ -358,7 +358,7 @@ int ARTnSaddleSearch::run() {
   // Clean up in all cases
   {
     std::lock_guard<std::mutex> lock(res.library_mutex);
-    res.get_clean_fn()();
+    res.get_destroy_fn()();
   }
   return status;
 
