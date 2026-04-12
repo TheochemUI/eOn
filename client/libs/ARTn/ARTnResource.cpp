@@ -39,6 +39,7 @@ ARTnResource::ARTnResource() {
   setup_artn_ = load_sym<setup_artn_fn>("setup_artn");
   artn_ = load_sym<artn_fn>("artn");
   clean_artn_ = load_sym<clean_artn_fn>("clean_artn");
+  artn_destroy_ = load_sym<artn_destroy_fn>("artn_destroy");
   set_param_ = load_sym<set_param_fn>("set_param");
   get_param_ = load_sym<get_param_fn>("get_param");
   get_runparam_ = load_sym<get_runparam_fn>("get_runparam");
@@ -47,9 +48,9 @@ ARTnResource::ARTnResource() {
   artn_step_ = load_sym<artn_step_fn>("artn_step");
 
   // Check that all required symbols are loaded
-  if (!artn_create_ || !setup_artn_ || !artn_ || !clean_artn_ || !set_param_ ||
-      !get_param_ || !get_runparam_ || !get_data_ || !print_caller_ ||
-      !artn_step_) {
+  if (!artn_create_ || !setup_artn_ || !artn_ || !clean_artn_ ||
+      !artn_destroy_ || !set_param_ || !get_param_ || !get_runparam_ ||
+      !get_data_ || !print_caller_ || !artn_step_) {
     std::cerr << "[ARTN] Library loaded but missing required symbols\n";
     dynlib::close(m_handle);
     m_handle = {};
