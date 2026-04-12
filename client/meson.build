@@ -715,26 +715,12 @@ if get_option('with_artn')
                 check: true)
             run_command('cmake', '--build', artn_bld, '--parallel', '4', check: true)
             artn_libdir = artn_bld
-            artn_incdir = 'interface'
-            artn_incbase = artn_src
-        else
-            artn_incbase = ''
         endif
         _runtime_rpath += [artn_libdir]
-        if artn_incbase != ''
-            artn_dep = declare_dependency(
-                dependencies: meson.get_compiler('cpp').find_library('artn',
-                    dirs: [artn_libdir]),
-                include_directories: include_directories(
-                    '..' / 'subprojects' / 'artn-plugin' / artn_incdir),
-            )
-        else
-            artn_dep = declare_dependency(
-                dependencies: meson.get_compiler('cpp').find_library('artn',
-                    dirs: [artn_libdir]),
-                include_directories: include_directories(artn_incdir),
-            )
-        endif
+        artn_dep = declare_dependency(
+            dependencies: meson.get_compiler('cpp').find_library('artn',
+                dirs: [artn_libdir]),
+        )
     endif
     _deps += [artn_dep]
     _args += ['-DWITH_ARTN']
@@ -758,7 +744,7 @@ if get_option('with_ira')
                 check: true)
             run_command('cmake', '--build', ira_bld, '--parallel', '4', check: true)
             ira_incdir = 'interface'
-            ira_incbase = ira_src
+            ira_includes = ['-I' + ira_src / ira_incdir]
             ira_candidates = [ira_bld / 'src', ira_src / 'lib']
             ira_lib = not_found
             foreach candidate : ira_candidates
@@ -776,7 +762,7 @@ if get_option('with_ira')
                 error('IRA enabled but libira was not found in the built or vendored library directories')
             endif
         else
-            ira_incbase = ''
+            ira_includes = ['-I' + ira_incdir]
             ira_lib = meson.get_compiler('cpp').find_library(
                 'ira',
                 dirs: [ira_libdir],
@@ -787,18 +773,10 @@ if get_option('with_ira')
             endif
         endif
         _runtime_rpath += [ira_libdir]
-        if ira_incbase != ''
-            ira_dep = declare_dependency(
-                dependencies: ira_lib,
-                include_directories: include_directories(
-                    '..' / 'subprojects' / 'ira' / ira_incdir),
-            )
-        else
-            ira_dep = declare_dependency(
-                dependencies: ira_lib,
-                include_directories: include_directories(ira_incdir),
-            )
-        endif
+        ira_dep = declare_dependency(
+            dependencies: ira_lib,
+            compile_args: ira_includes,
+        )
     endif
     _deps += [ira_dep]
     _args += ['-DWITH_IRA']
