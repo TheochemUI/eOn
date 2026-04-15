@@ -579,6 +579,12 @@ public:
     int lanczos_min_size{
         -1};         // maps to pARTn "lanczos_min_size" (-1 = use default)
     int nsmooth{-1}; // maps to pARTn "nsmooth" (-1 = use default)
+    int nnewchance{
+        3}; // maps to pARTn "nnewchance": retries when lowest eigval > 0
+            // (convex region). pARTn default is 0 (immediate fail), which
+            // is too aggressive for small clusters where Lanczos can
+            // momentarily settle on a positive eigenvalue before the
+            // unstable mode emerges. 3 retries is a reasonable default.
   } artn_options;
 
   // [IRA] //

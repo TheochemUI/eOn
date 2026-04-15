@@ -151,6 +151,17 @@ int ARTnSaddleSearch::run() {
       res.get_set_param_fn()("nsmooth", 0, &size0, &ns);
     }
 
+    // nnewchance: retries permitted when Lanczos returns a positive lowest
+    // eigenvalue (convex region, no unstable mode). pARTn defaults to 0,
+    // i.e. immediate "EIGENVALUE LOST" failure -- too brittle for small
+    // clusters where the eigenvalue can flip positive transiently before
+    // the saddle direction stabilizes. eOn's default of 3 (Parameters.h)
+    // gives Lanczos a few random-restart chances before giving up.
+    if (params.artn_options.nnewchance >= 0) {
+      int nnc = params.artn_options.nnewchance;
+      res.get_set_param_fn()("nnewchance", 0, &size0, &nnc);
+    }
+
     // Setup
     bool cerr = false;
     res.get_setup_fn()(nat, &cerr);
