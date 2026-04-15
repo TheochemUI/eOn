@@ -1,7 +1,7 @@
 [wrap-git]
 directory=artn-plugin
 url=https://gitlab.com/HaoZeke/artn-plugin.git
-revision=81de9c9237c79edb6b0fb38d4d212e84153615e7
+revision=9dab2053c236b7226892d48631b1ee361bb13f17
 depth=1
 
 [provide]

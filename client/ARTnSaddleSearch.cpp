@@ -232,6 +232,12 @@ int ARTnSaddleSearch::run() {
 
     // 3. ARTn State Update (LOCKED)
     // Serialize only the interaction with the non-thread-safe backend.
+    //
+    // Perf note (artn-plugin >= 9dab2053): the inner Lanczos eigenvector
+    // reconstruction now uses intrinsic matmul on a reshaped Vmat slice,
+    // which allocates a temporary [3*nat, ilanc] array per Lanczos iteration.
+    // Negligible at our sizes (small molecules, ilanc < O(20)); revisit if
+    // we ever drive artn against large supercell DFT.
     {
       std::unique_lock<std::mutex> lock(res.library_mutex);
       res.get_artn_step_fn()(nat, energy, force_map.data(), ityp.data(),
