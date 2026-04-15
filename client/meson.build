@@ -746,7 +746,7 @@ if get_option('with_ira')
             ira_incdir = 'interface'
             ira_includes = ['-I' + ira_src / ira_incdir]
             ira_candidates = [ira_bld / 'src', ira_src / 'lib']
-            ira_lib = not_found
+            ira_lib = disabler()
             foreach candidate : ira_candidates
                 ira_lib = meson.get_compiler('cpp').find_library(
                     'ira',
