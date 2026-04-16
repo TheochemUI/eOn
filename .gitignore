@@ -674,3 +674,5 @@ pos.con
 examples/*/states/
 scripts/regression/.snakemake/
 scripts/regression/workdirs/
+
+.project-ctx.toml

@@ -47,8 +47,8 @@ std::vector<std::string> SaddleSearchJob::run() {
 
   const bool standaloneARTn = params.saddle_search_options.method == "artn";
 
-  if (!standaloneARTn &&
-      params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD) {
+  if (!standaloneARTn && params.saddle_search_options.displace_type ==
+                             eonc::EpiCenters::DISP_LOAD) {
     saddle->con2matter(displacementFilename);
   } else {
     *saddle = *initial;
