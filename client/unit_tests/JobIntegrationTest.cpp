@@ -1107,9 +1107,10 @@ potential = morse_pt
 method = artn
 )");
 
-  REQUIRE_THROWS_WITH(runJob(),
-                      Catch::Matchers::ContainsSubstring(
-                          "saddle_search.method=artn requires a build with ARTn support"));
+  REQUIRE_THROWS_WITH(
+      runJob(),
+      Catch::Matchers::ContainsSubstring(
+          "saddle_search.method=artn requires a build with ARTn support"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -1128,10 +1129,9 @@ method = min_mode
 min_mode_method = artn
 )");
 
-  REQUIRE_THROWS_WITH(
-      runJob(),
-      Catch::Matchers::ContainsSubstring(
-          "saddle_search.minmode_method=artn requires a build with ARTn support"));
+  REQUIRE_THROWS_WITH(runJob(), Catch::Matchers::ContainsSubstring(
+                                    "saddle_search.minmode_method=artn "
+                                    "requires a build with ARTn support"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -1149,9 +1149,10 @@ potential = morse_pt
 method = artn
 )");
 
-  REQUIRE_THROWS_WITH(runJob(),
-                      Catch::Matchers::ContainsSubstring(
-                          "saddle_search.method=artn requires a build with ARTn support"));
+  REQUIRE_THROWS_WITH(
+      runJob(),
+      Catch::Matchers::ContainsSubstring(
+          "saddle_search.method=artn requires a build with ARTn support"));
 }
 #endif
 
