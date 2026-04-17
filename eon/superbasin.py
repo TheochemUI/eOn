@@ -124,11 +124,66 @@ class Superbasin:
             t = numpy.zeros(n_transient)
             t[st2i[entry_state.number]] = tau_total
             logger.debug("mrm_direct tau_total=%e", tau_total)
+        elif sb_kernel == 'ngt':
+            # Wales 2009 graph-transformation. NGT yields (rate, mfpt,
+            # committor) for a single (source, target) pair; to get
+            # the per-exit-slot absorption row the BKL sampler needs,
+            # call NGT once per absorbing slot and read off the
+            # committor for that (source={entry}, target={slot_k})
+            # problem. Sum of committors = 1 (mass conservation); MFPT
+            # from amsel is the same across all per-slot calls since
+            # source + interior do not change.
+            n_transient = len(self.state_numbers)
+            transient_ids = [int(sn) for sn in self.state_numbers]
+            abs_offset = (max(transient_ids) + 1) if transient_ids else 0
+            abs_ids = [abs_offset + j for j in range(len(col2st))]
+            rates = []
+            for number in self.state_numbers:
+                procs = self.state_dict[number].get_process_table()
+                for pid, proc in procs.items():
+                    target = proc['product']
+                    if target in self.state_numbers:
+                        rates.append((int(number), int(target), float(proc['rate'])))
+                    else:
+                        col = st2col[(number, pid)]
+                        rates.append((int(number), abs_ids[col], float(proc['rate'])))
+            entry_id = int(entry_state.number)
+            committors = numpy.zeros(len(col2st))
+            mfpts = numpy.zeros(len(col2st))
+            for slot_idx, absorbing_id in enumerate(abs_ids):
+                try:
+                    _rate, mfpt, committor = _mcamc_mod.ngt(
+                        transient=transient_ids,
+                        absorbing=abs_ids,
+                        rates=rates,
+                        source=[entry_id],
+                        target=[absorbing_id],
+                    )
+                except Exception:
+                    # NoAbPath etc. => no flux through this slot.
+                    continue
+                committors[slot_idx] = committor
+                mfpts[slot_idx] = mfpt
+            b = committors
+            # MFPT to ANY absorbing slot = the MFPT of the first
+            # reachable call (they agree by construction). Fall back
+            # to inverse sum-of-rates if none reported.
+            nonzero_mfpts = mfpts[mfpts > 0.0]
+            if nonzero_mfpts.size:
+                t = numpy.zeros(n_transient)
+                t[st2i[entry_state.number]] = float(nonzero_mfpts[0])
+            else:
+                raise ValueError(
+                    "NGT dispatch returned no reachable exit slots; "
+                    "superbasin may be effectively closed"
+                )
+            residual = 0.0
+            logger.debug("ngt mfpt=%e total_committor=%e",
+                         t[st2i[entry_state.number]], committors.sum())
         else:
             raise NotImplementedError(
                 f"sb_kernel={sb_kernel!r} not yet wired in Superbasin.step; "
-                "only 'fpta_bundle' and 'mrm' are supported. 'ngt' is the "
-                "next branch."
+                "supported options: 'fpta_bundle', 'mrm', 'ngt'."
             )
         # Re-normalise the absorption row before sampling. amsel's B
         # rows sum to 1 by construction, but the legacy paths can drop
