@@ -307,6 +307,17 @@ class ConfigClass:
         self.sb_path = parser.get('Paths', 'superbasins')
         self.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
         self.sb_max_size = parser.getint('Coarse Graining', 'max_size')
+        # Kernel selector for the amsel dispatch in Superbasin.step.
+        # Bead amsel-yo8. Default `fpta_bundle` keeps existing behaviour;
+        # `mrm` and `ngt` route through amsel's typed AmcProblem.
+        self.sb_kernel = parser.get(
+            'Coarse Graining', 'sb_kernel', fallback='fpta_bundle'
+        )
+        if self.sb_kernel not in ('fpta_bundle', 'mrm', 'ngt'):
+            raise ValueError(
+                f"Unknown sb_kernel {self.sb_kernel!r}; expected one of "
+                "'fpta_bundle', 'mrm', 'ngt'."
+            )
         if self.sb_scheme == 'transition_counting':
             self.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
         elif self.sb_scheme == 'energy_level':

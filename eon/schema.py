@@ -1107,6 +1107,18 @@ class CoarseGrainingConfig(BaseModel):
      - ``energy_level``: States are merged based on energy levels filling up existing basins.
      - ``rate``: States are merged based only on rate criteria.
     """
+    sb_kernel: Literal["fpta_bundle", "mrm", "ngt"] = Field(
+        default="fpta_bundle",
+        description="Which amsel kernel the superbasin solver dispatches to. ``fpta_bundle`` keeps the current (Q, R, c) closed-form path used by Superbasin.step; ``mrm`` and ``ngt`` route through amsel's typed AmcProblem for head-to-head benchmarks.",
+    )
+    """
+    Added 2026-04-17 for bead amsel-yo8 (expose the full amsel kernel
+    surface so researchers can benchmark MCAMC variants from eon). The
+    default keeps Superbasin.step behaviour unchanged; selecting
+    ``mrm`` or ``ngt`` will route through eon.mcamc.mrm_direct /
+    eon.mcamc.ngt respectively once the Superbasin.step branching
+    lands in a follow-up commit.
+    """
     max_size: int = Field(
         default=0,
         description="The maximal number of states that will be merged together. If 0, there is no limit.",
