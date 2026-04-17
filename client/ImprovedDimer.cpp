@@ -132,8 +132,16 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   VectorXd g0, g1;
   bool canParallel = pot->isThreadSafe() || pot->needsPerImageInstance();
   if (params.main_options.parallel && canParallel) {
+    // std::thread instead of std::jthread (Apple Clang libc++). Use a guard
+    // so an exception from the foreground call still joins t0 before rethrow.
     std::thread t0([&] { g0 = -x0->getForcesV(); });
-    g1 = -x1->getForcesV();
+    try {
+      g1 = -x1->getForcesV();
+    } catch (...) {
+      if (t0.joinable())
+        t0.join();
+      throw;
+    }
     t0.join();
   } else {
     g0 = -x0->getForcesV();
