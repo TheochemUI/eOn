@@ -46,6 +46,9 @@ ARTnResource::ARTnResource() {
   get_data_ = load_sym<get_data_fn>("get_data");
   print_caller_ = load_sym<print_caller_fn>("print_caller");
   artn_step_ = load_sym<artn_step_fn>("artn_step");
+  // Optional: older artn-plugin builds (pre-get_error C wrapper) may not
+  // export this. Callers null-check via get_get_error_fn() before use.
+  get_error_ = load_sym<get_error_fn>("get_error");
 
   // Check that all required symbols are loaded
   if (!artn_create_ || !setup_artn_ || !artn_ || !artn_destroy_ ||
