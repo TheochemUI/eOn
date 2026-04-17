@@ -73,6 +73,19 @@ def stiffness_step(s, n_fwd, n_rev, rates_unscaled, pe_tol, min_sep, down_limit)
     )
 
 
+def discover_fichthorn(entry, candidate_states, rates, ts_energies, e_min, max_size=0):
+    """Fichthorn-Lin 2013 local-rule superbasin discovery.
+
+    Build an AmcProblem-shaped partition `(transient, absorbing,
+    rates)` from a KMC candidate pool by BFS under a TS-energy
+    cutoff `e_min`. `max_size=0` disables the transient-set cap;
+    any positive value bounds the partition size (overflow raises).
+    """
+    return _require_amsel().discover_fichthorn(
+        entry, candidate_states, rates, ts_energies, e_min, max_size,
+    )
+
+
 __all__ = [
     "mcamc",
     "fpta",
@@ -82,4 +95,5 @@ __all__ = [
     "as_kmc_nf_from_delta",
     "as_kmc_nf_kaiser",
     "stiffness_step",
+    "discover_fichthorn",
 ]

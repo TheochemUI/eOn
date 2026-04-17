@@ -26,6 +26,7 @@ def test_reexports_match_bead_spec():
         "as_kmc_nf_from_delta",
         "as_kmc_nf_kaiser",
         "stiffness_step",
+        "discover_fichthorn",
     ):
         assert hasattr(mcamc_mod, name), f"eon.mcamc missing {name}"
 
@@ -76,6 +77,21 @@ def test_as_kmc_bounds_round_trip():
         mcamc_mod.as_kmc_nf_kaiser(alpha, delta)
         > mcamc_mod.as_kmc_nf_from_delta(alpha, delta) * 10
     )
+
+
+def test_discover_fichthorn_partitions_chain():
+    # 0 -> 1 (TS 0.1), 1 -> 2 (TS 0.5). e_min=0.3 puts 0,1 in
+    # transient, 2 on the absorbing border.
+    transient, absorbing, rates = mcamc_mod.discover_fichthorn(
+        entry=0,
+        candidate_states=[0, 1, 2],
+        rates=[(0, 1, 1.0), (1, 2, 1.0)],
+        ts_energies=[0.1, 0.5],
+        e_min=0.3,
+    )
+    assert set(transient) == {0, 1}
+    assert set(absorbing) == {2}
+    assert len(rates) == 2
 
 
 def test_stiffness_identity_when_no_firings():
