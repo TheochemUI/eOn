@@ -80,20 +80,26 @@ class Superbasin:
                 else:
                     R[st2i[number], st2col[(number, id)]] += proc['rate']
 
-        #lei debug
-        print("################")
-        print(str(self.id)+" c is: ")
-        print(c)
-        print(str(self.id)+" Q is: ")
-        print(Q)
-        print(str(self.id)+" R is: ")
-        print(R)
-        # import pdb; pdb.set_trace()
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("superbasin %s c %s", self.id, c)
+            logger.debug("superbasin %s Q %s", self.id, Q)
+            logger.debug("superbasin %s R %s", self.id, R)
 
         t, B, residual = mcamc(Q, R, c)
         logger.debug("residual %e" % residual)
 
-        b = B[st2i[entry_state.number],:]
+        b = B[st2i[entry_state.number], :]
+        # Re-normalise the absorption row before sampling. amsel's B
+        # rows sum to 1 by construction, but the legacy paths can drop
+        # ~1e-12 in floating point and make the BKL cumulative compare
+        # fall through to the else branch at the end of the loop.
+        b_sum = float(b.sum())
+        if b_sum <= 0.0:
+            raise ValueError(
+                "MCAMC returned non-positive absorption weights (sum={:g}); "
+                "superbasin may be effectively closed".format(b_sum)
+            )
+        b = b / b_sum
         p = 0.0
         u = numpy.random.sample()
         for i in range(len(b)):
@@ -102,7 +108,9 @@ class Superbasin:
                 exit_state_number, exit_proc_id = col2st[i]
                 break
         else:
-            raise ValueError("Failed to select exit process.")
+            # Unreachable after the normalisation above, but kept as a
+            # tripwire in case the input invariants drift.
+            raise ValueError("Failed to select exit process after normalisation.")
 
         exit_state = self.state_dict[exit_state_number]
         product_state = get_product_state(exit_state_number, exit_proc_id)
