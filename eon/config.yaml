@@ -1079,7 +1079,7 @@ ARTn:
 
         ninit:
             kind: int
-            default: 0
+            default: -1
 
         nperp_limitation:
             kind: string

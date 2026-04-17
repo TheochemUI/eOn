@@ -1731,8 +1731,8 @@ class ARTnConfig(BaseModel):
         description="Maximum number of ARTn iterations.",
     )
     ninit: int = Field(
-        default=0,
-        description="Number of initial push steps before Lanczos eigenmode estimation. 0 skips the push phase and goes directly to Lanczos. Larger values let ARTn explore further from the minimum.",
+        default=-1,
+        description="Number of initial push steps before Lanczos eigenmode estimation. -1 keeps pARTn's built-in default. 0 skips the push phase and goes directly to Lanczos (appropriate when eOn supplies the displacement). Larger values let ARTn explore further from the minimum.",
     )
     nperp_limitation: str = Field(
         default="default",
