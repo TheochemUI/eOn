@@ -3,6 +3,7 @@ import os
 import shutil
 import numpy
 from eon.mcamc import mcamc
+from eon import mcamc as _mcamc_mod
 import logging
 logger = logging.getLogger('superbasin')
 from eon.config import config
@@ -85,10 +86,50 @@ class Superbasin:
             logger.debug("superbasin %s Q %s", self.id, Q)
             logger.debug("superbasin %s R %s", self.id, R)
 
-        t, B, residual = mcamc(Q, R, c)
-        logger.debug("residual %e" % residual)
-
-        b = B[st2i[entry_state.number], :]
+        sb_kernel = getattr(config, 'sb_kernel', 'fpta_bundle')
+        if sb_kernel == 'fpta_bundle':
+            t, B, residual = mcamc(Q, R, c)
+            logger.debug("residual %e" % residual)
+            b = B[st2i[entry_state.number], :]
+        elif sb_kernel == 'mrm':
+            # Ferasat-corrected MRM on the typed AmcProblem. We reuse
+            # the state-number partition from above as amsel state IDs.
+            # Absorbing-slot indices become synthetic IDs offset past
+            # the transient range so they don't collide.
+            n_transient = len(self.state_numbers)
+            transient_ids = [int(sn) for sn in self.state_numbers]
+            abs_offset = (max(transient_ids) + 1) if transient_ids else 0
+            abs_ids = [abs_offset + j for j in range(len(col2st))]
+            rates = []
+            for number in self.state_numbers:
+                procs = self.state_dict[number].get_process_table()
+                for pid, proc in procs.items():
+                    target = proc['product']
+                    if target in self.state_numbers:
+                        rates.append((int(number), int(target), float(proc['rate'])))
+                    else:
+                        col = st2col[(number, pid)]
+                        rates.append((int(number), abs_ids[col], float(proc['rate'])))
+            tau_total, rate_to_abs, _x = _mcamc_mod.mrm_direct(
+                transient=transient_ids,
+                absorbing=abs_ids,
+                rates=rates,
+                entry=int(entry_state.number),
+            )
+            # Build the B-row equivalent: absorption probability through
+            # each exit slot is rate_to_abs[slot] * tau_total.
+            b = numpy.array(rate_to_abs) * tau_total
+            residual = 0.0  # MRM gates its own LU residual
+            # t[entry] is the mean exit time amsel reports.
+            t = numpy.zeros(n_transient)
+            t[st2i[entry_state.number]] = tau_total
+            logger.debug("mrm_direct tau_total=%e", tau_total)
+        else:
+            raise NotImplementedError(
+                f"sb_kernel={sb_kernel!r} not yet wired in Superbasin.step; "
+                "only 'fpta_bundle' and 'mrm' are supported. 'ngt' is the "
+                "next branch."
+            )
         # Re-normalise the absorption row before sampling. amsel's B
         # rows sum to 1 by construction, but the legacy paths can drop
         # ~1e-12 in floating point and make the BKL cumulative compare
