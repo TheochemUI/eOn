@@ -52,6 +52,12 @@ public:
                                 double *const pos, const double *box,
                                 const int *if_pos, double *displ_vec,
                                 bool *lconv);
+  /// Retrieve pARTn error code + c_malloc'd message pointer.
+  /// Defined in m_artn_error.f90 as bind(C, name="get_error"):
+  ///   int get_error(void** cmsg);
+  /// Non-zero return indicates an error; *cmsg then points at a
+  /// C-string the caller must std::free. Zero leaves *cmsg null.
+  using get_error_fn = int (*)(void **cmsg);
 
   /// Singleton accessor (Meyer's pattern).
   static ARTnResource &instance();
@@ -76,6 +82,9 @@ public:
   get_data_fn get_get_data_fn() const { return get_data_; }
   print_caller_fn get_print_caller_fn() const { return print_caller_; }
   artn_step_fn get_artn_step_fn() const { return artn_step_; }
+  /// May be null on older pARTn builds that predate the C get_error
+  /// wrapper; callers must null-check before dispatching.
+  get_error_fn get_get_error_fn() const { return get_error_; }
 
   /// Non-copyable, non-movable
   ARTnResource(const ARTnResource &) = delete;
@@ -99,6 +108,7 @@ private:
   get_data_fn get_data_{nullptr};
   print_caller_fn print_caller_{nullptr};
   artn_step_fn artn_step_{nullptr};
+  get_error_fn get_error_{nullptr};
 
   /// Try to load a symbol; returns nullptr on failure.
   template <typename Fn> Fn load_sym(const char *name) const {

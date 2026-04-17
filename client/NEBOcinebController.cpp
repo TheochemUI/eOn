@@ -216,9 +216,8 @@ void OCINEBController::updateThresholdBackoff(double alignment) {
   // convergence, but also capped by the trigger_factor envelope so a
   // loose force_tolerance cannot push min_threshold above the cap and
   // starve MMF activation.
-  double min_threshold =
-      std::min(cfg_.force_tolerance * 2.0,
-               baseline_force_ * cfg_.trigger_factor);
+  double min_threshold = std::min(cfg_.force_tolerance * 2.0,
+                                  baseline_force_ * cfg_.trigger_factor);
   current_threshold_ = std::max(current_threshold_, min_threshold);
 }
 

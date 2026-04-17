@@ -277,22 +277,35 @@ int ARTnSaddleSearch::run() {
   if (lconv) {
     std::lock_guard<std::mutex> lock(res.library_mutex);
 
-    // Check has_error and has_sad to distinguish success from error
-    bool has_error = false;
-    bool has_sad = false;
-    bool *has_error_ptr = nullptr;
-    bool *has_sad_ptr = nullptr;
-    int result_has_error = res.get_get_data_fn()(
-        "has_error", reinterpret_cast<void **>(&has_error_ptr));
-    if (result_has_error != 0) {
-      QUILL_LOG_WARNING(log, "get_data(has_error) failed with code {}",
-                        result_has_error);
-      has_error_ptr = nullptr;
-    } else if (has_error_ptr) {
-      has_error = *has_error_ptr;
-      std::free(has_error_ptr);
+    // pARTn exposes a dedicated C get_error() that returns both the error
+    // code and a c_malloc'd message pointer (see m_artn_error.f90 in
+    // artn-plugin). Prefer it when available; fall back to the has_error
+    // flag via get_data for older libartn builds that predate the wrapper.
+    int artn_err = 0;
+    std::string artn_err_msg;
+    if (auto *get_error_fn_ = res.get_get_error_fn()) {
+      void *cmsg = nullptr;
+      artn_err = get_error_fn_(&cmsg);
+      if (artn_err != 0 && cmsg != nullptr) {
+        artn_err_msg.assign(static_cast<const char *>(cmsg));
+        std::free(cmsg);
+      }
+    } else {
+      bool *has_error_ptr = nullptr;
+      int result_has_error = res.get_get_data_fn()(
+          "has_error", reinterpret_cast<void **>(&has_error_ptr));
+      if (result_has_error != 0) {
+        QUILL_LOG_WARNING(log, "get_data(has_error) failed with code {}",
+                          result_has_error);
+      } else if (has_error_ptr) {
+        artn_err = *has_error_ptr ? 1 : 0;
+        std::free(has_error_ptr);
+      }
     }
+    bool has_error = artn_err != 0;
 
+    bool has_sad = false;
+    bool *has_sad_ptr = nullptr;
     int result_has_sad = res.get_get_data_fn()(
         "has_sad", reinterpret_cast<void **>(&has_sad_ptr));
     if (result_has_sad != 0) {
@@ -301,6 +314,11 @@ int ARTnSaddleSearch::run() {
     } else if (has_sad_ptr) {
       has_sad = *has_sad_ptr;
       std::free(has_sad_ptr);
+    }
+
+    if (has_error && !artn_err_msg.empty()) {
+      QUILL_LOG_WARNING(log, "pARTn reported error {}: {}", artn_err,
+                        artn_err_msg);
     }
 
     // If a saddle was found, accept it even if force didn't fully converge
