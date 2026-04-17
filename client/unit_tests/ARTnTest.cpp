@@ -123,18 +123,21 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
                        << " iterations=" << artnIters);
 
   // --- Compare ---
-  // If both converged, they should find saddle points with comparable energies.
-  // The exact saddle may differ (different search paths), but the energy
-  // landscape has a finite number of saddles and both should be at one.
-  if (dimerStatus == MinModeSaddleSearch::STATUS_GOOD && artnStatus == 0) {
+  // Intent of this test is build smoke + first-order-saddle invariants, not
+  // a strict numerical regression gate. Dimer and ARTn typically converge
+  // to the same saddle on the LJ fixture, but ARTn's push+Lanczos trajectory
+  // can reach a different saddle in the same basin (both are valid). The
+  // 50% relative-energy tolerance below is intentionally generous to avoid
+  // flaky failures when that happens; saddle structural identity is checked
+  // by the dedicated IRA-based comparison tests.
+  if (dimerStatus == MinModeSaddleSearch::STATUS_GOOD &&
+      artnStatus == ARTnSaddleSearch::STATUS_GOOD) {
     // Both found a first-order saddle: negative eigenvalue
+    REQUIRE(dimerStatus == MinModeSaddleSearch::STATUS_GOOD);
     REQUIRE(dimerEigenvalue < 0.0);
     REQUIRE(artnEigenvalue < 0.0);
 
-    // Energy should be higher than the minimum
-    double minEnergy = matter_dimer->getPotentialEnergy(); // after dimer search
-    // Both saddle energies should be finite and comparable
-    // (allow generous tolerance since they may find different saddles)
+    // Build-smoke energy bound (see comment above re: same-basin saddles).
     REQUIRE(std::abs(dimerSaddleEnergy - artnSaddleEnergy) /
                 std::max(1.0, std::abs(dimerSaddleEnergy)) <
             0.5);

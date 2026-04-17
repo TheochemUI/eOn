@@ -100,7 +100,10 @@ IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
     result.translation = Eigen::Map<const Vector3d>(tr_ptr);
   }
 
-  // If libira reallocated (pointers changed), free the new buffers
+  // If libira reallocated (pointers changed), free the new buffers.
+  // libira allocates replacement output buffers via c_malloc on the Fortran
+  // side (see libira's lib_match wrapper), so std::free is the matching
+  // deallocator. Never free the original stack/vector-backed buffers.
   if (rmat_ptr != rmat_buf.data())
     std::free(rmat_ptr);
   if (tr_ptr != tr_buf.data())
@@ -267,6 +270,8 @@ IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
 
   // Only free if Fortran reallocated (pointer changed from our pre-allocated
   // buffer). If pointer is unchanged, the vector destructor handles cleanup.
+  // Reallocated buffers come from libira's c_malloc side, so std::free is the
+  // matching deallocator; never free the vector-backed originals.
   if (mat_data != mat_buf.data())
     std::free(mat_data);
   if (perm_data != perm_buf.data())
