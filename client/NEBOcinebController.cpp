@@ -211,7 +211,14 @@ void OCINEBController::updateThresholdBackoff(double alignment) {
   penalty_factor = std::clamp(penalty_factor, cfg_.penalty_base, 1.0);
 
   current_threshold_ = baseline_force_ * cfg_.trigger_factor * penalty_factor;
-  double min_threshold = cfg_.force_tolerance * 2.0;
+  // Lower bound on the MMF trigger threshold. Scaled by force_tolerance so
+  // the MMF gate never collapses to zero when the NEB is already near
+  // convergence, but also capped by the trigger_factor envelope so a
+  // loose force_tolerance cannot push min_threshold above the cap and
+  // starve MMF activation.
+  double min_threshold =
+      std::min(cfg_.force_tolerance * 2.0,
+               baseline_force_ * cfg_.trigger_factor);
   current_threshold_ = std::max(current_threshold_, min_threshold);
 }
 

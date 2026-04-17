@@ -43,6 +43,8 @@ IRAResource::IRAResource() {
   // Check that all required symbols are loaded
   if (!libira_match_ || !libira_cshda_pbc_ || !libira_compute_all_ ||
       !libira_get_nmax_) {
+    // std::cerr instead of quill: this runs from the static-initialiser of
+    // instance() before eOn's logger backend is guaranteed to be configured.
     std::cerr << "[IRA] Library loaded but missing required symbols\n";
     dynlib::close(m_handle);
     m_handle = {};
