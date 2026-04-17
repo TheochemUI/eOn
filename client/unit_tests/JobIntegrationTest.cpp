@@ -1177,7 +1177,9 @@ max_iterations = 1000
 
   // Verify ARTn parameters are parsed
   REQUIRE(params->artn_options.push_step_size == 0.5);
-  REQUIRE(params->artn_options.ninit == 0);
+  // ninit default is -1 (sentinel = "keep pARTn's own default"); test does
+  // not set it in the INI above, so the sentinel must round-trip unchanged.
+  REQUIRE(params->artn_options.ninit == -1);
   REQUIRE(params->artn_options.force_threshold == 0.1);
   REQUIRE(params->artn_options.max_iterations == 1000);
 }

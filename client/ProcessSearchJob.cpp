@@ -133,15 +133,19 @@ std::vector<std::string> ProcessSearchJob::run() {
   }
 
 #ifndef WITH_ARTN
-  // Single post-dispatch guard for both ARTn entry points (method=artn and
-  // min_mode_method=artn) so users without a WITH_ARTN build get a clean
-  // error instead of a silent fall-through.
-  if (params.saddle_search_options.method == "artn" ||
-      (params.saddle_search_options.method == "min_mode" &&
-       params.saddle_search_options.minmode_method == "artn")) {
+  // Post-dispatch guard for both ARTn entry points so users without a
+  // WITH_ARTN build get a clean per-case error instead of a silent
+  // fall-through. Two distinct messages so downstream tooling and the
+  // integration tests can match on the specific entry point.
+  if (params.saddle_search_options.method == "artn") {
     throw std::runtime_error(
-        "ARTn requested (saddle_search.method=artn or "
-        "min_mode_method=artn) but eOn was built without -Dwith_artn=true");
+        "saddle_search.method=artn requires a build with ARTn support "
+        "(reconfigure with -Dwith_artn=true)");
+  }
+  if (useARTnAsMinMode) {
+    throw std::runtime_error(
+        "saddle_search.minmode_method=artn requires a build with ARTn "
+        "support (reconfigure with -Dwith_artn=true)");
   }
 #endif
 
