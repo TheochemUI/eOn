@@ -4,6 +4,7 @@ minima. Supports two modes: ``method = artn`` (standalone, pARTn drives push +
 internal eigenmode search + relaxation) and ``min_mode_method = artn``
 (drop-in, eOn's displacement seeds the mode). Configurable via ``[ARTn]``
 section with ``push_step_size``, ``force_threshold``, ``max_iterations``,
-and ``optimizer`` parameters. Requires ``-Dwith_artn=true`` at build time.
+``ninit``, ``nperp_limitation``, ``lanczos_min_size``, ``nsmooth``, and
+``nnewchance`` parameters. Requires ``-Dwith_artn=true`` at build time.
 For automated saddle point refinement in production workflows, prefer OCINEB
 (``ci_mmf = true``).

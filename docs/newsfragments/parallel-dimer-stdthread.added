@@ -1,0 +1,1 @@
+Parallel improved dimer gradient evaluation via ``std::thread``. The two dimer replicas evaluate forces concurrently when the potential is thread-safe. ``std::thread`` rather than ``std::jthread`` for Apple Clang libc++ compatibility.
