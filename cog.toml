@@ -8,6 +8,7 @@ disable_changelog = true
 disable_bump_commit = false
 skip_ci = "[skip ci]"
 branch_whitelist = ["main"]
+tag_prefix = "v"
 
 pre_bump_hooks = [
   "sed -i 's/^version = \"[^\"]*\"/version = \"{{version}}\"/' pyproject.toml",
