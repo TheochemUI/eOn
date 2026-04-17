@@ -103,8 +103,10 @@ max_iterations = 500
   pARTn's ``forc_thr``.
 - **`max_iterations`**: Maximum number of ARTn steps.
 - **`ninit`**: Number of initial push steps before Lanczos eigenmode estimation.
-  Default 0 skips the push and goes directly to Lanczos. Larger values let ARTn
-  explore further from the minimum. Maps to pARTn's ``ninit``.
+  Default ``-1`` keeps pARTn's own default. Set ``0`` to skip the push and go
+  directly to Lanczos (appropriate when eOn supplies the displacement); larger
+  values let ARTn explore further from the minimum before engaging Lanczos.
+  Maps to pARTn's ``ninit``.
 - **`nperp_limitation`**: Comma-separated integers controlling the maximum number
   of perpendicular relaxation steps per Lanczos cycle. ``default`` uses pARTn
   defaults (tuned for exploration from a minimum). ``-1`` for unlimited

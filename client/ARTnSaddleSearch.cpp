@@ -47,7 +47,33 @@ int ARTnSaddleSearch::run() {
     mode = AtomMatrix::Zero(nat, 3);
   }
 
-  // 1. Library Initialization & Configuration (Locked)
+  // Pre-declare force-loop storage outside the lock so it outlives the
+  // setup critical section. These reads do not touch pARTn state.
+  AtomMatrix positions = matter->getPositions();
+  AtomMatrix forces = AtomMatrix::Zero(nat, 3);
+  AtomMatrix displacement = AtomMatrix::Zero(nat, 3);
+
+  // Eigen::Maps give Fortran a column-major [3, nat] view over the same
+  // memory as the row-major [nat, 3] AtomMatrix (zero-copy).
+  Eigen::Map<AtomMatrixF> pos_map(positions.data(), 3, nat);
+  Eigen::Map<AtomMatrixF> force_map(forces.data(), 3, nat);
+  Eigen::Map<AtomMatrixF> disp_map(displacement.data(), 3, nat);
+  Eigen::Map<AtomMatrixF> mode_map(mode.data(), 3, nat);
+
+  const double push_step = params.artn_options.push_step_size;
+  const double mode_norm = mode.norm();
+  AtomMatrixF mode_fort;
+  if (mode_norm > 1e-10) {
+    mode_fort = mode_map;
+    Eigen::Map<VectorXd> mode_vec_map(mode_fort.data(), mode_fort.size());
+    mode_vec_map *= (push_step / mode_norm);
+  }
+  int dim_mode[2] = {3, nat};
+
+  // 1. Library Initialization, Configuration, and Initial Push (Locked)
+  //    Held as a single critical section so concurrent ARTn searches in
+  //    the same process cannot interleave create(), set_param(), setup,
+  //    or push_init calls on pARTn's non-thread-safe global state.
   {
     std::lock_guard<std::mutex> lock(res.library_mutex);
 
@@ -108,12 +134,16 @@ int ARTnSaddleSearch::run() {
 
     // ninit controls initial push steps before Lanczos eigenmode estimation.
     // 0 = skip push, go straight to Lanczos (appropriate when eOn provides
-    // the displacement direction via push_init).
-    int ninit = params.artn_options.ninit;
-    int result_ninit = res.get_set_param_fn()("ninit", 0, &size0, &ninit);
-    if (result_ninit != 0) {
-      QUILL_LOG_ERROR(log, "set_param(ninit) failed with code {}",
-                      result_ninit);
+    // the displacement direction via push_init); >0 = push that many steps.
+    // -1 sentinel means "leave pARTn's own default in place", so we only
+    // call set_param when the user asked for a specific value.
+    if (params.artn_options.ninit >= 0) {
+      int ninit = params.artn_options.ninit;
+      int result_ninit = res.get_set_param_fn()("ninit", 0, &size0, &ninit);
+      if (result_ninit != 0) {
+        QUILL_LOG_ERROR(log, "set_param(ninit) failed with code {}",
+                        result_ninit);
+      }
     }
 
     // nperp_limitation: controls perp-relax steps per Lanczos cycle.
@@ -171,45 +201,12 @@ int ARTnSaddleSearch::run() {
       status = STATUS_BAD_ARTN_ERROR;
       return status;
     }
-  }
 
-  // Prepare arrays as Eigen objects to avoid std::vector copies
-  // Using the memory layout equivalence between RowMajor(N,3) and
-  // ColumnMajor(3,N)
-  AtomMatrix positions = matter->getPositions();
-  AtomMatrix forces(nat, 3);
-  forces.setZero(); // Initialize to zero to prevent undefined behavior
-  AtomMatrix displacement(nat, 3);
-  displacement.setZero(); // Initialize to zero to prevent undefined behavior
-
-  // Prepare Eigen::Maps to provide the correct interface to Fortran
-  Eigen::Map<AtomMatrixF> pos_map(positions.data(), 3, nat);
-  Eigen::Map<AtomMatrixF> force_map(forces.data(), 3, nat);
-  Eigen::Map<AtomMatrixF> disp_map(displacement.data(), 3, nat);
-  Eigen::Map<AtomMatrixF> mode_map(mode.data(), 3, nat); // For initial mode
-
-  // Prepare integer arrays (still needed for metadata)
-  std::vector<int> ityp(nat);
-  std::vector<int> if_pos(3 * nat, 1); // all atoms free by default
-  double box_f[9];
-  bool lconv = false;
-  int dim_mode[2] = {3, nat};
-
-  // Use Eigen for norm calculation
-  const double mode_norm = mode.norm();
-  const double push_step =
-      params.artn_options.push_step_size; // Access push_step here
-
-  if (mode_norm > 1e-10) {
-    // Create a temporary mode vector for the initial push
-    AtomMatrixF mode_fort = mode_map; // Copy to Fortran layout
-    // Vectorized scaling via Eigen Map
-    Eigen::Map<VectorXd> mode_vec_map(mode_fort.data(), mode_fort.size());
-    mode_vec_map *= (push_step / mode_norm);
-
-    // Set initial push vector for ARTn (locked)
-    {
-      std::lock_guard<std::mutex> lock(res.library_mutex);
+    // Initial push vector (if eOn supplied a non-trivial mode). Must be set
+    // after setup_artn() and before the first artn_step(); keep inside the
+    // same critical section so no concurrent ARTn search can re-init between
+    // setup and push.
+    if (mode_norm > 1e-10) {
       int result =
           res.get_set_param_fn()("push_init", 2, dim_mode, mode_fort.data());
       if (result != 0) {
@@ -218,6 +215,12 @@ int ARTnSaddleSearch::run() {
       }
     }
   }
+
+  // Per-atom metadata for the Fortran step (no pARTn state, unlocked).
+  std::vector<int> ityp(nat);
+  std::vector<int> if_pos(3 * nat, 1); // all atoms free by default
+  double box_f[9];
+  bool lconv = false;
 
   for (int i = 0; i < nat; i++) {
     if (matter->getFixed(i)) {
@@ -234,9 +237,14 @@ int ARTnSaddleSearch::run() {
 
   int maxIter = params.artn_options.max_iterations;
 
-  for (iteration = 0; iteration < maxIter && !lconv; iteration++) {
+  // while-loop (not for) so `iteration` reports the index of the converged
+  // step rather than one past it: on convergence during step k, we break
+  // before the increment and the post-loop value is k, matching log output.
+  iteration = 0;
+  while (iteration < maxIter && !lconv) {
     // 2. Parallel PES Evaluation (UNLOCKED)
-    // Multiple jthreads can execute this block concurrently.
+    // Concurrent ARTn searches in the same process would share the same
+    // PES call, so the potential evaluation itself is not serialized here.
     double energy = matter->getPotentialEnergy();
     forces = matter->getForces(); // Returns RowMajor Nx3
     this->forcecalls++;
@@ -261,6 +269,7 @@ int ARTnSaddleSearch::run() {
       // thread-safe) Add displacement to positions
       positions += displacement;
       matter->setPositions(positions);
+      iteration++;
     }
   }
 

@@ -697,14 +697,16 @@ endif
 
 if get_option('with_artn')
     # ARTn (pARTn): Fortran library for saddle point search.
-    # Try system/pkg-config first, then manual paths, then cmake-build the subproject.
-    # Meson's Fortran scanner breaks with -cpp + submodules (mesonbuild/meson TBD),
+    # Try system/pkg-config first, then manual artn_libdir, then cmake-build
+    # the subproject. Meson's Fortran scanner breaks with -cpp + submodules,
     # so we build artn-plugin via cmake at configure time as a workaround.
+    # We redeclare pARTn's C signatures inline in ARTnResource.h, so we
+    # never need an -I for artn.h; hence no artn_includedir option.
     artn_dep = dependency('artn', required: false)
     if not artn_dep.found()
         artn_libdir = get_option('artn_libdir')
-        artn_incdir = get_option('artn_includedir')
-        if artn_libdir == '' or artn_incdir == ''
+        artn_lib = disabler()
+        if artn_libdir == ''
             # Auto-build artn-plugin from subprojects/ via cmake
             artn_src = meson.project_source_root() / 'subprojects' / 'artn-plugin'
             artn_bld = meson.project_build_root() / 'subprojects' / '_artn_cmake_build'
@@ -714,13 +716,31 @@ if get_option('with_artn')
                 '-DWITH_LAMMPS=OFF', '-DWITH_QE=OFF', '-DWITH_SIESTA=OFF',
                 check: true)
             run_command('cmake', '--build', artn_bld, '--parallel', '4', check: true)
-            artn_libdir = artn_bld
+            # LIBRARY_OUTPUT_DIRECTORY in artn-plugin's CMakeLists.txt puts
+            # libartn.so at ${CMAKE_BINARY_DIR}; search a couple of plausible
+            # locations symmetrically with the IRA block below in case a
+            # future cmake refactor moves it.
+            artn_candidates = [artn_bld, artn_bld / 'src', artn_bld / 'lib']
+            foreach candidate : artn_candidates
+                artn_lib = meson.get_compiler('cpp').find_library(
+                    'artn',
+                    dirs: [candidate],
+                    required: false,
+                )
+                if artn_lib.found()
+                    artn_libdir = candidate
+                    break
+                endif
+            endforeach
+            if not artn_lib.found()
+                error('ARTn enabled but libartn was not found in the built subproject directory')
+            endif
+        else
+            artn_lib = meson.get_compiler('cpp').find_library('artn',
+                dirs: [artn_libdir], required: true)
         endif
         _runtime_rpath += [artn_libdir]
-        artn_dep = declare_dependency(
-            dependencies: meson.get_compiler('cpp').find_library('artn',
-                dirs: [artn_libdir]),
-        )
+        artn_dep = declare_dependency(dependencies: artn_lib)
     endif
     _deps += [artn_dep]
     _args += ['-DWITH_ARTN']
