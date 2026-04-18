@@ -21,7 +21,7 @@ except Exception:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "myst_parser",
+    "myst_nb",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
@@ -51,6 +51,11 @@ myst_enable_extensions = [
     "deflist",
     "fieldlist",
 ]
+
+nb_execution_mode = "force"
+nb_execution_timeout = 600
+nb_execution_raise_on_error = False
+nb_execution_show_tb = True
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),

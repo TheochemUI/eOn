@@ -88,6 +88,19 @@ server:
 .. autopydantic_model:: eon.schema.SaddleSearchConfig
 ```
 
+## Output
+
+The saddle search writes:
+- `saddle.con`: the saddle point structure
+- `mode.dat`: eigenvector at the saddle (Nx3 whitespace-separated)
+- `results.dat`: energy, force calls, convergence status, eigenvalue
+
+With `write_movies = true` (in `[Debug]`), additional files are produced for
+visualization with [rgpycrumbs](https://rgpycrumbs.rgoswami.me):
+- `climb`: concatenated structure movie (one frame per iteration)
+- `climb.dat`: per-iteration metrics (TSV: iteration, step_size, delta_e,
+  convergence, eigenvalue, torque, angle, rotations)
+
 ## See also
 
 - <project:dimer.md> for the eigenmode method used during the saddle search

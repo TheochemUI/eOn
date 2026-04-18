@@ -80,6 +80,11 @@ The minimization writes:
 - `min.con`: the minimized structure
 - `results.dat`: energy, force calls, convergence status
 
+With `write_movies = true` (in `[Debug]`), additional files are produced for
+visualization with [rgpycrumbs](https://rgpycrumbs.rgoswami.me):
+- `minimization`: concatenated structure movie (one frame per iteration)
+- `minimization.dat`: per-iteration metrics (TSV: iteration, step_size, convergence, energy)
+
 ## Configuration
 
 ```{eval-rst}
