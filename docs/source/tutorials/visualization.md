@@ -23,8 +23,8 @@ files enable rich 2D reaction-valley projections and convergence plots via
 [chemparseplot](https://chemparseplot.rgoswami.me).
 
 This tutorial walks through the full workflow: running eOn with PET-MAD on the
-HCN isomerization reaction, then generating energy profiles, convergence panels,
-and 2D optimization landscapes.
+vinyl alcohol -> acetaldehyde keto-enol tautomerization, then generating energy
+profiles, convergence panels, and 2D optimization landscapes.
 
 ## Setup
 
@@ -77,8 +77,8 @@ print(f"Working in: {tutorial_dir}")
 
 ## Minimization
 
-We start by minimizing a slightly distorted HCN molecule to demonstrate the
-minimization trajectory output.
+We start by minimizing a slightly distorted vinyl alcohol molecule to
+demonstrate the minimization trajectory output.
 
 ```{code-cell} python
 :tags: [remove-cell]
@@ -87,7 +87,7 @@ import shutil
 import numpy as np
 import readcon
 
-# Read the HCN reactant and perturb it
+# Read the vinyl alcohol reactant and perturb it
 src = Path("data/reactant.con")
 atoms = readcon.read_con_as_ase(str(src))[0]
 np.random.seed(42)
@@ -101,7 +101,7 @@ min_config = {
     "Main": {"job": "minimization"},
     "Potential": {"potential": "metatomic"},
     "Metatomic": {"model_path": str(model_path.resolve())},
-    "Optimizer": {"opt_method": "lbfgs", "converged_force": 0.01, "max_iterations": 200},
+    "Optimizer": {"opt_method": "lbfgs", "converged_force": 0.0514221, "max_iterations": 200},
     "Debug": {"write_movies": True},
 }
 write_eon_config(min_dir, min_config)
@@ -137,23 +137,10 @@ runner.invoke(plt_min_main, [
 ])
 ```
 
-### 2D optimization landscape
-
-The landscape projects the high-dimensional trajectory into (s, d) coordinates:
-*s* measures progress toward the minimum, *d* measures lateral deviation.
-
-```{code-cell} python
-runner.invoke(plt_min_main, [
-    "--job-dir", str(min_dir), "--prefix", "minimization",
-    "--plot-type", "landscape", "--surface-type", "grad_imq", "--project-path",
-    "--plot-structures", "endpoints", "--strip-renderer", "xyzrender",
-    "--strip-dividers", "--perspective-tilt", "8", "--dpi", "150",
-])
-```
-
 ## Nudged Elastic Band
 
-We run a CI-NEB calculation on HCN -> HNC isomerization using PET-MAD.
+We run an OCI-NEB calculation on the vinyl alcohol -> acetaldehyde
+keto-enol tautomerization using PET-MAD.
 
 ```{code-cell} python
 :tags: [remove-cell]
@@ -164,16 +151,16 @@ shutil.copy("data/reactant.con", neb_dir / "reactant.con")
 shutil.copy("data/product.con", neb_dir / "product.con")
 
 neb_config = {
-    # Mirror eon_orchestrator's HCN-isomerization NEB config
-    # (https://github.com/HaoZeke/eon_orchestrator examples/hcn_isom).
-    # 18 images + SIDPP path + energy-weighted springs + climbing
-    # image + OCI-NEB MMF refinement converges the HCN -> HNC barrier
-    # (~1.8 eV with PET-MAD-XS) cleanly.
+    # Mirror eon_orchestrator's vinyl-alcohol NEB config
+    # (https://github.com/HaoZeke/eon_orchestrator examples/vinyl_alcohol).
+    # 17 images + SIDPP path + energy-weighted springs + climbing image +
+    # OCI-NEB MMF refinement converges the keto-enol tautomerization
+    # barrier (~6 eV with PET-MAD-XS) cleanly.
     "Main": {"job": "nudged_elastic_band", "random_seed": 706253457},
     "Potential": {"potential": "metatomic"},
     "Metatomic": {"model_path": str(model_path.resolve()), "device": "cpu"},
     "Nudged Elastic Band": {
-        "images": 18,
+        "images": 17,
         # initialization
         "initializer": "sidpp",
         "sidpp_growth_alpha": 0.33,
@@ -266,8 +253,8 @@ For producing your own NEB trajectories beyond this tutorial:
 - [HaoZeke/eon_orchestrator](https://github.com/HaoZeke/eon_orchestrator):
   Snakemake-orchestrated workflow for batches of NEB calculations with
   PET-MAD, including IRA pre-alignment, endpoint minimization, energy
-  profiles, and 2D RMSD landscapes. The HCN config used in this tutorial
-  is taken from `examples/hcn_isom/`.
+  profiles, and 2D RMSD landscapes. The vinyl alcohol config used in this
+  tutorial is taken from `examples/vinyl_alcohol/`.
 
 ## Further reading
 
