@@ -19,7 +19,9 @@
 #include <format>
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include <string>
+#include <unordered_map>
 
 namespace {
 
@@ -43,6 +45,21 @@ std::string strip_nl(const std::string &s) {
     str.pop_back();
   return str;
 }
+
+// Per-file long-lived ConFrameWriter for append mode. readcon-core's
+// from_path constructor opens the file in truncate mode (File::create),
+// so reconstructing a writer per iteration discards previous frames.
+// Keeping one writer alive per filename for the duration of the run
+// reuses the same open file handle, so successive writer.extend() calls
+// stream each new frame to the existing position without truncation.
+std::unordered_map<std::string, std::unique_ptr<readcon::ConFrameWriter>> &
+movie_writer_cache() {
+  static std::unordered_map<std::string,
+                            std::unique_ptr<readcon::ConFrameWriter>>
+      cache;
+  return cache;
+}
+std::mutex movie_writer_cache_mutex;
 
 } // namespace
 
@@ -93,17 +110,23 @@ bool matter2con(Matter &m, std::string filename, bool append) {
   }
 
   auto frame = builder.build();
-  std::vector<readcon::ConFrame> frames;
-  if (append) {
-    try {
-      frames = readcon::read_all_frames(filename);
-    } catch (...) {
-      // File doesn't exist yet, start fresh
-    }
+
+  std::lock_guard<std::mutex> guard(movie_writer_cache_mutex);
+  auto &cache = movie_writer_cache();
+  auto it = cache.find(filename);
+  if (!append || it == cache.end()) {
+    // First write to this file (or explicit truncate): replace any
+    // previous handle so the new run starts from a fresh file. The
+    // writer's destructor closes the prior file via free_rkr_writer.
+    cache[filename] = std::make_unique<readcon::ConFrameWriter>(filename, 17);
+    it = cache.find(filename);
   }
-  frames.push_back(std::move(frame));
-  readcon::ConFrameWriter writer(filename, 17);
-  writer.extend(frames);
+  // ConFrameWriter::extend takes a vector by const ref; build a single-
+  // element vector and let the writer stream it to the open file.
+  std::vector<readcon::ConFrame> one;
+  one.reserve(1);
+  one.push_back(std::move(frame));
+  it->second->extend(one);
   return true;
 }
 
