@@ -164,11 +164,47 @@ shutil.copy("data/reactant.con", neb_dir / "reactant.con")
 shutil.copy("data/product.con", neb_dir / "product.con")
 
 neb_config = {
-    "Main": {"job": "nudged_elastic_band"},
+    # Mirror eon_orchestrator's HCN-isomerization NEB config
+    # (https://github.com/HaoZeke/eon_orchestrator examples/hcn_isom).
+    # 18 images + SIDPP path + energy-weighted springs + climbing
+    # image + OCI-NEB MMF refinement converges the HCN -> HNC barrier
+    # (~1.8 eV with PET-MAD-XS) cleanly.
+    "Main": {"job": "nudged_elastic_band", "random_seed": 706253457},
     "Potential": {"potential": "metatomic"},
-    "Metatomic": {"model_path": str(model_path.resolve())},
-    "Nudged Elastic Band": {"images": 7, "spring": 5.0},
-    "Optimizer": {"opt_method": "lbfgs", "converged_force": 0.01, "max_iterations": 500},
+    "Metatomic": {"model_path": str(model_path.resolve()), "device": "cpu"},
+    "Nudged Elastic Band": {
+        "images": 18,
+        # initialization
+        "initializer": "sidpp",
+        "sidpp_growth_alpha": 0.33,
+        "minimize_endpoints": "false",
+        # energy-weighted springs
+        "energy_weighted": "true",
+        "ew_ksp_min": 0.972,
+        "ew_ksp_max": 9.72,
+        "ew_trigger": 0.5,
+        # climbing image once roughly converged
+        "climbing_image_method": "true",
+        "climbing_image_converged_only": "true",
+        "ci_after": 0.5,
+        "ci_after_rel": 0.8,
+        # OCI-NEB MMF refinement at the saddle (recommended,
+        # see Goswami et al. 2026)
+        "ci_mmf": "true",
+        "ci_mmf_after": 0.1,
+        "ci_mmf_after_rel": 0.8,
+        "ci_mmf_penalty_strength": 1.5,
+        "ci_mmf_penalty_base": 0.4,
+        "ci_mmf_angle": 0.9,
+        "ci_mmf_nsteps": 1000,
+    },
+    "Optimizer": {
+        "opt_method": "lbfgs",
+        "max_move": 0.1,
+        # 10^-3 Ha/Bohr; standard chemistry precision
+        "converged_force": 0.0514221,
+        "max_iterations": 1000,
+    },
     "Debug": {"write_movies": True},
 }
 write_eon_config(neb_dir, neb_config)
@@ -218,6 +254,20 @@ runner.invoke(plt_neb_main, [
     "--dpi", "150",
 ])
 ```
+
+## See also
+
+For producing your own NEB trajectories beyond this tutorial:
+
+- The [`eon-pet-neb`](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
+  example in the [lab-cosmo/atomistic-cookbook](https://github.com/lab-cosmo/atomistic-cookbook):
+  a step-by-step PET-MAD NEB walkthrough using ASE for path setup. This is
+  the canonical metatomic-consumer integration test for eOn.
+- [HaoZeke/eon_orchestrator](https://github.com/HaoZeke/eon_orchestrator):
+  Snakemake-orchestrated workflow for batches of NEB calculations with
+  PET-MAD, including IRA pre-alignment, endpoint minimization, energy
+  profiles, and 2D RMSD landscapes. The HCN config used in this tutorial
+  is taken from `examples/hcn_isom/`.
 
 ## Further reading
 
