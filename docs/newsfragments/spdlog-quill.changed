@@ -1,1 +1,0 @@
-Converted commented-out SPDLOG_LOGGER_DEBUG calls to active ``QUILL_LOG_TRACE_L1`` (compiled out in release builds).

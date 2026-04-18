@@ -1,1 +1,0 @@
-Replaced C-style headers (``math.h``, ``string.h``, ``time.h``, etc.) with C++ equivalents (``cmath``, ``cstring``, ``ctime``) in 10 client files. Added ``using enum JobType`` in Job.cpp.

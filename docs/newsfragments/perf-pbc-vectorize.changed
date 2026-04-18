@@ -1,1 +1,0 @@
-Vectorized PBC wrapping: replaced scalar ``fmod`` loop with ``floor``-based Eigen array operation. Single x86 ``vroundsd`` instruction instead of expensive ``fmod`` library call per element.

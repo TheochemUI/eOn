@@ -1,2 +1,0 @@
-Fixed Prefactor Hessian size validation that checked min1 vs saddle on both
-sides of the OR condition, never validating min2 frequency array size.

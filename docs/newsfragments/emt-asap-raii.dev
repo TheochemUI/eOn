@@ -1,2 +1,0 @@
-Replace remaining new[]/delete[] in EMT/Asap (NeighborList.cpp, EMT.cpp)
-with std::vector. 5 allocations in Asap library internals.

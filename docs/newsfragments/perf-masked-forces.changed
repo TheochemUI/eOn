@@ -1,1 +1,0 @@
-``Matter::getForces()`` now returns ``const AtomMatrix&`` to a cached masked-force result instead of copying and zeroing fixed atoms on every call.

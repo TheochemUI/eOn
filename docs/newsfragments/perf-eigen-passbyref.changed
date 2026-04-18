@@ -1,1 +1,0 @@
-Fixed pass-by-value of ``VectorXd`` in ``ObjectiveFunction``, ``LBFGS``, and optimizer interfaces. Dynamic Eigen types now passed by ``const`` reference per Eigen documentation, eliminating unnecessary 40-160KB copies per optimizer step.

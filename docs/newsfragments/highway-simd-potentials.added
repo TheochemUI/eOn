@@ -1,3 +1,0 @@
-Highway SIMD subproject builds and is detected at configure time. SIMD
-kernels for Morse/LJ/EAM force loops are planned but not yet implemented
-(core algorithm files already benefit from Eigen's auto-vectorization).

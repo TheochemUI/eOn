@@ -1,1 +1,0 @@
-OCINEB (Off-Path Climbing Image NEB): recommended hybrid CI-NEB + Min-Mode Following with Hessian eigenmode alignment for automated saddle point refinement (``ci_mmf = true``). See Goswami, Gunde, Jónsson, *Enhanced Climbing Image Nudged Elastic Band Method with Hessian Eigenmode Alignment*, 2026, [arXiv:2601.12630](https://arxiv.org/abs/2601.12630).

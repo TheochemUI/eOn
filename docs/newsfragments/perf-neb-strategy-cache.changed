@@ -1,1 +1,0 @@
-NEB tangent and projection strategies cached as class members (built once in constructor). Spring strategy still rebuilt per iteration as it depends on per-step energy data. SIMD-optimized ``Eigen::Map<VectorXd>.dot()`` replaces ``(a.array() * b.array()).sum()`` in all NEB force projections.

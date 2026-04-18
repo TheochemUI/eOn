@@ -1,3 +1,0 @@
-Competitive NEB benchmarking framework (private repo HaoZeke/eon_benchmarks).
-Compare eOn against ASE, ORCA, OPTIM, ARTn, NWChem, Sella on Baker test
-set and Pt surfaces. Snakemake workflow with reproducible environments.

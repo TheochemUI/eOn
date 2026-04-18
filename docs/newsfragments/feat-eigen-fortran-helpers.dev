@@ -1,3 +1,0 @@
-Added Fortran column-major layout conversion helpers in ``Eigen.h``:
-``AtomMatrixF`` type alias, zero-copy ``to/from_fortran_layout()``, and
-``map_from_flat_colmajor/rowmajor()`` for interfacing with Fortran libraries.

@@ -1,4 +1,0 @@
-Fixed LBFGS aborting on degenerate curvature updates. The ``abs()`` ->
-``std::abs()`` fix exposed that the ``s0.y0 < LBFGS_EPS`` check was
-previously disabled by integer truncation. Now resets L-BFGS memory
-(standard restart strategy) instead of aborting the optimization.

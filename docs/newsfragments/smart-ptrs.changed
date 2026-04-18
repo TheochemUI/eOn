@@ -1,1 +1,0 @@
-All job classes now use ``std::shared_ptr<Matter>`` and RAII (``ForceCallTimer``, ``std::ofstream``). No more raw ``new/delete`` for Matter objects or unchecked ``fopen`` calls.

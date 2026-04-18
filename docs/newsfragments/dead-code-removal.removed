@@ -1,3 +1,0 @@
-Removed dead code: INIFile.cpp/h (superseded by inih), legacy CMakeLists.txt
-(36 files), Makefile/buildRules.mk, old unittest framework (unittests/).
-Total: ~2600 lines of dead code removed.

@@ -1,1 +1,0 @@
-Migrated test suite from GoogleTest to Catch2. Added 5 new tests (DimerTest, SaddleSearchTest, OptimizerTest, ConFileIOTest, HessianTest) and revived 4 (MatterTest, PotTest, ImpDimerTest, StringHelpersTest). Total: 16 tests.
