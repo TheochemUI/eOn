@@ -1,5 +1,0 @@
-Added IRA (Iterative Rotations and Assignments) structure comparison via the
-libira Fortran library. Provides ``IRACompare::match()`` (CShDA + SVD
-alignment), ``matchPBC()`` (periodic boundary conditions), and
-``findSymmetry()`` (SOFI point group detection). Requires ``-Dwith_ira=true``
-at build time.

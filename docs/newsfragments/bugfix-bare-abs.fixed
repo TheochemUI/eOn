@@ -1,3 +1,0 @@
-Fixed bare ``abs()`` calls on ``double`` values in BondBoost, LBFGS, and
-Hessian that resolved to the C integer ``abs(int)`` overload on non-MSVC
-compilers, silently truncating floating-point values.

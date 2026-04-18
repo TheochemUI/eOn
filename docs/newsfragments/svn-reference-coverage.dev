@@ -1,3 +1,0 @@
-Add SVN-verified integration tests for remaining unused reference data:
-neb_morse_pt, global_optimization_lj, minimization_eam_fire,
-minimization_sw_cg, min_lj_sd, replica_exchange_lj, bh50.

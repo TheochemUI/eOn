@@ -1,1 +1,0 @@
-Python `eon/fileio.py` now uses the `readcon` package (PyPI) for loading and saving .con files, replacing ~60 lines of hand-written parsing. The `loadcon`, `loadcons`, and `savecon` functions delegate to `readcon.read_con()` / `readcon.write_con()`.

@@ -1,3 +1,0 @@
-Fixed DynamicsSaddleSearch MD snapshot recording using shared_ptr aliasing
-instead of deep copy, causing all snapshots to point to the same live object
-and making transition time refinement unreliable.

@@ -1,4 +1,0 @@
-LAMMPS potential now uses runtime dynamic loading (``dlopen``/``LoadLibrary``)
-instead of compile-time linking. A single eOn binary can use LAMMPS
-potentials if ``liblammps`` is installed, without requiring LAMMPS at build
-time. Install via ``conda install -c conda-forge lammps``.

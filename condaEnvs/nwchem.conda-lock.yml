@@ -1451,6 +1451,30 @@ package:
     sha256: f4957c05f4fbcd99577de8838ca4b5b1ae4b400a44be647a0159c14f85b9bfc0
   category: main
   optional: false
+- name: rust
+  version: 1.94.0
+  manager: conda
+  platform: osx-arm64
+  dependencies:
+    rust-std-aarch64-apple-darwin 1.94.0 hf6ec828_0: '*'
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/rust-1.94.0-h4ff7c5d_0.conda
+  hash:
+    md5: fb0fc448d379337e26f2633bd15bfcd8
+    sha256: 811c519f01d0d26587cdc99ba2c77ea8affd1cef0990e61c0a4ed663451d01b3
+  category: main
+  optional: false
+- name: rust-std-aarch64-apple-darwin
+  version: 1.94.0
+  manager: conda
+  platform: osx-arm64
+  dependencies:
+    __unix: '*'
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-apple-darwin-1.94.0-hf6ec828_0.conda
+  hash:
+    md5: 4aa5527d3163e6644197772dc56261c9
+    sha256: ad761500228974aad3d422902a87c8c2d938fb3f76dd356f7629fd16f5f214a4
+  category: main
+  optional: false
 - name: scalapack
   version: 2.2.0
   manager: conda
@@ -1466,18 +1490,6 @@ package:
   hash:
     md5: e8f17a6565bbf8c30fb0c601173f8295
     sha256: 810f497ae81ed9f91d30883d763160410ab8557d561be9e2a739ac1f96d82927
-  category: main
-  optional: false
-- name: sccache
-  version: 0.14.0
-  manager: conda
-  platform: osx-arm64
-  dependencies:
-    __osx: '>=11.0'
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/sccache-0.14.0-h6fdd925_0.conda
-  hash:
-    md5: 5ca50d2b2df57a9d08c8ea1ecf1425f1
-    sha256: eb41fa276fcbebcf7c4ce4223988af0ef40ee97a724fca39547508868375249a
   category: main
   optional: false
 - name: scipy
@@ -1710,6 +1722,16 @@ package:
   url: https://files.pythonhosted.org/packages/c5/2c/78e4a789306a92ade5000da4f5de3255202c534acdadc3aac7b5458fadef/psutil-7.2.1-cp36-abi3-macosx_11_0_arm64.whl
   hash:
     sha256: 05cc68dbb8c174828624062e73078e7e35406f4ca2d0866c272c2410d8ef06d1
+  category: main
+  optional: false
+- name: readcon
+  version: 0.4.3
+  manager: pip
+  platform: osx-arm64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/cb/8d/8d68e9cf2bb561bc83e776a035c6119ebdeb37f6fe30d8aae1c05bbbc9c6/readcon-0.4.3-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 691485579d45d810e5f16dac9cb096178c5b56b44d24030fa2102b2541445933
   category: main
   optional: false
 - name: towncrier
@@ -3215,6 +3237,35 @@ package:
     sha256: d5c73079c1dd2c2a313c3bfd81c73dbd066b7eb08d213778c8bff520091ae894
   category: main
   optional: false
+- name: rust
+  version: 1.94.0
+  manager: conda
+  platform: linux-64
+  dependencies:
+    __glibc: '>=2.17,<3.0.a0'
+    gcc_impl_linux-64: '*'
+    libgcc: '>=14'
+    libzlib: '>=1.3.1,<2.0a0'
+    rust-std-x86_64-unknown-linux-gnu 1.94.0 h2c6d0dc_0: '*'
+    sysroot_linux-64: '>=2.17'
+  url: https://conda.anaconda.org/conda-forge/linux-64/rust-1.94.0-h53717f1_0.conda
+  hash:
+    md5: f32243e302459c44eb66291ff690abd2
+    sha256: 50bfa8a8f848c1cb0a75e25327c056e5dad46c9076d54471b01b08fa7fd64f94
+  category: main
+  optional: false
+- name: rust-std-x86_64-unknown-linux-gnu
+  version: 1.94.0
+  manager: conda
+  platform: linux-64
+  dependencies:
+    __unix: '*'
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-unknown-linux-gnu-1.94.0-h2c6d0dc_0.conda
+  hash:
+    md5: df0c8674169061103f9cc0e112591eab
+    sha256: 3980a10eee5f24ce7770c5d1665f93f363345c630bb6189176f3ab7bd9e8724d
+  category: main
+  optional: false
 - name: scalapack
   version: 2.2.0
   manager: conda
@@ -3231,20 +3282,6 @@ package:
   hash:
     md5: 4c93bc0b336c30f8b8c6b09d41f74438
     sha256: dda828c55dee9ef7e6d53e0e83ba1edf341db2b12f0f8d9d0716b9b36ce32616
-  category: main
-  optional: false
-- name: sccache
-  version: 0.14.0
-  manager: conda
-  platform: linux-64
-  dependencies:
-    __glibc: '>=2.17,<3.0.a0'
-    libgcc: '>=14'
-    openssl: '>=3.5.5,<4.0a0'
-  url: https://conda.anaconda.org/conda-forge/linux-64/sccache-0.14.0-he64ecbb_0.conda
-  hash:
-    md5: 513b2505df7c927f2f048aa2e3f48f7d
-    sha256: 83f881b318b9a39723ee8b5f0a5329240b4b65c692a8a998d4217333b8c801d4
   category: main
   optional: false
 - name: scipy
@@ -3468,6 +3505,16 @@ package:
   url: https://files.pythonhosted.org/packages/29/f8/40e01c350ad9a2b3cb4e6adbcc8a83b17ee50dd5792102b6142385937db5/psutil-7.2.1-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl
   hash:
     sha256: 5e38404ca2bb30ed7267a46c02f06ff842e92da3bb8c5bfdadbd35a5722314d8
+  category: main
+  optional: false
+- name: readcon
+  version: 0.4.3
+  manager: pip
+  platform: linux-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/22/da/7637d393d07a23387886bb7ccdfc82999639bd804b9b4acacd10a4aa2723/readcon-0.4.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  hash:
+    sha256: 039ed476613778634714247f42810f1c9f6b9b3cbc68e2ff42d34a33e852da9c
   category: main
   optional: false
 - name: towncrier
@@ -4860,6 +4907,30 @@ package:
     sha256: 65c946fc5a9bb71772a7ac9bad64ff08ac07f7d5311306c2dcc1647157b96706
   category: main
   optional: false
+- name: rust
+  version: 1.94.0
+  manager: conda
+  platform: osx-64
+  dependencies:
+    rust-std-x86_64-apple-darwin 1.94.0 h38e4360_0: '*'
+  url: https://conda.anaconda.org/conda-forge/osx-64/rust-1.94.0-h5655b98_0.conda
+  hash:
+    md5: 59ca71d90e1fa1871f9bf267d11b29a5
+    sha256: d6d4c597e30e03e06da6626b601f2e85256ded5a920d4323b07522721fe7b47d
+  category: main
+  optional: false
+- name: rust-std-x86_64-apple-darwin
+  version: 1.94.0
+  manager: conda
+  platform: osx-64
+  dependencies:
+    __unix: '*'
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-apple-darwin-1.94.0-h38e4360_0.conda
+  hash:
+    md5: 214a61b18f51d3f97828a6b8388b2989
+    sha256: 4beba0d8f99cb8b62102cf9c09bbcdd8a8ab1be55c0bd00b4ebfbe0c76bf8b18
+  category: main
+  optional: false
 - name: scalapack
   version: 2.2.0
   manager: conda
@@ -4875,18 +4946,6 @@ package:
   hash:
     md5: 0d3172acf936548df706e212f95b3568
     sha256: 3413e7c7afaea4c5193c711367af10eae39f6d60a7ea52045fd05221c628f4b6
-  category: main
-  optional: false
-- name: sccache
-  version: 0.14.0
-  manager: conda
-  platform: osx-64
-  dependencies:
-    __osx: '>=10.13'
-  url: https://conda.anaconda.org/conda-forge/osx-64/sccache-0.14.0-h4728fb8_0.conda
-  hash:
-    md5: 4e34b4df5ebaf47994b41ef370d9a0f3
-    sha256: 540a53afa16eff7f2dce5c2d313cde1e386d2809f332575c2f542f6540150ab6
   category: main
   optional: false
 - name: scipy
@@ -5101,6 +5160,16 @@ package:
   url: https://files.pythonhosted.org/packages/c5/cf/5180eb8c8bdf6a503c6919f1da28328bd1e6b3b1b5b9d5b01ae64f019616/psutil-7.2.1-cp36-abi3-macosx_10_9_x86_64.whl
   hash:
     sha256: b2e953fcfaedcfbc952b44744f22d16575d3aa78eb4f51ae74165b4e96e55f42
+  category: main
+  optional: false
+- name: readcon
+  version: 0.4.3
+  manager: pip
+  platform: osx-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/68/5e/c6c5b88dc027ee926b0eeffc7e442b0240b4ee9169674263a6f3dd591021/readcon-0.4.3-cp312-cp312-macosx_10_12_x86_64.whl
+  hash:
+    sha256: cab13e8e86fd5c21c2a79227f3c26907bb0e7eb0184468f5d81d067c8caef50d
   category: main
   optional: false
 - name: towncrier

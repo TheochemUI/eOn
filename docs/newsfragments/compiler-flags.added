@@ -1,1 +1,0 @@
-Release builds now use ``-O3 -flto=auto``. Optional ``native_arch`` and ``fast_math`` meson options for ``-march=native`` and ``-ffast-math``.

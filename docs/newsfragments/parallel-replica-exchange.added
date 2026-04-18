@@ -1,4 +1,0 @@
-ReplicaExchangeJob now runs replica MD steps in parallel via ``std::thread``
-when ``parallel=true`` and the potential supports it. Each replica gets its
-own potential instance when ``needsPerImageInstance()`` is true (e.g. ML
-potentials).

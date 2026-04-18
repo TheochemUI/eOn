@@ -1,1 +1,0 @@
-Extracted ``ReplicaDynamicsJob`` base class from TADJob and SafeHyperJob, deduplicating ~190 lines of shared code (checkState, refine, dephase, saveData).

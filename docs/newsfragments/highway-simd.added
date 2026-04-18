@@ -1,6 +1,0 @@
-Added Highway SIMD as optional subproject (cmake wrap). When available,
-``-DWITH_HIGHWAY`` is set so future potential kernels can opt in.
-Hand-written SIMD kernels for Morse/LJ/EAM are staged for a follow-up
-release (see the separate ``highway-simd-potentials`` developer note);
-today the main benefit of enabling Highway is compile-time availability
-of the subproject for those downstream kernels.

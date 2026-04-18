@@ -1,1 +1,0 @@
-Added bounds check for ``numExtrema`` to prevent out-of-range access in NEB spline extrema.

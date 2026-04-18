@@ -2,6 +2,140 @@
 
 <!-- towncrier release notes start -->
 
+## [2.13.0](https://github.com/TheochemUI/eOn/tree/2.13.0) - 2026-04-18
+
+### Removed
+
+- Removed 9 dead legacy pointer+size math functions from HelperFunctions (``dot``, ``length``, ``add``, ``subtract``, ``multiplyScalar``, ``divideScalar``, ``copyRightIntoLeft``, ``normalize``, ``makeProjection``), all superseded by Eigen. ([#dead-code](https://github.com/TheochemUI/eOn/issues/dead-code))
+- Removed dead code: INIFile.cpp/h (superseded by inih), legacy CMakeLists.txt
+  (36 files), Makefile/buildRules.mk, old unittest framework (unittests/).
+  Total: ~2600 lines of dead code removed. ([#dead-code-removal](https://github.com/TheochemUI/eOn/issues/dead-code-removal))
+- Removed dead ``TADJob::saddleSearch()`` function and associated ``dimerSearch`` member (dead since 2013). ([#dead-tad](https://github.com/TheochemUI/eOn/issues/dead-tad))
+
+### Added
+
+- Release builds now use ``-O3 -flto=auto``. Optional ``native_arch`` and ``fast_math`` meson options for ``-march=native`` and ``-ffast-math``. ([#compiler-flags](https://github.com/TheochemUI/eOn/issues/compiler-flags))
+- Added ARTn (Activation-Relaxation Technique nouveau) saddle search method via
+  the pARTn Fortran library, as a complementary explorer for pushing away from
+  minima. Supports two modes: ``method = artn`` (standalone, pARTn drives push +
+  internal eigenmode search + relaxation) and ``min_mode_method = artn``
+  (drop-in, eOn's displacement seeds the mode). Configurable via ``[ARTn]``
+  section with ``push_step_size``, ``force_threshold``, ``max_iterations``,
+  ``ninit``, ``nperp_limitation``, ``lanczos_min_size``, ``nsmooth``, and
+  ``nnewchance`` parameters. Requires ``-Dwith_artn=true`` at build time.
+  For automated saddle point refinement in production workflows, prefer OCINEB
+  (``ci_mmf = true``). ([#feat-artn-integration](https://github.com/TheochemUI/eOn/issues/feat-artn-integration))
+- Added IRA (Iterative Rotations and Assignments) structure comparison via the
+  libira Fortran library. Provides ``IRACompare::match()`` (CShDA + SVD
+  alignment), ``matchPBC()`` (periodic boundary conditions), and
+  ``findSymmetry()`` (SOFI point group detection). Requires ``-Dwith_ira=true``
+  at build time. ([#feat-ira-integration](https://github.com/TheochemUI/eOn/issues/feat-ira-integration))
+- Added Highway SIMD as optional subproject (cmake wrap). When available,
+  ``-DWITH_HIGHWAY`` is set so future potential kernels can opt in.
+  Hand-written SIMD kernels for Morse/LJ/EAM are staged for a follow-up
+  release (see the separate ``highway-simd-potentials`` developer note);
+  today the main benefit of enabling Highway is compile-time availability
+  of the subproject for those downstream kernels. ([#highway-simd](https://github.com/TheochemUI/eOn/issues/highway-simd))
+- Highway SIMD subproject builds and is detected at configure time. SIMD
+  kernels for Morse/LJ/EAM force loops are planned but not yet implemented
+  (core algorithm files already benefit from Eigen's auto-vectorization). ([#highway-simd-potentials](https://github.com/TheochemUI/eOn/issues/highway-simd-potentials))
+- IDPP (Image Dependent Pair Potential) path initialization for NEB. ([#neb-idpp](https://github.com/TheochemUI/eOn/issues/neb-idpp))
+- NEB decomposed into modular strategy-pattern components: tangent, projection, spring force, OCINEB controller, spline extrema, initial paths, and objective function. ([#neb-modularize](https://github.com/TheochemUI/eOn/issues/neb-modularize))
+- OCINEB (Off-Path Climbing Image NEB): recommended hybrid CI-NEB + Min-Mode Following with Hessian eigenmode alignment for automated saddle point refinement (``ci_mmf = true``). See Goswami, Gunde, Jónsson, *Enhanced Climbing Image Nudged Elastic Band Method with Hessian Eigenmode Alignment*, 2026, [arXiv:2601.12630](https://arxiv.org/abs/2601.12630). ([#neb-ocineb](https://github.com/TheochemUI/eOn/issues/neb-ocineb))
+- Onsager-Machlup action-based NEB for minimum action paths (``onsager_machlup = true``). ([#neb-om](https://github.com/TheochemUI/eOn/issues/neb-om))
+- Parallel image force evaluation for NEB (requires TBB, ``-Dwith_parallel_neb=true``). ([#neb-parallel](https://github.com/TheochemUI/eOn/issues/neb-parallel))
+- Parallel improved dimer gradient evaluation via ``std::thread``. The two dimer replicas evaluate forces concurrently when the potential is thread-safe. ``std::thread`` rather than ``std::jthread`` for Apple Clang libc++ compatibility. ([#parallel-dimer-stdthread](https://github.com/TheochemUI/eOn/issues/parallel-dimer-stdthread))
+- Parallel NEB force evaluation via ``std::thread``. Each image evaluates its potential concurrently when the potential is thread-safe. Achieves 2.5x speedup over SVN baseline on 5-image NEB with Morse potential. No external dependencies (replaces TBB-based ``std::execution::par``). Apple Clang's libc++ does not yet ship ``std::jthread``, so the implementation uses ``std::thread`` with explicit exception-safe joins. ([#parallel-neb-stdthread](https://github.com/TheochemUI/eOn/issues/parallel-neb-stdthread))
+- ReplicaExchangeJob now runs replica MD steps in parallel via ``std::thread``
+  when ``parallel=true`` and the potential supports it. Each replica gets its
+  own potential instance when ``needsPerImageInstance()`` is true (e.g. ML
+  potentials). ([#parallel-replica-exchange](https://github.com/TheochemUI/eOn/issues/parallel-replica-exchange))
+- JSON serialization for Parameters via `nlohmann/json <https://github.com/nlohmann/json>`_. New ``load_json()`` and ``to_json()`` methods enable programmatic configuration for library usage and RPC transport. ([#params-json](https://github.com/TheochemUI/eOn/issues/params-json))
+- Added readcon-core v0.7.1 as a Meson subproject for .con/.convel file I/O. The Rust FFI library replaces the hand-written C FILE*-based parser with an mmap-based reader and a type-safe ConFrameBuilder/ConFrameWriter for output. Requires Rust >= 1.88 and cbindgen >= 0.29 at build time.
+
+### Developer
+
+- Planned: approval tests (snapshot-based regression) and fuzz testing
+  for parser robustness (INI, .con format, command line arguments). ([#approval-fuzz-testing](https://github.com/TheochemUI/eOn/issues/approval-fuzz-testing))
+- Competitive NEB benchmarking framework (private repo HaoZeke/eon_benchmarks).
+  Compare eOn against ASE, ORCA, OPTIM, ARTn, NWChem, Sella on Baker test
+  set and Pt surfaces. Snakemake workflow with reproducible environments. ([#competitive-benchmarks](https://github.com/TheochemUI/eOn/issues/competitive-benchmarks))
+- Added developer design docs for Parameters decomposition and NEB modularization. Updated testing inventory, user guides (minimization, dynamics, NEB, saddle search), and added algorithm selection guide with rgpycrumbs examples and atomistic-cookbook links. ([#docs-design](https://github.com/TheochemUI/eOn/issues/docs-design))
+- Replace remaining new[]/delete[] in EMT/Asap (NeighborList.cpp, EMT.cpp)
+  with std::vector. 5 allocations in Asap library internals. ([#emt-asap-raii](https://github.com/TheochemUI/eOn/issues/emt-asap-raii))
+- Added Fortran column-major layout conversion helpers in ``Eigen.h``:
+  ``AtomMatrixF`` type alias, zero-copy ``to/from_fortran_layout()``, and
+  ``map_from_flat_colmajor/rowmajor()`` for interfacing with Fortran libraries. ([#feat-eigen-fortran-helpers](https://github.com/TheochemUI/eOn/issues/feat-eigen-fortran-helpers))
+- Modernize Fortran source files (SW, Tersoff, EDIP, Lenosky, Aluminum,
+  CuH2). Convert to free-form F90, add intent declarations, replace
+  common blocks with modules. Requires SVN regression verification. ([#fortran-modernization](https://github.com/TheochemUI/eOn/issues/fortran-modernization))
+- Highway SIMD kernels for Morse, LJ, and EAM pair-potential force loops.
+  Subproject builds and -DWITH_HIGHWAY is set; needs actual vectorized
+  inner loop implementations using HWY_DYNAMIC_DISPATCH. ([#highway-potential-kernels](https://github.com/TheochemUI/eOn/issues/highway-potential-kernels))
+- SafeHyperJob integration test with SVN reference data. Needs Morse Pt
+  system with element-specific BondBoost parameters (SIGFPE on generic LJ). ([#safe-hyper-test](https://github.com/TheochemUI/eOn/issues/safe-hyper-test))
+- Add SVN-verified integration tests for remaining unused reference data:
+  neb_morse_pt, global_optimization_lj, minimization_eam_fire,
+  minimization_sw_cg, min_lj_sd, replica_exchange_lj, bh50. ([#svn-reference-coverage](https://github.com/TheochemUI/eOn/issues/svn-reference-coverage))
+- Migrated test suite from GoogleTest to Catch2. Added 5 new tests (DimerTest, SaddleSearchTest, OptimizerTest, ConFileIOTest, HessianTest) and revived 4 (MatterTest, PotTest, ImpDimerTest, StringHelpersTest). Total: 16 tests. ([#tests-new](https://github.com/TheochemUI/eOn/issues/tests-new))
+- Removed abandoned v3c TOML migration artifacts from 11 documentation files. ([#docs-v3c-cleanup](https://github.com/TheochemUI/eOn/issues/docs-v3c-cleanup))
+
+### Changed
+
+- Eigenmode methods (Dimer, ImprovedDimer, Lanczos, GPRDimer) now use ``std::variant`` instead of an abstract base class, eliminating virtual dispatch overhead. ([#eigenmode-variant](https://github.com/TheochemUI/eOn/issues/eigenmode-variant))
+- LAMMPS potential now uses runtime dynamic loading (``dlopen``/``LoadLibrary``)
+  instead of compile-time linking. A single eOn binary can use LAMMPS
+  potentials if ``liblammps`` is installed, without requiring LAMMPS at build
+  time. Install via ``conda install -c conda-forge lammps``. ([#lammps-runtime](https://github.com/TheochemUI/eOn/issues/lammps-runtime))
+- Extracted ``RandomNumbers``, ``GeometryAnalysis``, and ``ConFileIO`` modules from Matter and HelperFunctions. Matter.cpp reduced from 1253 to ~500 lines, HelperFunctions.cpp from 838 to ~300 lines. ([#module-extract](https://github.com/TheochemUI/eOn/issues/module-extract))
+- Removed all ``using namespace std;`` from the entire client codebase
+  (60+ files). All standard library symbols now explicitly qualified with
+  ``std::``, preventing ADL-related bugs and improving code clarity. ([#namespace-cleanup](https://github.com/TheochemUI/eOn/issues/namespace-cleanup))
+- INI parsing extracted from ``Parameters.cpp`` into ``ParametersINI.cpp`` with a ``validate_and_link()`` function for cross-group dependency resolution. ([#params-ini-extract](https://github.com/TheochemUI/eOn/issues/params-ini-extract))
+- Replaced vendored 724-line ``CIniFile`` INI parser with `inih <https://github.com/benhoyt/inih>`_ (r62) via meson wrap. ([#params-inih](https://github.com/TheochemUI/eOn/issues/params-inih))
+- Narrowed parameter passing: Matter, Potential base, Optimizer hierarchy (``OptimizerConfig``), and Dynamics (``DynamicsConfig``) no longer require the full ``Parameters`` object. NEB no longer mutates its Parameters copy. ([#params-narrow](https://github.com/TheochemUI/eOn/issues/params-narrow))
+- All 33 Parameters option-group structs now use C++20 NSDMI (Non-Static Data Member Initialization) for defaults. The constructor shrunk from 481 to 3 lines. ([#params-nsdmi](https://github.com/TheochemUI/eOn/issues/params-nsdmi))
+- Fixed pass-by-value of ``VectorXd`` in ``ObjectiveFunction``, ``LBFGS``, and optimizer interfaces. Dynamic Eigen types now passed by ``const`` reference per Eigen documentation, eliminating unnecessary 40-160KB copies per optimizer step. ([#perf-eigen-passbyref](https://github.com/TheochemUI/eOn/issues/perf-eigen-passbyref))
+- ``Matter::getForces()`` now returns ``const AtomMatrix&`` to a cached masked-force result instead of copying and zeroing fixed atoms on every call. ([#perf-masked-forces](https://github.com/TheochemUI/eOn/issues/perf-masked-forces))
+- NEB tangent and projection strategies cached as class members (built once in constructor). Spring strategy still rebuilt per iteration as it depends on per-step energy data. SIMD-optimized ``Eigen::Map<VectorXd>.dot()`` replaces ``(a.array() * b.array()).sum()`` in all NEB force projections. ([#perf-neb-strategy-cache](https://github.com/TheochemUI/eOn/issues/perf-neb-strategy-cache))
+- Vectorized PBC wrapping: replaced scalar ``fmod`` loop with ``floor``-based Eigen array operation. Single x86 ``vroundsd`` instruction instead of expensive ``fmod`` library call per element. ([#perf-pbc-vectorize](https://github.com/TheochemUI/eOn/issues/perf-pbc-vectorize))
+- Eliminated ``std::pow()`` with integer exponents from all hot-path force
+  loops: LJ (pow(x,6) -> x*x*x), EAM (pow(r,5/6), simplified Morse pair
+  from 3 exp to 1), IDPP (pow(r,4/5)), NEB spline (Horner's method),
+  Water_Pt (11 pow calls replaced with explicit multiplies). ([#perf-pow-elimination](https://github.com/TheochemUI/eOn/issues/perf-pow-elimination))
+- Extracted ``ReplicaDynamicsJob`` base class from TADJob and SafeHyperJob, deduplicating ~190 lines of shared code (checkState, refine, dephase, saveData). ([#replica-base](https://github.com/TheochemUI/eOn/issues/replica-base))
+- All job classes now use ``std::shared_ptr<Matter>`` and RAII (``ForceCallTimer``, ``std::ofstream``). No more raw ``new/delete`` for Matter objects or unchecked ``fopen`` calls. ([#smart-ptrs](https://github.com/TheochemUI/eOn/issues/smart-ptrs))
+- Converted commented-out SPDLOG_LOGGER_DEBUG calls to active ``QUILL_LOG_TRACE_L1`` (compiled out in release builds). ([#spdlog-quill](https://github.com/TheochemUI/eOn/issues/spdlog-quill))
+- Replaced C-style headers (``math.h``, ``string.h``, ``time.h``, etc.) with C++ equivalents (``cmath``, ``cstring``, ``ctime``) in 10 client files. Added ``using enum JobType`` in Job.cpp. ([#cpp20-headers](https://github.com/TheochemUI/eOn/issues/cpp20-headers))
+- Python `eon/fileio.py` now uses the `readcon` package (PyPI) for loading and saving .con files, replacing ~60 lines of hand-written parsing. The `loadcon`, `loadcons`, and `savecon` functions delegate to `readcon.read_con()` / `readcon.write_con()`.
+- Replaced all FILE*-based con/convel I/O in the C++ client with readcon-core. Reading uses `readcon::read_first_frame()` (mmap). Writing uses `ConFrameBuilder` + `ConFrameWriter` with 17-digit precision for positions. All FILE* overloads removed; callers now pass filenames directly.
+
+### Fixed
+
+- Fixed bare ``abs()`` calls on ``double`` values in BondBoost, LBFGS, and
+  Hessian that resolved to the C integer ``abs(int)`` overload on non-MSVC
+  compilers, silently truncating floating-point values. ([#bugfix-bare-abs](https://github.com/TheochemUI/eOn/issues/bugfix-bare-abs))
+- ``cellInverse`` now recomputed in ``Matter::setCell()`` (was stale after cell changes). ([#bugfix-cellinverse](https://github.com/TheochemUI/eOn/issues/bugfix-cellinverse))
+- Fixed ``confine_positive`` Eigen indexing (flat ``3*i+0`` replaced with proper ``(i,k)`` row-column access) and replaced raw ``new[]/delete[]`` with ``std::vector``. ([#bugfix-confine-positive](https://github.com/TheochemUI/eOn/issues/bugfix-confine-positive))
+- Fixed ``convergenceForce()`` loop variable mutation that could skip images. ([#bugfix-convergenceforce](https://github.com/TheochemUI/eOn/issues/bugfix-convergenceforce))
+- Fixed LBFGS aborting on degenerate curvature updates. The ``abs()`` ->
+  ``std::abs()`` fix exposed that the ``s0.y0 < LBFGS_EPS`` check was
+  previously disabled by integer truncation. Now resets L-BFGS memory
+  (standard restart strategy) instead of aborting the optimization. ([#bugfix-lbfgs-curvature](https://github.com/TheochemUI/eOn/issues/bugfix-lbfgs-curvature))
+- Fixed uninitialized ``cuttOffU`` member in LJ potential (caused garbage energy with ``MALLOC_PERTURB_``). ([#bugfix-lj-cutoffu](https://github.com/TheochemUI/eOn/issues/bugfix-lj-cutoffu))
+- Fixed ``maxAtomMotionV`` out-of-bounds read when vector size < 3 elements
+  (e.g. 2D optimizer objectives). Valgrind caught ``segment<3>`` reading past
+  buffer, causing silent data corruption with ``MALLOC_PERTURB_`` enabled. ([#bugfix-maxatommotionv](https://github.com/TheochemUI/eOn/issues/bugfix-maxatommotionv))
+- ``maxEnergyImage`` now default-initialized to 0 (was uninitialized). ([#bugfix-maxenergyimage](https://github.com/TheochemUI/eOn/issues/bugfix-maxenergyimage))
+- Added null ``FILE*`` guard in NEB write_movies to prevent crash when movie writing is disabled. ([#bugfix-neb-write-movies](https://github.com/TheochemUI/eOn/issues/bugfix-neb-write-movies))
+- Added bounds check for ``numExtrema`` to prevent out-of-range access in NEB spline extrema. ([#bugfix-numextrema](https://github.com/TheochemUI/eOn/issues/bugfix-numextrema))
+- Fixed Prefactor Hessian size validation that checked min1 vs saddle on both
+  sides of the OR condition, never validating min2 frequency array size. ([#bugfix-prefactor-hessian](https://github.com/TheochemUI/eOn/issues/bugfix-prefactor-hessian))
+- Fixed DynamicsSaddleSearch MD snapshot recording using shared_ptr aliasing
+  instead of deep copy, causing all snapshots to point to the same live object
+  and making transition time refinement unreliable. ([#bugfix-snapshot-aliasing](https://github.com/TheochemUI/eOn/issues/bugfix-snapshot-aliasing))
+
+
 ## [2.12.0](https://github.com/TheochemUI/eOn/tree/2.12.0) - 2026-03-08
 
 ### Removed
