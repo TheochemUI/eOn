@@ -94,6 +94,7 @@ minimization
 neb
 dimer
 lanczos
+artn
 hessian
 prefactor
 ```

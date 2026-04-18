@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Checklist - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API Reference" href="../apidocs/index.html" /><link rel="prev" title="Tracking changes" href="tracking-changes.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Release workflow - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API Reference" href="../apidocs/index.html" /><link rel="prev" title="Tracking changes" href="tracking-changes.html" />
       <link rel="canonical" href="https://eondocs.org/devdocs/release.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -26,7 +26,7 @@
 </style>
     <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://eondocs.org/devdocs/release.html"/>
-  <meta property="og:title" content="Checklist"/>
+  <meta property="og:title" content="Release workflow"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -111,6 +111,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neb.html">Nudged Elastic Band</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/dimer.html">Dimer method</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
@@ -137,41 +138,41 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="tracking-changes.html">Tracking changes</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Checklist</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Release workflow</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -237,7 +238,18 @@ data-aria-dark="Switch to auto color mode">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#pre-release-checklist">1. Pre-release checklist</a></li>
+<li><a class="reference internal" href="#running-cog-bump">2. Running <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code></a><ul>
+<li><a class="reference internal" href="#what-cog-bump-does">What <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> does</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#post-bump-actions">3. Post-bump actions</a></li>
+<li><a class="reference internal" href="#conda-forge-feedstock-bump">4. conda-forge feedstock bump</a></li>
+<li><a class="reference internal" href="#manual-fallback">5. Manual fallback</a></li>
+<li><a class="reference internal" href="#paper-tags">6. Paper tags</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <iconify-icon icon="simple-icons:github"></iconify-icon>
@@ -280,7 +292,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">Checklist</strong>
+        <strong itemprop="name">Release workflow</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -328,42 +340,188 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </div><article class="yue dark-code" role="main">
-          <section id="checklist">
-<h1>Checklist<a class="headerlink" href="#checklist" title="Link to this heading">¶</a></h1>
-<ul class="simple">
-<li><p>[ ] Bump version in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> – this is the single source of truth.
-All other consumers (<code class="docutils literal notranslate"><span class="pre">docs/source/conf.py</span></code>, <code class="docutils literal notranslate"><span class="pre">client/get_version.py</span></code>,
-and the meson/CMake builds) read from it automatically.</p>
+          <section id="release-workflow">
+<h1>Release workflow<a class="headerlink" href="#release-workflow" title="Link to this heading">¶</a></h1>
+<p>eOn releases use <a class="reference external" href="https://docs.cocogitto.io/">cocogitto (<code class="docutils literal notranslate"><span class="pre">cog</span></code>)</a> to derive the
+next semver tag from the conventional-commit log, run the mechanical bump
+steps, create an atomic signed tag, and emit the source tarball. The
+<code class="docutils literal notranslate"><span class="pre">cog.toml</span></code> at the repo root wires this up; the hand checklist below documents
+what it automates and the manual steps that precede and follow it.</p>
+<section id="pre-release-checklist">
+<h2>1. Pre-release checklist<a class="headerlink" href="#pre-release-checklist" title="Link to this heading">¶</a></h2>
+<p>Before invoking <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code>, verify:</p>
 <ul>
-<li><p>[ ] Also bump <code class="docutils literal notranslate"><span class="pre">version</span></code> in <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> to match.</p></li>
+<li><p>[ ] Every PR intended for the release is merged into <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> is up to date <em>through the previous release only</em> –
+towncrier will prepend the new section from <code class="docutils literal notranslate"><span class="pre">docs/newsfragments/*</span></code>. If
+fragments are missing for user-facing changes, add them first.</p></li>
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">docs/source/releases/v&lt;X.Y.Z&gt;/release-notes.md</span></code> and <code class="docutils literal notranslate"><span class="pre">index.md</span></code> exist
+and are linked from <code class="docutils literal notranslate"><span class="pre">docs/source/releases/index.md</span></code> (cog cannot generate
+these – they are curated).</p></li>
+<li><p>[ ] CI is green on <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">install</span> <span class="pre">--locked</span></code> succeeds cleanly (so the lockfile regeneration
+hook has something stable to work from).</p></li>
+<li><p>[ ] <strong>Downstream integration test passes.</strong> The
+<a class="reference external" href="https://github.com/lab-cosmo/atomistic-cookbook">lab-cosmo/atomistic-cookbook</a>
+example <code class="docutils literal notranslate"><span class="pre">eon-pet-neb</span></code> exercises eOn + PET-MAD on the oxadiazole NEB and
+is the canonical smoke gate for metatomic consumers. Point a cookbook
+checkout at the prospective release commit of eOn (edit its
+<code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> to override the <code class="docutils literal notranslate"><span class="pre">eon</span></code> dependency, or
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span></code> the eOn source tree into the nox-managed env) and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">nox<span class="w"> </span>-e<span class="w"> </span>eon-pet-neb
+</span></pre></div>
+</div>
+<p>A pass means the nox session exits 0, the generated gallery artefacts
+regenerate, and <code class="docutils literal notranslate"><span class="pre">client_traceback.log</span></code> inside the example directory is
+empty. A regression here blocks the release.</p>
+</li>
+</ul>
+</section>
+<section id="running-cog-bump">
+<h2>2. Running <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code><a class="headerlink" href="#running-cog-bump" title="Link to this heading">¶</a></h2>
+<p>The one-command happy path on <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cog<span class="w"> </span>bump<span class="w"> </span>--auto<span class="w"> </span>--annotated<span class="w"> </span><span class="s1">&#39;Release v&lt;X.Y.Z&gt;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="s1">&lt;one-paragraph body listing headline features, e.g.:</span>
+</span><span data-line="4"><span class="s1">ARTn saddle search (pARTn), OCINEB hybrid CI-NEB + min-mode,</span>
+</span><span data-line="5"><span class="s1">IRA structure comparison, ...&gt;</span>
+</span><span data-line="6"><span class="s1">See CHANGELOG.md.&#39;</span>
+</span></pre></div>
+</div>
+<p>Override cog’s commit-log inference with <code class="docutils literal notranslate"><span class="pre">--minor</span></code>, <code class="docutils literal notranslate"><span class="pre">--major</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">--version</span> <span class="pre">X.Y.Z</span></code> when needed (e.g. the only <code class="docutils literal notranslate"><span class="pre">feat:</span></code> commits since the
+last tag are <code class="docutils literal notranslate"><span class="pre">feat(docs)</span></code> and a patch bump is incorrect).</p>
+<section id="what-cog-bump-does">
+<h3>What <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> does<a class="headerlink" href="#what-cog-bump-does" title="Link to this heading">¶</a></h3>
+<p>Defined in <code class="docutils literal notranslate"><span class="pre">cog.toml</span></code>:</p>
+<ol class="arabic simple">
+<li><p>Picks the next version (semver increment inferred from conventional
+commit types since the last tag, or taken from the flag).</p></li>
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">pre_bump_hooks</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sed</span></code> the new version into <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>. All
+other consumers (<code class="docutils literal notranslate"><span class="pre">docs/source/conf.py</span></code>, <code class="docutils literal notranslate"><span class="pre">client/get_version.py</span></code>,
+the meson and CMake builds) read from <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uvx</span> <span class="pre">pixi-to-conda-lock</span> <span class="pre">pixi.lock</span> <span class="pre">--output</span> <span class="pre">condaEnvs</span></code> regenerates
+every <code class="docutils literal notranslate"><span class="pre">condaEnvs/*.conda-lock.yml</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">r</span> <span class="pre">-e</span> <span class="pre">dev</span> <span class="pre">towncrier</span> <span class="pre">build</span> <span class="pre">--version</span> <span class="pre">{{version}}</span> <span class="pre">--date</span> <span class="pre">$(date</span> <span class="pre">+%Y-%m-%d)</span> <span class="pre">--yes</span></code> consumes every file in
+<code class="docutils literal notranslate"><span class="pre">docs/newsfragments/</span></code> and prepends the new section to
+<code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>.</p></li>
 </ul>
 </li>
-<li><p>[ ] Lockfiles updated</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>pixi-to-conda-lock<span class="w"> </span>pixi.lock<span class="w"> </span>--output<span class="w"> </span>condaEnvs
-</span></pre></div>
-</div>
+<li><p>Stages the resulting diff and writes the atomic release commit
+(<code class="docutils literal notranslate"><span class="pre">chore(version):</span> <span class="pre">&lt;X.Y.Z&gt;</span></code> by default; override via the
+<code class="docutils literal notranslate"><span class="pre">--annotated</span></code> body if you want custom wording).</p></li>
+<li><p>Creates the signed annotated tag <code class="docutils literal notranslate"><span class="pre">v&lt;X.Y.Z&gt;</span></code>.</p></li>
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">post_bump_hooks</span></code>:</p>
 <ul class="simple">
-<li><p>[ ] Changelog build and edited if necessary</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">archive</span> <span class="pre">--format=tar</span> <span class="pre">v&lt;X.Y.Z&gt;</span> <span class="pre">|</span> <span class="pre">xz</span> <span class="pre">-9</span> <span class="pre">&gt;</span> <span class="pre">eon-v&lt;X.Y.Z&gt;.tar.xz</span></code>
+produces the source tarball. Automatic GitHub tag archives are
+avoided because their contents have a
+<a class="reference external" href="https://github.blog/open-source/git/update-on-the-future-stability-of-source-code-archives-and-hashes/">documented stability caveat</a>.</p></li>
+<li><p>Prints a reminder for the remaining manual steps.</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>r<span class="w"> </span>-e<span class="w"> </span>dev<span class="w"> </span>towncrier<span class="w"> </span>build<span class="w"> </span>--draft<span class="w"> </span>--version<span class="o">=</span>X.Y.Z<span class="w"> </span>--date<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">&quot;</span>
+</li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">cog.toml</span></code> sets <code class="docutils literal notranslate"><span class="pre">disable_changelog</span> <span class="pre">=</span> <span class="pre">true</span></code> so cog stays out of
+<code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> (towncrier owns it) and <code class="docutils literal notranslate"><span class="pre">branch_whitelist</span> <span class="pre">=</span> <span class="pre">[&quot;main&quot;]</span></code>
+so <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> refuses to run on a PR branch.</p>
+</section>
+</section>
+<section id="post-bump-actions">
+<h2>3. Post-bump actions<a class="headerlink" href="#post-bump-actions" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p>Inspect the release commit:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>show<span class="w"> </span>HEAD
 </span></pre></div>
 </div>
-<ul class="simple">
-<li><p>[ ] Generate release notes, and also the publication page, e.g. see <code class="docutils literal notranslate"><span class="pre">releases/vX.Y.Z/</span></code></p></li>
-</ul>
-<p>To generate the archive since auto-generated archives of tags have <a class="reference external" href="https://github.blog/open-source/git/update-on-the-future-stability-of-source-code-archives-and-hashes/">security
-issues</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>vX.Y.Z<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-vX.Y.Z.tar.xz
+<p>The diff should look like <code class="docutils literal notranslate"><span class="pre">1edaf4d8</span></code> from v2.12.0 – version bumps
+in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>/<code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>, regenerated <code class="docutils literal notranslate"><span class="pre">condaEnvs/*.conda-lock.yml</span></code>,
+an appended block in <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>, every
+<code class="docutils literal notranslate"><span class="pre">docs/newsfragments/*</span></code> file deleted, and the new release-notes page.</p>
+</li>
+<li><p>Push the commit and tag together:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main<span class="w"> </span>--follow-tags
 </span></pre></div>
 </div>
-<p>Paper related tags do not need full release machinery, just a lightweight tag:</p>
+</li>
+<li><p>Create the GitHub release with the tarball attached:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span>eon-v&lt;X.Y.Z&gt;.tar.xz<span class="w"> </span><span class="se">\</span>
+</span><span data-line="2"><span class="w">  </span>--title<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span><span class="se">\</span>
+</span><span data-line="3"><span class="w">  </span>--notes-file<span class="w"> </span>docs/source/releases/v&lt;X.Y.Z&gt;/release-notes.md
+</span></pre></div>
+</div>
+<p>The feedstock URL assumes this exact tarball filename; do not rename
+the asset.</p>
+</li>
+</ol>
+</section>
+<section id="conda-forge-feedstock-bump">
+<h2>4. conda-forge feedstock bump<a class="headerlink" href="#conda-forge-feedstock-bump" title="Link to this heading">¶</a></h2>
+<p>Once the GitHub release is published (so the asset URL resolves), update
+the feedstock at
+<a class="reference external" href="https://github.com/conda-forge/eon-feedstock">conda-forge/eon-feedstock</a>:</p>
+<ol class="arabic">
+<li><p>Branch <code class="docutils literal notranslate"><span class="pre">release-&lt;X.Y.Z&gt;</span></code> off <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code>, bump <code class="docutils literal notranslate"><span class="pre">context.version</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;&lt;X.Y.Z&gt;&quot;</span></code>.</p></li>
+<li><p>Compute the tarball sha256 and replace the first <code class="docutils literal notranslate"><span class="pre">source[].sha256</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">curl<span class="w"> </span>-sSL<span class="w"> </span><span class="s2">&quot;https://github.com/TheochemUI/eOn/releases/download/v&lt;X.Y.Z&gt;/eon-v&lt;X.Y.Z&gt;.tar.xz&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span data-line="2"><span class="w">  </span><span class="p">|</span><span class="w"> </span>sha256sum
+</span></pre></div>
+</div>
+</li>
+<li><p>Reset <code class="docutils literal notranslate"><span class="pre">build.number:</span> <span class="pre">0</span></code>.</p></li>
+<li><p>Verify <code class="docutils literal notranslate"><span class="pre">fix_vesin_const.patch</span></code> and <code class="docutils literal notranslate"><span class="pre">fix_capnpc.patch</span></code> still apply
+cleanly; if not, regenerate them against the new source tree.</p></li>
+<li><p>Commit, push, <code class="docutils literal notranslate"><span class="pre">gh</span> <span class="pre">pr</span> <span class="pre">create</span></code> against <code class="docutils literal notranslate"><span class="pre">conda-forge/eon-feedstock</span></code>.</p></li>
+<li><p>Watch the Azure Pipelines matrix (linux-64, osx-64, osx-arm64, win-64)
+via <code class="docutils literal notranslate"><span class="pre">cf-ci</span> <span class="pre">watch</span> <span class="pre">conda-forge/eon-feedstock#&lt;N&gt;</span></code>.</p></li>
+</ol>
+</section>
+<section id="manual-fallback">
+<h2>5. Manual fallback<a class="headerlink" href="#manual-fallback" title="Link to this heading">¶</a></h2>
+<p>When <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> fails mid-run (hook script error, unexpected prompt, etc.)
+the state is recoverable: no commit has been written yet. Fix the root
+cause and re-run. If you must cut by hand, this is the equivalent
+sequence; <code class="docutils literal notranslate"><span class="pre">1edaf4d8</span> <span class="pre">chore:</span> <span class="pre">release</span> <span class="pre">v2.12.0</span></code> is the canonical reference.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Version</span>
+</span><span data-line="2">sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/^version = &quot;[^&quot;]*&quot;/version = &quot;&lt;X.Y.Z&gt;&quot;/&#39;</span><span class="w"> </span>pyproject.toml<span class="w"> </span>pixi.toml
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Lockfiles</span>
+</span><span data-line="5">uvx<span class="w"> </span>pixi-to-conda-lock<span class="w"> </span>pixi.lock<span class="w"> </span>--output<span class="w"> </span>condaEnvs
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># Changelog</span>
+</span><span data-line="8">pixi<span class="w"> </span>r<span class="w"> </span>-e<span class="w"> </span>dev<span class="w"> </span>towncrier<span class="w"> </span>build<span class="w"> </span>--version<span class="w"> </span>&lt;X.Y.Z&gt;<span class="w"> </span><span class="se">\</span>
+</span><span data-line="9"><span class="w">  </span>--date<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>--yes
+</span><span data-line="10">
+</span><span data-line="11"><span class="c1"># Release notes page (manual)</span>
+</span><span data-line="12"><span class="c1"># Create docs/source/releases/v&lt;X.Y.Z&gt;/{index.md,release-notes.md} and</span>
+</span><span data-line="13"><span class="c1"># add to docs/source/releases/index.md toctree.</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="c1"># Atomic commit + signed tag</span>
+</span><span data-line="16">git<span class="w"> </span>add<span class="w"> </span>-A
+</span><span data-line="17">git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: release v&lt;X.Y.Z&gt;&quot;</span>
+</span><span data-line="18">git<span class="w"> </span>tag<span class="w"> </span>-s<span class="w"> </span>-a<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release v&lt;X.Y.Z&gt;</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="s2">&lt;body&gt;&quot;</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="c1"># Tarball</span>
+</span><span data-line="23">git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-v&lt;X.Y.Z&gt;.tar.xz
+</span></pre></div>
+</div>
+<p>Then continue from <a class="reference internal" href="#post-bump-actions"><span class="xref myst">§3 post-bump actions</span></a>.</p>
+</section>
+<section id="paper-tags">
+<h2>6. Paper tags<a class="headerlink" href="#paper-tags" title="Link to this heading">¶</a></h2>
+<p>Preprints and other paper-related tags do not need the release
+machinery; just a lightweight annotated tag:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>arXiv_2510.06030v3<span class="w"> </span>45c077cb
-</span><span data-line="2"><span class="c1"># feat(arxiv): descriptive</span>
+</span><span data-line="2"><span class="c1"># feat(arxiv): descriptive one-line summary</span>
 </span><span data-line="3"><span class="c1">#</span>
-</span><span data-line="4"><span class="c1"># more details including the arxiv link</span>
+</span><span data-line="4"><span class="c1"># body, including the arXiv link</span>
 </span></pre></div>
 </div>
+</section>
 </section>
 
         </article><button class="back-to-top" type="button">
