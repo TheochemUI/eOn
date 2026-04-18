@@ -1,0 +1,28 @@
+## Cocogitto config for automated releases.
+## See docs/source/devdocs/release.md for the full release workflow.
+## Run with: cog bump --auto --annotated 'Release v{{version}}\n\n<body>'
+
+from_latest_tag = true
+ignore_merge_commits = true
+disable_changelog = true
+disable_bump_commit = false
+skip_ci = "[skip ci]"
+branch_whitelist = ["main"]
+tag_prefix = "v"
+
+pre_bump_hooks = [
+  "sed -i 's/^version = \"[^\"]*\"/version = \"{{version}}\"/' pyproject.toml",
+  "sed -i 's/^version = \"[^\"]*\"/version = \"{{version}}\"/' pixi.toml",
+  "uvx pixi-to-conda-lock pixi.lock --output condaEnvs",
+  "pixi r -e dev towncrier build --version {{version}} --date $(date +%Y-%m-%d) --yes",
+]
+
+post_bump_hooks = [
+  "git archive --format=tar v{{version}} | xz -9 > eon-v{{version}}.tar.xz",
+  "echo 'Tarball eon-v{{version}}.tar.xz ready. Next: git push origin main --follow-tags; gh release create v{{version}} eon-v{{version}}.tar.xz --title v{{version}} --notes-file docs/source/releases/v{{version}}/release-notes.md'",
+]
+
+[changelog]
+path = "CHANGELOG.md"
+
+[packages]
