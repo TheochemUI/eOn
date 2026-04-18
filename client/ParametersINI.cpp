@@ -454,6 +454,30 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.lanczos_options.quit_early = ini.GetBoolean(
       "Lanczos", "quit_early", params.lanczos_options.quit_early);
 
+  // [ARTn] //
+  params.artn_options.push_step_size =
+      ini.GetReal("ARTn", "push_step_size", params.artn_options.push_step_size);
+  params.artn_options.force_threshold = ini.GetReal(
+      "ARTn", "force_threshold", params.artn_options.force_threshold);
+  params.artn_options.max_iterations = ini.GetInteger(
+      "ARTn", "max_iterations", params.artn_options.max_iterations);
+  params.artn_options.ninit =
+      ini.GetInteger("ARTn", "ninit", params.artn_options.ninit);
+  params.artn_options.nperp_limitation =
+      ini.Get("ARTn", "nperp_limitation", params.artn_options.nperp_limitation);
+  params.artn_options.lanczos_min_size = ini.GetInteger(
+      "ARTn", "lanczos_min_size", params.artn_options.lanczos_min_size);
+  params.artn_options.nsmooth =
+      ini.GetInteger("ARTn", "nsmooth", params.artn_options.nsmooth);
+
+  // [IRA] //
+  params.ira_options.distance_threshold = ini.GetReal(
+      "IRA", "distance_threshold", params.ira_options.distance_threshold);
+  params.ira_options.symmetry_threshold = ini.GetReal(
+      "IRA", "symmetry_threshold", params.ira_options.symmetry_threshold);
+  params.ira_options.use_pbc =
+      ini.GetBoolean("IRA", "use_pbc", params.ira_options.use_pbc);
+
   // [GPR Dimer] //
   params.gpr_dimer_options.rotation_angle = ini.GetReal(
       "GPR Dimer", "finite_angle", params.gpr_dimer_options.rotation_angle);

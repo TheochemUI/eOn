@@ -90,11 +90,34 @@ passed with `--native-file`:
 - With `ccache` installed, add `--native-file nativeFiles/ccache_gnu.ini`
 - With `mold` installed, add `--native-file nativeFiles/mold.ini`
 
+### Troubleshooting: rolling distros (Arch, Fedora)
+
+On rolling-release distributions with newer system packages, the conda-forge
+compiler sysroot can conflict with system headers. The symptom is errors like
+`__iseqsigf128 was not declared` or `__fpclassify has not been declared` when
+compiling with the pixi/conda compilers.
+
+The root cause is system-installed CMake configs (e.g. `nlohmann_json`) exporting
+`-I/usr/include`, which mixes the system glibc headers with the conda sysroot.
+Fix by forcing meson to use subproject fallbacks:
+
+```{code-block} bash
+meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib \
+  --force-fallback-for=nlohmann_json
+```
+
 ### Optional packages
 
 The full listing of options is found in the `meson_options.txt` file. These can
 all be turned on and off at the command line. As an example see the [LAMMPS
 integration instructions](project:../user_guide/lammps_pot.md).
+
+For optional wrapped dependencies such as ARTn and IRA, make sure the
+subproject sources are present before configuring:
+
+```{code-block} bash
+meson subprojects download artn-plugin ira
+```
 
 # Licenses
 

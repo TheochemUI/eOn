@@ -50,5 +50,6 @@ jobs:
       - name: Run tests
         shell: pixi run bash -e {0}
         run: |
+          python tests/test_config_metadata.py
           cd examples/akmc-al
           python -m eon.server

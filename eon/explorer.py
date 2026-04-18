@@ -581,7 +581,12 @@ class ProcessSearch:
                                   "max_concave_iterations",
                                   "max_iterations", unknown, unknown, unknown,
                                   unknown, unknown, "potential_failed",
-                                  "nonnegative_abort", "nonlocal abort"],
+                                  "nonnegative_abort", "nonlocal abort",
+                                  unknown, "md_trajectory_too_short",
+                                  "no_negative_mode_at_saddle",
+                                  "no_barrier", "zero_mode_abort",
+                                  "optimizer_error", "dimer_lost_mode",
+                                  "dimer_restored_best", "artn_error"],
                 'minimization':[ "good", "max_iterations", "potential_failed", ]}
 
         self.finished_jobs = []

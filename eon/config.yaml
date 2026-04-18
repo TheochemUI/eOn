@@ -1061,6 +1061,88 @@ Lanczos:
 
 ################################################################################
 
+ARTn:
+
+    options:
+
+        push_step_size:
+            kind: float
+            default: 0.3
+
+        force_threshold:
+            kind: float
+            default: 0.05
+
+        max_iterations:
+            kind: int
+            default: 500
+
+        ninit:
+            kind: int
+            default: -1
+
+        nperp_limitation:
+            kind: string
+            default: default
+
+        lanczos_min_size:
+            kind: int
+            default: -1
+
+        nsmooth:
+            kind: int
+            default: -1
+
+################################################################################
+
+IRA:
+
+    options:
+
+        distance_threshold:
+            kind: float
+            default: 0.3
+
+        symmetry_threshold:
+            kind: float
+            default: 0.1
+
+        use_pbc:
+            kind: boolean
+            default: false
+
+################################################################################
+
+BGSD:
+
+    options:
+
+        alpha:
+            kind: float
+            default: 10.0
+
+        beta:
+            kind: float
+            default: 0.2
+
+        gradientfinitedifference:
+            kind: float
+            default: 0.000001
+
+        Hforceconvergence:
+            kind: float
+            default: 0.01
+
+        grad2energyconvergence:
+            kind: float
+            default: 0.000001
+
+        grad2forceconvergence:
+            kind: float
+            default: 0.0001
+
+################################################################################
+
 AKMC:
 
     options:
@@ -1217,6 +1299,8 @@ Saddle Search:
                 - min_mode
                 - dynamics
                 - basin_hopping
+                - bgsd
+                - artn
 
         min_mode_method:
             kind: string
@@ -1225,6 +1309,7 @@ Saddle Search:
                 - dimer
                 - lanczos
                 - gprdimer
+                - artn
 
         displace_random_weight:
             kind: float
@@ -1271,15 +1356,12 @@ Saddle Search:
             kind: string
             default: random
             values:
+                - load
                 - random
+                - last_atom
+                - least_coordinated
+                - not_fcc_hcp_coordinated
                 - listed_atoms
-                - listed_types
-                - under
-                - least
-                - not_FCC_HCP
-                - not_TCP_BCC
-                - not_TCP
-                - water
 
         displace_1d:
             kind: boolean

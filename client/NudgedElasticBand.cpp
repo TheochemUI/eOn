@@ -426,13 +426,24 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   // instance, OR (b) per-image instances were created (separate models).
   bool canParallel = pot->isThreadSafe() || perImagePotentials_;
   if (numImages > 1 && params.main_options.parallel && canParallel) {
+    // std::thread rather than std::jthread -- Apple Clang libc++ lacks the
+    // latter. Wrap launch + join so a throw from any lambda still joins the
+    // remaining threads before we rethrow; otherwise the unjoined std::thread
+    // destructors call std::terminate().
     std::vector<std::thread> threads;
     threads.reserve(static_cast<size_t>(numImages));
-    for (long i = 1; i <= numImages; i++) {
-      threads.emplace_back([this, i] { path[i]->getForcesRaw(); });
+    try {
+      for (long i = 1; i <= numImages; i++) {
+        threads.emplace_back([this, i] { path[i]->getForcesRaw(); });
+      }
+      for (auto &t : threads)
+        t.join();
+    } catch (...) {
+      for (auto &t : threads)
+        if (t.joinable())
+          t.join();
+      throw;
     }
-    for (auto &t : threads)
-      t.join();
   } else {
     for (long i = 1; i <= numImages; i++) {
       path[i]->getForcesRaw();

@@ -568,6 +568,35 @@ public:
     std::string endpoints;
   } serve_options;
 
+  // [ARTn] //
+  struct artn_options_t {
+    double push_step_size{0.3};   // maps to pARTn "push_step_size"
+    double force_threshold{0.05}; // maps to pARTn "forc_thr"
+    int max_iterations{500};
+    int ninit{-1}; // maps to pARTn "ninit" (-1 = use pARTn default): number
+                   // of initial push steps before Lanczos eigenmode
+                   // estimation. 0 skips the push (eOn supplies the mode);
+                   // larger values let pARTn explore further from the
+                   // minimum before switching to Lanczos.
+    std::string nperp_limitation{"default"}; // maps to pARTn "nperp_limitation"
+    int lanczos_min_size{
+        -1};         // maps to pARTn "lanczos_min_size" (-1 = use default)
+    int nsmooth{-1}; // maps to pARTn "nsmooth" (-1 = use default)
+    int nnewchance{
+        3}; // maps to pARTn "nnewchance": retries when lowest eigval > 0
+            // (convex region). pARTn default is 0 (immediate fail), which
+            // is too aggressive for small clusters where Lanczos can
+            // momentarily settle on a positive eigenvalue before the
+            // unstable mode emerges. 3 retries is a reasonable default.
+  } artn_options;
+
+  // [IRA] //
+  struct ira_options_t {
+    double distance_threshold{0.3};
+    double symmetry_threshold{0.1};
+    bool use_pbc{false};
+  } ira_options;
+
   // [Debug] //
   struct debug_options_t {
     bool write_movies{false};

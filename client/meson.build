@@ -1,4 +1,5 @@
 _incdirs += [include_directories('thirdparty')]
+_runtime_rpath = []
 
 cmake = import('cmake')
 
@@ -226,15 +227,13 @@ if not inireader_dep.found()
 endif
 _deps += inireader_dep
 
-nlohmann_json_dep = dependency('nlohmann_json', required: false)
-if not nlohmann_json_dep.found()
-    nlohmann_json_dep = dependency(
-        'nlohmann_json',
-        fallback: ['nlohmann_json', 'nlohmann_json_dep'],
-        required: true,
-        default_options: ['default_library=static'],
-    )
-endif
+# Always use the subproject: system nlohmann_json cmake configs can export
+# -I/usr/include which breaks conda-forge sysroot isolation on rolling distros.
+nlohmann_json_proj = subproject(
+    'nlohmann_json',
+    default_options: ['default_library=static'],
+)
+nlohmann_json_dep = nlohmann_json_proj.get_variable('nlohmann_json_dep')
 _deps += nlohmann_json_dep
 
 # Highway SIMD (optional, for vectorized potentials)
@@ -696,6 +695,115 @@ if get_option('with_parallel_neb')
     _args += ['-DEON_PARALLEL_NEB']
 endif
 
+if get_option('with_artn')
+    # ARTn (pARTn): Fortran library for saddle point search.
+    # Try system/pkg-config first, then manual artn_libdir, then cmake-build
+    # the subproject. Meson's Fortran scanner breaks with -cpp + submodules,
+    # so we build artn-plugin via cmake at configure time as a workaround.
+    # We redeclare pARTn's C signatures inline in ARTnResource.h, so we
+    # never need an -I for artn.h; hence no artn_includedir option.
+    artn_dep = dependency('artn', required: false)
+    if not artn_dep.found()
+        artn_libdir = get_option('artn_libdir')
+        artn_lib = disabler()
+        if artn_libdir == ''
+            # Auto-build artn-plugin from subprojects/ via cmake
+            artn_src = meson.project_source_root() / 'subprojects' / 'artn-plugin'
+            artn_bld = meson.project_build_root() / 'subprojects' / '_artn_cmake_build'
+            message('ARTn: building subproject via cmake (meson Fortran scanner workaround)')
+            run_command('cmake', '-S', artn_src, '-B', artn_bld,
+                '-DCMAKE_BUILD_TYPE=Release',
+                '-DWITH_LAMMPS=OFF', '-DWITH_QE=OFF', '-DWITH_SIESTA=OFF',
+                check: true)
+            run_command('cmake', '--build', artn_bld, '--parallel', '4', check: true)
+            # LIBRARY_OUTPUT_DIRECTORY in artn-plugin's CMakeLists.txt puts
+            # libartn.so at ${CMAKE_BINARY_DIR}; search a couple of plausible
+            # locations symmetrically with the IRA block below in case a
+            # future cmake refactor moves it.
+            artn_candidates = [artn_bld, artn_bld / 'src', artn_bld / 'lib']
+            foreach candidate : artn_candidates
+                artn_lib = meson.get_compiler('cpp').find_library(
+                    'artn',
+                    dirs: [candidate],
+                    required: false,
+                )
+                if artn_lib.found()
+                    artn_libdir = candidate
+                    break
+                endif
+            endforeach
+            if not artn_lib.found()
+                error('ARTn enabled but libartn was not found in the built subproject directory')
+            endif
+        else
+            artn_lib = meson.get_compiler('cpp').find_library('artn',
+                dirs: [artn_libdir], required: true)
+        endif
+        _runtime_rpath += [artn_libdir]
+        artn_dep = declare_dependency(dependencies: artn_lib)
+    endif
+    _deps += [artn_dep]
+    _args += ['-DWITH_ARTN']
+    eonclib_sources += ['ARTnSaddleSearch.cpp']
+    eonclib_sources += ['libs/ARTn/ARTnResource.cpp']
+endif
+
+if get_option('with_ira')
+    # IRA (Iterative Rotations and Assignments): Fortran library for structure comparison.
+    # Same cmake workaround as ARTn.
+    ira_dep = dependency('ira', required: false)
+    if not ira_dep.found()
+        ira_libdir = get_option('ira_libdir')
+        ira_incdir = get_option('ira_includedir')
+        if ira_libdir == '' or ira_incdir == ''
+            ira_src = meson.project_source_root() / 'subprojects' / 'ira'
+            ira_bld = meson.project_build_root() / 'subprojects' / '_ira_cmake_build'
+            message('IRA: building subproject via cmake (meson Fortran scanner workaround)')
+            run_command('cmake', '-S', ira_src, '-B', ira_bld,
+                '-DCMAKE_BUILD_TYPE=Release',
+                check: true)
+            run_command('cmake', '--build', ira_bld, '--parallel', '4', check: true)
+            ira_incdir = 'interface'
+            ira_includes = ['-I' + ira_src / ira_incdir]
+            ira_candidates = [ira_bld / 'src', ira_src / 'lib']
+            ira_lib = disabler()
+            foreach candidate : ira_candidates
+                ira_lib = meson.get_compiler('cpp').find_library(
+                    'ira',
+                    dirs: [candidate],
+                    required: false,
+                )
+                if ira_lib.found()
+                    ira_libdir = candidate
+                    break
+                endif
+            endforeach
+            if not ira_lib.found()
+                error('IRA enabled but libira was not found in the built or vendored library directories')
+            endif
+        else
+            ira_includes = ['-I' + ira_incdir]
+            ira_lib = meson.get_compiler('cpp').find_library(
+                'ira',
+                dirs: [ira_libdir],
+                required: false,
+            )
+            if not ira_lib.found()
+                error('IRA enabled but libira was not found in ira_libdir=' + ira_libdir)
+            endif
+        endif
+        _runtime_rpath += [ira_libdir]
+        ira_dep = declare_dependency(
+            dependencies: ira_lib,
+            compile_args: ira_includes,
+        )
+    endif
+    _deps += [ira_dep]
+    _args += ['-DWITH_IRA']
+    eonclib_sources += ['IRACompare.cpp']
+    eonclib_sources += ['libs/IRA/IRAResource.cpp']
+endif
+
 if get_option('with_serve')
     # rgpot-compatible RPC serve mode: wraps any eOn potential and serves it
     # over Cap'n Proto RPC using the rgpot Potentials.capnp schema.
@@ -753,6 +861,8 @@ eclib = library(
     link_with: _linkto,
     cpp_args: _args,
     link_args: _linkargs,
+    build_rpath: ':'.join(_runtime_rpath),
+    install_rpath: ':'.join(_runtime_rpath),
     install: true,
 )
 
@@ -779,6 +889,8 @@ ec = executable(
     link_with: _linkto,
     cpp_args: [_args, '-w'],
     link_args: _linkargs,
+    build_rpath: ':'.join(_runtime_rpath),
+    install_rpath: ':'.join(_runtime_rpath),
     install: true,
 )
 
@@ -859,6 +971,12 @@ if get_option('with_tests')
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif
+    if get_option('with_artn')
+        test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
+    endif
+    if get_option('with_ira')
+        test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
+    endif
     foreach test : test_array
         test_timeout = test.get(3, 30)
         test(
@@ -873,6 +991,7 @@ if get_option('with_tests')
                 include_directories: _incdirs,
                 cpp_args: test_args,
                 link_with: _linkto,
+                build_rpath: ':'.join(_runtime_rpath),
             ),
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
                 2,
