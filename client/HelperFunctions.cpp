@@ -243,8 +243,18 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
 
   std::ostringstream min;
   min << prefixMovie;
+  std::string minDatFilename = prefixMovie + ".dat";
   if (writeMovie) {
     matter.matter2con(min.str(), false);
+    // Structured per-iteration data for visualization tools
+    std::ofstream minDat(minDatFilename, std::ios::binary);
+    if (minDat) {
+      minDat << "iteration\tstep_size\tconvergence\tenergy\n";
+      minDat << std::format("{}\t{:.5e}\t{:.5e}\t{:.6f}\n", 0, 0.0,
+                            objf->getConvergence(),
+                            matter.getPotentialEnergy());
+      minDat.close();
+    }
   }
 
   int iteration = 0;
@@ -277,6 +287,13 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
 
     if (writeMovie) {
       matter.matter2con(min.str(), true);
+      // Append structured iteration data
+      std::ofstream minDat(minDatFilename, std::ios::binary | std::ios::app);
+      if (minDat) {
+        minDat << std::format("{}\t{:.5e}\t{:.5e}\t{:.6f}\n", iteration,
+                              stepSize, objf->getConvergence(),
+                              matter.getPotentialEnergy());
+      }
     }
 
     if (checkpoint) {
