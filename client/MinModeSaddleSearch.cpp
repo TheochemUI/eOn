@@ -20,6 +20,8 @@
 #include "eonExceptions.hpp"
 
 #include <cmath>
+#include <format>
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -249,6 +251,13 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     std::string climbLabel = "climb";
     if (params.debug_options.write_movies) {
       matter->matter2con(climbLabel, false);
+      // Structured per-iteration data for visualization tools
+      std::ofstream climbDat("climb.dat", std::ios::binary);
+      if (climbDat) {
+        climbDat << "iteration\tstep_size\tdelta_e\tconvergence\teigenvalue"
+                    "\ttorque\tangle\trotations\n";
+        climbDat.close();
+      }
     }
 
     AtomMatrix initialPosition = matter->getPositions();
@@ -356,6 +365,14 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
 
       if (params.debug_options.write_movies) {
         matter->matter2con(climbLabel, true);
+        // Append structured iteration data
+        std::ofstream climbDat("climb.dat", std::ios::binary | std::ios::app);
+        if (climbDat) {
+          climbDat << std::format("{}\t{:.7e}\t{:.6f}\t{:.5e}\t{:.6f}"
+                                  "\t{:.6f}\t{:.4f}\t{}\n",
+                                  iteration, stepSize, de, conv, eigenval,
+                                  torque, angle, rotations);
+        }
       }
 
       if (params.main_options.checkpoint) {
