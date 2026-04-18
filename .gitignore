@@ -1,5 +1,9 @@
 # Custom, other things are auto-ignored
 subprojects
+artn_gitinfo.h
+ira_gitinfo.h
+**/artn_gitinfo.h
+**/ira_gitinfo.h
 eon/version.py
 .asv/
 /docs/source/apidocs/
@@ -670,3 +674,5 @@ pos.con
 examples/*/states/
 scripts/regression/.snakemake/
 scripts/regression/workdirs/
+
+.project-ctx.toml

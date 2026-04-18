@@ -803,7 +803,7 @@ class AMSEnvConfig(BaseModel):
 class SaddleSearchConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    method: Literal["min_mode", "dynamics"] = Field(
+    method: Literal["min_mode", "dynamics", "basin_hopping", "bgsd", "artn"] = Field(
         default="min_mode", description="Method to locate the saddle point."
     )
     """
@@ -813,8 +813,17 @@ class SaddleSearchConfig(BaseModel):
       - ``dynamics``: Experimental method that uses molecular dynamics to find
         new states and then runs a climbing image NEB calculation to find the
         saddle and a dimer calculation to estimate the eigenmode at the saddle.
+      - ``basin_hopping``: Use basin hopping as the saddle search backend
+        within a process search workflow.
+      - ``bgsd``: Use biased gradient squared descent within a process search
+        workflow.
+      - ``artn``: Use the Activation-Relaxation Technique nouveau. ARTn
+        starts from ``pos.con``, ignores ``displacement.con``, and performs
+        its own push, Lanczos eigenmode estimation, and perpendicular
+        relaxation internally. ``direction.dat`` is optional and only biases
+        the initial push when present.
     """
-    min_mode_method: Literal["dimer", "lanczos", "gprdimer"] = Field(
+    min_mode_method: Literal["dimer", "lanczos", "gprdimer", "artn"] = Field(
         default="dimer", description="Min-mode method to use."
     )
     """
@@ -822,10 +831,20 @@ class SaddleSearchConfig(BaseModel):
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
      - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`
      - ``gprdimer``: Use the GP accelerated dimer method.
+     - ``artn``: Use ARTn as a drop-in for min-mode search. eOn's displacement
+       seeds the initial mode; ARTn takes over from the displaced structure.
      """
+    disp_at_random: int = Field(
+        default=1,
+        description="Legacy displacement control flag used by the client.",
+    )
     max_energy: float = Field(
         default=20.0,
         description="The energy at which a saddle search is considered bad and terminated.",
+    )
+    max_step_size: float = Field(
+        default=0.2,
+        description="Maximum step size for saddle-search displacement updates.",
     )
     displace_radius: float = Field(
         default=5.0,
@@ -835,13 +854,29 @@ class SaddleSearchConfig(BaseModel):
         default=0.1,
         description="The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.",
     )
+    displace_min_norm: float = Field(
+        default=0.0,
+        description="Minimum displacement norm enforced for the initial perturbation.",
+    )
     displace_random_weight: float = Field(
-        default=1.0,
+        default=0.0,
         description="Relative probability to displace with a random epicenter.",
     )
     displace_not_FCC_HCP_weight: float = Field(
         default=0.0,
         description="Relative probability to displace with an epicenter that is not FCC or HCP coordinated.",
+    )
+    displace_not_TCP_BCC_weight: float = Field(
+        default=0.0,
+        description="Relative probability to displace with an epicenter that is not TCP or BCC coordinated.",
+    )
+    displace_not_TCP_weight: float = Field(
+        default=0.0,
+        description="Relative probability to displace with an epicenter that is not TCP coordinated.",
+    )
+    displace_water_weight: float = Field(
+        default=0.0,
+        description="Relative probability to displace with an epicenter selected by the water heuristic.",
     )
     displace_least_coordinated_weight: float = Field(
         default=0.0,
@@ -855,8 +890,8 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_atom_list.",
     )
-    displace_atom_list: list[int] = Field(
-        default=[-1],
+    displace_atom_list: Union[str, list[int]] = Field(
+        default="0",
         description="0-based atom indices to use as displacement epicenters, separated by commas. "
         "Example: 10, 20, -1 would be atoms 10, 20, and the last atom. "
         "When displace_atom_kmc_state_script is set, this list is populated dynamically "
@@ -875,8 +910,12 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_type_list.",
     )
-    displace_type_list: list[str] = Field(
-        default=[], description="The atom types should be separated by a comma."
+    displace_type_list: Union[str, list[str]] = Field(
+        default="0", description="The atom types should be separated by a comma."
+    )
+    molecule_list: str = Field(
+        default="[]",
+        description="Legacy molecule list used by molecular displacement logic.",
     )
     displace_all_listed: bool = Field(
         default=False,
@@ -896,12 +935,17 @@ class SaddleSearchConfig(BaseModel):
         default=11,
         description="When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.",
     )
-    converged_force: Optional[float] = Field(
-        default=None,
+    displace_1d: bool = Field(
+        default=False,
+        description="Restrict the initial displacement to a single dimension.",
+    )
+    converged_force: float = Field(
+        default=0.01,
         description="When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.",
     )
-    max_iterations: Optional[int] = Field(
-        default=None, description="The maximum number of translation steps to be taken."
+    max_iterations: int = Field(
+        default=1000,
+        description="The maximum number of translation steps to be taken."
     )
     nonlocal_count_abort: int = Field(
         default=0,
@@ -912,17 +956,37 @@ class SaddleSearchConfig(BaseModel):
         description="If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.",
     )
     client_displace_type: Literal[
-        "load", "random", "last_atom", "min_coordinated", "not_fcc_or_hcp",
-        "listed_atoms"
+        "load",
+        "random",
+        "last_atom",
+        "least_coordinated",
+        "not_fcc_hcp_coordinated",
+        "listed_atoms",
     ] = Field(
         default="random",
         description="Epicenter selection method used by the C++ client. "
         "'random': uniform random atom. "
         "'last_atom': the last atom in the configuration. "
-        "'min_coordinated': the atom with the fewest neighbours. "
-        "'not_fcc_or_hcp': an atom whose local structure is neither FCC nor HCP. "
+        "'least_coordinated': the atom with the fewest neighbours. "
+        "'not_fcc_hcp_coordinated': an atom whose local structure is neither FCC nor HCP. "
         "'listed_atoms': an atom from displace_atom_list (parsed from config, no server displacement file needed). "
         "'load': read a displacement vector from a file written by the server.",
+    )
+    stdev_translation: float = Field(
+        default=0.2,
+        description="Standard deviation for translational displacement components.",
+    )
+    stdev_rotation: float = Field(
+        default=1.0,
+        description="Standard deviation for rotational displacement components.",
+    )
+    void_bias_fraction: float = Field(
+        default=0.0,
+        description="Bias fraction applied to the void-based displacement heuristic.",
+    )
+    random_mode: bool = Field(
+        default=True,
+        description="Enable randomized initial-mode generation.",
     )
     zero_mode_abort_curvature: float = Field(
         default=0.0,
@@ -945,8 +1009,8 @@ class SaddleSearchConfig(BaseModel):
         default=20,
         description="Size of the applied confinement in the bowl breakout scheme.",
     )
-    dynamics_temperature: Optional[float] = Field(
-        default=None,
+    dynamics_temperature: float = Field(
+        default=300.0,
         description="The temperature, in Kelvin, for the molecular dynamics run.",
     )
     """
@@ -966,7 +1030,7 @@ class SaddleSearchConfig(BaseModel):
     minimizes to a new geometry.
     """
     dynamics_linear_interpolation: bool = Field(
-        default=True,
+        default=False,
     )
     """
      - If true, then the band connecting the initial and final states will be
@@ -1011,23 +1075,6 @@ class SaddleSearchConfig(BaseModel):
         default=30,
         description="The minimum number of active atoms for confining the positive region of the PES, undocumented.",
     )
-
-    @validator("converged_force", always=True)
-    def set_converged_force(cls, v, values):
-        if v is None:
-            optimizer_config = values.get("optimizer")
-            if optimizer_config:
-                return optimizer_config.converged_force
-        return v
-
-    @validator("max_iterations", always=True)
-    def set_max_iterations(cls, v, values):
-        if v is None:
-            optimizer_config = values.get("optimizer")
-            if optimizer_config:
-                return optimizer_config.max_iterations
-        return v
-
 
 class KDBConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
@@ -1668,6 +1715,85 @@ class LanczosConfig(BaseModel):
     )
 
 
+class ARTnConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    push_step_size: float = Field(
+        default=0.3,
+        description="Step size for the initial push away from the minimum, in Angstroms.",
+    )
+    force_threshold: float = Field(
+        default=0.05,
+        description="Force convergence criterion for saddle point, in eV/Angstrom. Maps to pARTn's forc_thr.",
+    )
+    max_iterations: int = Field(
+        default=500,
+        description="Maximum number of ARTn iterations.",
+    )
+    ninit: int = Field(
+        default=-1,
+        description="Number of initial push steps before Lanczos eigenmode estimation. -1 keeps pARTn's built-in default. 0 skips the push phase and goes directly to Lanczos (appropriate when eOn supplies the displacement). Larger values let ARTn explore further from the minimum.",
+    )
+    nperp_limitation: str = Field(
+        default="default",
+        description="Comma-separated ints controlling max perp-relax steps per Lanczos cycle. 'default' uses pARTn defaults. '-1' for unlimited (smooth potentials). '20,30' for ML potentials.",
+    )
+    lanczos_min_size: int = Field(
+        default=-1,
+        description="Minimum Lanczos iterations before convergence check. -1 uses pARTn default (3). Set to 1 for refinement near a known saddle.",
+    )
+    nsmooth: int = Field(
+        default=-1,
+        description="Number of smooth interpolation steps between push and eigenvector. -1 uses pARTn default. 0 disables smoothing.",
+    )
+
+
+class IRAConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    distance_threshold: float = Field(
+        default=0.3,
+        description="Distance threshold for atom matching in structure comparison.",
+    )
+    symmetry_threshold: float = Field(
+        default=0.1,
+        description="Threshold for symmetry detection (SOFI algorithm).",
+    )
+    use_pbc: bool = Field(
+        default=False,
+        description="Use periodic boundary conditions for structure comparison.",
+    )
+
+
+class BGSDConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    alpha: float = Field(
+        default=10.0,
+        description="Bias prefactor for the BGSD objective.",
+    )
+    beta: float = Field(
+        default=0.2,
+        description="Energy offset used in the BGSD bias term.",
+    )
+    gradientfinitedifference: float = Field(
+        default=0.000001,
+        description="Finite-difference step used to estimate the BGSD gradient.",
+    )
+    Hforceconvergence: float = Field(
+        default=0.01,
+        description="Convergence threshold for the Hessian-like force component.",
+    )
+    grad2energyconvergence: float = Field(
+        default=0.000001,
+        description="Convergence threshold for the squared-gradient energy criterion.",
+    )
+    grad2forceconvergence: float = Field(
+        default=0.0001,
+        description="Convergence threshold for the squared-gradient force criterion.",
+    )
+
+
 class HessianConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     atom_list: Union[str, list[int]] = Field(
@@ -1890,6 +2016,9 @@ class Config(BaseModel):
     optimizer: OptimizerConfig
     distributed_replica: DistributedReplicaConfig
     gprdimer: GPRDimerConfig
+    bgsd: BGSDConfig
+    artn: ARTnConfig
+    ira: IRAConfig
     debug: DebugConfig
     serve: ServeConfig
 

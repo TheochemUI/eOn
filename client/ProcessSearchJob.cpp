@@ -10,6 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ProcessSearchJob.h"
+#ifdef WITH_ARTN
+#include "ARTnSaddleSearch.h"
+#endif
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
 #include "DynamicsSaddleSearch.h"
@@ -23,6 +26,7 @@
 #include <format>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 #include "EonLogger.h"
@@ -79,18 +83,45 @@ std::vector<std::string> ProcessSearchJob::run() {
       *saddle = *min1 = *min2 = *initial;
     }
   } else {
+    // ARTn and dynamics start from the initial minimum
     *saddle = *min1 = *min2 = *initial;
   }
 
   AtomMatrix mode;
+  const bool useARTnAsMinMode =
+      params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method == "artn";
 
   if (params.saddle_search_options.method == "min_mode") {
     if (params.saddle_search_options.displace_type ==
         eonc::EpiCenters::DISP_LOAD) {
       mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
-    saddleSearch = std::make_unique<MinModeSaddleSearch>(
-        saddle, mode, initial->getPotentialEnergy(), params, pot);
+#ifdef WITH_ARTN
+    // ARTn as a min-mode drop-in: eOn displaces, seeds the mode, ARTn
+    // takes over from the displaced structure.
+    if (useARTnAsMinMode) {
+      saddleSearch =
+          std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
+    } else
+#endif
+    {
+      saddleSearch = std::make_unique<MinModeSaddleSearch>(
+          saddle, mode, initial->getPotentialEnergy(), params, pot);
+    }
+#ifdef WITH_ARTN
+  } else if (params.saddle_search_options.method == "artn") {
+    // ARTn handles its own push from the minimum, eigenmode estimation,
+    // and perpendicular relaxation internally.
+    AtomMatrix artnMode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+    if (params.saddle_search_options.displace_type ==
+        eonc::EpiCenters::DISP_LOAD) {
+      artnMode =
+          eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
+    }
+    saddleSearch =
+        std::make_unique<ARTnSaddleSearch>(saddle, pot, artnMode, params);
+#endif
   } else if (params.saddle_search_options.method == "basin_hopping") {
     saddleSearch =
         std::make_unique<BasinHoppingSaddleSearch>(min1, saddle, pot, params);
@@ -100,6 +131,23 @@ std::vector<std::string> ProcessSearchJob::run() {
     saddleSearch = std::make_unique<BiasedGradientSquaredDescent>(
         saddle, initial->getPotentialEnergy(), params);
   }
+
+#ifndef WITH_ARTN
+  // Post-dispatch guard for both ARTn entry points so users without a
+  // WITH_ARTN build get a clean per-case error instead of a silent
+  // fall-through. Two distinct messages so downstream tooling and the
+  // integration tests can match on the specific entry point.
+  if (params.saddle_search_options.method == "artn") {
+    throw std::runtime_error(
+        "saddle_search.method=artn requires a build with ARTn support "
+        "(reconfigure with -Dwith_artn=true)");
+  }
+  if (useARTnAsMinMode) {
+    throw std::runtime_error(
+        "saddle_search.minmode_method=artn requires a build with ARTn "
+        "support (reconfigure with -Dwith_artn=true)");
+  }
+#endif
 
   int status = doProcessSearch();
 
@@ -116,7 +164,15 @@ int ProcessSearchJob::doProcessSearch() {
 
   fctmp = pot->forceCallCounter;
   status = saddleSearch->run();
-  fCallsSaddle += pot->forceCallCounter - fctmp;
+  if (params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method ==
+          LowestEigenmode::MINMODE_GPRDIMER) {
+    fCallsSaddle += saddleSearch->getForceCalls();
+  } else if (params.saddle_search_options.method == "artn") {
+    fCallsSaddle += saddleSearch->getForceCalls();
+  } else {
+    fCallsSaddle += pot->forceCallCounter - fctmp;
+  }
   EONC_LOG_DEBUG("Got {} calls in the saddle search, with previous {}",
                  fCallsSaddle, fctmp);
 
@@ -244,8 +300,7 @@ void ProcessSearchJob::saveData(int status) {
   if (out) {
     out << std::format("{} termination_reason\n", status);
     out << std::format("{} termination_reason_text\n",
-                       magic_enum::enum_name(
-                           static_cast<MinModeSaddleSearch::Status>(status)));
+                       saddleSearch->describeStatus(status));
     out << std::format("{} random_seed\n", params.main_options.randomSeed);
     out << std::format(
         "{} potential_type\n",
@@ -302,7 +357,7 @@ void ProcessSearchJob::saveData(int status) {
 }
 
 void ProcessSearchJob::printEndState(int status) {
-  auto msg = MinModeSaddleSearch::statusMessage(status);
+  auto msg = saddleSearch->describeStatus(status);
   if (status == MinModeSaddleSearch::STATUS_GOOD) {
     QUILL_LOG_DEBUG(log, "[Saddle Search] {}", msg);
   } else {

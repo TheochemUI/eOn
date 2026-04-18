@@ -10,6 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "SaddleSearchJob.h"
+#ifdef WITH_ARTN
+#include "ARTnSaddleSearch.h"
+#endif
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Potential.h"
@@ -17,6 +20,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 std::vector<std::string> SaddleSearchJob::run() {
@@ -41,23 +45,50 @@ std::vector<std::string> SaddleSearchJob::run() {
 
   initial->con2matter(reactantFilename);
 
-  if (params.saddle_search_options.displace_type ==
-      eonc::EpiCenters::DISP_LOAD) {
+  const bool standaloneARTn = params.saddle_search_options.method == "artn";
+
+  if (!standaloneARTn && params.saddle_search_options.displace_type ==
+                             eonc::EpiCenters::DISP_LOAD) {
     saddle->con2matter(displacementFilename);
   } else {
     *saddle = *initial;
   }
-  AtomMatrix mode;
-  if (params.saddle_search_options.displace_type ==
-      eonc::EpiCenters::DISP_LOAD) {
+
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  const bool canLoadMode =
+      params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD;
+  if (canLoadMode && std::filesystem::exists(modeFilename)) {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
-  saddleSearch = std::make_unique<MinModeSaddleSearch>(
-      saddle, mode, initial->getPotentialEnergy(), params, pot);
+  const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
+  const bool useARTnAsMinMode =
+      params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method == "artn";
 
-  int status;
-  status = doSaddleSearch();
+#ifdef WITH_ARTN
+  if (useStandaloneARTn || useARTnAsMinMode) {
+    saddleSearch =
+        std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
+  } else
+#endif
+  {
+#ifndef WITH_ARTN
+    if (useStandaloneARTn) {
+      throw std::runtime_error(
+          "saddle_search.method=artn requires a build with ARTn support");
+    }
+    if (useARTnAsMinMode) {
+      throw std::runtime_error(
+          "saddle_search.minmode_method=artn requires a build with ARTn "
+          "support");
+    }
+#endif
+    saddleSearch = std::make_unique<MinModeSaddleSearch>(
+        saddle, mode, initial->getPotentialEnergy(), params, pot);
+  }
+
+  int status = doSaddleSearch();
   printEndState(status);
   saveData(status);
 
@@ -80,9 +111,12 @@ int SaddleSearchJob::doSaddleSearch() {
     }
   }
 
-  if (params.saddle_search_options.minmode_method ==
-      LowestEigenmode::MINMODE_GPRDIMER) {
-    fCallsSaddle = saddleSearch->forcecalls - f1;
+  if (params.saddle_search_options.method == "min_mode" &&
+      params.saddle_search_options.minmode_method ==
+          LowestEigenmode::MINMODE_GPRDIMER) {
+    fCallsSaddle = saddleSearch->getForceCalls();
+  } else if (params.saddle_search_options.method == "artn") {
+    fCallsSaddle = saddleSearch->getForceCalls();
   } else {
     fCallsSaddle += this->pot->forceCallCounter - f1;
   }
@@ -98,8 +132,7 @@ void SaddleSearchJob::saveData(int status) {
   if (out) {
     out << std::format("{} termination_reason\n", status);
     out << std::format("{} termination_reason_text\n",
-                       magic_enum::enum_name(
-                           static_cast<MinModeSaddleSearch::Status>(status)));
+                       saddleSearch->describeStatus(status));
     out << "saddle_search job_type\n";
     out << std::format("{} random_seed\n", params.main_options.randomSeed);
     out << std::format(
@@ -108,7 +141,7 @@ void SaddleSearchJob::saveData(int status) {
     out << std::format("{} total_force_calls\n",
                        this->pot->forceCallCounter.load());
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
-    out << std::format("{} iterations\n", saddleSearch->iteration);
+    out << std::format("{} iterations\n", saddleSearch->getIterationCount());
     if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
       out << std::format("{:f} potential_energy_saddle\n",
                          saddle->getPotentialEnergy());
@@ -138,7 +171,7 @@ void SaddleSearchJob::saveData(int status) {
 }
 
 void SaddleSearchJob::printEndState(int status) {
-  auto msg = MinModeSaddleSearch::statusMessage(status);
+  auto msg = saddleSearch->describeStatus(status);
   if (status == MinModeSaddleSearch::STATUS_GOOD) {
     QUILL_LOG_DEBUG(log, "[Saddle Search] {}", msg);
   } else {

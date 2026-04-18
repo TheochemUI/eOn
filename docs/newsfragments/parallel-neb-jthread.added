@@ -1,1 +1,0 @@
-Parallel NEB force evaluation via C++20 ``std::jthread``. Each image evaluates its potential concurrently when the potential is thread-safe. Achieves 2.5x speedup over SVN baseline on 5-image NEB with Morse potential. No external dependencies (replaces TBB-based ``std::execution::par``).

@@ -17,6 +17,7 @@
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
+#include "SaddleSearchMethod.h"
 
 namespace eonc {
 
@@ -66,8 +67,8 @@ private:
   //! Container for the results of the run
   std::vector<std::string> returnFiles;
 
-  //! Initializes a ref MinModeSaddleSearch
-  std::unique_ptr<MinModeSaddleSearch> saddleSearch;
+  //! Initializes a ref SaddleSearchMethod (base class for polymorphism)
+  std::unique_ptr<SaddleSearchMethod> saddleSearch;
   //! Initial configuration.
   std::shared_ptr<Matter> initial;
   //! Configuration used during the saddle point search.

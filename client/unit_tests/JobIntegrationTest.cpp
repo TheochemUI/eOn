@@ -20,6 +20,10 @@
 #include "PotRegistry.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#ifdef WITH_ARTN
+#include "ARTnSaddleSearch.h"
+#include "libs/ARTn/ARTnResource.h"
+#endif
 
 #include <filesystem>
 #include <fstream>
@@ -926,6 +930,281 @@ max_energy = 10.0
   // Barrier must match SVN
   double barrier = std::stod(results["barrier_reactant_to_product"]);
   REQUIRE(barrier == Catch::Approx(0.158077).epsilon(1e-3));
+}
+
+#ifdef WITH_ARTN
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob ARTn converges on Morse Pt",
+                 "[job][saddle_search][artn][integration]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+converged_force = 0.001
+max_iterations = 1000
+
+[Saddle Search]
+displace_least_coordinated_weight = 1.0
+displace_radius = 3.3
+displace_magnitude = 0.01
+method = artn
+max_energy = 10.0
+
+[ARTn]
+push_step_size = 0.3
+force_threshold = 0.05
+max_iterations = 500
+)");
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  int status = std::stoi(results["termination_reason"]);
+  // ARTn may not converge, but should not crash
+  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
+           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
+           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+
+  // Energy must be finite
+  double energy = std::stod(results["potential_energy_saddle"]);
+  REQUIRE(std::isfinite(energy));
+
+  if (status == ARTnSaddleSearch::STATUS_GOOD) {
+    // Eigenvalue must be negative for a converged first-order saddle
+    double eigenvalue = std::stod(results["final_eigenvalue"]);
+    REQUIRE(eigenvalue < 0.0);
+    REQUIRE(std::isfinite(eigenvalue)); // Regression test for FPE fix
+  }
+
+  // Should have made force calls
+  REQUIRE(results.count("force_calls_saddle") > 0);
+  int fCalls = std::stoi(results["force_calls_saddle"]);
+  REQUIRE(fCalls > 0);
+
+  // Reactant energy must match
+  double reactantE = std::stod(results["potential_energy_reactant"]);
+  REQUIRE(reactantE == Catch::Approx(-1462.166782).epsilon(1e-4));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ProcessSearchJob ARTn converges on Morse Pt",
+                 "[job][process_search][artn][integration]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = process_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 1000
+max_move = 0.2
+
+[Saddle Search]
+displace_least_coordinated_weight = 1.0
+displace_radius = 3.3
+displace_magnitude = 0.01
+method = artn
+max_energy = 10.0
+
+[ARTn]
+push_step_size = 0.3
+force_threshold = 0.05
+max_iterations = 500
+
+[Process Search]
+max_spawns = 5
+)");
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  int status = std::stoi(results["termination_reason"]);
+  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
+           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
+           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+
+  // Force calls must be reasonable
+  REQUIRE(forceCalls_ > 0);
+
+  // Energies must be finite
+  double saddleE = std::stod(results["potential_energy_saddle"]);
+  REQUIRE(std::isfinite(saddleE));
+
+  double reactantE = std::stod(results["potential_energy_reactant"]);
+  REQUIRE(std::isfinite(reactantE));
+
+  double productE = std::stod(results["potential_energy_product"]);
+  REQUIRE(std::isfinite(productE));
+
+  // Reactant energy must match
+  REQUIRE(reactantE == Catch::Approx(-1462.166783).epsilon(1e-4));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob standalone ARTn works without direction file",
+                 "[job][saddle_search][artn][optional-mode][integration]") {
+  copyTestData("../saddle_search");
+  std::filesystem::remove(workdir / "direction.dat");
+  std::filesystem::remove(workdir / "displacement.con");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+temperature = 300
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = artn
+
+[ARTn]
+push_step_size = 0.3
+force_threshold = 0.05
+max_iterations = 5
+)");
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  int status = std::stoi(results["termination_reason"]);
+  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
+           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
+           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+}
+#endif // WITH_ARTN
+
+#ifndef WITH_ARTN
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob rejects standalone ARTn when not compiled",
+                 "[job][saddle_search][artn][config][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = artn
+)");
+
+  REQUIRE_THROWS_WITH(
+      runJob(),
+      Catch::Matchers::ContainsSubstring(
+          "saddle_search.method=artn requires a build with ARTn support"));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob rejects ARTn min-mode when not compiled",
+                 "[job][saddle_search][artn][min_mode][config][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = min_mode
+min_mode_method = artn
+)");
+
+  REQUIRE_THROWS_WITH(runJob(), Catch::Matchers::ContainsSubstring(
+                                    "saddle_search.minmode_method=artn "
+                                    "requires a build with ARTn support"));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ProcessSearchJob rejects standalone ARTn when not compiled",
+                 "[job][process_search][artn][config][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = process_search
+
+[Potential]
+potential = morse_pt
+
+[Saddle Search]
+method = artn
+)");
+
+  REQUIRE_THROWS_WITH(
+      runJob(),
+      Catch::Matchers::ContainsSubstring(
+          "saddle_search.method=artn requires a build with ARTn support"));
+}
+#endif
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob ARTn parameters parsed correctly",
+                 "[job][saddle_search][artn][params][integration]") {
+  copyTestData("../saddle_search");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+
+[ARTn]
+push_step_size = 0.5
+force_threshold = 0.1
+max_iterations = 1000
+)");
+
+  std::filesystem::current_path(workdir);
+  params = std::make_unique<Parameters>();
+  params->load("config.ini");
+  std::filesystem::current_path(originalDir);
+
+  // Verify ARTn parameters are parsed
+  REQUIRE(params->artn_options.push_step_size == 0.5);
+  // ninit default is -1 (sentinel = "keep pARTn's own default"); test does
+  // not set it in the INI above, so the sentinel must round-trip unchanged.
+  REQUIRE(params->artn_options.ninit == -1);
+  REQUIRE(params->artn_options.force_threshold == 0.1);
+  REQUIRE(params->artn_options.max_iterations == 1000);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture, "IRA parameters parsed correctly",
+                 "[job][ira][params][integration]") {
+  writeConfig(R"(
+[Main]
+job = point
+
+[IRA]
+distance_threshold = 0.5
+symmetry_threshold = 0.2
+use_pbc = true
+)");
+
+  std::filesystem::current_path(workdir);
+  params = std::make_unique<Parameters>();
+  params->load("config.ini");
+  std::filesystem::current_path(originalDir);
+
+  // Verify IRA parameters are parsed
+  REQUIRE(params->ira_options.distance_threshold == 0.5);
+  REQUIRE(params->ira_options.symmetry_threshold == 0.2);
+  REQUIRE(params->ira_options.use_pbc == true);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
