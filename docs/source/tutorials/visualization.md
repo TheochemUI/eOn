@@ -212,6 +212,8 @@ from rgpycrumbs.eon.plt_neb import main as plt_neb_main
 runner.invoke(plt_neb_main, [
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--con-file", str(neb_dir / "neb.con"),
+    "--ira-kmax", "14",
+    "--force-recompute",
     "--plot-type", "profile",
     "--plot-structures", "crit_points",
     "--strip-renderer", "xyzrender",
@@ -228,6 +230,8 @@ runner.invoke(plt_neb_main, [
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--input-path-pattern", str(neb_dir / "neb_path_*.con"),
     "--con-file", str(neb_dir / "neb.con"),
+    "--ira-kmax", "14",
+    "--force-recompute",
     "--plot-type", "landscape",
     "--surface-type", "grad_imq",
     "--show-pts",
