@@ -214,11 +214,12 @@ runner.invoke(plt_neb_main, [
     "--con-file", str(neb_dir / "neb.con"),
     "--ira-kmax", "14",
     "--force-recompute",
+    "--rc-mode", "rmsd",
     "--plot-type", "profile",
     "--plot-structures", "crit_points",
     "--strip-renderer", "xyzrender",
     "--perspective-tilt", "8",
-    "--zoom-ratio", "0.3",
+    "--zoom-ratio", "0.15",
     "--dpi", "150",
 ])
 ```
@@ -232,6 +233,7 @@ runner.invoke(plt_neb_main, [
     "--con-file", str(neb_dir / "neb.con"),
     "--ira-kmax", "14",
     "--force-recompute",
+    "--rc-mode", "rmsd",
     "--plot-type", "landscape",
     "--surface-type", "grad_imq",
     "--show-pts",
@@ -241,6 +243,7 @@ runner.invoke(plt_neb_main, [
     "--strip-renderer", "xyzrender",
     "--strip-dividers",
     "--perspective-tilt", "8",
+    "--zoom-ratio", "0.2",
     "--show-legend",
     "--dpi", "150",
 ])
