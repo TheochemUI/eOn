@@ -30,12 +30,13 @@ compilers = ">=1.9.0,<2"
 pkg-config = ">=0.29.2,<0.30"
 fortran-compiler = ">=1.10.0,<2"
 pyyaml = "*"
+sccache = "*"
 quill = ">=11.0.2,<12"
 rust = ">=1.88"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
-readcon = ">=0.4.2, <0.5"
+readcon = ">=0.7.0, <0.8"
 
 [pypi-options]
 # TODO(rg): only if the CPU version is needed
@@ -56,6 +57,7 @@ lammps = {features = ["lammps"]}
 ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
 docs = {features = ["docs"]}
+docs-mta = {features = ["docs", "develop", "metatomic"]}
 rel = {features = ["metatomic", "release"]}
 serve = {features = ["serve"]}
 dev-serve-mta = {features = ["serve", "metatomic", "develop"]}
@@ -116,8 +118,12 @@ psutil = ">=7.0.0, <8"
 sphinx = ">=7"
 shibuya = "*"
 
+[feature.docs.target.linux-64.dependencies]
+ira = ">=2"
+
 [feature.docs.pypi-dependencies]
-myst-parser = ">=3"
+meson-python = ">=0.17"
+myst-nb = ">=1.1"
 sphinx-design = "*"
 sphinx-copybutton = "*"
 sphinx-togglebutton = "*"
@@ -128,6 +134,9 @@ sphinxcontrib-bibtex = "*"
 sphinxcontrib-spelling = "*"
 autodoc-pydantic = "*"
 sphinx-autodoc2 = "*"
+rgpycrumbs = {version = ">=1.5", extras = ["analysis"]}
+chemparseplot = {version = ">=1.5.4", extras = ["neb", "plot"]}
+adjustText = "*"
 
 [feature.docs.tasks.makedocs]
 cmd = "sphinx-build docs/source docs/build/html"

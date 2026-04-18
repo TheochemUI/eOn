@@ -64,7 +64,7 @@ def _frame_to_atoms(frame):
         a.r[i] = [atom.x, atom.y, atom.z]
         a.names[i] = atom.symbol
         a.mass[i] = atom.mass if atom.mass is not None else 0.0
-        a.free[i] = 0 if atom.is_fixed else 1
+        a.free[i] = 0 if any(atom.fixed) else 1
     return a
 
 
@@ -109,7 +109,7 @@ def _atoms_to_frame(p):
             x=float(p.r[i][0]),
             y=float(p.r[i][1]),
             z=float(p.r[i][2]),
-            is_fixed=(p.free[i] == 0),
+            fixed=[p.free[i] == 0] * 3,
             atom_id=i + 1,
             mass=float(p.mass[i]),
         ))
