@@ -72,6 +72,24 @@ public:
   /// separate instances would enable true parallelism.
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
+  /// Conservative gate for sharing one Potential instance across threads.
+  /// Some legacy Fortran backends expose only global/common-block entry
+  /// points, so wrapper instances do not imply isolated state.
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept {
+    switch (ptype) {
+    case PotType::EAM_AL:
+    case PotType::EDIP:
+    case PotType::FEHE:
+    case PotType::LENOSKY_SI:
+    case PotType::SW_SI:
+    case PotType::TERSOFF_SI:
+    case PotType::CUH2:
+      return false;
+    default:
+      return isThreadSafe();
+    }
+  }
+
   /// Whether NEB should create separate Potential instances per image
   /// for true parallel force evaluation. When true, NEB calls
   /// makePotential() once per image instead of sharing one instance.
