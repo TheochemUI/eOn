@@ -1107,17 +1107,18 @@ class CoarseGrainingConfig(BaseModel):
      - ``energy_level``: States are merged based on energy levels filling up existing basins.
      - ``rate``: States are merged based only on rate criteria.
     """
-    sb_kernel: Literal["fpta_bundle", "mrm", "ngt"] = Field(
+    sb_kernel: Literal["fpta_bundle", "mrm", "ngt", "adaptive_clock"] = Field(
         default="fpta_bundle",
-        description="Which amsel kernel the superbasin solver dispatches to. ``fpta_bundle`` keeps the current (Q, R, c) closed-form path used by Superbasin.step; ``mrm`` and ``ngt`` route through amsel's typed AmcProblem for head-to-head benchmarks.",
+        description="Which amsel kernel the superbasin solver dispatches to. ``fpta_bundle`` keeps the current (Q, R, c) closed-form path used by Superbasin.step; ``mrm`` and ``ngt`` route through amsel's typed AmcProblem for head-to-head benchmarks; ``adaptive_clock`` uses reduced-kinetics diagnostics to choose between a scalar mean clock and a sampled clock.",
     )
     """
     Added 2026-04-17 for bead amsel-yo8 (expose the full amsel kernel
     surface so researchers can benchmark MCAMC variants from eon). The
     default keeps Superbasin.step behaviour unchanged; selecting
     ``mrm`` or ``ngt`` will route through eon.mcamc.mrm_direct /
-    eon.mcamc.ngt respectively once the Superbasin.step branching
-    lands in a follow-up commit.
+    eon.mcamc.ngt respectively, and ``adaptive_clock`` will route
+    through eon.mcamc.adaptive_clock to sample non-exponential
+    basins while keeping rank-1 basins on the mean-clock path.
     """
     max_size: int = Field(
         default=0,

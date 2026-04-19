@@ -11,6 +11,8 @@ reach every literature method through a single import path without
 having to know about amsel-python vs the legacy libmcamc.so layer.
 Import shape intentionally matches the bead amsel-yo8 spec.
 """
+import numpy
+
 from .mcamc import mcamc
 
 try:
@@ -86,14 +88,103 @@ def discover_fichthorn(entry, candidate_states, rates, ts_energies, e_min, max_s
     )
 
 
+def discover_adaptive(entry, candidate_states, rates, ts_energies, e_min_init,
+                      e_min_step, e_min_floor, cv_threshold=10.0,
+                      min_absorbing=1, max_transient_fraction=1.0, max_size=0):
+    """Adaptive discover wrapper. See amsel.discover_adaptive."""
+    return _require_amsel().discover_adaptive(
+        entry, candidate_states, rates, ts_energies,
+        e_min_init, e_min_step, e_min_floor, cv_threshold,
+        min_absorbing, max_transient_fraction, max_size,
+    )
+
+
+def discover_adaptive_status(entry, candidate_states, rates, ts_energies, e_min_init,
+                             e_min_step, e_min_floor, cv_threshold=10.0,
+                             min_absorbing=1, max_transient_fraction=1.0, max_size=0):
+    """Adaptive discover status wrapper. See amsel.discover_adaptive_status."""
+    return _require_amsel().discover_adaptive_status(
+        entry, candidate_states, rates, ts_energies,
+        e_min_init, e_min_step, e_min_floor, cv_threshold,
+        min_absorbing, max_transient_fraction, max_size,
+    )
+
+
+def discover_decide_status(entry, candidate_states, rates, ts_energies, e_min_init,
+                           e_min_step, e_min_floor, cv_threshold=10.0,
+                           min_absorbing=1, max_transient_fraction=1.0, max_size=0):
+    """Split-aware discover decision. See amsel.discover_decide_status."""
+    return _require_amsel().discover_decide_status(
+        entry, candidate_states, rates, ts_energies,
+        e_min_init, e_min_step, e_min_floor, cv_threshold,
+        min_absorbing, max_transient_fraction, max_size,
+    )
+
+
+def discover_decide_diagnostics_status(entry, candidate_states, rates, ts_energies, e_min_init,
+                                       e_min_step, e_min_floor, cv_threshold=10.0,
+                                       min_absorbing=1, max_transient_fraction=1.0,
+                                       max_size=0):
+    """Split-aware discover decision with diagnostics."""
+    return _require_amsel().discover_decide_diagnostics_status(
+        entry, candidate_states, rates, ts_energies,
+        e_min_init, e_min_step, e_min_floor, cv_threshold,
+        min_absorbing, max_transient_fraction, max_size,
+    )
+
+
+def fpt_spectrum(transient, absorbing, rates, entry):
+    """Typed FPT spectrum. See amsel.AmcProblem.fpt_spectrum."""
+    problem = _require_amsel().AmcProblem(transient, absorbing, rates)
+    return problem.fpt_spectrum(entry)
+
+
+def reduced_kinetics(transient, absorbing, rates, entry):
+    """Typed reduced kinetics. See amsel.AmcProblem.reduced_kinetics."""
+    problem = _require_amsel().AmcProblem(transient, absorbing, rates)
+    return problem.reduced_kinetics(entry)
+
+
+def adaptive_clock(transient, absorbing, rates, entry, rank_tol=1.0e-8, rng=None):
+    """Choose a mean or sampled clock from ``reduced_kinetics``.
+
+    Returns ``(t_exit, weights, mode, reduced)`` where ``mode`` is either
+    ``"mean"`` or ``"sampled"``.
+    """
+    amsel = _require_amsel()
+    problem = amsel.AmcProblem(transient, absorbing, rates)
+    reduced = problem.reduced_kinetics(entry)
+    if reduced.one_rate_clock_is_plausible(rank_tol):
+        mrm = problem.mrm(entry)
+        weights = numpy.asarray(mrm.rate_to_absorbing, dtype=float) * float(mrm.tau_total)
+        weights = weights / weights.sum()
+        return float(mrm.tau_total), weights.tolist(), "mean", reduced
+
+    if rng is None:
+        r = float(numpy.random.random())
+    else:
+        r = float(rng.random())
+    fpta_res = problem.fpta(entry, r)
+    weights = numpy.asarray(fpta_res.weights, dtype=float)
+    weights = weights / weights.sum()
+    return float(fpta_res.t_exit), weights.tolist(), "sampled", reduced
+
+
 __all__ = [
     "mcamc",
     "fpta",
+    "fpt_spectrum",
     "mrm_direct",
     "ngt",
+    "reduced_kinetics",
+    "adaptive_clock",
     "as_kmc_rate",
     "as_kmc_nf_from_delta",
     "as_kmc_nf_kaiser",
     "stiffness_step",
     "discover_fichthorn",
+    "discover_adaptive",
+    "discover_adaptive_status",
+    "discover_decide_status",
+    "discover_decide_diagnostics_status",
 ]

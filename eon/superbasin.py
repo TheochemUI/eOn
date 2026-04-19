@@ -86,7 +86,23 @@ class Superbasin:
             logger.debug("superbasin %s Q %s", self.id, Q)
             logger.debug("superbasin %s R %s", self.id, R)
 
+        n_transient = len(self.state_numbers)
+        transient_ids = [int(sn) for sn in self.state_numbers]
+        abs_offset = (max(transient_ids) + 1) if transient_ids else 0
+        abs_ids = [abs_offset + j for j in range(len(col2st))]
+        typed_rates = []
+        for number in self.state_numbers:
+            procs = self.state_dict[number].get_process_table()
+            for pid, proc in procs.items():
+                target = proc['product']
+                if target in self.state_numbers:
+                    typed_rates.append((int(number), int(target), float(proc['rate'])))
+                else:
+                    col = st2col[(number, pid)]
+                    typed_rates.append((int(number), abs_ids[col], float(proc['rate'])))
+
         sb_kernel = getattr(config, 'sb_kernel', 'fpta_bundle')
+        time_advance = None
         if sb_kernel == 'fpta_bundle':
             t, B, residual = mcamc(Q, R, c)
             logger.debug("residual %e" % residual)
@@ -96,24 +112,10 @@ class Superbasin:
             # the state-number partition from above as amsel state IDs.
             # Absorbing-slot indices become synthetic IDs offset past
             # the transient range so they don't collide.
-            n_transient = len(self.state_numbers)
-            transient_ids = [int(sn) for sn in self.state_numbers]
-            abs_offset = (max(transient_ids) + 1) if transient_ids else 0
-            abs_ids = [abs_offset + j for j in range(len(col2st))]
-            rates = []
-            for number in self.state_numbers:
-                procs = self.state_dict[number].get_process_table()
-                for pid, proc in procs.items():
-                    target = proc['product']
-                    if target in self.state_numbers:
-                        rates.append((int(number), int(target), float(proc['rate'])))
-                    else:
-                        col = st2col[(number, pid)]
-                        rates.append((int(number), abs_ids[col], float(proc['rate'])))
             tau_total, rate_to_abs, _x = _mcamc_mod.mrm_direct(
                 transient=transient_ids,
                 absorbing=abs_ids,
-                rates=rates,
+                rates=typed_rates,
                 entry=int(entry_state.number),
             )
             # Build the B-row equivalent: absorption probability through
@@ -133,20 +135,6 @@ class Superbasin:
             # problem. Sum of committors = 1 (mass conservation); MFPT
             # from amsel is the same across all per-slot calls since
             # source + interior do not change.
-            n_transient = len(self.state_numbers)
-            transient_ids = [int(sn) for sn in self.state_numbers]
-            abs_offset = (max(transient_ids) + 1) if transient_ids else 0
-            abs_ids = [abs_offset + j for j in range(len(col2st))]
-            rates = []
-            for number in self.state_numbers:
-                procs = self.state_dict[number].get_process_table()
-                for pid, proc in procs.items():
-                    target = proc['product']
-                    if target in self.state_numbers:
-                        rates.append((int(number), int(target), float(proc['rate'])))
-                    else:
-                        col = st2col[(number, pid)]
-                        rates.append((int(number), abs_ids[col], float(proc['rate'])))
             entry_id = int(entry_state.number)
             committors = numpy.zeros(len(col2st))
             mfpts = numpy.zeros(len(col2st))
@@ -155,7 +143,7 @@ class Superbasin:
                     _rate, mfpt, committor = _mcamc_mod.ngt(
                         transient=transient_ids,
                         absorbing=abs_ids,
-                        rates=rates,
+                        rates=typed_rates,
                         source=[entry_id],
                         target=[absorbing_id],
                     )
@@ -180,10 +168,25 @@ class Superbasin:
             residual = 0.0
             logger.debug("ngt mfpt=%e total_committor=%e",
                          t[st2i[entry_state.number]], committors.sum())
+        elif sb_kernel == 'adaptive_clock':
+            time_advance, weights, clock_mode, reduced = _mcamc_mod.adaptive_clock(
+                transient=transient_ids,
+                absorbing=abs_ids,
+                rates=typed_rates,
+                entry=int(entry_state.number),
+            )
+            b = numpy.asarray(weights, dtype=float)
+            residual = 0.0
+            logger.debug(
+                "adaptive_clock mode=%s rank=%d invalidity=%e",
+                clock_mode,
+                reduced.slow_subspace_rank,
+                reduced.rank1_invalidity,
+            )
         else:
             raise NotImplementedError(
                 f"sb_kernel={sb_kernel!r} not yet wired in Superbasin.step; "
-                "supported options: 'fpta_bundle', 'mrm', 'ngt'."
+                "supported options: 'fpta_bundle', 'mrm', 'ngt', 'adaptive_clock'."
             )
         # Re-normalise the absorption row before sampling. amsel's B
         # rows sum to 1 by construction, but the legacy paths can drop
@@ -210,7 +213,10 @@ class Superbasin:
 
         exit_state = self.state_dict[exit_state_number]
         product_state = get_product_state(exit_state_number, exit_proc_id)
-        mean_time = t[st2i[entry_state.number]]
+        if time_advance is None:
+            mean_time = t[st2i[entry_state.number]]
+        else:
+            mean_time = time_advance
         return mean_time, exit_state, product_state, exit_proc_id, self.id
 
     def contains_state(self, state):
