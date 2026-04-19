@@ -159,6 +159,17 @@ public:
                 int isFixed); // set the atom to fixed (true) or movable (false)
   double getEnergyVariance() const;
   double getPotentialEnergy() const;
+
+  /// Whether forces need recomputation (positions changed since last eval).
+  [[nodiscard]] bool needsForceUpdate() const { return recomputePotential; }
+
+  /// Mutable access to force storage for batched potential evaluation.
+  /// Caller must also call setComputedPotential() after writing forces.
+  double *forcesData() { return forces.data(); }
+
+  /// Set energy/variance from external batched evaluation and mark forces
+  /// as up-to-date (recomputePotential = false).
+  void setComputedPotential(double energy, double variance);
   double getKineticEnergy() const;
   double getMechanicalEnergy() const;
 

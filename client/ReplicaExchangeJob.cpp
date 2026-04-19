@@ -89,8 +89,8 @@ std::vector<std::string> ReplicaExchangeJob::run() {
       params.replica_exchange_options.replicas);
 
   // Parallel replica dynamics when enabled and potential supports it
-  const bool canParallel =
-      params.main_options.parallel && (pot->isThreadSafe() || perImage);
+  const bool canParallel = params.main_options.parallel &&
+                           (pot->isSharedInstanceThreadSafe() || perImage);
 
   for (long step = 1; step <= samplingSteps; step++) {
     if (canParallel && nReplicas > 1) {

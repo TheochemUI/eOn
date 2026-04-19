@@ -34,6 +34,16 @@ TEST_CASE("EAM_AL potential returns finite energy on Al FCC cluster",
   REQUIRE(maxForce == Catch::Approx(0.968647).epsilon(1e-3));
 }
 
+TEST_CASE("EAM_AL opts out of shared-instance threading",
+          "[pot][eam][al][thread_safety]") {
+  Parameters params;
+  params.potential_options.potential = PotType::EAM_AL;
+  auto pot = eonc::helpers::makePotential(params);
+
+  REQUIRE_FALSE(pot->isSharedInstanceThreadSafe());
+  REQUIRE_FALSE(pot->needsPerImageInstance());
+}
+
 TEST_CASE("EAM_AL minimization converges on Al FCC",
           "[pot][eam][al][minimization]") {
   Parameters params;

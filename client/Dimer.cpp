@@ -148,14 +148,50 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
     posDimer = posCenter + direction * params.main_options.finiteDifference;
   }
 
-  // Obtain forces for dimer and center (parallel if thread-safe)
+  // Obtain forces for dimer and center
   matterDimer->setPositions(posDimer);
   AtomMatrix forceA, forceCenter;
-  bool canParallel = pot->isThreadSafe() || pot->needsPerImageInstance();
-  if (params.main_options.parallel && canParallel) {
-    std::thread t([&] { forceA = matterDimer->getForces(); });
+  if (pot->supportsBatchEvaluation()) {
+    // Only batch systems that actually need recomputation.
+    bool centerDirty = matterCenter->needsForceUpdate();
+    bool dimerDirty = matterDimer->needsForceUpdate();
+
+    if (centerDirty && dimerDirty) {
+      // Both need eval -- batch together
+      auto nrs0 = matterCenter->getAtomicNrs();
+      auto nrs1 = matterDimer->getAtomicNrs();
+      auto box0 = matterCenter->getCell();
+      auto box1 = matterDimer->getCell();
+      const double *posVec[] = {matterCenter->getPositions().data(),
+                                posDimer.data()};
+      const int *nrsVec[] = {nrs0.data(), nrs1.data()};
+      double *frcVec[] = {matterCenter->forcesData(),
+                          matterDimer->forcesData()};
+      double energies[2], vars[2];
+      const double *boxVec[] = {box0.data(), box1.data()};
+      pot->forceBatch(2, nAtoms, posVec, nrsVec, frcVec, energies, vars,
+                      boxVec);
+      matterCenter->setComputedPotential(energies[0], vars[0]);
+      matterDimer->setComputedPotential(energies[1], vars[1]);
+    } else if (dimerDirty) {
+      // Only dimer moved -- eval just dimer, center is cached
+      auto nrs = matterDimer->getAtomicNrs();
+      auto box = matterDimer->getCell();
+      const double *posVec[] = {posDimer.data()};
+      const int *nrsVec[] = {nrs.data()};
+      double *frcVec[] = {matterDimer->forcesData()};
+      double energies[1], vars[1];
+      const double *boxVec[] = {box.data()};
+      pot->forceBatch(1, nAtoms, posVec, nrsVec, frcVec, energies, vars,
+                      boxVec);
+      matterDimer->setComputedPotential(energies[0], vars[0]);
+    } else if (centerDirty) {
+      // Only center moved (rare)
+      matterCenter->getForces(); // through computePotential
+    }
+    // else: both cached, nothing to do
     forceCenter = matterCenter->getForces();
-    t.join();
+    forceA = matterDimer->getForces();
   } else {
     forceA = matterDimer->getForces();
     forceCenter = matterCenter->getForces();

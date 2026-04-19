@@ -39,6 +39,8 @@ public:
       : Potential(params) {}
   ~FeHe() override = default;
 
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 };

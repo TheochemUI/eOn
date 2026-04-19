@@ -170,6 +170,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
       matter{matterPassed} {
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
+  initialTangent_ = modePassed;
   status = STATUS_GOOD;
   iteration = 0;
 

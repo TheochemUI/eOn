@@ -55,7 +55,7 @@ public:
     double finiteDifference{0.01};
     long maxForceCalls{0};
     bool removeNetForce{true};
-    bool parallel{false}; // parallel force evaluation via std::thread
+    bool parallel{true}; // parallel force evaluation via std::jthread
   } main_options;
 
   // [Potential] //
@@ -329,8 +329,6 @@ public:
     std::string extensions_directory;
     bool check_consistency{false};
     double uncertainty_threshold{-1.0};
-    /// Override model dtype ("float64" for batched reproducibility, empty=auto)
-    std::string dtype_override;
     struct variants_t {
       std::string base;
       std::string energy;
@@ -410,12 +408,8 @@ public:
         double trigger_force{0.1};
         long max_steps{1000};
         long ci_stability_count{5};
-        double angle_tol{0.8};
+        double angle_tol{0.7071}; // 1/sqrt(2): Householder stability bound
         double trigger_factor{0.0};
-        struct ocineb_penalty_t {
-          double strength{0.5};
-          double base{0.1};
-        } penalty;
       } ocineb;
     } climbing_image;
 

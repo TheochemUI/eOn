@@ -24,6 +24,8 @@ public:
   CuH2(const Parameters &p)
       : Potential(PotType::CUH2, p) {}
 
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
   // To satisfy interface
   void cleanMemory(void);
 
