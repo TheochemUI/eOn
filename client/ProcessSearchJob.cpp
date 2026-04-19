@@ -196,13 +196,16 @@ int ProcessSearchJob::doProcessSearch() {
                       params.process_search_options.minimization_offset;
   min2->setPositions(displacedPos);
 
-  // Minimize both endpoints concurrently (independent Matter objects)
+  // Minimize both endpoints concurrently when the shared potential instance is
+  // safe to call from multiple threads, or when each endpoint owns a separate
+  // potential instance.
   QUILL_LOG_DEBUG(log, "Starting Minimization 1 & 2");
   bool converged1{false}, converged2{false};
   long fc1_before = min1->getPotentialCalls();
   long fc2_before = min2->getPotentialCalls();
 
-  bool canParallel = pot->isThreadSafe() || pot->needsPerImageInstance();
+  bool canParallel =
+      pot->isSharedInstanceThreadSafe() || pot->needsPerImageInstance();
   if (params.main_options.parallel && canParallel) {
     std::thread t1([&] {
       converged1 =

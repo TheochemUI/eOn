@@ -471,7 +471,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
     }
   } else {
     // Per-image evaluation (sequential or parallel threads)
-    bool canParallel = pot->isThreadSafe() || perImagePotentials_;
+    bool canParallel = pot->isSharedInstanceThreadSafe() || perImagePotentials_;
     if (numImages > 1 && params.main_options.parallel && canParallel) {
       // std::thread rather than std::jthread -- Apple Clang libc++ lacks the
       // latter. Wrap launch + join so a throw from any lambda still joins the

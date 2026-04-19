@@ -134,7 +134,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Else fall back to thread-parallel when the potential is thread-safe or
   // wants per-image instances. Otherwise sequential.
   VectorXd g0, g1;
-  bool canParallel = pot->isThreadSafe() || pot->needsPerImageInstance();
+  bool canParallel =
+      pot->isSharedInstanceThreadSafe() || pot->needsPerImageInstance();
   if (pot->supportsBatchEvaluation()) {
     long n = x0->numberOfAtoms();
     bool x0dirty = x0->needsForceUpdate();

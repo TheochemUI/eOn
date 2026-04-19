@@ -12,6 +12,8 @@
 #include "Aluminum.h"
 #include <cassert>
 
+bool Aluminum::isThreadSafe() const noexcept { return false; }
+
 void Aluminum::force(long N, const double *R, const int * /*atomicNrs*/,
                      double *F, double *U, double *variance,
                      const double *box) {
