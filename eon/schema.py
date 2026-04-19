@@ -1680,14 +1680,6 @@ class NudgedElasticBandConfig(BaseModel):
         default=0.8,
         description="Alignment threshold w.r.t NEB mode.",
     )
-    ci_mmf_penalty_base: float = Field(
-        default=0.1,
-        description="Baseline for losing mode.",
-    )
-    ci_mmf_penalty_strength: float = Field(
-        default=0.5,
-        description="Multiplier for losing mode.",
-    )
     setup_mmf_peaks: bool = Field(
         default=True,
         description="Generate modes and peak configurations.",

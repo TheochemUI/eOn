@@ -44,6 +44,21 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   // per-image potentials must match a shared instance.
   torch::jit::getProfilingMode() = false;
 
+  // Deterministic CUDA: cuBLAS matmul in vesin neighbor lists and
+  // index_add_ accumulation produce ULP-level different results per
+  // call without this, accumulating over NEB iterations into divergent
+  // trajectories. Strict mode (warn_only=false) requires the env var
+  // CUBLAS_WORKSPACE_CONFIG to be set (e.g. :4096:8).
+  {
+    bool strict = (std::getenv("CUBLAS_WORKSPACE_CONFIG") != nullptr);
+    at::globalContext().setDeterministicAlgorithms(true, /*warn_only=*/!strict);
+    at::globalContext().setBenchmarkCuDNN(false);
+    if (strict) {
+      QUILL_LOG_INFO(m_log,
+                     "[MetatomicPotential] Strict CUDA determinism enabled");
+    }
+  }
+
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
 
@@ -89,10 +104,9 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   device_ = torch::Device(device_type_);
   QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using device: {}", device_.str());
 
-  // 4. Set data type. Default: model's declared dtype.
-  // Override via config `dtype = float64` for batched reproducibility
-  // (float32 batching has ~1e-6 force differences vs sequential due to
-  // different reduction order; float64 eliminates this).
+  this->model_.to(this->device_);
+
+  // 4. Set data type (float32/float64) based on model capabilities
   if (this->capabilities_->dtype() == "float64") {
     this->dtype_ = torch::kFloat64;
   } else if (this->capabilities_->dtype() == "float32") {
@@ -101,45 +115,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     throw std::runtime_error("Unsupported dtype: " +
                              this->capabilities_->dtype());
   }
-  if (!m_metatomic_opts.dtype_override.empty()) {
-    if (m_metatomic_opts.dtype_override == "float64") {
-      this->dtype_ = torch::kFloat64;
-    } else if (m_metatomic_opts.dtype_override == "float32") {
-      this->dtype_ = torch::kFloat32;
-    }
-    QUILL_LOG_INFO(
-        m_log, "[MetatomicPotential] dtype overridden to {} (model: {})",
-        m_metatomic_opts.dtype_override, this->capabilities_->dtype().c_str());
-  } else {
-    QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
-                   this->capabilities_->dtype().c_str());
-  }
-
-  this->model_.to(this->device_);
-  // Only move to non-default dtype if the model supports it.
-  // Some models (e.g. PET-MAD) have embedding layers that break with
-  // to(float64) because integer indices get cast. Only attempt dtype
-  // override if explicitly requested AND different from model default.
-  if (!m_metatomic_opts.dtype_override.empty() &&
-      this->dtype_ != (this->capabilities_->dtype() == "float64"
-                           ? torch::kFloat64
-                           : torch::kFloat32)) {
-    try {
-      this->model_.to(this->dtype_);
-    } catch (const std::exception &e) {
-      // Fall back to model's default dtype
-      QUILL_LOG_WARNING(
-          m_log,
-          "[MetatomicPotential] dtype override to {} failed ({}), "
-          "using model default",
-          m_metatomic_opts.dtype_override, e.what());
-      if (this->capabilities_->dtype() == "float64") {
-        this->dtype_ = torch::kFloat64;
-      } else {
-        this->dtype_ = torch::kFloat32;
-      }
-    }
-  }
+  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using dtype: {}",
+                 this->capabilities_->dtype().c_str());
 
   // 5. Resolve variant keys via pick_output
   auto outputs = this->capabilities_->outputs();
@@ -484,3 +461,170 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
       std::vector<metatensor_torch::Labels>{neighbor_component},
       neighbor_properties);
 }
+
+// --- MetatomicPotential::forceBatch ---
+// Processes N systems sequentially through the same model instance.
+// Numerically identical to N individual force() calls. The single-instance
+// design avoids JIT profiling divergence and N model copies. True batched
+// model.forward({sys0..sysN}) is a future optimization (see #if 0 block below).
+
+void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
+                                    const double *const *positions,
+                                    const int *const *atomicNrs,
+                                    double *const *forces, double *energies,
+                                    double *variances,
+                                    const double *const *boxes) {
+  // Sequential evaluation through force() -- numerically identical to
+  // N individual computePotential() calls. The mutex inside force()
+  // serializes, and all calls share the same model instance + JIT state.
+  for (long s = 0; s < nSystems; s++) {
+    double var = 0;
+    force(nAtoms, positions[s], atomicNrs[s], forces[s], &energies[s], &var,
+          boxes[s]);
+    if (variances)
+      variances[s] = var;
+    forceCallCounter++;
+    PotRegistry::get().on_force_call(ptype);
+  }
+}
+
+// --- True batched forward (future optimization) ---
+// model.forward({sys0..sysN}) verified identical in Python.
+// C++ energy extraction needs work to match single-system path exactly.
+#if 0
+void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
+                                     const double *const *positions,
+                                     const int *const *atomicNrs,
+                                     double *const *forces, double *energies,
+                                     double *variances,
+                                     const double *const *boxes) {
+  std::lock_guard<std::mutex> lock(inference_mutex_);
+
+  eonc::FPEHandler fpeh;
+  fpeh.eat_fpe();
+
+  auto f64_options =
+      torch::TensorOptions().dtype(torch::kFloat64).device(torch::kCPU);
+
+  std::vector<metatomic_torch::System> systems;
+  std::vector<torch::Tensor> pos_tensors;
+  systems.reserve(static_cast<size_t>(nSystems));
+  pos_tensors.reserve(static_cast<size_t>(nSystems));
+
+  for (long s = 0; s < nSystems; s++) {
+    auto torch_positions =
+        torch::from_blob(const_cast<double *>(positions[s]), {nAtoms, 3},
+                         f64_options)
+            .to(this->dtype_)
+            .to(this->device_)
+            .set_requires_grad(true);
+    pos_tensors.push_back(torch_positions);
+
+    auto torch_cell =
+        torch::from_blob(const_cast<double *>(boxes[s]), {3, 3}, f64_options)
+            .to(this->dtype_)
+            .to(this->device_);
+
+    auto cell_norms = torch::norm(torch_cell, 2, /*dim=*/1);
+    auto torch_pbc = cell_norms.abs() > 1e-9;
+    bool periodic[3] = {torch_pbc[0].item<bool>(), torch_pbc[1].item<bool>(),
+                        torch_pbc[2].item<bool>()};
+
+    if (!atomicNrs[s]) {
+      throw std::runtime_error(
+          "[MetatomicPotential] `atomicNrs` must be provided.");
+    }
+    std::vector<int32_t> types_vec(atomicNrs[s], atomicNrs[s] + nAtoms);
+    auto atomic_types =
+        torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32))
+            .to(this->device_);
+
+    auto system = torch::make_intrusive<metatomic_torch::SystemHolder>(
+        atomic_types, torch_positions, torch_cell, torch_pbc);
+
+    // Compute and register neighbor lists for this system
+    for (const auto &request : this->nl_requests_) {
+      auto neighbors = this->computeNeighbors(request, nAtoms, positions[s],
+                                               boxes[s], periodic);
+      metatomic_torch::register_autograd_neighbors(system, neighbors,
+                                                    this->check_consistency_);
+      system->add_neighbor_list(request, neighbors);
+    }
+
+    systems.push_back(system);
+  }
+
+  // Single batched forward pass
+  metatensor_torch::TensorMap output_map;
+  try {
+    auto ivalue_output = this->model_.forward({
+        systems,
+        evaluations_options_,
+        this->check_consistency_,
+    });
+    auto dict_output = ivalue_output.toGenericDict();
+    output_map = dict_output.at(this->energy_key_)
+                     .toCustomClass<metatensor_torch::TensorMapHolder>();
+  } catch (const std::exception &e) {
+    QUILL_LOG_ERROR(m_log,
+                    "[MetatomicPotential] Batched model evaluation failed: {}",
+                    e.what());
+    throw;
+  }
+
+  // Extract per-system energies from the output TensorMap.
+  // For per-atom output: samples have ["system", "atom"] dimensions.
+  // For system-level output: samples have ["system"] dimension.
+  // In both cases, sum over all non-system dimensions to get per-system energy.
+  auto energy_block =
+      metatensor_torch::TensorMapHolder::block_by_id(output_map, 0);
+  auto energy_values = energy_block->values();
+  auto samples = energy_block->samples();
+
+  // Check if this is per-atom or per-system output
+  bool per_atom = samples->size() > 0 && samples->names().size() > 1;
+
+  if (per_atom) {
+    // Per-atom output: sum energies by system index
+    auto system_col = samples->column("system").to(torch::kCPU);
+    auto flat_energies = energy_values.reshape({-1}).to(torch::kCPU);
+
+    // Sum per-system energies for output
+    for (long s = 0; s < nSystems; s++) {
+      auto mask = (system_col == s);
+      energies[s] =
+          flat_energies.index({mask}).sum().to(torch::kFloat64).item<double>();
+    }
+
+    // Backward: sum ALL energies, single backward call.
+    // Each system's positions.grad() gets only its own contribution
+    // because energy_i depends only on positions_i.
+    energy_values.sum().backward();
+  } else {
+    // System-level output: values shape is (nSystems, 1) or similar
+    auto cpu_energies = energy_values.to(torch::kCPU).to(torch::kFloat64);
+    for (long s = 0; s < nSystems; s++) {
+      energies[s] = cpu_energies[s].sum().item<double>();
+    }
+    energy_values.backward(torch::ones_like(energy_values));
+  }
+
+  // Extract per-system forces from position gradients
+  for (long s = 0; s < nSystems; s++) {
+    auto positions_grad = pos_tensors[s].grad();
+    auto forces_tensor =
+        -positions_grad.to(torch::kCPU).to(torch::kFloat64);
+    std::memcpy(forces[s], forces_tensor.contiguous().data_ptr<double>(),
+                nAtoms * 3 * sizeof(double));
+  }
+
+  // Variances: not yet supported in batched path
+  if (variances) {
+    for (long s = 0; s < nSystems; s++) {
+      variances[s] = 0.0;
+    }
+  }
+
+  fpeh.restore_fpe();
+}
+#endif

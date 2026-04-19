@@ -30,8 +30,6 @@ OCINEBController::fromParams(const Parameters &params) {
       r.max_steps,
       r.ci_stability_count,
       r.angle_tol,
-      r.penalty.strength,
-      r.penalty.base,
       params.neb_options.force_tolerance,
   };
 }
@@ -64,6 +62,7 @@ void OCINEBController::updateStability(long climbingImage) {
   } else {
     ciStabilityCounter_ = 0;
     previousClimbingImage_ = climbingImage;
+    has_cached_mode_ = false;
   }
 }
 
@@ -104,12 +103,24 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
                     mmfResult, convForce, newForce, newForce / baseline_force_,
                     current_threshold_);
   } else {
+    // On positive curvature (status=-2), the CI is at a minimum, not a
+    // saddle. Restore to pre-MMF position to prevent catastrophic force
+    // explosion. For other failures (alignment loss, force increase),
+    // let the NEB recover naturally -- the CI position may still be
+    // closer to the saddle than before.
+    if (mmfResult == -2) {
+      neb.path[neb.climbingImage]->setPositions(savedPositions);
+      neb.movedAfterForceCall = true;
+      has_cached_mode_ = false;
+      newForce = convForce;
+    }
     updateThresholdBackoff(alignment);
     QUILL_LOG_DEBUG(
         log,
         "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
-        "Alignment:  {:.3f}. New threshold: {:.4f} ({:.2f}x baseline)",
-        mmfResult, convForce, newForce, alignment, current_threshold_,
+        "Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)",
+        mmfResult, convForce, newForce, alignment,
+        mmfResult == -2 ? "Restored CI. " : "", current_threshold_,
         current_threshold_ / baseline_force_);
   }
 
@@ -138,7 +149,12 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
     return -1;
   }
 
-  AtomMatrix initialMode = *neb.tangent[neb.climbingImage];
+  AtomMatrix initialMode;
+  if (has_cached_mode_) {
+    initialMode = cached_mode_;
+  } else {
+    initialMode = *neb.tangent[neb.climbingImage];
+  }
   double tangentNorm = initialMode.norm();
   if (tangentNorm < 1e-8) {
     QUILL_LOG_WARNING(log, "Tangent too small for MMF initialization");
@@ -186,6 +202,8 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
           alignment, cfg_.angle_tol);
       return -1;
     }
+    cached_mode_ = finalModeMatrix;
+    has_cached_mode_ = true;
     return 0;
   } else if (minModeStatus == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
     return 1;
@@ -205,11 +223,7 @@ void OCINEBController::updateThresholdSuccess(double convForce,
 
 void OCINEBController::updateThresholdBackoff(double alignment) {
   double alpha = std::clamp(alignment, 0.0, 1.0);
-  double penalty_factor =
-      cfg_.penalty_base +
-      (1.0 - cfg_.penalty_base) * std::pow(alpha, cfg_.penalty_strength);
-  penalty_factor = std::clamp(penalty_factor, cfg_.penalty_base, 1.0);
-
+  double penalty_factor = 0.5 + 0.5 * alpha;
   current_threshold_ = baseline_force_ * cfg_.trigger_factor * penalty_factor;
   // Lower bound on the MMF trigger threshold. Scaled by force_tolerance so
   // the MMF gate never collapses to zero when the NEB is already near

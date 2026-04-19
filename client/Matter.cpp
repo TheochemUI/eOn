@@ -500,6 +500,22 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   recomputeMaskedForces = true;
 }
 
+void Matter::setComputedPotential(double energy, double variance) {
+  potentialEnergy = energy;
+  energyVariance = variance;
+  recomputePotential = false;
+  recomputeMaskedForces = true;
+  forceCalls++;
+
+  // Apply the same net force removal as computePotential()
+  if (isFixed.sum() == 0 && removeNetForce) {
+    Vector3d tempForce = forces.colwise().sum() / nAtoms;
+    for (long int i = 0; i < nAtoms; i++) {
+      forces.row(i) -= tempForce.transpose();
+    }
+  }
+}
+
 size_t Matter::getPotentialCalls() const {
   return this->potential->forceCallCounter;
 }

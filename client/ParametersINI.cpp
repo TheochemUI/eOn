@@ -420,7 +420,6 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.GetBoolean("Metatomic", "check_consistency", false);
     params.metatomic_options.uncertainty_threshold =
         ini.GetReal("Metatomic", "uncertainty_threshold", -1.0);
-    params.metatomic_options.dtype_override = ini.Get("Metatomic", "dtype", "");
     auto &_variant = params.metatomic_options.variant;
     _variant.base = ini.Get("Metatomic", "variant_base", "");
     _variant.energy = ini.Get("Metatomic", "variant_energy", "");
@@ -717,10 +716,6 @@ int load_ini(INIReader &ini, Parameters &params) {
   oci.ci_stability_count = ini.GetInteger(
       neb_section, "ci_mmf_ci_stability_count", oci.ci_stability_count);
   oci.angle_tol = ini.GetReal(neb_section, "ci_mmf_angle", oci.angle_tol);
-  oci.penalty.strength =
-      ini.GetReal(neb_section, "ci_mmf_penalty_strength", oci.penalty.strength);
-  oci.penalty.base =
-      ini.GetReal(neb_section, "ci_mmf_penalty_base", oci.penalty.base);
 
   auto &init = params.neb_options.initialization;
   init.method =

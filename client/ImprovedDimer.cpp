@@ -128,12 +128,51 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     x1_r = x0_r + tau * delta;
   }
 
-  // Calculate gradients on x0 and x1 (parallel if possible)
+  // Calculate gradients on x0 and x1.
+  // Prefer batched evaluation when the potential supports it (single
+  // model.forward() call for both replicas, e.g. MetatomicPotential on GPU).
+  // Else fall back to thread-parallel when the potential is thread-safe or
+  // wants per-image instances. Otherwise sequential.
   VectorXd g0, g1;
-  bool canParallel = pot->isThreadSafe() || pot->needsPerImageInstance();
-  if (params.main_options.parallel && canParallel) {
-    // std::thread instead of std::jthread (Apple Clang libc++). Use a guard
-    // so an exception from the foreground call still joins t0 before rethrow.
+  bool canParallel =
+      pot->isSharedInstanceThreadSafe() || pot->needsPerImageInstance();
+  if (pot->supportsBatchEvaluation()) {
+    long n = x0->numberOfAtoms();
+    bool x0dirty = x0->needsForceUpdate();
+    bool x1dirty = x1->needsForceUpdate();
+
+    if (x0dirty && x1dirty) {
+      auto nrs0 = x0->getAtomicNrs();
+      auto nrs1 = x1->getAtomicNrs();
+      auto box0 = x0->getCell();
+      auto box1 = x1->getCell();
+      const double *posVec[] = {x0->getPositions().data(),
+                                x1->getPositions().data()};
+      const int *nrsVec[] = {nrs0.data(), nrs1.data()};
+      double *frcVec[] = {x0->forcesData(), x1->forcesData()};
+      double energies[2], vars[2];
+      const double *boxVec[] = {box0.data(), box1.data()};
+      pot->forceBatch(2, n, posVec, nrsVec, frcVec, energies, vars, boxVec);
+      x0->setComputedPotential(energies[0], vars[0]);
+      x1->setComputedPotential(energies[1], vars[1]);
+    } else if (x1dirty) {
+      auto nrs = x1->getAtomicNrs();
+      auto box = x1->getCell();
+      const double *posVec[] = {x1->getPositions().data()};
+      const int *nrsVec[] = {nrs.data()};
+      double *frcVec[] = {x1->forcesData()};
+      double energies[1], vars[1];
+      const double *boxVec[] = {box.data()};
+      pot->forceBatch(1, n, posVec, nrsVec, frcVec, energies, vars, boxVec);
+      x1->setComputedPotential(energies[0], vars[0]);
+    } else if (x0dirty) {
+      x0->getForcesRaw(); // through computePotential
+    }
+    g0 = -x0->getForcesV();
+    g1 = -x1->getForcesV();
+  } else if (params.main_options.parallel && canParallel) {
+    // std::thread instead of std::jthread (Apple Clang libc++). Guard so an
+    // exception from the foreground call still joins t0 before rethrow.
     std::thread t0([&] { g0 = -x0->getForcesV(); });
     try {
       g1 = -x1->getForcesV();

@@ -285,9 +285,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
                        mmf_opt.trigger_factor);
         QUILL_LOG_INFO(log, "   - {:<21} : {:.4f}", "Absolute Floor",
                        mmf_opt.trigger_force);
-        QUILL_LOG_INFO(log, "   - {:<21} : {:.2f} (Base: {:.2f}, Str: {:.2f})",
-                       "Penalty Scheme", mmf_opt.penalty.base,
-                       mmf_opt.penalty.base, mmf_opt.penalty.strength);
         QUILL_LOG_INFO(log, "   - {:<21} : {:.4f}", "Angle Tolerance",
                        mmf_opt.angle_tol);
       }
@@ -321,7 +318,21 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
           status = NEBStatus::GOOD;
           break;
         }
-        if (result.shouldResetOptimizer) {
+        // Post-MMF arc-length reparameterization: pass full path
+        // (endpoints are fixed by resamplePathInPlace, only interior
+        // images are redistributed). Zero force-call cost; next NEB
+        // iteration recomputes all forces anyway.
+        bool didResample = false;
+        if (!result.convergedAfterMMF && result.newForce < convForce) {
+          eonc::helpers::neb_paths::resamplePathInPlace(
+              std::span{path.data(), path.size()});
+          movedAfterForceCall = true;
+          didResample = true;
+        }
+
+        // Reset optimizer AFTER reparameterization so fresh L-BFGS
+        // starts from the redistributed positions.
+        if (result.shouldResetOptimizer || didResample) {
           optim = eonc::helpers::create::mkOptim(
               objf, params.neb_options.opt_method, params);
         }
@@ -420,33 +431,70 @@ double NudgedElasticBand::convergenceForce() {
 
 // Update the forces, do the projections, and add spring forces
 void NudgedElasticBand::updateForces(bool ci_active) {
-  // Update forces for all intermediate images.
-  // Each image has its own Matter+Potential, so force evaluations are
-  // independent. Parallelize when: (a) potential is thread-safe on same
-  // instance, OR (b) per-image instances were created (separate models).
-  bool canParallel = pot->isThreadSafe() || perImagePotentials_;
-  if (numImages > 1 && params.main_options.parallel && canParallel) {
-    // std::thread rather than std::jthread -- Apple Clang libc++ lacks the
-    // latter. Wrap launch + join so a throw from any lambda still joins the
-    // remaining threads before we rethrow; otherwise the unjoined std::thread
-    // destructors call std::terminate().
-    std::vector<std::thread> threads;
-    threads.reserve(static_cast<size_t>(numImages));
-    try {
-      for (long i = 1; i <= numImages; i++) {
-        threads.emplace_back([this, i] { path[i]->getForcesRaw(); });
+  // Update forces for all intermediate images. Prefer batched evaluation
+  // (single model.forward() over all dirty images, e.g. MetatomicPotential
+  // on GPU). Else fall back to per-image evaluation, which is itself
+  // thread-parallel when (a) the potential is thread-safe on the same
+  // instance, or (b) per-image instances were created (separate models).
+  if (pot->supportsBatchEvaluation() && numImages > 1) {
+    // Collect only images that need recomputation (positions changed).
+    // Store temporaries to keep data alive (getAtomicNrs/getCell return by
+    // value)
+    std::vector<long> dirty; // indices into path[] (1-based)
+    std::vector<VectorXi> nrsStore;
+    std::vector<Matrix3d> boxStore;
+    std::vector<const double *> posVec, boxVec;
+    std::vector<const int *> nrsVec;
+    std::vector<double *> frcVec;
+
+    for (long i = 1; i <= numImages; i++) {
+      if (path[i]->needsForceUpdate()) {
+        dirty.push_back(i);
+        nrsStore.push_back(path[i]->getAtomicNrs());
+        boxStore.push_back(path[i]->getCell());
+        posVec.push_back(path[i]->getPositions().data());
+        nrsVec.push_back(nrsStore.back().data());
+        frcVec.push_back(path[i]->forcesData());
+        boxVec.push_back(boxStore.back().data());
       }
-      for (auto &t : threads)
-        t.join();
-    } catch (...) {
-      for (auto &t : threads)
-        if (t.joinable())
-          t.join();
-      throw;
+    }
+
+    if (!dirty.empty()) {
+      auto nDirty = static_cast<long>(dirty.size());
+      std::vector<double> energies(nDirty), variances(nDirty);
+      pot->forceBatch(nDirty, atoms, posVec.data(), nrsVec.data(),
+                      frcVec.data(), energies.data(), variances.data(),
+                      boxVec.data());
+      for (long j = 0; j < nDirty; j++) {
+        path[dirty[j]]->setComputedPotential(energies[j], variances[j]);
+      }
     }
   } else {
-    for (long i = 1; i <= numImages; i++) {
-      path[i]->getForcesRaw();
+    // Per-image evaluation (sequential or parallel threads)
+    bool canParallel = pot->isSharedInstanceThreadSafe() || perImagePotentials_;
+    if (numImages > 1 && params.main_options.parallel && canParallel) {
+      // std::thread rather than std::jthread -- Apple Clang libc++ lacks the
+      // latter. Wrap launch + join so a throw from any lambda still joins the
+      // remaining threads before we rethrow; otherwise the unjoined std::thread
+      // destructors call std::terminate().
+      std::vector<std::thread> threads;
+      threads.reserve(static_cast<size_t>(numImages));
+      try {
+        for (long i = 1; i <= numImages; i++) {
+          threads.emplace_back([this, i] { path[i]->getForcesRaw(); });
+        }
+        for (auto &t : threads)
+          t.join();
+      } catch (...) {
+        for (auto &t : threads)
+          if (t.joinable())
+            t.join();
+        throw;
+      }
+    } else {
+      for (long i = 1; i <= numImages; i++) {
+        path[i]->getForcesRaw();
+      }
     }
   }
 
