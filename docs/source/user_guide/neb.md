@@ -116,6 +116,19 @@ See {doc}`/tutorials/dict_config` for the full programmatic workflow.
 .. autopydantic_model:: eon.schema.NudgedElasticBandConfig
 ```
 
+## Outputs
+
+NEB writes the usual `results.dat`, `neb.dat`, and the final band `neb.con`.
+
+With `write_movies = true` in `[Debug]`, eOn also writes per-iteration
+`neb_path_*.con` movie files and `neb_maximage.con`. These `.con` outputs now
+embed structured frame metadata via `readcon-core`, including fields such as
+`energy`, `frame_index`, `neb_bead`, optional `neb_band`,
+`reaction_coordinate`, `relative_energy`, and `parallel_force`.
+
+The existing `neb.dat` and `neb_*.dat` outputs are still written and remain the
+primary compatibility path for current plotting tools.
+
 ## Refinement
 
 ```{versionadded} 2.0
