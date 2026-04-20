@@ -466,29 +466,43 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   // instance, or (b) per-image instances were created (separate models).
   if (pot->supportsBatchEvaluation() && numImages > 1) {
     // Collect only images that need recomputation (positions changed).
-    // Store temporaries to keep data alive (getAtomicNrs/getCell return by
-    // value)
+    // Materialize atomic numbers and cells first, then build the raw-pointer
+    // arrays after storage is stable. Otherwise vector growth can invalidate
+    // earlier .data() pointers and hand garbage cells/types to forceBatch().
     std::vector<long> dirty; // indices into path[] (1-based)
-    std::vector<VectorXi> nrsStore;
-    std::vector<Matrix3d> boxStore;
-    std::vector<const double *> posVec, boxVec;
-    std::vector<const int *> nrsVec;
-    std::vector<double *> frcVec;
-
+    dirty.reserve(numImages);
     for (long i = 1; i <= numImages; i++) {
       if (path[i]->needsForceUpdate()) {
         dirty.push_back(i);
-        nrsStore.push_back(path[i]->getAtomicNrs());
-        boxStore.push_back(path[i]->getCell());
-        posVec.push_back(path[i]->getPositions().data());
-        nrsVec.push_back(nrsStore.back().data());
-        frcVec.push_back(path[i]->forcesData());
-        boxVec.push_back(boxStore.back().data());
       }
     }
 
     if (!dirty.empty()) {
       auto nDirty = static_cast<long>(dirty.size());
+      std::vector<VectorXi> nrsStore;
+      std::vector<Matrix3d> boxStore;
+      std::vector<const double *> posVec, boxVec;
+      std::vector<const int *> nrsVec;
+      std::vector<double *> frcVec;
+      nrsStore.reserve(static_cast<size_t>(nDirty));
+      boxStore.reserve(static_cast<size_t>(nDirty));
+      posVec.reserve(static_cast<size_t>(nDirty));
+      boxVec.reserve(static_cast<size_t>(nDirty));
+      nrsVec.reserve(static_cast<size_t>(nDirty));
+      frcVec.reserve(static_cast<size_t>(nDirty));
+
+      for (long idx : dirty) {
+        nrsStore.push_back(path[idx]->getAtomicNrs());
+        boxStore.push_back(path[idx]->getCell());
+      }
+      for (long j = 0; j < nDirty; j++) {
+        auto idx = dirty[static_cast<size_t>(j)];
+        posVec.push_back(path[idx]->getPositions().data());
+        nrsVec.push_back(nrsStore[static_cast<size_t>(j)].data());
+        frcVec.push_back(path[idx]->forcesData());
+        boxVec.push_back(boxStore[static_cast<size_t>(j)].data());
+      }
+
       std::vector<double> energies(nDirty), variances(nDirty);
       pot->forceBatch(nDirty, atoms, posVec.data(), nrsVec.data(),
                       frcVec.data(), energies.data(), variances.data(),
