@@ -12,6 +12,7 @@
 #include "NudgedElasticBandJob.h"
 #include "ConjugateGradients.h"
 #include "NEBInitialPaths.hpp"
+#include "NEBSplineExtrema.h"
 #include "Potential.h"
 
 #include <filesystem>
