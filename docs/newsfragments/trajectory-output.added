@@ -1,1 +1,1 @@
-Structured per-iteration trajectory output during saddle search and minimization for visualization and debugging.
+Structured per-iteration metadata is now embedded directly in minimization and saddle-search movie `.con` files via `readcon-core`, replacing the temporary sidecar table approach.

@@ -80,10 +80,10 @@ The minimization writes:
 - `min.con`: the minimized structure
 - `results.dat`: energy, force calls, convergence status
 
-With `write_movies = true` (in `[Debug]`), additional files are produced for
-visualization with [rgpycrumbs](https://rgpycrumbs.rgoswami.me):
-- `minimization`: concatenated structure movie (one frame per iteration)
-- `minimization.dat`: per-iteration metrics (TSV: iteration, step_size, convergence, energy)
+With `write_movies = true` (in `[Debug]`), `minimization.con` is written as a
+concatenated structure movie (one frame per iteration). Each frame stores
+structured JSON metadata on line 2 via `readcon-core`, including `energy`,
+`frame_index`, `step_size`, and `convergence`.
 
 ## Configuration
 

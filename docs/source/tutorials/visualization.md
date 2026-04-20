@@ -16,9 +16,10 @@ myst:
 
 # Visualizing Optimization Trajectories
 
-eOn can output structured per-iteration data alongside trajectory movies when
-`write_movies = true` is set in the `[Debug]` section of `config.ini`. These
-files enable rich 2D reaction-valley projections and convergence plots via
+eOn can embed structured per-iteration metadata directly into trajectory movie
+frames when `write_movies = true` is set in the `[Debug]` section of
+`config.ini`. These metadata-rich `.con` movies enable rich 2D reaction-valley
+projections and convergence plots via
 [rgpycrumbs](https://rgpycrumbs.rgoswami.me) and
 [chemparseplot](https://chemparseplot.rgoswami.me).
 

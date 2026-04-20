@@ -95,11 +95,11 @@ The saddle search writes:
 - `mode.dat`: eigenvector at the saddle (Nx3 whitespace-separated)
 - `results.dat`: energy, force calls, convergence status, eigenvalue
 
-With `write_movies = true` (in `[Debug]`), additional files are produced for
-visualization with [rgpycrumbs](https://rgpycrumbs.rgoswami.me):
-- `climb`: concatenated structure movie (one frame per iteration)
-- `climb.dat`: per-iteration metrics (TSV: iteration, step_size, delta_e,
-  convergence, eigenvalue, torque, angle, rotations)
+With `write_movies = true` (in `[Debug]`), `climb.con` is written as a
+concatenated structure movie (one frame per iteration). Each frame stores
+structured JSON metadata on line 2 via `readcon-core`, including `energy`,
+`frame_index`, `step_size`, `delta_e`, `convergence`, `eigenvalue`, `torque`,
+`angle`, and `rotations`.
 
 ## See also
 
