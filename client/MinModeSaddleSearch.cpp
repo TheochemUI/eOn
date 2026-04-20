@@ -20,6 +20,8 @@
 #include "eonExceptions.hpp"
 
 #include <cmath>
+#include <format>
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -247,6 +249,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     }
 
     std::string climbLabel = "climb";
+    std::string climbDatFilename = "climb.dat";
 
     AtomMatrix initialPosition = matter->getPositions();
 
@@ -268,6 +271,22 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       metadata.scalars.push_back({"rotations",
                                   static_cast<double>(rotations)});
       matter->matter2con(climbLabel, append, &metadata);
+
+      if (params.debug_options.write_deprecated_outs) {
+        std::ofstream climbDat(
+            climbDatFilename,
+            append ? (std::ios::binary | std::ios::app) : std::ios::binary);
+        if (climbDat) {
+          if (!append) {
+            climbDat << "iteration\tstep_size\tdelta_e\tconvergence"
+                        "\teigenvalue\ttorque\tangle\trotations\n";
+          }
+          climbDat << std::format("{}\t{:.7e}\t{:.6f}\t{:.5e}\t{:.6f}"
+                                  "\t{:.6f}\t{:.4f}\t{}\n",
+                                  frameIndex, stepSize, de, conv, eigenval,
+                                  torque, angle, rotations);
+        }
+      }
     };
     if (params.debug_options.write_movies) {
       write_climb_frame(0, false, 0.0, 0.0, objf->getConvergence(),

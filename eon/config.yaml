@@ -420,6 +420,10 @@ Debug:
             kind: int
             default: 1
 
+        write_deprecated_outs:
+            kind: boolean
+            default: False
+
         stop_criterion:
             kind: float
             default: 1e8

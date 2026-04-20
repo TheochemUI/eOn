@@ -167,6 +167,7 @@ json to_json(const Parameters &p) {
   j["Debug"] = {
       {"write_movies", p.debug_options.write_movies},
       {"write_movies_interval", p.debug_options.write_movies_interval},
+      {"write_deprecated_outs", p.debug_options.write_deprecated_outs},
   };
 
   // [Serve]

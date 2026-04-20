@@ -12,6 +12,7 @@
 
 #include "ConFileIO.h"
 #include "Matter.h"
+#include "NEBSplineExtrema.h"
 #include "Parameters.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
@@ -274,6 +275,106 @@ TEST_CASE("ConFileIO preserves metadata across append-mode movie frames",
   REQUIRE(file_contents.find("\"frame_index\":0") != std::string::npos);
   REQUIRE(file_contents.find("\"frame_index\":1") != std::string::npos);
   REQUIRE(file_contents.find("\"step_size\":0.25") != std::string::npos);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO append mode rejects corrupt existing files",
+          "[confileio][append][errors]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_corrupt_append.con";
+  std::string tmpfile = tmppath.string();
+  {
+    std::ofstream out(tmpfile);
+    out << "not a valid con file\n";
+  }
+
+  std::ifstream before_in(tmpfile);
+  std::string before((std::istreambuf_iterator<char>(before_in)),
+                     std::istreambuf_iterator<char>());
+
+  REQUIRE_FALSE(m->matter2con(tmpfile, true));
+
+  std::ifstream after_in(tmpfile);
+  std::string after((std::istreambuf_iterator<char>(after_in)),
+                    std::istreambuf_iterator<char>());
+  REQUIRE(after == before);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO appends .con based on basename extension",
+          "[confileio][paths]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+
+  auto tmpdir =
+      std::filesystem::temp_directory_path() / "nested.con.dir";
+  std::filesystem::create_directories(tmpdir);
+  auto tmpbase = tmpdir / "movie";
+
+  REQUIRE(m->matter2con(tmpbase.string(), false));
+  REQUIRE(std::filesystem::exists(tmpbase.string() + ".con"));
+  REQUIRE_FALSE(std::filesystem::exists(tmpbase));
+
+  std::filesystem::remove_all(tmpdir);
+}
+
+TEST_CASE("NEB path writer embeds structured frame metadata",
+          "[confileio][neb][metadata]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+
+  auto make_matter = [&]() {
+    auto m = std::make_shared<Matter>(pot, params);
+    m->con2matter(std::string("reactant.con"));
+    return m;
+  };
+
+  std::vector<std::shared_ptr<Matter>> path{
+      make_matter(), make_matter(), make_matter()};
+  auto pos1 = path[1]->getPositions();
+  pos1(0, 0) += 0.1;
+  path[1]->setPositions(pos1);
+  auto pos2 = path[2]->getPositions();
+  pos2(0, 0) += 0.2;
+  path[2]->setPositions(pos2);
+  path[0]->setComputedPotential(-10.0, 0.0);
+  path[1]->setComputedPotential(-9.5, 0.0);
+  path[2]->setComputedPotential(-9.0, 0.0);
+
+  std::vector<std::shared_ptr<AtomMatrix>> tangent(3);
+  for (auto &t : tangent) {
+    t = std::make_shared<AtomMatrix>();
+    t->resize(path[0]->numberOfAtoms(), 3);
+    t->setZero();
+    (*t)(0, 0) = 1.0;
+  }
+
+  std::vector<std::shared_ptr<EigenmodeStrategy>> eigenmode_solvers(3);
+
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_neb_metadata.con";
+  std::string tmpfile = tmppath.string();
+
+  REQUIRE(eonc::neb::writePathCon(path, tangent, eigenmode_solvers, 1, false,
+                                  tmpfile, 12));
+
+  std::ifstream in(tmpfile);
+  std::string file_contents((std::istreambuf_iterator<char>(in)),
+                            std::istreambuf_iterator<char>());
+  REQUIRE(file_contents.find("\"neb_band\":12") != std::string::npos);
+  REQUIRE(file_contents.find("\"neb_bead\":1") != std::string::npos);
+  REQUIRE(file_contents.find("\"reaction_coordinate\"") != std::string::npos);
+  REQUIRE(file_contents.find("\"parallel_force\"") != std::string::npos);
 
   std::filesystem::remove(tmpfile);
 }

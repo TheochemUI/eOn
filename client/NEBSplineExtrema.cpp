@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "NEBSplineExtrema.h"
+#include "ConFileIO.h"
 #include <cmath>
 #include <format>
 #include <fstream>
@@ -18,6 +19,56 @@
 namespace fs = std::filesystem;
 
 namespace eonc::neb {
+
+namespace {
+
+eonc::io::ConFrameMetadata neb_frame_metadata(
+    const std::vector<std::shared_ptr<Matter>> &path,
+    const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+    const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
+    long numImages, bool estimateEigenvalues, long imageIndex,
+    double reactionCoordinate, std::optional<size_t> bandIndex) {
+  AtomMatrix tang;
+  if (imageIndex == 0) {
+    tang = path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
+  } else if (imageIndex == numImages + 1) {
+    tang = path[numImages]->pbc(path[numImages + 1]->getPositions() -
+                                path[numImages]->getPositions());
+  } else {
+    tang = *tangent[imageIndex];
+  }
+  tang.normalize();
+
+  const double reference_energy = path[0]->getPotentialEnergy();
+  const double absolute_energy = path[imageIndex]->getPotentialEnergy();
+  const double relative_energy = absolute_energy - reference_energy;
+  const double parallel_force = matDot(path[imageIndex]->getForces(), tang);
+
+  eonc::io::ConFrameMetadata metadata;
+  metadata.frame_index = static_cast<uint64_t>(imageIndex);
+  metadata.energy = absolute_energy;
+  metadata.neb_bead = static_cast<uint64_t>(imageIndex);
+  if (bandIndex) {
+    metadata.neb_band = static_cast<uint64_t>(*bandIndex);
+  }
+  metadata.scalars.push_back({"reaction_coordinate", reactionCoordinate});
+  metadata.scalars.push_back({"relative_energy", relative_energy});
+  metadata.scalars.push_back({"parallel_force", parallel_force});
+
+  if (estimateEigenvalues && imageIndex >= 0 &&
+      imageIndex < static_cast<long>(eigenmode_solvers.size()) &&
+      eigenmode_solvers[imageIndex]) {
+    eonc::eigenmodeCompute(*eigenmode_solvers[imageIndex], path[imageIndex],
+                           tang);
+    metadata.scalars.push_back(
+        {"lowest_eigenvalue",
+         eonc::eigenmodeGetEigenvalue(*eigenmode_solvers[imageIndex])});
+  }
+
+  return metadata;
+}
+
+} // namespace
 
 ExtremaResult
 findSplineExtrema(const std::vector<std::shared_ptr<Matter>> &path,
@@ -195,6 +246,30 @@ void printImageData(
       }
     }
   }
+}
+
+bool writePathCon(
+    const std::vector<std::shared_ptr<Matter>> &path,
+    const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+    const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
+    long numImages, bool estimateEigenvalues, std::string filename,
+    std::optional<size_t> bandIndex) {
+  double distTotal = 0.0;
+
+  for (long i = 0; i <= numImages + 1; i++) {
+    if (i > 0) {
+      distTotal += path[i]->distanceTo(*path[i - 1]);
+    }
+
+    auto metadata = neb_frame_metadata(path, tangent, eigenmode_solvers,
+                                       numImages, estimateEigenvalues, i,
+                                       distTotal, bandIndex);
+    if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 } // namespace eonc::neb

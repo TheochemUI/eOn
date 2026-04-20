@@ -23,6 +23,11 @@ projections and convergence plots via
 [rgpycrumbs](https://rgpycrumbs.rgoswami.me) and
 [chemparseplot](https://chemparseplot.rgoswami.me).
 
+For one compatibility window, `write_deprecated_outs = true` can also be used
+to emit the older minimization and saddle-search `.dat` sidecars. NEB continues
+to write its existing `neb.dat` / `neb_*.dat` outputs alongside the `.con`
+movies.
+
 This tutorial walks through the full workflow: running eOn with PET-MAD on the
 vinyl alcohol -> acetaldehyde keto-enol tautomerization, then generating energy
 profiles, convergence panels, and 2D optimization landscapes.

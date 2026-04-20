@@ -16,12 +16,15 @@
 #include "SafeMath.h"
 
 #include <cstring>
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <string>
 
 namespace {
+
+namespace fs = std::filesystem;
 
 const char *elementArray[] = {
     "Unknown", "H",  "He", "Li", "Be", "B",    "C",  "N",  "O",  "F",  "Ne",
@@ -42,6 +45,14 @@ std::string strip_nl(const std::string &s) {
   while (!str.empty() && (str.back() == '\n' || str.back() == '\r'))
     str.pop_back();
   return str;
+}
+
+std::string ensure_extension(std::string filename, std::string_view ext) {
+  fs::path path(filename);
+  if (path.extension() != ext) {
+    path += ext;
+  }
+  return path.string();
 }
 
 void apply_frame_metadata(readcon::ConFrameBuilder &builder,
@@ -103,10 +114,7 @@ cell_to_lengths_angles(const Matter &m) {
 
 bool matter2con(Matter &m, std::string filename, bool append,
                 const ConFrameMetadata *metadata) {
-  int pos = filename.find_last_of('.');
-  if (filename.compare(pos + 1, 3, "con")) {
-    filename += ".con";
-  }
+  filename = ensure_extension(std::move(filename), ".con");
 
   if (m.usePeriodicBoundaries) {
     m.applyPeriodicBoundary();
@@ -131,10 +139,13 @@ bool matter2con(Matter &m, std::string filename, bool append,
   auto frame = builder.build();
   std::vector<readcon::ConFrame> frames;
   if (append) {
-    try {
-      frames = readcon::read_all_frames(filename);
-    } catch (...) {
-      // File doesn't exist yet, start fresh.
+    if (fs::exists(filename)) {
+      try {
+        frames = readcon::read_all_frames(filename);
+      } catch (const std::exception &e) {
+        EONC_LOG_ERROR("Failed to append to {}: {}", filename, e.what());
+        return false;
+      }
     }
   }
   frames.push_back(std::move(frame));
@@ -145,10 +156,7 @@ bool matter2con(Matter &m, std::string filename, bool append,
 
 // Load atomic coordinates from a .con file via readcon-core (mmap reader)
 bool con2matter(Matter &m, std::string filename) {
-  int pos = filename.find_last_of('.');
-  if (filename.compare(pos + 1, 3, "con")) {
-    filename += ".con";
-  }
+  filename = ensure_extension(std::move(filename), ".con");
   try {
     auto frame = readcon::read_first_frame(filename);
     return con2matter(m, frame);
@@ -225,10 +233,7 @@ bool con2matter(Matter &m, const readcon::ConFrame &frame) {
 }
 
 bool matter2convel(Matter &m, std::string filename) {
-  int pos = filename.find_last_of('.');
-  if (filename.compare(pos + 1, 6, "convel")) {
-    filename += ".convel";
-  }
+  filename = ensure_extension(std::move(filename), ".convel");
 
   if (m.usePeriodicBoundaries) {
     m.applyPeriodicBoundary();
@@ -259,10 +264,7 @@ bool matter2convel(Matter &m, std::string filename) {
 }
 
 bool convel2matter(Matter &m, std::string filename) {
-  int pos = filename.find_last_of('.');
-  if (filename.compare(pos + 1, 6, "convel")) {
-    filename += ".convel";
-  }
+  filename = ensure_extension(std::move(filename), ".convel");
   try {
     auto frame = readcon::read_first_frame(filename);
     bool ok = con2matter(m, frame);

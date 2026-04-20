@@ -11,6 +11,7 @@
 */
 #include "GPSurrogateJob.h"
 #include "BaseStructures.h"
+#include "NEBSplineExtrema.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
 #include "SurrogatePotential.h"
@@ -148,17 +149,12 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string nebFilename = "neb.con";
   returnFiles.push_back(nebFilename);
 
-  std::ofstream fileNEB(nebFilename);
-  if (!fileNEB) {
-    // Handle file open error
-    throw std::runtime_error("Failed to open file: " + nebFilename);
+  if (!eonc::neb::writePathCon(neb->path, neb->tangent, neb->eigenmode_solvers,
+                               neb->numImages,
+                               params.debug_options.estimate_neb_eigenvalues,
+                               nebFilename)) {
+    throw std::runtime_error("Failed to write file: " + nebFilename);
   }
-
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    neb->path[i]->matter2con(nebFilename, true);
-  }
-
-  fileNEB.close();
 
   returnFiles.push_back("neb.dat");
   neb->printImageData(true);

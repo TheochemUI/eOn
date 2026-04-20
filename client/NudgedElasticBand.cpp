@@ -228,11 +228,39 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     if (params.debug_options.write_movies &&
         (iteration % params.debug_options.write_movies_interval == 0)) {
       bool append = (iteration != 0);
-      path[maxEnergyImage]->matter2con("neb_maximage.con", append);
-      std::string nebFilename(std::format("neb_path_{:03d}.con", iteration));
-      for (long idx = 0; idx <= numImages + 1; idx++) {
-        path[idx]->matter2con(nebFilename, /*append=*/idx > 0);
+      if (!eonc::neb::writePathCon(path, tangent, eigenmode_solvers, numImages,
+                                   params.debug_options.estimate_neb_eigenvalues,
+                                   std::format("neb_path_{:03d}.con", iteration),
+                                   iteration)) {
+        QUILL_LOG_ERROR(log, "Failed to write NEB path movie for iteration {}",
+                        iteration);
       }
+
+      AtomMatrix maxTang;
+      if (maxEnergyImage == 0) {
+        maxTang = path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
+      } else if (maxEnergyImage == static_cast<size_t>(numImages + 1)) {
+        maxTang = path[numImages]->pbc(path[numImages + 1]->getPositions() -
+                                       path[numImages]->getPositions());
+      } else {
+        maxTang = *tangent[maxEnergyImage];
+      }
+      maxTang.normalize();
+      auto maxImageMetadata = eonc::io::ConFrameMetadata{};
+      maxImageMetadata.frame_index = static_cast<uint64_t>(maxEnergyImage);
+      maxImageMetadata.energy = path[maxEnergyImage]->getPotentialEnergy();
+      maxImageMetadata.neb_bead = static_cast<uint64_t>(maxEnergyImage);
+      maxImageMetadata.neb_band = static_cast<uint64_t>(iteration);
+      maxImageMetadata.scalars.push_back(
+          {"relative_energy",
+           path[maxEnergyImage]->getPotentialEnergy() -
+               path[0]->getPotentialEnergy()});
+      maxImageMetadata.scalars.push_back(
+          {"parallel_force",
+           matDot(path[maxEnergyImage]->getForces(), maxTang)});
+      maxImageMetadata.strings.push_back({"movie_kind", "neb_maximage"});
+      path[maxEnergyImage]->matter2con("neb_maximage.con", append,
+                                       &maxImageMetadata);
       printImageData(true, iteration);
     }
 

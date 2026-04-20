@@ -101,6 +101,9 @@ structured JSON metadata on line 2 via `readcon-core`, including `energy`,
 `frame_index`, `step_size`, `delta_e`, `convergence`, `eigenvalue`, `torque`,
 `angle`, and `rotations`.
 
+Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy
+`climb.dat` sidecar during the compatibility window.
+
 ## See also
 
 - <project:dimer.md> for the eigenmode method used during the saddle search

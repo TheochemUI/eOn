@@ -1,1 +1,1 @@
-Structured per-iteration metadata is now embedded directly in minimization and saddle-search movie `.con` files via `readcon-core`, replacing the temporary sidecar table approach.
+Structured per-iteration metadata is now embedded directly in minimization, saddle-search, and NEB movie `.con` files via `readcon-core`. The legacy minimization and saddle-search sidecar tables remain available temporarily behind `write_deprecated_outs = true`.
