@@ -85,6 +85,9 @@ concatenated structure movie (one frame per iteration). Each frame stores
 structured JSON metadata on line 2 via `readcon-core`, including `energy`,
 `frame_index`, `step_size`, and `convergence`.
 
+Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy
+`minimization.dat` sidecar during the compatibility window.
+
 ## Configuration
 
 ```{eval-rst}

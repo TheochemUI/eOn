@@ -196,6 +196,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.debug_options.write_movies_interval =
       ini.GetInteger("Debug", "write_movies_interval",
                      params.debug_options.write_movies_interval);
+  params.debug_options.write_deprecated_outs =
+      ini.GetBoolean("Debug", "write_deprecated_outs",
+                     params.debug_options.write_deprecated_outs);
   params.debug_options.estimate_neb_eigenvalues =
       ini.GetBoolean("Debug", "estimate_neb_eigenvalues",
                      params.debug_options.estimate_neb_eigenvalues);

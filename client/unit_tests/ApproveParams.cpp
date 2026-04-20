@@ -584,6 +584,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "writeMoviesInterval: " << params.debug_options.write_movies_interval
      << std::endl;
+  os << "writeDeprecatedOuts: "
+     << params.debug_options.write_deprecated_outs << std::endl;
   return os;
 }
 
