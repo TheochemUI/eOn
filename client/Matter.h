@@ -200,8 +200,9 @@ public:
   bool convel2matter(std::string filename) {
     return io::convel2matter(*this, filename);
   }
-  bool matter2con(std::string filename, bool append = false) {
-    return io::matter2con(*this, filename, append);
+  bool matter2con(std::string filename, bool append = false,
+                  const io::ConFrameMetadata *metadata = nullptr) {
+    return io::matter2con(*this, filename, append, metadata);
   }
   bool matter2convel(std::string filename) {
     return io::matter2convel(*this, filename);
@@ -217,7 +218,8 @@ public:
 private:
   // Friend declarations for eonc::io free functions that need private access
   friend bool io::con2matter(Matter &, const readcon::ConFrame &);
-  friend bool io::matter2con(Matter &, std::string, bool);
+  friend bool io::matter2con(Matter &, std::string, bool,
+                             const io::ConFrameMetadata *);
   friend bool io::matter2convel(Matter &, std::string);
   friend void io::matter2xyz(Matter &, std::string, bool);
   friend std::pair<std::array<double, 3>, std::array<double, 3>>

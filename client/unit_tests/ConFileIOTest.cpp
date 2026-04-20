@@ -215,6 +215,69 @@ TEST_CASE("ConFileIO multiple writes accumulate in append mode",
   std::filesystem::remove(tmpfile);
 }
 
+TEST_CASE("ConFileIO embeds movie metadata in frame JSON", "[confileio][metadata]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  m->setComputedPotential(-12.5, 0.0);
+
+  eonc::io::ConFrameMetadata metadata;
+  metadata.frame_index = 7;
+  metadata.energy = -12.5;
+  metadata.scalars.push_back({"step_size", 0.125});
+  metadata.scalars.push_back({"convergence", 1.0e-3});
+
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_metadata.con";
+  std::string tmpfile = tmppath.string();
+  m->matter2con(tmpfile, false, &metadata);
+
+  std::ifstream in(tmpfile);
+  std::string file_contents((std::istreambuf_iterator<char>(in)),
+                            std::istreambuf_iterator<char>());
+  REQUIRE(file_contents.find("\"frame_index\":7") != std::string::npos);
+  REQUIRE(file_contents.find("\"energy\":-12.5") != std::string::npos);
+  REQUIRE(file_contents.find("\"step_size\":0.125") != std::string::npos);
+  REQUIRE(file_contents.find("\"convergence\":0.001") != std::string::npos);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO preserves metadata across append-mode movie frames",
+          "[confileio][append][metadata]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+
+  auto tmppath =
+      std::filesystem::temp_directory_path() / "_test_append_metadata.con";
+  std::string tmpfile = tmppath.string();
+
+  eonc::io::ConFrameMetadata first;
+  first.frame_index = 0;
+  first.energy = -10.0;
+  first.scalars.push_back({"step_size", 0.0});
+  m->matter2con(tmpfile, false, &first);
+
+  eonc::io::ConFrameMetadata second;
+  second.frame_index = 1;
+  second.energy = -9.5;
+  second.scalars.push_back({"step_size", 0.25});
+  m->matter2con(tmpfile, true, &second);
+
+  std::ifstream in(tmpfile);
+  std::string file_contents((std::istreambuf_iterator<char>(in)),
+                            std::istreambuf_iterator<char>());
+  REQUIRE(file_contents.find("\"frame_index\":0") != std::string::npos);
+  REQUIRE(file_contents.find("\"frame_index\":1") != std::string::npos);
+  REQUIRE(file_contents.find("\"step_size\":0.25") != std::string::npos);
+
+  std::filesystem::remove(tmpfile);
+}
+
 TEST_CASE("ConFileIO reads multi-component Pt system",
           "[confileio][multicomponent]") {
   Parameters params;

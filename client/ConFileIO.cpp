@@ -19,9 +19,7 @@
 #include <format>
 #include <fstream>
 #include <iostream>
-#include <mutex>
 #include <string>
-#include <unordered_map>
 
 namespace {
 
@@ -46,20 +44,39 @@ std::string strip_nl(const std::string &s) {
   return str;
 }
 
-// Per-file long-lived ConFrameWriter for append mode. readcon-core's
-// from_path constructor opens the file in truncate mode (File::create),
-// so reconstructing a writer per iteration discards previous frames.
-// Keeping one writer alive per filename for the duration of the run
-// reuses the same open file handle, so successive writer.extend() calls
-// stream each new frame to the existing position without truncation.
-std::unordered_map<std::string, std::unique_ptr<readcon::ConFrameWriter>> &
-movie_writer_cache() {
-  static std::unordered_map<std::string,
-                            std::unique_ptr<readcon::ConFrameWriter>>
-      cache;
-  return cache;
+void apply_frame_metadata(readcon::ConFrameBuilder &builder,
+                          const eonc::io::ConFrameMetadata *metadata) {
+  if (metadata == nullptr) {
+    return;
+  }
+  if (metadata->raw_json && !metadata->raw_json->empty()) {
+    builder.set_metadata_json(*metadata->raw_json);
+  }
+  if (metadata->energy) {
+    builder.set_energy(*metadata->energy);
+  }
+  if (metadata->frame_index) {
+    builder.set_frame_index(*metadata->frame_index);
+  }
+  if (metadata->time) {
+    builder.set_time(*metadata->time);
+  }
+  if (metadata->timestep) {
+    builder.set_timestep(*metadata->timestep);
+  }
+  if (metadata->neb_bead) {
+    builder.set_neb_bead(*metadata->neb_bead);
+  }
+  if (metadata->neb_band) {
+    builder.set_neb_band(*metadata->neb_band);
+  }
+  for (const auto &[key, value] : metadata->scalars) {
+    builder.set_scalar_metadata(key, value);
+  }
+  for (const auto &[key, value] : metadata->strings) {
+    builder.set_string_metadata(key, value);
+  }
 }
-std::mutex movie_writer_cache_mutex;
 
 } // namespace
 
@@ -84,7 +101,8 @@ cell_to_lengths_angles(const Matter &m) {
   return {lengths, angles};
 }
 
-bool matter2con(Matter &m, std::string filename, bool append) {
+bool matter2con(Matter &m, std::string filename, bool append,
+                const ConFrameMetadata *metadata) {
   int pos = filename.find_last_of('.');
   if (filename.compare(pos + 1, 3, "con")) {
     filename += ".con";
@@ -101,6 +119,7 @@ bool matter2con(Matter &m, std::string filename, bool append) {
       {angles_deg[0], angles_deg[1], angles_deg[2]},
       {strip_nl(m.headerCon[0]), strip_nl(m.headerCon[1])},
       {strip_nl(m.headerCon[3]), strip_nl(m.headerCon[4])});
+  apply_frame_metadata(builder, metadata);
 
   for (long i = 0; i < m.numberOfAtoms(); i++) {
     builder.add_atom(atomicNumber2symbol(m.getAtomicNr(i)), m.getPosition(i, 0),
@@ -110,23 +129,17 @@ bool matter2con(Matter &m, std::string filename, bool append) {
   }
 
   auto frame = builder.build();
-
-  std::lock_guard<std::mutex> guard(movie_writer_cache_mutex);
-  auto &cache = movie_writer_cache();
-  auto it = cache.find(filename);
-  if (!append || it == cache.end()) {
-    // First write to this file (or explicit truncate): replace any
-    // previous handle so the new run starts from a fresh file. The
-    // writer's destructor closes the prior file via free_rkr_writer.
-    cache[filename] = std::make_unique<readcon::ConFrameWriter>(filename, 17);
-    it = cache.find(filename);
+  std::vector<readcon::ConFrame> frames;
+  if (append) {
+    try {
+      frames = readcon::read_all_frames(filename);
+    } catch (...) {
+      // File doesn't exist yet, start fresh.
+    }
   }
-  // ConFrameWriter::extend takes a vector by const ref; build a single-
-  // element vector and let the writer stream it to the open file.
-  std::vector<readcon::ConFrame> one;
-  one.reserve(1);
-  one.push_back(std::move(frame));
-  it->second->extend(one);
+  frames.push_back(std::move(frame));
+  readcon::ConFrameWriter writer(filename, 17);
+  writer.extend(frames);
   return true;
 }
 

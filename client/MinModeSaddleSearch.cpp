@@ -20,8 +20,6 @@
 #include "eonExceptions.hpp"
 
 #include <cmath>
-#include <format>
-#include <fstream>
 #include <memory>
 #include <string>
 
@@ -249,21 +247,33 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     }
 
     std::string climbLabel = "climb";
-    if (params.debug_options.write_movies) {
-      matter->matter2con(climbLabel, false);
-      // Structured per-iteration data for visualization tools
-      std::ofstream climbDat("climb.dat", std::ios::binary);
-      if (climbDat) {
-        climbDat << "iteration\tstep_size\tdelta_e\tconvergence\teigenvalue"
-                    "\ttorque\tangle\trotations\n";
-        climbDat.close();
-      }
-    }
 
     AtomMatrix initialPosition = matter->getPositions();
 
     auto objf = std::make_shared<MinModeObjectiveFunction>(
         matter, minModeMethod, mode, params);
+    auto write_climb_frame = [&](uint64_t frameIndex, bool append,
+                                 double stepSize, double de, double conv,
+                                 double eigenval, double torque, double angle,
+                                 long rotations) {
+      eonc::io::ConFrameMetadata metadata;
+      metadata.frame_index = frameIndex;
+      metadata.energy = matter->getPotentialEnergy();
+      metadata.scalars.push_back({"step_size", stepSize});
+      metadata.scalars.push_back({"delta_e", de});
+      metadata.scalars.push_back({"convergence", conv});
+      metadata.scalars.push_back({"eigenvalue", eigenval});
+      metadata.scalars.push_back({"torque", torque});
+      metadata.scalars.push_back({"angle", angle});
+      metadata.scalars.push_back({"rotations",
+                                  static_cast<double>(rotations)});
+      matter->matter2con(climbLabel, append, &metadata);
+    };
+    if (params.debug_options.write_movies) {
+      write_climb_frame(0, false, 0.0, 0.0, objf->getConvergence(),
+                        eonc::eigenmodeGetEigenvalue(*minModeMethod), 0.0, 0.0,
+                        0);
+    }
     if (params.saddle_search_options.nonnegative_displacement_abort) {
       objf->getGradient();
       if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
@@ -364,15 +374,8 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       }
 
       if (params.debug_options.write_movies) {
-        matter->matter2con(climbLabel, true);
-        // Append structured iteration data
-        std::ofstream climbDat("climb.dat", std::ios::binary | std::ios::app);
-        if (climbDat) {
-          climbDat << std::format("{}\t{:.7e}\t{:.6f}\t{:.5e}\t{:.6f}"
-                                  "\t{:.6f}\t{:.4f}\t{}\n",
-                                  iteration, stepSize, de, conv, eigenval,
-                                  torque, angle, rotations);
-        }
+        write_climb_frame(static_cast<uint64_t>(iteration), true, stepSize, de,
+                          conv, eigenval, torque, angle, rotations);
       }
 
       if (params.main_options.checkpoint) {
