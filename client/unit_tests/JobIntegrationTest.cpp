@@ -467,6 +467,52 @@ max_move = 0.2
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "NEB movies embed structured metadata in con outputs",
+                 "[job][neb][integration][metadata]") {
+  copyTestData(".");
+  writeConfig(R"(
+[Main]
+job = nudged_elastic_band
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Nudged Elastic Band]
+images = 3
+spring = 5.0
+max_iterations = 50
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.01
+max_iterations = 50
+max_move = 0.2
+
+[Debug]
+write_movies = true
+)");
+
+  auto results = runJob();
+  REQUIRE(std::stoi(results["termination_reason"]) == 0);
+
+  REQUIRE(std::filesystem::exists(workdir / "neb.con"));
+  REQUIRE(std::filesystem::exists(workdir / "neb_path_000.con"));
+
+  std::ifstream nebCon(workdir / "neb.con");
+  std::string nebConContents((std::istreambuf_iterator<char>(nebCon)),
+                             std::istreambuf_iterator<char>());
+  REQUIRE(nebConContents.find("\"neb_bead\":1") != std::string::npos);
+  REQUIRE(nebConContents.find("\"reaction_coordinate\"") != std::string::npos);
+  REQUIRE(nebConContents.find("\"parallel_force\"") != std::string::npos);
+
+  std::ifstream nebPath(workdir / "neb_path_000.con");
+  std::string nebPathContents((std::istreambuf_iterator<char>(nebPath)),
+                              std::istreambuf_iterator<char>());
+  REQUIRE(nebPathContents.find("\"neb_band\":0") != std::string::npos);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "MinimizationJob Morse Pt frozen layers matches SVN",
                  "[job][minimization][integration]") {
   copyTestData("../Pt_Heptamer_FrozenLayers");
@@ -497,6 +543,45 @@ max_iterations = 200
 
   // Force calls must be <= SVN (1)
   REQUIRE(forceCalls_ <= 1);
+}
+
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "Minimization deprecated outputs remain available behind flag",
+    "[job][minimization][integration][deprecated]") {
+  copyTestData(".");
+  writeConfig(R"(
+[Main]
+job = minimization
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 100
+
+[Debug]
+write_movies = true
+write_deprecated_outs = true
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+  REQUIRE(std::stoi(results["termination_reason"]) == 0);
+
+  REQUIRE(std::filesystem::exists(workdir / "minimization.con"));
+  REQUIRE(std::filesystem::exists(workdir / "minimization.dat"));
+
+  std::ifstream datFile(workdir / "minimization.dat");
+  std::string datContents((std::istreambuf_iterator<char>(datFile)),
+                          std::istreambuf_iterator<char>());
+  REQUIRE(datContents.find("iteration\tstep_size\tconvergence\tenergy") !=
+          std::string::npos);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
