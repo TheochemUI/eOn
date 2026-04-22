@@ -39,6 +39,7 @@ profiles, convergence panels, and 2D optimization landscapes.
 
 import os
 import subprocess
+import sys
 from contextlib import chdir
 from pathlib import Path
 import tempfile
@@ -81,6 +82,40 @@ tutorial_dir = Path(tempfile.mkdtemp(prefix="eon_tutorial_"))
 print(f"Working in: {tutorial_dir}")
 ```
 
+```{code-cell} python
+:tags: [remove-cell]
+
+from IPython.display import Image, display
+
+plot_dir = tutorial_dir / "plots"
+plot_dir.mkdir(exist_ok=True)
+
+def run_cli_or_raise(args, *, cwd=None, timeout=300):
+    print("$", " ".join(args))
+    result = subprocess.run(
+        args,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+    )
+    if result.stdout:
+        print(result.stdout)
+    if result.stderr:
+        print(result.stderr, file=sys.stderr)
+    if result.returncode != 0:
+        raise RuntimeError(f"command failed (exit {result.returncode}): {' '.join(args)}")
+    return result
+
+
+def run_rgpycrumbs(*args, cwd=None, timeout=180):
+    return run_cli_or_raise(
+        [sys.executable, "-m", "rgpycrumbs.cli", *args],
+        cwd=cwd,
+        timeout=timeout,
+    )
+```
+
 ## Minimization
 
 We start by minimizing a slightly distorted vinyl alcohol molecule to
@@ -108,7 +143,9 @@ min_config = {
     "Potential": {"potential": "metatomic"},
     "Metatomic": {"model_path": str(model_path.resolve())},
     "Optimizer": {"opt_method": "lbfgs", "converged_force": 0.0514221, "max_iterations": 200},
-    "Debug": {"write_movies": True},
+    # rgpycrumbs plt_min still consumes minimization.dat for profile/convergence
+    # plots, so keep the compatibility sidecar enabled during the transition.
+    "Debug": {"write_movies": True, "write_deprecated_outs": True},
 }
 write_eon_config(min_dir, min_config)
 
@@ -124,23 +161,31 @@ print(f"Minimization done: {list(min_dir.glob('minimization.*'))}")
 ### Energy profile
 
 ```{code-cell} python
-from rgpycrumbs.eon.plt_min import main as plt_min_main
-from click.testing import CliRunner
-
-runner = CliRunner()
-runner.invoke(plt_min_main, [
-    "--job-dir", str(min_dir), "--prefix", "minimization",
-    "--plot-type", "profile", "--dpi", "150",
-])
+min_profile = plot_dir / "min_profile.png"
+run_rgpycrumbs(
+    "eon", "plt-min",
+    "--job-dir", str(min_dir),
+    "--prefix", "minimization",
+    "--plot-type", "profile",
+    "--dpi", "150",
+    "--output", str(min_profile),
+)
+display(Image(filename=min_profile))
 ```
 
 ### Convergence panel
 
 ```{code-cell} python
-runner.invoke(plt_min_main, [
-    "--job-dir", str(min_dir), "--prefix", "minimization",
-    "--plot-type", "convergence", "--dpi", "150",
-])
+min_convergence = plot_dir / "min_convergence.png"
+run_rgpycrumbs(
+    "eon", "plt-min",
+    "--job-dir", str(min_dir),
+    "--prefix", "minimization",
+    "--plot-type", "convergence",
+    "--dpi", "150",
+    "--output", str(min_convergence),
+)
+display(Image(filename=min_convergence))
 ```
 
 ## Nudged Elastic Band
@@ -213,9 +258,9 @@ print(f"NEB done: {len(list(neb_dir.glob('neb_*.dat')))} steps")
 ### Energy profile
 
 ```{code-cell} python
-from rgpycrumbs.eon.plt_neb import main as plt_neb_main
-
-runner.invoke(plt_neb_main, [
+neb_profile = plot_dir / "neb_profile.png"
+run_rgpycrumbs(
+    "eon", "plt-neb",
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--con-file", str(neb_dir / "neb.con"),
     "--ira-kmax", "14",
@@ -227,13 +272,17 @@ runner.invoke(plt_neb_main, [
     "--perspective-tilt", "8",
     "--zoom-ratio", "0.15",
     "--dpi", "150",
-])
+    "--output-file", str(neb_profile),
+)
+display(Image(filename=neb_profile))
 ```
 
 ### 2D reaction landscape
 
 ```{code-cell} python
-runner.invoke(plt_neb_main, [
+neb_landscape = plot_dir / "neb_landscape.png"
+run_rgpycrumbs(
+    "eon", "plt-neb",
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--input-path-pattern", str(neb_dir / "neb_path_*.con"),
     "--con-file", str(neb_dir / "neb.con"),
@@ -252,7 +301,9 @@ runner.invoke(plt_neb_main, [
     "--zoom-ratio", "0.2",
     "--show-legend",
     "--dpi", "150",
-])
+    "--output-file", str(neb_landscape),
+)
+display(Image(filename=neb_landscape))
 ```
 
 ## See also

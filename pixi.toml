@@ -117,6 +117,7 @@ psutil = ">=7.0.0, <8"
 [feature.docs.dependencies]
 sphinx = ">=7"
 shibuya = "*"
+uv = "*"
 
 [feature.docs.target.linux-64.dependencies]
 ira = ">=2"
