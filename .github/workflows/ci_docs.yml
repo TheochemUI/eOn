@@ -55,7 +55,6 @@ jobs:
         shell: pixi run -e docs-mta bash -e {0}
         run: |
           pip install . --no-build-isolation
-          python scripts/patch_docs_kernel_env.py
           sphinx-build -b html docs/source docs/build/html
 
       - name: Upload artifact
