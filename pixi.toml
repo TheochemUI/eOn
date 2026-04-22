@@ -121,6 +121,7 @@ uv = "*"
 
 [feature.docs.target.linux-64.dependencies]
 ira = ">=2"
+patchelf = "*"
 
 [feature.docs.pypi-dependencies]
 meson-python = ">=0.17"
