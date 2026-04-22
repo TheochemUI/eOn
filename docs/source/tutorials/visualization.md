@@ -99,11 +99,9 @@ def run_cli_or_raise(args, *, cwd=None, timeout=300):
     return result
 
 
-def run_rgpycrumbs(*args, cwd=None, timeout=180):
+def run_rgpycrumbs(module, *args, cwd=None, timeout=180):
     return run_cli_or_raise(
-        # Use the current docs environment's pinned rgpycrumbs/chemparseplot
-        # revisions instead of letting `uv run` resolve a fresh PEP 723 env.
-        [sys.executable, "-m", "rgpycrumbs.cli", "--dev", *args],
+        [sys.executable, "-m", f"rgpycrumbs.{module}", *args],
         cwd=cwd,
         timeout=timeout,
     )
@@ -174,7 +172,7 @@ print(f"Minimization done: {list(min_dir.glob('minimization.*'))}")
 ```{code-cell} python
 min_profile = plot_dir / "min_profile.png"
 run_rgpycrumbs(
-    "eon", "plt-min",
+    "eon.plt_min",
     "--job-dir", str(min_dir),
     "--prefix", "minimization",
     "--plot-type", "profile",
@@ -189,7 +187,7 @@ show_plot(min_profile)
 ```{code-cell} python
 min_landscape = plot_dir / "min_landscape.png"
 run_rgpycrumbs(
-    "eon", "plt-min",
+    "eon.plt_min",
     "--job-dir", str(min_dir),
     "--prefix", "minimization",
     "--plot-type", "landscape",
@@ -209,7 +207,7 @@ show_plot(min_landscape)
 ```{code-cell} python
 min_convergence = plot_dir / "min_convergence.png"
 run_rgpycrumbs(
-    "eon", "plt-min",
+    "eon.plt_min",
     "--job-dir", str(min_dir),
     "--prefix", "minimization",
     "--plot-type", "convergence",
@@ -286,7 +284,7 @@ print(f"NEB done: {len(list(neb_dir.glob('neb_*.dat')))} steps")
 ```{code-cell} python
 neb_profile = plot_dir / "neb_profile.png"
 run_rgpycrumbs(
-    "eon", "plt-neb",
+    "eon.plt_neb",
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--con-file", str(neb_dir / "neb.con"),
     "--ira-kmax", "14",
@@ -308,7 +306,7 @@ show_plot(neb_profile)
 ```{code-cell} python
 neb_landscape = plot_dir / "neb_landscape.png"
 run_rgpycrumbs(
-    "eon", "plt-neb",
+    "eon.plt_neb",
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--input-path-pattern", str(neb_dir / "neb_path_*.con"),
     "--con-file", str(neb_dir / "neb.con"),
