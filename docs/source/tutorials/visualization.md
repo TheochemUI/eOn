@@ -101,7 +101,9 @@ def run_cli_or_raise(args, *, cwd=None, timeout=300):
 
 def run_rgpycrumbs(*args, cwd=None, timeout=180):
     return run_cli_or_raise(
-        [sys.executable, "-m", "rgpycrumbs.cli", *args],
+        # Use the current docs environment's pinned rgpycrumbs/chemparseplot
+        # revisions instead of letting `uv run` resolve a fresh PEP 723 env.
+        [sys.executable, "-m", "rgpycrumbs.cli", "--dev", *args],
         cwd=cwd,
         timeout=timeout,
     )
