@@ -99,17 +99,18 @@ def run_cli_or_raise(args, *, cwd=None, timeout=300):
     return result
 
 
-def run_rgpycrumbs(module, *args, cwd=None, timeout=180):
+def run_rgpycrumbs(group, command, *args, cwd=None, timeout=180):
     return run_cli_or_raise(
-        [sys.executable, "-m", f"rgpycrumbs.{module}", *args],
+        [sys.executable, "-m", "rgpycrumbs.cli", group, command, *args],
         cwd=cwd,
         timeout=timeout,
     )
 
 
 def run_eon(job_dir, *, timeout=300):
+    eonclient = str(Path(sys.executable).with_name("eonclient"))
     result = subprocess.run(
-        ["eonclient"],
+        [eonclient],
         cwd=job_dir,
         capture_output=True,
         text=True,
@@ -172,7 +173,7 @@ print(f"Minimization done: {list(min_dir.glob('minimization.*'))}")
 ```{code-cell} python
 min_profile = plot_dir / "min_profile.png"
 run_rgpycrumbs(
-    "eon.plt_min",
+    "eon", "plt-min",
     "--job-dir", str(min_dir),
     "--prefix", "minimization",
     "--plot-type", "profile",
@@ -187,7 +188,7 @@ show_plot(min_profile)
 ```{code-cell} python
 min_landscape = plot_dir / "min_landscape.png"
 run_rgpycrumbs(
-    "eon.plt_min",
+    "eon", "plt-min",
     "--job-dir", str(min_dir),
     "--prefix", "minimization",
     "--plot-type", "landscape",
@@ -207,7 +208,7 @@ show_plot(min_landscape)
 ```{code-cell} python
 min_convergence = plot_dir / "min_convergence.png"
 run_rgpycrumbs(
-    "eon.plt_min",
+    "eon", "plt-min",
     "--job-dir", str(min_dir),
     "--prefix", "minimization",
     "--plot-type", "convergence",
@@ -284,7 +285,7 @@ print(f"NEB done: {len(list(neb_dir.glob('neb_*.dat')))} steps")
 ```{code-cell} python
 neb_profile = plot_dir / "neb_profile.png"
 run_rgpycrumbs(
-    "eon.plt_neb",
+    "eon", "plt-neb",
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--con-file", str(neb_dir / "neb.con"),
     "--ira-kmax", "14",
@@ -306,7 +307,7 @@ show_plot(neb_profile)
 ```{code-cell} python
 neb_landscape = plot_dir / "neb_landscape.png"
 run_rgpycrumbs(
-    "eon.plt_neb",
+    "eon", "plt-neb",
     "--input-dat-pattern", str(neb_dir / "neb_*.dat"),
     "--input-path-pattern", str(neb_dir / "neb_path_*.con"),
     "--con-file", str(neb_dir / "neb.con"),
