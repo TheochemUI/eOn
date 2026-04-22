@@ -48,9 +48,10 @@ os.environ["RGPYCRUMBS_AUTO_DEPS"] = "1"
 
 # Ensure eonclient can find metatensor/torch shared libs at runtime
 import sys
+import vesin
 import torch, metatensor.torch, metatomic.torch
 _lib_paths = {os.path.join(sys.prefix, "lib")}
-for _mod in [torch, metatensor.torch, metatomic.torch]:
+for _mod in [vesin, torch, metatensor.torch, metatomic.torch]:
     _d = os.path.dirname(_mod.__file__)
     _lib_paths.add(_d)
     _lib = os.path.join(_d, "lib")
