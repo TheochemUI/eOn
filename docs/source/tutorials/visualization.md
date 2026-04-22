@@ -28,9 +28,14 @@ to emit the older minimization and saddle-search `.dat` sidecars. NEB continues
 to write its existing `neb.dat` / `neb_*.dat` outputs alongside the `.con`
 movies.
 
-This tutorial walks through the full workflow: running eOn with PET-MAD on the
-vinyl alcohol -> acetaldehyde keto-enol tautomerization, then generating energy
-profiles, convergence panels, and 2D optimization landscapes.
+This tutorial walks through two complete workflows with PET-MAD:
+
+- a single-ended minimization of a perturbed vinyl alcohol structure
+- an OCI-NEB calculation for vinyl alcohol -> acetaldehyde
+
+For each workflow we run `eonclient`, then visualize the result through the
+public `rgpycrumbs` dispatcher so the tutorial matches current command-line
+usage.
 
 ## Setup
 
@@ -40,7 +45,6 @@ profiles, convergence panels, and 2D optimization landscapes.
 import os
 import subprocess
 import sys
-from contextlib import chdir
 from pathlib import Path
 import tempfile
 
@@ -101,12 +105,34 @@ def run_rgpycrumbs(*args, cwd=None, timeout=180):
         cwd=cwd,
         timeout=timeout,
     )
+
+
+def run_eon(job_dir, *, timeout=300):
+    result = subprocess.run(
+        ["eonclient"],
+        cwd=job_dir,
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+    )
+    if result.returncode != 0:
+        if result.stdout:
+            print(result.stdout)
+        if result.stderr:
+            print(result.stderr, file=sys.stderr)
+        raise RuntimeError(f"eonclient failed (exit {result.returncode})")
+    return result
+
+
+def show_plot(path):
+    display(Image(filename=path))
 ```
 
 ## Minimization
 
 We start by minimizing a slightly distorted vinyl alcohol molecule to
-demonstrate the minimization trajectory output.
+demonstrate the single-ended optimization outputs consumed by
+`rgpycrumbs eon plt-min`.
 
 ```{code-cell} python
 :tags: [remove-cell]
@@ -130,18 +156,14 @@ min_config = {
     "Potential": {"potential": "metatomic"},
     "Metatomic": {"model_path": str(model_path.resolve())},
     "Optimizer": {"opt_method": "lbfgs", "converged_force": 0.0514221, "max_iterations": 200},
-    # rgpycrumbs plt_min still consumes minimization.dat for profile/convergence
-    # plots, so keep the compatibility sidecar enabled during the transition.
+    # Current plt-min profile/convergence commands still consume the legacy
+    # minimization.dat sidecar, while the 2D landscape uses the metadata-rich
+    # minimization.con movie.
     "Debug": {"write_movies": True, "write_deprecated_outs": True},
 }
 write_eon_config(min_dir, min_config)
 
-with chdir(min_dir):
-    result = subprocess.run(["eonclient"], capture_output=True, text=True, timeout=300)
-    if result.returncode != 0:
-        print(result.stdout)
-        print(result.stderr)
-        raise RuntimeError(f"eonclient failed (exit {result.returncode})")
+run_eon(min_dir)
 print(f"Minimization done: {list(min_dir.glob('minimization.*'))}")
 ```
 
@@ -157,7 +179,27 @@ run_rgpycrumbs(
     "--dpi", "150",
     "--output", str(min_profile),
 )
-display(Image(filename=min_profile))
+show_plot(min_profile)
+```
+
+### 2D optimization landscape
+
+```{code-cell} python
+min_landscape = plot_dir / "min_landscape.png"
+run_rgpycrumbs(
+    "eon", "plt-min",
+    "--job-dir", str(min_dir),
+    "--prefix", "minimization",
+    "--plot-type", "landscape",
+    "--project-path",
+    "--surface-type", "grad_matern",
+    "--plot-structures", "endpoints",
+    "--strip-renderer", "xyzrender",
+    "--perspective-tilt", "8",
+    "--dpi", "150",
+    "--output", str(min_landscape),
+)
+show_plot(min_landscape)
 ```
 
 ### Convergence panel
@@ -172,7 +214,7 @@ run_rgpycrumbs(
     "--dpi", "150",
     "--output", str(min_convergence),
 )
-display(Image(filename=min_convergence))
+show_plot(min_convergence)
 ```
 
 ## Nudged Elastic Band
@@ -233,12 +275,7 @@ neb_config = {
     "Debug": {"write_movies": True},
 }
 write_eon_config(neb_dir, neb_config)
-with chdir(neb_dir):
-    result = subprocess.run(["eonclient"], capture_output=True, text=True, timeout=300)
-    if result.returncode != 0:
-        print(result.stdout)
-        print(result.stderr)
-        raise RuntimeError(f"eonclient failed (exit {result.returncode})")
+run_eon(neb_dir)
 print(f"NEB done: {len(list(neb_dir.glob('neb_*.dat')))} steps")
 ```
 
@@ -261,7 +298,7 @@ run_rgpycrumbs(
     "--dpi", "150",
     "--output-file", str(neb_profile),
 )
-display(Image(filename=neb_profile))
+show_plot(neb_profile)
 ```
 
 ### 2D reaction landscape
@@ -290,7 +327,7 @@ run_rgpycrumbs(
     "--dpi", "150",
     "--output-file", str(neb_landscape),
 )
-display(Image(filename=neb_landscape))
+show_plot(neb_landscape)
 ```
 
 ## See also
