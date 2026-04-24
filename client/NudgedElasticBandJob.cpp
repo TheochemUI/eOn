@@ -12,6 +12,7 @@
 #include "NudgedElasticBandJob.h"
 #include "ConjugateGradients.h"
 #include "NEBInitialPaths.hpp"
+#include "NEBSplineExtrema.h"
 #include "Potential.h"
 
 #include <filesystem>
@@ -187,8 +188,10 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    neb->path[i]->matter2con(nebFilename, /*append=*/i > 0);
+  if (!eonc::neb::writePathCon(
+          neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
+          params.debug_options.estimate_neb_eigenvalues, nebFilename)) {
+    QUILL_LOG_ERROR(m_log, "Failed to write {}", nebFilename);
   }
 
   // Save Discrete Saddle Point (Highest Energy Image)

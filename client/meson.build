@@ -579,6 +579,16 @@ if get_option('with_metatomic')
 
     if get_option('pip_metatomic')
         torch_ver = get_option('torch_version')
+        pip_metatomic_runtime_dirs = [
+            LIB_TORCH_LIB_PATH,
+            py.get_install_dir() / 'metatensor' / 'lib',
+            py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib',
+            py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'lib',
+            py.get_install_dir() / 'vesin' / 'lib',
+        ]
+        if not is_windows
+            _runtime_rpath += pip_metatomic_runtime_dirs
+        endif
         mts_inc_args = []
         foreach d : [
             py.get_install_dir() / 'metatensor' / 'include',

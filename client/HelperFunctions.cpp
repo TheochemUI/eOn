@@ -243,8 +243,32 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
 
   std::ostringstream min;
   min << prefixMovie;
+  std::string minDatFilename = prefixMovie + ".dat";
+  auto write_movie_frame = [&](uint64_t frameIndex, bool append,
+                               double stepSize) {
+    eonc::io::ConFrameMetadata metadata;
+    metadata.frame_index = frameIndex;
+    metadata.energy = matter.getPotentialEnergy();
+    metadata.scalars.push_back({"step_size", stepSize});
+    metadata.scalars.push_back({"convergence", objf->getConvergence()});
+    matter.matter2con(min.str(), append, &metadata);
+
+    if (params.debug_options.write_deprecated_outs) {
+      std::ofstream minDat(minDatFilename,
+                           append ? (std::ios::binary | std::ios::app)
+                                  : std::ios::binary);
+      if (minDat) {
+        if (!append) {
+          minDat << "iteration\tstep_size\tconvergence\tenergy\n";
+        }
+        minDat << std::format("{}\t{:.5e}\t{:.5e}\t{:.6f}\n", frameIndex,
+                              stepSize, objf->getConvergence(),
+                              matter.getPotentialEnergy());
+      }
+    }
+  };
   if (writeMovie) {
-    matter.matter2con(min.str(), false);
+    write_movie_frame(0, false, 0.0);
   }
 
   int iteration = 0;
@@ -276,7 +300,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
     }
 
     if (writeMovie) {
-      matter.matter2con(min.str(), true);
+      write_movie_frame(static_cast<uint64_t>(iteration), true, stepSize);
     }
 
     if (checkpoint) {

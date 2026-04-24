@@ -17,6 +17,7 @@
 #include "Matter.h"
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -42,5 +43,13 @@ void printImageData(
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx,
     eonc::log::Scoped log);
+
+/// Write a NEB band as a multi-frame .con file with per-image metadata.
+bool writePathCon(
+    const std::vector<std::shared_ptr<Matter>> &path,
+    const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+    const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
+    long numImages, bool estimateEigenvalues, std::string filename,
+    std::optional<size_t> bandIndex = std::nullopt);
 
 } // namespace eonc::neb

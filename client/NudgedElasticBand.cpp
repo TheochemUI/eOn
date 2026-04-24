@@ -228,11 +228,39 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     if (params.debug_options.write_movies &&
         (iteration % params.debug_options.write_movies_interval == 0)) {
       bool append = (iteration != 0);
-      path[maxEnergyImage]->matter2con("neb_maximage.con", append);
-      std::string nebFilename(std::format("neb_path_{:03d}.con", iteration));
-      for (long idx = 0; idx <= numImages + 1; idx++) {
-        path[idx]->matter2con(nebFilename, /*append=*/idx > 0);
+      if (!eonc::neb::writePathCon(
+              path, tangent, eigenmode_solvers, numImages,
+              params.debug_options.estimate_neb_eigenvalues,
+              std::format("neb_path_{:03d}.con", iteration), iteration)) {
+        QUILL_LOG_ERROR(log, "Failed to write NEB path movie for iteration {}",
+                        iteration);
       }
+
+      AtomMatrix maxTang;
+      if (maxEnergyImage == 0) {
+        maxTang =
+            path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
+      } else if (maxEnergyImage == static_cast<size_t>(numImages + 1)) {
+        maxTang = path[numImages]->pbc(path[numImages + 1]->getPositions() -
+                                       path[numImages]->getPositions());
+      } else {
+        maxTang = *tangent[maxEnergyImage];
+      }
+      maxTang.normalize();
+      auto maxImageMetadata = eonc::io::ConFrameMetadata{};
+      maxImageMetadata.frame_index = static_cast<uint64_t>(maxEnergyImage);
+      maxImageMetadata.energy = path[maxEnergyImage]->getPotentialEnergy();
+      maxImageMetadata.neb_bead = static_cast<uint64_t>(maxEnergyImage);
+      maxImageMetadata.neb_band = static_cast<uint64_t>(iteration);
+      maxImageMetadata.scalars.push_back(
+          {"relative_energy", path[maxEnergyImage]->getPotentialEnergy() -
+                                  path[0]->getPotentialEnergy()});
+      maxImageMetadata.scalars.push_back(
+          {"parallel_force",
+           matDot(path[maxEnergyImage]->getForces(), maxTang)});
+      maxImageMetadata.strings.push_back({"movie_kind", "neb_maximage"});
+      path[maxEnergyImage]->matter2con("neb_maximage.con", append,
+                                       &maxImageMetadata);
       printImageData(true, iteration);
     }
 
@@ -438,29 +466,43 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   // instance, or (b) per-image instances were created (separate models).
   if (pot->supportsBatchEvaluation() && numImages > 1) {
     // Collect only images that need recomputation (positions changed).
-    // Store temporaries to keep data alive (getAtomicNrs/getCell return by
-    // value)
+    // Materialize atomic numbers and cells first, then build the raw-pointer
+    // arrays after storage is stable. Otherwise vector growth can invalidate
+    // earlier .data() pointers and hand garbage cells/types to forceBatch().
     std::vector<long> dirty; // indices into path[] (1-based)
-    std::vector<VectorXi> nrsStore;
-    std::vector<Matrix3d> boxStore;
-    std::vector<const double *> posVec, boxVec;
-    std::vector<const int *> nrsVec;
-    std::vector<double *> frcVec;
-
+    dirty.reserve(numImages);
     for (long i = 1; i <= numImages; i++) {
       if (path[i]->needsForceUpdate()) {
         dirty.push_back(i);
-        nrsStore.push_back(path[i]->getAtomicNrs());
-        boxStore.push_back(path[i]->getCell());
-        posVec.push_back(path[i]->getPositions().data());
-        nrsVec.push_back(nrsStore.back().data());
-        frcVec.push_back(path[i]->forcesData());
-        boxVec.push_back(boxStore.back().data());
       }
     }
 
     if (!dirty.empty()) {
       auto nDirty = static_cast<long>(dirty.size());
+      std::vector<VectorXi> nrsStore;
+      std::vector<Matrix3d> boxStore;
+      std::vector<const double *> posVec, boxVec;
+      std::vector<const int *> nrsVec;
+      std::vector<double *> frcVec;
+      nrsStore.reserve(static_cast<size_t>(nDirty));
+      boxStore.reserve(static_cast<size_t>(nDirty));
+      posVec.reserve(static_cast<size_t>(nDirty));
+      boxVec.reserve(static_cast<size_t>(nDirty));
+      nrsVec.reserve(static_cast<size_t>(nDirty));
+      frcVec.reserve(static_cast<size_t>(nDirty));
+
+      for (long idx : dirty) {
+        nrsStore.push_back(path[idx]->getAtomicNrs());
+        boxStore.push_back(path[idx]->getCell());
+      }
+      for (long j = 0; j < nDirty; j++) {
+        auto idx = dirty[static_cast<size_t>(j)];
+        posVec.push_back(path[idx]->getPositions().data());
+        nrsVec.push_back(nrsStore[static_cast<size_t>(j)].data());
+        frcVec.push_back(path[idx]->forcesData());
+        boxVec.push_back(boxStore[static_cast<size_t>(j)].data());
+      }
+
       std::vector<double> energies(nDirty), variances(nDirty);
       pot->forceBatch(nDirty, atoms, posVec.data(), nrsVec.data(),
                       frcVec.data(), energies.data(), variances.data(),

@@ -10,7 +10,7 @@ version = "2.13.0"
 [tasks]
 gen-ref = { cmd = "cd scripts/regression && snakemake -c4", description = "Generate SVN regression reference data (default: svn-Jul_01_2024)" }
 gen-ref-clean = { cmd = "cd scripts/regression && snakemake clean", description = "Clean regression build artifacts" }
-ensure_cbindgen = "command -v cbindgen > /dev/null || cargo install cbindgen"
+ensure_cbindgen = { cmd = "command -v cbindgen > /dev/null || cargo install --root $CONDA_PREFIX cbindgen", description = "Install cbindgen into the active env's bin (needed by readcon-core; cbindgen is not packaged for conda-forge or PyPI)" }
 
 [dependencies]
 eigen = ">=3.4,<3.5"
@@ -30,12 +30,13 @@ compilers = ">=1.9.0,<2"
 pkg-config = ">=0.29.2,<0.30"
 fortran-compiler = ">=1.10.0,<2"
 pyyaml = "*"
+sccache = "*"
 quill = ">=11.0.2,<12"
 rust = ">=1.88"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
-readcon = ">=0.4.2, <0.5"
+readcon = ">=0.8.0, <0.9"
 
 [pypi-options]
 # TODO(rg): only if the CPU version is needed
@@ -56,6 +57,7 @@ lammps = {features = ["lammps"]}
 ams = {features = ["ams"]}
 nwchem = {features = ["nwchem"]}
 docs = {features = ["docs"]}
+docs-mta = {features = ["docs", "develop", "metatomic"]}
 rel = {features = ["metatomic", "release"]}
 serve = {features = ["serve"]}
 dev-serve-mta = {features = ["serve", "metatomic", "develop"]}
@@ -115,9 +117,15 @@ psutil = ">=7.0.0, <8"
 [feature.docs.dependencies]
 sphinx = ">=7"
 shibuya = "*"
+uv = "*"
+
+[feature.docs.target.linux-64.dependencies]
+ira = ">=2"
+patchelf = "*"
 
 [feature.docs.pypi-dependencies]
-myst-parser = ">=3"
+meson-python = ">=0.17"
+myst-nb = ">=1.1"
 sphinx-design = "*"
 sphinx-copybutton = "*"
 sphinx-togglebutton = "*"
@@ -128,6 +136,9 @@ sphinxcontrib-bibtex = "*"
 sphinxcontrib-spelling = "*"
 autodoc-pydantic = "*"
 sphinx-autodoc2 = "*"
+rgpycrumbs = { git = "https://github.com/HaoZeke/rgpycrumbs.git", rev = "52ecbd2", extras = ["analysis"] }
+chemparseplot = { git = "https://github.com/HaoZeke/chemparseplot.git", rev = "f71d79b", extras = ["neb", "plot"] }
+adjustText = "*"
 
 [feature.docs.tasks.makedocs]
 cmd = "sphinx-build docs/source docs/build/html"
@@ -190,3 +201,4 @@ meson setup bbdir --reconfigure \
       -Dwith_gprd=True
 """
 args = ["buildtype"]
+depends-on = ["ensure_cbindgen"]

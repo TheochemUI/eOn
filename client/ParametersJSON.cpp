@@ -167,6 +167,7 @@ json to_json(const Parameters &p) {
   j["Debug"] = {
       {"write_movies", p.debug_options.write_movies},
       {"write_movies_interval", p.debug_options.write_movies_interval},
+      {"write_deprecated_outs", p.debug_options.write_deprecated_outs},
   };
 
   // [Serve]
@@ -328,6 +329,14 @@ void from_json(const json &j, Parameters &p) {
     if (s.contains("gateway_port"))
       p.serve_options.gateway_port = s.at("gateway_port").get<uint16_t>();
     JSON_OPT(s, "endpoints", p.serve_options.endpoints);
+  }
+
+  // [Debug]
+  if (j.contains("Debug")) {
+    auto &s = j.at("Debug");
+    JSON_OPT(s, "write_movies", p.debug_options.write_movies);
+    JSON_OPT(s, "write_movies_interval", p.debug_options.write_movies_interval);
+    JSON_OPT(s, "write_deprecated_outs", p.debug_options.write_deprecated_outs);
   }
 
   // Resolve computed fields
