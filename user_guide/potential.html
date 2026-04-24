@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -248,14 +250,112 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#vendored">Vendored</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig"><code class="docutils literal notranslate"><span class="pre">PotentialConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.ext_pot_path"><code class="docutils literal notranslate">ext_pot_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.lammps_logging"><code class="docutils literal notranslate">lammps_logging</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.lammps_threads"><code class="docutils literal notranslate">lammps_threads</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.log_potential"><code class="docutils literal notranslate">log_potential</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.mpi_poll_period"><code class="docutils literal notranslate">mpi_poll_period</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.potential"><code class="docutils literal notranslate">potential</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#potential-configurations">Potential configurations</a><ul>
-<li><a class="reference internal" href="#metatomic">Metatomic</a></li>
-<li><a class="reference internal" href="#xtb">XTB</a></li>
-<li><a class="reference internal" href="#zbl">ZBL</a></li>
-<li><a class="reference internal" href="#nwchem">NWChem</a></li>
-<li><a class="reference internal" href="#ase-potentials">ASE potentials</a></li>
-<li><a class="reference internal" href="#ams-potentials">AMS potentials</a></li>
+<li><a class="reference internal" href="#metatomic">Metatomic</a><ul>
+<li><a class="reference internal" href="#eon.schema.Metatomic"><code class="docutils literal notranslate"><span class="pre">Metatomic</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.Metatomic.check_consistency"><code class="docutils literal notranslate">check_consistency</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.device"><code class="docutils literal notranslate">device</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.extensions_directory"><code class="docutils literal notranslate">extensions_directory</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.length_unit"><code class="docutils literal notranslate">length_unit</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.model_path"><code class="docutils literal notranslate">model_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.uncertainty_threshold"><code class="docutils literal notranslate">uncertainty_threshold</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.variant_base"><code class="docutils literal notranslate">variant_base</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.variant_energy"><code class="docutils literal notranslate">variant_energy</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.variant_energy_uncertainty"><code class="docutils literal notranslate">variant_energy_uncertainty</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#xtb">XTB</a><ul>
+<li><a class="reference internal" href="#eon.schema.XTBPot"><code class="docutils literal notranslate"><span class="pre">XTBPot</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.XTBPot.accuracy"><code class="docutils literal notranslate">accuracy</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.XTBPot.charge"><code class="docutils literal notranslate">charge</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.XTBPot.electronic_temperature"><code class="docutils literal notranslate">electronic_temperature</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.XTBPot.max_iterations"><code class="docutils literal notranslate">max_iterations</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.XTBPot.paramset"><code class="docutils literal notranslate">paramset</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.XTBPot.uhf"><code class="docutils literal notranslate">uhf</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zbl">ZBL</a><ul>
+<li><a class="reference internal" href="#eon.schema.ZBLPot"><code class="docutils literal notranslate"><span class="pre">ZBLPot</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.ZBLPot.cut_global"><code class="docutils literal notranslate">cut_global</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.ZBLPot.cut_inner"><code class="docutils literal notranslate">cut_inner</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nwchem">NWChem</a><ul>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot"><code class="docutils literal notranslate"><span class="pre">SocketNWChemPot</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot.host"><code class="docutils literal notranslate">host</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot.make_template_input"><code class="docutils literal notranslate">make_template_input</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot.mem_in_gb"><code class="docutils literal notranslate">mem_in_gb</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot.nwchem_settings"><code class="docutils literal notranslate">nwchem_settings</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot.port"><code class="docutils literal notranslate">port</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot.unix_socket_mode"><code class="docutils literal notranslate">unix_socket_mode</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SocketNWChemPot.unix_socket_path"><code class="docutils literal notranslate">unix_socket_path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ase-potentials">ASE potentials</a><ul>
+<li><a class="reference internal" href="#eon.schema.ASE_NWCHEM"><code class="docutils literal notranslate"><span class="pre">ASE_NWCHEM</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.ASE_NWCHEM.multiplicity"><code class="docutils literal notranslate">multiplicity</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.ASE_NWCHEM.nproc"><code class="docutils literal notranslate">nproc</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.ASE_NWCHEM.nwchem_path"><code class="docutils literal notranslate">nwchem_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.ASE_NWCHEM.scf_maxiter"><code class="docutils literal notranslate">scf_maxiter</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.ASE_NWCHEM.scf_thresh"><code class="docutils literal notranslate">scf_thresh</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eon.schema.ASE_ORCA"><code class="docutils literal notranslate"><span class="pre">ASE_ORCA</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.ASE_ORCA.nproc"><code class="docutils literal notranslate">nproc</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.ASE_ORCA.orca_path"><code class="docutils literal notranslate">orca_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.ASE_ORCA.simpleinput"><code class="docutils literal notranslate">simpleinput</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ams-potentials">AMS potentials</a><ul>
+<li><a class="reference internal" href="#eon.schema.AMSConfig"><code class="docutils literal notranslate"><span class="pre">AMSConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.AMSConfig.basis"><code class="docutils literal notranslate">basis</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSConfig.engine"><code class="docutils literal notranslate">engine</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSConfig.forcefield"><code class="docutils literal notranslate">forcefield</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSConfig.model"><code class="docutils literal notranslate">model</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSConfig.resources"><code class="docutils literal notranslate">resources</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSConfig.xc"><code class="docutils literal notranslate">xc</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eon.schema.AMSIOConfig"><code class="docutils literal notranslate"><span class="pre">AMSIOConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.AMSIOConfig.engine"><code class="docutils literal notranslate">engine</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSIOConfig.forcefield"><code class="docutils literal notranslate">forcefield</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSIOConfig.model"><code class="docutils literal notranslate">model</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSIOConfig.xc"><code class="docutils literal notranslate">xc</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#eon.schema.AMSEnvConfig"><code class="docutils literal notranslate"><span class="pre">AMSEnvConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.AMSEnvConfig.amsbin"><code class="docutils literal notranslate">amsbin</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSEnvConfig.amshome"><code class="docutils literal notranslate">amshome</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSEnvConfig.amsresources"><code class="docutils literal notranslate">amsresources</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSEnvConfig.scm_pythondir"><code class="docutils literal notranslate">scm_pythondir</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSEnvConfig.scm_tmpdir"><code class="docutils literal notranslate">scm_tmpdir</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.AMSEnvConfig.scmlicense"><code class="docutils literal notranslate">scmlicense</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#references">References</a></li>
@@ -440,18 +540,505 @@ bopfox
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
 </span></pre></div>
 </div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">PotentialConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#PotentialConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.PotentialConfig" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PotentialConfig&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;mpi_poll_period&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.25</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Polling period for MPI potential.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mpi Poll Period&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;lammps_logging&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Logging LAMMPS calls.&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lammps Logging&quot;</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;lammps_threads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LAMMPS threads.&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lammps Threads&quot;</span><span class="p">,</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="22"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="23"><span class="w">      </span><span class="nt">&quot;ext_pot_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ext_pot&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path for the external potential.&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ext Pot Path&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lj&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type of potential to execute.&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="33"><span class="w">            </span><span class="s2">&quot;ams&quot;</span><span class="p">,</span>
+</span><span data-line="34"><span class="w">            </span><span class="s2">&quot;ams_io&quot;</span><span class="p">,</span>
+</span><span data-line="35"><span class="w">            </span><span class="s2">&quot;ase_nwcem&quot;</span><span class="p">,</span>
+</span><span data-line="36"><span class="w">            </span><span class="s2">&quot;ase_orca&quot;</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">            </span><span class="s2">&quot;bop&quot;</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">            </span><span class="s2">&quot;bopfox&quot;</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">            </span><span class="s2">&quot;cuh2&quot;</span><span class="p">,</span>
+</span><span data-line="40"><span class="w">            </span><span class="s2">&quot;eam_al&quot;</span><span class="p">,</span>
+</span><span data-line="41"><span class="w">            </span><span class="s2">&quot;edip&quot;</span><span class="p">,</span>
+</span><span data-line="42"><span class="w">            </span><span class="s2">&quot;emt&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">            </span><span class="s2">&quot;ext_pot&quot;</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">            </span><span class="s2">&quot;fehe&quot;</span><span class="p">,</span>
+</span><span data-line="45"><span class="w">            </span><span class="s2">&quot;gpr&quot;</span><span class="p">,</span>
+</span><span data-line="46"><span class="w">            </span><span class="s2">&quot;imd&quot;</span><span class="p">,</span>
+</span><span data-line="47"><span class="w">            </span><span class="s2">&quot;lammps&quot;</span><span class="p">,</span>
+</span><span data-line="48"><span class="w">            </span><span class="s2">&quot;lenosky_si&quot;</span><span class="p">,</span>
+</span><span data-line="49"><span class="w">            </span><span class="s2">&quot;lj&quot;</span><span class="p">,</span>
+</span><span data-line="50"><span class="w">            </span><span class="s2">&quot;ljcluster&quot;</span><span class="p">,</span>
+</span><span data-line="51"><span class="w">            </span><span class="s2">&quot;metatomic&quot;</span><span class="p">,</span>
+</span><span data-line="52"><span class="w">            </span><span class="s2">&quot;morse_pt&quot;</span><span class="p">,</span>
+</span><span data-line="53"><span class="w">            </span><span class="s2">&quot;mpi&quot;</span><span class="p">,</span>
+</span><span data-line="54"><span class="w">            </span><span class="s2">&quot;new_pot&quot;</span><span class="p">,</span>
+</span><span data-line="55"><span class="w">            </span><span class="s2">&quot;pyamff&quot;</span><span class="p">,</span>
+</span><span data-line="56"><span class="w">            </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+</span><span data-line="57"><span class="w">            </span><span class="s2">&quot;qsc&quot;</span><span class="p">,</span>
+</span><span data-line="58"><span class="w">            </span><span class="s2">&quot;socket_nwchem&quot;</span><span class="p">,</span>
+</span><span data-line="59"><span class="w">            </span><span class="s2">&quot;spce&quot;</span><span class="p">,</span>
+</span><span data-line="60"><span class="w">            </span><span class="s2">&quot;sw_si&quot;</span><span class="p">,</span>
+</span><span data-line="61"><span class="w">            </span><span class="s2">&quot;tersoff_si&quot;</span><span class="p">,</span>
+</span><span data-line="62"><span class="w">            </span><span class="s2">&quot;tip4p&quot;</span><span class="p">,</span>
+</span><span data-line="63"><span class="w">            </span><span class="s2">&quot;tip4p_h&quot;</span><span class="p">,</span>
+</span><span data-line="64"><span class="w">            </span><span class="s2">&quot;tip4p_pt&quot;</span><span class="p">,</span>
+</span><span data-line="65"><span class="w">            </span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+</span><span data-line="66"><span class="w">            </span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
+</span><span data-line="67"><span class="w">            </span><span class="s2">&quot;xtb&quot;</span><span class="p">,</span>
+</span><span data-line="68"><span class="w">            </span><span class="s2">&quot;zbl&quot;</span><span class="p">,</span>
+</span><span data-line="69"><span class="w">            </span><span class="s2">&quot;zpice&quot;</span>
+</span><span data-line="70"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="71"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Potential&quot;</span><span class="p">,</span>
+</span><span data-line="72"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="73"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="74"><span class="w">      </span><span class="nt">&quot;log_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="75"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="76"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="77"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="78"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="79"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="80"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+</span><span data-line="81"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="82"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="83"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+</span><span data-line="84"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, write timing information about each force call to client.log.&quot;</span><span class="p">,</span>
+</span><span data-line="85"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Log Potential&quot;</span>
+</span><span data-line="86"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="87"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="88"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.PotentialConfig.ext_pot_path" title="eon.schema.PotentialConfig.ext_pot_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ext_pot_path</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PotentialConfig.lammps_logging" title="eon.schema.PotentialConfig.lammps_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lammps_logging</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PotentialConfig.lammps_threads" title="eon.schema.PotentialConfig.lammps_threads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lammps_threads</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PotentialConfig.log_potential" title="eon.schema.PotentialConfig.log_potential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_potential</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PotentialConfig.mpi_poll_period" title="eon.schema.PotentialConfig.mpi_poll_period"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi_poll_period</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PotentialConfig.potential" title="eon.schema.PotentialConfig.potential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">potential</span> <span class="pre">(Literal['ams',</span> <span class="pre">'ams_io',</span> <span class="pre">'ase_nwcem',</span> <span class="pre">'ase_orca',</span> <span class="pre">'bop',</span> <span class="pre">'bopfox',</span> <span class="pre">'cuh2',</span> <span class="pre">'eam_al',</span> <span class="pre">'edip',</span> <span class="pre">'emt',</span> <span class="pre">'ext_pot',</span> <span class="pre">'fehe',</span> <span class="pre">'gpr',</span> <span class="pre">'imd',</span> <span class="pre">'lammps',</span> <span class="pre">'lenosky_si',</span> <span class="pre">'lj',</span> <span class="pre">'ljcluster',</span> <span class="pre">'metatomic',</span> <span class="pre">'morse_pt',</span> <span class="pre">'mpi',</span> <span class="pre">'new_pot',</span> <span class="pre">'pyamff',</span> <span class="pre">'python',</span> <span class="pre">'qsc',</span> <span class="pre">'socket_nwchem',</span> <span class="pre">'spce',</span> <span class="pre">'sw_si',</span> <span class="pre">'tersoff_si',</span> <span class="pre">'tip4p',</span> <span class="pre">'tip4p_h',</span> <span class="pre">'tip4p_pt',</span> <span class="pre">'unknown',</span> <span class="pre">'vasp',</span> <span class="pre">'xtb',</span> <span class="pre">'zbl',</span> <span class="pre">'zpice'])</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.ext_pot_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ext_pot_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ext_pot'</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.ext_pot_path" title="Link to this definition">¶</a></dt>
+<dd><p>Path for the external potential.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.lammps_logging">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lammps_logging</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.lammps_logging" title="Link to this definition">¶</a></dt>
+<dd><p>Logging LAMMPS calls.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.lammps_threads">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">lammps_threads</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.lammps_threads" title="Link to this definition">¶</a></dt>
+<dd><p>LAMMPS threads.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.log_potential">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">log_potential</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.log_potential" title="Link to this definition">¶</a></dt>
+<dd><p>If true, write timing information about each force call to client.log.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.mpi_poll_period">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mpi_poll_period</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.25</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.mpi_poll_period" title="Link to this definition">¶</a></dt>
+<dd><p>Polling period for MPI potential.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.potential">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">potential</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ams'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ams_io'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_nwcem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_orca'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bop'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bopfox'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cuh2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'eam_al'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'edip'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'emt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ext_pot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fehe'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gpr'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'imd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lammps'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lenosky_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lj'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ljcluster'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'metatomic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'morse_pt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mpi'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'new_pot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pyamff'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'python'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'qsc'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'socket_nwchem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'spce'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sw_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tersoff_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p_h'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p_pt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unknown'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'vasp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zbl'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zpice'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lj'</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.potential" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ams</span></code>: Amsterdam Modeling Suite potential.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ams_io</span></code>: Amsterdam Modeling Suite via the I/O.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ase_orca</span></code>: ASE interface for ORCA quantum chemistry package.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bop</span></code>: Bond order potential for metals. [unused]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bopfox</span></code>: Bond order potential, for metals. [unused]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cuh2</span></code>: Potential for copper hydride systems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eam_al</span></code>: Embedded atom method parameterized for aluminum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edip</span></code>: Environment-Dependent Interatomic Potential, for carbon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emt</span></code>: Effective medium theory, for metals.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ext_pot</span></code>: External potential with system call interface.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fehe</span></code>: Potential for iron-hydrogen systems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gpr</span></code>: Gaussian process regression potential.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imd</span></code>: IMD simulation package interface.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lammps</span></code>: The LAMMPS potentials.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lenosky_si</span></code>: Lenosky potential, for silicon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lj</span></code>: Lennard-Jones potential in reduced units.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ljcluster</span></code>: Lennard-Jones cluster potential.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">morse_pt</span></code>: Morse potential for platinum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mpi</span></code>: Communicate with an MPI process to calculate energy and forces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyamff</span></code>: Python implementation of the AMFF potential.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span></code>: Custom python potential.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qsc</span></code>: Quantum Sutton-Chen potential, for FCC metals.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spce</span></code>: Simple Point Charge model for water.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sw_si</span></code>: Stillinger-Weber potential, for silicon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tersoff_si</span></code>: Tersoff pair potential with angular terms, for silicon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tip4p</span></code>: Point charge model for water.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tip4p_h</span></code>: TIP4P model for water with hydrogen.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tip4p_pt</span></code>: TIP4P model for water on platinum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unknown</span></code>: Placeholder for unknown potential type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vasp</span></code>: Vienna Ab-Initio Simulation Program (VASP) interface.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xtb</span></code>: Extended Tight Binding model.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Type of potential to execute.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="potential-configurations">
 <h2>Potential configurations<a class="headerlink" href="#potential-configurations" title="Link to this heading">¶</a></h2>
 <p>Several potentials have additional configuration stanzas.</p>
 <section id="metatomic">
 <h3>Metatomic<a class="headerlink" href="#metatomic" title="Link to this heading">¶</a></h3>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.Metatomic">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">Metatomic</span></span><a class="reference internal" href="../_modules/eon/schema.html#Metatomic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.Metatomic" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Metatomic&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;model_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to the Metatomic model.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Path&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Device to use for Metatomic calculations (e.g., &#39;cpu&#39;, &#39;cuda&#39;, &#39;auto&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Device&quot;</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;length_unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Angstrom&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Length unit used by the Metatomic model.&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Length Unit&quot;</span><span class="p">,</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="22"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="23"><span class="w">      </span><span class="nt">&quot;extensions_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Directory for Metatomic extensions.&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Extensions Directory&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;check_consistency&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Whether to check consistency of the Metatomic model.&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Check Consistency&quot;</span><span class="p">,</span>
+</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="34"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="35"><span class="w">      </span><span class="nt">&quot;uncertainty_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.&quot;</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Uncertainty Threshold&quot;</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="40"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="41"><span class="w">      </span><span class="nt">&quot;variant_base&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Global variant for energy and uncertainty.&quot;</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variant Base&quot;</span><span class="p">,</span>
+</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="46"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="47"><span class="w">      </span><span class="nt">&quot;variant_energy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="48"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Override variant for energy.&quot;</span><span class="p">,</span>
+</span><span data-line="50"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variant Energy&quot;</span><span class="p">,</span>
+</span><span data-line="51"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="52"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="53"><span class="w">      </span><span class="nt">&quot;variant_energy_uncertainty&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="54"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="55"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Override variant for energy_uncertainty.&quot;</span><span class="p">,</span>
+</span><span data-line="56"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variant Energy Uncertainty&quot;</span><span class="p">,</span>
+</span><span data-line="57"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="58"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="59"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="60"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.check_consistency" title="eon.schema.Metatomic.check_consistency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_consistency</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.device" title="eon.schema.Metatomic.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.extensions_directory" title="eon.schema.Metatomic.extensions_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extensions_directory</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.length_unit" title="eon.schema.Metatomic.length_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">length_unit</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.model_path" title="eon.schema.Metatomic.model_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_path</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.uncertainty_threshold" title="eon.schema.Metatomic.uncertainty_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uncertainty_threshold</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.variant_base" title="eon.schema.Metatomic.variant_base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variant_base</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.variant_energy" title="eon.schema.Metatomic.variant_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variant_energy</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.variant_energy_uncertainty" title="eon.schema.Metatomic.variant_energy_uncertainty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variant_energy_uncertainty</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.check_consistency">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.Metatomic.check_consistency" title="Link to this definition">¶</a></dt>
+<dd><p>Whether to check consistency of the Metatomic model.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.device">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">device</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auto'</span></span><a class="headerlink" href="#eon.schema.Metatomic.device" title="Link to this definition">¶</a></dt>
+<dd><p>Device to use for Metatomic calculations (e.g., ‘cpu’, ‘cuda’, ‘auto’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.extensions_directory">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">extensions_directory</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.extensions_directory" title="Link to this definition">¶</a></dt>
+<dd><p>Directory for Metatomic extensions.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.length_unit">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">length_unit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Angstrom'</span></span><a class="headerlink" href="#eon.schema.Metatomic.length_unit" title="Link to this definition">¶</a></dt>
+<dd><p>Length unit used by the Metatomic model.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.model_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">model_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.model_path" title="Link to this definition">¶</a></dt>
+<dd><p>Path to the Metatomic model.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.uncertainty_threshold">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">uncertainty_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></span><a class="headerlink" href="#eon.schema.Metatomic.uncertainty_threshold" title="Link to this definition">¶</a></dt>
+<dd><p>Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.variant_base">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variant_base</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.variant_base" title="Link to this definition">¶</a></dt>
+<dd><p>Global variant for energy and uncertainty.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.variant_energy">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variant_energy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.variant_energy" title="Link to this definition">¶</a></dt>
+<dd><p>Override variant for energy.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.variant_energy_uncertainty">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variant_energy_uncertainty</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.variant_energy_uncertainty" title="Link to this definition">¶</a></dt>
+<dd><p>Override variant for energy_uncertainty.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="xtb">
 <h3>XTB<a class="headerlink" href="#xtb" title="Link to this heading">¶</a></h3>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.XTBPot">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">XTBPot</span></span><a class="reference internal" href="../_modules/eon/schema.html#XTBPot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.XTBPot" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;XTBPot&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;paramset&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GFNFF&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Parameter set for XTB potential.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="9"><span class="w">            </span><span class="s2">&quot;GFNFF&quot;</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">            </span><span class="s2">&quot;GFN0xTB&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">            </span><span class="s2">&quot;GFN1xTB&quot;</span><span class="p">,</span>
+</span><span data-line="12"><span class="w">            </span><span class="s2">&quot;GFN2xTB&quot;</span>
+</span><span data-line="13"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Paramset&quot;</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;accuracy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Accuracy of the XTB calculation.&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="22"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="23"><span class="w">      </span><span class="nt">&quot;electronic_temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Electronic temperature for XTB.&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Electronic Temperature&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">250</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum number of XTB iterations.&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Iterations&quot;</span><span class="p">,</span>
+</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="34"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="35"><span class="w">      </span><span class="nt">&quot;uhf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Multiplicity&quot;</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Uhf&quot;</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="40"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="41"><span class="w">      </span><span class="nt">&quot;charge&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Total charge&quot;</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Charge&quot;</span><span class="p">,</span>
+</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="46"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="47"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="48"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.XTBPot.accuracy" title="eon.schema.XTBPot.accuracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">accuracy</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.XTBPot.charge" title="eon.schema.XTBPot.charge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">charge</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.XTBPot.electronic_temperature" title="eon.schema.XTBPot.electronic_temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">electronic_temperature</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.XTBPot.max_iterations" title="eon.schema.XTBPot.max_iterations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_iterations</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.XTBPot.paramset" title="eon.schema.XTBPot.paramset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">paramset</span> <span class="pre">(Literal['GFNFF',</span> <span class="pre">'GFN0xTB',</span> <span class="pre">'GFN1xTB',</span> <span class="pre">'GFN2xTB'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.XTBPot.uhf" title="eon.schema.XTBPot.uhf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uhf</span> <span class="pre">(int)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XTBPot.accuracy">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">accuracy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.XTBPot.accuracy" title="Link to this definition">¶</a></dt>
+<dd><p>Accuracy of the XTB calculation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XTBPot.charge">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">charge</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.XTBPot.charge" title="Link to this definition">¶</a></dt>
+<dd><p>Total charge</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XTBPot.electronic_temperature">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">electronic_temperature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.XTBPot.electronic_temperature" title="Link to this definition">¶</a></dt>
+<dd><p>Electronic temperature for XTB.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XTBPot.max_iterations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></span><a class="headerlink" href="#eon.schema.XTBPot.max_iterations" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of XTB iterations.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XTBPot.paramset">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">paramset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'GFNFF'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GFN0xTB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GFN1xTB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GFN2xTB'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GFNFF'</span></span><a class="headerlink" href="#eon.schema.XTBPot.paramset" title="Link to this definition">¶</a></dt>
+<dd><p>Parameter set for XTB potential.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.XTBPot.uhf">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">uhf</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.XTBPot.uhf" title="Link to this definition">¶</a></dt>
+<dd><p>Multiplicity</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="zbl">
 <h3>ZBL<a class="headerlink" href="#zbl" title="Link to this heading">¶</a></h3>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.ZBLPot">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">ZBLPot</span></span><a class="reference internal" href="../_modules/eon/schema.html#ZBLPot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.ZBLPot" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ZBLPot&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;cut_inner&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Distance where switching function begins.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cut Inner&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;cut_global&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.5</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Global cutoff for the ZBL interaction.&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cut Global&quot;</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="16"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="17"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="18"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.ZBLPot.cut_global" title="eon.schema.ZBLPot.cut_global"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cut_global</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ZBLPot.cut_inner" title="eon.schema.ZBLPot.cut_inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cut_inner</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ZBLPot.cut_global">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cut_global</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.5</span></span><a class="headerlink" href="#eon.schema.ZBLPot.cut_global" title="Link to this definition">¶</a></dt>
+<dd><p>Global cutoff for the ZBL interaction.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ZBLPot.cut_inner">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cut_inner</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.0</span></span><a class="headerlink" href="#eon.schema.ZBLPot.cut_inner" title="Link to this definition">¶</a></dt>
+<dd><p>Distance where switching function begins.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="nwchem">
 <h3>NWChem<a class="headerlink" href="#nwchem" title="Link to this heading">¶</a></h3>
@@ -461,6 +1048,122 @@ Optimal transport Gaussian Process
 <span id="id18">[<a class="reference internal" href="#id40" title="Rohit Goswami and Hannes Jónsson. Adaptive Pruning for Increased Robustness and Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point Searches. ChemPhysChem, November 2025. doi:10.1002/cphc.202500730.">POT_GJonsson25</a>]</span>, and can lead to manyfold
 increases in speed compared to file or ASE interfaces
 <span id="id19">[<a class="reference internal" href="#id42" title="Rohit Goswami. Efficient exploration of chemical kinetics. October 2025. arXiv:2510.21368, doi:10.48550/arXiv.2510.21368.">POT_Gos25</a>]</span>.</p>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">SocketNWChemPot</span></span><a class="reference internal" href="../_modules/eon/schema.html#SocketNWChemPot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.SocketNWChemPot" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SocketNWChemPot&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Host where the NWChem client will connect.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Host&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">9999</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Port for the NWChem client to send data to eOn.&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Port&quot;</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;nwchem_settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nwchem_settings.nwi&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to the user-provided file containing NWChem scientific settings (basis, theory, task, etc.).&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nwchem Settings&quot;</span><span class="p">,</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="22"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="23"><span class="w">      </span><span class="nt">&quot;unix_socket_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eon_nwchem&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The basename for the UNIX socket file. The full path will be /tmp/ipi_&lt;basename&gt;.&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Unix Socket Path&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;unix_socket_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, use a UNIX domain socket for communication instead of TCP/IP.&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Unix Socket Mode&quot;</span><span class="p">,</span>
+</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="34"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="35"><span class="w">      </span><span class="nt">&quot;mem_in_gb&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Memory (in GB) to be allocated for the NWChem calculation.&quot;</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mem In Gb&quot;</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="40"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="41"><span class="w">      </span><span class="nt">&quot;make_template_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If false, the socket input for the right geometry is generated by the user.&quot;</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Make Template Input&quot;</span><span class="p">,</span>
+</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="46"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="47"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="48"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.SocketNWChemPot.host" title="eon.schema.SocketNWChemPot.host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">host</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SocketNWChemPot.make_template_input" title="eon.schema.SocketNWChemPot.make_template_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_template_input</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SocketNWChemPot.mem_in_gb" title="eon.schema.SocketNWChemPot.mem_in_gb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mem_in_gb</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SocketNWChemPot.nwchem_settings" title="eon.schema.SocketNWChemPot.nwchem_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nwchem_settings</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SocketNWChemPot.port" title="eon.schema.SocketNWChemPot.port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SocketNWChemPot.unix_socket_mode" title="eon.schema.SocketNWChemPot.unix_socket_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unix_socket_mode</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SocketNWChemPot.unix_socket_path" title="eon.schema.SocketNWChemPot.unix_socket_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unix_socket_path</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot.host">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">host</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'127.0.0.1'</span></span><a class="headerlink" href="#eon.schema.SocketNWChemPot.host" title="Link to this definition">¶</a></dt>
+<dd><p>Host where the NWChem client will connect.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot.make_template_input">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">make_template_input</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.SocketNWChemPot.make_template_input" title="Link to this definition">¶</a></dt>
+<dd><p>If false, the socket input for the right geometry is generated by the user.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot.mem_in_gb">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mem_in_gb</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#eon.schema.SocketNWChemPot.mem_in_gb" title="Link to this definition">¶</a></dt>
+<dd><p>Memory (in GB) to be allocated for the NWChem calculation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot.nwchem_settings">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nwchem_settings</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nwchem_settings.nwi'</span></span><a class="headerlink" href="#eon.schema.SocketNWChemPot.nwchem_settings" title="Link to this definition">¶</a></dt>
+<dd><p>Path to the user-provided file containing NWChem scientific settings (basis, theory, task, etc.).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot.port">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">port</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9999</span></span><a class="headerlink" href="#eon.schema.SocketNWChemPot.port" title="Link to this definition">¶</a></dt>
+<dd><p>Port for the NWChem client to send data to eOn.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot.unix_socket_mode">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unix_socket_mode</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SocketNWChemPot.unix_socket_mode" title="Link to this definition">¶</a></dt>
+<dd><p>If true, use a UNIX domain socket for communication instead of TCP/IP.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SocketNWChemPot.unix_socket_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unix_socket_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eon_nwchem'</span></span><a class="headerlink" href="#eon.schema.SocketNWChemPot.unix_socket_path" title="Link to this definition">¶</a></dt>
+<dd><p>The basename for the UNIX socket file. The full path will be /tmp/ipi_&lt;basename&gt;.</p>
+</dd></dl>
+
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>NWChem’s Fortran i-PI socket driver truncates UNIX socket names to approximately
@@ -474,11 +1177,474 @@ causing a connection failure with no clear error message.</p>
 <section id="ase-potentials">
 <h3>ASE potentials<a class="headerlink" href="#ase-potentials" title="Link to this heading">¶</a></h3>
 <p>There are several specific ASE potentials supported,</p>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.ASE_NWCHEM">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">ASE_NWCHEM</span></span><a class="reference internal" href="../_modules/eon/schema.html#ASE_NWCHEM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.ASE_NWCHEM" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ASE_NWCHEM&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;nwchem_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to the NWChem executable.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nwchem Path&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;nproc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="13"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="14"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="15"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="16"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="17"><span class="w">               </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="19"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="20"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span data-line="22"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of processors to use for NWChem. Can be &#39;auto&#39; or an integer string.&quot;</span><span class="p">,</span>
+</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nproc&quot;</span>
+</span><span data-line="24"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="25"><span class="w">      </span><span class="nt">&quot;multiplicity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Spin multiplicity for the NWChem calculation.&quot;</span><span class="p">,</span>
+</span><span data-line="28"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Multiplicity&quot;</span><span class="p">,</span>
+</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="30"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="31"><span class="w">      </span><span class="nt">&quot;scf_thresh&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1e-05</span><span class="p">,</span>
+</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SCF convergence threshold for NWChem.&quot;</span><span class="p">,</span>
+</span><span data-line="34"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scf Thresh&quot;</span><span class="p">,</span>
+</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="36"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="37"><span class="w">      </span><span class="nt">&quot;scf_maxiter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum number of SCF iterations for NWChem.&quot;</span><span class="p">,</span>
+</span><span data-line="40"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scf Maxiter&quot;</span><span class="p">,</span>
+</span><span data-line="41"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="42"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="43"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="44"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.ASE_NWCHEM.multiplicity" title="eon.schema.ASE_NWCHEM.multiplicity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiplicity</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ASE_NWCHEM.nproc" title="eon.schema.ASE_NWCHEM.nproc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nproc</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">Literal['auto'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ASE_NWCHEM.nwchem_path" title="eon.schema.ASE_NWCHEM.nwchem_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nwchem_path</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ASE_NWCHEM.scf_maxiter" title="eon.schema.ASE_NWCHEM.scf_maxiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scf_maxiter</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ASE_NWCHEM.scf_thresh" title="eon.schema.ASE_NWCHEM.scf_thresh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scf_thresh</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_NWCHEM.multiplicity">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">multiplicity</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1'</span></span><a class="headerlink" href="#eon.schema.ASE_NWCHEM.multiplicity" title="Link to this definition">¶</a></dt>
+<dd><p>Spin multiplicity for the NWChem calculation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_NWCHEM.nproc">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nproc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'auto'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auto'</span></span><a class="headerlink" href="#eon.schema.ASE_NWCHEM.nproc" title="Link to this definition">¶</a></dt>
+<dd><p>Number of processors to use for NWChem. Can be ‘auto’ or an integer string.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_NWCHEM.nwchem_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nwchem_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NONE'</span></span><a class="headerlink" href="#eon.schema.ASE_NWCHEM.nwchem_path" title="Link to this definition">¶</a></dt>
+<dd><p>Path to the NWChem executable.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_NWCHEM.scf_maxiter">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scf_maxiter</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></span><a class="headerlink" href="#eon.schema.ASE_NWCHEM.scf_maxiter" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of SCF iterations for NWChem.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_NWCHEM.scf_thresh">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scf_thresh</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-05</span></span><a class="headerlink" href="#eon.schema.ASE_NWCHEM.scf_thresh" title="Link to this definition">¶</a></dt>
+<dd><p>SCF convergence threshold for NWChem.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.ASE_ORCA">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">ASE_ORCA</span></span><a class="reference internal" href="../_modules/eon/schema.html#ASE_ORCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.ASE_ORCA" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ASE_ORCA&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;orca_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to the ORCA executable.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Orca Path&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;nproc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="13"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="14"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="15"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="16"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="17"><span class="w">               </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="19"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="20"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+</span><span data-line="22"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Number of processors to use for ORCA. Can be &#39;auto&#39; or an integer string.&quot;</span><span class="p">,</span>
+</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nproc&quot;</span>
+</span><span data-line="24"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="25"><span class="w">      </span><span class="nt">&quot;simpleinput&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ENGRAD HF-3c&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Simple input string for ORCA, specifying method and basis set.&quot;</span><span class="p">,</span>
+</span><span data-line="28"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Simpleinput&quot;</span><span class="p">,</span>
+</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="30"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="31"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="32"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.ASE_ORCA.nproc" title="eon.schema.ASE_ORCA.nproc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nproc</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">Literal['auto'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ASE_ORCA.orca_path" title="eon.schema.ASE_ORCA.orca_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orca_path</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.ASE_ORCA.simpleinput" title="eon.schema.ASE_ORCA.simpleinput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpleinput</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_ORCA.nproc">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nproc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'auto'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auto'</span></span><a class="headerlink" href="#eon.schema.ASE_ORCA.nproc" title="Link to this definition">¶</a></dt>
+<dd><p>Number of processors to use for ORCA. Can be ‘auto’ or an integer string.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_ORCA.orca_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">orca_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NONE'</span></span><a class="headerlink" href="#eon.schema.ASE_ORCA.orca_path" title="Link to this definition">¶</a></dt>
+<dd><p>Path to the ORCA executable.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.ASE_ORCA.simpleinput">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">simpleinput</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ENGRAD</span> <span class="pre">HF-3c'</span></span><a class="headerlink" href="#eon.schema.ASE_ORCA.simpleinput" title="Link to this definition">¶</a></dt>
+<dd><p>Simple input string for ORCA, specifying method and basis set.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="ams-potentials">
 <h3>AMS potentials<a class="headerlink" href="#ams-potentials" title="Link to this heading">¶</a></h3>
 <p>Both a direct server model and a file based integration exist.</p>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.AMSConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">AMSConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#AMSConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.AMSConfig" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AMSConfig&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Engine for AMS calculation. One of REAXFF, MOPAC.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="9"><span class="w">            </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">            </span><span class="s2">&quot;REAXFF&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">            </span><span class="s2">&quot;MOPAC&quot;</span>
+</span><span data-line="12"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Engine&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="15"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="16"><span class="w">      </span><span class="nt">&quot;forcefield&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="17"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Force field to use (e.g., &#39;OPt.ff&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Forcefield&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="21"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="22"><span class="w">      </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model to use (e.g., &#39;PM7&#39;, &#39;PM3&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="27"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="28"><span class="w">      </span><span class="nt">&quot;xc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Exchange-correlation functional.&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Xc&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="33"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="34"><span class="w">      </span><span class="nt">&quot;basis&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basis set to use with the exchange-correlation functional.&quot;</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basis&quot;</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="39"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="40"><span class="w">      </span><span class="nt">&quot;resources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="41"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Resources path for DFTB.&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Resources&quot;</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="45"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="46"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="47"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.AMSConfig.basis" title="eon.schema.AMSConfig.basis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basis</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSConfig.engine" title="eon.schema.AMSConfig.engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">engine</span> <span class="pre">(Literal['',</span> <span class="pre">'REAXFF',</span> <span class="pre">'MOPAC'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSConfig.forcefield" title="eon.schema.AMSConfig.forcefield"><code class="xref py py-obj docutils literal notranslate"><span class="pre">forcefield</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSConfig.model" title="eon.schema.AMSConfig.model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSConfig.resources" title="eon.schema.AMSConfig.resources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resources</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSConfig.xc" title="eon.schema.AMSConfig.xc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xc</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSConfig.basis">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">basis</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSConfig.basis" title="Link to this definition">¶</a></dt>
+<dd><p>Basis set to use with the exchange-correlation functional.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSConfig.engine">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">engine</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">''</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'REAXFF'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'MOPAC'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSConfig.engine" title="Link to this definition">¶</a></dt>
+<dd><p>Engine for AMS calculation. One of REAXFF, MOPAC.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSConfig.forcefield">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">forcefield</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSConfig.forcefield" title="Link to this definition">¶</a></dt>
+<dd><p>Force field to use (e.g., ‘OPt.ff’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSConfig.model">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">model</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSConfig.model" title="Link to this definition">¶</a></dt>
+<dd><p>Model to use (e.g., ‘PM7’, ‘PM3’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSConfig.resources">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">resources</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSConfig.resources" title="Link to this definition">¶</a></dt>
+<dd><p>Resources path for DFTB.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSConfig.xc">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSConfig.xc" title="Link to this definition">¶</a></dt>
+<dd><p>Exchange-correlation functional.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.AMSIOConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">AMSIOConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#AMSIOConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.AMSIOConfig" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AMSIOConfig&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Engine for AMS calculation. One of REAXFF, MOPAC.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="9"><span class="w">            </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">            </span><span class="s2">&quot;REAXFF&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">            </span><span class="s2">&quot;MOPAC&quot;</span>
+</span><span data-line="12"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Engine&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="15"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="16"><span class="w">      </span><span class="nt">&quot;forcefield&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="17"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Force field to use (e.g., &#39;OPt.ff&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Forcefield&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="21"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="22"><span class="w">      </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model to use (e.g., &#39;PM7&#39;, &#39;PM3&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="27"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="28"><span class="w">      </span><span class="nt">&quot;xc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Exchange-correlation functional.&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Xc&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="33"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="34"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="35"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.AMSIOConfig.engine" title="eon.schema.AMSIOConfig.engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">engine</span> <span class="pre">(Literal['',</span> <span class="pre">'REAXFF',</span> <span class="pre">'MOPAC'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSIOConfig.forcefield" title="eon.schema.AMSIOConfig.forcefield"><code class="xref py py-obj docutils literal notranslate"><span class="pre">forcefield</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSIOConfig.model" title="eon.schema.AMSIOConfig.model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSIOConfig.xc" title="eon.schema.AMSIOConfig.xc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xc</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSIOConfig.engine">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">engine</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">''</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'REAXFF'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'MOPAC'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSIOConfig.engine" title="Link to this definition">¶</a></dt>
+<dd><p>Engine for AMS calculation. One of REAXFF, MOPAC.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSIOConfig.forcefield">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">forcefield</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSIOConfig.forcefield" title="Link to this definition">¶</a></dt>
+<dd><p>Force field to use (e.g., ‘OPt.ff’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSIOConfig.model">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">model</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSIOConfig.model" title="Link to this definition">¶</a></dt>
+<dd><p>Model to use (e.g., ‘PM7’, ‘PM3’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSIOConfig.xc">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSIOConfig.xc" title="Link to this definition">¶</a></dt>
+<dd><p>Exchange-correlation functional.</p>
+</dd></dl>
+
+</dd></dl>
+
 <p>Along with helpers to set environment variables for these calculations.</p>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.AMSEnvConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">AMSEnvConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#AMSEnvConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.AMSEnvConfig" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AMSEnvConfig&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;amshome&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to AMS home directory (e.g., &#39;/some/path/to/amshome/&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Amshome&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;scm_tmpdir&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Temporary directory for SCM (e.g., &#39;/tmp&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scm Tmpdir&quot;</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="16"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="17"><span class="w">      </span><span class="nt">&quot;scm_pythondir&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python directory for SCM (e.g., &#39;/.scm/python&#39;).&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scm Pythondir&quot;</span><span class="p">,</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="22"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="23"><span class="w">      </span><span class="nt">&quot;amsbin&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to AMS binary directory (will be appended to amshome).&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Amsbin&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="29"><span class="w">      </span><span class="nt">&quot;scmlicense&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to SCM license file (will be appended to amshome).&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scmlicense&quot;</span><span class="p">,</span>
+</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="34"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="35"><span class="w">      </span><span class="nt">&quot;amsresources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to AMS atomic data resources (will be appended to amshome).&quot;</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Amsresources&quot;</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="40"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="41"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="42"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.AMSEnvConfig.amsbin" title="eon.schema.AMSEnvConfig.amsbin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amsbin</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSEnvConfig.amshome" title="eon.schema.AMSEnvConfig.amshome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amshome</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSEnvConfig.amsresources" title="eon.schema.AMSEnvConfig.amsresources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amsresources</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSEnvConfig.scm_pythondir" title="eon.schema.AMSEnvConfig.scm_pythondir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scm_pythondir</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSEnvConfig.scm_tmpdir" title="eon.schema.AMSEnvConfig.scm_tmpdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scm_tmpdir</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.AMSEnvConfig.scmlicense" title="eon.schema.AMSEnvConfig.scmlicense"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scmlicense</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSEnvConfig.amsbin">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">amsbin</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSEnvConfig.amsbin" title="Link to this definition">¶</a></dt>
+<dd><p>Path to AMS binary directory (will be appended to amshome).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSEnvConfig.amshome">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">amshome</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSEnvConfig.amshome" title="Link to this definition">¶</a></dt>
+<dd><p>Path to AMS home directory (e.g., ‘/some/path/to/amshome/’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSEnvConfig.amsresources">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">amsresources</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSEnvConfig.amsresources" title="Link to this definition">¶</a></dt>
+<dd><p>Path to AMS atomic data resources (will be appended to amshome).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSEnvConfig.scm_pythondir">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scm_pythondir</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSEnvConfig.scm_pythondir" title="Link to this definition">¶</a></dt>
+<dd><p>Python directory for SCM (e.g., ‘/.scm/python’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSEnvConfig.scm_tmpdir">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scm_tmpdir</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSEnvConfig.scm_tmpdir" title="Link to this definition">¶</a></dt>
+<dd><p>Temporary directory for SCM (e.g., ‘/tmp’).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.AMSEnvConfig.scmlicense">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">scmlicense</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.AMSEnvConfig.scmlicense" title="Link to this definition">¶</a></dt>
+<dd><p>Path to SCM license file (will be appended to amshome).</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 <section id="references">

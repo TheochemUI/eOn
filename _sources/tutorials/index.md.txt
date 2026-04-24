@@ -27,6 +27,7 @@ akmc
 parrep
 displacement_scripts
 dict_config
+visualization
 CECAM_LTS_MAP_2024/index
 ```
 

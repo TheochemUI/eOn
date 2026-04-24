@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -244,7 +246,22 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig"><code class="docutils literal notranslate"><span class="pre">PrefactorConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.all_free_atoms"><code class="docutils literal notranslate">all_free_atoms</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.configuration"><code class="docutils literal notranslate">configuration</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.default_value"><code class="docutils literal notranslate">default_value</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.filter_fraction"><code class="docutils literal notranslate">filter_fraction</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.filter_scheme"><code class="docutils literal notranslate">filter_scheme</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.max_value"><code class="docutils literal notranslate">max_value</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.min_displacement"><code class="docutils literal notranslate">min_displacement</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.min_value"><code class="docutils literal notranslate">min_value</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.rate_estimation"><code class="docutils literal notranslate">rate_estimation</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PrefactorConfig.within_radius"><code class="docutils literal notranslate">within_radius</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -369,6 +386,181 @@ range, filtering out very high-frequency modes that may be numerical artifacts.<
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Prefactor]</span>
 </span></pre></div>
 </div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">PrefactorConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#PrefactorConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.PrefactorConfig" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PrefactorConfig&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;all_free_atoms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Account for all free atoms when determining the prefactor.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;All Free Atoms&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="10"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">&quot;filter_scheme&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="12"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fraction&quot;</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Determines how to filter the atoms for use in the prefactor calculation.&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="15"><span class="w">            </span><span class="s2">&quot;cutoff&quot;</span><span class="p">,</span>
+</span><span data-line="16"><span class="w">            </span><span class="s2">&quot;fraction&quot;</span>
+</span><span data-line="17"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Filter Scheme&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="20"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="21"><span class="w">      </span><span class="nt">&quot;filter_fraction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="22"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span>
+</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When using filter_scheme ``fraction``, includes the atoms that move the most, limited to the number that make up ``filter_fraction`` of the total motion.&quot;</span><span class="p">,</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Filter Fraction&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="26"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="27"><span class="w">      </span><span class="nt">&quot;min_displacement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="28"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.25</span><span class="p">,</span>
+</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum displacement for an atom to be included in the Hessian calculation. Used only with filter_scheme &#39;cutoff&#39;.&quot;</span><span class="p">,</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Min Displacement&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="32"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="33"><span class="w">      </span><span class="nt">&quot;within_radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="34"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3.3</span><span class="p">,</span>
+</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atoms within this radius of moving atoms are included in the Hessian. Used only with filter_scheme &#39;cutoff&#39;.&quot;</span><span class="p">,</span>
+</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Within Radius&quot;</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="38"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="39"><span class="w">      </span><span class="nt">&quot;default_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="40"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="41"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Calculate prefactor if zero, otherwise use given value instead of doing a full prefactor calculation.&quot;</span><span class="p">,</span>
+</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Default Value&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="44"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="45"><span class="w">      </span><span class="nt">&quot;min_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="46"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000000000.0</span><span class="p">,</span>
+</span><span data-line="47"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum value for a reasonable prefactor.&quot;</span><span class="p">,</span>
+</span><span data-line="48"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Min Value&quot;</span><span class="p">,</span>
+</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="50"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="51"><span class="w">      </span><span class="nt">&quot;max_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="52"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1e+21</span><span class="p">,</span>
+</span><span data-line="53"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum value for a reasonable prefactor.&quot;</span><span class="p">,</span>
+</span><span data-line="54"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Value&quot;</span><span class="p">,</span>
+</span><span data-line="55"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="56"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="57"><span class="w">      </span><span class="nt">&quot;configuration&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="58"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;reactant&quot;</span><span class="p">,</span>
+</span><span data-line="59"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration for which the eigenfrequencies will be determined in a prefactor job.&quot;</span><span class="p">,</span>
+</span><span data-line="60"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="61"><span class="w">            </span><span class="s2">&quot;reactant&quot;</span><span class="p">,</span>
+</span><span data-line="62"><span class="w">            </span><span class="s2">&quot;saddle&quot;</span><span class="p">,</span>
+</span><span data-line="63"><span class="w">            </span><span class="s2">&quot;product&quot;</span>
+</span><span data-line="64"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="65"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration&quot;</span><span class="p">,</span>
+</span><span data-line="66"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="67"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="68"><span class="w">      </span><span class="nt">&quot;rate_estimation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="69"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;htst&quot;</span><span class="p">,</span>
+</span><span data-line="70"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rate estimation method used for the prefactor calculation.&quot;</span><span class="p">,</span>
+</span><span data-line="71"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rate Estimation&quot;</span><span class="p">,</span>
+</span><span data-line="72"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="73"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="74"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="75"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.all_free_atoms" title="eon.schema.PrefactorConfig.all_free_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_free_atoms</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.configuration" title="eon.schema.PrefactorConfig.configuration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">configuration</span> <span class="pre">(Literal['reactant',</span> <span class="pre">'saddle',</span> <span class="pre">'product'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.default_value" title="eon.schema.PrefactorConfig.default_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_value</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.filter_fraction" title="eon.schema.PrefactorConfig.filter_fraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_fraction</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.filter_scheme" title="eon.schema.PrefactorConfig.filter_scheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_scheme</span> <span class="pre">(Literal['cutoff',</span> <span class="pre">'fraction'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.max_value" title="eon.schema.PrefactorConfig.max_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_value</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.min_displacement" title="eon.schema.PrefactorConfig.min_displacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_displacement</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.min_value" title="eon.schema.PrefactorConfig.min_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_value</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.rate_estimation" title="eon.schema.PrefactorConfig.rate_estimation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rate_estimation</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.PrefactorConfig.within_radius" title="eon.schema.PrefactorConfig.within_radius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">within_radius</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.all_free_atoms">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">all_free_atoms</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.all_free_atoms" title="Link to this definition">¶</a></dt>
+<dd><p>Account for all free atoms when determining the prefactor.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.configuration">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">configuration</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'reactant'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'saddle'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'product'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'reactant'</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.configuration" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reactant</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">saddle</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">product</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Configuration for which the eigenfrequencies will be determined in a prefactor job.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.default_value">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">default_value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.default_value" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate prefactor if zero, otherwise use given value instead of doing a full prefactor calculation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.filter_fraction">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">filter_fraction</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.filter_fraction" title="Link to this definition">¶</a></dt>
+<dd><p>When using filter_scheme <code class="docutils literal notranslate"><span class="pre">fraction</span></code>, includes the atoms that move the most, limited to the number that make up <code class="docutils literal notranslate"><span class="pre">filter_fraction</span></code> of the total motion.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.filter_scheme">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">filter_scheme</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'cutoff'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fraction'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fraction'</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.filter_scheme" title="Link to this definition">¶</a></dt>
+<dd><p>Options:
+- <code class="docutils literal notranslate"><span class="pre">cutoff</span></code>: includes atoms that move more than <a class="reference internal" href="#eon.schema.PrefactorConfig.min_displacement" title="eon.schema.PrefactorConfig.min_displacement"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.PrefactorConfig.min_displacement</span></code></a>
+- <code class="docutils literal notranslate"><span class="pre">fraction</span></code>: includes atoms that make up <a class="reference internal" href="#eon.schema.PrefactorConfig.filter_fraction" title="eon.schema.PrefactorConfig.filter_fraction"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">eon.schema.PrefactorConfig.filter_fraction</span></code></a> of the total motion, prioritizing the atoms that move the most</p>
+<p>Determines how to filter the atoms for use in the prefactor calculation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.max_value">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e+21</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.max_value" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum value for a reasonable prefactor.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.min_displacement">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_displacement</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.25</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.min_displacement" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum displacement for an atom to be included in the Hessian calculation. Used only with filter_scheme ‘cutoff’.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.min_value">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000000000.0</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.min_value" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum value for a reasonable prefactor.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.rate_estimation">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rate_estimation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'htst'</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.rate_estimation" title="Link to this definition">¶</a></dt>
+<dd><p>Rate estimation method used for the prefactor calculation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PrefactorConfig.within_radius">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">within_radius</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.3</span></span><a class="headerlink" href="#eon.schema.PrefactorConfig.within_radius" title="Link to this definition">¶</a></dt>
+<dd><p>Atoms within this radius of moving atoms are included in the Hessian. Used only with filter_scheme ‘cutoff’.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 

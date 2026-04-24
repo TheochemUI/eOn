@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -434,6 +436,12 @@ for final convergence.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">min.con</span></code>: the minimized structure</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">results.dat</span></code>: energy, force calls, convergence status</p></li>
 </ul>
+<p>With <code class="docutils literal notranslate"><span class="pre">write_movies</span> <span class="pre">=</span> <span class="pre">true</span></code> (in <code class="docutils literal notranslate"><span class="pre">[Debug]</span></code>), <code class="docutils literal notranslate"><span class="pre">minimization.con</span></code> is written as a
+concatenated structure movie (one frame per iteration). Each frame stores
+structured JSON metadata on line 2 via <code class="docutils literal notranslate"><span class="pre">readcon-core</span></code>, including <code class="docutils literal notranslate"><span class="pre">energy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">frame_index</span></code>, <code class="docutils literal notranslate"><span class="pre">step_size</span></code>, and <code class="docutils literal notranslate"><span class="pre">convergence</span></code>.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">write_deprecated_outs</span> <span class="pre">=</span> <span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">[Debug]</span></code> to also emit the legacy
+<code class="docutils literal notranslate"><span class="pre">minimization.dat</span></code> sidecar during the compatibility window.</p>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>

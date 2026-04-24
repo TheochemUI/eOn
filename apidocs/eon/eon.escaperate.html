@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -378,42 +380,42 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.parallelreplica">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">parallelreplica</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.parallelreplica" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">parallelreplica</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#parallelreplica"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.parallelreplica" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.step">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transition</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.step" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.step" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.get_statelist">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">get_statelist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.get_statelist" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">get_statelist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#get_statelist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.get_statelist" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.get_pr_metadata">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">get_pr_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.get_pr_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">get_pr_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#get_pr_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.get_pr_metadata" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.write_pr_metadata">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">write_pr_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wuid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.write_pr_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">write_pr_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#write_pr_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.write_pr_metadata" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.make_searches">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">make_searches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wuid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.make_searches" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">make_searches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#make_searches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.make_searches" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.register_results">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.register_results" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#register_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.register_results" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.main">
-<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.escaperate.main" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.main" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>

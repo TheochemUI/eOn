@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -251,7 +253,63 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#client-side-displacement">Client-Side Displacement</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig"><code class="docutils literal notranslate"><span class="pre">SaddleSearchConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="docutils literal notranslate">bowl_active_atoms</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_breakout"><code class="docutils literal notranslate">bowl_breakout</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.client_displace_type"><code class="docutils literal notranslate">client_displace_type</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive"><code class="docutils literal notranslate">confine_positive</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_boost"><code class="docutils literal notranslate">confine_positive_boost</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_min_active"><code class="docutils literal notranslate">confine_positive_min_active</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_min_force"><code class="docutils literal notranslate">confine_positive_min_force</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_scale_ratio"><code class="docutils literal notranslate">confine_positive_scale_ratio</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.converged_force"><code class="docutils literal notranslate">converged_force</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.disp_at_random"><code class="docutils literal notranslate">disp_at_random</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_1d"><code class="docutils literal notranslate">displace_1d</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_all_listed"><code class="docutils literal notranslate">displace_all_listed</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script"><code class="docutils literal notranslate">displace_atom_kmc_state_script</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_atom_list"><code class="docutils literal notranslate">displace_atom_list</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_least_coordinated_weight"><code class="docutils literal notranslate">displace_least_coordinated_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_listed_atom_weight"><code class="docutils literal notranslate">displace_listed_atom_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_listed_type_weight"><code class="docutils literal notranslate">displace_listed_type_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_magnitude"><code class="docutils literal notranslate">displace_magnitude</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_max_coordination"><code class="docutils literal notranslate">displace_max_coordination</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_min_norm"><code class="docutils literal notranslate">displace_min_norm</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_not_FCC_HCP_weight"><code class="docutils literal notranslate">displace_not_FCC_HCP_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_not_TCP_BCC_weight"><code class="docutils literal notranslate">displace_not_TCP_BCC_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_not_TCP_weight"><code class="docutils literal notranslate">displace_not_TCP_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_radius"><code class="docutils literal notranslate">displace_radius</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_random_weight"><code class="docutils literal notranslate">displace_random_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_type_list"><code class="docutils literal notranslate">displace_type_list</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_under_coordinated_weight"><code class="docutils literal notranslate">displace_under_coordinated_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_water_weight"><code class="docutils literal notranslate">displace_water_weight</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_linear_interpolation"><code class="docutils literal notranslate">dynamics_linear_interpolation</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_max_init_curvature"><code class="docutils literal notranslate">dynamics_max_init_curvature</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_record_interval"><code class="docutils literal notranslate">dynamics_record_interval</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_state_check_interval"><code class="docutils literal notranslate">dynamics_state_check_interval</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_temperature"><code class="docutils literal notranslate">dynamics_temperature</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_energy"><code class="docutils literal notranslate">max_energy</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_iterations"><code class="docutils literal notranslate">max_iterations</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_single_displace"><code class="docutils literal notranslate">max_single_displace</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_step_size"><code class="docutils literal notranslate">max_step_size</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.method"><code class="docutils literal notranslate">method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.min_mode_method"><code class="docutils literal notranslate">min_mode_method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.molecule_list"><code class="docutils literal notranslate">molecule_list</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonlocal_count_abort"><code class="docutils literal notranslate">nonlocal_count_abort</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonlocal_distance_abort"><code class="docutils literal notranslate">nonlocal_distance_abort</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonnegative_displacement_abort"><code class="docutils literal notranslate">nonnegative_displacement_abort</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.perp_force_ratio"><code class="docutils literal notranslate">perp_force_ratio</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.random_mode"><code class="docutils literal notranslate">random_mode</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.remove_rotation"><code class="docutils literal notranslate">remove_rotation</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.stdev_rotation"><code class="docutils literal notranslate">stdev_rotation</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.stdev_translation"><code class="docutils literal notranslate">stdev_translation</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.void_bias_fraction"><code class="docutils literal notranslate">void_bias_fraction</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.SaddleSearchConfig.zero_mode_abort_curvature"><code class="docutils literal notranslate">zero_mode_abort_curvature</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#output">Output</a></li>
 <li><a class="reference internal" href="#see-also">See also</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
@@ -350,7 +408,7 @@ data-aria-dark="Switch to auto color mode">
 <h1>Saddle Search<a class="headerlink" href="#saddle-search" title="Link to this heading">¶</a></h1>
 <p>A saddle search is initiated by making a local displacement of atoms from their
 position at the minimum of the current state. This displacement can be done
-using the different strategies indicated by the <code class="xref any docutils literal notranslate"><span class="pre">client_displace_type</span></code>
+using the different strategies indicated by the <a class="reference internal" href="#eon.schema.SaddleSearchConfig.client_displace_type" title="eon.schema.SaddleSearchConfig.client_displace_type"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">client_displace_type</span></code></a>
 option, and the following parameters. If the user knows something about the
 local environment where reactions are likely to take place in the system, this
 information can be used to make saddle searches more efficient by getting them
@@ -441,6 +499,789 @@ config; no server displacement file needed)</p></li>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Saddle Search]</span>
 </span></pre></div>
 </div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">SaddleSearchConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#SaddleSearchConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.SaddleSearchConfig" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SaddleSearchConfig&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;min_mode&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Method to locate the saddle point.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="9"><span class="w">            </span><span class="s2">&quot;min_mode&quot;</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">            </span><span class="s2">&quot;dynamics&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">            </span><span class="s2">&quot;basin_hopping&quot;</span><span class="p">,</span>
+</span><span data-line="12"><span class="w">            </span><span class="s2">&quot;bgsd&quot;</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">            </span><span class="s2">&quot;artn&quot;</span>
+</span><span data-line="14"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="15"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Method&quot;</span><span class="p">,</span>
+</span><span data-line="16"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="17"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="18"><span class="w">      </span><span class="nt">&quot;min_mode_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dimer&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Min-mode method to use.&quot;</span><span class="p">,</span>
+</span><span data-line="21"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="22"><span class="w">            </span><span class="s2">&quot;dimer&quot;</span><span class="p">,</span>
+</span><span data-line="23"><span class="w">            </span><span class="s2">&quot;lanczos&quot;</span><span class="p">,</span>
+</span><span data-line="24"><span class="w">            </span><span class="s2">&quot;gprdimer&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">            </span><span class="s2">&quot;artn&quot;</span>
+</span><span data-line="26"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Min Mode Method&quot;</span><span class="p">,</span>
+</span><span data-line="28"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="29"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="30"><span class="w">      </span><span class="nt">&quot;disp_at_random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Legacy displacement control flag used by the client.&quot;</span><span class="p">,</span>
+</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Disp At Random&quot;</span><span class="p">,</span>
+</span><span data-line="34"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="35"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="36"><span class="w">      </span><span class="nt">&quot;max_energy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The energy at which a saddle search is considered bad and terminated.&quot;</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Energy&quot;</span><span class="p">,</span>
+</span><span data-line="40"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="41"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="42"><span class="w">      </span><span class="nt">&quot;max_step_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum step size for saddle-search displacement updates.&quot;</span><span class="p">,</span>
+</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Step Size&quot;</span><span class="p">,</span>
+</span><span data-line="46"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="47"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="48"><span class="w">      </span><span class="nt">&quot;displace_radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+</span><span data-line="50"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atoms within this distance of the epicenter will be displaced.&quot;</span><span class="p">,</span>
+</span><span data-line="51"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Radius&quot;</span><span class="p">,</span>
+</span><span data-line="52"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="53"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="54"><span class="w">      </span><span class="nt">&quot;displace_magnitude&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="55"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+</span><span data-line="56"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.&quot;</span><span class="p">,</span>
+</span><span data-line="57"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Magnitude&quot;</span><span class="p">,</span>
+</span><span data-line="58"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="59"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="60"><span class="w">      </span><span class="nt">&quot;displace_min_norm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="61"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="62"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum displacement norm enforced for the initial perturbation.&quot;</span><span class="p">,</span>
+</span><span data-line="63"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Min Norm&quot;</span><span class="p">,</span>
+</span><span data-line="64"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="65"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="66"><span class="w">      </span><span class="nt">&quot;displace_random_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="67"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="68"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with a random epicenter.&quot;</span><span class="p">,</span>
+</span><span data-line="69"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Random Weight&quot;</span><span class="p">,</span>
+</span><span data-line="70"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="71"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="72"><span class="w">      </span><span class="nt">&quot;displace_not_FCC_HCP_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="73"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="74"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not FCC or HCP coordinated.&quot;</span><span class="p">,</span>
+</span><span data-line="75"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Fcc Hcp Weight&quot;</span><span class="p">,</span>
+</span><span data-line="76"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="77"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="78"><span class="w">      </span><span class="nt">&quot;displace_not_TCP_BCC_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="80"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not TCP or BCC coordinated.&quot;</span><span class="p">,</span>
+</span><span data-line="81"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Tcp Bcc Weight&quot;</span><span class="p">,</span>
+</span><span data-line="82"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="83"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="84"><span class="w">      </span><span class="nt">&quot;displace_not_TCP_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="85"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="86"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not TCP coordinated.&quot;</span><span class="p">,</span>
+</span><span data-line="87"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Tcp Weight&quot;</span><span class="p">,</span>
+</span><span data-line="88"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="89"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="90"><span class="w">      </span><span class="nt">&quot;displace_water_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="91"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="92"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter selected by the water heuristic.&quot;</span><span class="p">,</span>
+</span><span data-line="93"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Water Weight&quot;</span><span class="p">,</span>
+</span><span data-line="94"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="95"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="96"><span class="w">      </span><span class="nt">&quot;displace_least_coordinated_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="97"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="98"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration.&quot;</span><span class="p">,</span>
+</span><span data-line="99"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Least Coordinated Weight&quot;</span><span class="p">,</span>
+</span><span data-line="100"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="101"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="102"><span class="w">      </span><span class="nt">&quot;displace_under_coordinated_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="103"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="104"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.&quot;</span><span class="p">,</span>
+</span><span data-line="105"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Under Coordinated Weight&quot;</span><span class="p">,</span>
+</span><span data-line="106"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="107"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="108"><span class="w">      </span><span class="nt">&quot;displace_listed_atom_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="109"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="110"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter listed in displace_atom_list.&quot;</span><span class="p">,</span>
+</span><span data-line="111"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Listed Atom Weight&quot;</span><span class="p">,</span>
+</span><span data-line="112"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="113"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="114"><span class="w">      </span><span class="nt">&quot;displace_atom_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="115"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="116"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="117"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="118"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="119"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="120"><span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="121"><span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="122"><span class="w">               </span><span class="p">},</span>
+</span><span data-line="123"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+</span><span data-line="124"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="125"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="126"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+</span><span data-line="127"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0-based atom indices to use as displacement epicenters, separated by commas. Example: 10, 20, -1 would be atoms 10, 20, and the last atom. When displace_atom_kmc_state_script is set, this list is populated dynamically per AKMC state from the script&#39;s output.&quot;</span><span class="p">,</span>
+</span><span data-line="128"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom List&quot;</span>
+</span><span data-line="129"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="130"><span class="w">      </span><span class="nt">&quot;displace_atom_kmc_state_script&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="131"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="132"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to a Python script that determines which atoms to displace. The script receives the path to a .con file as its sole positional argument and must print a comma-separated list of 0-based atom indices to stdout. It is executed once per new AKMC state; the result is cached in state.info. The path can be relative (resolved against the eOn root directory) or absolute. See the displacement scripts tutorial for worked examples.&quot;</span><span class="p">,</span>
+</span><span data-line="133"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom Kmc State Script&quot;</span><span class="p">,</span>
+</span><span data-line="134"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="135"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="136"><span class="w">      </span><span class="nt">&quot;displace_listed_type_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="137"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="138"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter listed in displace_type_list.&quot;</span><span class="p">,</span>
+</span><span data-line="139"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Listed Type Weight&quot;</span><span class="p">,</span>
+</span><span data-line="140"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="141"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="142"><span class="w">      </span><span class="nt">&quot;displace_type_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="143"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="144"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="145"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="146"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="147"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="148"><span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="149"><span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="150"><span class="w">               </span><span class="p">},</span>
+</span><span data-line="151"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+</span><span data-line="152"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="153"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="154"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+</span><span data-line="155"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The atom types should be separated by a comma.&quot;</span><span class="p">,</span>
+</span><span data-line="156"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Type List&quot;</span>
+</span><span data-line="157"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="158"><span class="w">      </span><span class="nt">&quot;molecule_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="159"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[]&quot;</span><span class="p">,</span>
+</span><span data-line="160"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Legacy molecule list used by molecular displacement logic.&quot;</span><span class="p">,</span>
+</span><span data-line="161"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Molecule List&quot;</span><span class="p">,</span>
+</span><span data-line="162"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="163"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="164"><span class="w">      </span><span class="nt">&quot;displace_all_listed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="165"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="166"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, displace all atoms in displace_atom_list (or displace_type_list) simultaneously. If false, one atom is chosen at random from the list per saddle search. In either case, atoms within displace_radius of any displaced atom are also included. Set displace_radius to 0 to restrict displacement strictly to listed atoms.&quot;</span><span class="p">,</span>
+</span><span data-line="167"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace All Listed&quot;</span><span class="p">,</span>
+</span><span data-line="168"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="169"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="170"><span class="w">      </span><span class="nt">&quot;displace_max_coordination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="171"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span>
+</span><span data-line="172"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.&quot;</span><span class="p">,</span>
+</span><span data-line="173"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Max Coordination&quot;</span><span class="p">,</span>
+</span><span data-line="174"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="175"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="176"><span class="w">      </span><span class="nt">&quot;displace_1d&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="177"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="178"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Restrict the initial displacement to a single dimension.&quot;</span><span class="p">,</span>
+</span><span data-line="179"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace 1D&quot;</span><span class="p">,</span>
+</span><span data-line="180"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="181"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="182"><span class="w">      </span><span class="nt">&quot;converged_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="183"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
+</span><span data-line="184"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.&quot;</span><span class="p">,</span>
+</span><span data-line="185"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Converged Force&quot;</span><span class="p">,</span>
+</span><span data-line="186"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="187"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="188"><span class="w">      </span><span class="nt">&quot;max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="189"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+</span><span data-line="190"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum number of translation steps to be taken.&quot;</span><span class="p">,</span>
+</span><span data-line="191"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Iterations&quot;</span><span class="p">,</span>
+</span><span data-line="192"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="193"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="194"><span class="w">      </span><span class="nt">&quot;nonlocal_count_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="195"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="196"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If this is not zero, the saddle search will abort when this many atoms have moved more than nonlocal_distance_abort from the initial displacement.&quot;</span><span class="p">,</span>
+</span><span data-line="197"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonlocal Count Abort&quot;</span><span class="p">,</span>
+</span><span data-line="198"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="199"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="200"><span class="w">      </span><span class="nt">&quot;nonlocal_distance_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="201"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="202"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.&quot;</span><span class="p">,</span>
+</span><span data-line="203"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonlocal Distance Abort&quot;</span><span class="p">,</span>
+</span><span data-line="204"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="205"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="206"><span class="w">      </span><span class="nt">&quot;client_displace_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="207"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+</span><span data-line="208"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Epicenter selection method used by the C++ client. &#39;random&#39;: uniform random atom. &#39;last_atom&#39;: the last atom in the configuration. &#39;least_coordinated&#39;: the atom with the fewest neighbours. &#39;not_fcc_hcp_coordinated&#39;: an atom whose local structure is neither FCC nor HCP. &#39;listed_atoms&#39;: an atom from displace_atom_list (parsed from config, no server displacement file needed). &#39;load&#39;: read a displacement vector from a file written by the server.&quot;</span><span class="p">,</span>
+</span><span data-line="209"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="210"><span class="w">            </span><span class="s2">&quot;load&quot;</span><span class="p">,</span>
+</span><span data-line="211"><span class="w">            </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+</span><span data-line="212"><span class="w">            </span><span class="s2">&quot;last_atom&quot;</span><span class="p">,</span>
+</span><span data-line="213"><span class="w">            </span><span class="s2">&quot;least_coordinated&quot;</span><span class="p">,</span>
+</span><span data-line="214"><span class="w">            </span><span class="s2">&quot;not_fcc_hcp_coordinated&quot;</span><span class="p">,</span>
+</span><span data-line="215"><span class="w">            </span><span class="s2">&quot;listed_atoms&quot;</span>
+</span><span data-line="216"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="217"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Client Displace Type&quot;</span><span class="p">,</span>
+</span><span data-line="218"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="219"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="220"><span class="w">      </span><span class="nt">&quot;stdev_translation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="221"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
+</span><span data-line="222"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard deviation for translational displacement components.&quot;</span><span class="p">,</span>
+</span><span data-line="223"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stdev Translation&quot;</span><span class="p">,</span>
+</span><span data-line="224"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="225"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="226"><span class="w">      </span><span class="nt">&quot;stdev_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="227"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+</span><span data-line="228"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard deviation for rotational displacement components.&quot;</span><span class="p">,</span>
+</span><span data-line="229"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stdev Rotation&quot;</span><span class="p">,</span>
+</span><span data-line="230"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="231"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="232"><span class="w">      </span><span class="nt">&quot;void_bias_fraction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="233"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="234"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bias fraction applied to the void-based displacement heuristic.&quot;</span><span class="p">,</span>
+</span><span data-line="235"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Void Bias Fraction&quot;</span><span class="p">,</span>
+</span><span data-line="236"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="237"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="238"><span class="w">      </span><span class="nt">&quot;random_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="239"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="240"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Enable randomized initial-mode generation.&quot;</span><span class="p">,</span>
+</span><span data-line="241"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Random Mode&quot;</span><span class="p">,</span>
+</span><span data-line="242"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="243"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="244"><span class="w">      </span><span class="nt">&quot;zero_mode_abort_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="245"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="246"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The saddle search will abort when the magnitude of the minmode curvature is less than this value.&quot;</span><span class="p">,</span>
+</span><span data-line="247"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Zero Mode Abort Curvature&quot;</span><span class="p">,</span>
+</span><span data-line="248"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="249"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="250"><span class="w">      </span><span class="nt">&quot;confine_positive&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="251"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="252"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Activates a confinement scheme when the search is within a positive region of the PES.&quot;</span><span class="p">,</span>
+</span><span data-line="253"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive&quot;</span><span class="p">,</span>
+</span><span data-line="254"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="255"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="256"><span class="w">      </span><span class="nt">&quot;bowl_breakout&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="257"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="258"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When activated, the search within positive regions of PES is confined to a subset of atoms.&quot;</span><span class="p">,</span>
+</span><span data-line="259"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bowl Breakout&quot;</span><span class="p">,</span>
+</span><span data-line="260"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="261"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="262"><span class="w">      </span><span class="nt">&quot;bowl_active_atoms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="263"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
+</span><span data-line="264"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Size of the applied confinement in the bowl breakout scheme.&quot;</span><span class="p">,</span>
+</span><span data-line="265"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bowl Active Atoms&quot;</span><span class="p">,</span>
+</span><span data-line="266"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="267"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="268"><span class="w">      </span><span class="nt">&quot;dynamics_temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="269"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
+</span><span data-line="270"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The temperature, in Kelvin, for the molecular dynamics run.&quot;</span><span class="p">,</span>
+</span><span data-line="271"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Temperature&quot;</span><span class="p">,</span>
+</span><span data-line="272"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="273"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="274"><span class="w">      </span><span class="nt">&quot;dynamics_state_check_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="275"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
+</span><span data-line="276"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The time interval, in femtoseconds, to minimize the geometry and check if the system has left the initial state.&quot;</span><span class="p">,</span>
+</span><span data-line="277"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics State Check Interval&quot;</span><span class="p">,</span>
+</span><span data-line="278"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="279"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="280"><span class="w">      </span><span class="nt">&quot;dynamics_record_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="281"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+</span><span data-line="282"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory.&quot;</span><span class="p">,</span>
+</span><span data-line="283"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Record Interval&quot;</span><span class="p">,</span>
+</span><span data-line="284"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="285"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="286"><span class="w">      </span><span class="nt">&quot;dynamics_linear_interpolation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="287"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="288"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;- If true, then the band connecting the initial and final states will be\n  initialized using a linear interpolation.\n- If false, then the band is interpolated through the first snapshot that\n  minimizes to the final state.&quot;</span><span class="p">,</span>
+</span><span data-line="289"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Linear Interpolation&quot;</span><span class="p">,</span>
+</span><span data-line="290"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="291"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="292"><span class="w">      </span><span class="nt">&quot;dynamics_max_init_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="293"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="294"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum initial curvature for the dynamics method in eV/\u00c5^2.&quot;</span><span class="p">,</span>
+</span><span data-line="295"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Max Init Curvature&quot;</span><span class="p">,</span>
+</span><span data-line="296"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="297"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="298"><span class="w">      </span><span class="nt">&quot;nonnegative_displacement_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="299"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="300"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Abort the search if a non-negative displacement is detected.&quot;</span><span class="p">,</span>
+</span><span data-line="301"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonnegative Displacement Abort&quot;</span><span class="p">,</span>
+</span><span data-line="302"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="303"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="304"><span class="w">      </span><span class="nt">&quot;max_single_displace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="305"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+</span><span data-line="306"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum single displacement value.&quot;</span><span class="p">,</span>
+</span><span data-line="307"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Single Displace&quot;</span><span class="p">,</span>
+</span><span data-line="308"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="309"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="310"><span class="w">      </span><span class="nt">&quot;remove_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="311"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="312"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove rotational components from the displacement.&quot;</span><span class="p">,</span>
+</span><span data-line="313"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove Rotation&quot;</span><span class="p">,</span>
+</span><span data-line="314"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="315"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="316"><span class="w">      </span><span class="nt">&quot;perp_force_ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="317"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="318"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The ratio of perpendicular force, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="319"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Perp Force Ratio&quot;</span><span class="p">,</span>
+</span><span data-line="320"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="321"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="322"><span class="w">      </span><span class="nt">&quot;confine_positive_min_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="323"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+</span><span data-line="324"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The minimum force for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="325"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Min Force&quot;</span><span class="p">,</span>
+</span><span data-line="326"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="327"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="328"><span class="w">      </span><span class="nt">&quot;confine_positive_scale_ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="329"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span>
+</span><span data-line="330"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The scaling ratio for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="331"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Scale Ratio&quot;</span><span class="p">,</span>
+</span><span data-line="332"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="333"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="334"><span class="w">      </span><span class="nt">&quot;confine_positive_boost&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="335"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+</span><span data-line="336"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The boost factor for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="337"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Boost&quot;</span><span class="p">,</span>
+</span><span data-line="338"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="339"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="340"><span class="w">      </span><span class="nt">&quot;confine_positive_min_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="341"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+</span><span data-line="342"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The minimum number of active atoms for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="343"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Min Active&quot;</span><span class="p">,</span>
+</span><span data-line="344"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="345"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="346"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="347"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bowl_active_atoms</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_breakout" title="eon.schema.SaddleSearchConfig.bowl_breakout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bowl_breakout</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.client_displace_type" title="eon.schema.SaddleSearchConfig.client_displace_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">client_displace_type</span> <span class="pre">(Literal['load',</span> <span class="pre">'random',</span> <span class="pre">'last_atom',</span> <span class="pre">'least_coordinated',</span> <span class="pre">'not_fcc_hcp_coordinated',</span> <span class="pre">'listed_atoms'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive" title="eon.schema.SaddleSearchConfig.confine_positive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_boost" title="eon.schema.SaddleSearchConfig.confine_positive_boost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_boost</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_min_active" title="eon.schema.SaddleSearchConfig.confine_positive_min_active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_min_active</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_min_force" title="eon.schema.SaddleSearchConfig.confine_positive_min_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_min_force</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive_scale_ratio" title="eon.schema.SaddleSearchConfig.confine_positive_scale_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confine_positive_scale_ratio</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.converged_force" title="eon.schema.SaddleSearchConfig.converged_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_force</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.disp_at_random" title="eon.schema.SaddleSearchConfig.disp_at_random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disp_at_random</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_1d" title="eon.schema.SaddleSearchConfig.displace_1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_1d</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_all_listed" title="eon.schema.SaddleSearchConfig.displace_all_listed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_all_listed</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script" title="eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_atom_kmc_state_script</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_atom_list" title="eon.schema.SaddleSearchConfig.displace_atom_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_atom_list</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">list[int])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_least_coordinated_weight" title="eon.schema.SaddleSearchConfig.displace_least_coordinated_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_least_coordinated_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_listed_atom_weight" title="eon.schema.SaddleSearchConfig.displace_listed_atom_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_listed_atom_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_listed_type_weight" title="eon.schema.SaddleSearchConfig.displace_listed_type_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_listed_type_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_magnitude" title="eon.schema.SaddleSearchConfig.displace_magnitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_magnitude</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_max_coordination" title="eon.schema.SaddleSearchConfig.displace_max_coordination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_max_coordination</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_min_norm" title="eon.schema.SaddleSearchConfig.displace_min_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_min_norm</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_not_FCC_HCP_weight" title="eon.schema.SaddleSearchConfig.displace_not_FCC_HCP_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_not_FCC_HCP_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_not_TCP_BCC_weight" title="eon.schema.SaddleSearchConfig.displace_not_TCP_BCC_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_not_TCP_BCC_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_not_TCP_weight" title="eon.schema.SaddleSearchConfig.displace_not_TCP_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_not_TCP_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_radius" title="eon.schema.SaddleSearchConfig.displace_radius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_radius</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_random_weight" title="eon.schema.SaddleSearchConfig.displace_random_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_random_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_type_list" title="eon.schema.SaddleSearchConfig.displace_type_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_type_list</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">list[str])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_under_coordinated_weight" title="eon.schema.SaddleSearchConfig.displace_under_coordinated_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_under_coordinated_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.displace_water_weight" title="eon.schema.SaddleSearchConfig.displace_water_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">displace_water_weight</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_linear_interpolation" title="eon.schema.SaddleSearchConfig.dynamics_linear_interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dynamics_linear_interpolation</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_max_init_curvature" title="eon.schema.SaddleSearchConfig.dynamics_max_init_curvature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dynamics_max_init_curvature</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_record_interval" title="eon.schema.SaddleSearchConfig.dynamics_record_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dynamics_record_interval</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_state_check_interval" title="eon.schema.SaddleSearchConfig.dynamics_state_check_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dynamics_state_check_interval</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.dynamics_temperature" title="eon.schema.SaddleSearchConfig.dynamics_temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dynamics_temperature</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_energy" title="eon.schema.SaddleSearchConfig.max_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_energy</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_iterations" title="eon.schema.SaddleSearchConfig.max_iterations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_iterations</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_single_displace" title="eon.schema.SaddleSearchConfig.max_single_displace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_single_displace</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_step_size" title="eon.schema.SaddleSearchConfig.max_step_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_step_size</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.method" title="eon.schema.SaddleSearchConfig.method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['min_mode',</span> <span class="pre">'dynamics',</span> <span class="pre">'basin_hopping',</span> <span class="pre">'bgsd',</span> <span class="pre">'artn'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="eon.schema.SaddleSearchConfig.min_mode_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">(Literal['dimer',</span> <span class="pre">'lanczos',</span> <span class="pre">'gprdimer',</span> <span class="pre">'artn'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.molecule_list" title="eon.schema.SaddleSearchConfig.molecule_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule_list</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonlocal_count_abort" title="eon.schema.SaddleSearchConfig.nonlocal_count_abort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonlocal_count_abort</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonlocal_distance_abort" title="eon.schema.SaddleSearchConfig.nonlocal_distance_abort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonlocal_distance_abort</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonnegative_displacement_abort" title="eon.schema.SaddleSearchConfig.nonnegative_displacement_abort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonnegative_displacement_abort</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.perp_force_ratio" title="eon.schema.SaddleSearchConfig.perp_force_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">perp_force_ratio</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.random_mode" title="eon.schema.SaddleSearchConfig.random_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_mode</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.remove_rotation" title="eon.schema.SaddleSearchConfig.remove_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_rotation</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.stdev_rotation" title="eon.schema.SaddleSearchConfig.stdev_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stdev_rotation</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.stdev_translation" title="eon.schema.SaddleSearchConfig.stdev_translation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stdev_translation</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.void_bias_fraction" title="eon.schema.SaddleSearchConfig.void_bias_fraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">void_bias_fraction</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.zero_mode_abort_curvature" title="eon.schema.SaddleSearchConfig.zero_mode_abort_curvature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_mode_abort_curvature</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.bowl_active_atoms">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bowl_active_atoms</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="Link to this definition">¶</a></dt>
+<dd><p>Size of the applied confinement in the bowl breakout scheme.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.bowl_breakout">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bowl_breakout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.bowl_breakout" title="Link to this definition">¶</a></dt>
+<dd><p>Determines <a class="reference internal" href="#eon.schema.SaddleSearchConfig.bowl_active_atoms" title="eon.schema.SaddleSearchConfig.bowl_active_atoms"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">bowl_active_atoms</span></code></a> that are subject to the largest forces.
+To activate, <a class="reference internal" href="#eon.schema.SaddleSearchConfig.confine_positive" title="eon.schema.SaddleSearchConfig.confine_positive"><code class="xref any py py-obj docutils literal notranslate"><span class="pre">confine_positive</span></code></a> must also be true. Method of
+<span id="id1">Pedersen and Luiser [<a class="reference internal" href="#id67" title="Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. The Journal of Chemical Physics, 141(2):024109, July 2014. doi:10.1063/1.4885852.">SS_PL14</a>]</span>.</p>
+<p>When activated, the search within positive regions of PES is confined to a subset of atoms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.client_displace_type">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">client_displace_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'load'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'random'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'last_atom'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'least_coordinated'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'not_fcc_hcp_coordinated'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'listed_atoms'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'random'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.client_displace_type" title="Link to this definition">¶</a></dt>
+<dd><p>Epicenter selection method used by the C++ client. ‘random’: uniform random atom. ‘last_atom’: the last atom in the configuration. ‘least_coordinated’: the atom with the fewest neighbours. ‘not_fcc_hcp_coordinated’: an atom whose local structure is neither FCC nor HCP. ‘listed_atoms’: an atom from displace_atom_list (parsed from config, no server displacement file needed). ‘load’: read a displacement vector from a file written by the server.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.confine_positive">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">confine_positive</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.confine_positive" title="Link to this definition">¶</a></dt>
+<dd><p>Activates a confinement scheme when the search is within a positive region of the PES.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.confine_positive_boost">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">confine_positive_boost</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.confine_positive_boost" title="Link to this definition">¶</a></dt>
+<dd><p>The boost factor for confining the positive region of the PES, undocumented.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.confine_positive_min_active">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">confine_positive_min_active</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.confine_positive_min_active" title="Link to this definition">¶</a></dt>
+<dd><p>The minimum number of active atoms for confining the positive region of the PES, undocumented.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.confine_positive_min_force">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">confine_positive_min_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.confine_positive_min_force" title="Link to this definition">¶</a></dt>
+<dd><p>The minimum force for confining the positive region of the PES, undocumented.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.confine_positive_scale_ratio">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">confine_positive_scale_ratio</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.confine_positive_scale_ratio" title="Link to this definition">¶</a></dt>
+<dd><p>The scaling ratio for confining the positive region of the PES, undocumented.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.converged_force">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">converged_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.01</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.converged_force" title="Link to this definition">¶</a></dt>
+<dd><p>When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.disp_at_random">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">disp_at_random</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.disp_at_random" title="Link to this definition">¶</a></dt>
+<dd><p>Legacy displacement control flag used by the client.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_1d">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_1d</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_1d" title="Link to this definition">¶</a></dt>
+<dd><p>Restrict the initial displacement to a single dimension.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_all_listed">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_all_listed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_all_listed" title="Link to this definition">¶</a></dt>
+<dd><p>This can be disabled by setting <cite>displace_radius</cite> to 0. Otherwise:</p>
+<ul class="simple">
+<li><p>If true, each displacement will include all of the degrees of freedom of all of the listed atoms in <cite>displace_atom_list</cite> or <cite>displace_type_list</cite>.</p></li>
+<li><p>If false, one of the atoms in <cite>displace_atom_list</cite> or <cite>displace_type_list</cite> will be selected at random for each displacement.</p></li>
+<li><p>In either case, all atoms up to <cite>displace_radius</cite> distance away from any displaced atom will be included in the displacement.</p></li>
+</ul>
+<p>If true, displace all atoms in displace_atom_list (or displace_type_list) simultaneously. If false, one atom is chosen at random from the list per saddle search. In either case, atoms within displace_radius of any displaced atom are also included. Set displace_radius to 0 to restrict displacement strictly to listed atoms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_atom_kmc_state_script</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_atom_kmc_state_script" title="Link to this definition">¶</a></dt>
+<dd><p>Path to a Python script that determines which atoms to displace. The script receives the path to a .con file as its sole positional argument and must print a comma-separated list of 0-based atom indices to stdout. It is executed once per new AKMC state; the result is cached in state.info. The path can be relative (resolved against the eOn root directory) or absolute. See the displacement scripts tutorial for worked examples.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_atom_list">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_atom_list</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_atom_list" title="Link to this definition">¶</a></dt>
+<dd><p>0-based atom indices to use as displacement epicenters, separated by commas. Example: 10, 20, -1 would be atoms 10, 20, and the last atom. When displace_atom_kmc_state_script is set, this list is populated dynamically per AKMC state from the script’s output.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_least_coordinated_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_least_coordinated_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_least_coordinated_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_listed_atom_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_listed_atom_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_listed_atom_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter listed in displace_atom_list.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_listed_type_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_listed_type_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_listed_type_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter listed in displace_type_list.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_magnitude">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_magnitude</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_magnitude" title="Link to this definition">¶</a></dt>
+<dd><p>The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_max_coordination">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_max_coordination</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_max_coordination" title="Link to this definition">¶</a></dt>
+<dd><p>When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_min_norm">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_min_norm</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_min_norm" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum displacement norm enforced for the initial perturbation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_not_FCC_HCP_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_not_FCC_HCP_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_not_FCC_HCP_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter that is not FCC or HCP coordinated.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_not_TCP_BCC_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_not_TCP_BCC_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_not_TCP_BCC_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter that is not TCP or BCC coordinated.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_not_TCP_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_not_TCP_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_not_TCP_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter that is not TCP coordinated.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_radius">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_radius</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_radius" title="Link to this definition">¶</a></dt>
+<dd><p>Atoms within this distance of the epicenter will be displaced.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_random_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_random_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_random_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with a random epicenter.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_type_list">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_type_list</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_type_list" title="Link to this definition">¶</a></dt>
+<dd><p>The atom types should be separated by a comma.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_under_coordinated_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_under_coordinated_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_under_coordinated_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.displace_water_weight">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">displace_water_weight</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.displace_water_weight" title="Link to this definition">¶</a></dt>
+<dd><p>Relative probability to displace with an epicenter selected by the water heuristic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.dynamics_linear_interpolation">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dynamics_linear_interpolation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.dynamics_linear_interpolation" title="Link to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>If true, then the band connecting the initial and final states will be
+initialized using a linear interpolation.</p></li>
+<li><p>If false, then the band is interpolated through the first snapshot that
+minimizes to the final state.</p></li>
+<li><p>If true, then the band connecting the initial and final states will be
+initialized using a linear interpolation.</p></li>
+<li><p>If false, then the band is interpolated through the first snapshot that
+minimizes to the final state.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.dynamics_max_init_curvature">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dynamics_max_init_curvature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.dynamics_max_init_curvature" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum initial curvature for the dynamics method in eV/Å^2.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.dynamics_record_interval">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dynamics_record_interval</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.dynamics_record_interval" title="Link to this definition">¶</a></dt>
+<dd><p>Snapshots of MD trajectories are used to locate when the system first left
+the initial state. A binary search is used to locate the first snapshot that
+minimizes to a new geometry.</p>
+<p>The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.dynamics_state_check_interval">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dynamics_state_check_interval</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.dynamics_state_check_interval" title="Link to this definition">¶</a></dt>
+<dd><p>The time interval, in femtoseconds, to minimize the geometry and check if the system has left the initial state.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.dynamics_temperature">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dynamics_temperature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.dynamics_temperature" title="Link to this definition">¶</a></dt>
+<dd><p>A good initial choice might be near the melting temperature of the material.</p>
+<p>The temperature, in Kelvin, for the molecular dynamics run.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.max_energy">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_energy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.max_energy" title="Link to this definition">¶</a></dt>
+<dd><p>The energy at which a saddle search is considered bad and terminated.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.max_iterations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.max_iterations" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum number of translation steps to be taken.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.max_single_displace">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_single_displace</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.max_single_displace" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum single displacement value.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.max_step_size">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_step_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.max_step_size" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum step size for saddle-search displacement updates.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.method">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'min_mode'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dynamics'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'basin_hopping'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bgsd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'min_mode'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.method" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min_mode</span></code>: Use a min-mode following scheme to locate the saddle
+point.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dynamics</span></code>: Experimental method that uses molecular dynamics to find
+new states and then runs a climbing image NEB calculation to find the
+saddle and a dimer calculation to estimate the eigenmode at the saddle.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">basin_hopping</span></code>: Use basin hopping as the saddle search backend
+within a process search workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bgsd</span></code>: Use biased gradient squared descent within a process search
+workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">artn</span></code>: Use the Activation-Relaxation Technique nouveau. ARTn
+starts from <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>, ignores <code class="docutils literal notranslate"><span class="pre">displacement.con</span></code>, and performs
+its own push, Lanczos eigenmode estimation, and perpendicular
+relaxation internally. <code class="docutils literal notranslate"><span class="pre">direction.dat</span></code> is optional and only biases
+the initial push when present.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Method to locate the saddle point.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.min_mode_method">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id2">Henkelman and Jónsson [<a class="reference internal" href="#id30" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id3">Malek and Mousseau [<a class="reference internal" href="#id56" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>: Use the GP accelerated dimer method.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">artn</span></code>: Use ARTn as a drop-in for min-mode search. eOn’s displacement
+seeds the initial mode; ARTn takes over from the displaced structure.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Min-mode method to use.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.molecule_list">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">molecule_list</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'[]'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.molecule_list" title="Link to this definition">¶</a></dt>
+<dd><p>Legacy molecule list used by molecular displacement logic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.nonlocal_count_abort">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nonlocal_count_abort</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.nonlocal_count_abort" title="Link to this definition">¶</a></dt>
+<dd><p>If this is not zero, the saddle search will abort when this many atoms have moved more than nonlocal_distance_abort from the initial displacement.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.nonlocal_distance_abort">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nonlocal_distance_abort</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.nonlocal_distance_abort" title="Link to this definition">¶</a></dt>
+<dd><p>If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.nonnegative_displacement_abort">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nonnegative_displacement_abort</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.nonnegative_displacement_abort" title="Link to this definition">¶</a></dt>
+<dd><p>Abort the search if a non-negative displacement is detected.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.perp_force_ratio">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">perp_force_ratio</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.perp_force_ratio" title="Link to this definition">¶</a></dt>
+<dd><p>The ratio of perpendicular force, undocumented.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.random_mode">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">random_mode</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.random_mode" title="Link to this definition">¶</a></dt>
+<dd><p>Enable randomized initial-mode generation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.remove_rotation">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">remove_rotation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.remove_rotation" title="Link to this definition">¶</a></dt>
+<dd><p>Remove rotational components from the displacement.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.stdev_rotation">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">stdev_rotation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.stdev_rotation" title="Link to this definition">¶</a></dt>
+<dd><p>Standard deviation for rotational displacement components.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.stdev_translation">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">stdev_translation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.stdev_translation" title="Link to this definition">¶</a></dt>
+<dd><p>Standard deviation for translational displacement components.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.void_bias_fraction">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">void_bias_fraction</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.void_bias_fraction" title="Link to this definition">¶</a></dt>
+<dd><p>Bias fraction applied to the void-based displacement heuristic.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.zero_mode_abort_curvature">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">zero_mode_abort_curvature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.zero_mode_abort_curvature" title="Link to this definition">¶</a></dt>
+<dd><p>The saddle search will abort when the magnitude of the minmode curvature is less than this value.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
+<p>The saddle search writes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">saddle.con</span></code>: the saddle point structure</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode.dat</span></code>: eigenvector at the saddle (Nx3 whitespace-separated)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">results.dat</span></code>: energy, force calls, convergence status, eigenvalue</p></li>
+</ul>
+<p>With <code class="docutils literal notranslate"><span class="pre">write_movies</span> <span class="pre">=</span> <span class="pre">true</span></code> (in <code class="docutils literal notranslate"><span class="pre">[Debug]</span></code>), <code class="docutils literal notranslate"><span class="pre">climb.con</span></code> is written as a
+concatenated structure movie (one frame per iteration). Each frame stores
+structured JSON metadata on line 2 via <code class="docutils literal notranslate"><span class="pre">readcon-core</span></code>, including <code class="docutils literal notranslate"><span class="pre">energy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">frame_index</span></code>, <code class="docutils literal notranslate"><span class="pre">step_size</span></code>, <code class="docutils literal notranslate"><span class="pre">delta_e</span></code>, <code class="docutils literal notranslate"><span class="pre">convergence</span></code>, <code class="docutils literal notranslate"><span class="pre">eigenvalue</span></code>, <code class="docutils literal notranslate"><span class="pre">torque</span></code>,
+<code class="docutils literal notranslate"><span class="pre">angle</span></code>, and <code class="docutils literal notranslate"><span class="pre">rotations</span></code>.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">write_deprecated_outs</span> <span class="pre">=</span> <span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">[Debug]</span></code> to also emit the legacy
+<code class="docutils literal notranslate"><span class="pre">climb.dat</span></code> sidecar during the compatibility window.</p>
 </section>
 <section id="see-also">
 <h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
@@ -454,7 +1295,23 @@ implementation (dimer, improved dimer, Lanczos, GPR dimer)</p></li>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<span class="target" id="id1"></span></section>
+<div class="docutils container" id="id1">
+<div role="list" class="citation-list">
+<div class="citation" id="id30" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">SS_HJonsson99</a><span class="fn-bracket">]</span></span>
+<p>Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. <em>The Journal of Chemical Physics</em>, 111(15):7010–7022, October 1999. <a class="reference external" href="https://doi.org/10.1063/1.480097">doi:10.1063/1.480097</a>.</p>
+</div>
+<div class="citation" id="id56" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS_MM00</a><span class="fn-bracket">]</span></span>
+<p>Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. <em>Physical Review E</em>, 62(6):7723–7728, December 2000. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.62.7723">doi:10.1103/PhysRevE.62.7723</a>.</p>
+</div>
+<div class="citation" id="id67" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">SS_PL14</a><span class="fn-bracket">]</span></span>
+<p>Andreas Pedersen and Mathieu Luiser. Bowl breakout: Escaping the positive region when searching for saddle points. <em>The Journal of Chemical Physics</em>, 141(2):024109, July 2014. <a class="reference external" href="https://doi.org/10.1063/1.4885852">doi:10.1063/1.4885852</a>.</p>
+</div>
+</div>
+</div>
+</section>
 </section>
 
         </article><button class="back-to-top" type="button">

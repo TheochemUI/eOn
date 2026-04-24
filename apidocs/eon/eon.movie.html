@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -393,103 +395,103 @@ data-aria-dark="Switch to auto color mode">
 <h3>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.make_movie">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">make_movie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">movie_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separate_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.make_movie" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">make_movie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">movie_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separate_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#make_movie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.make_movie" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.get_trajectory">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">get_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.get_trajectory" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">get_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#get_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.get_trajectory" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.processes">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">processes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.processes" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">processes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#processes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.processes" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.dot">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.dot" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.dot" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.dynamics">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.dynamics" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.dynamics" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.make_graph">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">make_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.make_graph" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">make_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#make_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.make_graph" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.fastest_path">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">fastest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.fastest_path" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">fastest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#fastest_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.fastest_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.get_fastest_process_id">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">get_fastest_process_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.get_fastest_process_id" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">get_fastest_process_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#get_fastest_process_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.get_fastest_process_id" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.movie.get_fastest_process_rate">
-<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">get_fastest_process_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.get_fastest_process_rate" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">get_fastest_process_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#get_fastest_process_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.get_fastest_process_rate" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.movie.Graph">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph" title="Link to this definition">¶</a></dt>
 <dd><p class="rubric">Initialization</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.Graph.dot">
-<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph.dot" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph.dot" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.Graph.add_node">
-<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph.add_node" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph.add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph.add_node" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.Graph.add_edge">
-<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph.add_edge" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph.add_edge" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.Graph.neighbors">
-<span class="sig-name descname"><span class="pre">neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph.neighbors" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph.neighbors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph.neighbors" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.Graph.nodes">
-<span class="sig-name descname"><span class="pre">nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph.nodes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph.nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph.nodes" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.Graph.dijkstra">
-<span class="sig-name descname"><span class="pre">dijkstra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph.dijkstra" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dijkstra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph.dijkstra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph.dijkstra" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.Graph.shortest_path">
-<span class="sig-name descname"><span class="pre">shortest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.Graph.shortest_path" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">shortest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#Graph.shortest_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.Graph.shortest_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.movie.priorityDictionary">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">priorityDictionary</span></span><a class="headerlink" href="#eon.movie.priorityDictionary" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.movie.</span></span><span class="sig-name descname"><span class="pre">priorityDictionary</span></span><a class="reference internal" href="../../_modules/eon/movie.html#priorityDictionary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.priorityDictionary" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.priorityDictionary.smallest">
-<span class="sig-name descname"><span class="pre">smallest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.priorityDictionary.smallest" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">smallest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#priorityDictionary.smallest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.priorityDictionary.smallest" title="Link to this definition">¶</a></dt>
 <dd><p>Find smallest item after removing deleted items from heap.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.movie.priorityDictionary.setdefault">
-<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.movie.priorityDictionary.setdefault" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/movie.html#priorityDictionary.setdefault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.movie.priorityDictionary.setdefault" title="Link to this definition">¶</a></dt>
 <dd><p>Reimplement setdefault to call our customized <strong>setitem</strong>.</p>
 </dd></dl>
 

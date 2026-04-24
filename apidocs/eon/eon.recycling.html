@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -348,7 +350,7 @@ The basic methods this undergoes are as follows:</p></td>
 <h3>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.recycling.SB_Recycling">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.recycling.</span></span><span class="sig-name descname"><span class="pre">SB_Recycling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recycle_save</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb_scheme</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasining</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.SB_Recycling" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.recycling.</span></span><span class="sig-name descname"><span class="pre">SB_Recycling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recycle_save</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb_scheme</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasining</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#SB_Recycling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.SB_Recycling" title="Link to this definition">¶</a></dt>
 <dd><p>Constructs a super-basin recycling object.
 The basic methods this undergoes are as follows:</p>
 <p>*First, determine whether this is a continuation of a previous recycling effort.
@@ -375,34 +377,34 @@ superbasining - if sb_scheme is “mcamc”, then this is the superbasining obje
 <p>Initialize the data for the super-basin recycling object.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.SB_Recycling.get_process_id">
-<span class="sig-name descname"><span class="pre">get_process_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state_procs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.SB_Recycling.get_process_id" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state_procs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state_num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#SB_Recycling.get_process_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.SB_Recycling.get_process_id" title="Link to this definition">¶</a></dt>
 <dd><p>Return the process id of the process going from the current state
 to the next state (number).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.SB_Recycling.make_suggestion">
-<span class="sig-name descname"><span class="pre">make_suggestion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.SB_Recycling.make_suggestion" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">make_suggestion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#SB_Recycling.make_suggestion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.SB_Recycling.make_suggestion" title="Link to this definition">¶</a></dt>
 <dd><p>This will use the recycling class to make saddle search suggestions.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.SB_Recycling.write_metadata">
-<span class="sig-name descname"><span class="pre">write_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.SB_Recycling.write_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#SB_Recycling.write_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.SB_Recycling.write_metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Write to disk the superbasin state list, and the new possibilities to consider.
 Also write how far along in this superbasin recycling process we are.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.SB_Recycling.read_metadata">
-<span class="sig-name descname"><span class="pre">read_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.SB_Recycling.read_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#SB_Recycling.read_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.SB_Recycling.read_metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Read the metadata and return the superbasin state list, the “current/previous”
 states, and how far along in the superbasin recycling process we are.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.SB_Recycling.generate_corresponding_states">
-<span class="sig-name descname"><span class="pre">generate_corresponding_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.SB_Recycling.generate_corresponding_states" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">generate_corresponding_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#SB_Recycling.generate_corresponding_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.SB_Recycling.generate_corresponding_states" title="Link to this definition">¶</a></dt>
 <dd><p>Generate the list of reactants expected as part of the new superbasin.
 Then, use the StateList object to create the actual states.</p>
 </dd></dl>
@@ -411,7 +413,7 @@ Then, use the StateList object to create the actual states.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.recycling.Recycling">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.recycling.</span></span><span class="sig-name descname"><span class="pre">Recycling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suggested_ref_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_sb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.Recycling" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.recycling.</span></span><span class="sig-name descname"><span class="pre">Recycling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suggested_ref_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_sb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#Recycling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.Recycling" title="Link to this definition">¶</a></dt>
 <dd><p>Constructs a saddle point recycling object.</p>
 <p>states - the StateList object
 suggested_ref_state - state to make suggestions from
@@ -423,7 +425,7 @@ If there is a file containing the data for the current state,
 use this file.  Otherwise, the previous state will be the reference.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.Recycling.make_suggestion">
-<span class="sig-name descname"><span class="pre">make_suggestion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.Recycling.make_suggestion" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">make_suggestion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#Recycling.make_suggestion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.Recycling.make_suggestion" title="Link to this definition">¶</a></dt>
 <dd><p>Makes a saddle suggestion and returns True.
 If no more saddle suggestions are possible
 (end of process table has been reached), returns False.</p>
@@ -431,7 +433,7 @@ If no more saddle suggestions are possible
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.Recycling.read_recycling_metadata">
-<span class="sig-name descname"><span class="pre">read_recycling_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.Recycling.read_recycling_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read_recycling_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#Recycling.read_recycling_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.Recycling.read_recycling_metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Open the recycling metadata file located in the current state’s directory.
 Return the state from which suggestions are being made.
 Return the process number current up for recycling consideration.</p>
@@ -439,13 +441,13 @@ Return the process number current up for recycling consideration.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.Recycling.write_recycling_metadata">
-<span class="sig-name descname"><span class="pre">write_recycling_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.Recycling.write_recycling_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write_recycling_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#Recycling.write_recycling_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.Recycling.write_recycling_metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Write the recycling metadata file located in the current state’s directory.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.recycling.Recycling.get_moved_indices">
-<span class="sig-name descname"><span class="pre">get_moved_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.recycling.Recycling.get_moved_indices" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_moved_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/recycling.html#Recycling.get_moved_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.recycling.Recycling.get_moved_indices" title="Link to this definition">¶</a></dt>
 <dd><p>Return the indices of atoms that moved in the process getting
 to the current state from the reference state.</p>
 </dd></dl>
