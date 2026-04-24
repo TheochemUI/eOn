@@ -2,6 +2,18 @@
 
 <!-- towncrier release notes start -->
 
+## [2.14.0](https://github.com/TheochemUI/eOn/tree/2.14.0) - 2026-04-24
+
+### Added
+
+- Structured per-iteration metadata is now embedded directly in minimization, saddle-search, and NEB movie `.con` files via `readcon-core`. The legacy minimization and saddle-search sidecar tables remain available temporarily behind `write_deprecated_outs = true`. ([#trajectory-output](https://github.com/TheochemUI/eOn/issues/trajectory-output))
+- Added the `filin` option under `[ARTn]` to expose pARTn's input-file name. Empty (the default) leaves pARTn with its post-`artn_create` sentinel so no file is read; setting it to a path wires that file into pARTn setup and aborts early with a clear error if it is missing. ([#334](https://github.com/TheochemUI/eOn/issues/334))
+
+### Fixed
+
+- Fixed a regression in threaded force-evaluation paths by keeping legacy Fortran-backed potentials out of shared-instance parallel execution. ([#332](https://github.com/TheochemUI/eOn/issues/332))
+
+
 ## [2.13.0](https://github.com/TheochemUI/eOn/tree/2.13.0) - 2026-04-18
 
 ### Removed

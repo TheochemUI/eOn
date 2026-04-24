@@ -1682,6 +1682,18 @@ package:
     sha256: ad761500228974aad3d422902a87c8c2d938fb3f76dd356f7629fd16f5f214a4
   category: main
   optional: false
+- name: sccache
+  version: 0.14.0
+  manager: conda
+  platform: osx-arm64
+  dependencies:
+    __osx: '>=11.0'
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/sccache-0.14.0-h6fdd925_0.conda
+  hash:
+    md5: 5ca50d2b2df57a9d08c8ea1ecf1425f1
+    sha256: eb41fa276fcbebcf7c4ce4223988af0ef40ee97a724fca39547508868375249a
+  category: main
+  optional: false
 - name: setuptools
   version: 80.10.1
   manager: conda
@@ -2618,13 +2630,13 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.4.3
+  version: 0.8.0
   manager: pip
   platform: osx-arm64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/cb/8d/8d68e9cf2bb561bc83e776a035c6119ebdeb37f6fe30d8aae1c05bbbc9c6/readcon-0.4.3-cp312-cp312-macosx_11_0_arm64.whl
+  url: https://files.pythonhosted.org/packages/68/12/f0b642f03dcfbbc2e238501fa4430919c733e882939f9d4f52c7c72409b8/readcon-0.8.0-cp312-cp312-macosx_11_0_arm64.whl
   hash:
-    sha256: 691485579d45d810e5f16dac9cb096178c5b56b44d24030fa2102b2541445933
+    sha256: 41263d323a01a75f5d00854ce01344ae8c4478bbec973e6fe8b3607f33bef94b
   category: main
   optional: false
 - name: referencing
@@ -2745,7 +2757,7 @@ package:
     optree: '>=0.13.0 ; extra == ''optree'''
     opt-einsum: '>=3.3 ; extra == ''opt-einsum'''
     pyyaml ; extra: == 'pyyaml'
-  url: https://download.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
+  url: https://download-r2.pytorch.org/whl/cpu/torch-2.10.0-2-cp312-none-macosx_11_0_arm64.whl
   hash:
     sha256: 358bd7125cbec6e692d60618a5eec7f55a51b29e3652a849fd42af021d818023
   category: main
@@ -4413,6 +4425,20 @@ package:
     sha256: 3980a10eee5f24ce7770c5d1665f93f363345c630bb6189176f3ab7bd9e8724d
   category: main
   optional: false
+- name: sccache
+  version: 0.14.0
+  manager: conda
+  platform: linux-64
+  dependencies:
+    __glibc: '>=2.17,<3.0.a0'
+    libgcc: '>=14'
+    openssl: '>=3.5.5,<4.0a0'
+  url: https://conda.anaconda.org/conda-forge/linux-64/sccache-0.14.0-he64ecbb_0.conda
+  hash:
+    md5: 513b2505df7c927f2f048aa2e3f48f7d
+    sha256: 83f881b318b9a39723ee8b5f0a5329240b4b65c692a8a998d4217333b8c801d4
+  category: main
+  optional: false
 - name: setuptools
   version: 80.9.0
   manager: conda
@@ -5310,13 +5336,13 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.4.3
+  version: 0.8.0
   manager: pip
   platform: linux-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/22/da/7637d393d07a23387886bb7ccdfc82999639bd804b9b4acacd10a4aa2723/readcon-0.4.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  url: https://files.pythonhosted.org/packages/04/73/c188f7e6cb2d1f889b4d36fa2756b4e8d7fc1d3dfa1bb3035525b27d2e38/readcon-0.8.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
   hash:
-    sha256: 039ed476613778634714247f42810f1c9f6b9b3cbc68e2ff42d34a33e852da9c
+    sha256: c9b7f44b59f499de6d95737e4eeca7da0de20134cd01fc7a227fd236288bc836
   category: main
   optional: false
 - name: referencing
@@ -5437,7 +5463,7 @@ package:
     optree: '>=0.13.0 ; extra == ''optree'''
     opt-einsum: '>=3.3 ; extra == ''opt-einsum'''
     pyyaml ; extra: == 'pyyaml'
-  url: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+  url: https://download-r2.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
   hash:
     sha256: ee40b8a4b4b2cf0670c6fd4f35a7ef23871af956fecb238fbf5da15a72650b1d
   category: main
@@ -6826,6 +6852,20 @@ package:
     sha256: 3d84e1778e68709a377127af453f8564d038053c61ca063f448ee6c03dc8b20a
   category: main
   optional: false
+- name: sccache
+  version: 0.14.0
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc: '>=14.3,<15'
+    vc14_runtime: '>=14.44.35208'
+    ucrt: '>=10.0.20348.0'
+  url: https://conda.anaconda.org/conda-forge/win-64/sccache-0.14.0-h18a1a76_0.conda
+  hash:
+    md5: 531701ba481a1f2f3228f3f077a0e97a
+    sha256: 7a2cbb5c405e8ec04cf9d77f8d567cb57a3b8e2cb875b8962795edd9569dedb7
+  category: main
+  optional: false
 - name: setuptools
   version: 82.0.0
   manager: conda
@@ -7872,13 +7912,13 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.4.3
+  version: 0.8.0
   manager: pip
   platform: win-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/01/b6/38e97cca73f54d675738fb8e02b420e3a9d9f5adc499250b59ab54d1d828/readcon-0.4.3-cp312-cp312-win_amd64.whl
+  url: https://files.pythonhosted.org/packages/3d/dd/80e7d17ca39acec96a74f7886be857f0d962b826ad73317e195d54882e04/readcon-0.8.0-cp312-cp312-win_amd64.whl
   hash:
-    sha256: a972c1cca208cdf7f2b0335fd8c88a600ad00468f6376beaae5d0954b26edc9f
+    sha256: 25d0ab830aadf0ad049950b14640b8f7425b7fc99779e2052a189a2058acc18b
   category: main
   optional: false
 - name: referencing
@@ -8012,7 +8052,7 @@ package:
     opt-einsum: '>=3.3 ; extra == ''opt-einsum'''
     optree: '>=0.13.0 ; extra == ''optree'''
     pyyaml ; extra: == 'pyyaml'
-  url: https://download.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-win_amd64.whl
+  url: https://download-r2.pytorch.org/whl/cpu/torch-2.10.0%2Bcpu-cp312-cp312-win_amd64.whl
   hash:
     sha256: 21cb5436978ef47c823b7a813ff0f8c2892e266cfe0f1d944879b5fba81bf4e1
   category: main
