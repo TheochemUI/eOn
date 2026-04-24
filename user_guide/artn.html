@@ -472,6 +472,11 @@ known saddle. Maps to pARTn’s <code class="docutils literal notranslate"><span
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">nsmooth</span></code></strong>: Number of smooth interpolation steps between push direction and
 eigenvector. <code class="docutils literal notranslate"><span class="pre">-1</span></code> uses pARTn default. <code class="docutils literal notranslate"><span class="pre">0</span></code> disables smoothing. Maps to
 pARTn’s <code class="docutils literal notranslate"><span class="pre">nsmooth</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">filin</span></code></strong>: Path to an <code class="docutils literal notranslate"><span class="pre">artn.in</span></code> style input file read by pARTn during
+setup. Empty (the default) keeps pARTn’s post <code class="docutils literal notranslate"><span class="pre">artn_create</span></code> sentinel
+<code class="docutils literal notranslate"><span class="pre">BBBB</span></code>, i.e. no file is read and all parameters come from this <code class="docutils literal notranslate"><span class="pre">[ARTn]</span></code>
+section. Any non-empty value is required to exist; eOn checks before setup
+and aborts with a clear error when it does not. Maps to pARTn’s <code class="docutils literal notranslate"><span class="pre">filin</span></code>.</p></li>
 </ul>
 </section>
 </section>
