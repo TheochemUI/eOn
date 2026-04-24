@@ -1738,6 +1738,10 @@ class ARTnConfig(BaseModel):
         default=-1,
         description="Number of smooth interpolation steps between push and eigenvector. -1 uses pARTn default. 0 disables smoothing.",
     )
+    filin: str = Field(
+        default="",
+        description="Path to an artn.in style input file. Empty keeps pARTn's post-artn_create NAN_STR sentinel ('BBBB'), so no file is read and all parameters come from this [ARTn] section. A non-empty value must name a file on disk; eOn checks before pARTn setup and aborts with a clear error when missing.",
+    )
 
 
 class IRAConfig(BaseModel):
