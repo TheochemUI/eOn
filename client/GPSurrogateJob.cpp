@@ -11,6 +11,7 @@
 */
 #include "GPSurrogateJob.h"
 #include "BaseStructures.h"
+#include "NEBSplineExtrema.h"
 #include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
 #include "SurrogatePotential.h"
@@ -88,8 +89,11 @@ std::vector<std::string> GPSurrogateJob::run() {
 
     std::string nebFilename(std::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
-    for (long i = 0; i <= neb->numImages + 1; i++) {
-      neb->path[i]->matter2con(nebFilename, /*append=*/i > 0);
+    if (!eonc::neb::writePathCon(neb->path, neb->tangent,
+                                 neb->eigenmode_solvers, neb->numImages,
+                                 params.debug_options.estimate_neb_eigenvalues,
+                                 nebFilename, static_cast<size_t>(n_gp))) {
+      throw std::runtime_error("Failed to write file: " + nebFilename);
     }
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
         eonc::helpers::surrogate::accuratePES(neb->path, pot)) {
@@ -148,17 +152,11 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string nebFilename = "neb.con";
   returnFiles.push_back(nebFilename);
 
-  std::ofstream fileNEB(nebFilename);
-  if (!fileNEB) {
-    // Handle file open error
-    throw std::runtime_error("Failed to open file: " + nebFilename);
+  if (!eonc::neb::writePathCon(
+          neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
+          params.debug_options.estimate_neb_eigenvalues, nebFilename)) {
+    throw std::runtime_error("Failed to write file: " + nebFilename);
   }
-
-  for (long i = 0; i <= neb->numImages + 1; i++) {
-    neb->path[i]->matter2con(nebFilename, true);
-  }
-
-  fileNEB.close();
 
   returnFiles.push_back("neb.dat");
   neb->printImageData(true);

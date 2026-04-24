@@ -1468,6 +1468,10 @@ class DebugConfig(BaseModel):
     write_movies_interval: int = Field(
         default=1, description="Write a movie frame every write_movies_interval steps."
     )
+    write_deprecated_outs: bool = Field(
+        default=False,
+        description="Temporarily also write deprecated sidecar outputs such as minimization.dat and climb.dat alongside the new metadata-rich .con movies.",
+    )
     # TODO(rg): Document, from config.yaml
     stop_criterion: float = Field(
         default=1e8, description="Criterion to stop the calculation."

@@ -601,6 +601,7 @@ public:
   struct debug_options_t {
     bool write_movies{false};
     long write_movies_interval{1};
+    bool write_deprecated_outs{false};
     bool estimate_neb_eigenvalues{false};
     std::string neb_mmf{"dimer"};
   } debug_options;

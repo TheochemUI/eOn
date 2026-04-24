@@ -99,6 +99,23 @@ TEST_CASE("JSON to_json includes dynamics section", "[params][json]") {
   REQUIRE(s.find("Dynamics") != std::string::npos);
 }
 
+TEST_CASE("JSON round-trip preserves debug compatibility flags",
+          "[params][json]") {
+  Parameters p1;
+  p1.debug_options.write_movies = true;
+  p1.debug_options.write_movies_interval = 4;
+  p1.debug_options.write_deprecated_outs = true;
+
+  auto j = eonc::config::to_json(p1);
+  Parameters p2;
+  eonc::config::from_json(j, p2);
+
+  REQUIRE(j["Debug"]["write_deprecated_outs"] == true);
+  REQUIRE(p2.debug_options.write_movies == true);
+  REQUIRE(p2.debug_options.write_movies_interval == 4);
+  REQUIRE(p2.debug_options.write_deprecated_outs == true);
+}
+
 TEST_CASE("Parameters INI load handles all sections", "[params][ini]") {
   auto tmppath = std::filesystem::temp_directory_path() / "_test_full.ini";
   std::string tmpfile = tmppath.string();
