@@ -99,7 +99,12 @@ def run_cli_or_raise(args, *, cwd=None, timeout=300):
     return result
 
 
-def run_rgpycrumbs(group, command, *args, cwd=None, timeout=180):
+def run_rgpycrumbs(group, command, *args, cwd=None, timeout=600):
+    # 600s caps first-call rgpycrumbs overhead on the weakest GHA runner.
+    # Landscape plots (grad_matern / grad_imq surface fits) dominate wall
+    # time; profile and convergence panels land well under a minute locally,
+    # but cold matplotlib + CLI import on ubuntu-latest has been observed
+    # past the old 180s ceiling.
     return run_cli_or_raise(
         [sys.executable, "-m", "rgpycrumbs.cli", group, command, *args],
         cwd=cwd,
