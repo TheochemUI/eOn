@@ -254,9 +254,9 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
     matter.matter2con(min.str(), append, &metadata);
 
     if (params.debug_options.write_deprecated_outs) {
-      std::ofstream minDat(
-          minDatFilename,
-          append ? (std::ios::binary | std::ios::app) : std::ios::binary);
+      std::ofstream minDat(minDatFilename,
+                           append ? (std::ios::binary | std::ios::app)
+                                  : std::ios::binary);
       if (minDat) {
         if (!append) {
           minDat << "iteration\tstep_size\tconvergence\tenergy\n";

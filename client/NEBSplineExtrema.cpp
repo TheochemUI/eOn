@@ -261,9 +261,9 @@ bool writePathCon(
       distTotal += path[i]->distanceTo(*path[i - 1]);
     }
 
-    auto metadata = neb_frame_metadata(path, tangent, eigenmode_solvers,
-                                       numImages, estimateEigenvalues, i,
-                                       distTotal, bandIndex);
+    auto metadata =
+        neb_frame_metadata(path, tangent, eigenmode_solvers, numImages,
+                           estimateEigenvalues, i, distTotal, bandIndex);
     if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
       return false;
     }

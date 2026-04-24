@@ -152,10 +152,9 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string nebFilename = "neb.con";
   returnFiles.push_back(nebFilename);
 
-  if (!eonc::neb::writePathCon(neb->path, neb->tangent, neb->eigenmode_solvers,
-                               neb->numImages,
-                               params.debug_options.estimate_neb_eigenvalues,
-                               nebFilename)) {
+  if (!eonc::neb::writePathCon(
+          neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
+          params.debug_options.estimate_neb_eigenvalues, nebFilename)) {
     throw std::runtime_error("Failed to write file: " + nebFilename);
   }
 
