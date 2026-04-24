@@ -188,10 +188,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
-  if (!eonc::neb::writePathCon(neb->path, neb->tangent, neb->eigenmode_solvers,
-                               neb->numImages,
-                               params.debug_options.estimate_neb_eigenvalues,
-                               nebFilename)) {
+  if (!eonc::neb::writePathCon(
+          neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
+          params.debug_options.estimate_neb_eigenvalues, nebFilename)) {
     QUILL_LOG_ERROR(m_log, "Failed to write {}", nebFilename);
   }
 

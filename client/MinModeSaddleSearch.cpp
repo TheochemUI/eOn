@@ -268,14 +268,13 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       metadata.scalars.push_back({"eigenvalue", eigenval});
       metadata.scalars.push_back({"torque", torque});
       metadata.scalars.push_back({"angle", angle});
-      metadata.scalars.push_back({"rotations",
-                                  static_cast<double>(rotations)});
+      metadata.scalars.push_back({"rotations", static_cast<double>(rotations)});
       matter->matter2con(climbLabel, append, &metadata);
 
       if (params.debug_options.write_deprecated_outs) {
-        std::ofstream climbDat(
-            climbDatFilename,
-            append ? (std::ios::binary | std::ios::app) : std::ios::binary);
+        std::ofstream climbDat(climbDatFilename,
+                               append ? (std::ios::binary | std::ios::app)
+                                      : std::ios::binary);
         if (climbDat) {
           if (!append) {
             climbDat << "iteration\tstep_size\tdelta_e\tconvergence"

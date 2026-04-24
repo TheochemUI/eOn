@@ -545,10 +545,9 @@ max_iterations = 200
   REQUIRE(forceCalls_ <= 1);
 }
 
-TEST_CASE_METHOD(
-    JobIntegrationFixture,
-    "Minimization deprecated outputs remain available behind flag",
-    "[job][minimization][integration][deprecated]") {
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "Minimization deprecated outputs remain available behind flag",
+                 "[job][minimization][integration][deprecated]") {
   copyTestData(".");
   writeConfig(R"(
 [Main]

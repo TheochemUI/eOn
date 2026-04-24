@@ -228,17 +228,18 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     if (params.debug_options.write_movies &&
         (iteration % params.debug_options.write_movies_interval == 0)) {
       bool append = (iteration != 0);
-      if (!eonc::neb::writePathCon(path, tangent, eigenmode_solvers, numImages,
-                                   params.debug_options.estimate_neb_eigenvalues,
-                                   std::format("neb_path_{:03d}.con", iteration),
-                                   iteration)) {
+      if (!eonc::neb::writePathCon(
+              path, tangent, eigenmode_solvers, numImages,
+              params.debug_options.estimate_neb_eigenvalues,
+              std::format("neb_path_{:03d}.con", iteration), iteration)) {
         QUILL_LOG_ERROR(log, "Failed to write NEB path movie for iteration {}",
                         iteration);
       }
 
       AtomMatrix maxTang;
       if (maxEnergyImage == 0) {
-        maxTang = path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
+        maxTang =
+            path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
       } else if (maxEnergyImage == static_cast<size_t>(numImages + 1)) {
         maxTang = path[numImages]->pbc(path[numImages + 1]->getPositions() -
                                        path[numImages]->getPositions());
@@ -252,9 +253,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       maxImageMetadata.neb_bead = static_cast<uint64_t>(maxEnergyImage);
       maxImageMetadata.neb_band = static_cast<uint64_t>(iteration);
       maxImageMetadata.scalars.push_back(
-          {"relative_energy",
-           path[maxEnergyImage]->getPotentialEnergy() -
-               path[0]->getPotentialEnergy()});
+          {"relative_energy", path[maxEnergyImage]->getPotentialEnergy() -
+                                  path[0]->getPotentialEnergy()});
       maxImageMetadata.scalars.push_back(
           {"parallel_force",
            matDot(path[maxEnergyImage]->getForces(), maxTang)});

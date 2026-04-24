@@ -88,9 +88,10 @@ TEST_CASE_METHOD(ConFileIOFixture, "Con file append mode creates larger file",
   REQUIRE(size2 > size1);
 }
 
-TEST_CASE_METHOD(ConFileIOFixture,
-                 "Metadata-rich append movies remain parseable with blank headers",
-                 "[confileio][append][metadata]") {
+TEST_CASE_METHOD(
+    ConFileIOFixture,
+    "Metadata-rich append movies remain parseable with blank headers",
+    "[confileio][append][metadata]") {
   std::string tmpfile = "_test_append_metadata.con";
   auto movie = std::make_shared<Matter>(pot, params);
   movie->resize(1);
@@ -262,7 +263,8 @@ TEST_CASE("ConFileIO multiple writes accumulate in append mode",
   std::filesystem::remove(tmpfile);
 }
 
-TEST_CASE("ConFileIO embeds movie metadata in frame JSON", "[confileio][metadata]") {
+TEST_CASE("ConFileIO embeds movie metadata in frame JSON",
+          "[confileio][metadata]") {
   Parameters params;
   params.potential_options.potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -349,7 +351,8 @@ TEST_CASE("ConFileIO append mode rejects corrupt existing files",
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
 
-  auto tmppath = std::filesystem::temp_directory_path() / "_test_corrupt_append.con";
+  auto tmppath =
+      std::filesystem::temp_directory_path() / "_test_corrupt_append.con";
   std::string tmpfile = tmppath.string();
   {
     std::ofstream out(tmpfile);
@@ -378,8 +381,7 @@ TEST_CASE("ConFileIO appends .con based on basename extension",
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
 
-  auto tmpdir =
-      std::filesystem::temp_directory_path() / "nested.con.dir";
+  auto tmpdir = std::filesystem::temp_directory_path() / "nested.con.dir";
   std::filesystem::create_directories(tmpdir);
   auto tmpbase = tmpdir / "movie";
 
@@ -402,8 +404,8 @@ TEST_CASE("NEB path writer embeds structured frame metadata",
     return m;
   };
 
-  std::vector<std::shared_ptr<Matter>> path{
-      make_matter(), make_matter(), make_matter()};
+  std::vector<std::shared_ptr<Matter>> path{make_matter(), make_matter(),
+                                            make_matter()};
   auto pos1 = path[1]->getPositions();
   pos1(0, 0) += 0.1;
   path[1]->setPositions(pos1);
@@ -424,7 +426,8 @@ TEST_CASE("NEB path writer embeds structured frame metadata",
 
   std::vector<std::shared_ptr<EigenmodeStrategy>> eigenmode_solvers(3);
 
-  auto tmppath = std::filesystem::temp_directory_path() / "_test_neb_metadata.con";
+  auto tmppath =
+      std::filesystem::temp_directory_path() / "_test_neb_metadata.con";
   std::string tmpfile = tmppath.string();
 
   REQUIRE(eonc::neb::writePathCon(path, tangent, eigenmode_solvers, 1, false,
