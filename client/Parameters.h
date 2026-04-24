@@ -582,6 +582,12 @@ public:
             // is too aggressive for small clusters where Lanczos can
             // momentarily settle on a positive eigenvalue before the
             // unstable mode emerges. 3 retries is a reasonable default.
+    std::string filin{""}; // maps to pARTn "filin": path to an artn.in input
+                           // file. Empty preserves pARTn's post-create default
+                           // (NAN_STR sentinel "BBBB" set by artn_create in
+                           // artn_api.f90), which tells m_setup_artn to skip
+                           // reading any file. If set, pARTn opens the file
+                           // with status="old" and errors out when absent.
   } artn_options;
 
   // [IRA] //
