@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -420,25 +422,25 @@ performing the Chatterjee &amp; Voter accelerated superbasin KMC method.</p></td
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.askmc.</span></span><span class="sig-name descname"><span class="pre">ASKMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier_test_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_test_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb_recycling_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recycle_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.askmc.</span></span><span class="sig-name descname"><span class="pre">ASKMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier_test_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_test_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb_recycling_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recycle_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC" title="Link to this definition">¶</a></dt>
 <dd><p>This is a class to keep track of things associated with
 performing the Chatterjee &amp; Voter accelerated superbasin KMC method.</p>
 <p class="rubric">Initialization</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.compile_process_table">
-<span class="sig-name descname"><span class="pre">compile_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.compile_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compile_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.compile_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.compile_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Load the normal process table, and replace all the rates edited by AS-KMC.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.get_ratetable">
-<span class="sig-name descname"><span class="pre">get_ratetable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.get_ratetable" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_ratetable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.get_ratetable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.get_ratetable" title="Link to this definition">¶</a></dt>
 <dd><p>Generate a rate table according to the kT and thermal_window.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.get_askmc_metadata">
-<span class="sig-name descname"><span class="pre">get_askmc_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.get_askmc_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_askmc_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.get_askmc_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.get_askmc_metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Check to see if the AS-KMC data has been saved.
 If it hasn’t, simply use the correct starting values.
 Otherwise, read the current values.</p>
@@ -446,45 +448,45 @@ Otherwise, read the current values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.save_askmc_metadata">
-<span class="sig-name descname"><span class="pre">save_askmc_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sb_check_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_rate_changes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.save_askmc_metadata" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_askmc_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sb_check_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_rate_changes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.save_askmc_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.save_askmc_metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Save the current values of the AS-KMC data.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.get_real_process_table">
-<span class="sig-name descname"><span class="pre">get_real_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.get_real_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_real_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.get_real_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.get_real_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Return the real process table.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.get_modified_process_table">
-<span class="sig-name descname"><span class="pre">get_modified_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.get_modified_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_modified_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.get_modified_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.get_modified_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Return the table of modified processes. If it doesn’t exist yet, it’s hopefully because the system is in the first state.
 These will be “substituted” in place of their corresponding rates in the normal rate table.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.save_modified_process_table">
-<span class="sig-name descname"><span class="pre">save_modified_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state_mod_procs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.save_modified_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_modified_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state_mod_procs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.save_modified_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.save_modified_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Write the modified process table for the current state to disk.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.append_modified_process_table">
-<span class="sig-name descname"><span class="pre">append_modified_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saddle_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view_count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.append_modified_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append_modified_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saddle_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.append_modified_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.append_modified_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Append a single line to the modified process table on disk.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.get_process_id">
-<span class="sig-name descname"><span class="pre">get_process_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state_procs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.get_process_id" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state_procs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.get_process_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.get_process_id" title="Link to this definition">¶</a></dt>
 <dd><p>Return the process id of the process going from the current state
 to the next state (number).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.register_transition">
-<span class="sig-name descname"><span class="pre">register_transition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.register_transition" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register_transition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.register_transition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.register_transition" title="Link to this definition">¶</a></dt>
 <dd><p>Whenever there is a move (in KMC), update the view_count, and potentially
 lower rate constants and raise the corresponding transition state energies.
 If superbasin recycling is on, and a superbasin has just been exited from,
@@ -493,7 +495,7 @@ Perform the superbasin recycling.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.in_array">
-<span class="sig-name descname"><span class="pre">in_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.in_array" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">in_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.in_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.in_array" title="Link to this definition">¶</a></dt>
 <dd><p>Determine whether two arrays are equivalent.
 Because of the use of numpy, the natural python ‘in’ test does not work properly.  So this is a workaround.
 “test” should be a 1Xn (1X2) list, and “array” should be a mXn (mX2) array.</p>
@@ -501,33 +503,33 @@ Because of the use of numpy, the natural python ‘in’ test does not work prop
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.is_equal">
-<span class="sig-name descname"><span class="pre">is_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.is_equal" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">is_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.is_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.is_equal" title="Link to this definition">¶</a></dt>
 <dd><p>Determine whether two floats are ‘close’.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.edgelist_to_statelist">
-<span class="sig-name descname"><span class="pre">edgelist_to_statelist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.edgelist_to_statelist" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">edgelist_to_statelist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.edgelist_to_statelist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.edgelist_to_statelist" title="Link to this definition">¶</a></dt>
 <dd><p>Compile a list of state numbers from the current edgelist with no repeats.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.missed_connections">
-<span class="sig-name descname"><span class="pre">missed_connections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origEtrans</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.missed_connections" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">missed_connections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origEtrans</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.missed_connections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.missed_connections" title="Link to this definition">¶</a></dt>
 <dd><p>Determine whether or not there are low barrier processes which
 connect states in the proposed superbasin which have been missed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.missed_low_barriers">
-<span class="sig-name descname"><span class="pre">missed_low_barriers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origEtrans</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.missed_low_barriers" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">missed_low_barriers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origEtrans</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.missed_low_barriers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.missed_low_barriers" title="Link to this definition">¶</a></dt>
 <dd><p>Determine whether or not there are low barrier processes originating
 from any of the states in identified superbasin that <em>were missed</em>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.locsearch">
-<span class="sig-name descname"><span class="pre">locsearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origEtrans</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.locsearch" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">locsearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origEtrans</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.locsearch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.locsearch" title="Link to this definition">¶</a></dt>
 <dd><p>Act recursively to find if the superbasic criterion is met.
 However, —Note— that in this implementation, not all neighbors are necessarily checked –
 just those which have been seen so far (which is <em>probably</em> all low barrier processes in a superbasin).
@@ -538,7 +540,7 @@ Immediately before each call, self.welltest should be set to 1 and self.edgelist
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.askmc.ASKMC.raiseup">
-<span class="sig-name descname"><span class="pre">raiseup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb_check_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_rate_changes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.askmc.ASKMC.raiseup" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">raiseup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sb_check_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_rate_changes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/askmc.html#ASKMC.raiseup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.askmc.ASKMC.raiseup" title="Link to this definition">¶</a></dt>
 <dd><p>Determine (with the aid of locsearch) if a superbasin is present.
 If a superbasin is found to be present, raise the rate constants,
 lower the saddle energies and the barriers, and save the states in the basin.</p>

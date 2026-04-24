@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -243,7 +245,22 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#eon.schema.DimerConfig"><code class="docutils literal notranslate"><span class="pre">DimerConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.converged_angle"><code class="docutils literal notranslate">converged_angle</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.dimer_improved"><code class="docutils literal notranslate">dimer_improved</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.dimer_max_iterations"><code class="docutils literal notranslate">dimer_max_iterations</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.dimer_remove_rotation"><code class="docutils literal notranslate">dimer_remove_rotation</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.dimer_rotations_min"><code class="docutils literal notranslate">dimer_rotations_min</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.dimer_torque_max"><code class="docutils literal notranslate">dimer_torque_max</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.dimer_torque_min"><code class="docutils literal notranslate">dimer_torque_min</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.finite_angle"><code class="docutils literal notranslate">finite_angle</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.opt_method"><code class="docutils literal notranslate">opt_method</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.DimerConfig.rotations_max"><code class="docutils literal notranslate">rotations_max</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -360,6 +377,175 @@ implemented for use with gas phase systems.</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Dimer]</span>
 </span></pre></div>
 </div>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.schema.</span></span><span class="sig-name descname"><span class="pre">DimerConfig</span></span><a class="reference internal" href="../_modules/eon/schema.html#DimerConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.schema.DimerConfig" title="Link to this definition">¶</a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DimerConfig&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">&quot;opt_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cg&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Optimization algorithm to choose the dimer rotation direction.&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="9"><span class="w">            </span><span class="s2">&quot;sd&quot;</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">            </span><span class="s2">&quot;cg&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">            </span><span class="s2">&quot;lbfgs&quot;</span>
+</span><span data-line="12"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="13"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Opt Method&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="15"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="16"><span class="w">      </span><span class="nt">&quot;converged_angle&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="17"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The dimer is considered converged if it will be rotated fewer degrees than this angle.&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Converged Angle&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="21"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="22"><span class="w">      </span><span class="nt">&quot;rotations_max&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="23"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+</span><span data-line="24"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rotations Max&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="27"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="28"><span class="w">      </span><span class="nt">&quot;finite_angle&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.005</span><span class="p">,</span>
+</span><span data-line="30"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Finite angle for dimer rotation.&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Finite Angle&quot;</span><span class="p">,</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="33"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="34"><span class="w">      </span><span class="nt">&quot;dimer_improved&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="36"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the improved dimer method is used.&quot;</span><span class="p">,</span>
+</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dimer Improved&quot;</span><span class="p">,</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="39"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="40"><span class="w">      </span><span class="nt">&quot;dimer_max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="41"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+</span><span data-line="42"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum number of iterations allowed for the dimer.&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dimer Max Iterations&quot;</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="45"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="46"><span class="w">      </span><span class="nt">&quot;dimer_rotations_min&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="47"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="48"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum number of rotations for the dimer. [not improved]&quot;</span><span class="p">,</span>
+</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dimer Rotations Min&quot;</span><span class="p">,</span>
+</span><span data-line="50"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="51"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="52"><span class="w">      </span><span class="nt">&quot;dimer_torque_min&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="53"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+</span><span data-line="54"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum torque for the dimer. [not improved]&quot;</span><span class="p">,</span>
+</span><span data-line="55"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dimer Torque Min&quot;</span><span class="p">,</span>
+</span><span data-line="56"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="57"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="58"><span class="w">      </span><span class="nt">&quot;dimer_torque_max&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="59"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+</span><span data-line="60"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum torque for the dimer. [not improved]&quot;</span><span class="p">,</span>
+</span><span data-line="61"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dimer Torque Max&quot;</span><span class="p">,</span>
+</span><span data-line="62"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="63"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="64"><span class="w">      </span><span class="nt">&quot;dimer_remove_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="65"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="66"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicates if the rotation should be removed.&quot;</span><span class="p">,</span>
+</span><span data-line="67"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dimer Remove Rotation&quot;</span><span class="p">,</span>
+</span><span data-line="68"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="69"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="70"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="71"><span class="p">}</span>
+</span></pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_attribute_docstrings</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.converged_angle" title="eon.schema.DimerConfig.converged_angle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">converged_angle</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.dimer_improved" title="eon.schema.DimerConfig.dimer_improved"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimer_improved</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.dimer_max_iterations" title="eon.schema.DimerConfig.dimer_max_iterations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimer_max_iterations</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.dimer_remove_rotation" title="eon.schema.DimerConfig.dimer_remove_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimer_remove_rotation</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.dimer_rotations_min" title="eon.schema.DimerConfig.dimer_rotations_min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimer_rotations_min</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.dimer_torque_max" title="eon.schema.DimerConfig.dimer_torque_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimer_torque_max</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.dimer_torque_min" title="eon.schema.DimerConfig.dimer_torque_min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimer_torque_min</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.finite_angle" title="eon.schema.DimerConfig.finite_angle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finite_angle</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.opt_method" title="eon.schema.DimerConfig.opt_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">opt_method</span> <span class="pre">(Literal['sd',</span> <span class="pre">'cg',</span> <span class="pre">'lbfgs'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.DimerConfig.rotations_max" title="eon.schema.DimerConfig.rotations_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotations_max</span> <span class="pre">(int)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.converged_angle">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">converged_angle</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></span><a class="headerlink" href="#eon.schema.DimerConfig.converged_angle" title="Link to this definition">¶</a></dt>
+<dd><p>The dimer is considered converged if it will be rotated fewer degrees than this angle.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.dimer_improved">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dimer_improved</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.DimerConfig.dimer_improved" title="Link to this definition">¶</a></dt>
+<dd><p>Indicates if the improved dimer method is used.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.dimer_max_iterations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dimer_max_iterations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></span><a class="headerlink" href="#eon.schema.DimerConfig.dimer_max_iterations" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of iterations allowed for the dimer.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.dimer_remove_rotation">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dimer_remove_rotation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.DimerConfig.dimer_remove_rotation" title="Link to this definition">¶</a></dt>
+<dd><p>Implements the method of <span id="id1">Melander <em>et al.</em> [<a class="reference internal" href="#id67" title="Marko Melander, Kari Laasonen, and Hannes Jónsson. Removing External Degrees of Freedom from Transition-State Search Methods using Quaternions. Journal of Chemical Theory and Computation, 11(3):1055–1062, March 2015. doi:10.1021/ct501155k.">DM_MLJonsson15</a>]</span></p>
+<p>Indicates if the rotation should be removed.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.dimer_rotations_min">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dimer_rotations_min</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.DimerConfig.dimer_rotations_min" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum number of rotations for the dimer. [not improved]</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.dimer_torque_max">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dimer_torque_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#eon.schema.DimerConfig.dimer_torque_max" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum torque for the dimer. [not improved]</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.dimer_torque_min">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dimer_torque_min</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></span><a class="headerlink" href="#eon.schema.DimerConfig.dimer_torque_min" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum torque for the dimer. [not improved]</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.finite_angle">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">finite_angle</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.005</span></span><a class="headerlink" href="#eon.schema.DimerConfig.finite_angle" title="Link to this definition">¶</a></dt>
+<dd><p>Finite angle for dimer rotation.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.opt_method">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">opt_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'sd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cg'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lbfgs'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cg'</span></span><a class="headerlink" href="#eon.schema.DimerConfig.opt_method" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Options:</dt><dd><ul class="simple">
+<li><p>‘sd’: Steepest descent, rotate along the rotational force.</p></li>
+<li><p>‘cg’: Conjugate gradient, rotate along conjugate directions.</p></li>
+<li><p>‘lbfgs’: Limited memory Broyden-Fletcher-Goldfarb-Shanno Quasi-Newton optimizer.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Optimization algorithm to choose the dimer rotation direction.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.DimerConfig.rotations_max">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rotations_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#eon.schema.DimerConfig.rotations_max" title="Link to this definition">¶</a></dt>
+<dd><p>This is the maximum number of rotations allowed for the dimer for each minimum mode estimation.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
@@ -386,7 +572,8 @@ implemented for use with gas phase systems.</p>
 <p>Johannes Kästner and Paul Sherwood. Superlinearly converging dimer method for transition state search. <em>The Journal of Chemical Physics</em>, 128(1):014106, January 2008. <a class="reference external" href="https://doi.org/10.1063/1.2815812">doi:10.1063/1.2815812</a>.</p>
 </div>
 <div class="citation" id="id67" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">DM_MLJonsson15</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span>DM_MLJonsson15<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id1">2</a>)</span>
 <p>Marko Melander, Kari Laasonen, and Hannes Jónsson. Removing External Degrees of Freedom from Transition-State Search Methods using Quaternions. <em>Journal of Chemical Theory and Computation</em>, 11(3):1055–1062, March 2015. <a class="reference external" href="https://doi.org/10.1021/ct501155k">doi:10.1021/ct501155k</a>.</p>
 </div>
 <div class="citation" id="id73" role="doc-biblioentry">

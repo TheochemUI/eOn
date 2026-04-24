@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -411,28 +413,28 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.explorer.get_minmodexplorer">
-<span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">get_minmodexplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.get_minmodexplorer" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">get_minmodexplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#get_minmodexplorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.get_minmodexplorer" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.explorer.Explorer">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">Explorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.Explorer" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">Explorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#Explorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.Explorer" title="Link to this definition">¶</a></dt>
 <dd><p class="rubric">Initialization</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.Explorer.load_wuid">
-<span class="sig-name descname"><span class="pre">load_wuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.Explorer.load_wuid" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load_wuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#Explorer.load_wuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.Explorer.load_wuid" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.Explorer.save_wuid">
-<span class="sig-name descname"><span class="pre">save_wuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.Explorer.save_wuid" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_wuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#Explorer.save_wuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.Explorer.save_wuid" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.explorer.MinModeExplorer">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">MinModeExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.MinModeExplorer" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">MinModeExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#MinModeExplorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.MinModeExplorer" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eon.explorer.Explorer" title="eon.explorer.Explorer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.explorer.Explorer</span></code></a></p>
 <p class="rubric">Initialization</p>
 <p>Init MinModeExplorer.</p>
@@ -442,19 +444,19 @@ will also lead to a different confidence definition being
 used, which takes only processes exiting the SB into account.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.MinModeExplorer.explore">
-<span class="sig-name descname"><span class="pre">explore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.MinModeExplorer.explore" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">explore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#MinModeExplorer.explore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.MinModeExplorer.explore" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.MinModeExplorer.generate_displacement">
-<span class="sig-name descname"><span class="pre">generate_displacement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.MinModeExplorer.generate_displacement" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">generate_displacement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#MinModeExplorer.generate_displacement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.MinModeExplorer.generate_displacement" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.explorer.ClientMinModeExplorer">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">ClientMinModeExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ClientMinModeExplorer" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">ClientMinModeExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ClientMinModeExplorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ClientMinModeExplorer" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eon.explorer.MinModeExplorer" title="eon.explorer.MinModeExplorer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.explorer.MinModeExplorer</span></code></a></p>
 <p class="rubric">Initialization</p>
 <p>Init MinModeExplorer.</p>
@@ -464,19 +466,19 @@ will also lead to a different confidence definition being
 used, which takes only processes exiting the SB into account.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ClientMinModeExplorer.make_jobs">
-<span class="sig-name descname"><span class="pre">make_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ClientMinModeExplorer.make_jobs" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">make_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ClientMinModeExplorer.make_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ClientMinModeExplorer.make_jobs" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ClientMinModeExplorer.register_results">
-<span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ClientMinModeExplorer.register_results" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ClientMinModeExplorer.register_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ClientMinModeExplorer.register_results" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.explorer.ServerMinModeExplorer">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">ServerMinModeExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">ServerMinModeExplorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ServerMinModeExplorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eon.explorer.MinModeExplorer" title="eon.explorer.MinModeExplorer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.explorer.MinModeExplorer</span></code></a></p>
 <p class="rubric">Initialization</p>
 <p>Init MinModeExplorer.</p>
@@ -486,83 +488,83 @@ will also lead to a different confidence definition being
 used, which takes only processes exiting the SB into account.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ServerMinModeExplorer.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.save" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ServerMinModeExplorer.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.save" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ServerMinModeExplorer.explore">
-<span class="sig-name descname"><span class="pre">explore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.explore" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">explore</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ServerMinModeExplorer.explore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.explore" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ServerMinModeExplorer.register_results">
-<span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.register_results" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ServerMinModeExplorer.register_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.register_results" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ServerMinModeExplorer.make_jobs">
-<span class="sig-name descname"><span class="pre">make_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.make_jobs" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">make_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ServerMinModeExplorer.make_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ServerMinModeExplorer.make_jobs" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">ProcessSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactant</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disp_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.explorer.</span></span><span class="sig-name descname"><span class="pre">ProcessSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactant</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displacement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disp_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch" title="Link to this definition">¶</a></dt>
 <dd><p class="rubric">Initialization</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.get_job">
-<span class="sig-name descname"><span class="pre">get_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.get_job" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.get_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.get_job" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.process_result">
-<span class="sig-name descname"><span class="pre">process_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.process_result" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.process_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.process_result" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.build_result">
-<span class="sig-name descname"><span class="pre">build_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.build_result" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">build_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.build_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.build_result" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.get_saddle">
-<span class="sig-name descname"><span class="pre">get_saddle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.get_saddle" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_saddle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.get_saddle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.get_saddle" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.get_saddle_file">
-<span class="sig-name descname"><span class="pre">get_saddle_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.get_saddle_file" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_saddle_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.get_saddle_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.get_saddle_file" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.start_minimization">
-<span class="sig-name descname"><span class="pre">start_minimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which_min</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.start_minimization" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">start_minimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which_min</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.start_minimization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.start_minimization" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.finish_minimization">
-<span class="sig-name descname"><span class="pre">finish_minimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.finish_minimization" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">finish_minimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.finish_minimization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.finish_minimization" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.start_search">
-<span class="sig-name descname"><span class="pre">start_search</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.start_search" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">start_search</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.start_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.start_search" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.finish_search">
-<span class="sig-name descname"><span class="pre">finish_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.finish_search" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">finish_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.finish_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.finish_search" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.save_result">
-<span class="sig-name descname"><span class="pre">save_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.save_result" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.save_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.save_result" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.explorer.ProcessSearch.load_result">
-<span class="sig-name descname"><span class="pre">load_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.explorer.ProcessSearch.load_result" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/explorer.html#ProcessSearch.load_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.explorer.ProcessSearch.load_result" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

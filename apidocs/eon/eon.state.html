@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -370,96 +372,96 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.state.State">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.state.</span></span><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statelist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reactant_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.state.</span></span><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statelist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reactant_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State" title="Link to this definition">¶</a></dt>
 <dd><p>The state super class.</p>
 <p class="rubric">Initialization</p>
 <p>Creates a new state, with lazily loaded data.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.add_process">
-<span class="sig-name descname"><span class="pre">add_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.add_process" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.add_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.add_process" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_energy">
-<span class="sig-name descname"><span class="pre">get_energy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_energy" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_energy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_energy" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.set_energy">
-<span class="sig-name descname"><span class="pre">set_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.set_energy" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.set_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.set_energy" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_reactant">
-<span class="sig-name descname"><span class="pre">get_reactant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_reactant" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_reactant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_reactant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_reactant" title="Link to this definition">¶</a></dt>
 <dd><p>Loads the reactant.con into a point and returns it.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_process_reactant">
-<span class="sig-name descname"><span class="pre">get_process_reactant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_process_reactant" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_reactant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_process_reactant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_process_reactant" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_process_product">
-<span class="sig-name descname"><span class="pre">get_process_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_process_product" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_process_product"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_process_product" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.proc_reactant_path">
-<span class="sig-name descname"><span class="pre">proc_reactant_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.proc_reactant_path" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">proc_reactant_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.proc_reactant_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.proc_reactant_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.proc_product_path">
-<span class="sig-name descname"><span class="pre">proc_product_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.proc_product_path" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">proc_product_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.proc_product_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.proc_product_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.proc_results_path">
-<span class="sig-name descname"><span class="pre">proc_results_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.proc_results_path" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">proc_results_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.proc_results_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.proc_results_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.proc_stdout_path">
-<span class="sig-name descname"><span class="pre">proc_stdout_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.proc_stdout_path" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">proc_stdout_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.proc_stdout_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.proc_stdout_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.tar_procdata">
-<span class="sig-name descname"><span class="pre">tar_procdata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.tar_procdata" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">tar_procdata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.tar_procdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.tar_procdata" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_process">
-<span class="sig-name descname"><span class="pre">get_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_process" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_process" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_process_ids">
-<span class="sig-name descname"><span class="pre">get_process_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_process_ids" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_process_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_process_ids" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the list of ids in the rate table.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_previous_state">
-<span class="sig-name descname"><span class="pre">get_previous_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_previous_state" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_previous_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_previous_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_previous_state" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_num_procs">
-<span class="sig-name descname"><span class="pre">get_num_procs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_num_procs" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_num_procs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_num_procs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_num_procs" title="Link to this definition">¶</a></dt>
 <dd><p>Loads the process table if it is not already loaded and returns the length of it</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_process_table">
-<span class="sig-name descname"><span class="pre">get_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.state.State.get_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/state.html#State.get_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_process_table" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.state.State.get_displacement_atom_list">
-<span class="sig-name descname"><span class="pre">get_displacement_atom_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#eon.state.State.get_displacement_atom_list" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_displacement_atom_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/eon/state.html#State.get_displacement_atom_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.state.State.get_displacement_atom_list" title="Link to this definition">¶</a></dt>
 <dd><p>Gets the list of atoms for displacement.</p>
 <p>If the list has already been generated and stored in this state’s
 info file, it is read from there. Otherwise, the displacement

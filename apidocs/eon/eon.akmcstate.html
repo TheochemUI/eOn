@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -405,10 +407,8 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.akmcstate.</span></span><span class="sig-name descname"><span class="pre">AKMCState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statelist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reactant_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.akmcstate.</span></span><span class="sig-name descname"><span class="pre">AKMCState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statelist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reactant_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">EON_CONFIG</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="eon.state.html#eon.state.State" title="eon.state.State"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.state.State</span></code></a></p>
-<p class="rubric">Initialization</p>
-<p>Creates a new State, with lazily loaded data.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.processtable_head_fmt">
 <span class="sig-name descname"><span class="pre">processtable_head_fmt</span></span><a class="headerlink" href="#eon.akmcstate.AKMCState.processtable_head_fmt" title="Link to this definition">¶</a></dt>
@@ -429,42 +429,42 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.find_repeat">
-<span class="sig-name descname"><span class="pre">find_repeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">saddle_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.find_repeat" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">find_repeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">saddle_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.find_repeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.find_repeat" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.add_process">
-<span class="sig-name descname"><span class="pre">add_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.add_process" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.add_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.add_process" title="Link to this definition">¶</a></dt>
 <dd><p>Adds a process to this State.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.append_search_result">
-<span class="sig-name descname"><span class="pre">append_search_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.append_search_result" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append_search_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.append_search_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.append_search_result" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_ratetable">
-<span class="sig-name descname"><span class="pre">get_ratetable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_ratetable" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_ratetable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_ratetable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_ratetable" title="Link to this definition">¶</a></dt>
 <dd><p>Loads the process table if it has not been loaded and generates a rate table
 according to kT and thermal_window.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_process_table">
-<span class="sig-name descname"><span class="pre">get_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Return dictionary of processes (id-&gt;proc) inside thermal window.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_relevant_procids">
-<span class="sig-name descname"><span class="pre">get_relevant_procids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_relevant_procids" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_relevant_procids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_relevant_procids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_relevant_procids" title="Link to this definition">¶</a></dt>
 <dd><p>Get process IDs inside thermal window.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_confidence">
-<span class="sig-name descname"><span class="pre">get_confidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_confidence" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_confidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_confidence" title="Link to this definition">¶</a></dt>
 <dd><p>Confidence that all relevant processes for this state were found.</p>
 <p>The confidence is a function of the ratio Nf/Ns, where Nf is
 the number of unique processes and Ns is the number of
@@ -494,52 +494,52 @@ self.config.sb_superbasin_confidence option.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_proc_random_count">
-<span class="sig-name descname"><span class="pre">get_proc_random_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_proc_random_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_proc_random_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_proc_random_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_proc_random_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.inc_proc_random_count">
-<span class="sig-name descname"><span class="pre">inc_proc_random_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">procid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.inc_proc_random_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">inc_proc_random_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">procid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.inc_proc_random_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.inc_proc_random_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.reset_repeats">
-<span class="sig-name descname"><span class="pre">reset_repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.reset_repeats" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reset_repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.reset_repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.reset_repeats" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_repeats">
-<span class="sig-name descname"><span class="pre">get_repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_repeats" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_repeats" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.inc_repeats">
-<span class="sig-name descname"><span class="pre">inc_repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.inc_repeats" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">inc_repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.inc_repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.inc_repeats" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.load_process_table">
-<span class="sig-name descname"><span class="pre">load_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.load_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.load_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.load_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Load the process table.  If the process table is not loaded, load it.  If it is
 loaded, do nothing.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.save_process_table">
-<span class="sig-name descname"><span class="pre">save_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.save_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.save_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.save_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>If the processtable is present in memory, writes it to disk.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.append_process_table">
-<span class="sig-name descname"><span class="pre">append_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saddle_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeats</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.append_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saddle_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeats</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.append_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.append_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Append to the process table.  Append a single line to the process table file.  If we
 have loaded the process table, also append it to the process table in memory.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.update_lowest_barrier">
-<span class="sig-name descname"><span class="pre">update_lowest_barrier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.update_lowest_barrier" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_lowest_barrier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">barrier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.update_lowest_barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.update_lowest_barrier" title="Link to this definition">¶</a></dt>
 <dd><p>Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
 barrier stored in info if the barrier parameter is lower and returns the (possibly new)
 lowest barrier.</p>
@@ -547,106 +547,106 @@ lowest barrier.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_lowest_barrier">
-<span class="sig-name descname"><span class="pre">get_lowest_barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_lowest_barrier" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_lowest_barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_lowest_barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_lowest_barrier" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_unique_saddle_count">
-<span class="sig-name descname"><span class="pre">get_unique_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_unique_saddle_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_unique_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_unique_saddle_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_unique_saddle_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.set_unique_saddle_count">
-<span class="sig-name descname"><span class="pre">set_unique_saddle_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.set_unique_saddle_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_unique_saddle_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.set_unique_saddle_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.set_unique_saddle_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_good_saddle_count">
-<span class="sig-name descname"><span class="pre">get_good_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_good_saddle_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_good_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_good_saddle_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_good_saddle_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.set_good_saddle_count">
-<span class="sig-name descname"><span class="pre">set_good_saddle_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.set_good_saddle_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_good_saddle_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.set_good_saddle_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.set_good_saddle_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.increment_time">
-<span class="sig-name descname"><span class="pre">increment_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_search</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.increment_time" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">increment_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_search</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.increment_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.increment_time" title="Link to this definition">¶</a></dt>
 <dd><p>Increment MD search time by dt at temperature T_search.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_time">
-<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_time" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_time" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_time_by_temp">
-<span class="sig-name descname"><span class="pre">get_time_by_temp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_time_by_temp" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_time_by_temp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_time_by_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_time_by_temp" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_number_of_searches">
-<span class="sig-name descname"><span class="pre">get_number_of_searches</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_number_of_searches" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_number_of_searches</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_number_of_searches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_number_of_searches" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_total_saddle_count">
-<span class="sig-name descname"><span class="pre">get_total_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_total_saddle_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_total_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_total_saddle_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_total_saddle_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_bad_saddle_count">
-<span class="sig-name descname"><span class="pre">get_bad_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_bad_saddle_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_bad_saddle_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_bad_saddle_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_bad_saddle_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.set_bad_saddle_count">
-<span class="sig-name descname"><span class="pre">set_bad_saddle_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.set_bad_saddle_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_bad_saddle_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.set_bad_saddle_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.set_bad_saddle_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.register_bad_saddle">
-<span class="sig-name descname"><span class="pre">register_bad_saddle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.register_bad_saddle" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register_bad_saddle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">superbasin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.register_bad_saddle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.register_bad_saddle" title="Link to this definition">¶</a></dt>
 <dd><p>Registers a bad saddle.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_process_reactant">
-<span class="sig-name descname"><span class="pre">get_process_reactant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_reactant" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_reactant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_process_reactant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_reactant" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_process_saddle">
-<span class="sig-name descname"><span class="pre">get_process_saddle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_saddle" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_saddle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_process_saddle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_saddle" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_process_product">
-<span class="sig-name descname"><span class="pre">get_process_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_product" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_process_product"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_product" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.get_process_mode">
-<span class="sig-name descname"><span class="pre">get_process_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_mode" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_process_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.get_process_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.get_process_mode" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.proc_saddle_path">
-<span class="sig-name descname"><span class="pre">proc_saddle_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.proc_saddle_path" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">proc_saddle_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.proc_saddle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.proc_saddle_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.akmcstate.AKMCState.proc_mode_path">
-<span class="sig-name descname"><span class="pre">proc_mode_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.AKMCState.proc_mode_path" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">proc_mode_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.proc_mode_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.proc_mode_path" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.akmcstate.lambertw">
-<span class="sig-prename descclassname"><span class="pre">eon.akmcstate.</span></span><span class="sig-name descname"><span class="pre">lambertw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.akmcstate.lambertw" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.akmcstate.</span></span><span class="sig-name descname"><span class="pre">lambertw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#lambertw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.lambertw" title="Link to this definition">¶</a></dt>
 <dd><p>Lambert W function, principal branch</p>
 </dd></dl>
 

@@ -88,6 +88,22 @@ server:
 .. autopydantic_model:: eon.schema.SaddleSearchConfig
 ```
 
+## Output
+
+The saddle search writes:
+- `saddle.con`: the saddle point structure
+- `mode.dat`: eigenvector at the saddle (Nx3 whitespace-separated)
+- `results.dat`: energy, force calls, convergence status, eigenvalue
+
+With `write_movies = true` (in `[Debug]`), `climb.con` is written as a
+concatenated structure movie (one frame per iteration). Each frame stores
+structured JSON metadata on line 2 via `readcon-core`, including `energy`,
+`frame_index`, `step_size`, `delta_e`, `convergence`, `eigenvalue`, `torque`,
+`angle`, and `rotations`.
+
+Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy
+`climb.dat` sidecar during the compatibility window.
+
 ## See also
 
 - <project:dimer.md> for the eigenmode method used during the saddle search

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="teal" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.superbasin - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+      <link rel="canonical" href="https://eondocs.org/_modules/eon/superbasin.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=c1ed689c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://eondocs.org/_modules/eon/superbasin.html"/>
+  <meta property="og:title" content="eon.superbasin"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      
+      
+      <strong>eOn</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Ecosystem</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="https://rgpycrumbs.rgoswami.me">
+                <span>rgpycrumbs</span>
+                <small>Python helpers for eOn workflows</small>
+              </a></li><li><a href="https://chemparseplot.rgoswami.me">
+                <span>chemparseplot</span>
+                <small>Parsing and plotting for computational chemistry</small>
+              </a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html#obtaining-sources">Obtaining sources</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html#licenses">Licenses</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/quip.html">QUIP with LAMMPS</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/serve_mode.html">Serve Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/parallel-potentials.html">Parallel Force Evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/release.html">Release workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.13.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.12.0/index.html">[v2.12.0] - 2026-03-08</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.12.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.10.2/index.html">[v2.10.2] - 2026-02-22</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.10.0/index.html">[v2.10.0] - 2026-02-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.9.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.9.0/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
+  data-type="github" data-user="TheochemUI" data-repo="eOn">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>TheochemUI/eOn</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">eOn</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">eon.superbasin</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <h1>Source code for eon.superbasin</h1><div class="highlight"><pre>
+<span></span><span data-line="1">
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.mcamc</span><span class="w"> </span><span class="kn">import</span> <span class="n">mcamc</span>
+</span><span data-line="6"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span data-line="7"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;superbasin&#39;</span><span class="p">)</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+</span><span data-line="9">
+</span><span data-line="10">
+<div class="viewcode-block" id="Superbasin">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin">[docs]</a>
+</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">Superbasin</span><span class="p">:</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">state_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">get_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="14"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize superbasin.</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="sd">        Must pass either state_list or get_state:</span>
+</span><span data-line="17"><span class="sd">        * state_list: Create a new state (must not exist, yet)</span>
+</span><span data-line="18"><span class="sd">        * get_state: Read an existing state from path (must exist)</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="21">        <span class="k">if</span> <span class="p">(</span><span class="n">state_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">get_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="22">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Superbasin must either have a list of states or a reference to get_state of a StateList&#39;</span><span class="p">)</span>
+</span><span data-line="23">        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span data-line="24">        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+</span><span data-line="25">        <span class="c1"># Get the states.</span>
+</span><span data-line="26">        <span class="k">if</span> <span class="n">state_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="27">            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+</span><span data-line="28">                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Superbasin file &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="29">            <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">state_list</span>
+</span><span data-line="30">            <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">state_list</span><span class="p">]</span>
+</span><span data-line="31">            <span class="bp">self</span><span class="o">.</span><span class="n">write_data</span><span class="p">()</span>
+</span><span data-line="32">        <span class="k">else</span><span class="p">:</span> <span class="c1"># get_state is not None</span>
+</span><span data-line="33">            <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">get_state</span><span class="p">)</span>
+</span><span data-line="34">        <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="35">        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="36">            <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">number</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+</span><span data-line="37">
+<div class="viewcode-block" id="Superbasin.step">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.step">[docs]</a>
+</span><span data-line="38">    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry_state</span><span class="p">,</span> <span class="n">get_product_state</span><span class="p">):</span>
+</span><span data-line="39">        <span class="c1"># c_i (forming vector c) is the inverse of the sum of the rates for each transient state i</span>
+</span><span data-line="40">        <span class="c1"># Q is the transient matrix of the canonical markov matrix.</span>
+</span><span data-line="41">        <span class="c1"># R is the recurrent matrix of the canonical markov matrix.</span>
+</span><span data-line="42">
+</span><span data-line="43">        <span class="c1"># Build a mapping between transient states and row/column indices. Used in Q and R.</span>
+</span><span data-line="44">        <span class="n">st2i</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="45">        <span class="n">i2st</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="46">        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="47">        <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="48">            <span class="n">st2i</span><span class="p">[</span><span class="n">number</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+</span><span data-line="49">            <span class="n">i2st</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">number</span>
+</span><span data-line="50">            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="51">
+</span><span data-line="52">        <span class="c1"># Build a mapping between recurrent state identifiers [a (state number, process id) tuple] and</span>
+</span><span data-line="53">        <span class="c1"># column indices. Used only in R.</span>
+</span><span data-line="54">        <span class="n">st2col</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="55">        <span class="n">col2st</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="56">        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="57">        <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="58">            <span class="n">procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">number</span><span class="p">]</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="59">            <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">proc</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">procs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="60">                <span class="k">if</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="61">                    <span class="n">st2col</span><span class="p">[(</span><span class="n">number</span><span class="p">,</span> <span class="nb">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">index</span>
+</span><span data-line="62">                    <span class="n">col2st</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+</span><span data-line="63">                    <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="64">
+</span><span data-line="65">        <span class="c1"># Build c.</span>
+</span><span data-line="66">        <span class="n">c</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">))</span>
+</span><span data-line="67">        <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="68">            <span class="n">procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">number</span><span class="p">]</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="69">            <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">proc</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">procs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="70">                <span class="n">c</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">number</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span>
+</span><span data-line="71">
+</span><span data-line="72">        <span class="c1"># Build Q and R.</span>
+</span><span data-line="73">        <span class="n">Q</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">)))</span>
+</span><span data-line="74">        <span class="n">R</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">col2st</span><span class="p">)))</span>
+</span><span data-line="75">        <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="76">            <span class="n">procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">number</span><span class="p">]</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="77">            <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">proc</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">procs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="78">                <span class="k">if</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="79">                    <span class="n">Q</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">number</span><span class="p">],</span> <span class="n">st2i</span><span class="p">[</span><span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]]]</span> <span class="o">+=</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span>
+</span><span data-line="80">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="81">                    <span class="n">R</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">number</span><span class="p">],</span> <span class="n">st2col</span><span class="p">[(</span><span class="n">number</span><span class="p">,</span> <span class="nb">id</span><span class="p">)]]</span> <span class="o">+=</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span>
+</span><span data-line="82">
+</span><span data-line="83">        <span class="c1">#lei debug</span>
+</span><span data-line="84">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;################&quot;</span><span class="p">)</span>
+</span><span data-line="85">        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; c is: &quot;</span><span class="p">)</span>
+</span><span data-line="86">        <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</span><span data-line="87">        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; Q is: &quot;</span><span class="p">)</span>
+</span><span data-line="88">        <span class="nb">print</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+</span><span data-line="89">        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; R is: &quot;</span><span class="p">)</span>
+</span><span data-line="90">        <span class="nb">print</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+</span><span data-line="91">        <span class="c1"># import pdb; pdb.set_trace()</span>
+</span><span data-line="92">
+</span><span data-line="93">        <span class="n">t</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">residual</span> <span class="o">=</span> <span class="n">mcamc</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span data-line="94">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;residual </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">residual</span><span class="p">)</span>
+</span><span data-line="95">
+</span><span data-line="96">        <span class="n">b</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">entry_state</span><span class="o">.</span><span class="n">number</span><span class="p">],:]</span>
+</span><span data-line="97">        <span class="n">p</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="98">        <span class="n">u</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+</span><span data-line="99">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)):</span>
+</span><span data-line="100">            <span class="n">p</span> <span class="o">+=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span data-line="101">            <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;=</span> <span class="n">u</span><span class="p">:</span>
+</span><span data-line="102">                <span class="n">exit_state_number</span><span class="p">,</span> <span class="n">exit_proc_id</span> <span class="o">=</span> <span class="n">col2st</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span data-line="103">                <span class="k">break</span>
+</span><span data-line="104">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="105">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to select exit process.&quot;</span><span class="p">)</span>
+</span><span data-line="106">
+</span><span data-line="107">        <span class="n">exit_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span><span class="p">[</span><span class="n">exit_state_number</span><span class="p">]</span>
+</span><span data-line="108">        <span class="n">product_state</span> <span class="o">=</span> <span class="n">get_product_state</span><span class="p">(</span><span class="n">exit_state_number</span><span class="p">,</span> <span class="n">exit_proc_id</span><span class="p">)</span>
+</span><span data-line="109">        <span class="n">mean_time</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">st2i</span><span class="p">[</span><span class="n">entry_state</span><span class="o">.</span><span class="n">number</span><span class="p">]]</span>
+</span><span data-line="110">        <span class="k">return</span> <span class="n">mean_time</span><span class="p">,</span> <span class="n">exit_state</span><span class="p">,</span> <span class="n">product_state</span><span class="p">,</span> <span class="n">exit_proc_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></div>
+
+</span><span data-line="111">
+<div class="viewcode-block" id="Superbasin.contains_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.contains_state">[docs]</a>
+</span><span data-line="112">    <span class="k">def</span><span class="w"> </span><span class="nf">contains_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="113">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="114">            <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_dict</span>
+</span><span data-line="115">        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+</span><span data-line="116">            <span class="k">return</span> <span class="kc">False</span></div>
+
+</span><span data-line="117">
+<div class="viewcode-block" id="Superbasin.write_data">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.write_data">[docs]</a>
+</span><span data-line="118">    <span class="k">def</span><span class="w"> </span><span class="nf">write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="119">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;saving data to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="120">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span><span data-line="121">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="122">            <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">:</span>
+</span><span data-line="123">                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">number</span><span class="p">)</span>
+</span><span data-line="124">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="125">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</span><span data-line="126">
+<div class="viewcode-block" id="Superbasin.read_data">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.read_data">[docs]</a>
+</span><span data-line="127">    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_state</span><span class="p">):</span>
+</span><span data-line="128">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;reading data from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="129">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="130">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="131">            <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</span><span data-line="132">                                  <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+</span><span data-line="133">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="134">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="135">        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_state</span><span class="p">(</span><span class="n">number</span><span class="p">)</span> <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_numbers</span><span class="p">]</span></div>
+
+</span><span data-line="136">
+<div class="viewcode-block" id="Superbasin.delete">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.delete">[docs]</a>
+</span><span data-line="137">    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="138">        <span class="k">if</span> <span class="n">storage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="139">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;deleting </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="140">            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="141">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="142">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;storing </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="143">            <span class="n">path_storage</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+</span><span data-line="144">            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">path_storage</span><span class="p">)</span>
+</span><span data-line="145">        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+</span><span data-line="146">
+</span><span data-line="147">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_filtered_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="148"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter out states, which have no processes leading out of the superbasin</span>
+</span><span data-line="149"><span class="sd">        and which have spent at least twice as much time in dynamics</span>
+</span><span data-line="150"><span class="sd">        search as the longest time of all other states which do have</span>
+</span><span data-line="151"><span class="sd">        processes leading out.</span>
+</span><span data-line="152">
+</span><span data-line="153"><span class="sd">        Returns an iterator over states that should still be</span>
+</span><span data-line="154"><span class="sd">        considered.</span>
+</span><span data-line="155">
+</span><span data-line="156"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="157">        <span class="c1"># Do not filter states if superbasin_confidence is disabled.</span>
+</span><span data-line="158">        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">sb_superbasin_confidence</span><span class="p">:</span>
+</span><span data-line="159">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="160">                <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="161">            <span class="k">return</span>
+</span><span data-line="162">        <span class="c1"># The code for an enabled superbasin_confidence feature follows.</span>
+</span><span data-line="163">        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
+</span><span data-line="164">            <span class="c1"># Use time spent in dynamics.</span>
+</span><span data-line="165">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="166">                <span class="n">max_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+</span><span data-line="167">                               <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span>
+</span><span data-line="168">                               <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</span><span data-line="169">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="170">                <span class="c1"># There is no state with an exit process, yet.</span>
+</span><span data-line="171">                <span class="n">max_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="172">            <span class="k">if</span> <span class="n">max_time</span> <span class="o">&lt;</span> <span class="mf">100.0</span><span class="p">:</span>
+</span><span data-line="173">                <span class="c1"># If no state was searched for at least 100 fs, do not</span>
+</span><span data-line="174">                <span class="c1"># filter yet.</span>
+</span><span data-line="175">                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="176">                    <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="177">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="178">                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_time</span><span class="p">:</span>
+</span><span data-line="179">                    <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="180">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="181">            <span class="c1"># Use number of searches.</span>
+</span><span data-line="182">            <span class="k">try</span><span class="p">:</span>
+</span><span data-line="183">                <span class="n">max_searches</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">()</span>
+</span><span data-line="184">                                   <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span>
+</span><span data-line="185">                                   <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</span><span data-line="186">            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="187">                <span class="c1"># There is no state with an exit process, yet.</span>
+</span><span data-line="188">                <span class="n">max_searches</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="189">            <span class="k">if</span> <span class="n">max_searches</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="190">                <span class="c1"># If no state was searched at least once, do not</span>
+</span><span data-line="191">                <span class="c1"># filter yet.</span>
+</span><span data-line="192">                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="193">                    <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="194">            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+</span><span data-line="195">                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_searches</span><span class="p">:</span>
+</span><span data-line="196">                    <span class="k">yield</span> <span class="n">state</span>
+</span><span data-line="197">
+<div class="viewcode-block" id="Superbasin.get_confidence">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.get_confidence">[docs]</a>
+</span><span data-line="198">    <span class="k">def</span><span class="w"> </span><span class="nf">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="199">        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span data-line="200">                   <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">())</span> <span class="c1">#self.states)</span></div>
+
+</span><span data-line="201">
+<div class="viewcode-block" id="Superbasin.get_lowest_confidence_state">
+<a class="viewcode-back" href="../../apidocs/eon/eon.superbasin.html#eon.superbasin.Superbasin.get_lowest_confidence_state">[docs]</a>
+</span><span data-line="202">    <span class="k">def</span><span class="w"> </span><span class="nf">get_lowest_confidence_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="203">        <span class="c1"># If there are several states with equal confidence, order by</span>
+</span><span data-line="204">        <span class="c1"># time spent searching.  This is needed in the case where we</span>
+</span><span data-line="205">        <span class="c1"># know no exit at all from the superbasin. All states have</span>
+</span><span data-line="206">        <span class="c1"># confidence 0.0 and we keep searching the same state. If that</span>
+</span><span data-line="207">        <span class="c1"># state happens to have no exit but another one has, we will</span>
+</span><span data-line="208">        <span class="c1"># never find anything. When we sort by time spent searching,</span>
+</span><span data-line="209">        <span class="c1"># though, we will cycle the search through all states.</span>
+</span><span data-line="210">        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">saddle_method</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
+</span><span data-line="211">            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">(),</span>
+</span><span data-line="212">                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">state</span><span class="o">.</span><span class="n">get_time</span><span class="p">())</span>
+</span><span data-line="213">                          <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="214">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="215">            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filtered_states</span><span class="p">(),</span>
+</span><span data-line="216">                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">state</span><span class="o">.</span><span class="n">get_number_of_searches</span><span class="p">())</span>
+</span><span data-line="217">                          <span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, the eOn developers</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/documentation_options.js?v=f5edd4dd"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=1ae7504c"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=cac61aee"></script></body>
+</html>

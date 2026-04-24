@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="teal" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.akmcstate - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+      <link rel="canonical" href="https://eondocs.org/_modules/eon/akmcstate.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_contributors.css?v=fe9086e2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=c1ed689c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://eondocs.org/_modules/eon/akmcstate.html"/>
+  <meta property="og:title" content="eon.akmcstate"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      
+      
+      <strong>eOn</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Ecosystem</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="https://rgpycrumbs.rgoswami.me">
+                <span>rgpycrumbs</span>
+                <small>Python helpers for eOn workflows</small>
+              </a></li><li><a href="https://chemparseplot.rgoswami.me">
+                <span>chemparseplot</span>
+                <small>Parsing and plotting for computational chemistry</small>
+              </a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../team.html">eOn Team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html">Installation</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html#obtaining-sources">Obtaining sources</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../install/index.html#licenses">Licenses</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/akmc.html">AKMC Tutorial</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/quip.html">QUIP with LAMMPS</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/potential.html">Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/optimizer.html">Optimizer</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/minimization.html">Minimization</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/dimer.html">Dimer method</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lanczos.html">Lanczos</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hessian.html">Hessian</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/prefactor.html">Prefactor</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/saddle_search.html">Saddle Search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/basin_hopping.html">Basin Hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/recycling.html">Recycling</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/communicator.html">Communicator</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/debug.html">Debug</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/paths.html">Paths</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/serve_mode.html">Serve Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../devdocs/index.html">Development Documentation</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/testing.html">Tests</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/parallel-potentials.html">Parallel Force Evaluation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/docbuild.html">Working with the documentation</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn.html">Subversion</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/release.html">Release workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../apidocs/index.html">API Reference</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.13.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.12.0/index.html">[v2.12.0] - 2026-03-08</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.12.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.11.2/index.html">[v2.11.2] - 2026-03-02</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.11.1/index.html">[v2.11.1] - 2026-03-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.11.0/index.html">[v2.11.0] - 2026-02-24</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.11.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.10.2/index.html">[v2.10.2] - 2026-02-22</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.10.1/index.html">[v2.10.1] - 2026-02-18</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.1/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.10.0/index.html">[v2.10.0] - 2026-02-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.10.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.9.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.9.0/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.2/release-notes.html">Release notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.8.1/index.html">[v2.8.1] - 2025-11-03</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.1/publications.html">Related Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/release-notes.html">Release notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../releases/v2.8.0/publications.html">Related Publications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
+  data-type="github" data-user="TheochemUI" data-repo="eOn">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>TheochemUI/eOn</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">eOn</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">eon.akmcstate</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <h1>Source code for eon.akmcstate</h1><div class="highlight"><pre>
+<span></span><span data-line="1">
+</span><span data-line="2"><span class="sd">&quot;&quot;&quot; The state module. &quot;&quot;&quot;</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="5"><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+</span><span data-line="6"><span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+</span><span data-line="7"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span data-line="8"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">EON_CONFIG</span>
+</span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigClass</span> <span class="c1"># Typing</span>
+</span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">atoms</span>
+</span><span data-line="15"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+</span><span data-line="16"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">state</span>
+</span><span data-line="17">
+<div class="viewcode-block" id="AKMCState">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState">[docs]</a>
+</span><span data-line="18"><span class="k">class</span><span class="w"> </span><span class="nc">AKMCState</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+</span><span data-line="19">    <span class="n">ID</span><span class="p">,</span> <span class="n">ENERGY</span><span class="p">,</span> <span class="n">PREFACTOR</span><span class="p">,</span> <span class="n">PRODUCT</span><span class="p">,</span> <span class="n">PRODUCT_ENERGY</span><span class="p">,</span> <span class="n">PRODUCT_PREFACTOR</span><span class="p">,</span> <span class="n">BARRIER</span><span class="p">,</span> <span class="n">RATE</span><span class="p">,</span> <span class="n">REPEATS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">))</span>
+</span><span data-line="20">    <span class="n">processtable_head_fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%7s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%11s</span><span class="s2"> </span><span class="si">%9s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%17s</span><span class="s2"> </span><span class="si">%8s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%7s</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="21">    <span class="n">processtable_header</span> <span class="o">=</span> <span class="n">processtable_head_fmt</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;proc #&quot;</span><span class="p">,</span> <span class="s2">&quot;saddle energy&quot;</span><span class="p">,</span> <span class="s2">&quot;prefactor&quot;</span><span class="p">,</span>
+</span><span data-line="22">                                                   <span class="s2">&quot;product&quot;</span><span class="p">,</span> <span class="s2">&quot;product energy&quot;</span><span class="p">,</span> <span class="s2">&quot;product prefactor&quot;</span><span class="p">,</span>
+</span><span data-line="23">                                                   <span class="s2">&quot;barrier&quot;</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">,</span> <span class="s2">&quot;repeats&quot;</span><span class="p">)</span>
+</span><span data-line="24">    <span class="n">processtable_line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%7d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="s2"> </span><span class="si">%11.5e</span><span class="s2"> </span><span class="si">%9d</span><span class="s2"> </span><span class="si">%16.5f</span><span class="s2"> </span><span class="si">%17.5e</span><span class="s2"> </span><span class="si">%8.5f</span><span class="s2"> </span><span class="si">%12.5e</span><span class="s2"> </span><span class="si">%7d</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statepath</span><span class="p">,</span> <span class="n">statenumber</span><span class="p">,</span> <span class="n">statelist</span><span class="p">,</span> <span class="n">previous_state_num</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="27">                 <span class="n">reactant_path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ConfigClass</span> <span class="o">=</span> <span class="n">EON_CONFIG</span><span class="p">):</span>
+</span><span data-line="28"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Creates a new State, with lazily loaded data. &quot;&quot;&quot;</span>
+</span><span data-line="29">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+</span><span data-line="30">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_server_side_process_search</span><span class="p">:</span>
+</span><span data-line="31">            <span class="bp">self</span><span class="o">.</span><span class="n">search_result_header</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%8s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2">    </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;searchid&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;barrier&quot;</span><span class="p">,</span>
+</span><span data-line="32">                                                                                  <span class="s2">&quot;max-dist&quot;</span><span class="p">,</span> <span class="s2">&quot;sad-fcs&quot;</span><span class="p">,</span>
+</span><span data-line="33">                                                                                  <span class="s2">&quot;mins-fcs&quot;</span><span class="p">,</span> <span class="s2">&quot;pref-fcs&quot;</span><span class="p">,</span>
+</span><span data-line="34">                                                                                  <span class="s2">&quot;result&quot;</span><span class="p">)</span>
+</span><span data-line="35">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="36">            <span class="bp">self</span><span class="o">.</span><span class="n">search_result_header</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%8s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2">    </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;wuid&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;barrier&quot;</span><span class="p">,</span>
+</span><span data-line="37">                                                                                  <span class="s2">&quot;max-dist&quot;</span><span class="p">,</span> <span class="s2">&quot;sad-fcs&quot;</span><span class="p">,</span>
+</span><span data-line="38">                                                                                  <span class="s2">&quot;mins-fcs&quot;</span><span class="p">,</span> <span class="s2">&quot;pref-fcs&quot;</span><span class="p">,</span>
+</span><span data-line="39">                                                                                  <span class="s2">&quot;result&quot;</span><span class="p">)</span>
+</span><span data-line="40">        <span class="bp">self</span><span class="o">.</span><span class="n">search_result_header</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_result_header</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+</span><span data-line="41">        <span class="n">state</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">statepath</span><span class="p">,</span> <span class="n">statenumber</span><span class="p">,</span><span class="n">statelist</span><span class="p">,</span> <span class="n">previous_state_num</span><span class="p">,</span>
+</span><span data-line="42">                             <span class="n">reactant_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="43">
+</span><span data-line="44">        <span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;badprocdata&quot;</span><span class="p">)</span>
+</span><span data-line="45">
+</span><span data-line="46">        <span class="bp">self</span><span class="o">.</span><span class="n">con_cache</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="47">
+</span><span data-line="48">
+<div class="viewcode-block" id="AKMCState.find_repeat">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.find_repeat">[docs]</a>
+</span><span data-line="49">    <span class="k">def</span><span class="w"> </span><span class="nf">find_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">saddle_file</span><span class="p">,</span> <span class="n">barrier</span><span class="p">):</span>
+</span><span data-line="50">        <span class="bp">self</span><span class="o">.</span><span class="n">load_process_table</span><span class="p">()</span>
+</span><span data-line="51">        <span class="n">energy_a</span> <span class="o">=</span> <span class="n">barrier</span>
+</span><span data-line="52">        <span class="n">p1</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">saddle_file</span><span class="p">)</span>
+</span><span data-line="53">        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+</span><span data-line="54">            <span class="n">energy_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="s1">&#39;barrier&#39;</span><span class="p">]</span>
+</span><span data-line="55">            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">energy_a</span> <span class="o">-</span> <span class="n">energy_b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_eps_e</span><span class="p">:</span>
+</span><span data-line="56">                <span class="k">continue</span>
+</span><span data-line="57">
+</span><span data-line="58">            <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_cache</span><span class="p">:</span>
+</span><span data-line="59">                <span class="n">p2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">con_cache</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+</span><span data-line="60">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="61">                <span class="n">p2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_saddle_path</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+</span><span data-line="62">                <span class="bp">self</span><span class="o">.</span><span class="n">con_cache</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">p2</span>
+</span><span data-line="63">
+</span><span data-line="64">            <span class="k">if</span> <span class="n">atoms</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_eps_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">comp_neighbor_cutoff</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span><span data-line="65">                <span class="k">return</span> <span class="nb">id</span>
+</span><span data-line="66">        <span class="k">return</span> <span class="kc">None</span></div>
+
+</span><span data-line="67">
+<div class="viewcode-block" id="AKMCState.add_process">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.add_process">[docs]</a>
+</span><span data-line="68">    <span class="k">def</span><span class="w"> </span><span class="nf">add_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="69"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Adds a process to this State. &quot;&quot;&quot;</span>
+</span><span data-line="70">        <span class="n">state</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">add_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</span><span data-line="71">
+</span><span data-line="72">        <span class="bp">self</span><span class="o">.</span><span class="n">set_good_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_good_saddle_count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span data-line="73">
+</span><span data-line="74">        <span class="n">resultdata</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span> <span class="c1">#The information from the result.dat file</span>
+</span><span data-line="75">
+</span><span data-line="76">        <span class="k">if</span> <span class="s1">&#39;simulation_time&#39;</span> <span class="ow">in</span> <span class="n">resultdata</span><span class="p">:</span>
+</span><span data-line="77">            <span class="bp">self</span><span class="o">.</span><span class="n">increment_time</span><span class="p">(</span><span class="n">resultdata</span><span class="p">[</span><span class="s1">&#39;simulation_time&#39;</span><span class="p">],</span> <span class="n">resultdata</span><span class="p">[</span><span class="s1">&#39;md_temperature&#39;</span><span class="p">])</span>
+</span><span data-line="78">
+</span><span data-line="79">        <span class="c1"># We may not already have the energy for this State.  If not, it should be placed in the result data.</span>
+</span><span data-line="80">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="81">            <span class="c1"># This energy now defines the reference energy for the state</span>
+</span><span data-line="82">            <span class="bp">self</span><span class="o">.</span><span class="n">set_energy</span><span class="p">(</span><span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;potential_energy_reactant&quot;</span><span class="p">])</span>
+</span><span data-line="83">        <span class="n">reactant_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
+</span><span data-line="84">
+</span><span data-line="85">        <span class="c1"># Calculate the forward barrier for this process, and abort if the energy is too high.</span>
+</span><span data-line="86">        <span class="n">oldlowest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lowest_barrier</span><span class="p">()</span>
+</span><span data-line="87">        <span class="n">barrier</span> <span class="o">=</span> <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;potential_energy_saddle&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">reactant_energy</span>
+</span><span data-line="88">
+</span><span data-line="89">        <span class="n">lowest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_lowest_barrier</span><span class="p">(</span><span class="n">barrier</span><span class="p">)</span>
+</span><span data-line="90">        <span class="n">ediff</span> <span class="o">=</span> <span class="p">(</span><span class="n">barrier</span> <span class="o">-</span> <span class="n">lowest</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span> <span class="o">*</span>
+</span><span data-line="91">                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">thermal_window</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">max_thermal_window</span><span class="p">))</span>
+</span><span data-line="92">        <span class="k">if</span> <span class="n">ediff</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+</span><span data-line="93">            <span class="bp">self</span><span class="o">.</span><span class="n">append_search_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;barrier &gt; max_thermal_window&quot;</span><span class="p">,</span> <span class="n">superbasin</span><span class="p">)</span>
+</span><span data-line="94">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="95">
+</span><span data-line="96">        <span class="c1"># Determine the number of processes in the process table that have a similar energy.</span>
+</span><span data-line="97">        <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_repeat</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;saddle.con&quot;</span><span class="p">],</span> <span class="n">barrier</span><span class="p">)</span>
+</span><span data-line="98">        <span class="k">if</span> <span class="nb">id</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="99">            <span class="bp">self</span><span class="o">.</span><span class="n">append_search_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;repeat-</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">,</span> <span class="n">superbasin</span><span class="p">)</span>
+</span><span data-line="100">            <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="s1">&#39;repeats&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="101">            <span class="bp">self</span><span class="o">.</span><span class="n">save_process_table</span><span class="p">()</span>
+</span><span data-line="102">            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span> <span class="ow">or</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
+</span><span data-line="103">                <span class="bp">self</span><span class="o">.</span><span class="n">inc_proc_random_count</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span data-line="104">                <span class="c1"># Do not increase repeats if we are currently in a</span>
+</span><span data-line="105">                <span class="c1"># superbasin and the process does not lead out of it;</span>
+</span><span data-line="106">                <span class="c1"># or if the process barrier is outside the thermal window.</span>
+</span><span data-line="107">                <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_relevant_procids</span><span class="p">(</span><span class="n">superbasin</span><span class="p">):</span>
+</span><span data-line="108">                    <span class="bp">self</span><span class="o">.</span><span class="n">inc_repeats</span><span class="p">()</span>
+</span><span data-line="109">            <span class="k">if</span> <span class="s1">&#39;simulation_time&#39;</span> <span class="ow">in</span> <span class="n">resultdata</span><span class="p">:</span>
+</span><span data-line="110">                <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+</span><span data-line="111">                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;event </span><span class="si">%3i</span><span class="s2"> found at time </span><span class="si">%f</span><span class="s2"> fs&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">current_time</span><span class="p">))</span>
+</span><span data-line="112">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="113">
+</span><span data-line="114">        <span class="c1"># This appears to be a unique process.</span>
+</span><span data-line="115">        <span class="c1"># Check if the mode, reactant, saddle, and product are legit</span>
+</span><span data-line="116">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="117">            <span class="k">if</span> <span class="s1">&#39;mode&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span><span data-line="118">                <span class="n">io</span><span class="o">.</span><span class="n">load_mode</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;mode.dat&#39;</span><span class="p">])</span>
+</span><span data-line="119">            <span class="k">if</span> <span class="s1">&#39;reactant&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span><span data-line="120">                <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;reactant.con&#39;</span><span class="p">])</span>
+</span><span data-line="121">            <span class="k">if</span> <span class="s1">&#39;saddle&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span><span data-line="122">                <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;saddle.con&#39;</span><span class="p">])</span>
+</span><span data-line="123">            <span class="k">if</span> <span class="s1">&#39;product&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span><span data-line="124">                <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;product.con&#39;</span><span class="p">])</span>
+</span><span data-line="125">        <span class="k">except</span><span class="p">:</span>
+</span><span data-line="126">            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Mode, reactant, saddle, or product has incorrect format&quot;</span><span class="p">)</span>
+</span><span data-line="127">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="128">
+</span><span data-line="129">        <span class="c1"># Reset the repeat count.</span>
+</span><span data-line="130">        <span class="bp">self</span><span class="o">.</span><span class="n">reset_repeats</span><span class="p">()</span>
+</span><span data-line="131">
+</span><span data-line="132">        <span class="c1"># Respond to finding a new lowest barrier.</span>
+</span><span data-line="133">        <span class="bp">self</span><span class="o">.</span><span class="n">set_unique_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_unique_saddle_count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span data-line="134">        <span class="k">if</span> <span class="n">barrier</span> <span class="o">==</span> <span class="n">lowest</span> <span class="ow">and</span> <span class="n">barrier</span> <span class="o">&lt;</span> <span class="n">oldlowest</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">epsilon_e</span><span class="p">:</span>
+</span><span data-line="135">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found new lowest barrier </span><span class="si">%f</span><span class="s2"> for state </span><span class="si">%i</span><span class="s2"> (type: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">lowest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+</span><span data-line="136">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found new barrier </span><span class="si">%f</span><span class="s2"> for state </span><span class="si">%i</span><span class="s2"> (type: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+</span><span data-line="137">
+</span><span data-line="138">
+</span><span data-line="139">        <span class="c1"># Update the search result table.</span>
+</span><span data-line="140">        <span class="bp">self</span><span class="o">.</span><span class="n">append_search_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;good-</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_num_procs</span><span class="p">(),</span> <span class="n">superbasin</span><span class="p">)</span>
+</span><span data-line="141">
+</span><span data-line="142">        <span class="c1"># The id of this process is the number of processes.</span>
+</span><span data-line="143">        <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_num_procs</span><span class="p">()</span>
+</span><span data-line="144">
+</span><span data-line="145">        <span class="k">if</span> <span class="s1">&#39;simulation_time&#39;</span> <span class="ow">in</span> <span class="n">resultdata</span><span class="p">:</span>
+</span><span data-line="146">            <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+</span><span data-line="147">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;new event </span><span class="si">%3i</span><span class="s2"> found at time </span><span class="si">%f</span><span class="s2"> fs&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">current_time</span><span class="p">))</span>
+</span><span data-line="148">
+</span><span data-line="149">        <span class="c1"># Move the relevant files into the procdata directory.</span>
+</span><span data-line="150">        <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_reactant_path</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;reactant.con&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="151">        <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_mode_path</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;mode.dat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="152">        <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_product_path</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;product.con&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="153">        <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_saddle_path</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;saddle.con&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="154">        <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_results_path</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="155">
+</span><span data-line="156">        <span class="c1"># Set maximum rate, if defined</span>
+</span><span data-line="157"><span class="c1">#        forward_rate = resultdata[&quot;prefactor_reactant_to_product&quot;] * math.exp(-barrier / self.statelist.kT)</span>
+</span><span data-line="158"><span class="c1">#        if self.config.akmc_max_rate &gt; 0 and cur_rate &gt; self.config.akmc_max_rate:</span>
+</span><span data-line="159"><span class="c1">#            # print &quot;max rate exceeded: &quot;, cur_rate</span>
+</span><span data-line="160"><span class="c1">#            forward_rate = self.config.akmc_max_rate</span>
+</span><span data-line="161">
+</span><span data-line="162">        <span class="c1"># Set equilibrium rate, if defined</span>
+</span><span data-line="163">        <span class="n">forward_rate</span> <span class="o">=</span> <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;prefactor_reactant_to_product&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">barrier</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+</span><span data-line="164">        <span class="n">reverse_barrier</span> <span class="o">=</span> <span class="n">barrier</span> <span class="o">-</span> <span class="p">(</span><span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;potential_energy_product&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">reactant_energy</span><span class="p">)</span>
+</span><span data-line="165">        <span class="n">reverse_rate</span> <span class="o">=</span> <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;prefactor_product_to_reactant&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">reverse_barrier</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+</span><span data-line="166">
+</span><span data-line="167">        <span class="n">eq_rate_flag</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="168">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_eq_rate</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">forward_rate</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_eq_rate</span> <span class="ow">and</span> <span class="n">reverse_rate</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_eq_rate</span><span class="p">:</span>
+</span><span data-line="169">            <span class="n">eq_rate_flag</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="170">            <span class="c1">#print &quot;eq_rate exceeded, forward:&quot;, forward_rate, &quot; reverse: &quot;, reverse_rate</span>
+</span><span data-line="171">            <span class="k">if</span> <span class="n">forward_rate</span> <span class="o">&lt;</span> <span class="n">reverse_rate</span><span class="p">:</span>
+</span><span data-line="172">                <span class="n">forward_eq_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_eq_rate</span>
+</span><span data-line="173">                <span class="n">reverse_eq_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_eq_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">reverse_rate</span> <span class="o">/</span> <span class="n">forward_rate</span><span class="p">)</span>
+</span><span data-line="174">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="175">                <span class="n">forward_eq_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_eq_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">forward_rate</span> <span class="o">/</span> <span class="n">reverse_rate</span><span class="p">)</span>
+</span><span data-line="176">                <span class="n">reverse_eq_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_eq_rate</span>
+</span><span data-line="177">            <span class="c1">#print &quot;new eq forward rate:&quot;, forward_eq_rate, &quot; reverse: &quot;, reverse_eq_rate</span>
+</span><span data-line="178">
+</span><span data-line="179">        <span class="c1"># Append this barrier to the process table (in memory and on disk).</span>
+</span><span data-line="180">        <span class="bp">self</span><span class="o">.</span><span class="n">append_process_table</span><span class="p">(</span><span class="nb">id</span> <span class="o">=</span>                <span class="nb">id</span><span class="p">,</span>
+</span><span data-line="181">                                  <span class="n">saddle_energy</span> <span class="o">=</span>     <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;potential_energy_saddle&quot;</span><span class="p">],</span>
+</span><span data-line="182">                                  <span class="n">prefactor</span> <span class="o">=</span>         <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;prefactor_reactant_to_product&quot;</span><span class="p">],</span>
+</span><span data-line="183">                                  <span class="n">product</span> <span class="o">=</span>           <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="184">                                  <span class="n">product_energy</span> <span class="o">=</span>    <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;potential_energy_product&quot;</span><span class="p">],</span>
+</span><span data-line="185">                                  <span class="n">product_prefactor</span> <span class="o">=</span> <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;prefactor_product_to_reactant&quot;</span><span class="p">],</span>
+</span><span data-line="186">                                  <span class="n">barrier</span> <span class="o">=</span>           <span class="n">barrier</span><span class="p">,</span>
+</span><span data-line="187">                                  <span class="n">rate</span> <span class="o">=</span>              <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;prefactor_reactant_to_product&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">barrier</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span><span class="p">),</span>
+</span><span data-line="188">                                  <span class="c1"># rate =              forward_rate,</span>
+</span><span data-line="189">                                  <span class="n">repeats</span> <span class="o">=</span>           <span class="mi">0</span><span class="p">)</span>
+</span><span data-line="190">
+</span><span data-line="191">        <span class="c1"># If equilibrium rate, change the forward rate as well</span>
+</span><span data-line="192">        <span class="k">if</span> <span class="n">eq_rate_flag</span><span class="p">:</span>
+</span><span data-line="193">            <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">forward_eq_rate</span>
+</span><span data-line="194">            <span class="c1"># reverse_procs[id][&#39;rate&#39;] = reverse_eq_rate</span>
+</span><span data-line="195">
+</span><span data-line="196">        <span class="c1"># If this is a random search type, add this proc to the random proc dict.</span>
+</span><span data-line="197">        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span> <span class="ow">or</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;dynamics&quot;</span><span class="p">:</span>
+</span><span data-line="198">            <span class="bp">self</span><span class="o">.</span><span class="n">inc_proc_random_count</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</span><span data-line="199">
+</span><span data-line="200">        <span class="c1"># This was a unique process, so return the id.</span>
+</span><span data-line="201">        <span class="k">return</span> <span class="nb">id</span></div>
+
+</span><span data-line="202">
+<div class="viewcode-block" id="AKMCState.append_search_result">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.append_search_result">[docs]</a>
+</span><span data-line="203">    <span class="k">def</span><span class="w"> </span><span class="nf">append_search_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">comment</span><span class="p">,</span> <span class="n">superbasin</span><span class="p">):</span>
+</span><span data-line="204">        <span class="c1">#try:</span>
+</span><span data-line="205">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_result_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</span><span data-line="206">        <span class="n">resultdata</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span>
+</span><span data-line="207">
+</span><span data-line="208">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_server_side_process_search</span><span class="p">:</span>
+</span><span data-line="209">            <span class="n">first_column</span> <span class="o">=</span> <span class="s2">&quot;search_id&quot;</span>
+</span><span data-line="210">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="211">            <span class="n">first_column</span> <span class="o">=</span> <span class="s2">&quot;wuid&quot;</span>
+</span><span data-line="212">
+</span><span data-line="213">        <span class="k">if</span> <span class="n">superbasin</span><span class="p">:</span>
+</span><span data-line="214">            <span class="n">comment</span> <span class="o">+=</span> <span class="s2">&quot; [</span><span class="si">%i</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="n">superbasin</span><span class="o">.</span><span class="n">id</span>
+</span><span data-line="215">
+</span><span data-line="216">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8d</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%10.5f</span><span class="s2"> </span><span class="si">%10.5f</span><span class="s2"> </span><span class="si">%10d</span><span class="s2"> </span><span class="si">%10d</span><span class="s2"> </span><span class="si">%10d</span><span class="s2">    </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">first_column</span><span class="p">],</span>
+</span><span data-line="217">                 <span class="n">result</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+</span><span data-line="218">                 <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;barrier_reactant_to_product&quot;</span><span class="p">],</span>
+</span><span data-line="219">                 <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;displacement_saddle_distance&quot;</span><span class="p">],</span>
+</span><span data-line="220">                 <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;force_calls_saddle&quot;</span><span class="p">],</span>
+</span><span data-line="221">                 <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;force_calls_minimization&quot;</span><span class="p">],</span>
+</span><span data-line="222">                 <span class="n">resultdata</span><span class="p">[</span><span class="s2">&quot;force_calls_prefactors&quot;</span><span class="p">],</span>
+</span><span data-line="223">                 <span class="n">comment</span><span class="p">))</span>
+</span><span data-line="224">        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</span><span data-line="225">        <span class="c1">#except:</span>
+</span><span data-line="226">        <span class="c1">#    logger.warning(&quot;Failed to append search result.&quot;)</span>
+</span><span data-line="227">
+<div class="viewcode-block" id="AKMCState.get_ratetable">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_ratetable">[docs]</a>
+</span><span data-line="228">    <span class="k">def</span><span class="w"> </span><span class="nf">get_ratetable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="229"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Loads the process table if it has not been loaded and generates a rate table</span>
+</span><span data-line="230"><span class="sd">            according to kT and thermal_window. &quot;&quot;&quot;</span>
+</span><span data-line="231">        <span class="bp">self</span><span class="o">.</span><span class="n">load_process_table</span><span class="p">()</span>
+</span><span data-line="232">        <span class="n">lowest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lowest_barrier</span><span class="p">()</span>
+</span><span data-line="233">        <span class="c1"># Maximum barrier according to thermal window.</span>
+</span><span data-line="234">        <span class="n">max_barrier</span> <span class="o">=</span> <span class="n">lowest</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">thermal_window</span>
+</span><span data-line="235">        <span class="n">rt</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">id</span><span class="p">,</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">])</span>
+</span><span data-line="236">              <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">proc</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+</span><span data-line="237">              <span class="k">if</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_barrier</span><span class="p">]</span>
+</span><span data-line="238">        <span class="k">if</span> <span class="ow">not</span> <span class="n">superbasin</span><span class="p">:</span>
+</span><span data-line="239">            <span class="k">return</span> <span class="n">rt</span>
+</span><span data-line="240">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="241">            <span class="c1"># Filter out processes that lead to another state in the superbasin.</span>
+</span><span data-line="242">            <span class="k">return</span> <span class="p">[</span><span class="n">entry</span>
+</span><span data-line="243">                    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">rt</span>
+</span><span data-line="244">                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;product&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">superbasin</span><span class="o">.</span><span class="n">state_dict</span><span class="p">]</span></div>
+
+</span><span data-line="245">
+<div class="viewcode-block" id="AKMCState.get_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_table">[docs]</a>
+</span><span data-line="246">    <span class="k">def</span><span class="w"> </span><span class="nf">get_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="247"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return dictionary of processes (id-&gt;proc) inside thermal window.&quot;&quot;&quot;</span>
+</span><span data-line="248">        <span class="k">return</span> <span class="nb">dict</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="nb">id</span><span class="p">]]</span>
+</span><span data-line="249">                    <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_relevant_procids</span><span class="p">())</span></div>
+
+</span><span data-line="250">
+<div class="viewcode-block" id="AKMCState.get_relevant_procids">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_relevant_procids">[docs]</a>
+</span><span data-line="251">    <span class="k">def</span><span class="w"> </span><span class="nf">get_relevant_procids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="252"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get process IDs inside thermal window.&quot;&quot;&quot;</span>
+</span><span data-line="253">        <span class="k">return</span> <span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="n">superbasin</span><span class="p">)]</span></div>
+
+</span><span data-line="254">
+<div class="viewcode-block" id="AKMCState.get_confidence">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_confidence">[docs]</a>
+</span><span data-line="255">    <span class="k">def</span><span class="w"> </span><span class="nf">get_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="256"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Confidence that all relevant processes for this state were found.</span>
+</span><span data-line="257">
+</span><span data-line="258"><span class="sd">        The confidence is a function of the ratio Nf/Ns, where Nf is</span>
+</span><span data-line="259"><span class="sd">        the number of unique processes and Ns is the number of</span>
+</span><span data-line="260"><span class="sd">        searches performed.</span>
+</span><span data-line="261">
+</span><span data-line="262"><span class="sd">        When Nf or Ns are zero, there is no confidence.  Zero is</span>
+</span><span data-line="263"><span class="sd">        returned in this case.</span>
+</span><span data-line="264">
+</span><span data-line="265"><span class="sd">        As the ratio Nf/Ns decreases, the confidence increases from</span>
+</span><span data-line="266"><span class="sd">        0.0 to a limit of 1.0.  This is roughly equivalent to the</span>
+</span><span data-line="267"><span class="sd">        statement: I am more confident that I have found all relevant</span>
+</span><span data-line="268"><span class="sd">        processes if I have found 10 processes after 1000 searches</span>
+</span><span data-line="269"><span class="sd">        than if I have found 900 processes after 1000 searches.</span>
+</span><span data-line="270">
+</span><span data-line="271"><span class="sd">        Nf is calculated to be the number of processes in the rate</span>
+</span><span data-line="272"><span class="sd">        table. Ns is calculated to be the number of searches that</span>
+</span><span data-line="273"><span class="sd">        resulted in a process on the rate table.</span>
+</span><span data-line="274">
+</span><span data-line="275"><span class="sd">        When using recycling or kdb, it is useful to ignore processes</span>
+</span><span data-line="276"><span class="sd">        that occur outside the hole, the region in which the last</span>
+</span><span data-line="277"><span class="sd">        process took place.  Focusing on this region means you can do</span>
+</span><span data-line="278"><span class="sd">        possibly far fewer searches to reach confidence. When using</span>
+</span><span data-line="279"><span class="sd">        the hole to filter processes, Nf and Ns only take into account</span>
+</span><span data-line="280"><span class="sd">        processes that intersect the hole.</span>
+</span><span data-line="281">
+</span><span data-line="282"><span class="sd">        If superbasin is passed, that means the state is in that</span>
+</span><span data-line="283"><span class="sd">        superbasin. The confidence calculation is adjusted so that</span>
+</span><span data-line="284"><span class="sd">        only processes that lead out of the superbasin are</span>
+</span><span data-line="285"><span class="sd">        counted. This may be disabled by the</span>
+</span><span data-line="286"><span class="sd">        self.config.sb_superbasin_confidence option.</span>
+</span><span data-line="287">
+</span><span data-line="288"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="289">        <span class="c1"># Possibly disable superbasin feature.</span>
+</span><span data-line="290">        <span class="c1">#if not self.config.sb_superbasin_confidence:</span>
+</span><span data-line="291">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="292">            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sb_superbasin_confidence</span><span class="p">:</span>
+</span><span data-line="293">                <span class="n">superbasin</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="294">        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+</span><span data-line="295">            <span class="n">superbasin</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="296">
+</span><span data-line="297">        <span class="c1"># Checking to see if all recycling jobs are complete</span>
+</span><span data-line="298">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recycling_on</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">disp_moved_only</span><span class="p">:</span>
+</span><span data-line="299">            <span class="n">job_table_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;jobs.tbl&quot;</span><span class="p">)</span>
+</span><span data-line="300">            <span class="n">job_table</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">job_table_path</span><span class="p">)</span>
+</span><span data-line="301">            <span class="k">if</span> <span class="nb">any</span><span class="p">([</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;recycling&#39;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">job_table</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="p">]):</span>
+</span><span data-line="302">                <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="303">
+</span><span data-line="304">        <span class="c1"># Load the rate table. If we are in a superbasin, we filter</span>
+</span><span data-line="305">        <span class="c1"># out all processes leading to another state in the same</span>
+</span><span data-line="306">        <span class="c1"># superbasin.</span>
+</span><span data-line="307">        <span class="n">rt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ratetable</span><span class="p">(</span><span class="n">superbasin</span><span class="p">)</span>
+</span><span data-line="308">        <span class="c1"># Load the repeat counts and filter if we are in a superbasin.</span>
+</span><span data-line="309">        <span class="n">prc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_proc_random_count</span><span class="p">()</span>
+</span><span data-line="310">        <span class="k">if</span> <span class="n">superbasin</span><span class="p">:</span>
+</span><span data-line="311">            <span class="n">prc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span><span class="n">proc</span><span class="p">,</span> <span class="n">count</span><span class="p">]</span>
+</span><span data-line="312">                       <span class="k">for</span> <span class="n">proc</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">prc</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+</span><span data-line="313">                       <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="n">proc</span><span class="p">][</span><span class="s2">&quot;product&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">superbasin</span><span class="o">.</span><span class="n">state_dict</span><span class="p">)</span>
+</span><span data-line="314">        <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span><span data-line="315">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence_correction</span><span class="p">:</span>
+</span><span data-line="316">            <span class="n">mn</span> <span class="o">=</span> <span class="mf">1e300</span>
+</span><span data-line="317">            <span class="n">mx</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="318">            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rt</span><span class="p">:</span>
+</span><span data-line="319">                <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">prc</span><span class="p">:</span>
+</span><span data-line="320">                    <span class="n">mn</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">mn</span><span class="p">,</span> <span class="n">prc</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+</span><span data-line="321">                    <span class="n">mx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">mx</span><span class="p">,</span> <span class="n">prc</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+</span><span data-line="322">            <span class="k">if</span> <span class="n">mx</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="323">                <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span><span data-line="324">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="325">                <span class="n">alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mn</span><span class="p">)</span><span class="o">/</span><span class="n">mx</span>
+</span><span data-line="326">
+</span><span data-line="327">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence_scheme</span> <span class="o">==</span> <span class="s1">&#39;new&#39;</span><span class="p">:</span>
+</span><span data-line="328">            <span class="n">Nf</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="329">            <span class="n">Ns</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="330">            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rt</span><span class="p">:</span>
+</span><span data-line="331">                <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">prc</span><span class="p">:</span>
+</span><span data-line="332">                    <span class="n">Nf</span> <span class="o">+=</span> <span class="mf">1.0</span>
+</span><span data-line="333">                    <span class="n">Ns</span> <span class="o">+=</span> <span class="n">prc</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+</span><span data-line="334">            <span class="k">if</span> <span class="n">Ns</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="335">                <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="336">            <span class="k">if</span> <span class="n">Nf</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="337">                <span class="n">Nf</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span><span data-line="338">            <span class="k">return</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">Nf</span><span class="o">/</span><span class="p">(</span><span class="n">alpha</span><span class="o">*</span><span class="n">Ns</span><span class="p">))</span> <span class="o">*</span> <span class="n">lambertw</span><span class="p">(</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">Nf</span><span class="o">/</span><span class="p">(</span><span class="n">alpha</span><span class="o">*</span><span class="n">Ns</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="n">Nf</span><span class="o">/</span><span class="p">(</span><span class="n">alpha</span><span class="o">*</span><span class="n">Ns</span><span class="p">)))</span>
+</span><span data-line="339">
+</span><span data-line="340">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence_scheme</span> <span class="o">==</span> <span class="s1">&#39;sampling&#39;</span><span class="p">:</span>
+</span><span data-line="341">            <span class="n">all_repeats</span> <span class="o">=</span> <span class="n">prc</span>
+</span><span data-line="342">            <span class="n">repeats</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="343">            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">rt</span><span class="p">:</span>
+</span><span data-line="344">                <span class="nb">id</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="345">                <span class="n">repeats</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_repeats</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+</span><span data-line="346">            <span class="c1"># number of events</span>
+</span><span data-line="347">            <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span>
+</span><span data-line="348">            <span class="c1"># number of searches</span>
+</span><span data-line="349">            <span class="n">n</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">repeats</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</span><span data-line="350">            <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span> <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="351">
+</span><span data-line="352">            <span class="c1"># probabilities</span>
+</span><span data-line="353">            <span class="n">ps</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">repeats</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="354">            <span class="n">ps</span> <span class="o">/=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+</span><span data-line="355">
+</span><span data-line="356">            <span class="n">C</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</span><span data-line="357">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span data-line="358">                <span class="n">C</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">C</span><span class="p">)</span><span class="o">*</span><span class="n">ps</span>
+</span><span data-line="359">
+</span><span data-line="360">            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</span><span data-line="361">
+</span><span data-line="362">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">akmc_confidence_scheme</span> <span class="o">==</span> <span class="s1">&#39;dynamics&#39;</span><span class="p">:</span>
+</span><span data-line="363">            <span class="c1">#print(&quot;into dynamics confidence&quot;)</span>
+</span><span data-line="364">            <span class="c1"># filter out recycled saddles if displace_moved_only is true</span>
+</span><span data-line="365">            <span class="n">dyn_saddles</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="366">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">disp_moved_only</span><span class="p">:</span>
+</span><span data-line="367">                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_result_path</span><span class="p">)</span>
+</span><span data-line="368">                <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="369">                <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="370">
+</span><span data-line="371">                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="372">                    <span class="n">status</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">7</span><span class="p">]</span>
+</span><span data-line="373">                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;good&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">status</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;repeat&#39;</span><span class="p">)):</span>
+</span><span data-line="374">                        <span class="k">continue</span>
+</span><span data-line="375">                    <span class="n">search_type</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+</span><span data-line="376">                    <span class="k">if</span> <span class="n">search_type</span> <span class="o">!=</span> <span class="s1">&#39;dynamics&#39;</span><span class="p">:</span>
+</span><span data-line="377">                        <span class="k">continue</span>
+</span><span data-line="378">                    <span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+</span><span data-line="379">                    <span class="n">dyn_saddles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+</span><span data-line="380">                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="381">
+</span><span data-line="382">                <span class="n">rt</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span>
+</span><span data-line="383">                      <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">rt</span>
+</span><span data-line="384">                      <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">dyn_saddles</span><span class="p">]</span>
+</span><span data-line="385">
+</span><span data-line="386">            <span class="n">conf</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="387">            <span class="n">total_rate_estimator</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="388">            <span class="n">total_rate_found</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="389">            <span class="n">T1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">main_temperature</span>
+</span><span data-line="390">            <span class="k">for</span> <span class="n">T2</span><span class="p">,</span> <span class="n">T2_time</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_time_by_temp</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="391">                <span class="c1">#print(&quot;out of get_time_by_temp&quot;)</span>
+</span><span data-line="392">                <span class="k">if</span> <span class="n">T2_time</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+</span><span data-line="393">                    <span class="k">continue</span>
+</span><span data-line="394">
+</span><span data-line="395">                <span class="c1"># rates are at T1</span>
+</span><span data-line="396">                <span class="n">rates</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rt</span> <span class="p">])</span>
+</span><span data-line="397">                <span class="n">prefactors</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rt</span> <span class="p">])</span>
+</span><span data-line="398">                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="399">
+</span><span data-line="400">                <span class="c1"># extrapolate to T2</span>
+</span><span data-line="401">                <span class="n">rates_md</span> <span class="o">=</span> <span class="n">prefactors</span><span class="o">*</span><span class="p">(</span><span class="n">rates</span><span class="o">/</span><span class="n">prefactors</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">T1</span><span class="o">/</span><span class="n">T2</span><span class="p">)</span>
+</span><span data-line="402">
+</span><span data-line="403">                <span class="n">time</span> <span class="o">=</span> <span class="n">T2_time</span><span class="o">*</span><span class="mf">1e-15</span>
+</span><span data-line="404">                <span class="n">C</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">time</span><span class="o">*</span><span class="n">rates_md</span><span class="p">)</span>
+</span><span data-line="405">                <span class="n">total_rate_found</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rates</span><span class="p">)</span>
+</span><span data-line="406">
+</span><span data-line="407">                <span class="c1"># Chill confidence</span>
+</span><span data-line="408">                <span class="c1">#conf += sum(C*rates)/total_rate_found</span>
+</span><span data-line="409">
+</span><span data-line="410">                <span class="c1"># Lelievre-Jourdain confidence</span>
+</span><span data-line="411">                <span class="n">total_rate_estimator</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rates</span><span class="o">/</span><span class="n">C</span><span class="p">)</span>
+</span><span data-line="412">
+</span><span data-line="413">            <span class="k">if</span><span class="p">(</span><span class="n">total_rate_estimator</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+</span><span data-line="414">                <span class="n">conf</span> <span class="o">=</span> <span class="n">total_rate_found</span> <span class="o">/</span> <span class="n">total_rate_estimator</span>
+</span><span data-line="415">            <span class="k">return</span> <span class="n">conf</span>
+</span><span data-line="416">
+</span><span data-line="417">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="418">            <span class="c1"># No superbasin-specific code needed here, the number of</span>
+</span><span data-line="419">            <span class="c1"># repeats is adjusted for that in the add_process()</span>
+</span><span data-line="420">            <span class="c1"># method!</span>
+</span><span data-line="421">            <span class="n">Nr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_repeats</span><span class="p">()</span>
+</span><span data-line="422">            <span class="k">if</span> <span class="n">Nr</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="423">                <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="424">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="425">                <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">alpha</span><span class="o">*</span><span class="n">Nr</span><span class="p">))</span></div>
+
+</span><span data-line="426">
+<div class="viewcode-block" id="AKMCState.get_proc_random_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_proc_random_count">[docs]</a>
+</span><span data-line="427">    <span class="k">def</span><span class="w"> </span><span class="nf">get_proc_random_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="428">        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;proc repeat count&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">))</span></div>
+
+</span><span data-line="429">
+<div class="viewcode-block" id="AKMCState.inc_proc_random_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.inc_proc_random_count">[docs]</a>
+</span><span data-line="430">    <span class="k">def</span><span class="w"> </span><span class="nf">inc_proc_random_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">procid</span><span class="p">):</span>
+</span><span data-line="431">        <span class="n">prc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_proc_random_count</span><span class="p">()</span>
+</span><span data-line="432">        <span class="k">if</span> <span class="n">procid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prc</span><span class="p">:</span>
+</span><span data-line="433">            <span class="n">prc</span><span class="p">[</span><span class="n">procid</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="434">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="435">            <span class="n">prc</span><span class="p">[</span><span class="n">procid</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="436">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;proc repeat count&quot;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">prc</span><span class="p">))</span></div>
+
+</span><span data-line="437">
+<div class="viewcode-block" id="AKMCState.reset_repeats">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.reset_repeats">[docs]</a>
+</span><span data-line="438">    <span class="k">def</span><span class="w"> </span><span class="nf">reset_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="439">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;repeats&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+</span><span data-line="440">
+<div class="viewcode-block" id="AKMCState.get_repeats">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_repeats">[docs]</a>
+</span><span data-line="441">    <span class="k">def</span><span class="w"> </span><span class="nf">get_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="442">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;repeats&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+</span><span data-line="443">
+<div class="viewcode-block" id="AKMCState.inc_repeats">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.inc_repeats">[docs]</a>
+</span><span data-line="444">    <span class="k">def</span><span class="w"> </span><span class="nf">inc_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="445">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;repeats&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_repeats</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+</span><span data-line="446">
+<div class="viewcode-block" id="AKMCState.load_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.load_process_table">[docs]</a>
+</span><span data-line="447">    <span class="k">def</span><span class="w"> </span><span class="nf">load_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="448"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Load the process table.  If the process table is not loaded, load it.  If it is</span>
+</span><span data-line="449"><span class="sd">            loaded, do nothing. &quot;&quot;&quot;</span>
+</span><span data-line="450">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="451">            <span class="k">return</span>
+</span><span data-line="452">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proctable_path</span><span class="p">)</span>
+</span><span data-line="453">        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+</span><span data-line="454">        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="455">        <span class="bp">self</span><span class="o">.</span><span class="n">procs</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="456">        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+</span><span data-line="457">            <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span data-line="458">            <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">])]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">:</span>     <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ENERGY</span><span class="p">]),</span>
+</span><span data-line="459">                                           <span class="s2">&quot;prefactor&quot;</span><span class="p">:</span>         <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PREFACTOR</span><span class="p">]),</span>
+</span><span data-line="460">                                           <span class="s2">&quot;product&quot;</span><span class="p">:</span>           <span class="nb">int</span>  <span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PRODUCT</span><span class="p">]),</span>
+</span><span data-line="461">                                           <span class="s2">&quot;product_energy&quot;</span><span class="p">:</span>    <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PRODUCT_ENERGY</span><span class="p">]),</span>
+</span><span data-line="462">                                           <span class="s2">&quot;product_prefactor&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PRODUCT_PREFACTOR</span><span class="p">]),</span>
+</span><span data-line="463">                                           <span class="s2">&quot;barrier&quot;</span><span class="p">:</span>           <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">BARRIER</span><span class="p">]),</span>
+</span><span data-line="464">                                           <span class="s2">&quot;rate&quot;</span><span class="p">:</span>              <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">RATE</span><span class="p">]),</span>
+</span><span data-line="465">                                           <span class="s2">&quot;repeats&quot;</span><span class="p">:</span>           <span class="nb">int</span>  <span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">REPEATS</span><span class="p">])}</span>
+</span><span data-line="466">
+</span><span data-line="467">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="468">            <span class="n">kT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MetaData&#39;</span><span class="p">,</span> <span class="s1">&#39;kT&#39;</span><span class="p">)</span>
+</span><span data-line="469">        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+</span><span data-line="470">            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;MetaData&#39;</span><span class="p">,</span> <span class="s1">&#39;kT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+</span><span data-line="471">            <span class="k">return</span>
+</span><span data-line="472">        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">kT</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">:</span>
+</span><span data-line="473">            <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">proc</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="474">                <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">proc</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">statelist</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+</span><span data-line="475">            <span class="bp">self</span><span class="o">.</span><span class="n">save_process_table</span><span class="p">()</span></div>
+
+</span><span data-line="476">
+</span><span data-line="477">
+<div class="viewcode-block" id="AKMCState.save_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.save_process_table">[docs]</a>
+</span><span data-line="478">    <span class="k">def</span><span class="w"> </span><span class="nf">save_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="479"><span class="w">        </span><span class="sd">&quot;&quot;&quot; If the processtable is present in memory, writes it to disk. &quot;&quot;&quot;</span>
+</span><span data-line="480">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="481">            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proctable_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span><span data-line="482">            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processtable_header</span><span class="p">)</span>
+</span><span data-line="483">            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+</span><span data-line="484">                <span class="n">proc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+</span><span data-line="485">                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processtable_line</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;saddle_energy&#39;</span><span class="p">],</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">],</span>
+</span><span data-line="486">                                                  <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">],</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product_energy&#39;</span><span class="p">],</span>
+</span><span data-line="487">                                                  <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;product_prefactor&#39;</span><span class="p">],</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">],</span>
+</span><span data-line="488">                                                  <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span> <span class="n">proc</span><span class="p">[</span><span class="s1">&#39;repeats&#39;</span><span class="p">]))</span>
+</span><span data-line="489">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</span><span data-line="490">
+</span><span data-line="491">
+<div class="viewcode-block" id="AKMCState.append_process_table">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.append_process_table">[docs]</a>
+</span><span data-line="492">    <span class="k">def</span><span class="w"> </span><span class="nf">append_process_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">saddle_energy</span><span class="p">,</span> <span class="n">prefactor</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">product_energy</span><span class="p">,</span>
+</span><span data-line="493">                             <span class="n">product_prefactor</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">repeats</span><span class="p">):</span>
+</span><span data-line="494"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Append to the process table.  Append a single line to the process table file.  If we</span>
+</span><span data-line="495"><span class="sd">            have loaded the process table, also append it to the process table in memory. &quot;&quot;&quot;</span>
+</span><span data-line="496">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proctable_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</span><span data-line="497">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processtable_line</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">saddle_energy</span><span class="p">,</span> <span class="n">prefactor</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">product_energy</span><span class="p">,</span>
+</span><span data-line="498">                                          <span class="n">product_prefactor</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">repeats</span><span class="p">))</span>
+</span><span data-line="499">        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="500">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="501">            <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;saddle_energy&quot;</span><span class="p">:</span>    <span class="n">saddle_energy</span><span class="p">,</span>
+</span><span data-line="502">                              <span class="s2">&quot;prefactor&quot;</span><span class="p">:</span>        <span class="n">prefactor</span><span class="p">,</span>
+</span><span data-line="503">                              <span class="s2">&quot;product&quot;</span><span class="p">:</span>          <span class="n">product</span><span class="p">,</span>
+</span><span data-line="504">                              <span class="s2">&quot;product_energy&quot;</span><span class="p">:</span>   <span class="n">product_energy</span><span class="p">,</span>
+</span><span data-line="505">                              <span class="s2">&quot;product_prefactor&quot;</span><span class="p">:</span><span class="n">product_prefactor</span><span class="p">,</span>
+</span><span data-line="506">                              <span class="s2">&quot;barrier&quot;</span><span class="p">:</span>          <span class="n">barrier</span><span class="p">,</span>
+</span><span data-line="507">                              <span class="s2">&quot;rate&quot;</span><span class="p">:</span>             <span class="n">rate</span><span class="p">,</span>
+</span><span data-line="508">                              <span class="s2">&quot;repeats&quot;</span><span class="p">:</span>          <span class="n">repeats</span><span class="p">}</span></div>
+
+</span><span data-line="509">
+</span><span data-line="510">
+<div class="viewcode-block" id="AKMCState.update_lowest_barrier">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.update_lowest_barrier">[docs]</a>
+</span><span data-line="511">    <span class="k">def</span><span class="w"> </span><span class="nf">update_lowest_barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">barrier</span><span class="p">):</span>
+</span><span data-line="512"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest</span>
+</span><span data-line="513"><span class="sd">            barrier stored in info if the barrier parameter is lower and returns the (possibly new)</span>
+</span><span data-line="514"><span class="sd">            lowest barrier. &quot;&quot;&quot;</span>
+</span><span data-line="515">        <span class="n">lowest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;lowest barrier&quot;</span><span class="p">,</span> <span class="mf">1e300</span><span class="p">)</span>
+</span><span data-line="516">        <span class="k">if</span> <span class="n">barrier</span> <span class="o">&lt;</span> <span class="n">lowest</span><span class="p">:</span>
+</span><span data-line="517">            <span class="n">lowest</span> <span class="o">=</span> <span class="n">barrier</span>
+</span><span data-line="518">            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;lowest barrier&quot;</span><span class="p">,</span> <span class="n">lowest</span><span class="p">)</span>
+</span><span data-line="519">        <span class="k">return</span> <span class="n">lowest</span></div>
+
+</span><span data-line="520">
+<div class="viewcode-block" id="AKMCState.get_lowest_barrier">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_lowest_barrier">[docs]</a>
+</span><span data-line="521">    <span class="k">def</span><span class="w"> </span><span class="nf">get_lowest_barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="522">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;lowest barrier&quot;</span><span class="p">,</span> <span class="mf">1e300</span><span class="p">)</span></div>
+
+</span><span data-line="523">
+<div class="viewcode-block" id="AKMCState.get_unique_saddle_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_unique_saddle_count">[docs]</a>
+</span><span data-line="524">    <span class="k">def</span><span class="w"> </span><span class="nf">get_unique_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="525">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;unique_saddles&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+</span><span data-line="526">
+<div class="viewcode-block" id="AKMCState.set_unique_saddle_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.set_unique_saddle_count">[docs]</a>
+</span><span data-line="527">    <span class="k">def</span><span class="w"> </span><span class="nf">set_unique_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span data-line="528">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;unique_saddles&quot;</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span></div>
+
+</span><span data-line="529">
+<div class="viewcode-block" id="AKMCState.get_good_saddle_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_good_saddle_count">[docs]</a>
+</span><span data-line="530">    <span class="k">def</span><span class="w"> </span><span class="nf">get_good_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="531">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;good_saddles&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+</span><span data-line="532">
+<div class="viewcode-block" id="AKMCState.set_good_saddle_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.set_good_saddle_count">[docs]</a>
+</span><span data-line="533">    <span class="k">def</span><span class="w"> </span><span class="nf">set_good_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span data-line="534">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;good_saddles&quot;</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span></div>
+
+</span><span data-line="535">
+<div class="viewcode-block" id="AKMCState.increment_time">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.increment_time">[docs]</a>
+</span><span data-line="536">    <span class="k">def</span><span class="w"> </span><span class="nf">increment_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">T_search</span><span class="p">):</span>
+</span><span data-line="537"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Increment MD search time by dt at temperature T_search.&quot;&quot;&quot;</span>
+</span><span data-line="538">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="o">+</span> <span class="n">dt</span><span class="p">)</span>
+</span><span data-line="539">        <span class="n">temp_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">T_search</span> <span class="c1"># rounded to nearest Kelvin</span>
+</span><span data-line="540">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="s2">&quot;SearchTime&quot;</span><span class="p">):</span>
+</span><span data-line="541">            <span class="c1"># Increase time spent at current search temperature.</span>
+</span><span data-line="542">            <span class="n">new_time_at_current_temp</span> <span class="o">=</span> \
+</span><span data-line="543">                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SearchTime&quot;</span><span class="p">,</span> <span class="n">temp_str</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">dt</span>
+</span><span data-line="544">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="545">            <span class="c1"># The info file must come from an older version of eOn,</span>
+</span><span data-line="546">            <span class="c1"># which didn&#39;t have this section, yet. In this case we</span>
+</span><span data-line="547">            <span class="c1"># assume all prior searches were done at the current</span>
+</span><span data-line="548">            <span class="c1"># temperature and add the SearchTime section. This makes</span>
+</span><span data-line="549">            <span class="c1"># this codes backwards compatible and the correctness is</span>
+</span><span data-line="550">            <span class="c1"># not worse than before.</span>
+</span><span data-line="551">            <span class="n">new_time_at_current_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="c1"># time is already updated, so no +dt!</span>
+</span><span data-line="552">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;SearchTime&quot;</span><span class="p">,</span> <span class="n">temp_str</span><span class="p">,</span> <span class="n">new_time_at_current_temp</span><span class="p">)</span></div>
+
+</span><span data-line="553">
+<div class="viewcode-block" id="AKMCState.get_time">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_time">[docs]</a>
+</span><span data-line="554">    <span class="k">def</span><span class="w"> </span><span class="nf">get_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="555">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span></div>
+
+</span><span data-line="556">
+<div class="viewcode-block" id="AKMCState.get_time_by_temp">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_time_by_temp">[docs]</a>
+</span><span data-line="557">    <span class="k">def</span><span class="w"> </span><span class="nf">get_time_by_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="558">        <span class="c1">#print(&quot;into get_time_by_temp&quot;)</span>
+</span><span data-line="559">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="560">            <span class="k">return</span> <span class="nb">dict</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">)]</span> <span class="k">for</span> <span class="n">temp</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="s2">&quot;SearchTime&quot;</span><span class="p">))</span>
+</span><span data-line="561">        <span class="k">except</span> <span class="n">configparser</span><span class="o">.</span><span class="n">NoSectionError</span><span class="p">:</span>
+</span><span data-line="562">            <span class="c1"># The &quot;info&quot; file seems to have been produced by an old</span>
+</span><span data-line="563">            <span class="c1"># version of eOn which didn&#39;t have the SearchTime</span>
+</span><span data-line="564">            <span class="c1"># section. We simply upgrade and try again (no recursion</span>
+</span><span data-line="565">            <span class="c1"># to avoid endless recursion if the exception is raised</span>
+</span><span data-line="566">            <span class="c1"># again).</span>
+</span><span data-line="567">            <span class="bp">self</span><span class="o">.</span><span class="n">increment_time</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">saddle_dynamics_temperature</span><span class="p">)</span>
+</span><span data-line="568">            <span class="c1">#try:</span>
+</span><span data-line="569">            <span class="c1">#    print(self.info.items(&#39;SearchTime&#39;, raw=True))</span>
+</span><span data-line="570">            <span class="c1">#except Exception as e:</span>
+</span><span data-line="571">            <span class="c1">#    print(&quot;exception: &quot; + str(e))</span>
+</span><span data-line="572">            <span class="k">return</span> <span class="nb">dict</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">)]</span> <span class="k">for</span> <span class="n">temp</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="s2">&quot;SearchTime&quot;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
+
+</span><span data-line="573">
+<div class="viewcode-block" id="AKMCState.get_number_of_searches">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_number_of_searches">[docs]</a>
+</span><span data-line="574">    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_of_searches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="575">        <span class="c1"># TODO: this is inefficient!</span>
+</span><span data-line="576">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">search_result_path</span><span class="p">)</span>
+</span><span data-line="577">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="578">            <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="579">            <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="580">            <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="581">            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="582">                <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="583">        <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="584">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="585">        <span class="k">return</span> <span class="n">n</span></div>
+
+</span><span data-line="586">
+<div class="viewcode-block" id="AKMCState.get_total_saddle_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_total_saddle_count">[docs]</a>
+</span><span data-line="587">    <span class="k">def</span><span class="w"> </span><span class="nf">get_total_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="588">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_good_saddle_count</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bad_saddle_count</span><span class="p">()</span></div>
+
+</span><span data-line="589">
+<div class="viewcode-block" id="AKMCState.get_bad_saddle_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_bad_saddle_count">[docs]</a>
+</span><span data-line="590">    <span class="k">def</span><span class="w"> </span><span class="nf">get_bad_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="591">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;bad_saddles&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+</span><span data-line="592">
+<div class="viewcode-block" id="AKMCState.set_bad_saddle_count">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.set_bad_saddle_count">[docs]</a>
+</span><span data-line="593">    <span class="k">def</span><span class="w"> </span><span class="nf">set_bad_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span data-line="594">        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;MetaData&quot;</span><span class="p">,</span> <span class="s2">&quot;bad_saddles&quot;</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span></div>
+
+</span><span data-line="595">
+<div class="viewcode-block" id="AKMCState.register_bad_saddle">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.register_bad_saddle">[docs]</a>
+</span><span data-line="596">    <span class="k">def</span><span class="w"> </span><span class="nf">register_bad_saddle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">superbasin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="597"><span class="w">        </span><span class="sd">&quot;&quot;&quot; Registers a bad saddle. &quot;&quot;&quot;</span>
+</span><span data-line="598">        <span class="c1">#print (&quot;bad saddle &quot;,result[&quot;results&quot;][&quot;termination_reason&quot;])</span>
+</span><span data-line="599">        <span class="n">result_state_code</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Good&quot;</span><span class="p">,</span>
+</span><span data-line="600">                             <span class="s2">&quot;Init&quot;</span><span class="p">,</span>
+</span><span data-line="601">                             <span class="s2">&quot;Saddle Search No Convex Region&quot;</span><span class="p">,</span>
+</span><span data-line="602">                             <span class="s2">&quot;Saddle Search Terminated High Energy&quot;</span><span class="p">,</span>
+</span><span data-line="603">                             <span class="s2">&quot;Saddle Search Terminated Concave Iterations&quot;</span><span class="p">,</span>
+</span><span data-line="604">                             <span class="s2">&quot;Saddle Search Terminated Total Iterations&quot;</span><span class="p">,</span>
+</span><span data-line="605">                             <span class="s2">&quot;Not Connected&quot;</span><span class="p">,</span>
+</span><span data-line="606">                             <span class="s2">&quot;Bad Prefactor&quot;</span><span class="p">,</span>
+</span><span data-line="607">                             <span class="s2">&quot;Bad Barrier&quot;</span><span class="p">,</span>
+</span><span data-line="608">                             <span class="s2">&quot;Minimum Not Converged&quot;</span><span class="p">,</span>
+</span><span data-line="609">                             <span class="s2">&quot;Failed Prefactor Calculation&quot;</span><span class="p">,</span>
+</span><span data-line="610">                             <span class="s2">&quot;Potential Failed&quot;</span><span class="p">,</span>
+</span><span data-line="611">                             <span class="s2">&quot;Nonnegative Displacement Abort&quot;</span><span class="p">,</span>
+</span><span data-line="612">                             <span class="s2">&quot;Nonlocal Abort&quot;</span><span class="p">,</span>
+</span><span data-line="613">                             <span class="s2">&quot;Negative Barrier&quot;</span><span class="p">,</span>
+</span><span data-line="614">                             <span class="s2">&quot;MD Trajectory Too Short&quot;</span><span class="p">,</span>
+</span><span data-line="615">                             <span class="s2">&quot;No Negative Mode at Saddle&quot;</span><span class="p">,</span>
+</span><span data-line="616">                             <span class="s2">&quot;No Forward Barrier in Minimized Band&quot;</span><span class="p">,</span>
+</span><span data-line="617">                             <span class="s2">&quot;MinMode Zero Mode Abort&quot;</span><span class="p">,</span>
+</span><span data-line="618">                             <span class="s2">&quot;Optimizer Error&quot;</span>
+</span><span data-line="619">                             <span class="p">]</span>
+</span><span data-line="620">        <span class="bp">self</span><span class="o">.</span><span class="n">set_bad_saddle_count</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_bad_saddle_count</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span data-line="621">        <span class="bp">self</span><span class="o">.</span><span class="n">append_search_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">result_state_code</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;termination_reason&quot;</span><span class="p">]],</span> <span class="n">superbasin</span><span class="p">)</span>
+</span><span data-line="622">
+</span><span data-line="623">        <span class="c1"># If a MD saddle search is too short add it to the total clock time.</span>
+</span><span data-line="624">        <span class="k">if</span> <span class="s1">&#39;simulation_time&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]:</span>
+</span><span data-line="625">            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;termination_reason&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span> <span class="c1">#too short</span>
+</span><span data-line="626">                <span class="bp">self</span><span class="o">.</span><span class="n">increment_time</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;simulation_time&#39;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="s1">&#39;md_temperature&#39;</span><span class="p">])</span>
+</span><span data-line="627">
+</span><span data-line="628">        <span class="k">if</span> <span class="n">store</span><span class="p">:</span>
+</span><span data-line="629">            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span><span class="p">):</span>
+</span><span data-line="630">                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span><span class="p">)</span>
+</span><span data-line="631">            <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span><span class="p">,</span> <span class="s2">&quot;reactant_</span><span class="si">%d</span><span class="s2">.con&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;wuid&#39;</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;reactant.con&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="632">            <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span><span class="p">,</span> <span class="s2">&quot;product_</span><span class="si">%d</span><span class="s2">.con&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;wuid&#39;</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;product.con&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="633">            <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span><span class="p">,</span> <span class="s2">&quot;mode_</span><span class="si">%d</span><span class="s2">.dat&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;wuid&#39;</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;mode.dat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="634">            <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span><span class="p">,</span> <span class="s2">&quot;results_</span><span class="si">%d</span><span class="s2">.dat&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;wuid&#39;</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;results.dat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</span><span data-line="635">            <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_procdata_path</span><span class="p">,</span> <span class="s2">&quot;saddle_</span><span class="si">%d</span><span class="s2">.con&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;wuid&#39;</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;saddle.con&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span></div>
+
+</span><span data-line="636">
+</span><span data-line="637">
+</span><span data-line="638">    <span class="c1"># Utility functions for loading process .con and mode files.</span>
+<div class="viewcode-block" id="AKMCState.get_process_reactant">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_reactant">[docs]</a>
+</span><span data-line="639">    <span class="k">def</span><span class="w"> </span><span class="nf">get_process_reactant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+</span><span data-line="640">        <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_reactant_path</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AKMCState.get_process_saddle">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_saddle">[docs]</a>
+</span><span data-line="641">    <span class="k">def</span><span class="w"> </span><span class="nf">get_process_saddle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+</span><span data-line="642">        <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_saddle_path</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AKMCState.get_process_product">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_product">[docs]</a>
+</span><span data-line="643">    <span class="k">def</span><span class="w"> </span><span class="nf">get_process_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+</span><span data-line="644">        <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">loadcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_product_path</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AKMCState.get_process_mode">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.get_process_mode">[docs]</a>
+</span><span data-line="645">    <span class="k">def</span><span class="w"> </span><span class="nf">get_process_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+</span><span data-line="646">        <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">load_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_mode_path</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span></div>
+
+</span><span data-line="647">
+</span><span data-line="648">
+</span><span data-line="649">    <span class="c1"># Utility functions for compiling procdata paths, whether the files exist or not.</span>
+<div class="viewcode-block" id="AKMCState.proc_saddle_path">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.proc_saddle_path">[docs]</a>
+</span><span data-line="650">    <span class="k">def</span><span class="w"> </span><span class="nf">proc_saddle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+</span><span data-line="651">        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procdata_path</span><span class="p">,</span> <span class="s2">&quot;saddle_</span><span class="si">%d</span><span class="s2">.con&quot;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AKMCState.proc_mode_path">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.AKMCState.proc_mode_path">[docs]</a>
+</span><span data-line="652">    <span class="k">def</span><span class="w"> </span><span class="nf">proc_mode_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+</span><span data-line="653">        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">procdata_path</span><span class="p">,</span> <span class="s2">&quot;mode_</span><span class="si">%d</span><span class="s2">.dat&quot;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">)</span></div>
+</div>
+
+</span><span data-line="654">
+</span><span data-line="655">
+</span><span data-line="656"><span class="c1"># Lambert-W function: http://keithbriggs.info/software/LambertW.py</span>
+<div class="viewcode-block" id="lambertw">
+<a class="viewcode-back" href="../../apidocs/eon/eon.akmcstate.html#eon.akmcstate.lambertw">[docs]</a>
+</span><span data-line="657"><span class="k">def</span><span class="w"> </span><span class="nf">lambertw</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+</span><span data-line="658"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Lambert W function, principal branch&quot;&quot;&quot;</span>
+</span><span data-line="659">    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1.0e-12</span>
+</span><span data-line="660">    <span class="n">em1</span> <span class="o">=</span> <span class="mf">0.3678794411714423215955237701614608</span>
+</span><span data-line="661">    <span class="k">if</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">em1</span><span class="p">:</span>
+</span><span data-line="662">        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Tried to evaluate Lambert W function @ &lt; -1/e&quot;</span><span class="p">)</span>
+</span><span data-line="663">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+</span><span data-line="664">    <span class="k">if</span> <span class="mf">0.0</span> <span class="o">==</span> <span class="n">z</span><span class="p">:</span>
+</span><span data-line="665">        <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="666">    <span class="k">if</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">em1</span> <span class="o">+</span> <span class="mf">1e-4</span><span class="p">:</span>
+</span><span data-line="667">        <span class="n">q</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">em1</span>
+</span><span data-line="668">        <span class="n">r</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+</span><span data-line="669">        <span class="n">q2</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">q</span>
+</span><span data-line="670">        <span class="n">q3</span> <span class="o">=</span> <span class="n">q2</span> <span class="o">*</span> <span class="n">q</span>
+</span><span data-line="671">        <span class="k">return</span>\
+</span><span data-line="672">         <span class="o">-</span><span class="mf">1.0</span>\
+</span><span data-line="673">         <span class="o">+</span><span class="mf">2.331643981597124203363536062168</span> <span class="o">*</span> <span class="n">r</span>\
+</span><span data-line="674">         <span class="o">-</span><span class="mf">1.812187885639363490240191647568</span> <span class="o">*</span> <span class="n">q</span>\
+</span><span data-line="675">         <span class="o">+</span><span class="mf">1.936631114492359755363277457668</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">q</span>\
+</span><span data-line="676">         <span class="o">-</span><span class="mf">2.353551201881614516821543561516</span> <span class="o">*</span> <span class="n">q2</span>\
+</span><span data-line="677">         <span class="o">+</span><span class="mf">3.066858901050631912893148922704</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">q2</span>\
+</span><span data-line="678">         <span class="o">-</span><span class="mf">4.175335600258177138854984177460</span> <span class="o">*</span> <span class="n">q3</span>\
+</span><span data-line="679">         <span class="o">+</span><span class="mf">5.858023729874774148815053846119</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">q3</span>\
+</span><span data-line="680">         <span class="o">-</span><span class="mf">8.401032217523977370984161688514</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">*</span> <span class="n">q</span>
+</span><span data-line="681">    <span class="k">if</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+</span><span data-line="682">        <span class="n">p</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">2.7182818284590452353602874713526625</span> <span class="o">*</span> <span class="n">z</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span data-line="683">        <span class="n">w</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.333333333333333333333</span> <span class="o">+</span> <span class="n">p</span> <span class="o">*</span> <span class="mf">0.152777777777777777777777</span><span class="p">))</span>
+</span><span data-line="684">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="685">        <span class="n">w</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span data-line="686">    <span class="k">if</span> <span class="n">z</span> <span class="o">&gt;</span> <span class="mf">3.0</span><span class="p">:</span> <span class="n">w</span><span class="o">-=</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span><span data-line="687">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+</span><span data-line="688">        <span class="n">e</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span><span data-line="689">        <span class="n">t</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">-</span> <span class="n">z</span>
+</span><span data-line="690">        <span class="n">p</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="mf">1.0</span>
+</span><span data-line="691">        <span class="n">t</span> <span class="o">/=</span> <span class="n">e</span> <span class="o">*</span> <span class="n">p</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">p</span>
+</span><span data-line="692">        <span class="n">w</span> <span class="o">-=</span> <span class="n">t</span>
+</span><span data-line="693">        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">w</span><span class="p">)):</span>
+</span><span data-line="694">            <span class="k">return</span> <span class="n">w</span>
+</span><span data-line="695">    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to converge Lambert W function&quot;</span><span class="p">)</span>
+</span><span data-line="696">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span></div>
+
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, the eOn developers</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/TheochemUI/eOn" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/documentation_options.js?v=f5edd4dd"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=1ae7504c"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=cac61aee"></script></body>
+</html>

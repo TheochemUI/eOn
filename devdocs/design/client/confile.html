@@ -8,6 +8,7 @@
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_contributors.css?v=fe9086e2" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -89,6 +90,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
@@ -342,8 +344,8 @@ data-aria-dark="Switch to auto color mode">
           <section id="con-file-i-o-via-readcon-core">
 <h1>Con File I/O via readcon-core<a class="headerlink" href="#con-file-i-o-via-readcon-core" title="Link to this heading">¶</a></h1>
 <p>Starting from v2.12, eOn uses the <a class="reference external" href="https://github.com/lode-org/readcon-core">readcon-core</a>
-Rust library for all <code class="docutils literal notranslate"><span class="pre">.con</span></code> and <code class="docutils literal notranslate"><span class="pre">.convel</span></code> file I/O in both the C++ client and the
-Python server.</p>
+Rust library for <code class="docutils literal notranslate"><span class="pre">.con</span></code> and <code class="docutils literal notranslate"><span class="pre">.convel</span></code> file I/O in the C++ client, with the
+Python side using the companion <code class="docutils literal notranslate"><span class="pre">readcon</span></code> package.</p>
 <section id="c-client">
 <h2>C++ Client<a class="headerlink" href="#c-client" title="Link to this heading">¶</a></h2>
 <section id="reading">
@@ -369,16 +371,38 @@ Python server.</p>
 </div>
 <p>Position precision is 17 digits (matching the previous <code class="docutils literal notranslate"><span class="pre">%22.17f</span></code> format).
 Velocity files use 6-digit precision.</p>
+<p>Movie-like outputs can also carry structured frame metadata:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">eonc</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">ConFrameMetadata</span><span class="w"> </span><span class="n">metadata</span><span class="p">;</span>
+</span><span data-line="2"><span class="n">metadata</span><span class="p">.</span><span class="n">frame_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span>
+</span><span data-line="3"><span class="n">metadata</span><span class="p">.</span><span class="n">energy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matter</span><span class="p">.</span><span class="n">getPotentialEnergy</span><span class="p">();</span>
+</span><span data-line="4"><span class="n">metadata</span><span class="p">.</span><span class="n">scalars</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span><span class="s">&quot;step_size&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">step_size</span><span class="p">});</span>
+</span><span data-line="5"><span class="n">metadata</span><span class="p">.</span><span class="n">scalars</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span><span class="s">&quot;convergence&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">convergence</span><span class="p">});</span>
+</span><span data-line="6"><span class="n">matter</span><span class="p">.</span><span class="n">matter2con</span><span class="p">(</span><span class="s">&quot;minimization.con&quot;</span><span class="p">,</span><span class="w"> </span><span class="cm">/*append=*/</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">metadata</span><span class="p">);</span>
+</span></pre></div>
+</div>
+<p>This maps onto <code class="docutils literal notranslate"><span class="pre">readcon-core</span></code> metadata fields such as <code class="docutils literal notranslate"><span class="pre">energy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">frame_index</span></code>, <code class="docutils literal notranslate"><span class="pre">neb_bead</span></code>, <code class="docutils literal notranslate"><span class="pre">neb_band</span></code>, arbitrary scalar metadata, string
+metadata, and an escape hatch for raw JSON.</p>
 </section>
 <section id="multi-frame-append">
 <h3>Multi-frame (append)<a class="headerlink" href="#multi-frame-append" title="Link to this heading">¶</a></h3>
-<p>For NEB path output (multiple images in one <code class="docutils literal notranslate"><span class="pre">.con</span></code> file), frames are appended:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">neb</span><span class="o">-&gt;</span><span class="n">numImages</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="2"><span class="w">    </span><span class="n">neb</span><span class="o">-&gt;</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">matter2con</span><span class="p">(</span><span class="n">nebFilename</span><span class="p">,</span><span class="w"> </span><span class="cm">/*append=*/</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<p>For multi-frame output, eOn currently uses correctness-first append semantics:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">matter2con</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="cm">/*append=*/</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">metadata</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Failed to append frame&quot;</span><span class="p">);</span>
 </span><span data-line="3"><span class="p">}</span>
 </span></pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">append=true</span></code> mode reads existing frames, appends the new one, and rewrites.</p>
+<p><code class="docutils literal notranslate"><span class="pre">append=true</span></code> reads the existing frames, appends the new frame in memory, and
+rewrites the file. If the target file exists but cannot be parsed, the append
+fails instead of silently truncating the history.</p>
+<p>NEB path writers use a small helper wrapper so that per-image metadata stays
+consistent across <code class="docutils literal notranslate"><span class="pre">neb.con</span></code>, <code class="docutils literal notranslate"><span class="pre">neb_path_*.con</span></code>, and related outputs:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">eonc</span><span class="o">::</span><span class="n">neb</span><span class="o">::</span><span class="n">writePathCon</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">,</span><span class="w"> </span><span class="n">eigenmode_solvers</span><span class="p">,</span><span class="w"> </span><span class="n">numImages</span><span class="p">,</span>
+</span><span data-line="2"><span class="w">                        </span><span class="n">estimateEigenvalues</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;neb.con&quot;</span><span class="p">);</span>
+</span></pre></div>
+</div>
+<p>That helper currently stores per-frame fields such as <code class="docutils literal notranslate"><span class="pre">neb_bead</span></code>, optional
+<code class="docutils literal notranslate"><span class="pre">neb_band</span></code>, <code class="docutils literal notranslate"><span class="pre">reaction_coordinate</span></code>, <code class="docutils literal notranslate"><span class="pre">relative_energy</span></code>, and <code class="docutils literal notranslate"><span class="pre">parallel_force</span></code>.</p>
 </section>
 </section>
 <section id="python-server">
@@ -391,6 +415,9 @@ Velocity files use 6-digit precision.</p>
 </span><span data-line="5"><span class="n">readcon</span><span class="o">.</span><span class="n">write_con</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="p">[</span><span class="n">frame</span><span class="p">])</span>     <span class="c1"># write</span>
 </span></pre></div>
 </div>
+<p>At the time of writing, the Python orchestration layer is still primarily a
+consumer of <code class="docutils literal notranslate"><span class="pre">.con</span></code> data; the richer frame metadata is currently produced on the
+C++ side for trajectory outputs and downstream visualization tooling.</p>
 </section>
 <section id="build-requirements">
 <h2>Build Requirements<a class="headerlink" href="#build-requirements" title="Link to this heading">¶</a></h2>
