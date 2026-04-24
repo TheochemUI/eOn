@@ -1,4 +1,17 @@
 Traceback (most recent call last):
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 782, in _async_poll_for_reply
+    msg = await ensure_async(self.kc.shell_channel.get_msg(timeout=new_timeout))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 214, in ensure_async
+    result = await obj
+             ^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/jupyter_client/channels.py", line 316, in get_msg
+    raise Empty
+_queue.Empty
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
   File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
   File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 1323, in execute
@@ -12,12 +25,18 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^
   File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
     await self.async_execute_cell(
-  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
-    await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
-    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
-nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
-------------------
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 1005, in async_execute_cell
+    exec_reply = await self.task_poll_for_reply
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 806, in _async_poll_for_reply
+    error_on_timeout_execute_reply = await self._async_handle_timeout(timeout, cell)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/nbclient/client.py", line 856, in _async_handle_timeout
+    raise CellTimeoutError.error_from_timeout_and_cell(
+nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 600 seconds.
+The message was: Cell execution timed out.
+Here is a preview of the cell contents:
+-------------------
 min_profile = plot_dir / "min_profile.png"
 run_rgpycrumbs(
     "eon", "plt-min",
@@ -28,80 +47,5 @@ run_rgpycrumbs(
     "--output", str(min_profile),
 )
 show_plot(min_profile)
-------------------
-
------ stdout -----
-$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_tutorial_b8xs__y7/minimization --prefix minimization --plot-type profile --dpi 150 --output /tmp/eon_tutorial_b8xs__y7/plots/min_profile.png
-------------------
-
-[31m---------------------------------------------------------------------------[39m
-[31mTimeoutExpired[39m                            Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[5][39m[32m, line 2[39m
-[32m      1[39m min_profile = plot_dir / [33m"[39m[33mmin_profile.png[39m[33m"[39m
-[32m----> [39m[32m2[39m [43mrun_rgpycrumbs[49m[43m([49m
-[32m      3[39m [43m    [49m[33;43m"[39;49m[33;43meon[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[33;43m"[39;49m[33;43mplt-min[39;49m[33;43m"[39;49m[43m,[49m
-[32m      4[39m [43m    [49m[33;43m"[39;49m[33;43m--job-dir[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[38;5;28;43mstr[39;49m[43m([49m[43mmin_dir[49m[43m)[49m[43m,[49m
-[32m      5[39m [43m    [49m[33;43m"[39;49m[33;43m--prefix[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[33;43m"[39;49m[33;43mminimization[39;49m[33;43m"[39;49m[43m,[49m
-[32m      6[39m [43m    [49m[33;43m"[39;49m[33;43m--plot-type[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[33;43m"[39;49m[33;43mprofile[39;49m[33;43m"[39;49m[43m,[49m
-[32m      7[39m [43m    [49m[33;43m"[39;49m[33;43m--dpi[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[33;43m"[39;49m[33;43m150[39;49m[33;43m"[39;49m[43m,[49m
-[32m      8[39m [43m    [49m[33;43m"[39;49m[33;43m--output[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[38;5;28;43mstr[39;49m[43m([49m[43mmin_profile[49m[43m)[49m[43m,[49m
-[32m      9[39m [43m)[49m
-[32m     10[39m show_plot(min_profile)
-
-[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 25[39m, in [36mrun_rgpycrumbs[39m[34m(group, command, cwd, timeout, *args)[39m
-[32m     24[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mrun_rgpycrumbs[39m(group, command, *args, cwd=[38;5;28;01mNone[39;00m, timeout=[32m180[39m):
-[32m---> [39m[32m25[39m     [38;5;28;01mreturn[39;00m [43mrun_cli_or_raise[49m[43m([49m
-[32m     26[39m [43m        [49m[43m[[49m[43msys[49m[43m.[49m[43mexecutable[49m[43m,[49m[43m [49m[33;43m"[39;49m[33;43m-m[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[33;43m"[39;49m[33;43mrgpycrumbs.cli[39;49m[33;43m"[39;49m[43m,[49m[43m [49m[43mgroup[49m[43m,[49m[43m [49m[43mcommand[49m[43m,[49m[43m [49m[43m*[49m[43margs[49m[43m][49m[43m,[49m
-[32m     27[39m [43m        [49m[43mcwd[49m[43m=[49m[43mcwd[49m[43m,[49m
-[32m     28[39m [43m        [49m[43mtimeout[49m[43m=[49m[43mtimeout[49m[43m,[49m
-[32m     29[39m [43m    [49m[43m)[49m
-
-[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 8[39m, in [36mrun_cli_or_raise[39m[34m(args, cwd, timeout)[39m
-[32m      6[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mrun_cli_or_raise[39m(args, *, cwd=[38;5;28;01mNone[39;00m, timeout=[32m300[39m):
-[32m      7[39m     [38;5;28mprint[39m([33m"[39m[33m$[39m[33m"[39m, [33m"[39m[33m [39m[33m"[39m.join(args))
-[32m----> [39m[32m8[39m     result = [43msubprocess[49m[43m.[49m[43mrun[49m[43m([49m
-[32m      9[39m [43m        [49m[43margs[49m[43m,[49m
-[32m     10[39m [43m        [49m[43mcwd[49m[43m=[49m[43mcwd[49m[43m,[49m
-[32m     11[39m [43m        [49m[43mcapture_output[49m[43m=[49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m
-[32m     12[39m [43m        [49m[43mtext[49m[43m=[49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m
-[32m     13[39m [43m        [49m[43mtimeout[49m[43m=[49m[43mtimeout[49m[43m,[49m
-[32m     14[39m [43m    [49m[43m)[49m
-[32m     15[39m     [38;5;28;01mif[39;00m result.stdout:
-[32m     16[39m         [38;5;28mprint[39m(result.stdout)
-
-[36mFile [39m[32m~/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/subprocess.py:550[39m, in [36mrun[39m[34m(input, capture_output, timeout, check, *popenargs, **kwargs)[39m
-[32m    548[39m [38;5;28;01mwith[39;00m Popen(*popenargs, **kwargs) [38;5;28;01mas[39;00m process:
-[32m    549[39m     [38;5;28;01mtry[39;00m:
-[32m--> [39m[32m550[39m         stdout, stderr = [43mprocess[49m[43m.[49m[43mcommunicate[49m[43m([49m[38;5;28;43minput[39;49m[43m,[49m[43m [49m[43mtimeout[49m[43m=[49m[43mtimeout[49m[43m)[49m
-[32m    551[39m     [38;5;28;01mexcept[39;00m TimeoutExpired [38;5;28;01mas[39;00m exc:
-[32m    552[39m         process.kill()
-
-[36mFile [39m[32m~/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/subprocess.py:1209[39m, in [36mPopen.communicate[39m[34m(self, input, timeout)[39m
-[32m   1206[39m     endtime = [38;5;28;01mNone[39;00m
-[32m   1208[39m [38;5;28;01mtry[39;00m:
-[32m-> [39m[32m1209[39m     stdout, stderr = [38;5;28;43mself[39;49m[43m.[49m[43m_communicate[49m[43m([49m[38;5;28;43minput[39;49m[43m,[49m[43m [49m[43mendtime[49m[43m,[49m[43m [49m[43mtimeout[49m[43m)[49m
-[32m   1210[39m [38;5;28;01mexcept[39;00m [38;5;167;01mKeyboardInterrupt[39;00m:
-[32m   1211[39m     [38;5;66;03m# https://bugs.python.org/issue25942[39;00m
-[32m   1212[39m     [38;5;66;03m# See the detailed comment in .wait().[39;00m
-[32m   1213[39m     [38;5;28;01mif[39;00m timeout [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
-
-[36mFile [39m[32m~/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/subprocess.py:2116[39m, in [36mPopen._communicate[39m[34m(self, input, endtime, orig_timeout)[39m
-[32m   2111[39m     [38;5;28;01mraise[39;00m [38;5;167;01mRuntimeError[39;00m(  [38;5;66;03m# Impossible :)[39;00m
-[32m   2112[39m         [33m'[39m[33m_check_timeout(..., skip_check_and_raise=True) [39m[33m'[39m
-[32m   2113[39m         [33m'[39m[33mfailed to raise TimeoutExpired.[39m[33m'[39m)
-[32m   2115[39m ready = selector.select(timeout)
-[32m-> [39m[32m2116[39m [38;5;28;43mself[39;49m[43m.[49m[43m_check_timeout[49m[43m([49m[43mendtime[49m[43m,[49m[43m [49m[43morig_timeout[49m[43m,[49m[43m [49m[43mstdout[49m[43m,[49m[43m [49m[43mstderr[49m[43m)[49m
-[32m   2118[39m [38;5;66;03m# XXX Rewrite these to use non-blocking I/O on the file[39;00m
-[32m   2119[39m [38;5;66;03m# objects; they are no longer using C stdio![39;00m
-[32m   2121[39m [38;5;28;01mfor[39;00m key, events [38;5;129;01min[39;00m ready:
-
-[36mFile [39m[32m~/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/subprocess.py:1253[39m, in [36mPopen._check_timeout[39m[34m(self, endtime, orig_timeout, stdout_seq, stderr_seq, skip_check_and_raise)[39m
-[32m   1251[39m     [38;5;28;01mreturn[39;00m
-[32m   1252[39m [38;5;28;01mif[39;00m skip_check_and_raise [38;5;129;01mor[39;00m _time() > endtime:
-[32m-> [39m[32m1253[39m     [38;5;28;01mraise[39;00m TimeoutExpired(
-[32m   1254[39m             [38;5;28mself[39m.args, orig_timeout,
-[32m   1255[39m             output=[33mb[39m[33m'[39m[33m'[39m.join(stdout_seq) [38;5;28;01mif[39;00m stdout_seq [38;5;28;01melse[39;00m [38;5;28;01mNone[39;00m,
-[32m   1256[39m             stderr=[33mb[39m[33m'[39m[33m'[39m.join(stderr_seq) [38;5;28;01mif[39;00m stderr_seq [38;5;28;01melse[39;00m [38;5;28;01mNone[39;00m)
-
-[31mTimeoutExpired[39m: Command '['/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12', '-m', 'rgpycrumbs.cli', 'eon', 'plt-min', '--job-dir', '/tmp/eon_tutorial_b8xs__y7/minimization', '--prefix', 'minimization', '--plot-type', 'profile', '--dpi', '150', '--output', '/tmp/eon_tutorial_b8xs__y7/plots/min_profile.png']' timed out after 180 seconds
+-------------------
 
