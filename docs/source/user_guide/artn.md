@@ -119,6 +119,11 @@ max_iterations = 500
 - **`nsmooth`**: Number of smooth interpolation steps between push direction and
   eigenvector. ``-1`` uses pARTn default. ``0`` disables smoothing. Maps to
   pARTn's ``nsmooth``.
+- **`filin`**: Path to an ``artn.in`` style input file read by pARTn during
+  setup. Empty (the default) keeps pARTn's post ``artn_create`` sentinel
+  ``BBBB``, i.e. no file is read and all parameters come from this ``[ARTn]``
+  section. Any non-empty value is required to exist; eOn checks before setup
+  and aborts with a clear error when it does not. Maps to pARTn's ``filin``.
 
 ## Build requirements
 
