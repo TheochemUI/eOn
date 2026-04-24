@@ -468,6 +468,8 @@ int load_ini(INIReader &ini, Parameters &params) {
       "ARTn", "lanczos_min_size", params.artn_options.lanczos_min_size);
   params.artn_options.nsmooth =
       ini.GetInteger("ARTn", "nsmooth", params.artn_options.nsmooth);
+  params.artn_options.filin =
+      ini.Get("ARTn", "filin", params.artn_options.filin);
 
   // [IRA] //
   params.ira_options.distance_threshold = ini.GetReal(

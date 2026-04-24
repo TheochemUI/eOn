@@ -169,4 +169,20 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   REQUIRE(artnSearch->getForceCalls() > 0);
 }
 
+TEST_CASE_METHOD(ARTnVsDimerFixture,
+                 "ARTn reports an error when filin names a missing file",
+                 "[artn][filin]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
+  // Empty filin is the default -- pARTn keeps its NAN_STR sentinel and reads
+  // nothing. Setting filin to a path that does not exist has to trip the
+  // eager existence check in ARTnSaddleSearch::run(), before setup_artn gets
+  // a chance to surface its own ERR_FILE, and return STATUS_BAD_ARTN_ERROR.
+  params.artn_options.filin = "this_artn_input_does_not_exist.in";
+  auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
+                                                       displacement, params);
+  REQUIRE(artnSearch->run() == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+  REQUIRE(artnSearch->getForceCalls() == 0);
+}
+
 } /* namespace tests */
