@@ -113,11 +113,21 @@ int ARTnSaddleSearch::run() {
                       result_force);
     }
 
-    // Only set filin if the input file exists; pARTn fails setup if the
-    // file is specified but missing.
-    const char *filin = "artn_input.dat";
-    if (std::filesystem::exists(filin)) {
-      int result_filin = res.get_set_param_fn()("filin", 0, &size0, filin);
+    // filin names the artn.in input file pARTn reads at setup. artn_create
+    // resets its internal value to NAN_STR ("BBBB") meaning "undefined", so
+    // an empty eOn config leaves pARTn reading no file at all. If the user
+    // does set a path, surface a missing file before setup_artn runs so the
+    // failure names the file instead of hiding inside pARTn's ERR_FILE code.
+    const std::string &filin = params.artn_options.filin;
+    if (!filin.empty()) {
+      if (!std::filesystem::exists(filin)) {
+        QUILL_LOG_ERROR(log, "artn_options.filin '{}' does not exist", filin);
+        res.get_destroy_fn()();
+        status = STATUS_BAD_ARTN_ERROR;
+        return status;
+      }
+      int result_filin =
+          res.get_set_param_fn()("filin", 0, &size0, filin.c_str());
       if (result_filin != 0) {
         QUILL_LOG_ERROR(log, "set_param(filin) failed with code {}",
                         result_filin);
