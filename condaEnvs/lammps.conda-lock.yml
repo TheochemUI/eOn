@@ -1717,6 +1717,18 @@ package:
     sha256: ad761500228974aad3d422902a87c8c2d938fb3f76dd356f7629fd16f5f214a4
   category: main
   optional: false
+- name: sccache
+  version: 0.14.0
+  manager: conda
+  platform: osx-arm64
+  dependencies:
+    __osx: '>=11.0'
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/sccache-0.14.0-h6fdd925_0.conda
+  hash:
+    md5: 5ca50d2b2df57a9d08c8ea1ecf1425f1
+    sha256: eb41fa276fcbebcf7c4ce4223988af0ef40ee97a724fca39547508868375249a
+  category: main
+  optional: false
 - name: setuptools
   version: 80.10.1
   manager: conda
@@ -1948,13 +1960,13 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.4.3
+  version: 0.8.0
   manager: pip
   platform: osx-arm64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/cb/8d/8d68e9cf2bb561bc83e776a035c6119ebdeb37f6fe30d8aae1c05bbbc9c6/readcon-0.4.3-cp312-cp312-macosx_11_0_arm64.whl
+  url: https://files.pythonhosted.org/packages/68/12/f0b642f03dcfbbc2e238501fa4430919c733e882939f9d4f52c7c72409b8/readcon-0.8.0-cp312-cp312-macosx_11_0_arm64.whl
   hash:
-    sha256: 691485579d45d810e5f16dac9cb096178c5b56b44d24030fa2102b2541445933
+    sha256: 41263d323a01a75f5d00854ce01344ae8c4478bbec973e6fe8b3607f33bef94b
   category: main
   optional: false
 - name: towncrier
@@ -3780,6 +3792,20 @@ package:
     sha256: 3980a10eee5f24ce7770c5d1665f93f363345c630bb6189176f3ab7bd9e8724d
   category: main
   optional: false
+- name: sccache
+  version: 0.14.0
+  manager: conda
+  platform: linux-64
+  dependencies:
+    __glibc: '>=2.17,<3.0.a0'
+    libgcc: '>=14'
+    openssl: '>=3.5.5,<4.0a0'
+  url: https://conda.anaconda.org/conda-forge/linux-64/sccache-0.14.0-he64ecbb_0.conda
+  hash:
+    md5: 513b2505df7c927f2f048aa2e3f48f7d
+    sha256: 83f881b318b9a39723ee8b5f0a5329240b4b65c692a8a998d4217333b8c801d4
+  category: main
+  optional: false
 - name: setuptools
   version: 80.9.0
   manager: conda
@@ -4021,13 +4047,13 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.4.3
+  version: 0.8.0
   manager: pip
   platform: linux-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/22/da/7637d393d07a23387886bb7ccdfc82999639bd804b9b4acacd10a4aa2723/readcon-0.4.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  url: https://files.pythonhosted.org/packages/04/73/c188f7e6cb2d1f889b4d36fa2756b4e8d7fc1d3dfa1bb3035525b27d2e38/readcon-0.8.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
   hash:
-    sha256: 039ed476613778634714247f42810f1c9f6b9b3cbc68e2ff42d34a33e852da9c
+    sha256: c9b7f44b59f499de6d95737e4eeca7da0de20134cd01fc7a227fd236288bc836
   category: main
   optional: false
 - name: towncrier
@@ -5575,6 +5601,18 @@ package:
     sha256: 4beba0d8f99cb8b62102cf9c09bbcdd8a8ab1be55c0bd00b4ebfbe0c76bf8b18
   category: main
   optional: false
+- name: sccache
+  version: 0.14.0
+  manager: conda
+  platform: osx-64
+  dependencies:
+    __osx: '>=10.13'
+  url: https://conda.anaconda.org/conda-forge/osx-64/sccache-0.14.0-h4728fb8_0.conda
+  hash:
+    md5: 4e34b4df5ebaf47994b41ef370d9a0f3
+    sha256: 540a53afa16eff7f2dce5c2d313cde1e386d2809f332575c2f542f6540150ab6
+  category: main
+  optional: false
 - name: setuptools
   version: 80.9.0
   manager: conda
@@ -5790,13 +5828,13 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.4.3
+  version: 0.8.0
   manager: pip
   platform: osx-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/68/5e/c6c5b88dc027ee926b0eeffc7e442b0240b4ee9169674263a6f3dd591021/readcon-0.4.3-cp312-cp312-macosx_10_12_x86_64.whl
+  url: https://files.pythonhosted.org/packages/63/c1/d56a0f4e81d0c4bcdafeb43e7c4dc63764cad5ca4465f989256819ac0ee3/readcon-0.8.0-cp312-cp312-macosx_10_12_x86_64.whl
   hash:
-    sha256: cab13e8e86fd5c21c2a79227f3c26907bb0e7eb0184468f5d81d067c8caef50d
+    sha256: e6d191b42c72c0ee2a925b3f8dcbfd8458c93341e6933189dd774f1b3d8fc8c6
   category: main
   optional: false
 - name: towncrier
