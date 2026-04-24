@@ -331,6 +331,14 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "endpoints", p.serve_options.endpoints);
   }
 
+  // [Debug]
+  if (j.contains("Debug")) {
+    auto &s = j.at("Debug");
+    JSON_OPT(s, "write_movies", p.debug_options.write_movies);
+    JSON_OPT(s, "write_movies_interval", p.debug_options.write_movies_interval);
+    JSON_OPT(s, "write_deprecated_outs", p.debug_options.write_deprecated_outs);
+  }
+
   // Resolve computed fields
   validate_and_link(p);
 }
