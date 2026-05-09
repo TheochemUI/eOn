@@ -137,25 +137,35 @@ architecture = host_machine.cpu_family()
 message(host_system)
 message(architecture)
 
-# Generate features string for version.h.in
+# Generate features string for version.h.in.
+#
+# Each entry is (compile_flag, display_name, mode) where mode is one of:
+#   'compile'  -- check '-Dflag' presence in _args (Build-time CPP define)
+#   'runtime'  -- always compiled into the client; loaded later via dlopen.
+#                 Reporting 'enabled' here means the compiled-in shim exists,
+#                 not that the dynamic library was found at run time.
 features_list = [
-    ['WITH_GPRD', 'GPRD'],
-    ['WITH_GP_SURROGATE', 'GP Surrogate'],
-    ['WITH_CATLEARN', 'CatLearn'],
-    ['WITH_VASP', 'VASP'],
-    ['WITH_WATER', 'Water'],
-    ['WITH_AMS', 'AMS'],
-    ['WITH_XTB', 'XTB'],
-    ['LAMMPS_POT', 'LAMMPS'],
-    ['WITH_ASE_POT', 'ASE Potentials'],
-    ['EONMPI', 'MPI'],
-    ['WITH_FORTRAN', 'Fortran'],
-    ['CUH2_POT', 'CuH2'],
-    ['WITH_ASE_ORCA', 'ASE-ORCA'],
-    ['WITH_ASE_NWCHEM', 'ASE-NWChem'],
-    ['WITH_METATOMIC', 'Metatomic'],
-    ['WITH_SERVE_MODE', 'Serve Mode'],
-    ['EMBED_PYTHON', 'Embedded Python'],
+    ['WITH_GPRD',          'GPRD',           'compile'],
+    ['WITH_GP_SURROGATE',  'GP Surrogate',   'compile'],
+    ['WITH_CATLEARN',      'CatLearn',       'compile'],
+    ['WITH_VASP',          'VASP',           'compile'],
+    ['WITH_WATER',         'Water',          'compile'],
+    ['WITH_AMS',           'AMS',            'compile'],
+    ['WITH_XTB',           'XTB',            'compile'],
+    # LAMMPS is unconditionally compiled (see subdir('potentials/LAMMPS')
+    # below). The dlopen lookup of liblammps.so happens at run time inside
+    # LammpsLoader::instance(); the banner just tells the user the shim is
+    # present, not whether liblammps was located.
+    ['LAMMPS_POT',         'LAMMPS',         'runtime'],
+    ['WITH_ASE_POT',       'ASE Potentials', 'compile'],
+    ['EONMPI',             'MPI',            'compile'],
+    ['WITH_FORTRAN',       'Fortran',        'compile'],
+    ['CUH2_POT',           'CuH2',           'compile'],
+    ['WITH_ASE_ORCA',      'ASE-ORCA',       'compile'],
+    ['WITH_ASE_NWCHEM',    'ASE-NWChem',     'compile'],
+    ['WITH_METATOMIC',     'Metatomic',      'compile'],
+    ['WITH_SERVE_MODE',    'Serve Mode',     'compile'],
+    ['EMBED_PYTHON',       'Embedded Python','compile'],
 ]
 
 # Join _args into a single string for checking
@@ -165,7 +175,10 @@ features_string = ''
 foreach feature : features_list
     feature_flag = feature[0]
     feature_name = feature[1]
-    if '-D' + feature_flag in _args_str
+    feature_mode = feature.length() > 2 ? feature[2] : 'compile'
+    if feature_mode == 'runtime'
+        features_string += '  ' + feature_name + ': enabled (dlopen at runtime)\n'
+    elif '-D' + feature_flag in _args_str
         features_string += '  ' + feature_name + ': enabled\n'
     else
         features_string += '  ' + feature_name + ': disabled\n'
