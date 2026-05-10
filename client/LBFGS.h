@@ -22,7 +22,12 @@
 
 namespace eonc {
 
-#define LBFGS_EPS 1e-30
+/// Curvature-update gate. \f$|s_0 \cdot y_0|\f$ below this means the
+/// gradient barely changed across the step; pushing it through
+/// \f$\rho = 1 / (s_0 \cdot y_0)\f$ would amplify denormals into the
+/// L-BFGS history. 1e-30 is well below any chemistry-relevant
+/// value and well above double-precision underflow.
+inline constexpr double LBFGS_EPS = 1e-30;
 
 class LBFGS final : public Optimizer {
 
