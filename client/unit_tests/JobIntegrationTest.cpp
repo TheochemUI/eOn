@@ -1151,6 +1151,8 @@ max_spawns = 5
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob standalone ARTn works without direction file",
                  "[job][saddle_search][artn][optional-mode][integration]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
   copyTestData("../saddle_search");
   std::filesystem::remove(workdir / "direction.dat");
   std::filesystem::remove(workdir / "displacement.con");
