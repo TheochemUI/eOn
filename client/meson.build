@@ -1013,11 +1013,18 @@ if get_option('with_tests')
     # bug-family (PR93499 / 96012). Build the amalgamated TU as its
     # own static library with the suppression so eOn's own test sources
     # stay under -Wmaybe-uninitialized.
+    # `-Wno-maybe-uninitialized` is GCC-only (MSVC rejects it as
+     # `D8021 invalid numeric argument`; clang silently ignores it).
+     # Filter through get_supported_arguments so the static lib still
+     # builds on the windows-latest matrix.
+    _catch2_extra_cpp_args = cppc.get_supported_arguments(
+        ['-Wno-maybe-uninitialized'],
+    )
     catch2_lib = static_library(
         'catch2_amalgamated',
         ['thirdparty/catch2/catch_amalgamated.cpp'],
         include_directories: _incdirs,
-        cpp_args: test_args + ['-Wno-maybe-uninitialized'],
+        cpp_args: test_args + _catch2_extra_cpp_args,
     )
     # Note: there is no separate `TestMain` library target -- the
     # `unit_tests/TestMain.cpp` source is compiled directly into
