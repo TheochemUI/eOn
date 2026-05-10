@@ -14,11 +14,13 @@
 
 #include <algorithm>
 
-int FIRE::step(double a_maxMove) {
+using eonc::StepResult;
+
+StepResult FIRE::step(double a_maxMove) {
   double P = 0;
   // Check convergence.
   if (m_objf->isConverged()) {
-    return 1;
+    return StepResult::Converged;
   }
 
   // Velocity Verlet
@@ -61,12 +63,14 @@ int FIRE::step(double a_maxMove) {
   }
 
   m_iteration++;
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }
 
-int FIRE::run(size_t a_maxIterations, double a_maxMove) {
+StepResult FIRE::run(size_t a_maxIterations, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxIterations) {
     step(a_maxMove);
   }
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }

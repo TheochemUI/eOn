@@ -36,8 +36,8 @@ public:
         m_iteration{0} {}
   virtual ~FIRE() = default;
 
-  int step(double a_maxMove) override;
-  int run(size_t a_maxIterations, double a_maxMove) override;
+  StepResult step(double a_maxMove) override;
+  StepResult run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
   double m_dt, m_dt_max, m_max_move;

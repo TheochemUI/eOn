@@ -14,6 +14,8 @@
 
 #include <cmath>
 
+using eonc::StepResult;
+
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = std::fabs(m_force.dot(m_forceOld));
   double b = m_forceOld.squaredNorm();
@@ -42,7 +44,7 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   return m_direction;
 }
 
-int ConjugateGradients::step(double a_maxMove) {
+StepResult ConjugateGradients::step(double a_maxMove) {
   // Bail out instead of looping forever when the potential returns
   // NaN forces (atom overlap inside an EAM/ML repulsive core, etc.).
   // NaN propagates through dot products and < comparisons silently;
@@ -52,18 +54,16 @@ int ConjugateGradients::step(double a_maxMove) {
     QUILL_LOG_WARNING(m_log,
                       "[CG] non-finite force entering step (NaN or Inf); "
                       "aborting minimization");
-    return -1;
+    return StepResult::Failed;
   }
 
-  bool converged;
+  bool converged = false;
   if (m_optConfig.opts.cg.line_search) {
     converged = line_search(a_maxMove);
   } else {
     converged = single_step(a_maxMove);
   }
-  if (converged)
-    return 1;
-  return 0;
+  return converged ? StepResult::Converged : StepResult::NotConverged;
 }
 
 int ConjugateGradients::line_search(double a_maxMove) {
@@ -200,17 +200,17 @@ int ConjugateGradients::single_step(double a_maxMove) {
   return m_objf->isConverged() ? 1 : 0;
 }
 
-int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
+StepResult ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   size_t iterations = 0;
   while (!m_objf->isConverged() && iterations <= a_maxIterations) {
-    int status = step(a_maxMove);
-    if (status < 0) {
-      return -1;
+    if (step(a_maxMove) == StepResult::Failed) {
+      return StepResult::Failed;
     }
     iterations++;
   }
   if (!m_objf->getGradient().allFinite()) {
-    return -1;
+    return StepResult::Failed;
   }
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }

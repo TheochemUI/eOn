@@ -12,7 +12,9 @@
 #include "Quickmin.h"
 #include "HelperFunctions.h"
 
-int Quickmin::step(double a_maxMove) {
+using eonc::StepResult;
+
+StepResult Quickmin::step(double a_maxMove) {
   Eigen::VectorXd force = -m_objf->getGradient();
   if (m_optConfig.opts.quickmin.steepest_descent) {
     m_vel.setZero();
@@ -32,12 +34,14 @@ int Quickmin::step(double a_maxMove) {
   QUILL_LOG_INFO(m_log, "{} M_Vel.norm() is {}", m_iteration, m_vel.norm());
   m_objf->setPositions(m_objf->getPositions() + dr);
   m_iteration++;
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }
 
-int Quickmin::run(size_t a_maxSteps, double a_maxMove) {
+StepResult Quickmin::run(size_t a_maxSteps, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxSteps) {
     step(a_maxMove);
   }
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }

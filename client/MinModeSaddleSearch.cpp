@@ -27,6 +27,7 @@
 #include <utility>
 
 using namespace eonc::helpers;
+using eonc::StepResult;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
@@ -197,7 +198,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       log, "Saddle point search started from reactant with energy {} eV.",
       reactantEnergy);
 
-  int optStatus;
+  StepResult optStatus = StepResult::NotConverged;
   bool firstIteration = true;
   const char *forceLabel =
       params.optimizer_options.convergence_metric_label.c_str();
@@ -355,7 +356,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
         break;
       }
 
-      if (optStatus < 0) {
+      if (optStatus == StepResult::Failed) {
         status = STATUS_OPTIMIZER_ERROR;
         break;
       }

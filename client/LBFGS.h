@@ -42,11 +42,11 @@ public:
 
   ~LBFGS() = default;
 
-  int step(double a_maxMove) override;
-  int run(size_t a_maxIterations, double a_maxMove) override;
+  StepResult step(double a_maxMove) override;
+  StepResult run(size_t a_maxIterations, double a_maxMove) override;
   int update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
              const Eigen::VectorXd &a_f1, const Eigen::VectorXd &a_f0);
-  void reset(void);
+  void reset();
 
 private:
   Eigen::VectorXd getStep(double a_maxMove, const Eigen::VectorXd &a_f);

@@ -16,6 +16,8 @@
 
 #include <cmath>
 
+using eonc::StepResult;
+
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   double H0 = m_optConfig.opts.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
@@ -141,8 +143,7 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   return 0;
 }
 
-int LBFGS::step(double a_maxMove) {
-  int status = 0;
+StepResult LBFGS::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
 
@@ -156,14 +157,14 @@ int LBFGS::step(double a_maxMove) {
                       "[LBFGS] non-finite force at iteration {} (NaN or "
                       "Inf); aborting minimization",
                       m_iteration);
-    return -1;
+    return StepResult::Failed;
   }
 
   if (m_iteration > 0) {
-    status = update(r, m_rPrev, f, m_fPrev);
+    if (update(r, m_rPrev, f, m_fPrev) < 0) {
+      return StepResult::Failed;
+    }
   }
-  if (status < 0)
-    return -1;
 
   Eigen::VectorXd dr = getStep(a_maxMove, f);
 
@@ -174,20 +175,21 @@ int LBFGS::step(double a_maxMove) {
 
   m_iteration++;
 
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }
 
-int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
-  int status;
+StepResult LBFGS::run(size_t a_maxSteps, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxSteps) {
-    status = step(a_maxMove);
-    if (status < 0)
-      return -1;
+    if (step(a_maxMove) == StepResult::Failed) {
+      return StepResult::Failed;
+    }
   }
   // isConverged() returns false on a NaN convergence test even when
   // step() succeeded, so guard the final return too.
   if (!m_objf->getGradient().allFinite()) {
-    return -1;
+    return StepResult::Failed;
   }
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }

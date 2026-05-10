@@ -15,7 +15,9 @@
 #include "SteepestDescent.h"
 #include "SafeMath.h"
 
-int SteepestDescent::step(double a_maxMove) {
+using eonc::StepResult;
+
+StepResult SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
 
@@ -41,12 +43,14 @@ int SteepestDescent::step(double a_maxMove) {
 
   iteration++;
 
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }
 
-int SteepestDescent::run(size_t a_maxIteration, double a_maxMove) {
+StepResult SteepestDescent::run(size_t a_maxIteration, double a_maxMove) {
   while (!m_objf->isConverged() && iteration < a_maxIteration) {
     step(a_maxMove);
   }
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }

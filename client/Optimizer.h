@@ -14,6 +14,7 @@
 #include "Eigen.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
+#include "StatusTypes.h"
 
 #include "EonLogger.h"
 
@@ -94,9 +95,9 @@ public:
       : Optimizer(std::move(a_objf), a_optype,
                   OptimizerConfig::fromParams(a_params)) {}
 
-  virtual ~Optimizer() {};
-  virtual int step(double a_maxMove) = 0;
-  virtual int run(size_t a_maxIterations, double a_maxMove) = 0;
+  virtual ~Optimizer() = default;
+  virtual StepResult step(double a_maxMove) = 0;
+  virtual StepResult run(size_t a_maxIterations, double a_maxMove) = 0;
 };
 
 namespace helpers::create {
