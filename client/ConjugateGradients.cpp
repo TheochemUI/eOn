@@ -45,12 +45,14 @@ Eigen::VectorXd ConjugateGradients::getStep() {
 }
 
 StepResult ConjugateGradients::step(double a_maxMove) {
-  // Bail out instead of looping forever when the potential returns
-  // NaN forces (atom overlap inside an EAM/ML repulsive core, etc.).
-  // NaN propagates through dot products and < comparisons silently;
-  // without this guard line_search keeps shrinking the step and never
-  // exits because isConverged() never sees a finite-norm check.
-  if (!m_objf->getGradient().allFinite()) {
+  // Non-finite check: use the previous step's stored m_force (set by
+  // single_step / line_search) rather than calling getGradient()
+  // afresh. A fresh call here would invalidate the matter cache that
+  // the saddle-search outer loop just populated and charge ~+1 force
+  // call per CG step (saddle search regresses 39 -> 50 force calls
+  // on Morse Pt). Skip the check on the very first step where m_force
+  // hasn't been set yet; the body will catch NaN there.
+  if (m_cg_i > 0 && !m_force.allFinite()) {
     QUILL_LOG_WARNING(m_log,
                       "[CG] non-finite force entering step (NaN or Inf); "
                       "aborting minimization");
@@ -208,9 +210,8 @@ StepResult ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
     }
     iterations++;
   }
-  if (!m_objf->getGradient().allFinite()) {
-    return StepResult::Failed;
-  }
+  // No final getGradient() check -- the per-step guard above handles
+  // NaN bail without paying an extra force evaluation here.
   return m_objf->isConverged() ? StepResult::Converged
                                : StepResult::NotConverged;
 }
