@@ -258,7 +258,7 @@ SaddleStatus DynamicsSaddleSearch::run() {
         saddle->matter2con("saddle_initial_guess.con");
         MinModeSaddleSearch search = MinModeSaddleSearch(
             saddle, mode, reactant->getPotentialEnergy(), params, pot);
-        int minModeStatus = search.run();
+        SaddleStatus minModeStatus = search.run();
 
         if (minModeStatus != SaddleStatus::Good) {
           QUILL_LOG_DEBUG(log, "error in min mode saddle search");
