@@ -63,9 +63,10 @@ getRelevantFile(std::string filename); // return filename containing _checkpoint
 VectorXd loadMasses(std::string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
 AtomMatrix loadMode(std::string filename, int nAtoms);
-void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
-void saveMode(const std::string &filename, std::shared_ptr<Matter> matter,
-              AtomMatrix mode);
+void saveMode(FILE *modeFile, const std::shared_ptr<Matter> &matter,
+              const AtomMatrix &mode);
+void saveMode(const std::string &filename,
+              const std::shared_ptr<Matter> &matter, const AtomMatrix &mode);
 std::vector<int> split_string_int(std::string s, std::string delim);
 
 } // namespace helpers

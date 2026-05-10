@@ -184,12 +184,13 @@ std::vector<std::string> BasinHoppingJob::run() {
           *currentCopy = *current;
           uniqueStructures.push_back(currentCopy);
 
-          char fname[128];
-          snprintf(fname, 128, "min_%.5i.con", step + 1);
+          // std::format produces a sized std::string and avoids the
+          // unchecked snprintf truncation that cert-err33-c flags.
+          std::string fname = std::format("min_{:05d}.con", step + 1);
           current->matter2con(fname);
           returnFiles.push_back(fname);
 
-          snprintf(fname, 128, "energy_%.5i.dat", step + 1);
+          fname = std::format("energy_{:05d}.dat", step + 1);
           returnFiles.push_back(fname);
           {
             std::ofstream fh(fname);

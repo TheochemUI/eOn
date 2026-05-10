@@ -121,16 +121,23 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
   mode.resize(nAtoms, 3);
   mode.setZero();
   for (int i = 0; i < nAtoms; i++) {
-    fscanf(modeFile, "%lf %lf %lf", &mode(i, 0), &mode(i, 1), &mode(i, 2));
+    if (std::fscanf(modeFile, "%lf %lf %lf", &mode(i, 0), &mode(i, 1),
+                    &mode(i, 2)) != 3) {
+      EONC_LOG_CRITICAL("loadMode: short read at row {} (expected 3 doubles)",
+                        i);
+      std::exit(1);
+    }
   }
   return mode;
 }
 
 AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
-  // Unique FILE* with RAII cleanup
+  // Unique FILE* with RAII cleanup. fclose ignored at scope-exit
+  // because the buffer was for read-only use; flushing writes is
+  // the only reason cert-err33-c flags fclose, and there's none.
   auto closer = [](FILE *f) {
     if (f)
-      std::fclose(f);
+      (void)std::fclose(f);
   };
   std::unique_ptr<FILE, decltype(closer)> modeFile(
       std::fopen(filename.c_str(), "rb"), closer);
@@ -141,20 +148,28 @@ AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
   return loadMode(modeFile.get(), nAtoms);
 }
 
-void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
-                             AtomMatrix mode) {
+void eonc::helpers::saveMode(FILE *modeFile,
+                             const std::shared_ptr<Matter> &matter,
+                             const AtomMatrix &mode) {
   long const nAtoms = matter->numberOfAtoms();
   for (long i = 0; i < nAtoms; ++i) {
+    int written = 0;
     if (matter->getFixed(i)) {
-      fprintf(modeFile, "0 0 0\n");
+      written = std::fprintf(modeFile, "0 0 0\n");
     } else {
-      fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i, 0), mode(i, 1), mode(i, 2));
+      written = std::fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i, 0),
+                             mode(i, 1), mode(i, 2));
+    }
+    if (written < 0) {
+      EONC_LOG_CRITICAL("saveMode: fprintf failed at row {}", i);
+      std::exit(1);
     }
   }
 }
 
 void eonc::helpers::saveMode(const std::string &filename,
-                             std::shared_ptr<Matter> matter, AtomMatrix mode) {
+                             const std::shared_ptr<Matter> &matter,
+                             const AtomMatrix &mode) {
   std::ofstream out(filename);
   if (!out)
     return;
