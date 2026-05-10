@@ -160,7 +160,11 @@ features_list = [
     ['WITH_GPRD',          'GPRD',           'compile'],
     ['WITH_GP_SURROGATE',  'GP Surrogate',   'compile'],
     ['WITH_CATLEARN',      'CatLearn',       'compile'],
-    ['WITH_VASP',          'VASP',           'compile'],
+    # VASP is unconditionally compiled on POSIX (omitted on Windows).
+    # The class spawns ./runvasp.sh and reads FU/POSCAR files; nothing
+    # is linked or dlopen'd. The banner reports the shim's presence,
+    # not whether VASP itself is on PATH.
+    ['VASP_POT',           'VASP',           'subprocess'],
     ['WITH_WATER',         'Water',          'compile'],
     ['WITH_AMS',           'AMS',            'compile'],
     ['WITH_XTB',           'XTB',            'compile'],
@@ -201,6 +205,15 @@ foreach feature : features_list
     feature_mode = feature.length() > 2 ? feature[2] : 'compile'
     if feature_mode == 'runtime'
         features_string += '  ' + feature_name + ': enabled (dlopen at runtime)\n'
+    elif feature_mode == 'subprocess'
+        # POSIX-only subprocess shims (VASP). Always compiled where the
+        # platform supports it; the user supplies the external binary
+        # at run time on PATH.
+        if host_system == 'windows'
+            features_string += '  ' + feature_name + ': disabled (POSIX only)\n'
+        else
+            features_string += '  ' + feature_name + ': enabled (subprocess)\n'
+        endif
     elif feature_mode == 'compile_runtime'
         if '-D' + feature_flag in _args_str
             features_string += '  ' + feature_name + ': enabled (dlopen at runtime)\n'
@@ -450,12 +463,13 @@ if get_option('with_gp_surrogate')
     endif
 endif
 
-if get_option('with_vasp')
-    if host_system != 'windows'
-        subdir('potentials/VASP')
-        potentials += [vasp]
-        _args += ['-DWITH_VASP']
-    endif
+# VASP: always compiled on POSIX (Windows omits via #ifndef _WIN32 in
+# Potential.cpp). The shim spawns `runvasp.sh` at use time; no library
+# dependency at build time. The user gets VASP support iff the script is
+# on PATH and PotType::VASP is requested.
+if host_system != 'windows'
+    subdir('potentials/VASP')
+    potentials += [vasp]
 endif
 
 if get_option('with_water')

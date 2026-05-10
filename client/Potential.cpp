@@ -78,9 +78,7 @@
 #endif
 
 #ifndef _WIN32
-#ifdef WITH_VASP
 #include "potentials/VASP/VASP.h"
-#endif
 #endif
 
 #ifdef WITH_AMS
@@ -224,12 +222,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #ifndef _WIN32
-#ifdef WITH_VASP
   case PotType::VASP: {
     return (std::make_shared<VASP>(params));
     break;
   }
-#endif
 #endif
   case PotType::LAMMPS: {
     return std::make_shared<LAMMPSPot>(params);
