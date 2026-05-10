@@ -21,7 +21,7 @@ namespace eonc {
 
 class DynamicsSaddleSearch : public SaddleSearchMethod {
 public:
-  DynamicsSaddleSearch(std::shared_ptr<Matter> matterPassed,
+  DynamicsSaddleSearch(const std::shared_ptr<Matter> &matterPassed,
                        const Parameters &parametersPassed)
       : SaddleSearchMethod(nullptr, parametersPassed),
         product{std::make_shared<Matter>(*matterPassed)},
@@ -30,7 +30,7 @@ public:
     this->pot = matterPassed->getPotential();
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
-  };
+  }
   ~DynamicsSaddleSearch() = default;
 
   SaddleStatus run() override;
@@ -39,7 +39,7 @@ public:
   SaddleStatus getStatus() const override { return status; }
 
   int refineTransition(const std::vector<std::shared_ptr<Matter>> &snapshots,
-                       std::shared_ptr<Matter> product);
+                       const std::shared_ptr<Matter> &product);
 
   double eigenvalue{0.0};
   AtomMatrix eigenvector;

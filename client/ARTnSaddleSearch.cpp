@@ -22,10 +22,10 @@ ARTnSaddleSearch::ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
                                    std::shared_ptr<Potential> potPassed,
                                    AtomMatrix modeInitial,
                                    const Parameters &paramsPassed)
-    : SaddleSearchMethod(potPassed, paramsPassed),
-      matter{matterPassed},
-      mode{modeInitial},
-      eigenvector{AtomMatrix::Zero(matterPassed->numberOfAtoms(), 3)} {
+    : SaddleSearchMethod(std::move(potPassed), paramsPassed),
+      matter{std::move(matterPassed)},
+      eigenvector{AtomMatrix::Zero(matter->numberOfAtoms(), 3)},
+      mode{std::move(modeInitial)} {
   log = eonc::log::get();
   if (!log) {
     throw std::runtime_error("ARTnSaddleSearch: Logger not initialized");
@@ -222,14 +222,19 @@ SaddleStatus ARTnSaddleSearch::run() {
   }
 
   // Per-atom metadata for the Fortran step (no pARTn state, unlocked).
-  std::vector<int> ityp(nat);
-  std::vector<int> if_pos(3 * nat, 1); // all atoms free by default
+  // size_t casts on nat * <small int> to avoid the implicit widening
+  // bugprone-implicit-widening-of-multiplication-result lint --
+  // every consumer wants size_t / Index / ptrdiff_t.
+  const std::size_t natz = static_cast<std::size_t>(nat);
+  std::vector<int> ityp(natz);
+  std::vector<int> if_pos(natz * 3, 1); // all atoms free by default
   double box_f[9];
   bool lconv = false;
 
   for (int i = 0; i < nat; i++) {
     if (matter->getFixed(i)) {
-      Eigen::Map<Eigen::Vector3i>(&if_pos[i * 3]).setZero();
+      Eigen::Map<Eigen::Vector3i>(&if_pos[static_cast<std::size_t>(i) * 3])
+          .setZero();
     }
     ityp[i] = matter->getAtomicNr(i);
   }
@@ -341,7 +346,10 @@ SaddleStatus ARTnSaddleSearch::run() {
           "tau_sad", reinterpret_cast<void **>(&tau_sad_ptr));
       if (result_tau_sad == 0 && tau_sad_ptr) {
         matter->setPositions(eonc::from_fortran_layout_vector(
-            std::vector<double>(tau_sad_ptr, tau_sad_ptr + 3 * nat), nat));
+            std::vector<double>(tau_sad_ptr,
+                                tau_sad_ptr +
+                                    static_cast<std::ptrdiff_t>(3) * nat),
+            nat));
         std::free(tau_sad_ptr);
       } else {
         QUILL_LOG_WARNING(
@@ -375,7 +383,9 @@ SaddleStatus ARTnSaddleSearch::run() {
       if (result_evec == 0 && evec_ptr) {
         // Use direct Eigen::Map to convert from Fortran layout
         eigenvector = eonc::from_fortran_layout_vector(
-            std::vector<double>(evec_ptr, evec_ptr + 3 * nat), nat);
+            std::vector<double>(
+                evec_ptr, evec_ptr + static_cast<std::ptrdiff_t>(3) * nat),
+            nat);
 
         // get_data allocates via c_malloc (artn_c_wrappers.f90), safe to free
         std::free(evec_ptr);

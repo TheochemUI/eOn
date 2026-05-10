@@ -22,13 +22,13 @@ namespace eonc {
 
 class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
-  BiasedGradientSquaredDescent(std::shared_ptr<Matter> matterPassed,
+  BiasedGradientSquaredDescent(const std::shared_ptr<Matter> &matterPassed,
                                double reactantEnergyPassed,
                                const Parameters &parametersPassed)
       : SaddleSearchMethod(matterPassed->getPotential(), parametersPassed),
-        saddle{matterPassed} {
-    reactantEnergy = reactantEnergyPassed;
-    saddle = matterPassed;
+        eigenvalue{0.0},
+        saddle{matterPassed},
+        reactantEnergy{reactantEnergyPassed} {
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
   }

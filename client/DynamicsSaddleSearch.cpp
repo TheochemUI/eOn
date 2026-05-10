@@ -89,14 +89,15 @@ SaddleStatus DynamicsSaddleSearch::run() {
     bondBoost.initialize();
   }
 
-  int checkInterval = static_cast<int>(
-      params.saddle_search_options.dynamics.state_check_interval /
-          params.dynamics_options.time_step +
-      0.5);
-  int recordInterval =
-      static_cast<int>(params.saddle_search_options.dynamics.record_interval /
-                           params.dynamics_options.time_step +
-                       0.5);
+  // Round-to-nearest with std::lround instead of `(int)(x + 0.5)`,
+  // which is broken for negative arguments and exact representations
+  // (bugprone-incorrect-roundings).
+  const auto checkInterval = static_cast<int>(
+      std::lround(params.saddle_search_options.dynamics.state_check_interval /
+                  params.dynamics_options.time_step));
+  const auto recordInterval = static_cast<int>(
+      std::lround(params.saddle_search_options.dynamics.record_interval /
+                  params.dynamics_options.time_step));
 
   if (params.debug_options.write_movies) {
     saddle->matter2con("dynamics", false);
@@ -291,7 +292,7 @@ SaddleStatus DynamicsSaddleSearch::run() {
 /// Binary search through MD snapshots to find the transition point.
 int DynamicsSaddleSearch::refineTransition(
     const std::vector<std::shared_ptr<Matter>> &snapshots,
-    std::shared_ptr<Matter> prod) {
+    const std::shared_ptr<Matter> &prod) {
   int lo = 0;
   int hi = static_cast<int>(snapshots.size()) - 1;
   if (hi == 0) {
