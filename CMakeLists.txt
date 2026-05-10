@@ -52,7 +52,8 @@ option(WITH_ASE_ORCA "Build ASE ORCA potential" OFF)
 option(WITH_ASE_NWCHEM "Build ASE NWChem potential" OFF)
 option(WITH_ASE "Build ASE potential" OFF)
 option(WITH_QSC "Build QSC potential" OFF)
-option(USE_MKL "Enable Intel MKL support" OFF)
+option(USE_MKL "Hard-link Eigen against Intel MKL (legacy; mutually exclusive with WITH_FLEXIBLAS)" OFF)
+option(WITH_FLEXIBLAS "Link Eigen via FlexiBLAS for runtime-pluggable BLAS / LAPACK" OFF)
 option(WITH_METATOMIC "Build Metatomic potential" OFF)
 option(WITH_PYTHON "Build Python-embedding potentials" OFF)
 set(TORCH_PATH "" CACHE STRING "Path to Torch installation")
@@ -80,6 +81,30 @@ if(EON_NEED_PYTHON_EMBED)
   find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 else()
   find_package(Python3 COMPONENTS Interpreter)
+endif()
+
+# ---------------------- FlexiBLAS (BLAS / LAPACK)
+#
+# FlexiBLAS is the FlexiBLAS-of-MPI for BLAS: link once, swap the
+# backend (OpenBLAS, MKL, BLIS, ATLAS, ARMPL, ...) at run time via
+# the FLEXIBLAS env var. Mirrors the meson with_flexiblas block in
+# client/meson.build and the MPItrampoline pattern below.
+if(WITH_FLEXIBLAS AND USE_MKL)
+  message(FATAL_ERROR
+    "WITH_FLEXIBLAS and USE_MKL are mutually exclusive; "
+    "FlexiBLAS can route to MKL at run time via FLEXIBLAS=INTELMKL.")
+endif()
+if(WITH_FLEXIBLAS)
+  find_package(flexiblas QUIET)
+  if(NOT flexiblas_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+      flexiblas
+      GIT_REPOSITORY https://github.com/mpimd-csc/flexiblas.git
+      GIT_TAG v3.5.0
+      GIT_SHALLOW TRUE)
+    FetchContent_MakeAvailable(flexiblas)
+  endif()
 endif()
 
 # ---------------------- MPI (via MPItrampoline)

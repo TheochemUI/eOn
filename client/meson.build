@@ -17,6 +17,42 @@ if get_option('with_fortran') or get_option('with_cuh2')
     _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
 endif
 
+# BLAS / LAPACK acceleration for Eigen.
+#
+# Three operating modes, mutually exclusive:
+#
+#   with_flexiblas (default off, recommended)
+#     Link Eigen against FlexiBLAS -- the FlexiBLAS-of-MPI analogue
+#     for BLAS. One eonclient binary forwards every BLAS / LAPACK
+#     call to any installed backend (OpenBLAS, MKL, BLIS, ATLAS,
+#     ARMPL, ...) at run time, picked via the FLEXIBLAS env var:
+#       FLEXIBLAS=OPENBLAS ./eonclient   # OpenBLAS at runtime
+#       FLEXIBLAS=INTELMKL ./eonclient   # Intel MKL at runtime
+#     subprojects/flexiblas.wrap pins upstream and CMake-builds it
+#     when the host doesn't ship a FlexiBLAS install, so there's
+#     never a "no BLAS" failure mode.
+#
+#   use_mkl (default off, legacy direct link)
+#     Hard-link to Intel MKL via mkl-dynamic-ilp64-iomp. ABI-locks
+#     the binary to MKL. Kept for users who explicitly want MKL
+#     without the FlexiBLAS indirection. Mutually exclusive with
+#     with_flexiblas.
+#
+#   neither (default)
+#     Pure-header Eigen, no external BLAS link. Eigen falls back to
+#     its own routines.
+if get_option('with_flexiblas') and get_option('use_mkl')
+    error('with_flexiblas and use_mkl are mutually exclusive; FlexiBLAS '
+        + 'can route to MKL at run time via FLEXIBLAS=INTELMKL')
+endif
+
+if get_option('with_flexiblas')
+    flexiblas_dep = dependency('flexiblas', required: true)
+    add_project_arguments('-DEIGEN_USE_BLAS', language: 'cpp')
+    add_project_arguments('-DEIGEN_USE_LAPACKE', language: 'cpp')
+    _deps += [flexiblas_dep]
+endif
+
 if get_option('use_mkl')
     mkldep = dependency('mkl-dynamic-ilp64-iomp', required: true)
     add_project_arguments('-DEIGEN_USE_MKL_ALL', language: 'cpp')
