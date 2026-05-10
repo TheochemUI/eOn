@@ -1005,13 +1005,27 @@ endif
 if get_option('with_tests')
     test_args = _args
     test_deps = _exe_deps
+    # Catch2 amalgamated pulls in <regex>; libstdc++ 13.3 std::regex
+    # move-ctors trip a -Wmaybe-uninitialized false positive at -O3 + LTO
+    # (release buildtype) because the optimizer inlines the function<>
+    # move-ctor into _NFA::_M_insert_alt before it can prove _M_invoker /
+    # _M_manager are initialized by the default ctor. Known GCC
+    # bug-family (PR93499 / 96012). Build the amalgamated TU as its
+    # own static library with the suppression so eOn's own test sources
+    # stay under -Wmaybe-uninitialized.
+    catch2_lib = static_library(
+        'catch2_amalgamated',
+        ['thirdparty/catch2/catch_amalgamated.cpp'],
+        include_directories: _incdirs,
+        cpp_args: test_args + ['-Wno-maybe-uninitialized'],
+    )
     testMain = library(
         'TestMain',
-        ['unit_tests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
+        ['unit_tests/TestMain.cpp'],
         dependencies: _deps,  # static lib: use _deps (no readcon link_args)
         include_directories: _incdirs,
         cpp_args: test_args,
-        link_with: _linkto,
+        link_with: [_linkto, catch2_lib],
     )
     test_array = [  #
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
@@ -1071,12 +1085,11 @@ if get_option('with_tests')
                 test.get(0),
                 sources: [
                     'unit_tests/' + test.get(1),
-                    'thirdparty/catch2/catch_amalgamated.cpp',
                 ],
                 dependencies: test_deps,
                 include_directories: _incdirs,
                 cpp_args: test_args,
-                link_with: _linkto,
+                link_with: [_linkto, catch2_lib],
                 build_rpath: ':'.join(_runtime_rpath),
             ),
             # Catch2 v3 returns exit code 4 from a process that ran no
@@ -1102,12 +1115,11 @@ if get_option('with_tests')
             'test_socket_nwchem',
             sources: [
                 'unit_tests/SocketNWChemPotTest.cpp',
-                'thirdparty/catch2/catch_amalgamated.cpp',
             ],
             dependencies: test_deps,
             include_directories: _incdirs,
             cpp_args: test_args,
-            link_with: _linkto,
+            link_with: [_linkto, catch2_lib],
         )
 
         test_workdir = meson.project_source_root() + '/client/unit_tests/data/systems/nwchem_test'
@@ -1130,16 +1142,20 @@ if get_option('with_tests')
     endif
 
     # Benchmarks (not in default test suite -- run via: meson test --benchmark)
+    # bench_pot is the only target gated to `meson test --benchmark`;
+    # default builds (including the sanitizer matrix) skip it via
+    # build_by_default = false to avoid instrumenting + linking a
+    # benchmark binary nobody runs in the test pass.
     bench_pot_exe = executable('bench_pot',
         [
             'unit_tests/PotBenchmark.cpp',
             'unit_tests/TestMain.cpp',
-            'thirdparty/catch2/catch_amalgamated.cpp',
         ],
         dependencies: test_deps,
         include_directories: _incdirs,
         cpp_args: test_args,
-        link_with: _linkto,
+        link_with: [_linkto, catch2_lib],
+        build_by_default: false,
     )
     benchmark('bench_pot', bench_pot_exe,
         args: ['[.benchmark]'],
