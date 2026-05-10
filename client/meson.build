@@ -383,71 +383,114 @@ if not is_windows
     potentials += [socket_nwchem]
 endif
 
-eonclib_sources = [
-    'Parameters.cpp',
-    'ParametersINI.cpp',
-    'ParametersJSON.cpp',
-    'ConFileIO.cpp',
-    'GeometryAnalysis.cpp',
-    'Optimizer.cpp',
-    'IDPPObjectiveFunction.cpp',
-    'PrefactorJob.cpp',
-    'LBFGS.cpp',
-    'ReplicaExchangeJob.cpp',
-    'BondBoost.cpp',
-    'Job.cpp',
-    'GlobalOptimization.cpp',
-    'LowestEigenmode.cpp',
-    'MinModeSaddleSearch.cpp',
-    'StructureComparisonJob.cpp',
-    'SteepestDescent.cpp',
-    'ImprovedDimer.cpp',
-    'PointJob.cpp',
-    'Prefactor.cpp',
-    'ConjugateGradients.cpp',
-    'Matter.cpp',
-    'FiniteDifferenceJob.cpp',
-    'Lanczos.cpp',
-    'HessianJob.cpp',
-    'ReplicaDynamicsJob.cpp',
-    'TADJob.cpp',
-    'ProcessSearchJob.cpp',
-    'Bundling.cpp',
-    'NEBInitialPaths.cpp',
-    'NEBForceProjection.cpp',
-    'NEBObjectiveFunction.cpp',
-    'NEBProjection.cpp',
-    'NEBOcinebController.cpp',
-    'NEBSplineExtrema.cpp',
-    'NEBSpringForce.cpp',
-    'NEBTangent.cpp',
-    'NudgedElasticBand.cpp',
-    'MonteCarloJob.cpp',
-    'DynamicsJob.cpp',
-    'MonteCarlo.cpp',
-    'Hessian.cpp',
-    'NudgedElasticBandJob.cpp',
-    'DynamicsSaddleSearch.cpp',
-    'HelperFunctions.cpp',
-    'RandomNumbers.cpp',
-    'StringHelpers.cc',
-    'MatrixHelpers.hpp',  # Template
-    'Dimer.cpp',
-    'Dynamics.cpp',
-    'GlobalOptimizationJob.cpp',
-    'BiasedGradientSquaredDescent.cpp',
-    'SafeHyperJob.cpp',
-    'MinimizationJob.cpp',
-    'Quickmin.cpp',
-    'ParallelReplicaJob.cpp',
-    'Potential.cpp',
-    'SurrogatePotential.cpp',  # Part of the interface
-    'BasinHoppingJob.cpp',
-    'FIRE.cpp',
-    'EpiCenters.cpp',
-    'SaddleSearchJob.cpp',
-    'BasinHoppingSaddleSearch.cpp',
-]
+# eonclib source set (issue #177). Resolves the historical thicket of
+# conditional `eonclib_sources +=` accretions across the file by
+# moving every source-list decision into one sourceset driven by a
+# configuration_data of feature flags. Side-effecting feature blocks
+# (subproject(), find_library(), -DWITH_X args, _deps additions) stay
+# where they are; only the source-membership question moves here.
+eonclib_ss = import('sourceset').source_set()
+
+eonclib_ss.add(
+    files(
+        'BasinHoppingJob.cpp',
+        'BasinHoppingSaddleSearch.cpp',
+        'BiasedGradientSquaredDescent.cpp',
+        'BondBoost.cpp',
+        'Bundling.cpp',
+        'ConFileIO.cpp',
+        'ConjugateGradients.cpp',
+        'Dimer.cpp',
+        'Dynamics.cpp',
+        'DynamicsJob.cpp',
+        'DynamicsSaddleSearch.cpp',
+        'EpiCenters.cpp',
+        'FIRE.cpp',
+        'FiniteDifferenceJob.cpp',
+        'GeometryAnalysis.cpp',
+        'GlobalOptimization.cpp',
+        'GlobalOptimizationJob.cpp',
+        'HelperFunctions.cpp',
+        'Hessian.cpp',
+        'HessianJob.cpp',
+        'IDPPObjectiveFunction.cpp',
+        'ImprovedDimer.cpp',
+        'Job.cpp',
+        'LBFGS.cpp',
+        'Lanczos.cpp',
+        'LowestEigenmode.cpp',
+        'MatrixHelpers.hpp',
+        'Matter.cpp',
+        'MinModeSaddleSearch.cpp',
+        'MinimizationJob.cpp',
+        'MonteCarlo.cpp',
+        'MonteCarloJob.cpp',
+        'NEBForceProjection.cpp',
+        'NEBInitialPaths.cpp',
+        'NEBObjectiveFunction.cpp',
+        'NEBOcinebController.cpp',
+        'NEBProjection.cpp',
+        'NEBSplineExtrema.cpp',
+        'NEBSpringForce.cpp',
+        'NEBTangent.cpp',
+        'NudgedElasticBand.cpp',
+        'NudgedElasticBandJob.cpp',
+        'Optimizer.cpp',
+        'ParallelReplicaJob.cpp',
+        'Parameters.cpp',
+        'ParametersINI.cpp',
+        'ParametersJSON.cpp',
+        'PointJob.cpp',
+        'Potential.cpp',
+        'Prefactor.cpp',
+        'PrefactorJob.cpp',
+        'ProcessSearchJob.cpp',
+        'Quickmin.cpp',
+        'RandomNumbers.cpp',
+        'ReplicaDynamicsJob.cpp',
+        'ReplicaExchangeJob.cpp',
+        'SaddleSearchJob.cpp',
+        'SafeHyperJob.cpp',
+        'SteepestDescent.cpp',
+        'StringHelpers.cc',
+        'StructureComparisonJob.cpp',
+        'SurrogatePotential.cpp',
+        'TADJob.cpp',
+    ),
+)
+
+# ARTn / IRA: shim + driver always compiled, libs dlopen'd at run
+# time. ARTnResource.h / IRAResource.h redeclare the C entry points
+# inline, so neither needs an external header at compile time.
+eonclib_ss.add(
+    files(
+        'ARTnSaddleSearch.cpp',
+        'libs/ARTn/ARTnResource.cpp',
+        'IRACompare.cpp',
+        'libs/IRA/IRAResource.cpp',
+    ),
+)
+
+# Conditional sources, gated by configuration_data flags built up
+# below. Every -DWITH_<X> addition + subproject + dependency lives in
+# the matching feature block; sourceset only owns source membership.
+eonclib_ss.add(
+    when: 'WITH_GPRD',
+    if_true: files('AtomicGPDimer.cpp', 'GPRHelpers.cpp'),
+)
+eonclib_ss.add(
+    when: 'WITH_GP_SURROGATE',
+    if_true: files('GPSurrogateJob.cpp'),
+)
+eonclib_ss.add(
+    when: 'WITH_SERVE_MODE',
+    if_true: files('ServeMode.cpp', 'ServeRpcServer.cpp'),
+)
+
+eonclib_cfg = configuration_data()
+eonclib_cfg.set('WITH_GPRD', get_option('with_gprd'))
+eonclib_cfg.set('WITH_GP_SURROGATE', get_option('with_gp_surrogate'))
+eonclib_cfg.set('WITH_SERVE_MODE', get_option('with_serve'))
 
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
 
@@ -468,13 +511,14 @@ if get_option('with_gprd')
     # subdir('potentials/GPRPotential')
     # potentials += [ gprpot ]
     _args += ['-DWITH_GPRD']
-    eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
+    # Source membership for AtomicGPDimer.cpp + GPRHelpers.cpp is
+    # owned by the eonclib sourceset above (when: 'WITH_GPRD').
     _deps += [libgprd, gprd_deps]
 endif
 
 if get_option('with_gp_surrogate')
     _args += ['-DWITH_GP_SURROGATE']
-    eonclib_sources += ['GPSurrogateJob.cpp']
+    # Source membership owned by sourceset (when: 'WITH_GP_SURROGATE').
     if get_option('with_catlearn')
         # TODO: Cleanup, used for ase_orca too
         # Embedding the interpreter
@@ -792,22 +836,10 @@ if get_option('with_parallel_neb')
     _args += ['-DEON_PARALLEL_NEB']
 endif
 
-# ARTn (pARTn) and IRA: always compiled, dlopen'd at runtime.
-#
-# The *Resource shims (libs/ARTn/ARTnResource.cpp, libs/IRA/IRAResource.cpp)
-# use dlopen(libartn.so) / dlopen(libira.so) when require_loaded() is first
-# called. Both shims redeclare the C entry points inline (see
-# ARTnResource.h / IRAResource.h), so neither needs an external header
-# at compile time. Users supply libartn.so / libira.so on
-# LD_LIBRARY_PATH (or DYLD_LIBRARY_PATH on macOS) and ARTnSaddleSearch /
-# IRACompare check is_loaded() at the call site -- identical pattern to
-# LAMMPS today.
-eonclib_sources += [
-    'ARTnSaddleSearch.cpp',
-    'libs/ARTn/ARTnResource.cpp',
-    'IRACompare.cpp',
-    'libs/IRA/IRAResource.cpp',
-]
+# ARTn / IRA source membership is owned by the eonclib sourceset above
+# (always-on add). Users supply libartn.so / libira.so on
+# LD_LIBRARY_PATH; ARTnSaddleSearch / IRACompare gate at the call site
+# with is_loaded() / require_loaded().
 
 if get_option('with_serve')
     # rgpot-compatible RPC serve mode: wraps any eOn potential and serves it
@@ -824,7 +856,7 @@ if get_option('with_serve')
     rgpot_proj = subproject('rgpot', default_options: rgpot_serve_opts)
     ptlrpc_dep = rgpot_proj.get_variable('ptlrpc_dep')
     _args += ['-DWITH_SERVE_MODE']
-    eonclib_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
+    # Source membership owned by sourceset (when: 'WITH_SERVE_MODE').
     _deps += [serve_capnp_dep, ptlrpc_dep]
 endif
 
@@ -858,9 +890,14 @@ endif
 
 # --------------------- Library
 
+# Resolve the sourceset against the configuration_data assembled
+# above. result.sources() is the final, deduplicated list, identical
+# to what the pre-#177 chain of `eonclib_sources +=` produced.
+eonclib_resolved = eonclib_ss.apply(eonclib_cfg)
+
 eclib = library(
     'eonclib',
-    sources: eonclib_sources,
+    sources: eonclib_resolved.sources(),
     include_directories: _incdirs,
     dependencies: _deps,
     link_with: _linkto,
