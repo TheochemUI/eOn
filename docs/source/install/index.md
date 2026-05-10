@@ -90,6 +90,19 @@ passed with `--native-file`:
 - With `ccache` installed, add `--native-file nativeFiles/ccache_gnu.ini`
 - With `mold` installed, add `--native-file nativeFiles/mold.ini`
 
+### Inspecting what was compiled in
+
+Run `eonclient --features` to see the live banner of compile-time
+options the binary was built with (LAMMPS, ARTn, IRA, XTB, VASP,
+Metatomic, MPI, FlexiBLAS, Serve mode, ...) along with `enabled` /
+`disabled` / `enabled (dlopen at runtime)` / `enabled (subprocess)`
+markers. Useful to confirm a conda env or a source build before
+launching long ensemble jobs.
+
+```{code-block} bash
+eonclient --features
+```
+
 ### Runtime-pluggable BLAS / LAPACK (FlexiBLAS)
 
 ```{versionadded} 2.15

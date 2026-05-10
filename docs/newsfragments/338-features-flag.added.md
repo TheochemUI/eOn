@@ -1,0 +1,1 @@
+Document the existing `eonclient --features` flag in the install guide (closes #225). The flag was already wired through `CommandLine.cpp` -> `printFeatures()` -> the `FEATURES_STRING` populated from `client/meson.build` features_list at configure time; this commit adds the user-facing reference so `eonclient --features` is discoverable alongside `--version`.
