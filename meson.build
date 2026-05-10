@@ -7,16 +7,13 @@ project(
     meson_version: '>= 1.8.0',
     default_options: [  #
         'buildtype=debugoptimized',
-        # warning_level=1 -> -Wall (the universally-safe baseline).
-        # Pre-2.15 we shipped warning_level=0 ("ahead of CECAM school
-        # to prevent new-user fatigue", #117); the suppression has
-        # outlived its use. warning_level=2 (-Wall -Wextra) and =3
-        # are tracked as follow-ups in #117 -- enabling them surfaces
-        # ~hundreds of warnings that need their own focused branch.
-        # warning_level=3 also passes -fimplicit-none to gfortran,
-        # which breaks eonclient's vendored Fortran TUs that rely
-        # on implicit typing.
-        'warning_level=1',
+        # warning_level=2 -> -Wall -Wextra. Pre-2.15 we shipped 0
+        # to suppress build noise ahead of the CECAM school (#117);
+        # the suppression has outlived its use. =3 also passes
+        # -fimplicit-none to gfortran which breaks eonclient's
+        # vendored Fortran TUs that rely on implicit typing -- can't
+        # bump to 3 without a Fortran-side cleanup.
+        'warning_level=2',
         'cpp_std=c++20',
     ],
 )

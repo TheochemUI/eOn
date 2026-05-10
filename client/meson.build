@@ -344,11 +344,15 @@ _args += ['-DQUILL_DISABLE_NON_PREFIXED_MACROS']
 
 inireader_dep = dependency('INIReader', required: false)
 if not inireader_dep.found()
+    # warning_level=0 on the subproject silences `unused parameter
+    # 'user'` in inih-r62/tests/unittest_alloc.c -- vendored upstream
+    # test code, not ours to fix; inheriting our -Wall -Wextra would
+    # otherwise leak the warning into our build log.
     inireader_dep = dependency(
         'inireader',
         fallback: ['inih', 'INIReader_dep'],
         required: true,
-        default_options: ['default_library=static'],
+        default_options: ['default_library=static', 'warning_level=0'],
     )
 endif
 _deps += inireader_dep
