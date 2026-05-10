@@ -10,7 +10,6 @@ version = "2.14.0"
 [tasks]
 gen-ref = { cmd = "cd scripts/regression && snakemake -c4", description = "Generate SVN regression reference data (default: svn-Jul_01_2024)" }
 gen-ref-clean = { cmd = "cd scripts/regression && snakemake clean", description = "Clean regression build artifacts" }
-ensure_cbindgen = { cmd = "command -v cbindgen > /dev/null || cargo install --root $CONDA_PREFIX cbindgen", description = "Install cbindgen into the active env's bin (needed by readcon-core; cbindgen is not packaged for conda-forge or PyPI)" }
 
 [dependencies]
 eigen = ">=3.4,<3.5"
@@ -36,7 +35,7 @@ rust = ">=1.88"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
-readcon = ">=0.8.0, <0.9"
+readcon = ">=0.9.0, <0.10"
 
 [pypi-options]
 # TODO(rg): only if the CPU version is needed
@@ -200,4 +199,3 @@ meson setup bbdir --reconfigure \
       -Dwith_gprd=True
 """
 args = ["buildtype"]
-depends-on = ["ensure_cbindgen"]
