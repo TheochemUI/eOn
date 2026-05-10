@@ -7,12 +7,23 @@ project(
     meson_version: '>= 1.8.0',
     default_options: [  #
         'buildtype=debugoptimized',
-        'warning_level=0',
+        # warning_level=1 -> -Wall (the universally-safe baseline).
+        # Pre-2.15 we shipped warning_level=0 ("ahead of CECAM school
+        # to prevent new-user fatigue", #117); the suppression has
+        # outlived its use. warning_level=2 (-Wall -Wextra) and =3
+        # are tracked as follow-ups in #117 -- enabling them surfaces
+        # ~hundreds of warnings that need their own focused branch.
+        # warning_level=3 also passes -fimplicit-none to gfortran,
+        # which breaks eonclient's vendored Fortran TUs that rely
+        # on implicit typing.
+        'warning_level=1',
         'cpp_std=c++20',
     ],
 )
-# IMPORTANT!! warning_level=3 passes -fimplicit-none
-# eonclient needs implicit typing!!
+# Visibility flags applied in client/meson.build once cppc is created
+# (-fvisibility=hidden + -fvisibility-inlines-hidden). Cuts the
+# dynamic symbol table by ~10x, stops internal namespace symbols from
+# leaking into downstream conda envs.
 
 host_system = host_machine.system()
 

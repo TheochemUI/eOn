@@ -9,6 +9,20 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
+# Hide C++ symbols by default; tag exports explicitly with
+# __attribute__((visibility("default"))) at use sites. cppc.
+# get_supported_arguments() filters out flags MSVC doesn't accept,
+# so the same line works on Windows (where PE/COFF treats every
+# function as private until you dllexport it; the gcc/clang flag is
+# silently dropped).
+add_project_arguments(
+    cppc.get_supported_arguments([
+        '-fvisibility=hidden',
+        '-fvisibility-inlines-hidden',
+    ]),
+    language: 'cpp',
+)
+
 # DynLib.h (used by LammpsLoader / XtbLoader / ARTnResource /
 # IRAResource and any future runtime-loaded shim) calls dlopen +
 # dlsym + dlclose on POSIX. On Linux these symbols live in libdl;
@@ -29,6 +43,22 @@ if get_option('with_fortran') or get_option('with_cuh2')
     add_languages('fortran', required: true)
     fc = meson.get_compiler('fortran')
     _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
+endif
+
+# Centralised pybind11 lookup -- pre-2.15 every Python-embedding
+# potential block (with_catlearn / with_ase / with_ase_orca /
+# with_ase_nwchem) re-ran dependency('pybind11'), which isn't
+# expensive but bloats configure-time logs and duplicates the
+# include-path resolution. Resolve once, append once; downstream
+# blocks reuse the entry already in _deps.
+need_pybind11 = (
+    get_option('with_catlearn')
+    or get_option('with_ase')
+    or get_option('with_ase_orca')
+    or get_option('with_ase_nwchem')
+)
+if need_pybind11
+    _deps += [dependency('pybind11', required: true)]
 endif
 
 # BLAS / LAPACK acceleration for Eigen.
@@ -534,10 +564,7 @@ if get_option('with_gp_surrogate')
     _args += ['-DWITH_GP_SURROGATE']
     # Source membership owned by sourceset (when: 'WITH_GP_SURROGATE').
     if get_option('with_catlearn')
-        # TODO: Cleanup, used for ase_orca too
-        # Embedding the interpreter
-        pyb11f_deps = [dependency('pybind11')]
-        _deps += [pyb11f_deps]
+        # pybind11 is provided by the central need_pybind11 block above.
         subdir('potentials/CatLearnPot')
         potentials += [catlearnpot]
         _args += ['-DWITH_CATLEARN']
@@ -603,8 +630,7 @@ if py_embed
     # subdir('potentials/QSC')
     # potentials += [ qsc ]
     if get_option('with_ase')
-        pyb11f_deps = [dependency('pybind11')]
-        _deps += [pyb11f_deps]
+        # pybind11 supplied by need_pybind11 block.
         subdir('potentials/ASE')
         potentials += [ase]
         _args += ['-DWITH_ASE_POT']
@@ -656,25 +682,17 @@ if get_option('with_cuh2')
 endif
 
 if get_option('with_ase_orca')
-    # TODO: Cleanup, used for Catlearn too
-    # Embedding the interpreter
-    pyb11f_deps = [python_dep, dependency('pybind11')]
-    _deps += [pyb11f_deps]
+    # python_dep + pybind11_dep both supplied by the central
+    # py_embed and need_pybind11 blocks above.
     subdir('potentials/ASE_ORCA')
     potentials += [aseorca]
     _args += ['-DWITH_ASE_ORCA']
 endif
 
 if get_option('with_ase_nwchem')
-    # TODO: Cleanup, used for Catlearn too
-    # Embedding the interpreter
-    python_dep = py.dependency(embed: true, required: true)
-    pyb11f_deps = [
-        python_dep,
-        dependency('pybind11'),
-        declare_dependency(link_args: '-lstdc++'),
-    ]
-    _deps += [pyb11f_deps]
+    # python_dep + pybind11_dep supplied centrally; only the
+    # libstdc++ link arg is unique to this potential.
+    _deps += [declare_dependency(link_args: '-lstdc++')]
     subdir('potentials/ASE_NWCHEM')
     potentials += [asenwchem]
     _args += ['-DWITH_ASE_NWCHEM']

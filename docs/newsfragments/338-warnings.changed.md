@@ -1,0 +1,1 @@
+Bump default `warning_level` from 0 to 1 in the top-level meson project (`-Wall`). Pre-2.15 we shipped 0 to suppress build noise ahead of the CECAM school (#117); the suppression has outlived its use. `warning_level=2` (`-Wall -Wextra`) and `=3` (which also passes `-fimplicit-none` and breaks the vendored Fortran TUs) are tracked as follow-ups in #117.
