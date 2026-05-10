@@ -32,14 +32,9 @@ ARTnSaddleSearch::ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
   }
 }
 
-ARTnSaddleSearch::~ARTnSaddleSearch() {
-#ifdef WITH_ARTN
-  // Clean up is done within the search loop, not in destructor
-#endif
-}
+ARTnSaddleSearch::~ARTnSaddleSearch() = default;
 
 int ARTnSaddleSearch::run() {
-#ifdef WITH_ARTN
   auto &res = get_artn_resource();
   const int nat = matter->numberOfAtoms();
 
@@ -416,12 +411,6 @@ int ARTnSaddleSearch::run() {
     res.get_destroy_fn()();
   }
   return status;
-
-#else
-  QUILL_LOG_ERROR(log, "ARTn support not compiled");
-  status = STATUS_BAD_ARTN_ERROR;
-  return status;
-#endif
 }
 
 double ARTnSaddleSearch::getEigenvalue() {

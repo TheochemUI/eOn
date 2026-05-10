@@ -140,22 +140,16 @@ message(architecture)
 # Generate features string for version.h.in.
 #
 # Each entry is (compile_flag, display_name, mode) where mode is one of:
-#   'compile'         -- check '-Dflag' in _args (compile-time CPP define).
-#                        Reports 'enabled' (compile-linked) or 'disabled'.
-#   'runtime'         -- always compiled into the client; loaded via dlopen
-#                        at run time (e.g. LAMMPS via LammpsLoader). Always
-#                        reports 'enabled (dlopen at runtime)' since the
-#                        shim is present, irrespective of whether the
-#                        dynamic library is found at run time.
-#   'compile_runtime' -- conditionally compiled (-Dflag controls inclusion
-#                        of the resource shim); WHEN compiled, the actual
-#                        library is dlopen'd at run time. Reports 'enabled
-#                        (dlopen at runtime)' or 'disabled' depending on
-#                        whether '-Dflag' is in _args. ARTn (with_artn) and
-#                        IRA (with_ira) follow this pattern: their *Resource
-#                        classes use dynlib::openFirst then load_sym for
-#                        the C entry points, with require_loaded() throwing
-#                        only when the user actually requests the feature.
+#   'compile'    -- check '-Dflag' in _args (compile-time CPP define).
+#                   Reports 'enabled' (compile-linked) or 'disabled'.
+#   'runtime'    -- always compiled into the client; loaded via dlopen
+#                   at run time (LAMMPS, ARTn, IRA, XTB). Always reports
+#                   'enabled (dlopen at runtime)' since the shim is
+#                   present, irrespective of whether the dynamic library
+#                   is found at run time. Call sites use is_loaded() /
+#                   require_loaded() to gate the runtime path.
+#   'subprocess' -- POSIX-only subprocess shim (VASP). Always compiled
+#                   on POSIX, omitted on Windows.
 features_list = [
     ['WITH_GPRD',          'GPRD',           'compile'],
     ['WITH_GP_SURROGATE',  'GP Surrogate',   'compile'],
@@ -185,14 +179,12 @@ features_list = [
     ['WITH_METATOMIC',     'Metatomic',      'compile'],
     ['WITH_SERVE_MODE',    'Serve Mode',     'compile'],
     ['EMBED_PYTHON',       'Embedded Python','compile'],
-    # ARTn is conditionally compiled (with_artn=true builds ARTnResource
-    # + ARTnSaddleSearch + sets -DWITH_ARTN). When compiled, the actual
-    # libartn.so is dlopen'd at run time inside ARTnResource::instance().
-    ['WITH_ARTN',          'ARTn',           'compile_runtime'],
-    # IRA is conditionally compiled (with_ira=true builds IRAResource +
-    # sets -DWITH_IRA). When compiled, libira.so is dlopen'd at run time
-    # inside IRAResource::instance().
-    ['WITH_IRA',           'IRA',            'compile_runtime'],
+    # ARTn / IRA: same pattern as LAMMPS. The *Resource shim is
+    # unconditionally compiled; libartn.so / libira.so are dlopen'd
+    # inside *Resource::instance(); is_loaded() / require_loaded()
+    # gate the call sites at run time.
+    ['ARTN_POT',           'ARTn',           'runtime'],
+    ['IRA_POT',            'IRA',            'runtime'],
 ]
 
 # Join _args into a single string for checking
@@ -213,12 +205,6 @@ foreach feature : features_list
             features_string += '  ' + feature_name + ': disabled (POSIX only)\n'
         else
             features_string += '  ' + feature_name + ': enabled (subprocess)\n'
-        endif
-    elif feature_mode == 'compile_runtime'
-        if '-D' + feature_flag in _args_str
-            features_string += '  ' + feature_name + ': enabled (dlopen at runtime)\n'
-        else
-            features_string += '  ' + feature_name + ': disabled\n'
         endif
     elif '-D' + feature_flag in _args_str
         features_string += '  ' + feature_name + ': enabled\n'
@@ -761,114 +747,22 @@ if get_option('with_parallel_neb')
     _args += ['-DEON_PARALLEL_NEB']
 endif
 
-if get_option('with_artn')
-    # ARTn (pARTn): Fortran library for saddle point search.
-    # Try system/pkg-config first, then manual artn_libdir, then cmake-build
-    # the subproject. Meson's Fortran scanner breaks with -cpp + submodules,
-    # so we build artn-plugin via cmake at configure time as a workaround.
-    # We redeclare pARTn's C signatures inline in ARTnResource.h, so we
-    # never need an -I for artn.h; hence no artn_includedir option.
-    artn_dep = dependency('artn', required: false)
-    if not artn_dep.found()
-        artn_libdir = get_option('artn_libdir')
-        artn_lib = disabler()
-        if artn_libdir == ''
-            # Auto-build artn-plugin from subprojects/ via cmake
-            artn_src = meson.project_source_root() / 'subprojects' / 'artn-plugin'
-            artn_bld = meson.project_build_root() / 'subprojects' / '_artn_cmake_build'
-            message('ARTn: building subproject via cmake (meson Fortran scanner workaround)')
-            run_command('cmake', '-S', artn_src, '-B', artn_bld,
-                '-DCMAKE_BUILD_TYPE=Release',
-                '-DWITH_LAMMPS=OFF', '-DWITH_QE=OFF', '-DWITH_SIESTA=OFF',
-                check: true)
-            run_command('cmake', '--build', artn_bld, '--parallel', '4', check: true)
-            # LIBRARY_OUTPUT_DIRECTORY in artn-plugin's CMakeLists.txt puts
-            # libartn.so at ${CMAKE_BINARY_DIR}; search a couple of plausible
-            # locations symmetrically with the IRA block below in case a
-            # future cmake refactor moves it.
-            artn_candidates = [artn_bld, artn_bld / 'src', artn_bld / 'lib']
-            foreach candidate : artn_candidates
-                artn_lib = meson.get_compiler('cpp').find_library(
-                    'artn',
-                    dirs: [candidate],
-                    required: false,
-                )
-                if artn_lib.found()
-                    artn_libdir = candidate
-                    break
-                endif
-            endforeach
-            if not artn_lib.found()
-                error('ARTn enabled but libartn was not found in the built subproject directory')
-            endif
-        else
-            artn_lib = meson.get_compiler('cpp').find_library('artn',
-                dirs: [artn_libdir], required: true)
-        endif
-        _runtime_rpath += [artn_libdir]
-        artn_dep = declare_dependency(dependencies: artn_lib)
-    endif
-    _deps += [artn_dep]
-    _args += ['-DWITH_ARTN']
-    eonclib_sources += ['ARTnSaddleSearch.cpp']
-    eonclib_sources += ['libs/ARTn/ARTnResource.cpp']
-endif
-
-if get_option('with_ira')
-    # IRA (Iterative Rotations and Assignments): Fortran library for structure comparison.
-    # Same cmake workaround as ARTn.
-    ira_dep = dependency('ira', required: false)
-    if not ira_dep.found()
-        ira_libdir = get_option('ira_libdir')
-        ira_incdir = get_option('ira_includedir')
-        if ira_libdir == '' or ira_incdir == ''
-            ira_src = meson.project_source_root() / 'subprojects' / 'ira'
-            ira_bld = meson.project_build_root() / 'subprojects' / '_ira_cmake_build'
-            message('IRA: building subproject via cmake (meson Fortran scanner workaround)')
-            run_command('cmake', '-S', ira_src, '-B', ira_bld,
-                '-DCMAKE_BUILD_TYPE=Release',
-                check: true)
-            run_command('cmake', '--build', ira_bld, '--parallel', '4', check: true)
-            ira_incdir = 'interface'
-            ira_includes = ['-I' + ira_src / ira_incdir]
-            ira_candidates = [ira_bld / 'src', ira_src / 'lib']
-            ira_lib = disabler()
-            foreach candidate : ira_candidates
-                ira_lib = meson.get_compiler('cpp').find_library(
-                    'ira',
-                    dirs: [candidate],
-                    required: false,
-                )
-                if ira_lib.found()
-                    ira_libdir = candidate
-                    break
-                endif
-            endforeach
-            if not ira_lib.found()
-                error('IRA enabled but libira was not found in the built or vendored library directories')
-            endif
-        else
-            ira_includes = ['-I' + ira_incdir]
-            ira_lib = meson.get_compiler('cpp').find_library(
-                'ira',
-                dirs: [ira_libdir],
-                required: false,
-            )
-            if not ira_lib.found()
-                error('IRA enabled but libira was not found in ira_libdir=' + ira_libdir)
-            endif
-        endif
-        _runtime_rpath += [ira_libdir]
-        ira_dep = declare_dependency(
-            dependencies: ira_lib,
-            compile_args: ira_includes,
-        )
-    endif
-    _deps += [ira_dep]
-    _args += ['-DWITH_IRA']
-    eonclib_sources += ['IRACompare.cpp']
-    eonclib_sources += ['libs/IRA/IRAResource.cpp']
-endif
+# ARTn (pARTn) and IRA: always compiled, dlopen'd at runtime.
+#
+# The *Resource shims (libs/ARTn/ARTnResource.cpp, libs/IRA/IRAResource.cpp)
+# use dlopen(libartn.so) / dlopen(libira.so) when require_loaded() is first
+# called. Both shims redeclare the C entry points inline (see
+# ARTnResource.h / IRAResource.h), so neither needs an external header
+# at compile time. Users supply libartn.so / libira.so on
+# LD_LIBRARY_PATH (or DYLD_LIBRARY_PATH on macOS) and ARTnSaddleSearch /
+# IRACompare check is_loaded() at the call site -- identical pattern to
+# LAMMPS today.
+eonclib_sources += [
+    'ARTnSaddleSearch.cpp',
+    'libs/ARTn/ARTnResource.cpp',
+    'IRACompare.cpp',
+    'libs/IRA/IRAResource.cpp',
+]
 
 if get_option('with_serve')
     # rgpot-compatible RPC serve mode: wraps any eOn potential and serves it
@@ -1037,12 +931,10 @@ if get_option('with_tests')
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif
-    if get_option('with_artn')
-        test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
-    endif
-    if get_option('with_ira')
-        test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
-    endif
+    # ARTn / IRA tests are always built; they SKIP at runtime when the
+    # respective .so is not on LD_LIBRARY_PATH (see is_loaded() guards).
+    test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
+    test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     foreach test : test_array
         test_timeout = test.get(3, 30)
         test(

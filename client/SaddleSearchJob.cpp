@@ -10,9 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "SaddleSearchJob.h"
-#ifdef WITH_ARTN
 #include "ARTnSaddleSearch.h"
-#endif
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Potential.h"
@@ -66,24 +64,23 @@ std::vector<std::string> SaddleSearchJob::run() {
       params.saddle_search_options.method == "min_mode" &&
       params.saddle_search_options.minmode_method == "artn";
 
-#ifdef WITH_ARTN
   if (useStandaloneARTn || useARTnAsMinMode) {
+    // ARTnResource::require_loaded() inside ARTnSaddleSearch::run()
+    // converts a missing libartn.so into STATUS_BAD_ARTN_ERROR with
+    // an install-hint logged at error level. Pre-construct guard
+    // here lifts that into a runtime_error so config-time misuse
+    // surfaces a clear message before the search loop starts.
+    if (!eonc::get_artn_resource().is_loaded()) {
+      const char *which =
+          useStandaloneARTn ? "saddle_search.method=artn"
+                            : "saddle_search.minmode_method=artn";
+      throw std::runtime_error(
+          std::string(which) + " requires libartn at runtime "
+          "(set LD_LIBRARY_PATH so eonc::ARTnResource finds it)");
+    }
     saddleSearch =
         std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
-  } else
-#endif
-  {
-#ifndef WITH_ARTN
-    if (useStandaloneARTn) {
-      throw std::runtime_error(
-          "saddle_search.method=artn requires a build with ARTn support");
-    }
-    if (useARTnAsMinMode) {
-      throw std::runtime_error(
-          "saddle_search.minmode_method=artn requires a build with ARTn "
-          "support");
-    }
-#endif
+  } else {
     saddleSearch = std::make_unique<MinModeSaddleSearch>(
         saddle, mode, initial->getPotentialEnergy(), params, pot);
   }

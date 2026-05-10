@@ -20,10 +20,8 @@
 #include "PotRegistry.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#ifdef WITH_ARTN
 #include "ARTnSaddleSearch.h"
 #include "libs/ARTn/ARTnResource.h"
-#endif
 
 #include <filesystem>
 #include <fstream>
@@ -1016,7 +1014,6 @@ max_energy = 10.0
   REQUIRE(barrier == Catch::Approx(0.158077).epsilon(1e-3));
 }
 
-#ifdef WITH_ARTN
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob ARTn converges on Morse Pt",
                  "[job][saddle_search][artn][integration]") {
@@ -1173,12 +1170,15 @@ max_iterations = 5
            status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
            status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
 }
-#endif // WITH_ARTN
-
-#ifndef WITH_ARTN
+// Runtime-missing-libartn rejection tests. ARTnResource is always
+// compiled in; the failure path now triggers when libartn.so is not
+// found at first dlopen. These tests skip when libartn is loaded so
+// they only run on builds without the library on LD_LIBRARY_PATH.
 TEST_CASE_METHOD(JobIntegrationFixture,
-                 "SaddleSearchJob rejects standalone ARTn when not compiled",
+                 "SaddleSearchJob rejects standalone ARTn when libartn missing",
                  "[job][saddle_search][artn][config][integration]") {
+  if (eonc::get_artn_resource().is_loaded())
+    SKIP("libartn loaded; runtime-missing path not exercised");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -1194,12 +1194,14 @@ method = artn
   REQUIRE_THROWS_WITH(
       runJob(),
       Catch::Matchers::ContainsSubstring(
-          "saddle_search.method=artn requires a build with ARTn support"));
+          "saddle_search.method=artn requires libartn at runtime"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
-                 "SaddleSearchJob rejects ARTn min-mode when not compiled",
+                 "SaddleSearchJob rejects ARTn min-mode when libartn missing",
                  "[job][saddle_search][artn][min_mode][config][integration]") {
+  if (eonc::get_artn_resource().is_loaded())
+    SKIP("libartn loaded; runtime-missing path not exercised");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -1213,14 +1215,17 @@ method = min_mode
 min_mode_method = artn
 )");
 
-  REQUIRE_THROWS_WITH(runJob(), Catch::Matchers::ContainsSubstring(
-                                    "saddle_search.minmode_method=artn "
-                                    "requires a build with ARTn support"));
+  REQUIRE_THROWS_WITH(runJob(),
+                      Catch::Matchers::ContainsSubstring(
+                          "saddle_search.minmode_method=artn "
+                          "requires libartn at runtime"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
-                 "ProcessSearchJob rejects standalone ARTn when not compiled",
+                 "ProcessSearchJob rejects standalone ARTn when libartn missing",
                  "[job][process_search][artn][config][integration]") {
+  if (eonc::get_artn_resource().is_loaded())
+    SKIP("libartn loaded; runtime-missing path not exercised");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -1236,9 +1241,8 @@ method = artn
   REQUIRE_THROWS_WITH(
       runJob(),
       Catch::Matchers::ContainsSubstring(
-          "saddle_search.method=artn requires a build with ARTn support"));
+          "saddle_search.method=artn requires libartn at runtime"));
 }
-#endif
 
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob ARTn parameters parsed correctly",

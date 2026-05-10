@@ -10,9 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ProcessSearchJob.h"
-#ifdef WITH_ARTN
 #include "ARTnSaddleSearch.h"
-#endif
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
 #include "DynamicsSaddleSearch.h"
@@ -97,19 +95,15 @@ std::vector<std::string> ProcessSearchJob::run() {
         eonc::EpiCenters::DISP_LOAD) {
       mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
-#ifdef WITH_ARTN
     // ARTn as a min-mode drop-in: eOn displaces, seeds the mode, ARTn
     // takes over from the displaced structure.
     if (useARTnAsMinMode) {
       saddleSearch =
           std::make_unique<ARTnSaddleSearch>(saddle, pot, mode, params);
-    } else
-#endif
-    {
+    } else {
       saddleSearch = std::make_unique<MinModeSaddleSearch>(
           saddle, mode, initial->getPotentialEnergy(), params, pot);
     }
-#ifdef WITH_ARTN
   } else if (params.saddle_search_options.method == "artn") {
     // ARTn handles its own push from the minimum, eigenmode estimation,
     // and perpendicular relaxation internally.
@@ -121,7 +115,6 @@ std::vector<std::string> ProcessSearchJob::run() {
     }
     saddleSearch =
         std::make_unique<ARTnSaddleSearch>(saddle, pot, artnMode, params);
-#endif
   } else if (params.saddle_search_options.method == "basin_hopping") {
     saddleSearch =
         std::make_unique<BasinHoppingSaddleSearch>(min1, saddle, pot, params);
@@ -132,22 +125,20 @@ std::vector<std::string> ProcessSearchJob::run() {
         saddle, initial->getPotentialEnergy(), params);
   }
 
-#ifndef WITH_ARTN
-  // Post-dispatch guard for both ARTn entry points so users without a
-  // WITH_ARTN build get a clean per-case error instead of a silent
-  // fall-through. Two distinct messages so downstream tooling and the
-  // integration tests can match on the specific entry point.
-  if (params.saddle_search_options.method == "artn") {
+  // Runtime guard for both ARTn entry points: the *Resource shim is
+  // always compiled in, but libartn.so is dlopen'd lazily. Surface a
+  // missing-library error before doProcessSearch() so the message
+  // names the entry point that triggered the lookup.
+  const bool needARTn =
+      params.saddle_search_options.method == "artn" || useARTnAsMinMode;
+  if (needARTn && !eonc::get_artn_resource().is_loaded()) {
+    const char *which = (params.saddle_search_options.method == "artn")
+                            ? "saddle_search.method=artn"
+                            : "saddle_search.minmode_method=artn";
     throw std::runtime_error(
-        "saddle_search.method=artn requires a build with ARTn support "
-        "(reconfigure with -Dwith_artn=true)");
+        std::string(which) + " requires libartn at runtime "
+        "(set LD_LIBRARY_PATH so eonc::ARTnResource finds it)");
   }
-  if (useARTnAsMinMode) {
-    throw std::runtime_error(
-        "saddle_search.minmode_method=artn requires a build with ARTn "
-        "support (reconfigure with -Dwith_artn=true)");
-  }
-#endif
 
   int status = doProcessSearch();
 

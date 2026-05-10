@@ -11,7 +11,9 @@
 */
 
 /// Integration tests for the IRA structure comparison library.
-/// Requires -Dwith_ira=true and a working libira.
+/// IRAResource is always compiled in; libira.so is dlopen'd at first
+/// require_loaded(). Tests SKIP when libira is not on
+/// LD_LIBRARY_PATH at runtime.
 
 #include "IRACompare.h"
 #include "Matter.h"

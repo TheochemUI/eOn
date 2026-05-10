@@ -19,28 +19,17 @@
 #include "SaddleSearchMethod.h"
 #include <limits>
 
-// Include the ARTn resource for thread-local access
-#ifdef WITH_ARTN
 #include "libs/ARTn/ARTnResource.h"
-#endif
 
 namespace eonc {
 
-/*
- * ARTn integration with thread-local dynamic loading
- */
-#ifdef WITH_ARTN
-
-// Constants
+// ARTn constants. The ARTnResource is always compiled in; libartn.so
+// is dlopen'd at first require_loaded() call. WARNING: all ARTn
+// operations are serialized through ARTnResource::library_mutex due
+// to pARTn's non-thread-safe Fortran backend. Consider process-level
+// parallelism for true concurrency.
 constexpr double ARTN_MODE_TOLERANCE = 1e-10;
 constexpr double ARTN_SMALL_DISPLACEMENT = 1e-6;
-
-// WARNING: All ARTn operations are serialized through a global mutex
-// due to the non-thread-safe Fortran backend. This can be a performance
-// bottleneck in multi-threaded contexts. Consider process-level parallelism
-// if true concurrent ARTn operations are required.
-
-#endif // WITH_ARTN
 
 /// Saddle search method using the Activation-Relaxation Technique nouveau.
 /// Wraps the pARTn Fortran library via its C API (artn.h).
