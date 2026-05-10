@@ -13,76 +13,18 @@
 
 #include "../../Potential.h"
 #include "units.hpp"
-#include "xtb.h"
+
+#include <cstddef>
 
 class XTBPot final : public Potential {
 public:
-  // Functions
-  XTBPot(const Parameters &p)
-      : Potential(PotType::XTB, p),
-        xtb_acc{p.xtb_options.acc},
-        xtb_electronic_temperature{p.xtb_options.elec_temperature},
-        xtb_max_iter{p.xtb_options.maxiter},
-        total_charge{p.xtb_options.charge},
-        uhf{p.xtb_options.uhf} {
-    counter = 0;
-    initialized = false;
-    env = xtb_newEnvironment();
-    xtb_setVerbosity(env, XTB_VERBOSITY_MUTED);
-    // Release the default output unit to prevent Fortran NEWUNIT conflicts
-    // when multiple XTB environments coexist (e.g. per-image NEB potentials)
-    xtb_releaseOutput(env);
-    if (!env) {
-      throw std::runtime_error("Failed to create xtb environment");
-    }
-    calc = xtb_newCalculator();
-    if (!calc) {
-      xtb_delEnvironment(&env);
-      throw std::runtime_error("Failed to create xtb calculator");
-    }
-    res = xtb_newResults();
-    if (!calc) {
-      xtb_delResults(&res);
-      throw std::runtime_error("Failed to create xtb results");
-    }
-    // Unmarshal parameters
-    if (p.xtb_options.paramset == "GFNFF") {
-      xtb_paramset = GFNMethod::GFNFF;
-    } else if (p.xtb_options.paramset == "GFN0xTB") {
-      xtb_paramset = GFNMethod::GFN0xTB;
-    } else if (p.xtb_options.paramset == "GFN1xTB") {
-      xtb_paramset = GFNMethod::GFN1xTB;
-    } else if (p.xtb_options.paramset == "GFN2xTB") {
-      xtb_paramset = GFNMethod::GFN2xTB;
-    } else {
-      throw std::runtime_error("Parameter set for XTB must be one of GFNFF, "
-                               "GFN0xTB, GFN1xTB or GFN2xTB.\n");
-    }
-  }
-
-  virtual ~XTBPot() {
-    if (res) {
-      xtb_delResults(&res);
-    }
-    if (calc) {
-      xtb_delCalculator(&calc);
-    }
-    if (mol) {
-      xtb_delMolecule(&mol);
-    }
-    if (env) {
-      xtb_releaseOutput(env);
-      xtb_delEnvironment(&env);
-    }
-    QUILL_LOG_INFO(eonc::log::get(), "[XTB] called potential {} times",
-                   counter++);
-  }
+  XTBPot(const Parameters &p);
+  ~XTBPot() override;
 
   // Disable copy to prevent double-free of Fortran pointers
   XTBPot(const XTBPot &) = delete;
   XTBPot &operator=(const XTBPot &) = delete;
 
-  // To satisfy interface
   void cleanMemory(void);
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -101,18 +43,23 @@ public:
 
 private:
   enum class GFNMethod { GFNFF, GFN0xTB, GFN1xTB, GFN2xTB };
-  xtb_TEnvironment env = nullptr;
-  xtb_TCalculator calc = nullptr;
-  xtb_TMolecule mol = nullptr;
-  xtb_TResults res = nullptr;
+
+  // Opaque libxtb handles. xtb.h declares them as
+  // `typedef struct _xtb_TX* xtb_TX;`. We carry void* in the loader
+  // world; the .cpp casts at the call sites where libxtb's types
+  // matter.
+  void *env{nullptr};
+  void *calc{nullptr};
+  void *mol{nullptr};
+  void *res{nullptr};
 
   GFNMethod xtb_paramset;
   double xtb_acc;
   double xtb_electronic_temperature;
-  size_t xtb_max_iter;
-  double total_charge = 0.0;
-  int uhf = 0;
+  std::size_t xtb_max_iter;
+  double total_charge{0.0};
+  int uhf{0};
 
-  size_t counter;
-  bool initialized;
+  std::size_t counter{0};
+  bool initialized{false};
 };

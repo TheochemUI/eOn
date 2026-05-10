@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "../potentials/XTBPot/XtbLoader.h"
 #include "NudgedElasticBand.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
@@ -24,6 +25,8 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 // causing the NEB to diverge from the first step (issue introduced in
 // 6e8461c3).
 TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
+  if (!eonc::get_xtb_loader().is_loaded())
+    SKIP("libxtb not available at runtime");
   Parameters params;
   params.potential_options.potential = PotType::XTB;
   params.xtb_options.paramset = "GFN2xTB";

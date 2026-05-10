@@ -1,4 +1,5 @@
 #include "../MatrixHelpers.hpp"
+#include "../potentials/XTBPot/XtbLoader.h"
 #include "Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
@@ -37,6 +38,8 @@ protected:
 };
 
 TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
+  if (!eonc::get_xtb_loader().is_loaded())
+    SKIP("libxtb not available at runtime");
   SetUp();
   auto matEq =
       std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);

@@ -161,7 +161,8 @@ features_list = [
     ['VASP_POT',           'VASP',           'subprocess'],
     ['WITH_WATER',         'Water',          'compile'],
     ['WITH_AMS',           'AMS',            'compile'],
-    ['WITH_XTB',           'XTB',            'compile'],
+    # XTB: always compiled, dlopen at runtime via XtbLoader.
+    ['XTB_POT',            'XTB',            'runtime'],
     # LAMMPS is unconditionally compiled (see subdir('potentials/LAMMPS')
     # below). The dlopen lookup of liblammps.so happens at run time inside
     # LammpsLoader::instance(); the banner just tells the user the shim is
@@ -492,17 +493,10 @@ if get_option('with_ams')
     _args += ['-DWITH_AMS']
 endif
 
-if get_option('with_xtb')
-    # Try finding system 'xtb' via pkg-config or cmake.
-    # Users who need to build xtb from source can place it in subprojects/
-    # and Meson's implicit fallback will find it.
-    xtb_dep = dependency('xtb', required: true)
-
-    _deps += [xtb_dep]
-    subdir('potentials/XTBPot')
-    potentials += xtb_eon
-    _args += ['-DWITH_XTB']
-endif
+# XTB: always compiled, dlopens libxtb at runtime via XtbLoader.
+# Mirrors the LAMMPS / ARTn / IRA pattern; no link-time xtb dependency.
+subdir('potentials/XTBPot')
+potentials += xtb_eon
 
 # LAMMPS: always compiled, loaded at runtime via dlopen
 subdir('potentials/LAMMPS')
@@ -924,10 +918,10 @@ if get_option('with_tests')
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
     endif
-    if get_option('with_xtb')
-        test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
-        test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb', 120]]
-    endif
+    # XTB tests are always built; SKIP at runtime when libxtb isn't on
+    # LD_LIBRARY_PATH (mirrors LAMMPS / ARTn / IRA tests).
+    test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
+    test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb', 120]]
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif

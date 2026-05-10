@@ -108,9 +108,8 @@
 
 // Should respect Fortran availability
 
-#ifdef WITH_XTB
+// XTB always compiled; XtbLoader dlopens libxtb at first construction.
 #include "potentials/XTBPot/XTBPot.h"
-#endif
 
 #include <limits>
 
@@ -281,13 +280,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-// TODO: Handle Fortran interaction
-#ifdef WITH_XTB
   case PotType::XTB: {
     return (std::make_shared<XTBPot>(params));
     break;
   }
-#endif
 #ifdef WITH_ASE_ORCA
   case PotType::ASE_ORCA: {
     return (std::make_shared<ASEOrcaPot>(params));
