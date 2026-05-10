@@ -292,8 +292,8 @@ int main(int argc, char **argv) {
       MPI_Group orig_group, new_group;
       MPI_Comm_group(MPI_COMM_WORLD, &orig_group);
       int offset = i * potential_group_size;
-      MPI_Group_incl(orig_group, potential_group_size,
-                     &potential_ranks[offset], &new_group);
+      MPI_Group_incl(orig_group, potential_group_size, &potential_ranks[offset],
+                     &new_group);
       MPI_Comm new_comm;
       MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
       MPI_Group_free(&new_group);
@@ -380,8 +380,7 @@ int main(int argc, char **argv) {
       // Tag "1" is to interrupt the main loop and tell the communicator that a
       // client is ready
       MPI_Request ready_req;
-      MPI_Isend(&ready, 1, MPI_INT, server_rank, 1, MPI_COMM_WORLD,
-                &ready_req);
+      MPI_Isend(&ready, 1, MPI_INT, server_rank, 1, MPI_COMM_WORLD, &ready_req);
       MPI_Request_free(&ready_req);
 
       // Get the path we should run in from the server

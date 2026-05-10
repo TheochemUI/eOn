@@ -136,7 +136,8 @@ std::vector<std::string> ProcessSearchJob::run() {
                             ? "saddle_search.method=artn"
                             : "saddle_search.minmode_method=artn";
     throw std::runtime_error(
-        std::string(which) + " requires libartn at runtime "
+        std::string(which) +
+        " requires libartn at runtime "
         "(set LD_LIBRARY_PATH so eonc::ARTnResource finds it)");
   }
 

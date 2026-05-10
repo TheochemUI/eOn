@@ -86,9 +86,8 @@ int load_ini(INIReader &ini, Parameters &params) {
       "Potential", "lammps_logging", params.potential_options.LAMMPSLogging);
   params.potential_options.LAMMPSThreads = static_cast<int>(ini.GetInteger(
       "Potential", "lammps_threads", params.potential_options.LAMMPSThreads));
-  params.potential_options.LAMMPSBundlePath =
-      ini.Get("Potential", "lammps_bundle",
-              params.potential_options.LAMMPSBundlePath);
+  params.potential_options.LAMMPSBundlePath = ini.Get(
+      "Potential", "lammps_bundle", params.potential_options.LAMMPSBundlePath);
   params.potential_options.EMTRasmussen = ini.GetBoolean(
       "Potential", "emt_rasmussen", params.potential_options.EMTRasmussen);
   params.potential_options.extPotPath =

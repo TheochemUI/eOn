@@ -18,8 +18,8 @@
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "TestUtils.hpp"
-#include "libs/ARTn/ARTnResource.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "libs/ARTn/ARTnResource.h"
 
 namespace tests {
 

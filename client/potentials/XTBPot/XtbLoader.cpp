@@ -59,30 +59,26 @@ XtbLoader::XtbLoader() {
   load_gfn0 = dynlib::loadSym<load_gfn0_fn>(m_handle, "xtb_loadGFN0xTB");
   load_gfn1 = dynlib::loadSym<load_gfn1_fn>(m_handle, "xtb_loadGFN1xTB");
   load_gfn2 = dynlib::loadSym<load_gfn2_fn>(m_handle, "xtb_loadGFN2xTB");
-  set_accuracy =
-      dynlib::loadSym<set_accuracy_fn>(m_handle, "xtb_setAccuracy");
+  set_accuracy = dynlib::loadSym<set_accuracy_fn>(m_handle, "xtb_setAccuracy");
   set_max_iter = dynlib::loadSym<set_max_iter_fn>(m_handle, "xtb_setMaxIter");
   set_electronic_temp = dynlib::loadSym<set_electronic_temp_fn>(
       m_handle, "xtb_setElectronicTemp");
 
-  singlepoint =
-      dynlib::loadSym<singlepoint_fn>(m_handle, "xtb_singlepoint");
+  singlepoint = dynlib::loadSym<singlepoint_fn>(m_handle, "xtb_singlepoint");
 
   new_results = dynlib::loadSym<new_results_fn>(m_handle, "xtb_newResults");
   del_results = dynlib::loadSym<del_results_fn>(m_handle, "xtb_delResults");
   get_energy = dynlib::loadSym<get_energy_fn>(m_handle, "xtb_getEnergy");
-  get_gradient =
-      dynlib::loadSym<get_gradient_fn>(m_handle, "xtb_getGradient");
+  get_gradient = dynlib::loadSym<get_gradient_fn>(m_handle, "xtb_getGradient");
 
   // Required minimum surface; the GFN parametrisation loaders are
   // checked at use site so users can run on a libxtb missing one of
   // the four (e.g. distributors stripping GFNFF).
   if (!new_environment || !del_environment || !check_environment ||
       !get_error || !release_output || !set_verbosity || !new_molecule ||
-      !del_molecule || !update_molecule || !new_calculator ||
-      !del_calculator || !singlepoint || !new_results || !del_results ||
-      !get_energy || !get_gradient || !set_accuracy || !set_max_iter ||
-      !set_electronic_temp) {
+      !del_molecule || !update_molecule || !new_calculator || !del_calculator ||
+      !singlepoint || !new_results || !del_results || !get_energy ||
+      !get_gradient || !set_accuracy || !set_max_iter || !set_electronic_temp) {
     std::cerr << "[XTB] libxtb loaded but lacks required symbols\n";
     dynlib::close(m_handle);
     m_handle = {};
@@ -96,11 +92,10 @@ XtbLoader::~XtbLoader() { dynlib::close(m_handle); }
 
 void XtbLoader::require_loaded() const {
   if (!m_loaded) {
-    throw std::runtime_error(
-        "XTB potential requested but libxtb not found.\n"
-        "Install via: conda install -c conda-forge xtb\n"
-        "Or ensure libxtb is in your library search path "
-        "(LD_LIBRARY_PATH / DYLD_LIBRARY_PATH / PATH).");
+    throw std::runtime_error("XTB potential requested but libxtb not found.\n"
+                             "Install via: conda install -c conda-forge xtb\n"
+                             "Or ensure libxtb is in your library search path "
+                             "(LD_LIBRARY_PATH / DYLD_LIBRARY_PATH / PATH).");
   }
 }
 

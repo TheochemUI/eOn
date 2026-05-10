@@ -76,8 +76,8 @@ LAMMPSBundle LAMMPSBundle::open(const std::filesystem::path &bundle) {
                              bundle.string() + ")");
   }
   if (std::memcmp(header, kMagic, sizeof(kMagic)) != 0) {
-    throw std::runtime_error(
-        "LAMMPSBundle: bad magic (expected EONLPB1) in " + bundle.string());
+    throw std::runtime_error("LAMMPSBundle: bad magic (expected EONLPB1) in " +
+                             bundle.string());
   }
   const auto manifest_len = read_u64_le(header + 8);
   if (manifest_len == 0 || manifest_len > (1ULL << 24)) {
@@ -101,9 +101,8 @@ LAMMPSBundle LAMMPSBundle::open(const std::filesystem::path &bundle) {
         std::string("LAMMPSBundle: manifest is not valid JSON: ") + e.what());
   }
   if (!j.contains("files") || !j["files"].is_array()) {
-    throw std::runtime_error(
-        "LAMMPSBundle: manifest missing 'files' array (" + bundle.string() +
-        ")");
+    throw std::runtime_error("LAMMPSBundle: manifest missing 'files' array (" +
+                             bundle.string() + ")");
   }
 
   LAMMPSBundle out;
@@ -142,9 +141,8 @@ std::filesystem::path LAMMPSBundle::extract() const {
     if (rel.is_absolute() || entry.name.find("..") != std::string::npos) {
       std::error_code ec;
       std::filesystem::remove_all(scratch, ec);
-      throw std::runtime_error(
-          "LAMMPSBundle: rejecting unsafe entry name '" + entry.name + "' in " +
-          m_source.string());
+      throw std::runtime_error("LAMMPSBundle: rejecting unsafe entry name '" +
+                               entry.name + "' in " + m_source.string());
     }
     auto out_path = scratch / rel;
     std::filesystem::create_directories(out_path.parent_path());

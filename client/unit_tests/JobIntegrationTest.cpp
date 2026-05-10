@@ -15,12 +15,12 @@
 /// INI, running the job, and verifying outputs match SVN reference
 /// values.
 
+#include "ARTnSaddleSearch.h"
 #include "Job.h"
 #include "Parameters.h"
 #include "PotRegistry.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "ARTnSaddleSearch.h"
 #include "libs/ARTn/ARTnResource.h"
 
 #include <filesystem>
@@ -1192,9 +1192,8 @@ method = artn
 )");
 
   REQUIRE_THROWS_WITH(
-      runJob(),
-      Catch::Matchers::ContainsSubstring(
-          "saddle_search.method=artn requires libartn at runtime"));
+      runJob(), Catch::Matchers::ContainsSubstring(
+                    "saddle_search.method=artn requires libartn at runtime"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -1215,15 +1214,15 @@ method = min_mode
 min_mode_method = artn
 )");
 
-  REQUIRE_THROWS_WITH(runJob(),
-                      Catch::Matchers::ContainsSubstring(
-                          "saddle_search.minmode_method=artn "
-                          "requires libartn at runtime"));
+  REQUIRE_THROWS_WITH(runJob(), Catch::Matchers::ContainsSubstring(
+                                    "saddle_search.minmode_method=artn "
+                                    "requires libartn at runtime"));
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "ProcessSearchJob rejects standalone ARTn when libartn missing",
-                 "[job][process_search][artn][config][integration]") {
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "ProcessSearchJob rejects standalone ARTn when libartn missing",
+    "[job][process_search][artn][config][integration]") {
   if (eonc::get_artn_resource().is_loaded())
     SKIP("libartn loaded; runtime-missing path not exercised");
   copyTestData("../saddle_search");
@@ -1239,9 +1238,8 @@ method = artn
 )");
 
   REQUIRE_THROWS_WITH(
-      runJob(),
-      Catch::Matchers::ContainsSubstring(
-          "saddle_search.method=artn requires libartn at runtime"));
+      runJob(), Catch::Matchers::ContainsSubstring(
+                    "saddle_search.method=artn requires libartn at runtime"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

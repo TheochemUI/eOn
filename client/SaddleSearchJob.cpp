@@ -71,11 +71,12 @@ std::vector<std::string> SaddleSearchJob::run() {
     // here lifts that into a runtime_error so config-time misuse
     // surfaces a clear message before the search loop starts.
     if (!eonc::get_artn_resource().is_loaded()) {
-      const char *which =
-          useStandaloneARTn ? "saddle_search.method=artn"
-                            : "saddle_search.minmode_method=artn";
+      const char *which = useStandaloneARTn
+                              ? "saddle_search.method=artn"
+                              : "saddle_search.minmode_method=artn";
       throw std::runtime_error(
-          std::string(which) + " requires libartn at runtime "
+          std::string(which) +
+          " requires libartn at runtime "
           "(set LD_LIBRARY_PATH so eonc::ARTnResource finds it)");
     }
     saddleSearch =

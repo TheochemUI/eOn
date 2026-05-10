@@ -52,8 +52,8 @@ public:
   using set_verbosity_fn = void (*)(env_t, int);
 
   using new_molecule_fn = mol_t (*)(env_t, const int *, const int *,
-                                    const double *, const double *,
-                                    const int *, const double *, const bool *);
+                                    const double *, const double *, const int *,
+                                    const double *, const bool *);
   using del_molecule_fn = void (*)(mol_t *);
   using update_molecule_fn = void (*)(env_t, mol_t, const double *,
                                       const double *);
