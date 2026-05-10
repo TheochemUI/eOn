@@ -193,7 +193,6 @@ meson setup bbdir --reconfigure \
       --libdir=lib --buildtype {{ buildtype }} \
       --native-file nativeFiles/mold.ini \
       --native-file nativeFiles/ccache_gnu.ini \
-      -Dwith_xtb=False \
       -Dwith_metatomic=True \
       -Dpip_metatomic=True \
       -Dtorch_version=2.9 \
