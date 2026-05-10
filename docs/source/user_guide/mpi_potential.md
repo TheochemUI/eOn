@@ -13,6 +13,29 @@ myst:
 with `-Dwith_mpi=True`.
 ```
 
+```{versionchanged} 2.15
+MPIPot and the MPI control flow in `ClientEON.cpp` were ported off the
+removed MPI C++ bindings (`MPI::COMM_WORLD`, `MPI::INT`, ...). The C
+bindings used now (`MPI_Send`, `MPI_Recv`, `MPI_Iprobe`,
+`MPI_Comm_create`, ...) are guaranteed by every spec-compliant MPI
+implementation, so `-Dwith_mpi=true` builds against modern conda-forge
+MPICH 4.x and OpenMPI 5.x without the `mpicxx.h` header.
+```
+
+```{admonition} Runtime-load (planned)
+:class: note
+A FlexiBLAS-of-MPI shim (one eonclient binary that dlopens any
+spec-compliant libmpi) is the right end state, mirroring the LAMMPS /
+ARTn / IRA / XTB pattern in this same release. The MPI standard's
+binary ABI is in late draft for MPI-5 (MPICH 4.3+ and OpenMPI 5.0+
+both ship experimental support); the practical interim is
+[MPItrampoline](https://github.com/eschnett/MPItrampoline), which
+provides a stable wrapper ABI today. A future eOn release will use
+one of those paths to drop the link-time `dependency('mpi')` from
+`-Dwith_mpi=true` builds. Until then this potential builds against
+the MPI flavour selected at configure time.
+```
+
 ```{note}
 This is only for modified VASP at the moment..
 ```

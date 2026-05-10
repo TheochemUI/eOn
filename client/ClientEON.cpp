@@ -202,8 +202,15 @@ int main(int argc, char **argv) {
     number_of_clients = 1;
   }
 
-  if (MPI::Is_initialized() == false) {
-    MPI::Init();
+  // The MPI C++ bindings (MPI::Init, MPI::COMM_WORLD, MPI::INT, ...)
+  // were deprecated in MPI-2.2 and removed in MPI-3.0 (~2012). Modern
+  // conda-forge MPICH 4.x and OpenMPI 5.x ship without the C++
+  // bindings header. Every call below uses the C bindings, which
+  // every spec-compliant MPI implementation guarantees.
+  int mpi_initialized = 0;
+  MPI_Initialized(&mpi_initialized);
+  if (!mpi_initialized) {
+    MPI_Init(nullptr, nullptr);
   }
 
   int error;
@@ -222,22 +229,22 @@ int main(int argc, char **argv) {
   if (error) {
     QUILL_LOG_ERROR(logger, "problem loading parameter file");
     logger->flush_log();
-    MPI::COMM_WORLD.Abort(1);
+    MPI_Abort(MPI_COMM_WORLD, 1);
   }
 
   // XXX: Barrier for gpaw-python
-  MPI::COMM_WORLD.Barrier();
+  MPI_Barrier(MPI_COMM_WORLD);
 
-  int irank = MPI::COMM_WORLD.Get_rank();
-  int isize = MPI::COMM_WORLD.Get_size();
+  int irank = 0;
+  int isize = 0;
+  MPI_Comm_rank(MPI_COMM_WORLD, &irank);
+  MPI_Comm_size(MPI_COMM_WORLD, &isize);
 
   std::vector<int> process_types(isize);
-  int process_type;
+  int process_type = 1;
 
-  process_type = 1;
-
-  MPI::COMM_WORLD.Allgather(&process_type, 1, MPI::INT, &process_types[0], 1,
-                            MPI::INT);
+  MPI_Allgather(&process_type, 1, MPI_INT, process_types.data(), 1, MPI_INT,
+                MPI_COMM_WORLD);
 
   int i, servers = 0, clients = 0, potentials = 0;
   int server_rank = -1;
@@ -266,7 +273,7 @@ int main(int argc, char **argv) {
                     "didn't launch as many mpi client ranks as specified in "
                     "EON_NUMBER_OF_CLIENTS");
     logger->flush_log();
-    MPI::COMM_WORLD.Abort(1);
+    MPI_Abort(MPI_COMM_WORLD, 1);
   }
   clients = number_of_clients;
 
@@ -282,12 +289,15 @@ int main(int argc, char **argv) {
     int potential_group_size = potentials / clients;
 
     for (i = 0; i < clients; i++) {
-      MPI::Group orig_group, new_group;
-      orig_group = MPI::COMM_WORLD.Get_group();
+      MPI_Group orig_group, new_group;
+      MPI_Comm_group(MPI_COMM_WORLD, &orig_group);
       int offset = i * potential_group_size;
-      new_group =
-          orig_group.Incl(potential_group_size, &potential_ranks[offset]);
-      MPI::COMM_WORLD.Create(new_group);
+      MPI_Group_incl(orig_group, potential_group_size,
+                     &potential_ranks[offset], &new_group);
+      MPI_Comm new_comm;
+      MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
+      MPI_Group_free(&new_group);
+      MPI_Group_free(&orig_group);
     }
 
     if (my_client_number < number_of_clients) {
@@ -305,7 +315,7 @@ int main(int argc, char **argv) {
       MPI_Group_incl(world_group, 1, &r, &new_group);
       MPI_Comm new_comm;
       MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
-      if (new_comm != MPI_COMM_nullptr) {
+      if (new_comm != MPI_COMM_NULL) {
         parameters.potential_options.MPIClientComm = new_comm;
       }
       QUILL_LOG_INFO(logger, "creating group with ranks: {}", r);
@@ -332,10 +342,10 @@ int main(int argc, char **argv) {
       Py_Main(2, py_argv);
       Py_FinalizeEx();
       // GH
-      MPI::Finalize();
+      MPI_Finalize();
       return 0;
     } else if (my_client_number > number_of_clients) {
-      MPI::Finalize();
+      MPI_Finalize();
       return 0;
     }
   }
@@ -369,13 +379,17 @@ int main(int argc, char **argv) {
           irank, server_rank);
       // Tag "1" is to interrupt the main loop and tell the communicator that a
       // client is ready
-      MPI::COMM_WORLD.Isend(&ready, 1, MPI::INT, server_rank, 1);
+      MPI_Request ready_req;
+      MPI_Isend(&ready, 1, MPI_INT, server_rank, 1, MPI_COMM_WORLD,
+                &ready_req);
+      MPI_Request_free(&ready_req);
 
       // Get the path we should run in from the server
-      MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
+      MPI_Recv(path.data(), 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,
+               MPI_STATUS_IGNORE);
       if (path.starts_with("STOPCAR")) {
         QUILL_LOG_INFO(logger, "rank {} got STOPCAR", irank);
-        MPI::Finalize();
+        MPI_Finalize();
         return 0;
       }
       QUILL_LOG_INFO(logger, "client: rank: {} chdir to {}", irank, path);
@@ -487,7 +501,12 @@ int main(int argc, char **argv) {
     if (client_standalone) {
       break;
     }
-    MPI::COMM_WORLD.Isend(&path[0], 1024, MPI::CHAR, server_rank, 0);
+    {
+      MPI_Request done_req;
+      MPI_Isend(path.data(), 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,
+                &done_req);
+      MPI_Request_free(&done_req);
+    }
 
     // End of MPI while loop
   }
@@ -501,9 +520,9 @@ int main(int argc, char **argv) {
 
 #ifdef EONMPI
   if (client_standalone) {
-    MPI::COMM_WORLD.Abort(0);
+    MPI_Abort(MPI_COMM_WORLD, 0);
   } else {
-    MPI::Finalize();
+    MPI_Finalize();
   }
 #endif
 
