@@ -21,8 +21,8 @@ namespace eonc::neb {
 
 OCINEBController::Config
 OCINEBController::fromParams(const Parameters &params) {
-  auto &ci = params.neb_options.climbing_image;
-  auto &r = ci.ocineb;
+  const auto &ci = params.neb_options.climbing_image;
+  const auto &r = ci.ocineb;
   return Config{
       r.use_mmf,
       r.trigger_force,

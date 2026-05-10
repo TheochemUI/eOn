@@ -19,7 +19,7 @@
 
 using namespace eonc::helpers;
 
-std::vector<std::string> FiniteDifferenceJob::run(void) {
+std::vector<std::string> FiniteDifferenceJob::run() {
   auto reactant = std::make_unique<Matter>(pot, params);
   reactant->con2matter("pos.con");
   AtomMatrix posA = reactant->getPositions();

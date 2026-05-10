@@ -38,7 +38,7 @@ public:
 
   ~BGSDObjectiveFunction() = default;
 
-  double getEnergy() {
+  double getEnergy() override {
     VectorXd Vforce = matter.getForcesFreeV();
     double Henergy = 0.5 * Vforce.dot(Vforce) +
                      0.5 * bgsdAlpha *
@@ -49,7 +49,7 @@ public:
     return Henergy;
   }
 
-  VectorXd getGradient(bool fdstep = false) {
+  VectorXd getGradient(bool fdstep = false) override {
     VectorXd Vforce = matter.getForcesFreeV();
     double magVforce = Vforce.norm();
     VectorXd normVforce = Vforce / magVforce;
@@ -74,10 +74,10 @@ public:
     return Hnorm;
   }
 
-  void setPositions(const VectorXd &x) { matter.setPositionsFreeV(x); }
-  VectorXd getPositions() { return matter.getPositionsFreeV(); }
-  int degreesOfFreedom() { return 3 * matter.numberOfFreeAtoms(); }
-  bool isConverged() { return isConvergedH() && isConvergedV(); }
+  void setPositions(const VectorXd &x) override { matter.setPositionsFreeV(x); }
+  VectorXd getPositions() override { return matter.getPositionsFreeV(); }
+  int degreesOfFreedom() override { return 3 * matter.numberOfFreeAtoms(); }
+  bool isConverged() override { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
     return getConvergenceH() < params.bgsd_options.h_force_convergence;
   }
@@ -88,10 +88,12 @@ public:
     return getConvergenceH() < params.bgsd_options.grad2force_convergence;
   }
 
-  double getConvergence() { return getEnergy() && getGradient().norm(); }
+  double getConvergence() override {
+    return getEnergy() && getGradient().norm();
+  }
   double getConvergenceH() { return getGradient().norm(); }
   double getConvergenceV() { return getEnergy(); }
-  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return matter.pbcV(a - b);
   }
 

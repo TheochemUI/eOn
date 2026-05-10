@@ -53,7 +53,7 @@ void eonc::helpers::getTime(double *real, double *user, double *sys) {
   if (sys)
     *sys = 0.0;
 #else
-  struct rusage r_usage;
+  struct rusage r_usage{};
   if (getrusage(RUSAGE_SELF, &r_usage) != 0) {
     EONC_LOG_WARNING("problem getting usage info: {}", strerror(errno));
   }
@@ -151,7 +151,6 @@ void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
       fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i, 0), mode(i, 1), mode(i, 2));
     }
   }
-  return;
 }
 
 void eonc::helpers::saveMode(const std::string &filename,
@@ -203,17 +202,19 @@ public:
       : ObjectiveFunction(parametersPassed),
         m_matter{mat} {}
   ~MatterObjectiveFunction() = default;
-  double getEnergy() { return m_matter.getPotentialEnergy(); }
-  VectorXd getGradient(bool fdstep = false) {
+  double getEnergy() override { return m_matter.getPotentialEnergy(); }
+  VectorXd getGradient(bool fdstep = false) override {
     return -m_matter.getForcesFreeV();
   }
-  void setPositions(const VectorXd &x) { m_matter.setPositionsFreeV(x); }
-  VectorXd getPositions() { return m_matter.getPositionsFreeV(); }
-  int degreesOfFreedom() { return 3 * m_matter.numberOfFreeAtoms(); }
-  bool isConverged() {
+  void setPositions(const VectorXd &x) override {
+    m_matter.setPositionsFreeV(x);
+  }
+  VectorXd getPositions() override { return m_matter.getPositionsFreeV(); }
+  int degreesOfFreedom() override { return 3 * m_matter.numberOfFreeAtoms(); }
+  bool isConverged() override {
     return getConvergence() < params.optimizer_options.converged_force;
   }
-  double getConvergence() {
+  double getConvergence() override {
     if (params.optimizer_options.convergence_metric == "norm") {
       return m_matter.getForcesFreeV().norm();
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
@@ -226,7 +227,7 @@ public:
       std::exit(1);
     }
   }
-  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return m_matter.pbcV(a - b);
   }
 };

@@ -46,7 +46,7 @@ public:
 
   ~MinModeObjectiveFunction() override = default;
 
-  VectorXd getGradient(bool fdstep = false) {
+  VectorXd getGradient(bool fdstep = false) override {
     AtomMatrix force = matter->getForces();
 
     if (!fdstep || iteration == 0) {
@@ -136,15 +136,15 @@ public:
     return -forceV;
   }
 
-  double getEnergy() { return matter->getPotentialEnergy(); }
-  void setPositions(const VectorXd &x) { matter->setPositionsV(x); }
-  VectorXd getPositions() { return matter->getPositionsV(); }
-  int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
-  bool isConverged() {
+  double getEnergy() override { return matter->getPotentialEnergy(); }
+  void setPositions(const VectorXd &x) override { matter->setPositionsV(x); }
+  VectorXd getPositions() override { return matter->getPositionsV(); }
+  int degreesOfFreedom() override { return 3 * matter->numberOfAtoms(); }
+  bool isConverged() override {
     return getConvergence() < params.saddle_search_options.converged_force;
   }
 
-  double getConvergence() {
+  double getConvergence() override {
     if (params.optimizer_options.convergence_metric == "norm") {
       return matter->getForcesFreeV().norm();
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
@@ -158,7 +158,7 @@ public:
     }
   }
 
-  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return matter->pbcV(a - b);
   }
 };

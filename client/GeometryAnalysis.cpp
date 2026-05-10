@@ -234,7 +234,6 @@ void eonc::geometry::rotationRemove(const std::shared_ptr<Matter> m1,
                                     std::shared_ptr<Matter> m2) {
   AtomMatrix r1 = m1->getPositions();
   rotationRemove(r1, m2);
-  return;
 }
 
 void eonc::geometry::translationRemove(Matter &m1, const AtomMatrix r2_passed) {
@@ -257,13 +256,11 @@ void eonc::geometry::translationRemove(Matter &m1, const AtomMatrix r2_passed) {
   }
 
   m1.setPositions(r1);
-  return;
 }
 
 void eonc::geometry::translationRemove(Matter &m1, const Matter &m2) {
   AtomMatrix r2 = m2.getPositions();
   translationRemove(m1, r2);
-  return;
 }
 
 double eonc::geometry::maxAtomMotion(const AtomMatrix v1) {
@@ -431,7 +428,7 @@ bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
     for (int j2 = 0; j2 < r2.rows(); j2++) {
       if (j2 == i2)
         continue;
-      atom a2;
+      atom a2{};
       a2.r = m2.distance(i2, j2);
       a2.z = m2.getAtomicNr(j2);
       rdf2[i2].insert(a2);
@@ -446,7 +443,7 @@ bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
     for (int j1 = 0; j1 < r1.rows(); j1++) {
       if (j1 == i1)
         continue;
-      atom a;
+      atom a{};
       a.r = m1.distance(i1, j1);
       a.z = m1.getAtomicNr(j1);
       rdf1[i1].insert(a);

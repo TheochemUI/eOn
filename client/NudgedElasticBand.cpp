@@ -36,7 +36,7 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                                      std::shared_ptr<Potential> potPassed)
     : NudgedElasticBand(
           [&]() {
-            auto &init_opt = parametersPassed.neb_options.initialization;
+            const auto &init_opt = parametersPassed.neb_options.initialization;
             const size_t base_count = parametersPassed.neb_options.image_count;
 
             // Apply oversampling factor if flag exists

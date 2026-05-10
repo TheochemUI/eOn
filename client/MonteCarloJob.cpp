@@ -19,7 +19,7 @@
 #include <fstream>
 #include <string>
 
-std::vector<std::string> MonteCarloJob::run(void) {
+std::vector<std::string> MonteCarloJob::run() {
   std::string posInFilename("pos.con");
   std::string posOutFilename("out.con");
 

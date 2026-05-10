@@ -17,7 +17,7 @@
 #include "Parameters.h"
 #include "Potential.h"
 
-std::vector<std::string> DynamicsJob::run(void) {
+std::vector<std::string> DynamicsJob::run() {
   auto R = std::make_shared<Matter>(pot, params);
   auto F = std::make_shared<Matter>(pot, params);
   R->con2matter("pos.con");

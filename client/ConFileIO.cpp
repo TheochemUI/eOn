@@ -103,11 +103,11 @@ namespace eonc::io {
 
 std::pair<std::array<double, 3>, std::array<double, 3>>
 cell_to_lengths_angles(const Matter &m) {
-  std::array<double, 3> lengths;
+  std::array<double, 3> lengths{};
   lengths[0] = m.cell.row(0).norm();
   lengths[1] = m.cell.row(1).norm();
   lengths[2] = m.cell.row(2).norm();
-  std::array<double, 3> angles;
+  std::array<double, 3> angles{};
   angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   m.cell.row(0).dot(m.cell.row(1)), lengths[0] * lengths[1])) *
               180.0 / eonc::helpers::pi;
@@ -302,7 +302,7 @@ void matter2xyz(Matter &m, std::string filename, bool append) {
   } else {
     file = fopen(filename.c_str(), "wb");
   }
-  if (file == 0) {
+  if (file == nullptr) {
     std::cerr << "Can't create file " << filename << std::endl;
     exit(1);
   }

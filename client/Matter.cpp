@@ -362,10 +362,7 @@ long int Matter::numberOfFixedAtoms() const { return isFixed.sum(); }
 
 long Matter::getForceCalls() const { return (forceCalls); }
 
-void Matter::resetForceCalls() {
-  forceCalls = 0;
-  return;
-}
+void Matter::resetForceCalls() { forceCalls = 0; }
 
 void Matter::computePotential() const {
   if (recomputePotential) {
@@ -375,7 +372,7 @@ void Matter::computePotential() const {
     }
     if (potential->isSurrogate()) {
       // Surrogate potential case: uses free-atom subset interface
-      auto surrogatePotential =
+      auto *surrogatePotential =
           static_cast<SurrogatePotential *>(potential.get());
       auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
           this->getPositionsFree(), this->getAtomicNrsFree(), cell);

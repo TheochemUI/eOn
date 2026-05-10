@@ -96,7 +96,6 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   this->totalIterations = atomic_dimer.getIterations();
   this->totalForceCalls = atomic_dimer.getTotalForceCalls();
   pot->forceCallCounter = atomic_dimer.getTotalForceCalls();
-  return;
 }
 
 double AtomicGPDimer::getEigenvalue() {

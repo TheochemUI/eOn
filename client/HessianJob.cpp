@@ -18,7 +18,7 @@
 #include <fstream>
 #include <string>
 
-std::vector<std::string> HessianJob::run(void) {
+std::vector<std::string> HessianJob::run() {
   std::string matter_in("pos.con");
 
   std::vector<std::string> returnFiles;
