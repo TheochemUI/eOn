@@ -55,9 +55,18 @@ int getBundleSize() {
     std::string numstr = name.substr(upos + 1, dpos - upos - 1);
     if (!numstr.empty() &&
         std::isdigit(static_cast<unsigned char>(numstr[0]))) {
-      int i = std::atoi(numstr.c_str()) + 1;
-      if (i > num_bundle) {
-        num_bundle = i;
+      // std::atoi silently returns 0 on parse failure, so bugprone-
+      // unchecked-string-to-number-conversion (cert-err34-c) flags
+      // it. We've already guarded with isdigit(numstr[0]) so the
+      // first char parses; std::stoi throws on overflow / wholly
+      // bogus input, which we swallow as "skip this filename".
+      try {
+        int i = std::stoi(numstr) + 1;
+        if (i > num_bundle) {
+          num_bundle = i;
+        }
+      } catch (const std::exception &) {
+        // unparseable trailing junk -- ignore the file
       }
     }
   }
@@ -105,8 +114,13 @@ std::vector<std::string> unbundle(int number) {
     std::string numstr = originalFilename.substr(upos + 1, dpos - upos - 1);
     if (!numstr.empty() &&
         std::isdigit(static_cast<unsigned char>(numstr[0]))) {
-      int bundleNumber = std::atoi(numstr.c_str());
-      if (bundleNumber != number) {
+      // See bundleNumber rationale above; std::stoi over std::atoi
+      // for overflow / parse-failure visibility.
+      try {
+        if (std::stoi(numstr) != number) {
+          continue;
+        }
+      } catch (const std::exception &) {
         continue;
       }
     }
