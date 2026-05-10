@@ -1,0 +1,41 @@
+name: Sanitizers (ASan + UBSan)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+on: [push, pull_request]
+jobs:
+  sanitize:
+    runs-on: ubuntu-22.04
+    name: sanitize (asan+ubsan)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          environments: dev-lite
+      - name: Install cbindgen
+        shell: bash
+        run: command -v cbindgen || cargo install cbindgen
+      - name: Build with ASan + UBSan
+        shell: pixi run bash -e {0}
+        run: |
+          # b_sanitize=address,undefined wires both runtimes through
+          # meson; b_lundef=false relaxes -Wl,--no-undefined which
+          # ASan's wrapper symbols don't resolve at link time.
+          meson setup bbdir-san \
+            --buildtype=debug \
+            -Db_sanitize=address,undefined \
+            -Db_lundef=false \
+            -Dwith_tests=true
+          meson compile -C bbdir-san
+      - name: Run tests under sanitizers
+        shell: pixi run bash -e {0}
+        env:
+          ASAN_OPTIONS: halt_on_error=1:abort_on_error=1:print_summary=1:detect_leaks=0
+          UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1:print_stacktrace=1
+        run: |
+          # detect_leaks=0 because Eigen's static-init pool legitimately
+          # holds memory until process exit; we care about UAF / OOB /
+          # signed-overflow / null-deref, not leaks.
+          meson test -C bbdir-san --suite eon --print-errorlogs
