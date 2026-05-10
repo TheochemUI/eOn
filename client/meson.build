@@ -1019,14 +1019,10 @@ if get_option('with_tests')
         include_directories: _incdirs,
         cpp_args: test_args + ['-Wno-maybe-uninitialized'],
     )
-    testMain = library(
-        'TestMain',
-        ['unit_tests/TestMain.cpp'],
-        dependencies: _deps,  # static lib: use _deps (no readcon link_args)
-        include_directories: _incdirs,
-        cpp_args: test_args,
-        link_with: [_linkto, catch2_lib],
-    )
+    # Note: there is no separate `TestMain` library target -- the
+    # `unit_tests/TestMain.cpp` source is compiled directly into
+    # bench_pot (only consumer in this build). Test executables get
+    # their `main()` via the Catch2 amalgamated lib.
     test_array = [  #
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
