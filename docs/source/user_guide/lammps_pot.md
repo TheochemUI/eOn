@@ -70,37 +70,70 @@ pair_coeff * * 0.7102 1.6047 2.797 #specify parameters
 pair_modify shift yes #shift the potential to be zero at the cutoff
 ```
 
-### File-placement: `potfiles/` vs CWD
+### File placement
 
-**Important**: where you place `in.lammps` depends on the job type.
+Two ways to feed LAMMPS its run-time files. Pick one:
 
-- **Long-running multi-job drivers** (`job = akmc`, `job = parallel_replica`,
-  `job = basin_hopping`, `job = saddle_search` via the akmc.py communicator):
-  put `in.lammps` and any parameter files in `potfiles/` next to your
-  `config.ini`. The Python driver copies them into each per-job scratch
-  directory (`jobs/scratch/<wuid>/`) before launching `eonclient`.
+#### 1. Bundle (recommended) -- `lammps_bundle = path/to/run.eonlpb`
 
-- **Direct single-job invocations** (`job = minimization`,
-  `job = nudged_elastic_band`, `job = single_point`, `job = process_search`
-  run as a one-shot `eonclient` from the command line): `in.lammps` and
-  parameter files MUST be in the SAME directory where `eonclient` runs
-  (typically the directory containing `config.ini`). `LAMMPSPot` calls
-  `lammps_file(LAMMPSObj, "in.lammps")` with a relative path, and silently
-  skips when the file is missing. The next force evaluation then segfaults
-  because no `pair_style` was set.
-
-```{admonition} Symptom of misplaced in.lammps
-:class: warning
-If `eonclient` segfaults inside `LAMMPSPot::force` immediately after
-"Beginning minimization" / "Beginning NEB", check that `in.lammps` and the
-EAM/Tersoff/etc parameter files are in the SAME directory as `config.ini`,
-not nested in `potfiles/`. Set `LD_LIBRARY_PATH` to include the directory
-holding `liblammps.so` if not already on the path.
+```{versionadded} 2.15
 ```
 
-For the akmc.py-driven case, the existing `potfiles/` convention is correct
-and unchanged. The clarification above only applies when you call
-`eonclient` directly with a config that requires LAMMPS.
+Pack `in.lammps` and every file it references (pair_coeff data,
+custom `pair_style` `.so` plugins, KIM tables, `read_data` inputs,
+shell helpers, ...) into one `.eonlpb` blob. Point eOn at the bundle
+and the eonclient CWD becomes irrelevant for LAMMPS file lookups.
+
+```{code-block} bash
+# Pack the directory holding in.lammps + all referenced files
+python -m eon.lammps_bundle pack potfiles/ run.eonlpb
+
+# Inspect what got packed
+python -m eon.lammps_bundle list run.eonlpb
+```
+
+```{code-block} ini
+[Potential]
+potential = lammps
+lammps_bundle = run.eonlpb
+```
+
+`LAMMPSPot` extracts the bundle into a per-instance scratch dir
+under `$TMPDIR` and issues `shell cd <scratch>` to liblammps before
+sourcing `in.lammps`, so every relative reference inside `in.lammps`
+resolves there. The scratch dir is removed when the potential is
+destroyed. Multiple `eonclient` instances on the same host get their
+own private scratch dirs (PID + 64-bit random suffix).
+
+#### 2. Legacy CWD mode (no bundle)
+
+If `lammps_bundle` is unset, `in.lammps` and every file it references
+must live in the directory where `eonclient` runs:
+
+- **Multi-job drivers** (`job = akmc`, `job = parallel_replica`,
+  `job = basin_hopping`, ...): keep them in `potfiles/` next to your
+  `config.ini`. The Python driver copies the contents into each
+  per-job scratch directory (`jobs/scratch/<wuid>/`) before launching
+  `eonclient`.
+
+- **Direct single-job `eonclient`** (`job = minimization`,
+  `job = nudged_elastic_band`, `job = single_point`,
+  `job = process_search`): place `in.lammps` and every referenced file
+  in the SAME directory as `config.ini`. eOn now refuses to construct
+  a `LAMMPSPot` if `in.lammps` is missing from CWD and surfaces the
+  CWD path in the error message; `lammps_has_error` is also checked
+  after `lammps_file` so LAMMPS-side syntax / pair_coeff / pair_style
+  errors no longer hide.
+
+```{admonition} Why a bundle?
+:class: tip
+Pre-2.15 eOn coupled the eonclient CWD to LAMMPS's CWD: any file
+liblammps reads (pair_coeff, read_data, custom plugin `.so`, ...) had
+to be in eonclient's CWD or absolute. Job-scratch cleanup, tmpfs
+eviction, or a wrapper script chdir-ing somewhere unexpected would
+silently break the next force call. The bundle decouples them; one
+blob travels with the run.
+```
 
 ## Troubleshooting
 
@@ -114,10 +147,12 @@ If eOn reports "LAMMPS library not found", ensure that:
 3. The LAMMPS version is compatible (tested with LAMMPS 2Aug2023 and later;
    conda-forge `lammps=2024.08.29` works with eOn 2.14)
 
-If `eonclient` segfaults inside `LAMMPSPot::force` despite `liblammps.so`
-being loadable, see the file-placement note above -- a missing `in.lammps`
-in CWD is silent at instance-construction time but kills the first force
-evaluation.
+If `eonclient` reports `LAMMPSPot: in.lammps not found in eonclient CWD`,
+either point `lammps_bundle` at a `.eonlpb` blob (recommended) or place
+`in.lammps` and every file it references next to `config.ini` (legacy
+CWD mode). If liblammps surfaces a syntax / pair_coeff / pair_style
+error after sourcing `in.lammps`, eOn now reports the LAMMPS-side
+message verbatim instead of segfaulting on the next force call.
 
 ## References
 
