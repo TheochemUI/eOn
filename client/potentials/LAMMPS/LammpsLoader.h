@@ -40,6 +40,11 @@ public:
   using file_fn = void (*)(void *, const char *);
   using scatter_atoms_fn = void (*)(void *, const char *, int, int, void *);
   using extract_var_fn = void *(*)(void *, const char *, const char *);
+  // Error-introspection: lammps_file logs LAMMPS-side failures to its
+  // own log stream and returns void, so the only way to surface them
+  // is lammps_has_error + lammps_get_last_error_message.
+  using has_error_fn = int (*)(void *);
+  using get_last_error_fn = int (*)(void *, char *, int);
 #ifdef EONMPI
   using open_mpi_fn = void *(*)(int, char **, MPI_Comm, void **);
 #endif
@@ -54,6 +59,10 @@ public:
   file_fn file{nullptr};
   scatter_atoms_fn scatter_atoms{nullptr};
   extract_var_fn extract_variable{nullptr};
+  // Optional: present in LAMMPS >= ~stable_3Mar2020. Null on older
+  // builds; LAMMPSPot::makeNewLAMMPS() null-checks before calling.
+  has_error_fn has_error{nullptr};
+  get_last_error_fn get_last_error_message{nullptr};
 #ifdef EONMPI
   open_mpi_fn open_mpi{nullptr};
 #endif

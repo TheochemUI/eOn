@@ -64,6 +64,13 @@ public:
     double MPIPollPeriod{0.25};
     bool LAMMPSLogging{false};
     int LAMMPSThreads{0};
+    /// Optional path to a portable LAMMPS run-input bundle (.eonlpb)
+    /// containing in.lammps + every pair_coeff data file it
+    /// references. When set, LAMMPSPot extracts the bundle to a
+    /// per-instance scratch dir under temp_directory_path() and
+    /// liblammps reads in.lammps from there. Empty string keeps the
+    /// historical CWD-only behaviour.
+    std::string LAMMPSBundlePath{""};
     bool EMTRasmussen{false};
     bool LogPotential{false};
     std::string extPotPath{"./ext_pot"};

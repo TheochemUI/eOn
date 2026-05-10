@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "LAMMPSPot.h"
+#include "LammpsBundle.h"
 #include "LammpsLoader.h"
 
 #include <cstring>
@@ -31,11 +32,64 @@ LAMMPSPot::LAMMPSPot(const Parameters &p)
       mpiComm{p.potential_options.MPIClientComm}
 #endif
 {
-  // Fail fast if LAMMPS library not available
+  // Fail fast if LAMMPS library not available.
   eonc::LammpsLoader::instance().require_loaded();
+
+  // Two operating modes:
+  //   bundle mode  -- lammps_options.bundle_path is set. LAMMPSBundle
+  //                   extracts the .eonlpb tarball-equivalent into a
+  //                   private scratch dir and we point liblammps at
+  //                   that dir via "shell cd <scratch>" so every
+  //                   pair_coeff / include / read_data / shared
+  //                   plugin .so resolves there. The eonclient CWD
+  //                   becomes irrelevant for LAMMPS.
+  //   legacy mode  -- bundle_path empty. We require in.lammps in CWD
+  //                   so liblammps's relative-path lookups resolve
+  //                   against eonclient's CWD; pair-coeff files and
+  //                   any other LAMMPS-side file references must
+  //                   live there too.
+  const auto &bundle_path = p.potential_options.LAMMPSBundlePath;
+  if (!bundle_path.empty()) {
+    auto bundle = eonc::LAMMPSBundle::open(bundle_path);
+    m_lammps_workdir = bundle.extract();
+    m_owns_workdir = true;
+  } else {
+    m_lammps_workdir = std::filesystem::current_path();
+    m_owns_workdir = false;
+    if (!std::filesystem::exists(m_lammps_workdir / "in.lammps")) {
+      auto cwd = m_lammps_workdir.string();
+      EONC_LOG_ERROR("[LAMMPS] in.lammps not found in {}", cwd);
+      eonc::log::get()->flush_log();
+      throw std::runtime_error(
+          "LAMMPSPot: in.lammps not found in eonclient CWD (" + cwd +
+          "). Either (a) put in.lammps and every file it references "
+          "(pair_coeff data, custom pair_style .so plugins, KIM tables, "
+          "etc.) next to the eonclient process, or (b) pack them into a "
+          "single .eonlpb bundle and pass it via [Potential] "
+          "lammps_bundle = path/to/bundle.eonlpb -- liblammps then reads "
+          "everything from a private scratch dir, no CWD coupling.");
+    }
+  }
+
+  // Detect units from in.lammps: look for "#!units real" marker.
+  realunits = false;
+  std::ifstream infile(m_lammps_workdir / "in.lammps");
+  std::string line;
+  while (std::getline(infile, line)) {
+    if (line == "#!units real") {
+      realunits = true;
+      break;
+    }
+  }
 }
 
-LAMMPSPot::~LAMMPSPot() { cleanMemory(); }
+LAMMPSPot::~LAMMPSPot() {
+  cleanMemory();
+  if (m_owns_workdir && !m_lammps_workdir.empty()) {
+    std::error_code ec;
+    std::filesystem::remove_all(m_lammps_workdir, ec);
+  }
+}
 
 void LAMMPSPot::cleanMemory() {
   if (LAMMPSObj != nullptr) {
@@ -136,25 +190,20 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   LAMMPSObj = lmp.open_no_mpi(lmpargc, const_cast<char **>(lmpargv), nullptr);
 #endif
 
+  // Pin liblammps's working directory to m_lammps_workdir so every
+  // pair_coeff / include / read_data / shared-plugin .so reference
+  // inside in.lammps resolves there. In bundle mode this is the
+  // extracted scratch dir; in legacy mode it's eonclient's CWD (a
+  // no-op LAMMPS-side, but harmless).
+  {
+    std::string shell_cd =
+        std::format("shell cd {}", m_lammps_workdir.string());
+    lmp.command(LAMMPSObj, shell_cd.c_str());
+  }
+
   if (lammpsThr > 0) {
     std::string cmd = std::format("package omp {} force/neigh", lammpsThr);
     lmp.command(LAMMPSObj, cmd.c_str());
-  }
-
-  // Detect units from in.lammps: look for "#!units real" marker
-  realunits = false;
-  if (std::filesystem::exists("in.lammps")) {
-    std::ifstream infile("in.lammps");
-    std::string line;
-    while (std::getline(infile, line)) {
-      if (line == "#!units real") {
-        realunits = true;
-        break;
-      }
-    }
-  } else {
-    EONC_LOG_ERROR("[LAMMPS] in.lammps not found in working directory");
-    return;
   }
 
   if (realunits) {
@@ -186,8 +235,30 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
 
   lmp.command(LAMMPSObj, "mass * 1.0");
 
-  // Load user LAMMPS input script
+  // Read in.lammps from the pinned workdir. The "shell cd" above made
+  // liblammps's CWD = m_lammps_workdir, so a relative "in.lammps"
+  // here resolves against the bundle scratch dir (or eonclient CWD
+  // in legacy mode).
   lmp.file(LAMMPSObj, "in.lammps");
+
+  // lammps_file logs syntax / pair_coeff / pair_style errors to its
+  // own log and returns void. lammps_has_error (LAMMPS >= 3Mar2020,
+  // null on older builds) is the only way to surface them. Without
+  // this check the next lammps_command("run 1 ...") would dereference
+  // a null pair_style and segfault.
+  if (lmp.has_error && lmp.has_error(LAMMPSObj)) {
+    char buf[1024]{};
+    if (lmp.get_last_error_message) {
+      lmp.get_last_error_message(LAMMPSObj, buf, sizeof(buf));
+    }
+    EONC_LOG_ERROR("[LAMMPS] error after reading in.lammps from {}: {}",
+                   m_lammps_workdir.string(), buf);
+    eonc::log::get()->flush_log();
+    throw std::runtime_error(
+        std::string("LAMMPSPot: liblammps reported an error after sourcing ") +
+        "in.lammps (workdir=" + m_lammps_workdir.string() +
+        "). LAMMPS message: " + buf);
+  }
 
   // Define variables for force/energy extraction
   lmp.command(LAMMPSObj, "variable fx atom fx");

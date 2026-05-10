@@ -44,6 +44,12 @@ LammpsLoader::LammpsLoader() {
   extract_variable =
       dynlib::loadSym<extract_var_fn>(m_handle, "lammps_extract_variable");
 
+  // Optional: error-introspection. Present in LAMMPS >= 3Mar2020.
+  // Null on older builds; LAMMPSPot null-checks before calling.
+  has_error = dynlib::loadSym<has_error_fn>(m_handle, "lammps_has_error");
+  get_last_error_message = dynlib::loadSym<get_last_error_fn>(
+      m_handle, "lammps_get_last_error_message");
+
 #ifdef EONMPI
   open_mpi = dynlib::loadSym<open_mpi_fn>(m_handle, "lammps_open");
 #endif
