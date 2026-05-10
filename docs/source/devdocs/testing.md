@@ -56,7 +56,8 @@ source and linked against `eonclib`.
 
 Registration uses meson's array iteration:
 
-```{code-block} meson
+```{code-block} bash
+:caption: client/meson.build (excerpt)
 test_array = [
     ['test_name', 'TestFile.cpp', 'data_dir'],
 ]
