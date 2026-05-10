@@ -37,9 +37,9 @@ namespace eonc {
 /// information was carried as a bare int (-1 / 0 / 1) which made
 /// every call site read like a flag check.
 enum class StepResult : int {
-  Failed = -1,       ///< Hard failure: NaN forces, internal error.
-  NotConverged = 0,  ///< Step taken but the convergence test is unmet.
-  Converged = 1,     ///< Convergence achieved -- caller should stop.
+  Failed = -1,      ///< Hard failure: NaN forces, internal error.
+  NotConverged = 0, ///< Step taken but the convergence test is unmet.
+  Converged = 1,    ///< Convergence achieved -- caller should stop.
 };
 
 [[nodiscard]] constexpr int to_int(StepResult r) noexcept {

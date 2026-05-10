@@ -13,10 +13,13 @@
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
+#include "StatusTypes.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
 namespace tests {
+
+using eonc::SaddleStatus;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
@@ -66,7 +69,7 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   double reactantEnergy = matter->getPotentialEnergy();
   MinModeSaddleSearch search(matter, mode, reactantEnergy, params, pot);
 
-  int status = search.run();
+  SaddleStatus status = search.run();
 
   // Status should be a valid enum value (0 through 21)
   REQUIRE(status >= SaddleStatus::Good);
@@ -102,7 +105,7 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   double reactantEnergy = matter->getPotentialEnergy();
   MinModeSaddleSearch search(matter, mode, reactantEnergy, params, pot);
 
-  int status = search.run();
+  SaddleStatus status = search.run();
 
   // Should hit max iterations or some non-GOOD status
   REQUIRE(status != SaddleStatus::Good);
@@ -145,7 +148,7 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 
   double reactantEnergy = matter->getPotentialEnergy();
   MinModeSaddleSearch search(matter, mode, reactantEnergy, params, pot);
-  int status = search.run();
+  SaddleStatus status = search.run();
 
   REQUIRE(status >= SaddleStatus::Good);
   REQUIRE(status <= SaddleStatus::DimerRestoredBest);
@@ -163,7 +166,7 @@ TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
 
   double reactantEnergy = matter->getPotentialEnergy();
   MinModeSaddleSearch search(matter, mode, reactantEnergy, params, pot);
-  int status = search.run();
+  SaddleStatus status = search.run();
 
   REQUIRE(status >= SaddleStatus::Good);
   REQUIRE(std::isfinite(search.getEigenvalue()));

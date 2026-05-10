@@ -46,7 +46,6 @@ jobs:
       - name: Build and install eonclient
         shell: pixi run -e docs-mta bash -e {0}
         run: |
-          pixi run ensure_cbindgen
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib \
             -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True
           meson install -C bbdir

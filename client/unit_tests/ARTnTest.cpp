@@ -128,8 +128,7 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // 50% relative-energy tolerance below is intentionally generous to avoid
   // flaky failures when that happens; saddle structural identity is checked
   // by the dedicated IRA-based comparison tests.
-  if (dimerStatus == SaddleStatus::Good &&
-      artnStatus == SaddleStatus::Good) {
+  if (dimerStatus == SaddleStatus::Good && artnStatus == SaddleStatus::Good) {
     // Both found a first-order saddle: negative eigenvalue
     REQUIRE(dimerStatus == SaddleStatus::Good);
     REQUIRE(dimerEigenvalue < 0.0);
@@ -175,7 +174,8 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // Empty filin is the default -- pARTn keeps its NAN_STR sentinel and reads
   // nothing. Setting filin to a path that does not exist has to trip the
   // eager existence check in ARTnSaddleSearch::run(), before setup_artn gets
-  // a chance to surface its own ERR_FILE, and return SaddleStatus::BadArtnError.
+  // a chance to surface its own ERR_FILE, and return
+  // SaddleStatus::BadArtnError.
   params.artn_options.filin = "this_artn_input_does_not_exist.in";
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
