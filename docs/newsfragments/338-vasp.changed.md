@@ -1,0 +1,1 @@
+VASP potential is now always compiled on POSIX (Windows still omitted). The `with_vasp` meson option and `-DWITH_VASP` are gone -- VASP is a subprocess shim with no library dependency. The banner reports `VASP: enabled (subprocess)`.

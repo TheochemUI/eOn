@@ -1,0 +1,1 @@
+`LAMMPSPot` now fails loudly with the eonclient CWD when `in.lammps` is missing instead of letting liblammps swallow the error and segfault on the next `force()` call (issue eon-7qqp). `lammps_has_error` / `lammps_get_last_error_message` are loaded if liblammps exposes them and surface LAMMPS-side syntax / pair-coeff errors immediately after `lammps_file`.
