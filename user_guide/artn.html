@@ -170,9 +170,11 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.status_codes.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.status_codes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.lammps_bundle.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.lammps_bundle</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
 </ul>
@@ -255,7 +257,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#parameters">Parameters</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#build-requirements">Build requirements</a></li>
+<li><a class="reference internal" href="#runtime-requirements">Runtime requirements</a></li>
 <li><a class="reference internal" href="#comparison-with-kart">Comparison with kart</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
@@ -419,10 +421,14 @@ rate is expected to be lower.</p>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
-<p>ARTn requires the <code class="docutils literal notranslate"><span class="pre">artn-plugin</span></code> Fortran subproject source to be available under
-<code class="docutils literal notranslate"><span class="pre">subprojects/</span></code> (for example via <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">subprojects</span> <span class="pre">download</span> <span class="pre">artn-plugin</span></code>). When
-present, eOn builds it via CMake at configure time as a workaround for Meson’s
-current Fortran submodule scanner limitations.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.15: </span>ARTn is now loaded at runtime via <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> / <code class="docutils literal notranslate"><span class="pre">LoadLibrary</span></code>, mirroring
+the LAMMPS pattern. No <code class="docutils literal notranslate"><span class="pre">-Dwith_artn</span></code> build flag is needed and no
+configure-time CMake build of <code class="docutils literal notranslate"><span class="pre">artn-plugin</span></code> is required. A single
+eOn binary picks up ARTn iff <code class="docutils literal notranslate"><span class="pre">libartn.so</span></code> is on the library search
+path. The pre-2.15 <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">subprojects</span> <span class="pre">download</span> <span class="pre">artn-plugin</span></code> workflow
+is no longer required.</p>
+</div>
 <p>ARTn can be used in two ways:</p>
 <p><strong>As a standalone method</strong> (<code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">artn</span></code>): ARTn starts directly from
 <code class="docutils literal notranslate"><span class="pre">pos.con</span></code> and handles its own push, internal Lanczos eigenmode estimation,
@@ -486,19 +492,28 @@ and aborts with a clear error when it does not. Maps to pARTn’s <code class="d
 </ul>
 </section>
 </section>
-<section id="build-requirements">
-<h2>Build requirements<a class="headerlink" href="#build-requirements" title="Link to this heading">¶</a></h2>
-<p>ARTn requires a Fortran compiler and LAPACK. Download the subproject first, then
-let eOn build it automatically at configure time:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>subprojects<span class="w"> </span>download<span class="w"> </span>artn-plugin
-</span><span data-line="2">meson<span class="w"> </span>setup<span class="w"> </span>builddir<span class="w"> </span>-Dwith_artn<span class="o">=</span><span class="nb">true</span>
+<section id="runtime-requirements">
+<h2>Runtime requirements<a class="headerlink" href="#runtime-requirements" title="Link to this heading">¶</a></h2>
+<p>ARTn needs <code class="docutils literal notranslate"><span class="pre">libartn.so</span></code> (or <code class="docutils literal notranslate"><span class="pre">libartn.dylib</span></code> / <code class="docutils literal notranslate"><span class="pre">libartn.dll</span></code>) on the
+library search path at run time. The shim and the SaddleSearch driver
+are unconditionally compiled into eonclient; only the dynamic library
+is supplied externally.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Build libartn from the upstream Fortran subproject (one-time):</span>
+</span><span data-line="2">git<span class="w"> </span>clone<span class="w"> </span>https://gitlab.com/mammasmias/artn-plugin
+</span><span data-line="3"><span class="nb">cd</span><span class="w"> </span>artn-plugin
+</span><span data-line="4">cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span><span class="se">\</span>
+</span><span data-line="5"><span class="w">    </span>-DWITH_LAMMPS<span class="o">=</span>OFF<span class="w"> </span>-DWITH_QE<span class="o">=</span>OFF<span class="w"> </span>-DWITH_SIESTA<span class="o">=</span>OFF
+</span><span data-line="6">cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Make eonclient see it:</span>
+</span><span data-line="9"><span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$PWD</span>/build:<span class="nv">$LD_LIBRARY_PATH</span><span class="w">      </span><span class="c1"># Linux</span>
+</span><span data-line="10"><span class="nb">export</span><span class="w"> </span><span class="nv">DYLD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$PWD</span>/build:<span class="nv">$DYLD_LIBRARY_PATH</span><span class="w">  </span><span class="c1"># macOS</span>
 </span></pre></div>
 </div>
-<p>Or with a prebuilt library:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>builddir<span class="w"> </span>-Dwith_artn<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
-</span><span data-line="2"><span class="w">  </span>-Dartn_libdir<span class="o">=</span>/path/to/lib<span class="w"> </span>-Dartn_includedir<span class="o">=</span>/path/to/include
-</span></pre></div>
-</div>
+<p>If the library is missing, the eonclient banner still says
+<code class="docutils literal notranslate"><span class="pre">ARTn:</span> <span class="pre">enabled</span> <span class="pre">(dlopen</span> <span class="pre">at</span> <span class="pre">runtime)</span></code> but <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">artn</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">=</span> <span class="pre">artn</span></code>) raises a runtime error naming the entry
+point and pointing at <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>.</p>
 </section>
 <section id="comparison-with-kart">
 <h2>Comparison with kart<a class="headerlink" href="#comparison-with-kart" title="Link to this heading">¶</a></h2>

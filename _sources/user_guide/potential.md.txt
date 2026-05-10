@@ -11,11 +11,20 @@ myst:
 and libraries and others via interfaces.
 
 ```{note}
-Some of these require compile-time flags, detailed in the [installation instructions](project:../install/index.md).
-The `conda-forge` package (`conda install -c conda-forge eon`) ships with
-**Metatomic**, **XTB**, **EXT_POT**, and the vendored potentials.
-LAMMPS, ASE, VASP, AMS, and MPI potentials require building from source with
-the corresponding `-Dwith_*` flags.
+Some potentials require compile-time flags, detailed in the [installation
+instructions](project:../install/index.md). Three categories:
+
+- **Always compiled**: vendored Fortran/C potentials (LJ, EAM, EMT, Morse,
+  ZBL, ...), **LAMMPS**, **VASP** (POSIX only), **ARTn**, and **IRA**.
+  These need no `-Dwith_*` flag; LAMMPS / ARTn / IRA pick up their
+  shared library at run time via `dlopen`, VASP spawns its binary as
+  a subprocess.
+- **Optional via build flag**: ASE-* (`-Dwith_ase`, `-Dwith_ase_orca`,
+  `-Dwith_ase_nwchem`), AMS (`-Dwith_ams`), MPIPot (`-Dwith_mpi`),
+  GPRD / GP-Surrogate, CatLearn, CuH2 (default on).
+- **Conda-forge default**: `conda install -c conda-forge eon` ships
+  Metatomic, XTB, EXT_POT, LAMMPS (runtime-loaded), VASP, and the
+  vendored set.
 ```
 
 ## Supported Potentials
@@ -23,10 +32,12 @@ the corresponding `-Dwith_*` flags.
 ### External
 
 VASP {cite:p}`pot-kresseEfficientIterativeSchemes1996`
-: Vienna Ab-Initio Simulation Program (VASP) I/O interface. {bdg-warning}`source build`
+: Vienna Ab-Initio Simulation Program (VASP) subprocess interface;
+  POSIX only. {bdg-success}`always compiled`
 
 LAMMPS {cite:p}`pot-plimptonFastParallelAlgorithms1995,pot-thompsonLAMMPSFlexibleSimulation2022`
-: Library interface, detailed [documentation here](project:../user_guide/lammps_pot.md). {bdg-warning}`source build`
+: Runtime-loaded `liblammps`; portable run-input bundle support
+  (`.eonlpb`). Detailed [documentation here](project:../user_guide/lammps_pot.md). {bdg-success}`runtime dlopen`
 
 EXT_POT
 : File-based interface to any external calculator. Detailed [documentation here](project:ext_pot.md). {bdg-success}`conda-forge`

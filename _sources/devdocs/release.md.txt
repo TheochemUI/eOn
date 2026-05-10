@@ -91,6 +91,7 @@ Defined in `cog.toml`:
 `CHANGELOG.md` (towncrier owns it) and `branch_whitelist = ["main"]`
 so `cog bump` refuses to run on a PR branch.
 
+(post-bump-actions)=
 ## 3. Post-bump actions
 
 1. Inspect the release commit:
