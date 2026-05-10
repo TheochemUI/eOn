@@ -25,6 +25,7 @@
 
 #include "EonLogger.h"
 #include <thread>
+#include <utility>
 using namespace eonc::helpers;
 namespace fs = std::filesystem;
 
@@ -115,7 +116,7 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
             }
             return path;
           }(),
-          parametersPassed, potPassed) {}
+          parametersPassed, std::move(potPassed)) {}
 
 // Second constructor: Contains all the common setup code
 NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
@@ -123,7 +124,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
                                      std::shared_ptr<Potential> potPassed)
     : ci_enabled_{parametersPassed.neb_options.climbing_image.enabled},
       params{parametersPassed},
-      pot{potPassed},
+      pot{std::move(potPassed)},
       E_ref{0.0} {
 
   log = eonc::log::get();

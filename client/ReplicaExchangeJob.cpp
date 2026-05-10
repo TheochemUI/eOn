@@ -24,14 +24,16 @@
 #include <thread>
 
 std::vector<std::string> ReplicaExchangeJob::run() {
+  // Round-to-nearest with std::lround instead of `(int)(x + 0.5)`,
+  // which produces incorrect rounding for negative numbers and
+  // double-precision values that were already exactly representable
+  // (bugprone-incorrect-roundings).
   long samplingSteps =
-      static_cast<long>(params.replica_exchange_options.sampling_time /
-                            params.dynamics_options.time_step +
-                        0.5);
+      std::lround(params.replica_exchange_options.sampling_time /
+                  params.dynamics_options.time_step);
   long exchangePeriodSteps =
-      static_cast<long>(params.replica_exchange_options.exchange_period /
-                            params.dynamics_options.time_step +
-                        0.5);
+      std::lround(params.replica_exchange_options.exchange_period /
+                  params.dynamics_options.time_step);
   const double kB = params.constants.kB;
 
   std::string posFilename =
@@ -54,7 +56,8 @@ std::vector<std::string> ReplicaExchangeJob::run() {
     auto replicaPot = perImage ? eonc::helpers::makePotential(params) : pot;
     replica[i] = std::make_shared<Matter>(replicaPot, params);
     *replica[i] = *pos;
-    replicaDynamics[i] = std::make_unique<Dynamics>(replica[i].get(), params);
+    replicaDynamics[i] = std::make_unique<Dynamics>(
+        replica[i].get(), DynamicsConfig::fromParams(params));
   }
 
   std::vector<double> replicaTemperature(nReplicas);

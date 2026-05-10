@@ -28,9 +28,9 @@ const char ImprovedDimer::OPT_SD[] = "sd";
 const char ImprovedDimer::OPT_CG[] = "cg";
 const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
 
-ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
+ImprovedDimer::ImprovedDimer(const std::shared_ptr<Matter> &matter,
                              const Parameters &params,
-                             std::shared_ptr<Potential> pot)
+                             const std::shared_ptr<Potential> &pot)
     : LowestEigenmode(pot, params) {
   // Each dimer image gets its own potential for lock-free parallel evaluation
   auto x1Pot = (pot->needsPerImageInstance() && params.main_options.parallel)
@@ -59,7 +59,7 @@ void ImprovedDimer::setReferenceMode(const VectorXd &ref) {
 
 void ImprovedDimer::clearReferenceMode() { hasFixedReference = false; }
 
-void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
+void ImprovedDimer::compute(const std::shared_ptr<Matter> &matter,
                             AtomMatrix initialDirectionAtomMatrix) {
 
   VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),

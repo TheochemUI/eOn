@@ -34,7 +34,8 @@ public:
                 std::shared_ptr<Potential> pot);
   ~AtomicGPDimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  void compute(std::shared_ptr<Matter> matter,
+               const AtomMatrix &initialDirection);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 

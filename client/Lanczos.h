@@ -23,10 +23,11 @@ namespace eonc {
 class Lanczos : public LowestEigenmode {
 
 public:
-  Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
+  Lanczos(const std::shared_ptr<Matter> &matter, const Parameters &params,
           std::shared_ptr<Potential> pot);
   ~Lanczos() = default;
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  void compute(const std::shared_ptr<Matter> &matter,
+               AtomMatrix initialDirection);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 

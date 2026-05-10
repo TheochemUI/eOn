@@ -16,10 +16,11 @@
 
 #include <cmath>
 #include <set>
+#include <utility>
 #include <vector>
 
-RotationMatrix eonc::geometry::rotationExtract(const AtomMatrix r1,
-                                               const AtomMatrix r2) {
+RotationMatrix eonc::geometry::rotationExtract(const AtomMatrix &r1,
+                                               const AtomMatrix &r2) {
   RotationMatrix R;
 
   // Determine optimal rotation
@@ -201,8 +202,8 @@ void eonc::geometry::projectOutRotTrans(Eigen::VectorXd &step,
   }
 }
 
-void eonc::geometry::rotationRemove(const AtomMatrix r1_passed,
-                                    std::shared_ptr<Matter> m2) {
+void eonc::geometry::rotationRemove(const AtomMatrix &r1_passed,
+                                    const std::shared_ptr<Matter> &m2) {
   // Skip for extended systems (slabs/surfaces with frozen atoms).
   // Rigid-body rotation and translation are not well-defined when the
   // system is anchored by frozen atoms.
@@ -230,13 +231,14 @@ void eonc::geometry::rotationRemove(const AtomMatrix r1_passed,
   m2->setPositions(resultMat);
 }
 
-void eonc::geometry::rotationRemove(const std::shared_ptr<Matter> m1,
+void eonc::geometry::rotationRemove(const std::shared_ptr<Matter> &m1,
                                     std::shared_ptr<Matter> m2) {
   AtomMatrix r1 = m1->getPositions();
-  rotationRemove(r1, m2);
+  rotationRemove(r1, std::move(m2));
 }
 
-void eonc::geometry::translationRemove(Matter &m1, const AtomMatrix r2_passed) {
+void eonc::geometry::translationRemove(Matter &m1,
+                                       const AtomMatrix &r2_passed) {
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = r2_passed;
 
@@ -263,11 +265,11 @@ void eonc::geometry::translationRemove(Matter &m1, const Matter &m2) {
   translationRemove(m1, r2);
 }
 
-double eonc::geometry::maxAtomMotion(const AtomMatrix v1) {
+double eonc::geometry::maxAtomMotion(const AtomMatrix &v1) {
   return v1.rowwise().norm().maxCoeff();
 }
 
-double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
+double eonc::geometry::maxAtomMotionV(const VectorXd &v1) {
   double max = 0.0;
   long n = v1.rows();
   if (n < 3) {
@@ -291,7 +293,7 @@ double eonc::geometry::maxAtomMotionV(const VectorXd v1) {
   return max;
 }
 
-long eonc::geometry::numAtomsMoved(const AtomMatrix v1, double cutoff) {
+long eonc::geometry::numAtomsMoved(const AtomMatrix &v1, double cutoff) {
   long num = 0;
   for (int i = 0; i < v1.rows(); i++) {
     double norm = v1.row(i).norm();
@@ -302,7 +304,7 @@ long eonc::geometry::numAtomsMoved(const AtomMatrix v1, double cutoff) {
   return num;
 }
 
-AtomMatrix eonc::geometry::maxAtomMotionApplied(const AtomMatrix v1,
+AtomMatrix eonc::geometry::maxAtomMotionApplied(const AtomMatrix &v1,
                                                 double maxMotion) {
   AtomMatrix v2(v1);
 
@@ -313,7 +315,7 @@ AtomMatrix eonc::geometry::maxAtomMotionApplied(const AtomMatrix v1,
   return v2;
 }
 
-VectorXd eonc::geometry::maxAtomMotionAppliedV(const VectorXd v1,
+VectorXd eonc::geometry::maxAtomMotionAppliedV(const VectorXd &v1,
                                                double maxMotion) {
   VectorXd v2(v1);
 
@@ -324,7 +326,7 @@ VectorXd eonc::geometry::maxAtomMotionAppliedV(const VectorXd v1,
   return v2;
 }
 
-AtomMatrix eonc::geometry::maxMotionApplied(const AtomMatrix v1,
+AtomMatrix eonc::geometry::maxMotionApplied(const AtomMatrix &v1,
                                             double maxMotion) {
   AtomMatrix v2(v1);
 
@@ -335,7 +337,7 @@ AtomMatrix eonc::geometry::maxMotionApplied(const AtomMatrix v1,
   return v2;
 }
 
-VectorXd eonc::geometry::maxMotionAppliedV(const VectorXd v1,
+VectorXd eonc::geometry::maxMotionAppliedV(const VectorXd &v1,
                                            double maxMotion) {
   VectorXd v2(v1);
 
@@ -479,7 +481,8 @@ bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
   return matches >= r1.rows();
 }
 
-void eonc::geometry::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
+void eonc::geometry::pushApart(const std::shared_ptr<Matter> &m1,
+                               double minDistance) {
   if (minDistance <= 0)
     return;
 

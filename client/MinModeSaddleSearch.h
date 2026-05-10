@@ -83,7 +83,7 @@ public:
   }
 
   MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
-                      AtomMatrix modePassed, double reactantEnergyPassed,
+                      const AtomMatrix &modePassed, double reactantEnergyPassed,
                       const Parameters &parametersPassed,
                       std::shared_ptr<Potential> potPassed);
   ~MinModeSaddleSearch() = default;

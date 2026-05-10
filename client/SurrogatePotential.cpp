@@ -12,8 +12,8 @@
 #include "SurrogatePotential.h"
 
 std::tuple<double, AtomMatrix, double>
-SurrogatePotential::get_ef_var(const AtomMatrix pos, const VectorXi atmnrs,
-                               const Matrix3d box) {
+SurrogatePotential::get_ef_var(const AtomMatrix &pos, const VectorXi &atmnrs,
+                               const Matrix3d &box) {
   double energy{std::numeric_limits<double>::infinity()};
   long nAtoms = static_cast<long>(pos.rows());
   AtomMatrix forces{MatrixXd::Zero(nAtoms, 3)};

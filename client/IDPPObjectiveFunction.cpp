@@ -78,7 +78,8 @@ VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
   // Convert N x 3 matrix to 3N vector and return negative gradient (force)
   // BUT getGradient expects the Gradient (positive derivative), so we return
   // -Forces Actually, typical eOn getGradient returns dV/dx.
-  return VectorXd::Map(forces.data(), 3 * natoms) * -1.0;
+  return VectorXd::Map(forces.data(), static_cast<Eigen::Index>(3) * natoms) *
+         -1.0;
 }
 
 MatrixXd CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
@@ -165,9 +166,14 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
     // Total NEB Force
     AtomMatrix f_neb = f_perp + f_spring;
 
-    // Store as Gradient (-Force)
-    totalGradient.segment(3 * natoms * (i - 1), 3 * natoms) =
-        VectorXd::Map(f_neb.data(), 3 * natoms) * -1.0;
+    // Store as Gradient (-Force). Force the multiplication chain
+    // through Eigen::Index so bugprone-implicit-widening-of-
+    // multiplication-result doesn't fire when natoms * 3 (int * int)
+    // implicitly widens to the size_t / Index that segment() and
+    // VectorXd::Map want.
+    const Eigen::Index stride = static_cast<Eigen::Index>(3) * natoms;
+    totalGradient.segment(stride * (i - 1), stride) =
+        VectorXd::Map(f_neb.data(), stride) * -1.0;
 
     // Tracking convergence
     maxForce = std::max(maxForce, f_neb.template lpNorm<Eigen::Infinity>());

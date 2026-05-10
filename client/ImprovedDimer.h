@@ -37,11 +37,12 @@ public:
   static const char OPT_CG[];
   static const char OPT_LBFGS[];
 
-  ImprovedDimer(std::shared_ptr<Matter> matter, const Parameters &params,
-                std::shared_ptr<Potential> pot);
+  ImprovedDimer(const std::shared_ptr<Matter> &matter, const Parameters &params,
+                const std::shared_ptr<Potential> &pot);
   ~ImprovedDimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  void compute(const std::shared_ptr<Matter> &matter,
+               AtomMatrix initialDirection);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 

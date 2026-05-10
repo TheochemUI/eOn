@@ -188,9 +188,10 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
   }
 
   AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
-  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * neb.atoms);
+  const Eigen::Index seg = static_cast<Eigen::Index>(3) * neb.atoms;
+  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), seg);
   VectorXd currentTangent =
-      VectorXd::Map(neb.tangent[neb.climbingImage]->data(), 3 * neb.atoms);
+      VectorXd::Map(neb.tangent[neb.climbingImage]->data(), seg);
   alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));
 
   if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD ||

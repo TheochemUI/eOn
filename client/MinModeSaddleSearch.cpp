@@ -24,6 +24,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <utility>
 
 using namespace eonc::helpers;
 
@@ -41,7 +42,7 @@ public:
       AtomMatrix modePassed, const Parameters &paramsPassed)
       : ObjectiveFunction(paramsPassed),
         matter{std::move(matterPassed)},
-        minModeMethod{minModeMethodPassed},
+        minModeMethod{std::move(minModeMethodPassed)},
         eigenvector{std::move(modePassed)} {}
 
   ~MinModeObjectiveFunction() override = default;
@@ -164,12 +165,12 @@ public:
 };
 
 MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
-                                         AtomMatrix modePassed,
+                                         const AtomMatrix &modePassed,
                                          double reactantEnergyPassed,
                                          const Parameters &parametersPassed,
                                          std::shared_ptr<Potential> potPassed)
-    : SaddleSearchMethod(potPassed, parametersPassed),
-      matter{matterPassed} {
+    : SaddleSearchMethod(std::move(potPassed), parametersPassed),
+      matter{std::move(matterPassed)} {
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
   initialTangent_ = modePassed;

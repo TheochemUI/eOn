@@ -19,8 +19,8 @@
 
 using namespace eonc::helpers;
 
-Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
-             std::shared_ptr<Potential> pot)
+Dimer::Dimer(const std::shared_ptr<Matter> &matter, const Parameters &params,
+             const std::shared_ptr<Potential> &pot)
     : LowestEigenmode(pot, params) {
   // Give matterDimer its own potential for parallel force evaluation
   auto dimerPot = (pot->needsPerImageInstance() && params.main_options.parallel)
@@ -39,7 +39,7 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
   totalForceCalls = 0;
 }
 
-void Dimer::compute(std::shared_ptr<Matter> matter,
+void Dimer::compute(const std::shared_ptr<Matter> &matter,
                     AtomMatrix initialDirection) {
   *matterCenter = *matter;
 

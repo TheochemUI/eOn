@@ -17,6 +17,7 @@
 #include "fpe_handler.h"
 #include <cassert>
 #include <cmath>
+#include <utility>
 
 #include "subprojects/gpr_optim/gpr/AtomicDimer.h"
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
@@ -28,7 +29,7 @@ const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
-    : LowestEigenmode(pot, params) {
+    : LowestEigenmode(std::move(pot), params) {
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
   p = eonc::helpers::eon_parameters_to_gpr(params);
@@ -38,7 +39,7 @@ AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
 }
 
 void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
-                            AtomMatrix initialDirectionAtomMatrix) {
+                            const AtomMatrix &initialDirectionAtomMatrix) {
   atoms_config = eonc::helpers::eon_matter_to_atmconf(matter.get());
   // R_init.resize(1, matterCenter->getPositionsFree().size());
   // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());

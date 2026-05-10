@@ -21,11 +21,12 @@ namespace eonc {
 /// Uses finite-difference rotation to converge on the minimum eigenmode.
 class Dimer : public LowestEigenmode {
 public:
-  Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
-        std::shared_ptr<Potential> pot);
+  Dimer(const std::shared_ptr<Matter> &matter, const Parameters &params,
+        const std::shared_ptr<Potential> &pot);
   ~Dimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  void compute(const std::shared_ptr<Matter> &matter,
+               AtomMatrix initialDirection);
   [[nodiscard]] double getEigenvalue();
   [[nodiscard]] AtomMatrix getEigenvector();
 

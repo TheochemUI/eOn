@@ -36,8 +36,8 @@ using std::string;
 
 // Vector functions.
 // Make v1 orthogonal to v2
-AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
-                                         const AtomMatrix v2) {
+AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix &v1,
+                                         const AtomMatrix &v2) {
   return v1 - matDot(v1, v2) * eonc::safemath::safe_normalized(v2);
 }
 
@@ -68,7 +68,7 @@ void eonc::helpers::getTime(double *real, double *user, double *sys) {
 #endif
 }
 
-bool eonc::helpers::existsFile(string filename) {
+bool eonc::helpers::existsFile(const string &filename) {
   return std::filesystem::exists(filename);
 }
 
@@ -184,8 +184,8 @@ void eonc::helpers::saveMode(const std::string &filename,
   }
 }
 
-std::vector<int> eonc::helpers::split_string_int(std::string s,
-                                                 std::string delim) {
+std::vector<int> eonc::helpers::split_string_int(const std::string &s,
+                                                 const std::string &delim) {
   std::vector<int> list;
   if (s.empty())
     return list;
@@ -250,8 +250,8 @@ public:
 
 bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
                                 bool quiet, bool writeMovie, bool checkpoint,
-                                std::string prefixMovie,
-                                std::string prefixCheckpoint) {
+                                const std::string &prefixMovie,
+                                const std::string &prefixCheckpoint) {
   eonc::log::Scoped m_log;
   auto objf = std::make_shared<MatterObjectiveFunction>(matter, params);
   auto optim = eonc::helpers::create::mkOptim(

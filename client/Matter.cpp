@@ -19,10 +19,18 @@
 #include "EonLogger.h"
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
 
 const Matter &Matter::operator=(const Matter &matter) {
+  // Self-assignment guard (cert-oop54-cpp /
+  // bugprone-unhandled-self-assignment): without this, the resize()
+  // call below could repeatedly destroy and re-allocate the same
+  // backing storage we're about to copy from.
+  if (this == &matter) {
+    return *this;
+  }
   nAtoms = matter.nAtoms;
   resize(nAtoms);
 
@@ -191,7 +199,8 @@ VectorXi Matter::getAtomicNrsFree() const {
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    std::string prefixMovie, std::string prefixCheckpoint) {
   return eonc::helpers::relaxMatter(*this, *parameters, quiet, writeMovie,
-                                    checkpoint, prefixMovie, prefixCheckpoint);
+                                    checkpoint, std::move(prefixMovie),
+                                    std::move(prefixCheckpoint));
 }
 
 VectorXd Matter::getPositionsFreeV() const {
@@ -492,7 +501,7 @@ AtomMatrix Matter::getAccelerations() {
 Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const { return masses; }
 
 void Matter::setPotential(std::shared_ptr<Potential> pot) {
-  this->potential = pot;
+  this->potential = std::move(pot);
   recomputePotential = true;
   recomputeMaskedForces = true;
 }

@@ -153,13 +153,12 @@ int BiasedGradientSquaredDescent::run() {
   eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
   eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);
   QUILL_LOG_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
-  if (objf2->isConvergedV()) {
-    return 0;
-  } else if (objf2->isConvergedIP()) {
-    return 1;
-  } else {
-    return 1;
-  };
+  // Two convergence flavours: V (true convergence on a saddle) and
+  // IP (inflection-point fallback). isConvergedIP() and the trailing
+  // else both signal "not-V converged"; the chained if previously
+  // landed both on `return 1` -- bugprone-branch-clone fired. Reduce
+  // to the equivalent two-state form: 0 on V, 1 otherwise.
+  return objf2->isConvergedV() ? 0 : 1;
 }
 
 double BiasedGradientSquaredDescent::getEigenvalue() { return eigenvalue; }

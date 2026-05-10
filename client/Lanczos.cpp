@@ -22,9 +22,10 @@
 #include "EonLogger.h"
 
 #include <cmath>
-Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
-                 std::shared_ptr<Potential> pot)
-    : LowestEigenmode(pot, params) {
+#include <utility>
+Lanczos::Lanczos(const std::shared_ptr<Matter> &matter,
+                 const Parameters &params, std::shared_ptr<Potential> pot)
+    : LowestEigenmode(std::move(pot), params) {
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
   lowestEw = 0.0;
@@ -33,7 +34,8 @@ Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
 
 // The 1 character variables in this method match the variables in the
 // equations in the paper given at the top of this file.
-void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
+void Lanczos::compute(const std::shared_ptr<Matter> &matter,
+                      AtomMatrix direction) {
   int size = 3 * matter->numberOfFreeAtoms();
   MatrixXd T(size, params.lanczos_options.max_iterations),
       Q(size, params.lanczos_options.max_iterations);

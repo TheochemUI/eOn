@@ -65,8 +65,13 @@ int getBundleSize() {
         if (i > num_bundle) {
           num_bundle = i;
         }
-      } catch (const std::exception &) {
-        // unparseable trailing junk -- ignore the file
+      } catch (const std::exception &e) {
+        // unparseable trailing junk -- log the filename so a stray
+        // 'config_xxx.ini' shows up at debug level without breaking
+        // the bundle scan. bugprone-empty-catch wants something
+        // observable here.
+        std::cerr << "[bundle] skipping unparseable filename '" << name
+                  << "': " << e.what() << '\n';
       }
     }
   }
@@ -120,7 +125,10 @@ std::vector<std::string> unbundle(int number) {
         if (std::stoi(numstr) != number) {
           continue;
         }
-      } catch (const std::exception &) {
+      } catch (const std::exception &e) {
+        // Same skip-on-unparseable rationale as in getBundleSize().
+        std::cerr << "[bundle] skipping unparseable filename '"
+                  << originalFilename << "': " << e.what() << '\n';
         continue;
       }
     }

@@ -49,14 +49,14 @@ using eonc::geometry::sortedR;
 using eonc::geometry::translationRemove;
 
 AtomMatrix makeOrthogonal(
-    const AtomMatrix v1,
-    const AtomMatrix v2); // return orthogonal component of v1 from v2
+    const AtomMatrix &v1,
+    const AtomMatrix &v2); // return orthogonal component of v1 from v2
 bool relaxMatter(Matter &matter, const Parameters &params, bool quiet = false,
                  bool writeMovie = false, bool checkpoint = false,
-                 std::string prefixMovie = std::string(),
-                 std::string prefixCheckpoint = std::string());
+                 const std::string &prefixMovie = std::string(),
+                 const std::string &prefixCheckpoint = std::string());
 void getTime(double *real, double *user, double *sys);
-bool existsFile(std::string filename); // does filename exist
+bool existsFile(const std::string &filename); // does filename exist
 std::string
 getRelevantFile(std::string filename); // return filename containing _checkpoint
                                        // or _passed if such a file exists
@@ -67,7 +67,8 @@ void saveMode(FILE *modeFile, const std::shared_ptr<Matter> &matter,
               const AtomMatrix &mode);
 void saveMode(const std::string &filename,
               const std::shared_ptr<Matter> &matter, const AtomMatrix &mode);
-std::vector<int> split_string_int(std::string s, std::string delim);
+std::vector<int> split_string_int(const std::string &s,
+                                  const std::string &delim);
 
 } // namespace helpers
 
