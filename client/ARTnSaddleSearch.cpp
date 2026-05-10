@@ -34,7 +34,7 @@ ARTnSaddleSearch::ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
 
 ARTnSaddleSearch::~ARTnSaddleSearch() = default;
 
-int ARTnSaddleSearch::run() {
+SaddleStatus ARTnSaddleSearch::run() {
   auto &res = get_artn_resource();
   const int nat = matter->numberOfAtoms();
 
@@ -76,7 +76,7 @@ int ARTnSaddleSearch::run() {
       res.require_loaded();
     } catch (const std::exception &e) {
       QUILL_LOG_ERROR(log, "ARTn library not available: {}", e.what());
-      status = STATUS_BAD_ARTN_ERROR;
+      status = SaddleStatus::BadArtnError;
       return status;
     }
 
@@ -118,7 +118,7 @@ int ARTnSaddleSearch::run() {
       if (!std::filesystem::exists(filin)) {
         QUILL_LOG_ERROR(log, "artn_options.filin '{}' does not exist", filin);
         res.get_destroy_fn()();
-        status = STATUS_BAD_ARTN_ERROR;
+        status = SaddleStatus::BadArtnError;
         return status;
       }
       int result_filin =
@@ -203,7 +203,7 @@ int ARTnSaddleSearch::run() {
     if (cerr) {
       QUILL_LOG_ERROR(log, "ARTn setup failed (nat={})", nat);
       res.get_destroy_fn()();
-      status = STATUS_BAD_ARTN_ERROR;
+      status = SaddleStatus::BadArtnError;
       return status;
     }
 
@@ -387,7 +387,7 @@ int ARTnSaddleSearch::run() {
         eigenvector = AtomMatrix::Zero(nat, 3);
       }
 
-      status = STATUS_GOOD;
+      status = SaddleStatus::Good;
       res.get_destroy_fn()();
       return status;
     }
@@ -396,14 +396,14 @@ int ARTnSaddleSearch::run() {
     QUILL_LOG_WARNING(
         log, "ARTn stopped after {} iterations (has_error={}, has_sad={})",
         iteration, has_error, has_sad);
-    status = STATUS_BAD_ARTN_ERROR;
+    status = SaddleStatus::BadArtnError;
     res.get_destroy_fn()();
     return status;
   }
 
   QUILL_LOG_WARNING(log, "ARTn did not converge after {} iterations",
                     iteration);
-  status = STATUS_BAD_MAX_ITERATIONS;
+  status = SaddleStatus::BadMaxIterations;
 
   // Clean up in all cases
   {
@@ -425,19 +425,6 @@ AtomMatrix ARTnSaddleSearch::getEigenvector() {
     QUILL_LOG_WARNING(log, "Requesting uninitialized eigenvector");
   }
   return eigenvector;
-}
-
-std::string_view ARTnSaddleSearch::describeStatus(int status) const {
-  switch (status) {
-  case STATUS_GOOD:
-    return "Success";
-  case STATUS_BAD_MAX_ITERATIONS:
-    return "Too many iterations";
-  case STATUS_BAD_ARTN_ERROR:
-    return "ARTn backend error";
-  default:
-    return "Unknown status";
-  }
 }
 
 } // namespace eonc

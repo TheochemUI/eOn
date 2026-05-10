@@ -9,18 +9,24 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "DynamicsSaddleSearch.h"
+
 #include "BondBoost.h"
+
 #include "Dynamics.h"
+
 #include "EigenmodeStrategy.h"
+
 #include "MinModeSaddleSearch.h"
+
 #include "NudgedElasticBand.h"
 
 #include <cmath>
 #include <filesystem>
 #include <limits>
 
-int DynamicsSaddleSearch::run() {
+SaddleStatus DynamicsSaddleSearch::run() {
   std::vector<std::shared_ptr<Matter>> mdSnapshots;
   std::vector<double> mdTimes;
   QUILL_LOG_DEBUG(log, "Starting dynamics NEB saddle search");
@@ -238,7 +244,7 @@ int DynamicsSaddleSearch::run() {
             }
             if (maxEnergy <= reactant->getPotentialEnergy()) {
               QUILL_LOG_DEBUG(log, "warning: no barrier found");
-              return MinModeSaddleSearch::STATUS_BAD_NO_BARRIER;
+              return SaddleStatus::BadNoBarrier;
             }
           }
         } else {
@@ -252,7 +258,7 @@ int DynamicsSaddleSearch::run() {
             saddle, mode, reactant->getPotentialEnergy(), params, pot);
         int minModeStatus = search.run();
 
-        if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD) {
+        if (minModeStatus != SaddleStatus::Good) {
           QUILL_LOG_DEBUG(log, "error in min mode saddle search");
           return minModeStatus;
         }
@@ -266,7 +272,7 @@ int DynamicsSaddleSearch::run() {
         QUILL_LOG_DEBUG(log, "found barrier of {:.3f}", barrier);
         mdSnapshots.clear();
         mdTimes.clear();
-        return MinModeSaddleSearch::STATUS_GOOD;
+        return SaddleStatus::Good;
       } else {
         QUILL_LOG_DEBUG(log, "Still in original state");
         mdTimes.clear();
@@ -277,7 +283,7 @@ int DynamicsSaddleSearch::run() {
 
   mdSnapshots.clear();
   time = params.dynamics_options.steps * params.dynamics_options.time_step;
-  return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
+  return SaddleStatus::BadMdTrajectoryTooShort;
 }
 
 /// Binary search through MD snapshots to find the transition point.

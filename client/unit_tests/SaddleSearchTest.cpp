@@ -69,8 +69,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   int status = search.run();
 
   // Status should be a valid enum value (0 through 21)
-  REQUIRE(status >= MinModeSaddleSearch::STATUS_GOOD);
-  REQUIRE(status <= MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST);
+  REQUIRE(status >= SaddleStatus::Good);
+  REQUIRE(status <= SaddleStatus::DimerRestoredBest);
 }
 
 TEST_CASE_METHOD(SaddleSearchFixture,
@@ -105,7 +105,7 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   int status = search.run();
 
   // Should hit max iterations or some non-GOOD status
-  REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
+  REQUIRE(status != SaddleStatus::Good);
 }
 
 TEST_CASE_METHOD(SaddleSearchFixture,
@@ -147,8 +147,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   MinModeSaddleSearch search(matter, mode, reactantEnergy, params, pot);
   int status = search.run();
 
-  REQUIRE(status >= MinModeSaddleSearch::STATUS_GOOD);
-  REQUIRE(status <= MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST);
+  REQUIRE(status >= SaddleStatus::Good);
+  REQUIRE(status <= SaddleStatus::DimerRestoredBest);
   REQUIRE(std::isfinite(search.getEigenvalue()));
 }
 
@@ -165,7 +165,7 @@ TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
   MinModeSaddleSearch search(matter, mode, reactantEnergy, params, pot);
   int status = search.run();
 
-  REQUIRE(status >= MinModeSaddleSearch::STATUS_GOOD);
+  REQUIRE(status >= SaddleStatus::Good);
   REQUIRE(std::isfinite(search.getEigenvalue()));
 }
 

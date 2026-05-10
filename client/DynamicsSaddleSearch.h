@@ -33,13 +33,10 @@ public:
   };
   ~DynamicsSaddleSearch() = default;
 
-  int run();
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
-  std::string_view describeStatus(int status) const override {
-    return MinModeSaddleSearch::statusMessage(status);
-  }
-  int getStatus() const override { return status; }
+  SaddleStatus run() override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
+  SaddleStatus getStatus() const override { return status; }
 
   int refineTransition(const std::vector<std::shared_ptr<Matter>> &snapshots,
                        std::shared_ptr<Matter> product);
@@ -53,7 +50,7 @@ public:
   std::shared_ptr<Matter> reactant;
   std::shared_ptr<Matter> saddle;
 
-  int status{0};
+  SaddleStatus status{SaddleStatus::Good};
 
 private:
   eonc::log::Scoped log;

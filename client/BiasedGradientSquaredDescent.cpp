@@ -9,12 +9,19 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "BiasedGradientSquaredDescent.h"
+
 #include "EigenmodeStrategy.h"
+
 #include "HelperFunctions.h"
+
 #include "Matter.h"
+
 #include "ObjectiveFunction.h"
+
 #include "Optimizer.h"
+
 #include "SaddleSearchMethod.h"
 
 #include <cassert>
@@ -102,7 +109,7 @@ private:
   double bgsdAlpha;
 };
 
-int BiasedGradientSquaredDescent::run() {
+SaddleStatus BiasedGradientSquaredDescent::run() {
   auto objf = std::make_shared<BGSDObjectiveFunction>(
       *saddle, reactantEnergy, params.bgsd_options.alpha, params);
   auto optim = eonc::helpers::create::mkOptim(
@@ -155,10 +162,9 @@ int BiasedGradientSquaredDescent::run() {
   QUILL_LOG_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
   // Two convergence flavours: V (true convergence on a saddle) and
   // IP (inflection-point fallback). isConvergedIP() and the trailing
-  // else both signal "not-V converged"; the chained if previously
-  // landed both on `return 1` -- bugprone-branch-clone fired. Reduce
-  // to the equivalent two-state form: 0 on V, 1 otherwise.
-  return objf2->isConvergedV() ? 0 : 1;
+  // else both signal "not-V converged" -- preserve the pre-typed-
+  // status mapping (0 -> Good, 1 -> Init).
+  return objf2->isConvergedV() ? SaddleStatus::Good : SaddleStatus::Init;
 }
 
 double BiasedGradientSquaredDescent::getEigenvalue() { return eigenvalue; }

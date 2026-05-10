@@ -9,25 +9,27 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "ProcessSearchJob.h"
 #include "ARTnSaddleSearch.h"
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
 #include "DynamicsSaddleSearch.h"
+#include "EonLogger.h"
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "MinModeSaddleSearch.h"
-#include "Optimizer.h"
 #include "Prefactor.h"
-#include <thread>
 
 #include <format>
 #include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
-#include "EonLogger.h"
+using eonc::SaddleStatus;
+using eonc::to_int;
 
 std::vector<std::string> ProcessSearchJob::run() {
   std::string reactantFilename("pos.con");
@@ -141,7 +143,7 @@ std::vector<std::string> ProcessSearchJob::run() {
         "(set LD_LIBRARY_PATH so eonc::ARTnResource finds it)");
   }
 
-  int status = doProcessSearch();
+  SaddleStatus status = doProcessSearch();
 
   printEndState(status);
   saveData(status);
@@ -149,9 +151,9 @@ std::vector<std::string> ProcessSearchJob::run() {
   return returnFiles;
 }
 
-int ProcessSearchJob::doProcessSearch() {
+SaddleStatus ProcessSearchJob::doProcessSearch() {
   Matter matterTemp(pot, params);
-  long status;
+  SaddleStatus status = SaddleStatus::Good;
   size_t fctmp{0};
 
   fctmp = pot->forceCallCounter;
@@ -168,7 +170,7 @@ int ProcessSearchJob::doProcessSearch() {
   EONC_LOG_DEBUG("Got {} calls in the saddle search, with previous {}",
                  fCallsSaddle, fctmp);
 
-  if (status != MinModeSaddleSearch::STATUS_GOOD) {
+  if (status != SaddleStatus::Good) {
     return status;
   }
 
@@ -220,7 +222,7 @@ int ProcessSearchJob::doProcessSearch() {
                   min2->getPotentialCalls() - fc2_before);
 
   if (!converged1 || !converged2) {
-    return MinModeSaddleSearch::STATUS_BAD_MINIMA;
+    return SaddleStatus::BadMinima;
   }
 
   if (!(initial->compare(*min1)) && initial->compare(*min2)) {
@@ -231,12 +233,12 @@ int ProcessSearchJob::doProcessSearch() {
 
   if (!initial->compare(*min1)) {
     QUILL_LOG_DEBUG(log, "initial != min1");
-    return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
+    return SaddleStatus::BadNotConnected;
   }
 
   if (initial->compare(*min2)) {
     QUILL_LOG_DEBUG(log, "both minima are the initial state");
-    return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
+    return SaddleStatus::BadNotConnected;
   }
 
   if (!params.process_search_options.minimize_first) {
@@ -248,11 +250,11 @@ int ProcessSearchJob::doProcessSearch() {
 
   if ((params.saddle_search_options.max_energy < barriersValues[0]) ||
       (params.saddle_search_options.max_energy < barriersValues[1])) {
-    return MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER;
+    return SaddleStatus::BadHighBarrier;
   }
 
   if (barriersValues[0] < 0.0 || barriersValues[1] < 0.0) {
-    return MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER;
+    return SaddleStatus::NegativeBarrier;
   }
 
   if (!params.prefactor_options.default_value) {
@@ -263,19 +265,19 @@ int ProcessSearchJob::doProcessSearch() {
         params, min1.get(), saddle.get(), min2.get(), pref1, pref2);
     if (prefStatus == -1) {
       EONC_LOG_ERROR("Prefactor: bad calculation");
-      return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;
+      return SaddleStatus::FailedPrefactor;
     }
     fCallsPrefactors += min1->getPotentialCalls() - fctmp;
 
     if ((pref1 > params.prefactor_options.max_value) ||
         (pref1 < params.prefactor_options.min_value)) {
       EONC_LOG_ERROR("Bad reactant-to-saddle prefactor: {}", pref1);
-      return MinModeSaddleSearch::STATUS_BAD_PREFACTOR;
+      return SaddleStatus::BadPrefactor;
     }
     if ((pref2 > params.prefactor_options.max_value) ||
         (pref2 < params.prefactor_options.min_value)) {
       EONC_LOG_ERROR("Bad product-to-saddle prefactor: {}", pref2);
-      return MinModeSaddleSearch::STATUS_BAD_PREFACTOR;
+      return SaddleStatus::BadPrefactor;
     }
     prefactorsValues[0] = pref1;
     prefactorsValues[1] = pref2;
@@ -284,16 +286,16 @@ int ProcessSearchJob::doProcessSearch() {
     prefactorsValues[0] = params.prefactor_options.default_value;
     prefactorsValues[1] = params.prefactor_options.default_value;
   }
-  return MinModeSaddleSearch::STATUS_GOOD;
+  return SaddleStatus::Good;
 }
 
-void ProcessSearchJob::saveData(int status) {
+void ProcessSearchJob::saveData(SaddleStatus status) {
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
 
   std::ofstream out(resultsFilename, std::ios::binary);
   if (out) {
-    out << std::format("{} termination_reason\n", status);
+    out << std::format("{} termination_reason\n", to_int(status));
     out << std::format("{} termination_reason_text\n",
                        saddleSearch->describeStatus(status));
     out << std::format("{} random_seed\n", params.main_options.randomSeed);
@@ -351,9 +353,9 @@ void ProcessSearchJob::saveData(int status) {
   min2->matter2con(productFilename);
 }
 
-void ProcessSearchJob::printEndState(int status) {
+void ProcessSearchJob::printEndState(SaddleStatus status) {
   auto msg = saddleSearch->describeStatus(status);
-  if (status == MinModeSaddleSearch::STATUS_GOOD) {
+  if (status == SaddleStatus::Good) {
     QUILL_LOG_DEBUG(log, "[Saddle Search] {}", msg);
   } else {
     QUILL_LOG_ERROR(log, "[Saddle Search] {}", msg);

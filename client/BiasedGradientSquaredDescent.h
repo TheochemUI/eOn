@@ -34,20 +34,17 @@ public:
   }
   ~BiasedGradientSquaredDescent() = default;
 
-  int run();
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
-  std::string_view describeStatus(int status) const override {
-    return MinModeSaddleSearch::statusMessage(status);
-  }
-  int getStatus() const override { return status; }
+  SaddleStatus run() override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
+  SaddleStatus getStatus() const override { return status; }
 
   double eigenvalue;
   AtomMatrix eigenvector;
 
   std::shared_ptr<Matter> saddle;
 
-  int status;
+  SaddleStatus status{SaddleStatus::Good};
 
 private:
   double reactantEnergy;

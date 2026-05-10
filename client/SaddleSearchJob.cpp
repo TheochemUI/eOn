@@ -9,17 +9,20 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "SaddleSearchJob.h"
 #include "ARTnSaddleSearch.h"
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
-#include "Potential.h"
 
 #include <filesystem>
 #include <format>
 #include <fstream>
 #include <stdexcept>
 #include <string>
+
+using eonc::SaddleStatus;
+using eonc::to_int;
 
 std::vector<std::string> SaddleSearchJob::run() {
   std::string reactantFilename("pos.con");
@@ -66,7 +69,7 @@ std::vector<std::string> SaddleSearchJob::run() {
 
   if (useStandaloneARTn || useARTnAsMinMode) {
     // ARTnResource::require_loaded() inside ARTnSaddleSearch::run()
-    // converts a missing libartn.so into STATUS_BAD_ARTN_ERROR with
+    // converts a missing libartn.so into SaddleStatus::BadArtnError with
     // an install-hint logged at error level. Pre-construct guard
     // here lifts that into a runtime_error so config-time misuse
     // surfaces a clear message before the search loop starts.
@@ -86,23 +89,23 @@ std::vector<std::string> SaddleSearchJob::run() {
         saddle, mode, initial->getPotentialEnergy(), params, pot);
   }
 
-  int status = doSaddleSearch();
+  SaddleStatus status = doSaddleSearch();
   printEndState(status);
   saveData(status);
 
   return returnFiles;
 }
 
-int SaddleSearchJob::doSaddleSearch() {
+SaddleStatus SaddleSearchJob::doSaddleSearch() {
   Matter matterTemp(pot, params);
-  long status;
+  SaddleStatus status = SaddleStatus::Good;
   int f1{0};
   f1 = this->pot->forceCallCounter;
   try {
     status = saddleSearch->run();
   } catch (int e) {
     if (e == 100) {
-      status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED;
+      status = SaddleStatus::PotentialFailed;
     } else {
       printf("unknown exception: %i\n", e);
       throw e;
@@ -122,13 +125,13 @@ int SaddleSearchJob::doSaddleSearch() {
   return status;
 }
 
-void SaddleSearchJob::saveData(int status) {
+void SaddleSearchJob::saveData(SaddleStatus status) {
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
 
   std::ofstream out(resultsFilename, std::ios::binary);
   if (out) {
-    out << std::format("{} termination_reason\n", status);
+    out << std::format("{} termination_reason\n", to_int(status));
     out << std::format("{} termination_reason_text\n",
                        saddleSearch->describeStatus(status));
     out << "saddle_search job_type\n";
@@ -140,7 +143,7 @@ void SaddleSearchJob::saveData(int status) {
                        this->pot->forceCallCounter.load());
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
     out << std::format("{} iterations\n", saddleSearch->getIterationCount());
-    if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
+    if (status != SaddleStatus::PotentialFailed) {
       out << std::format("{:f} potential_energy_saddle\n",
                          saddle->getPotentialEnergy());
       out << std::format("{:f} final_eigenvalue\n",
@@ -168,9 +171,9 @@ void SaddleSearchJob::saveData(int status) {
   saddle->matter2con(saddleFilename);
 }
 
-void SaddleSearchJob::printEndState(int status) {
+void SaddleSearchJob::printEndState(SaddleStatus status) {
   auto msg = saddleSearch->describeStatus(status);
-  if (status == MinModeSaddleSearch::STATUS_GOOD) {
+  if (status == SaddleStatus::Good) {
     QUILL_LOG_DEBUG(log, "[Saddle Search] {}", msg);
   } else {
     QUILL_LOG_WARNING(log, "[Saddle Search] {}", msg);

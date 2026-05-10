@@ -9,17 +9,24 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "BasinHoppingSaddleSearch.h"
+
 #include "Dimer.h"
+
 #include "ImprovedDimer.h"
+
 #include "Lanczos.h"
+
 #include "LowestEigenmode.h"
+
 #include "MinModeSaddleSearch.h"
+
 #include "NudgedElasticBand.h"
 #include <cmath>
 #include <cstdio>
 
-int BasinHoppingSaddleSearch::run() {
+SaddleStatus BasinHoppingSaddleSearch::run() {
   // minimize "saddle"
   saddle->relax(false, true, false, "displacementmin");
   product = std::make_shared<Matter>(pot, params);

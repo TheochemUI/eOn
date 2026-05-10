@@ -166,14 +166,14 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
       neb.path[neb.climbingImage], initialMode,
       neb.path[neb.climbingImage]->getPotentialEnergy(), neb.params, neb.pot);
 
-  int minModeStatus;
+  SaddleStatus minModeStatus = SaddleStatus::Good;
   try {
     minModeStatus = tempMinModeSearch->run(cfg_.max_steps);
   } catch (const eonc::DimerModeRestoredException &) {
-    minModeStatus = MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST;
+    minModeStatus = SaddleStatus::DimerRestoredBest;
     QUILL_LOG_DEBUG(log, "MMF:  Dimer restored to best state");
   } catch (const eonc::DimerModeLostException &) {
-    minModeStatus = MinModeSaddleSearch::STATUS_DIMER_LOST_MODE;
+    minModeStatus = SaddleStatus::DimerLostMode;
     QUILL_LOG_WARNING(log, "Dimer lost mode during MMF refinement");
   }
 
@@ -194,8 +194,8 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
       VectorXd::Map(neb.tangent[neb.climbingImage]->data(), seg);
   alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));
 
-  if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD ||
-      minModeStatus == MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST) {
+  if (minModeStatus == SaddleStatus::Good ||
+      minModeStatus == SaddleStatus::DimerRestoredBest) {
     if (alignment < cfg_.angle_tol) {
       QUILL_LOG_WARNING(
           log,
@@ -206,7 +206,7 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
     cached_mode_ = finalModeMatrix;
     has_cached_mode_ = true;
     return 0;
-  } else if (minModeStatus == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
+  } else if (minModeStatus == SaddleStatus::BadMaxIterations) {
     return 1;
   } else {
     QUILL_LOG_WARNING(log, "MMF failed.  Mode-tangent alignment: {:.3f}",

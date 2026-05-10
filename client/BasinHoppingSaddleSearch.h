@@ -33,13 +33,10 @@ public:
   }
   ~BasinHoppingSaddleSearch() = default;
 
-  int run(void);
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
-  std::string_view describeStatus(int status) const override {
-    return MinModeSaddleSearch::statusMessage(status);
-  }
-  int getStatus() const override { return status; }
+  SaddleStatus run() override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
+  SaddleStatus getStatus() const override { return status; }
 
   double eigenvalue{0.0};
   AtomMatrix eigenvector;
@@ -48,7 +45,7 @@ public:
   std::shared_ptr<Matter> saddle;
   std::shared_ptr<Matter> product;
 
-  int status{0};
+  SaddleStatus status{SaddleStatus::Good};
 
 private:
   eonc::log::Scoped log;

@@ -1051,15 +1051,15 @@ max_iterations = 500
   REQUIRE(results.count("termination_reason") > 0);
   int status = std::stoi(results["termination_reason"]);
   // ARTn may not converge, but should not crash
-  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
-           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
-           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+  REQUIRE((status == SaddleStatus::Good ||
+           status == SaddleStatus::BadMaxIterations ||
+           status == SaddleStatus::BadArtnError));
 
   // Energy must be finite
   double energy = std::stod(results["potential_energy_saddle"]);
   REQUIRE(std::isfinite(energy));
 
-  if (status == ARTnSaddleSearch::STATUS_GOOD) {
+  if (status == SaddleStatus::Good) {
     // Eigenvalue must be negative for a converged first-order saddle
     double eigenvalue = std::stod(results["final_eigenvalue"]);
     REQUIRE(eigenvalue < 0.0);
@@ -1117,9 +1117,9 @@ max_spawns = 5
 
   REQUIRE(results.count("termination_reason") > 0);
   int status = std::stoi(results["termination_reason"]);
-  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
-           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
-           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+  REQUIRE((status == SaddleStatus::Good ||
+           status == SaddleStatus::BadMaxIterations ||
+           status == SaddleStatus::BadArtnError));
 
   // Force calls must be reasonable
   REQUIRE(forceCalls_ > 0);
@@ -1166,9 +1166,9 @@ max_iterations = 5
 
   REQUIRE(results.count("termination_reason") > 0);
   int status = std::stoi(results["termination_reason"]);
-  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
-           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
-           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+  REQUIRE((status == SaddleStatus::Good ||
+           status == SaddleStatus::BadMaxIterations ||
+           status == SaddleStatus::BadArtnError));
 }
 // Runtime-missing-libartn rejection tests. ARTnResource is always
 // compiled in; the failure path now triggers when libartn.so is not
