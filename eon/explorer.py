@@ -11,6 +11,11 @@ from copy import copy
 import numpy
 
 from eon import atoms
+from eon.status_codes import (
+    SaddleStatus,
+    saddle_status_slug,
+    minimization_status_slug,
+)
 from eon import communicator
 from eon import displace
 from eon import fileio as io
@@ -337,7 +342,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
             # read in the results
             result['results'] = io.parse_results(result['results.dat'])
-            if result['results']['termination_reason'] == 0:
+            if result['results']['termination_reason'] == SaddleStatus.Good:
                 state.add_process(result, self.superbasin)
             else:
                 state.register_bad_saddle(result, self.config.debug_keep_bad_saddles, superbasin=self.superbasin)
@@ -457,7 +462,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             if final_result:
                 results_dict = io.parse_results(final_result['results.dat'])
                 reason = results_dict['termination_reason']
-                if reason == 0:
+                if reason == SaddleStatus.Good:
                     self.state.add_process(final_result)
                 else:
                     final_result['wuid'] = id
@@ -575,19 +580,14 @@ class ProcessSearch:
                              'min2':'not_started'
                             }
 
-        unknown = "unknown_exit_code"
+        # Slug tables defer to eon.status_codes (single source of truth
+        # mirroring client/StatusTypes.h). Wrapped as callables so a
+        # raw int from results.dat resolves to a slug without needing
+        # an exact enum member, and unknown codes degrade gracefully.
         self.job_termination_reasons = {
-                'saddle_search':[ "good", unknown, "no_convex", "high_energy",
-                                  "max_concave_iterations",
-                                  "max_iterations", unknown, unknown, unknown,
-                                  unknown, unknown, "potential_failed",
-                                  "nonnegative_abort", "nonlocal abort",
-                                  unknown, "md_trajectory_too_short",
-                                  "no_negative_mode_at_saddle",
-                                  "no_barrier", "zero_mode_abort",
-                                  "optimizer_error", "dimer_lost_mode",
-                                  "dimer_restored_best", "artn_error"],
-                'minimization':[ "good", "max_iterations", "potential_failed", ]}
+            'saddle_search': saddle_status_slug,
+            'minimization': minimization_status_slug,
+        }
 
         self.finished_jobs = []
 
@@ -648,7 +648,7 @@ class ProcessSearch:
         if job_type == 'saddle_search':
             self.data['termination_reason'] = termination_code
             logger.info("Search_id: %i saddle search complete" % self.search_id)
-            if termination_code == 0:
+            if termination_code == SaddleStatus.Good:
                 self.job_statuses[job_type] = 'complete'
             else:
                 self.job_statuses[job_type] = 'error'
@@ -762,10 +762,10 @@ class ProcessSearch:
         tc1 = io.parse_results(result1['results.dat'])['termination_reason']
         tc2 = io.parse_results(result2['results.dat'])['termination_reason']
 
-        termination_reason1 = self.job_termination_reasons['minimization'][tc1]
-        termination_reason2 = self.job_termination_reasons['minimization'][tc2]
+        termination_reason1 = self.job_termination_reasons['minimization'](tc1)
+        termination_reason2 = self.job_termination_reasons['minimization'](tc2)
         if termination_reason1 == 'max_iterations' or termination_reason2 == 'max_iterations':
-            self.data['termination_reason'] = 9
+            self.data['termination_reason'] = int(SaddleStatus.BadMinima)
             self.data['potential_energy_saddle'] = 0.0
             self.data['potential_energy_reactant'] = 0.0
             self.data['potential_energy_product'] = 0.0
@@ -777,7 +777,7 @@ class ProcessSearch:
         if (not is_reactant(atoms1) and not is_reactant(atoms2)) or \
            (is_reactant(atoms1) and is_reactant(atoms2)):
             # Not connected
-            self.data['termination_reason'] = 6
+            self.data['termination_reason'] = int(SaddleStatus.BadNotConnected)
             self.data['potential_energy_saddle'] = 0.0
             self.data['potential_energy_reactant'] = 0.0
             self.data['potential_energy_product'] = 0.0

@@ -18,6 +18,7 @@ from eon import communicator
 from eon.config import config
 from eon import fileio as io
 from eon import locking
+from eon.status_codes import SaddleStatus
 from eon.version import version
 
 #class RandomStructure:
@@ -248,7 +249,7 @@ def register_results(comm, bhstates):
         result_info = io.parse_results(result['results.dat'])
         if 'minimum_energy' not in result_info:
             continue
-        if result_info['termination_reason'] == 0:
+        if result_info['termination_reason'] == SaddleStatus.Good:
             if bhstates.add_state(result, result_info):
                 logger.info("New structure with energy %.8e",
                             result_info['minimum_energy'])

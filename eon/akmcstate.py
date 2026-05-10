@@ -14,6 +14,7 @@ from eon.config import ConfigClass # Typing
 from eon import atoms
 from eon import fileio as io
 from eon import state
+from eon.status_codes import SaddleStatus, saddle_status_label
 
 class AKMCState(state.State):
     ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
@@ -595,34 +596,13 @@ class AKMCState(state.State):
 
     def register_bad_saddle(self, result, store=False, superbasin=None):
         """ Registers a bad saddle. """
-        #print ("bad saddle ",result["results"]["termination_reason"])
-        result_state_code = ["Good",
-                             "Init",
-                             "Saddle Search No Convex Region",
-                             "Saddle Search Terminated High Energy",
-                             "Saddle Search Terminated Concave Iterations",
-                             "Saddle Search Terminated Total Iterations",
-                             "Not Connected",
-                             "Bad Prefactor",
-                             "Bad Barrier",
-                             "Minimum Not Converged",
-                             "Failed Prefactor Calculation",
-                             "Potential Failed",
-                             "Nonnegative Displacement Abort",
-                             "Nonlocal Abort",
-                             "Negative Barrier",
-                             "MD Trajectory Too Short",
-                             "No Negative Mode at Saddle",
-                             "No Forward Barrier in Minimized Band",
-                             "MinMode Zero Mode Abort",
-                             "Optimizer Error"
-                             ]
+        termination_reason = result["results"]["termination_reason"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
-        self.append_search_result(result, result_state_code[result["results"]["termination_reason"]], superbasin)
+        self.append_search_result(result, saddle_status_label(termination_reason), superbasin)
 
         # If a MD saddle search is too short add it to the total clock time.
         if 'simulation_time' in result['results']:
-            if result['results']['termination_reason'] == 15: #too short
+            if termination_reason == SaddleStatus.BadMdTrajectoryTooShort:
                 self.increment_time(result['results']['simulation_time'], result['results']['md_temperature'])
 
         if store:
