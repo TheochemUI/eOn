@@ -518,11 +518,26 @@ if py_embed
 endif
 
 if get_option('with_mpi')
+    # MPI goes through MPItrampoline -- the FlexiBLAS-of-MPI. We link
+    # against its stable wrapper ABI; one eonclient binary then works
+    # against any spec-compliant libmpi at run time, picked via the
+    # MPITRAMPOLINE_LIB env var (see
+    # docs/source/user_guide/mpi_potential.md).
+    #
+    # subprojects/mpitrampoline.wrap pins upstream v5.5.1 and
+    # declares MPItrampoline as a provided dependency, so meson
+    # auto-builds the wrap if no system install is found. There is
+    # never a "no MPI library" failure mode here -- either the host
+    # already has MPItrampoline, or meson fetches and CMake-builds
+    # it from the wrap. We deliberately do NOT fall back to a
+    # direct dependency('mpi') link, since that would silently
+    # ABI-lock the binary to one MPI flavour and defeat the whole
+    # point.
+    mpi_dep = dependency('MPItrampoline', required: true)
+    _deps += [mpi_dep]
     subdir('potentials/MPIPot')
     potentials += [mpipot]
     _args += ['-DEONMPI']
-    mpi_dep = dependency('mpi')
-    _deps += [mpi_dep]
 endif
 
 if get_option('with_fortran')

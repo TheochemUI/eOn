@@ -38,8 +38,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ---------------------- Options (matching meson_options.txt)
 option(WITH_WATER "Build Water potentials" OFF)
 option(WITH_AMS "Build AMS potentials" OFF)
-option(WITH_LAMMPS "Build LAMMPS potential" OFF)
-option(WITH_MPI "Build with MPI support" OFF)
+# LAMMPS, ARTn, IRA, XTB, and VASP have no build-time toggle: they
+# are unconditionally compiled and dlopen / fork their runtime
+# library / binary on first use. Mirrors meson_options.txt.
+option(WITH_MPI "Build with MPI support (via MPItrampoline)" OFF)
 option(WITH_GPRD "Build with GPR dimer" OFF)
 option(WITH_FORTRAN "Build Fortran potentials" ON)
 option(WITH_CUH2 "Build CuH2 potential" ON)
@@ -78,6 +80,35 @@ if(EON_NEED_PYTHON_EMBED)
   find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 else()
   find_package(Python3 COMPONENTS Interpreter)
+endif()
+
+# ---------------------- MPI (via MPItrampoline)
+#
+# MPI integration always goes through MPItrampoline -- the
+# FlexiBLAS-of-MPI. We link against its stable wrapper ABI and one
+# eonclient binary forwards every MPI_* call to any spec-compliant
+# libmpi at run time, picked via MPITRAMPOLINE_LIB. Mirrors the
+# meson MPI block in client/meson.build.
+#
+# The fall-through here matches meson's wrap-driven behaviour:
+#   1. find_package(MPItrampoline) -- system or
+#      $CMAKE_PREFIX_PATH-resolvable install.
+#   2. FetchContent from upstream v5.5.1 -- analogue of the
+#      subprojects/mpitrampoline.wrap. There is never a
+#      "no MPI library" failure mode; we deliberately do NOT fall
+#      back to FindMPI / a direct system MPI link, since that
+#      ABI-locks the binary to one flavour and defeats the point.
+if(WITH_MPI)
+  find_package(MPItrampoline QUIET)
+  if(NOT MPItrampoline_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+      MPItrampoline
+      GIT_REPOSITORY https://github.com/eschnett/MPItrampoline.git
+      GIT_TAG v5.5.1
+      GIT_SHALLOW TRUE)
+    FetchContent_MakeAvailable(MPItrampoline)
+  endif()
 endif()
 
 # ---------------------- Subdirectories
