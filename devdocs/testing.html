@@ -170,9 +170,11 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.status_codes.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.status_codes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.lammps_bundle.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.lammps_bundle</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
 </ul>
@@ -453,9 +455,14 @@ All tests are registered via meson’s array iteration pattern and run with
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">test_ase_pot</span></code> (with_ase): ASE Python calculator</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test_mta</span></code> (with_metatomic): Metatomic ML potential</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">test_xtb</span></code> (with_xtb): XTB semiempirical</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">test_cineb_xtb</span></code> (with_xtb): CI-NEB with XTB</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test_serve_spec</span></code> (with_serve): Serve mode endpoint parsing</p></li>
+</ul>
+<p>Runtime-loaded tests (always built; SKIP at runtime when the .so is
+absent from <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_xtb</span></code>, <code class="docutils literal notranslate"><span class="pre">test_cineb_xtb</span></code>: libxtb</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_artn</span></code>: libartn</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_ira</span></code>: libira</p></li>
 </ul>
 </section>
 <section id="writing-and-registering-tests">
@@ -464,24 +471,27 @@ All tests are registered via meson’s array iteration pattern and run with
 in <code class="docutils literal notranslate"><span class="pre">thirdparty/catch2/</span></code>). Each test file is compiled with the amalgamated
 source and linked against <code class="docutils literal notranslate"><span class="pre">eonclib</span></code>.</p>
 <p>Registration uses meson’s array iteration:</p>
-<div class="highlight-meson notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">test_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="2"><span class="w">    </span><span class="p">[</span><span class="s">&#39;test_name&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TestFile.cpp&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data_dir&#39;</span><span class="p">],</span>
-</span><span data-line="3"><span class="p">]</span>
-</span><span data-line="4"><span class="k">foreach</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">test_array</span>
-</span><span data-line="5"><span class="w">    </span><span class="nb">test</span><span class="p">(</span><span class="nb">test</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="err">0</span><span class="p">),</span>
-</span><span data-line="6"><span class="w">        </span><span class="nb">executable</span><span class="p">(</span><span class="nb">test</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="err">0</span><span class="p">),</span>
-</span><span data-line="7"><span class="w">            </span><span class="n">sources</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;gtests/&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">test</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
-</span><span data-line="8"><span class="w">                      </span><span class="s">&#39;thirdparty/catch2/catch_amalgamated.cpp&#39;</span><span class="p">],</span>
-</span><span data-line="9"><span class="w">            </span><span class="n">dependencies</span><span class="p">:</span><span class="w"> </span><span class="n">test_deps</span><span class="p">,</span>
-</span><span data-line="10"><span class="w">            </span><span class="nb">include_directories</span><span class="p">:</span><span class="w"> </span><span class="n">_incdirs</span><span class="p">,</span>
-</span><span data-line="11"><span class="w">            </span><span class="n">cpp_args</span><span class="p">:</span><span class="w"> </span><span class="n">test_args</span><span class="p">,</span>
-</span><span data-line="12"><span class="w">            </span><span class="n">link_with</span><span class="p">:</span><span class="w"> </span><span class="n">_linkto</span><span class="p">,</span>
-</span><span data-line="13"><span class="w">        </span><span class="p">),</span>
-</span><span data-line="14"><span class="w">        </span><span class="n">workdir</span><span class="p">:</span><span class="w"> </span><span class="vm">meson</span><span class="p">.</span><span class="n">project_source_root</span><span class="p">()</span>
-</span><span data-line="15"><span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="s">&#39;/client/unit_tests/data/systems/&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">test</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
-</span><span data-line="16"><span class="w">    </span><span class="p">)</span>
-</span><span data-line="17"><span class="k">endforeach</span>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">client/meson.build (excerpt)</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">test_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>
+</span><span data-line="2"><span class="w">    </span><span class="o">[</span><span class="s1">&#39;test_name&#39;</span>,<span class="w"> </span><span class="s1">&#39;TestFile.cpp&#39;</span>,<span class="w"> </span><span class="s1">&#39;data_dir&#39;</span><span class="o">]</span>,
+</span><span data-line="3"><span class="o">]</span>
+</span><span data-line="4">foreach<span class="w"> </span><span class="nb">test</span><span class="w"> </span>:<span class="w"> </span>test_array
+</span><span data-line="5"><span class="w">    </span>test<span class="o">(</span>test.get<span class="o">(</span><span class="m">0</span><span class="o">)</span>,
+</span><span data-line="6"><span class="w">        </span>executable<span class="o">(</span>test.get<span class="o">(</span><span class="m">0</span><span class="o">)</span>,
+</span><span data-line="7"><span class="w">            </span>sources:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;gtests/&#39;</span><span class="w"> </span>+<span class="w"> </span>test.get<span class="o">(</span><span class="m">1</span><span class="o">)</span>,
+</span><span data-line="8"><span class="w">                      </span><span class="s1">&#39;thirdparty/catch2/catch_amalgamated.cpp&#39;</span><span class="o">]</span>,
+</span><span data-line="9"><span class="w">            </span>dependencies:<span class="w"> </span>test_deps,
+</span><span data-line="10"><span class="w">            </span>include_directories:<span class="w"> </span>_incdirs,
+</span><span data-line="11"><span class="w">            </span>cpp_args:<span class="w"> </span>test_args,
+</span><span data-line="12"><span class="w">            </span>link_with:<span class="w"> </span>_linkto,
+</span><span data-line="13"><span class="w">        </span><span class="o">)</span>,
+</span><span data-line="14"><span class="w">        </span>workdir:<span class="w"> </span>meson.project_source_root<span class="o">()</span>
+</span><span data-line="15"><span class="w">            </span>+<span class="w"> </span><span class="s1">&#39;/client/unit_tests/data/systems/&#39;</span><span class="w"> </span>+<span class="w"> </span>test.get<span class="o">(</span><span class="m">2</span><span class="o">)</span>,
+</span><span data-line="16"><span class="w">    </span><span class="o">)</span>
+</span><span data-line="17">endforeach
 </span></pre></div>
+</div>
 </div>
 </section>
 <section id="test-data">

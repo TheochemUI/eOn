@@ -40,9 +40,13 @@ All tests are registered via meson's array iteration pattern and run with
 Optional tests (enabled by build flags):
 - `test_ase_pot` (with_ase): ASE Python calculator
 - `test_mta` (with_metatomic): Metatomic ML potential
-- `test_xtb` (with_xtb): XTB semiempirical
-- `test_cineb_xtb` (with_xtb): CI-NEB with XTB
 - `test_serve_spec` (with_serve): Serve mode endpoint parsing
+
+Runtime-loaded tests (always built; SKIP at runtime when the .so is
+absent from `LD_LIBRARY_PATH`):
+- `test_xtb`, `test_cineb_xtb`: libxtb
+- `test_artn`: libartn
+- `test_ira`: libira
 
 ## Writing and registering tests
 
@@ -52,7 +56,8 @@ source and linked against `eonclib`.
 
 Registration uses meson's array iteration:
 
-```{code-block} meson
+```{code-block} bash
+:caption: client/meson.build (excerpt)
 test_array = [
     ['test_name', 'TestFile.cpp', 'data_dir'],
 ]

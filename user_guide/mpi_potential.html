@@ -170,9 +170,11 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.status_codes.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.status_codes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.lammps_bundle.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.lammps_bundle</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
 </ul>
@@ -249,6 +251,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#mpitrampoline-workflow">MPItrampoline workflow</a></li>
 <li><a class="reference internal" href="#vasp">VASP</a><ul>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
@@ -352,10 +355,74 @@ data-aria-dark="Switch to auto color mode">
 <p><strong>Not</strong> included in the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> package. Requires building from source
 with <code class="docutils literal notranslate"><span class="pre">-Dwith_mpi=True</span></code>.</p>
 </div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.15: </span>Two changes that ship together:</p>
+<ol class="arabic">
+<li><p><strong>C bindings.</strong> <code class="docutils literal notranslate"><span class="pre">MPIPot.cpp</span></code> and the MPI control flow in
+<code class="docutils literal notranslate"><span class="pre">ClientEON.cpp</span></code> were ported off the removed MPI C++ bindings
+(<code class="docutils literal notranslate"><span class="pre">MPI::COMM_WORLD</span></code>, <code class="docutils literal notranslate"><span class="pre">MPI::INT</span></code>, …). The C bindings used now
+(<code class="docutils literal notranslate"><span class="pre">MPI_Send</span></code>, <code class="docutils literal notranslate"><span class="pre">MPI_Recv</span></code>, <code class="docutils literal notranslate"><span class="pre">MPI_Iprobe</span></code>, <code class="docutils literal notranslate"><span class="pre">MPI_Comm_create</span></code>, …)
+are guaranteed by every spec-compliant MPI implementation, so
+<code class="docutils literal notranslate"><span class="pre">-Dwith_mpi=true</span></code> builds against modern conda-forge MPICH 4.x
+and OpenMPI 5.x without <code class="docutils literal notranslate"><span class="pre">mpicxx.h</span></code>.</p></li>
+<li><p><strong>MPItrampoline by default.</strong> The <code class="docutils literal notranslate"><span class="pre">-Dwith_mpi=true</span></code> build now
+prefers <a class="reference external" href="https://github.com/eschnett/MPItrampoline">MPItrampoline</a>
+over a direct link to a specific MPI flavour. MPItrampoline
+provides a stable wrapper ABI – think of it as FlexiBLAS for
+MPI – so one eonclient binary works against any spec-compliant
+libmpi at run time. The eOn meson detection order is:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dependency('MPItrampoline',</span> <span class="pre">method:</span> <span class="pre">'cmake')</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dependency('mpi-c')</span></code> (MPItrampoline ships a shim that
+shadows the system <code class="docutils literal notranslate"><span class="pre">mpi-c.pc</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dependency('mpi')</span></code> (last-resort direct link to system MPI)</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">subprojects/mpitrampoline.wrap</span></code> pins upstream v5.5.1 for users
+who want meson to fetch and CMake-build MPItrampoline locally.</p>
+</li>
+</ol>
+</div>
+<section id="mpitrampoline-workflow">
+<h2>MPItrampoline workflow<a class="headerlink" href="#mpitrampoline-workflow" title="Link to this heading">¶</a></h2>
+<p>Install MPItrampoline once per system, then point it at the actual
+MPI implementation you want to use at run time.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># 1) Build MPItrampoline against the trampoline ABI (no MPI needed yet):</span>
+</span><span data-line="2">git<span class="w"> </span>clone<span class="w"> </span>https://github.com/eschnett/MPItrampoline
+</span><span data-line="3">cmake<span class="w"> </span>-S<span class="w"> </span>MPItrampoline<span class="w"> </span>-B<span class="w"> </span>build-mpitrampoline<span class="w"> </span><span class="se">\</span>
+</span><span data-line="4"><span class="w">    </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>RelWithDebInfo<span class="w"> </span><span class="se">\</span>
+</span><span data-line="5"><span class="w">    </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$HOME</span>/mpitrampoline
+</span><span data-line="6">cmake<span class="w"> </span>--build<span class="w"> </span>build-mpitrampoline<span class="w"> </span>-j
+</span><span data-line="7">cmake<span class="w"> </span>--install<span class="w"> </span>build-mpitrampoline
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># 2) For each MPI implementation you want to wrap, build MPIwrapper:</span>
+</span><span data-line="10">git<span class="w"> </span>clone<span class="w"> </span>https://github.com/eschnett/MPIwrapper
+</span><span data-line="11">cmake<span class="w"> </span>-S<span class="w"> </span>MPIwrapper<span class="w"> </span>-B<span class="w"> </span>build-mpiwrapper-openmpi<span class="w"> </span><span class="se">\</span>
+</span><span data-line="12"><span class="w">    </span>-DMPIEXEC_EXECUTABLE<span class="o">=</span><span class="k">$(</span>which<span class="w"> </span>mpiexec<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+</span><span data-line="13"><span class="w">    </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$HOME</span>/mpiwrappers/openmpi
+</span><span data-line="14">cmake<span class="w"> </span>--build<span class="w"> </span>build-mpiwrapper-openmpi<span class="w"> </span>-j
+</span><span data-line="15">cmake<span class="w"> </span>--install<span class="w"> </span>build-mpiwrapper-openmpi
+</span><span data-line="16">
+</span><span data-line="17"><span class="c1"># 3) Build eOn with MPItrampoline on the cmake path:</span>
+</span><span data-line="18"><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="nv">$HOME</span>/mpitrampoline:<span class="nv">$CMAKE_PREFIX_PATH</span>
+</span><span data-line="19">meson<span class="w"> </span>setup<span class="w"> </span>builddir<span class="w"> </span>-Dwith_mpi<span class="o">=</span><span class="nb">true</span>
+</span><span data-line="20">meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>builddir
+</span><span data-line="21">
+</span><span data-line="22"><span class="c1"># 4) At run time, tell MPItrampoline which wrapper to forward to:</span>
+</span><span data-line="23"><span class="nb">export</span><span class="w"> </span><span class="nv">MPITRAMPOLINE_LIB</span><span class="o">=</span><span class="nv">$HOME</span>/mpiwrappers/openmpi/lib/libmpiwrapper.so
+</span><span data-line="24"><span class="nb">export</span><span class="w"> </span><span class="nv">MPITRAMPOLINE_MPIEXEC</span><span class="o">=</span><span class="nv">$HOME</span>/mpiwrappers/openmpi/bin/mpiwrapper-mpiexec
+</span><span data-line="25">mpiexec<span class="w"> </span>-n<span class="w"> </span><span class="m">4</span><span class="w"> </span>./eonclient<span class="w">   </span><span class="c1"># the trampoline-shipped mpiexec</span>
+</span></pre></div>
+</div>
+<p>The same <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> binary then works against MPICH, OpenMPI,
+Intel MPI, Spectrum MPI, or Cray MPICH by swapping the
+<code class="docutils literal notranslate"><span class="pre">MPITRAMPOLINE_LIB</span></code> env var; no eOn rebuild needed.</p>
+<p>If MPItrampoline is unavailable, the meson build falls back to a
+direct <code class="docutils literal notranslate"><span class="pre">dependency('mpi')</span></code> link against the system MPI as before.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is only for modified VASP at the moment..</p>
 </div>
+</section>
 <section id="vasp">
 <h2>VASP<a class="headerlink" href="#vasp" title="Link to this heading">¶</a></h2>
 <p>If you have access to the modified VASP source code that is compatible with eOn,

@@ -13,6 +13,73 @@ myst:
 with `-Dwith_mpi=True`.
 ```
 
+```{versionchanged} 2.15
+Two changes that ship together:
+
+1. **C bindings.** `MPIPot.cpp` and the MPI control flow in
+   `ClientEON.cpp` were ported off the removed MPI C++ bindings
+   (`MPI::COMM_WORLD`, `MPI::INT`, ...). The C bindings used now
+   (`MPI_Send`, `MPI_Recv`, `MPI_Iprobe`, `MPI_Comm_create`, ...)
+   are guaranteed by every spec-compliant MPI implementation, so
+   `-Dwith_mpi=true` builds against modern conda-forge MPICH 4.x
+   and OpenMPI 5.x without `mpicxx.h`.
+
+2. **MPItrampoline by default.** The `-Dwith_mpi=true` build now
+   prefers [MPItrampoline](https://github.com/eschnett/MPItrampoline)
+   over a direct link to a specific MPI flavour. MPItrampoline
+   provides a stable wrapper ABI -- think of it as FlexiBLAS for
+   MPI -- so one eonclient binary works against any spec-compliant
+   libmpi at run time. The eOn meson detection order is:
+
+   1. `dependency('MPItrampoline', method: 'cmake')`
+   2. `dependency('mpi-c')` (MPItrampoline ships a shim that
+      shadows the system `mpi-c.pc`)
+   3. `dependency('mpi')` (last-resort direct link to system MPI)
+
+   `subprojects/mpitrampoline.wrap` pins upstream v5.5.1 for users
+   who want meson to fetch and CMake-build MPItrampoline locally.
+```
+
+## MPItrampoline workflow
+
+Install MPItrampoline once per system, then point it at the actual
+MPI implementation you want to use at run time.
+
+```{code-block} shell
+# 1) Build MPItrampoline against the trampoline ABI (no MPI needed yet):
+git clone https://github.com/eschnett/MPItrampoline
+cmake -S MPItrampoline -B build-mpitrampoline \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=$HOME/mpitrampoline
+cmake --build build-mpitrampoline -j
+cmake --install build-mpitrampoline
+
+# 2) For each MPI implementation you want to wrap, build MPIwrapper:
+git clone https://github.com/eschnett/MPIwrapper
+cmake -S MPIwrapper -B build-mpiwrapper-openmpi \
+    -DMPIEXEC_EXECUTABLE=$(which mpiexec) \
+    -DCMAKE_INSTALL_PREFIX=$HOME/mpiwrappers/openmpi
+cmake --build build-mpiwrapper-openmpi -j
+cmake --install build-mpiwrapper-openmpi
+
+# 3) Build eOn with MPItrampoline on the cmake path:
+export CMAKE_PREFIX_PATH=$HOME/mpitrampoline:$CMAKE_PREFIX_PATH
+meson setup builddir -Dwith_mpi=true
+meson compile -C builddir
+
+# 4) At run time, tell MPItrampoline which wrapper to forward to:
+export MPITRAMPOLINE_LIB=$HOME/mpiwrappers/openmpi/lib/libmpiwrapper.so
+export MPITRAMPOLINE_MPIEXEC=$HOME/mpiwrappers/openmpi/bin/mpiwrapper-mpiexec
+mpiexec -n 4 ./eonclient   # the trampoline-shipped mpiexec
+```
+
+The same `eonclient` binary then works against MPICH, OpenMPI,
+Intel MPI, Spectrum MPI, or Cray MPICH by swapping the
+`MPITRAMPOLINE_LIB` env var; no eOn rebuild needed.
+
+If MPItrampoline is unavailable, the meson build falls back to a
+direct `dependency('mpi')` link against the system MPI as before.
+
 ```{note}
 This is only for modified VASP at the moment..
 ```
