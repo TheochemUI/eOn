@@ -146,6 +146,19 @@ int LBFGS::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
 
+  // Bail out instead of looping when the underlying potential returns
+  // NaN forces (e.g., the post-saddle push placed two atoms inside
+  // the EAM repulsive core; LAMMPS / xtb / ASE all return NaN there).
+  // Without this guard isConverged() / line-search comparisons all
+  // evaluate to false on NaN, and run() spins forever.
+  if (!f.allFinite()) {
+    QUILL_LOG_WARNING(m_log,
+                      "[LBFGS] non-finite force at iteration {} (NaN or "
+                      "Inf); aborting minimization",
+                      m_iteration);
+    return -1;
+  }
+
   if (m_iteration > 0) {
     status = update(r, m_rPrev, f, m_fPrev);
   }
@@ -170,6 +183,11 @@ int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
     status = step(a_maxMove);
     if (status < 0)
       return -1;
+  }
+  // isConverged() returns false on a NaN convergence test even when
+  // step() succeeded, so guard the final return too.
+  if (!m_objf->getGradient().allFinite()) {
+    return -1;
   }
   return m_objf->isConverged() ? 1 : 0;
 }

@@ -43,6 +43,18 @@ Eigen::VectorXd ConjugateGradients::getStep() {
 }
 
 int ConjugateGradients::step(double a_maxMove) {
+  // Bail out instead of looping forever when the potential returns
+  // NaN forces (atom overlap inside an EAM/ML repulsive core, etc.).
+  // NaN propagates through dot products and < comparisons silently;
+  // without this guard line_search keeps shrinking the step and never
+  // exits because isConverged() never sees a finite-norm check.
+  if (!m_objf->getGradient().allFinite()) {
+    QUILL_LOG_WARNING(m_log,
+                      "[CG] non-finite force entering step (NaN or Inf); "
+                      "aborting minimization");
+    return -1;
+  }
+
   bool converged;
   if (m_optConfig.opts.cg.line_search) {
     converged = line_search(a_maxMove);
@@ -191,8 +203,14 @@ int ConjugateGradients::single_step(double a_maxMove) {
 int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   size_t iterations = 0;
   while (!m_objf->isConverged() && iterations <= a_maxIterations) {
-    step(a_maxMove);
+    int status = step(a_maxMove);
+    if (status < 0) {
+      return -1;
+    }
     iterations++;
+  }
+  if (!m_objf->getGradient().allFinite()) {
+    return -1;
   }
   return m_objf->isConverged() ? 1 : 0;
 }
