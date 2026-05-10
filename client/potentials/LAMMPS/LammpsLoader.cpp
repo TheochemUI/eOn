@@ -65,7 +65,13 @@ LammpsLoader::LammpsLoader() {
   m_loaded = true;
 }
 
-LammpsLoader::~LammpsLoader() { dynlib::close(m_handle); }
+LammpsLoader::~LammpsLoader() {
+  // Intentionally do NOT dlclose at static destruction. liblammps holds
+  // global state (MPI handles, OpenMP threadpools, KIM model registry)
+  // whose teardown via atexit / __attribute__((destructor)) collides
+  // with running this Meyer-singleton dtor at process shutdown. The
+  // mapping is process-lifetime; OS reclaims it at exit.
+}
 
 void LammpsLoader::require_loaded() const {
   if (!m_loaded) {

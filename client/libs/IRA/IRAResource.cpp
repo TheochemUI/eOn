@@ -55,10 +55,10 @@ IRAResource::IRAResource() {
 }
 
 IRAResource::~IRAResource() {
-  if (m_handle) {
-    dynlib::close(m_handle);
-    m_handle = {};
-  }
+  // Intentionally do NOT dlclose at static destruction. libira is
+  // Fortran with its own runtime fini chain; mirroring the XtbLoader /
+  // LammpsLoader / ARTnResource policy of letting the OS reclaim the
+  // mapping at process exit.
 }
 
 void IRAResource::require_loaded() const {
