@@ -35,7 +35,7 @@ rust = ">=1.88"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
-readcon = ">=0.9.0, <0.10"
+readcon = ">=0.10.0, <0.11"
 
 [pypi-options]
 # TODO(rg): only if the CPU version is needed
