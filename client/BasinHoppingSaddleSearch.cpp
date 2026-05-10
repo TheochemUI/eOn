@@ -45,8 +45,8 @@ SaddleStatus BasinHoppingSaddleSearch::run() {
   double p = std::exp(arg);
   double r = eonc::helpers::random();
   if (ereactant < eproduct) {
-    if (r > p) { // reject
-      return 1;
+    if (r > p) { // reject -- preserve historical "1 == not converged"
+      return SaddleStatus::Init;
     }
   }
   // NEB reactant to minimized "saddle"
