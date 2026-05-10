@@ -9,17 +9,21 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
-# Hide C++ symbols by default; tag exports explicitly with
-# __attribute__((visibility("default"))) at use sites. cppc.
-# get_supported_arguments() filters out flags MSVC doesn't accept,
-# so the same line works on Windows (where PE/COFF treats every
-# function as private until you dllexport it; the gcc/clang flag is
-# silently dropped).
+# -fvisibility-inlines-hidden: stops the compiler from emitting
+# inline / template-instantiation symbols with default visibility,
+# which otherwise duplicate across every TU that includes the
+# header. Safe to apply universally -- inline functions don't need
+# to be visible across DSO boundaries because every consumer has
+# the body via the header.
+#
+# We deliberately do NOT pass -fvisibility=hidden globally: that
+# would require annotating every cross-DSO entry point in libeonclib
+# (Matter::compare, Potential::*, Job::*, ...) with
+# __attribute__((visibility("default"))), which is a separate
+# multi-day refactor. cppc.get_supported_arguments() filters out
+# flags MSVC doesn't accept, so the same line is a no-op on Windows.
 add_project_arguments(
-    cppc.get_supported_arguments([
-        '-fvisibility=hidden',
-        '-fvisibility-inlines-hidden',
-    ]),
+    cppc.get_supported_arguments(['-fvisibility-inlines-hidden']),
     language: 'cpp',
 )
 

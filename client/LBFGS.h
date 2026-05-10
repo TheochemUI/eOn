@@ -33,7 +33,7 @@ class LBFGS final : public Optimizer {
 
 public:
   LBFGS(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
-      : Optimizer(a_objf, OptType::LBFGS, a_params),
+      : Optimizer(a_objf, OptType::LBFGS, OptimizerConfig::fromParams(a_params)),
         m_iteration{0},
         m_memory{std::min(
             a_objf->degreesOfFreedom(),

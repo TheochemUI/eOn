@@ -24,7 +24,7 @@ class Quickmin final : public Optimizer {
 public:
   Quickmin(std::shared_ptr<ObjectiveFunction> a_objf,
            const Parameters &a_params)
-      : Optimizer(a_objf, OptType::QM, a_params),
+      : Optimizer(a_objf, OptType::QM, OptimizerConfig::fromParams(a_params)),
         m_dt{a_params.optimizer_options.time_step},
         m_dt_max{a_params.optimizer_options.max_time_step},
         m_max_move{a_params.optimizer_options.max_move},

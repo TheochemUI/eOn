@@ -35,7 +35,7 @@ int DynamicsSaddleSearch::run() {
     QUILL_LOG_DEBUG(log, "No mass weights file found");
   }
 
-  Dynamics dyn(saddle.get(), params);
+  Dynamics dyn(saddle.get(), DynamicsConfig::fromParams(params));
   QUILL_LOG_DEBUG(
       log, "Initializing velocities from Maxwell-Boltzmann distribution");
   dyn.setTemperature(params.saddle_search_options.dynamics.temperature);
