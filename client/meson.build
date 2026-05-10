@@ -1005,27 +1005,38 @@ endif
 if get_option('with_tests')
     test_args = _args
     test_deps = _exe_deps
-    # Catch2 amalgamated pulls in <regex>; libstdc++ 13.3 std::regex
-    # move-ctors trip a -Wmaybe-uninitialized false positive at -O3 + LTO
-    # (release buildtype) because the optimizer inlines the function<>
-    # move-ctor into _NFA::_M_insert_alt before it can prove _M_invoker /
-    # _M_manager are initialized by the default ctor. Known GCC
-    # bug-family (PR93499 / 96012). Build the amalgamated TU as its
-    # own static library with the suppression so eOn's own test sources
-    # stay under -Wmaybe-uninitialized.
-    # `-Wno-maybe-uninitialized` is GCC-only (MSVC rejects it as
-     # `D8021 invalid numeric argument`; clang silently ignores it).
-     # Filter through get_supported_arguments so the static lib still
-     # builds on the windows-latest matrix.
+    # Catch2 amalgamated dedup. On Linux/macOS (gcc/clang + ld/lld)
+    # we compile catch_amalgamated.cpp ONCE into a static library and
+    # `link_whole:` it into every test exe so LTO at --buildtype release
+    # cannot prune main() / the EventListener vtables. The static lib
+    # also gets `-Wno-maybe-uninitialized` to silence the libstdc++ 13.3
+    # std::regex move-ctor false positive at -O3 + LTO (GCC PR93499 /
+    # 96012). The flag is filtered through get_supported_arguments so
+    # MSVC -- which rejects it as D8021 invalid numeric argument -- does
+    # not see it.
+    #
+    # On Windows the dedup path doesn't work: meson's static_library
+    # under conda-forge clang 19 emits a GNU `.a` archive, but
+    # MSVC link.exe's /WHOLEARCHIVE expects a COFF `.lib` and bails
+    # with LNK1136 invalid or corrupt file. Fall back to compiling the
+    # amalgamated TU into each test executable directly there. This is
+    # the pre-d60a9b80 behaviour; it costs one extra compile per test
+    # target but only on a single matrix entry.
     _catch2_extra_cpp_args = cppc.get_supported_arguments(
         ['-Wno-maybe-uninitialized'],
     )
-    catch2_lib = static_library(
-        'catch2_amalgamated',
-        ['thirdparty/catch2/catch_amalgamated.cpp'],
-        include_directories: _incdirs,
-        cpp_args: test_args + _catch2_extra_cpp_args,
-    )
+    if host_machine.system() == 'windows'
+        catch2_lib = []
+        _catch2_per_target_sources = ['thirdparty/catch2/catch_amalgamated.cpp']
+    else
+        catch2_lib = static_library(
+            'catch2_amalgamated',
+            ['thirdparty/catch2/catch_amalgamated.cpp'],
+            include_directories: _incdirs,
+            cpp_args: test_args + _catch2_extra_cpp_args,
+        )
+        _catch2_per_target_sources = []
+    endif
     # Note: there is no separate `TestMain` library target -- the
     # `unit_tests/TestMain.cpp` source is compiled directly into
     # bench_pot (only consumer in this build). Test executables get
@@ -1088,19 +1099,21 @@ if get_option('with_tests')
                 test.get(0),
                 sources: [
                     'unit_tests/' + test.get(1),
-                ],
+                ] + _catch2_per_target_sources,
                 dependencies: test_deps,
                 include_directories: _incdirs,
                 cpp_args: test_args,
                 link_with: _linkto,
                 # Catch2 amalgamated provides main() and the
                 # AssertionHandler / EventListener vtables. Under
-                # -flto=auto (release buildtype) `link_with` lets LTO
-                # prune objects whose symbols aren't directly
-                # referenced by the test source, including main(),
-                # and the link fails. `link_whole` forces every
-                # catch2_lib object into the executable so the LTO
-                # pass keeps them.
+                # -flto=auto (release buildtype) `link_with` on a
+                # static lib lets LTO prune objects whose symbols
+                # aren't directly referenced by the test source,
+                # including main(), and the link fails. `link_whole`
+                # forces every catch2_lib object into the executable
+                # so the LTO pass keeps them. On Windows catch2_lib
+                # is `[]` and the amalgamated TU is in `sources`
+                # instead -- see the catch2_lib branch above.
                 link_whole: catch2_lib,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
@@ -1127,7 +1140,7 @@ if get_option('with_tests')
             'test_socket_nwchem',
             sources: [
                 'unit_tests/SocketNWChemPotTest.cpp',
-            ],
+            ] + _catch2_per_target_sources,
             dependencies: test_deps,
             include_directories: _incdirs,
             cpp_args: test_args,
@@ -1163,7 +1176,7 @@ if get_option('with_tests')
         [
             'unit_tests/PotBenchmark.cpp',
             'unit_tests/TestMain.cpp',
-        ],
+        ] + _catch2_per_target_sources,
         dependencies: test_deps,
         include_directories: _incdirs,
         cpp_args: test_args,
