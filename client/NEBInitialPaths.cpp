@@ -136,10 +136,10 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
     auto idpp_optim = eonc::helpers::create::mkOptim(
         idpp_objf, params.neb_options.opt_method, params);
 
-    // Run the optimization
-    int status =
-        idpp_optim->run(params.neb_options.initialization.max_iterations,
-                        params.neb_options.initialization.max_move);
+    // Run the optimization (return value not consumed; convergence
+    // is read out of getConvergence() below).
+    (void)idpp_optim->run(params.neb_options.initialization.max_iterations,
+                          params.neb_options.initialization.max_move);
 
     // Log progress
     double residual = idpp_objf->getConvergence();
