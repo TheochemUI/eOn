@@ -1,0 +1,5 @@
+---
+# Vendored upstream code; never run our tidy ruleset over it.
+Checks: '-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: '$^'
