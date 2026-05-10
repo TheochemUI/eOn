@@ -80,7 +80,7 @@ SaddleStatus BasinHoppingSaddleSearch::run() {
   *saddle = *neb.path[HighestImage];
   eigenvalue = dim.getEigenvalue();
   eigenvector = dim.getEigenvector();
-  return 0;
+  return SaddleStatus::Good;
 }
 
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }
