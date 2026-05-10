@@ -1085,7 +1085,16 @@ if get_option('with_tests')
                 dependencies: test_deps,
                 include_directories: _incdirs,
                 cpp_args: test_args,
-                link_with: [_linkto, catch2_lib],
+                link_with: _linkto,
+                # Catch2 amalgamated provides main() and the
+                # AssertionHandler / EventListener vtables. Under
+                # -flto=auto (release buildtype) `link_with` lets LTO
+                # prune objects whose symbols aren't directly
+                # referenced by the test source, including main(),
+                # and the link fails. `link_whole` forces every
+                # catch2_lib object into the executable so the LTO
+                # pass keeps them.
+                link_whole: catch2_lib,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
             # Catch2 v3 returns exit code 4 from a process that ran no
@@ -1115,7 +1124,8 @@ if get_option('with_tests')
             dependencies: test_deps,
             include_directories: _incdirs,
             cpp_args: test_args,
-            link_with: [_linkto, catch2_lib],
+            link_with: _linkto,
+            link_whole: catch2_lib,
         )
 
         test_workdir = meson.project_source_root() + '/client/unit_tests/data/systems/nwchem_test'
@@ -1150,7 +1160,8 @@ if get_option('with_tests')
         dependencies: test_deps,
         include_directories: _incdirs,
         cpp_args: test_args,
-        link_with: [_linkto, catch2_lib],
+        link_with: _linkto,
+        link_whole: catch2_lib,
         build_by_default: false,
     )
     benchmark('bench_pot', bench_pot_exe,
