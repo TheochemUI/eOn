@@ -49,7 +49,7 @@ bool writePathCon(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
-    long numImages, bool estimateEigenvalues, std::string filename,
+    long numImages, bool estimateEigenvalues, const std::string &filename,
     std::optional<size_t> bandIndex = std::nullopt);
 
 } // namespace eonc::neb

@@ -62,7 +62,7 @@ int SafeHyperJob::dynamics() {
   timeBuffer.resize(mdBufferLength);
   biasBuffer.resize(mdBufferLength);
 
-  Dynamics safeHyper(current.get(), params);
+  Dynamics safeHyper(current.get(), DynamicsConfig::fromParams(params));
   BondBoost bondBoost(current.get(), params);
 
   if (params.hyperdynamics_options.bias_potential ==

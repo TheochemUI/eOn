@@ -21,8 +21,8 @@ namespace eonc::neb {
 
 OCINEBController::Config
 OCINEBController::fromParams(const Parameters &params) {
-  auto &ci = params.neb_options.climbing_image;
-  auto &r = ci.ocineb;
+  const auto &ci = params.neb_options.climbing_image;
+  const auto &r = ci.ocineb;
   return Config{
       r.use_mmf,
       r.trigger_force,
@@ -80,7 +80,7 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   AtomMatrix savedPositions = neb.path[neb.climbingImage]->getPositions();
 
   double alignment = 0.0;
-  int mmfResult = runDimer(neb, alignment);
+  MMFStatus mmfResult = runDimer(neb, alignment);
 
   // Always update forces after MMF
   neb.movedAfterForceCall = true;
@@ -93,22 +93,22 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
     return {newForce, true, false};
   }
 
-  bool mmfHelped = (newForce < convForce) && mmfResult != -2;
+  bool mmfHelped =
+      (newForce < convForce) && mmfResult != MMFStatus::PositiveCurvature;
 
   if (mmfHelped) {
     updateThresholdSuccess(convForce, newForce);
     QUILL_LOG_DEBUG(log,
                     "MMF helped (status={}). Force: {:.4f} -> {:.4f} "
                     "({:.2f}x baseline). New threshold: {:.4f}",
-                    mmfResult, convForce, newForce, newForce / baseline_force_,
-                    current_threshold_);
+                    to_int(mmfResult), convForce, newForce,
+                    newForce / baseline_force_, current_threshold_);
   } else {
-    // On positive curvature (status=-2), the CI is at a minimum, not a
-    // saddle. Restore to pre-MMF position to prevent catastrophic force
-    // explosion. For other failures (alignment loss, force increase),
-    // let the NEB recover naturally -- the CI position may still be
-    // closer to the saddle than before.
-    if (mmfResult == -2) {
+    // PositiveCurvature: CI is at a minimum, not a saddle. Restore
+    // to pre-MMF position to prevent catastrophic force explosion.
+    // For Skipped / MaxIterations, let the NEB recover naturally --
+    // the CI position may still be closer to the saddle than before.
+    if (mmfResult == MMFStatus::PositiveCurvature) {
       neb.path[neb.climbingImage]->setPositions(savedPositions);
       neb.movedAfterForceCall = true;
       has_cached_mode_ = false;
@@ -119,9 +119,9 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
         log,
         "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
         "Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)",
-        mmfResult, convForce, newForce, alignment,
-        mmfResult == -2 ? "Restored CI. " : "", current_threshold_,
-        current_threshold_ / baseline_force_);
+        to_int(mmfResult), convForce, newForce, alignment,
+        mmfResult == MMFStatus::PositiveCurvature ? "Restored CI. " : "",
+        current_threshold_, current_threshold_ / baseline_force_);
   }
 
   bool shouldReset =
@@ -138,15 +138,15 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   return {newForce, false, shouldReset};
 }
 
-int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
-                               double &alignment) {
+MMFStatus OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
+                                     double &alignment) {
   auto *log = eonc::log::get();
   alignment = 0.0;
 
   if (neb.climbingImage <= 0 || neb.climbingImage > neb.numImages) {
     QUILL_LOG_WARNING(log, "Invalid climbing image for MMF:  {}",
                       neb.climbingImage);
-    return -1;
+    return MMFStatus::Skipped;
   }
 
   AtomMatrix initialMode;
@@ -158,7 +158,7 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
   double tangentNorm = initialMode.norm();
   if (tangentNorm < 1e-8) {
     QUILL_LOG_WARNING(log, "Tangent too small for MMF initialization");
-    return -1;
+    return MMFStatus::Skipped;
   }
   initialMode /= tangentNorm;
 
@@ -166,14 +166,14 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
       neb.path[neb.climbingImage], initialMode,
       neb.path[neb.climbingImage]->getPotentialEnergy(), neb.params, neb.pot);
 
-  int minModeStatus;
+  SaddleStatus minModeStatus = SaddleStatus::Good;
   try {
     minModeStatus = tempMinModeSearch->run(cfg_.max_steps);
   } catch (const eonc::DimerModeRestoredException &) {
-    minModeStatus = MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST;
+    minModeStatus = SaddleStatus::DimerRestoredBest;
     QUILL_LOG_DEBUG(log, "MMF:  Dimer restored to best state");
   } catch (const eonc::DimerModeLostException &) {
-    minModeStatus = MinModeSaddleSearch::STATUS_DIMER_LOST_MODE;
+    minModeStatus = SaddleStatus::DimerLostMode;
     QUILL_LOG_WARNING(log, "Dimer lost mode during MMF refinement");
   }
 
@@ -184,34 +184,35 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
     QUILL_LOG_WARNING(log,
                       "MMF skipped: Positive curvature detected (eig={:.4f}).",
                       eigenvalue);
-    return -2;
+    return MMFStatus::PositiveCurvature;
   }
 
   AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
-  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * neb.atoms);
+  const Eigen::Index seg = static_cast<Eigen::Index>(3) * neb.atoms;
+  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), seg);
   VectorXd currentTangent =
-      VectorXd::Map(neb.tangent[neb.climbingImage]->data(), 3 * neb.atoms);
+      VectorXd::Map(neb.tangent[neb.climbingImage]->data(), seg);
   alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));
 
-  if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD ||
-      minModeStatus == MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST) {
+  if (minModeStatus == SaddleStatus::Good ||
+      minModeStatus == SaddleStatus::DimerRestoredBest) {
     if (alignment < cfg_.angle_tol) {
       QUILL_LOG_WARNING(
           log,
           "MMF converged/restored but mode drifted (alignment={:.3f} < {:.3f})",
           alignment, cfg_.angle_tol);
-      return -1;
+      return MMFStatus::Skipped;
     }
     cached_mode_ = finalModeMatrix;
     has_cached_mode_ = true;
-    return 0;
-  } else if (minModeStatus == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS) {
-    return 1;
-  } else {
-    QUILL_LOG_WARNING(log, "MMF failed.  Mode-tangent alignment: {:.3f}",
-                      alignment);
-    return -1;
+    return MMFStatus::Helped;
   }
+  if (minModeStatus == SaddleStatus::BadMaxIterations) {
+    return MMFStatus::MaxIterations;
+  }
+  QUILL_LOG_WARNING(log, "MMF failed.  Mode-tangent alignment: {:.3f}",
+                    alignment);
+  return MMFStatus::Skipped;
 }
 
 void OCINEBController::updateThresholdSuccess(double convForce,

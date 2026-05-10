@@ -78,9 +78,7 @@
 #endif
 
 #ifndef _WIN32
-#ifdef WITH_VASP
 #include "potentials/VASP/VASP.h"
-#endif
 #endif
 
 #ifdef WITH_AMS
@@ -110,9 +108,8 @@
 
 // Should respect Fortran availability
 
-#ifdef WITH_XTB
+// XTB always compiled; XtbLoader dlopens libxtb at first construction.
 #include "potentials/XTBPot/XTBPot.h"
-#endif
 
 #include <limits>
 
@@ -224,12 +221,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #ifndef _WIN32
-#ifdef WITH_VASP
   case PotType::VASP: {
     return (std::make_shared<VASP>(params));
     break;
   }
-#endif
 #endif
   case PotType::LAMMPS: {
     return std::make_shared<LAMMPSPot>(params);
@@ -285,13 +280,10 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-// TODO: Handle Fortran interaction
-#ifdef WITH_XTB
   case PotType::XTB: {
     return (std::make_shared<XTBPot>(params));
     break;
   }
-#endif
 #ifdef WITH_ASE_ORCA
   case PotType::ASE_ORCA: {
     return (std::make_shared<ASEOrcaPot>(params));

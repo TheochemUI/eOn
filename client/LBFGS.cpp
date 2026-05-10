@@ -16,6 +16,8 @@
 
 #include <cmath>
 
+using eonc::StepResult;
+
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   double H0 = m_optConfig.opts.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
@@ -141,16 +143,29 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   return 0;
 }
 
-int LBFGS::step(double a_maxMove) {
-  int status = 0;
+StepResult LBFGS::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
 
-  if (m_iteration > 0) {
-    status = update(r, m_rPrev, f, m_fPrev);
+  // Bail out instead of looping when the underlying potential returns
+  // NaN forces (post-saddle push placing two atoms inside the EAM
+  // repulsive core; LAMMPS / xtb / ASE all return NaN there). Without
+  // this guard isConverged() / line-search comparisons evaluate false
+  // on NaN and run() spins forever. Uses the `f` already loaded above
+  // -- no extra force evaluation.
+  if (!f.allFinite()) {
+    QUILL_LOG_WARNING(m_log,
+                      "[LBFGS] non-finite force at iteration {} (NaN or "
+                      "Inf); aborting minimization",
+                      m_iteration);
+    return StepResult::Failed;
   }
-  if (status < 0)
-    return -1;
+
+  if (m_iteration > 0) {
+    if (update(r, m_rPrev, f, m_fPrev) < 0) {
+      return StepResult::Failed;
+    }
+  }
 
   Eigen::VectorXd dr = getStep(a_maxMove, f);
 
@@ -161,15 +176,19 @@ int LBFGS::step(double a_maxMove) {
 
   m_iteration++;
 
-  return m_objf->isConverged() ? 1 : 0;
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }
 
-int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
-  int status;
+StepResult LBFGS::run(size_t a_maxSteps, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxSteps) {
-    status = step(a_maxMove);
-    if (status < 0)
-      return -1;
+    if (step(a_maxMove) == StepResult::Failed) {
+      return StepResult::Failed;
+    }
   }
-  return m_objf->isConverged() ? 1 : 0;
+  // No final getGradient() check here -- step()'s entry-side guard
+  // already aborts the loop on NaN, so a second fresh evaluation on
+  // exit just charges an extra force call per outer optimizer call.
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }

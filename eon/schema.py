@@ -520,6 +520,16 @@ class PotentialConfig(BaseModel):
     # TODO(rg): move these around
     lammps_logging: bool = Field(default=True, description="Logging LAMMPS calls.")
     lammps_threads: int = Field(default=0, description="LAMMPS threads.")
+    lammps_bundle: str = Field(
+        default="",
+        description=(
+            "Path to a portable LAMMPS run-input bundle (.eonlpb) packing "
+            "in.lammps + every file it references. When set, LAMMPSPot "
+            "extracts to a per-instance scratch dir and pins liblammps's "
+            "working directory there. Pack a directory with "
+            "`python -m eon.lammps_bundle pack <dir> <out.eonlpb>`."
+        ),
+    )
     ext_pot_path: str = Field(
         default="ext_pot", description="Path for the external potential."
     )

@@ -36,8 +36,8 @@ using std::string;
 
 // Vector functions.
 // Make v1 orthogonal to v2
-AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
-                                         const AtomMatrix v2) {
+AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix &v1,
+                                         const AtomMatrix &v2) {
   return v1 - matDot(v1, v2) * eonc::safemath::safe_normalized(v2);
 }
 
@@ -53,7 +53,7 @@ void eonc::helpers::getTime(double *real, double *user, double *sys) {
   if (sys)
     *sys = 0.0;
 #else
-  struct rusage r_usage;
+  struct rusage r_usage{};
   if (getrusage(RUSAGE_SELF, &r_usage) != 0) {
     EONC_LOG_WARNING("problem getting usage info: {}", strerror(errno));
   }
@@ -68,7 +68,7 @@ void eonc::helpers::getTime(double *real, double *user, double *sys) {
 #endif
 }
 
-bool eonc::helpers::existsFile(string filename) {
+bool eonc::helpers::existsFile(const string &filename) {
   return std::filesystem::exists(filename);
 }
 
@@ -121,16 +121,23 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
   mode.resize(nAtoms, 3);
   mode.setZero();
   for (int i = 0; i < nAtoms; i++) {
-    fscanf(modeFile, "%lf %lf %lf", &mode(i, 0), &mode(i, 1), &mode(i, 2));
+    if (std::fscanf(modeFile, "%lf %lf %lf", &mode(i, 0), &mode(i, 1),
+                    &mode(i, 2)) != 3) {
+      EONC_LOG_CRITICAL("loadMode: short read at row {} (expected 3 doubles)",
+                        i);
+      std::exit(1);
+    }
   }
   return mode;
 }
 
 AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
-  // Unique FILE* with RAII cleanup
+  // Unique FILE* with RAII cleanup. fclose ignored at scope-exit
+  // because the buffer was for read-only use; flushing writes is
+  // the only reason cert-err33-c flags fclose, and there's none.
   auto closer = [](FILE *f) {
     if (f)
-      std::fclose(f);
+      (void)std::fclose(f);
   };
   std::unique_ptr<FILE, decltype(closer)> modeFile(
       std::fopen(filename.c_str(), "rb"), closer);
@@ -141,21 +148,28 @@ AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
   return loadMode(modeFile.get(), nAtoms);
 }
 
-void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
-                             AtomMatrix mode) {
+void eonc::helpers::saveMode(FILE *modeFile,
+                             const std::shared_ptr<Matter> &matter,
+                             const AtomMatrix &mode) {
   long const nAtoms = matter->numberOfAtoms();
   for (long i = 0; i < nAtoms; ++i) {
+    int written = 0;
     if (matter->getFixed(i)) {
-      fprintf(modeFile, "0 0 0\n");
+      written = std::fprintf(modeFile, "0 0 0\n");
     } else {
-      fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i, 0), mode(i, 1), mode(i, 2));
+      written = std::fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i, 0),
+                             mode(i, 1), mode(i, 2));
+    }
+    if (written < 0) {
+      EONC_LOG_CRITICAL("saveMode: fprintf failed at row {}", i);
+      std::exit(1);
     }
   }
-  return;
 }
 
 void eonc::helpers::saveMode(const std::string &filename,
-                             std::shared_ptr<Matter> matter, AtomMatrix mode) {
+                             const std::shared_ptr<Matter> &matter,
+                             const AtomMatrix &mode) {
   std::ofstream out(filename);
   if (!out)
     return;
@@ -170,8 +184,8 @@ void eonc::helpers::saveMode(const std::string &filename,
   }
 }
 
-std::vector<int> eonc::helpers::split_string_int(std::string s,
-                                                 std::string delim) {
+std::vector<int> eonc::helpers::split_string_int(const std::string &s,
+                                                 const std::string &delim) {
   std::vector<int> list;
   if (s.empty())
     return list;
@@ -203,17 +217,19 @@ public:
       : ObjectiveFunction(parametersPassed),
         m_matter{mat} {}
   ~MatterObjectiveFunction() = default;
-  double getEnergy() { return m_matter.getPotentialEnergy(); }
-  VectorXd getGradient(bool fdstep = false) {
+  double getEnergy() override { return m_matter.getPotentialEnergy(); }
+  VectorXd getGradient(bool fdstep = false) override {
     return -m_matter.getForcesFreeV();
   }
-  void setPositions(const VectorXd &x) { m_matter.setPositionsFreeV(x); }
-  VectorXd getPositions() { return m_matter.getPositionsFreeV(); }
-  int degreesOfFreedom() { return 3 * m_matter.numberOfFreeAtoms(); }
-  bool isConverged() {
+  void setPositions(const VectorXd &x) override {
+    m_matter.setPositionsFreeV(x);
+  }
+  VectorXd getPositions() override { return m_matter.getPositionsFreeV(); }
+  int degreesOfFreedom() override { return 3 * m_matter.numberOfFreeAtoms(); }
+  bool isConverged() override {
     return getConvergence() < params.optimizer_options.converged_force;
   }
-  double getConvergence() {
+  double getConvergence() override {
     if (params.optimizer_options.convergence_metric == "norm") {
       return m_matter.getForcesFreeV().norm();
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
@@ -226,7 +242,7 @@ public:
       std::exit(1);
     }
   }
-  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return m_matter.pbcV(a - b);
   }
 };
@@ -234,8 +250,8 @@ public:
 
 bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
                                 bool quiet, bool writeMovie, bool checkpoint,
-                                std::string prefixMovie,
-                                std::string prefixCheckpoint) {
+                                const std::string &prefixMovie,
+                                const std::string &prefixCheckpoint) {
   eonc::log::Scoped m_log;
   auto objf = std::make_shared<MatterObjectiveFunction>(matter, params);
   auto optim = eonc::helpers::create::mkOptim(

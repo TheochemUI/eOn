@@ -9,17 +9,26 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "BasinHoppingSaddleSearch.h"
+
+using eonc::SaddleStatus;
+
 #include "Dimer.h"
+
 #include "ImprovedDimer.h"
+
 #include "Lanczos.h"
+
 #include "LowestEigenmode.h"
+
 #include "MinModeSaddleSearch.h"
+
 #include "NudgedElasticBand.h"
 #include <cmath>
 #include <cstdio>
 
-int BasinHoppingSaddleSearch::run() {
+SaddleStatus BasinHoppingSaddleSearch::run() {
   // minimize "saddle"
   saddle->relax(false, true, false, "displacementmin");
   product = std::make_shared<Matter>(pot, params);
@@ -36,8 +45,8 @@ int BasinHoppingSaddleSearch::run() {
   double p = std::exp(arg);
   double r = eonc::helpers::random();
   if (ereactant < eproduct) {
-    if (r > p) { // reject
-      return 1;
+    if (r > p) { // reject -- preserve historical "1 == not converged"
+      return SaddleStatus::Init;
     }
   }
   // NEB reactant to minimized "saddle"
@@ -71,7 +80,7 @@ int BasinHoppingSaddleSearch::run() {
   *saddle = *neb.path[HighestImage];
   eigenvalue = dim.getEigenvalue();
   eigenvector = dim.getEigenvector();
-  return 0;
+  return SaddleStatus::Good;
 }
 
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }

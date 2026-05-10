@@ -22,25 +22,31 @@
 
 namespace eonc {
 
-#define LBFGS_EPS 1e-30
+/// Curvature-update gate. \f$|s_0 \cdot y_0|\f$ below this means the
+/// gradient barely changed across the step; pushing it through
+/// \f$\rho = 1 / (s_0 \cdot y_0)\f$ would amplify denormals into the
+/// L-BFGS history. 1e-30 is well below any chemistry-relevant
+/// value and well above double-precision underflow.
+inline constexpr double LBFGS_EPS = 1e-30;
 
 class LBFGS final : public Optimizer {
 
 public:
   LBFGS(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
-      : Optimizer(a_objf, OptType::LBFGS, a_params),
+      : Optimizer(std::move(a_objf), OptType::LBFGS,
+                  OptimizerConfig::fromParams(a_params)),
         m_iteration{0},
         m_memory{std::min(
-            a_objf->degreesOfFreedom(),
+            m_objf->degreesOfFreedom(),
             static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {}
 
   ~LBFGS() = default;
 
-  int step(double a_maxMove) override;
-  int run(size_t a_maxIterations, double a_maxMove) override;
+  StepResult step(double a_maxMove) override;
+  StepResult run(size_t a_maxIterations, double a_maxMove) override;
   int update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
              const Eigen::VectorXd &a_f1, const Eigen::VectorXd &a_f0);
-  void reset(void);
+  void reset();
 
 private:
   Eigen::VectorXd getStep(double a_maxMove, const Eigen::VectorXd &a_f);

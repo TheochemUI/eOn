@@ -53,10 +53,14 @@ double eonc::rng::random(long newSeed) {
   iv[j] = seed;
   if (iy < 1)
     iy += IMM1;
-  if ((temp = double(AM * iy)) > RNMX)
+  // Compute outside the if-condition so the side-effecting
+  // assignment-in-if pattern doesn't fire bugprone-assignment-in-if-
+  // condition. Behaviour is identical -- temp gets the AM*iy value
+  // either way.
+  temp = static_cast<double>(AM * iy);
+  if (temp > RNMX)
     return RNMX;
-  else
-    return temp;
+  return temp;
 }
 
 double eonc::rng::randomDouble() { return (random()); }

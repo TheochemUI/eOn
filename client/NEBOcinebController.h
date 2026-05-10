@@ -20,6 +20,33 @@ class NudgedElasticBand; // forward declaration
 
 namespace eonc::neb {
 
+/// Internal terminal status for the OCINEB MMF dimer step. Distinct
+/// from the broader SaddleStatus vocabulary because positive
+/// curvature on the climbing image is an *expected* short-circuit
+/// for the controller (the CI sat at a local minimum, not a saddle)
+/// rather than a generic saddle-search failure.
+enum class MMFStatus : int {
+  /// MMF converged to a saddle on the climbing image, alignment
+  /// passed the angle_tol gate; cache the mode for the next call.
+  Helped = 0,
+  /// MMF hit the iteration cap without converging; CI position is
+  /// still useable but flagged as "MMF didn't help this round".
+  MaxIterations = 1,
+  /// MMF refused to act -- input was malformed (invalid climbing
+  /// image index or vanishing tangent), or the converged mode
+  /// drifted outside angle_tol after MMF. Treated by run() as "MMF
+  /// didn't help this round".
+  Skipped = -1,
+  /// Positive curvature detected -- the CI sat at a local minimum,
+  /// not a saddle. run() restores the pre-MMF position to prevent
+  /// a force explosion in the next NEB step.
+  PositiveCurvature = -2,
+};
+
+[[nodiscard]] constexpr int to_int(MMFStatus s) noexcept {
+  return static_cast<int>(s);
+}
+
 /// Goswami (in prep).
 /// Controller for OCINEB hybrid dimer refinement of the climbing image.
 /// Manages MMF triggering, threshold adaptation, and backoff logic.
@@ -68,7 +95,7 @@ private:
   bool has_cached_mode_{false};
   AtomMatrix cached_mode_;
 
-  int runDimer(eonc::NudgedElasticBand &neb, double &alignment);
+  MMFStatus runDimer(eonc::NudgedElasticBand &neb, double &alignment);
   void updateThresholdSuccess(double convForce, double newForce);
   void updateThresholdBackoff(double alignment);
 };

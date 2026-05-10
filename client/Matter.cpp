@@ -19,10 +19,18 @@
 #include "EonLogger.h"
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
 
 const Matter &Matter::operator=(const Matter &matter) {
+  // Self-assignment guard (cert-oop54-cpp /
+  // bugprone-unhandled-self-assignment): without this, the resize()
+  // call below could repeatedly destroy and re-allocate the same
+  // backing storage we're about to copy from.
+  if (this == &matter) {
+    return *this;
+  }
   nAtoms = matter.nAtoms;
   resize(nAtoms);
 
@@ -191,7 +199,8 @@ VectorXi Matter::getAtomicNrsFree() const {
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    std::string prefixMovie, std::string prefixCheckpoint) {
   return eonc::helpers::relaxMatter(*this, *parameters, quiet, writeMovie,
-                                    checkpoint, prefixMovie, prefixCheckpoint);
+                                    checkpoint, std::move(prefixMovie),
+                                    std::move(prefixCheckpoint));
 }
 
 VectorXd Matter::getPositionsFreeV() const {
@@ -362,10 +371,7 @@ long int Matter::numberOfFixedAtoms() const { return isFixed.sum(); }
 
 long Matter::getForceCalls() const { return (forceCalls); }
 
-void Matter::resetForceCalls() {
-  forceCalls = 0;
-  return;
-}
+void Matter::resetForceCalls() { forceCalls = 0; }
 
 void Matter::computePotential() const {
   if (recomputePotential) {
@@ -375,7 +381,7 @@ void Matter::computePotential() const {
     }
     if (potential->isSurrogate()) {
       // Surrogate potential case: uses free-atom subset interface
-      auto surrogatePotential =
+      auto *surrogatePotential =
           static_cast<SurrogatePotential *>(potential.get());
       auto [freePE, freeForces, vari] = surrogatePotential->get_ef_var(
           this->getPositionsFree(), this->getAtomicNrsFree(), cell);
@@ -495,7 +501,7 @@ AtomMatrix Matter::getAccelerations() {
 Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const { return masses; }
 
 void Matter::setPotential(std::shared_ptr<Potential> pot) {
-  this->potential = pot;
+  this->potential = std::move(pot);
   recomputePotential = true;
   recomputeMaskedForces = true;
 }

@@ -32,7 +32,7 @@ std::vector<std::string> ParallelReplicaJob::run() {
 
   auto trajectory = std::make_shared<Matter>(pot, params);
   *trajectory = *reactant;
-  Dynamics dynamics(trajectory.get(), params);
+  Dynamics dynamics(trajectory.get(), DynamicsConfig::fromParams(params));
   BondBoost bondBoost(trajectory.get(), params);
 
   if (params.hyperdynamics_options.bias_potential ==
@@ -227,7 +227,7 @@ std::vector<std::string> ParallelReplicaJob::run() {
 }
 
 void ParallelReplicaJob::dephase(Matter &trajectory) {
-  Dynamics dynamics(&trajectory, params);
+  Dynamics dynamics(&trajectory, DynamicsConfig::fromParams(params));
 
   int dephaseSteps =
       static_cast<int>(std::floor(params.parallel_replica_options.dephase_time /

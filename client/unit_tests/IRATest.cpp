@@ -11,12 +11,15 @@
 */
 
 /// Integration tests for the IRA structure comparison library.
-/// Requires -Dwith_ira=true and a working libira.
+/// IRAResource is always compiled in; libira.so is dlopen'd at first
+/// require_loaded(). Tests SKIP when libira is not on
+/// LD_LIBRARY_PATH at runtime.
 
 #include "IRACompare.h"
 #include "Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "libs/IRA/IRAResource.h"
 
 namespace tests {
 
@@ -46,6 +49,8 @@ protected:
 TEST_CASE_METHOD(IRAFixture,
                  "IRA match of identical structures returns zero distance",
                  "[ira][match]") {
+  if (!eonc::get_ira_resource().is_loaded())
+    SKIP("libira not available at runtime");
   auto result = eonc::IRACompare::match(*m1, *m2, 1.0);
 
   REQUIRE(result.error == 0);
@@ -58,6 +63,8 @@ TEST_CASE_METHOD(IRAFixture,
 TEST_CASE_METHOD(IRAFixture,
                  "IRA match of translated structure recovers translation",
                  "[ira][match]") {
+  if (!eonc::get_ira_resource().is_loaded())
+    SKIP("libira not available at runtime");
   // Translate m2 by a known vector
   Eigen::Vector3d shift(1.5, -0.7, 0.3);
   auto pos = m2->getPositions();
@@ -76,6 +83,8 @@ TEST_CASE_METHOD(IRAFixture,
 TEST_CASE_METHOD(IRAFixture,
                  "IRA match of permuted structure finds permutation",
                  "[ira][match]") {
+  if (!eonc::get_ira_resource().is_loaded())
+    SKIP("libira not available at runtime");
   // Swap atoms 0 and 1 in m2
   auto pos = m2->getPositions();
   auto row0 = pos.row(0).eval();
@@ -95,6 +104,8 @@ TEST_CASE_METHOD(IRAFixture,
 TEST_CASE_METHOD(IRAFixture,
                  "IRA match of different structures returns nonzero distance",
                  "[ira][match]") {
+  if (!eonc::get_ira_resource().is_loaded())
+    SKIP("libira not available at runtime");
   // Displace atom 0 significantly
   auto pos = m2->getPositions();
   pos(0, 0) += 3.0;
@@ -109,6 +120,8 @@ TEST_CASE_METHOD(IRAFixture,
 
 TEST_CASE_METHOD(IRAFixture, "IRA findSymmetry returns valid point group",
                  "[ira][symmetry]") {
+  if (!eonc::get_ira_resource().is_loaded())
+    SKIP("libira not available at runtime");
   auto result = eonc::IRACompare::findSymmetry(*m1, 0.1);
 
   REQUIRE(result.error == 0);

@@ -80,12 +80,26 @@ int Parameters::load(std::string filename) {
 
 int Parameters::load(FILE *file) {
   // Legacy FILE* overload: read into string buffer, use INIReader buffer ctor
-  fseek(file, 0, SEEK_END);
+  if (std::fseek(file, 0, SEEK_END) != 0) {
+    EONC_LOG_ERROR("fseek to end failed on Parameters::load(FILE*)");
+    return 1;
+  }
   long size = ftell(file);
-  fseek(file, 0, SEEK_SET);
+  if (size < 0) {
+    EONC_LOG_ERROR("ftell failed on Parameters::load(FILE*)");
+    return 1;
+  }
+  if (std::fseek(file, 0, SEEK_SET) != 0) {
+    EONC_LOG_ERROR("fseek to start failed on Parameters::load(FILE*)");
+    return 1;
+  }
 
   std::string buffer(size, '\0');
-  fread(buffer.data(), 1, size, file);
+  if (std::fread(buffer.data(), 1, size, file) !=
+      static_cast<std::size_t>(size)) {
+    EONC_LOG_ERROR("short fread on Parameters::load(FILE*)");
+    return 1;
+  }
 
   INIReader ini(buffer.c_str(), buffer.size());
   if (ini.ParseError() < 0) {

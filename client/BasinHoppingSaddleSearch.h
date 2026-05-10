@@ -21,25 +21,22 @@ namespace eonc {
 
 class BasinHoppingSaddleSearch : public SaddleSearchMethod {
 public:
-  BasinHoppingSaddleSearch(std::shared_ptr<Matter> reactant,
+  BasinHoppingSaddleSearch(const std::shared_ptr<Matter> &reactant,
                            std::shared_ptr<Matter> displacement,
                            std::shared_ptr<Potential> potPassed,
                            const Parameters &parametersPassed)
-      : SaddleSearchMethod(potPassed, parametersPassed),
+      : SaddleSearchMethod(std::move(potPassed), parametersPassed),
         reactant{std::make_shared<Matter>(*reactant)},
-        saddle{displacement} {
-    eigenvector.resize(reactant->numberOfAtoms(), 3);
+        saddle{std::move(displacement)} {
+    eigenvector.resize(this->reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
   }
   ~BasinHoppingSaddleSearch() = default;
 
-  int run(void);
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
-  std::string_view describeStatus(int status) const override {
-    return MinModeSaddleSearch::statusMessage(status);
-  }
-  int getStatus() const override { return status; }
+  SaddleStatus run() override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
+  SaddleStatus getStatus() const override { return status; }
 
   double eigenvalue{0.0};
   AtomMatrix eigenvector;
@@ -48,7 +45,7 @@ public:
   std::shared_ptr<Matter> saddle;
   std::shared_ptr<Matter> product;
 
-  int status{0};
+  SaddleStatus status{SaddleStatus::Good};
 
 private:
   eonc::log::Scoped log;

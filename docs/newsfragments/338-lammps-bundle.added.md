@@ -1,0 +1,1 @@
+Add a portable LAMMPS run-input bundle (`.eonlpb`) that packs `in.lammps` and every file the run needs (pair-coeff data, custom `.so` plugins, KIM tables, etc.) into one blob. `[Potential] lammps_bundle = path/to/foo.eonlpb` makes `LAMMPSPot` extract to a per-instance scratch dir and chdir liblammps there, so the eonclient CWD no longer matters for LAMMPS file lookups.

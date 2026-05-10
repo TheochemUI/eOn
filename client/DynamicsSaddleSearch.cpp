@@ -9,18 +9,26 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "DynamicsSaddleSearch.h"
+
+using eonc::SaddleStatus;
+
 #include "BondBoost.h"
+
 #include "Dynamics.h"
+
 #include "EigenmodeStrategy.h"
+
 #include "MinModeSaddleSearch.h"
+
 #include "NudgedElasticBand.h"
 
 #include <cmath>
 #include <filesystem>
 #include <limits>
 
-int DynamicsSaddleSearch::run() {
+SaddleStatus DynamicsSaddleSearch::run() {
   std::vector<std::shared_ptr<Matter>> mdSnapshots;
   std::vector<double> mdTimes;
   QUILL_LOG_DEBUG(log, "Starting dynamics NEB saddle search");
@@ -35,7 +43,7 @@ int DynamicsSaddleSearch::run() {
     QUILL_LOG_DEBUG(log, "No mass weights file found");
   }
 
-  Dynamics dyn(saddle.get(), params);
+  Dynamics dyn(saddle.get(), DynamicsConfig::fromParams(params));
   QUILL_LOG_DEBUG(
       log, "Initializing velocities from Maxwell-Boltzmann distribution");
   dyn.setTemperature(params.saddle_search_options.dynamics.temperature);
@@ -81,14 +89,15 @@ int DynamicsSaddleSearch::run() {
     bondBoost.initialize();
   }
 
-  int checkInterval = static_cast<int>(
-      params.saddle_search_options.dynamics.state_check_interval /
-          params.dynamics_options.time_step +
-      0.5);
-  int recordInterval =
-      static_cast<int>(params.saddle_search_options.dynamics.record_interval /
-                           params.dynamics_options.time_step +
-                       0.5);
+  // Round-to-nearest with std::lround instead of `(int)(x + 0.5)`,
+  // which is broken for negative arguments and exact representations
+  // (bugprone-incorrect-roundings).
+  const auto checkInterval = static_cast<int>(
+      std::lround(params.saddle_search_options.dynamics.state_check_interval /
+                  params.dynamics_options.time_step));
+  const auto recordInterval = static_cast<int>(
+      std::lround(params.saddle_search_options.dynamics.record_interval /
+                  params.dynamics_options.time_step));
 
   if (params.debug_options.write_movies) {
     saddle->matter2con("dynamics", false);
@@ -238,7 +247,7 @@ int DynamicsSaddleSearch::run() {
             }
             if (maxEnergy <= reactant->getPotentialEnergy()) {
               QUILL_LOG_DEBUG(log, "warning: no barrier found");
-              return MinModeSaddleSearch::STATUS_BAD_NO_BARRIER;
+              return SaddleStatus::BadNoBarrier;
             }
           }
         } else {
@@ -250,9 +259,9 @@ int DynamicsSaddleSearch::run() {
         saddle->matter2con("saddle_initial_guess.con");
         MinModeSaddleSearch search = MinModeSaddleSearch(
             saddle, mode, reactant->getPotentialEnergy(), params, pot);
-        int minModeStatus = search.run();
+        SaddleStatus minModeStatus = search.run();
 
-        if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD) {
+        if (minModeStatus != SaddleStatus::Good) {
           QUILL_LOG_DEBUG(log, "error in min mode saddle search");
           return minModeStatus;
         }
@@ -266,7 +275,7 @@ int DynamicsSaddleSearch::run() {
         QUILL_LOG_DEBUG(log, "found barrier of {:.3f}", barrier);
         mdSnapshots.clear();
         mdTimes.clear();
-        return MinModeSaddleSearch::STATUS_GOOD;
+        return SaddleStatus::Good;
       } else {
         QUILL_LOG_DEBUG(log, "Still in original state");
         mdTimes.clear();
@@ -277,13 +286,13 @@ int DynamicsSaddleSearch::run() {
 
   mdSnapshots.clear();
   time = params.dynamics_options.steps * params.dynamics_options.time_step;
-  return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
+  return SaddleStatus::BadMdTrajectoryTooShort;
 }
 
 /// Binary search through MD snapshots to find the transition point.
 int DynamicsSaddleSearch::refineTransition(
     const std::vector<std::shared_ptr<Matter>> &snapshots,
-    std::shared_ptr<Matter> prod) {
+    const std::shared_ptr<Matter> &prod) {
   int lo = 0;
   int hi = static_cast<int>(snapshots.size()) - 1;
   if (hi == 0) {

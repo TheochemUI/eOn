@@ -175,8 +175,8 @@ public:
   }
 
 private:
-  std::vector<ForceCallback> m_pool;
-  std::vector<std::mutex> m_mutexes;
+  std::vector<ForceCallback> m_pool{};
+  std::vector<std::mutex> m_mutexes{};
   std::atomic<size_t> m_next;
 };
 

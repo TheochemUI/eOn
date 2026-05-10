@@ -145,9 +145,8 @@ void TestJob::checkFullSearch() {
   printf("SP done\n");
 
   // unique_ptrs clean up automatically
-  return;
 }
-void TestJob::checkPotentials(void) {
+void TestJob::checkPotentials() {
   double energyDiff;
   double forceDiff;
 

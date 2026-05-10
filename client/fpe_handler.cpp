@@ -130,8 +130,11 @@ void enableFPE() {
 #endif
 
 #ifndef _WIN32
-  // Register POSIX signal handler
-  struct sigaction act;
+  // Register POSIX signal handler. Value-initialise the struct so
+  // every field starts at zero -- POSIX explicitly leaves sa_flags
+  // and the sa_mask scratch area undefined otherwise, and clang-tidy
+  // (cppcoreguidelines-pro-type-member-init) flags the bare decl.
+  struct sigaction act = {};
   act.sa_sigaction = fpe_signal_handler;
   sigemptyset(&act.sa_mask);
   act.sa_flags = SA_SIGINFO;

@@ -14,6 +14,8 @@
 
 #include <cmath>
 
+using eonc::StepResult;
+
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = std::fabs(m_force.dot(m_forceOld));
   double b = m_forceOld.squaredNorm();
@@ -42,16 +44,28 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   return m_direction;
 }
 
-int ConjugateGradients::step(double a_maxMove) {
-  bool converged;
+StepResult ConjugateGradients::step(double a_maxMove) {
+  // Non-finite check: use the previous step's stored m_force (set by
+  // single_step / line_search) rather than calling getGradient()
+  // afresh. A fresh call here would invalidate the matter cache that
+  // the saddle-search outer loop just populated and charge ~+1 force
+  // call per CG step (saddle search regresses 39 -> 50 force calls
+  // on Morse Pt). Skip the check on the very first step where m_force
+  // hasn't been set yet; the body will catch NaN there.
+  if (m_cg_i > 0 && !m_force.allFinite()) {
+    QUILL_LOG_WARNING(m_log,
+                      "[CG] non-finite force entering step (NaN or Inf); "
+                      "aborting minimization");
+    return StepResult::Failed;
+  }
+
+  bool converged = false;
   if (m_optConfig.opts.cg.line_search) {
     converged = line_search(a_maxMove);
   } else {
     converged = single_step(a_maxMove);
   }
-  if (converged)
-    return 1;
-  return 0;
+  return converged ? StepResult::Converged : StepResult::NotConverged;
 }
 
 int ConjugateGradients::line_search(double a_maxMove) {
@@ -188,11 +202,16 @@ int ConjugateGradients::single_step(double a_maxMove) {
   return m_objf->isConverged() ? 1 : 0;
 }
 
-int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
+StepResult ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   size_t iterations = 0;
   while (!m_objf->isConverged() && iterations <= a_maxIterations) {
-    step(a_maxMove);
+    if (step(a_maxMove) == StepResult::Failed) {
+      return StepResult::Failed;
+    }
     iterations++;
   }
-  return m_objf->isConverged() ? 1 : 0;
+  // No final getGradient() check -- the per-step guard above handles
+  // NaN bail without paying an extra force evaluation here.
+  return m_objf->isConverged() ? StepResult::Converged
+                               : StepResult::NotConverged;
 }

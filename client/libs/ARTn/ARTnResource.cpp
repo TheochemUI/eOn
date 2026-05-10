@@ -66,10 +66,11 @@ ARTnResource::ARTnResource() {
 }
 
 ARTnResource::~ARTnResource() {
-  if (m_handle) {
-    dynlib::close(m_handle);
-    m_handle = {};
-  }
+  // Intentionally do NOT dlclose at static destruction. libartn pulls in
+  // gfortran runtime + LAPACK; its destructor chain runs Fortran
+  // FINAL/STOP statements that touch stdio that is already being torn
+  // down by the time this Meyer-singleton dtor runs. The handle is
+  // process-lifetime; OS unmaps the lib at exit.
 }
 
 void ARTnResource::require_loaded() const {

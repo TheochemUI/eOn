@@ -15,21 +15,22 @@
 /// INI, running the job, and verifying outputs match SVN reference
 /// values.
 
+#include "ARTnSaddleSearch.h"
 #include "Job.h"
 #include "Parameters.h"
 #include "PotRegistry.h"
+#include "StatusTypes.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#ifdef WITH_ARTN
-#include "ARTnSaddleSearch.h"
 #include "libs/ARTn/ARTnResource.h"
-#endif
 
 #include <filesystem>
 #include <fstream>
 #include <string>
 
 namespace tests {
+
+using eonc::SaddleStatus;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
@@ -347,8 +348,9 @@ max_energy = 10.0
   REQUIRE(results.count("termination_reason") > 0);
   // SVN reference (data/reference/saddle_search_morse_pt.dat):
   // 0 termination_reason (converged)
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   // Energy must match SVN exactly
   double energy = std::stod(results["potential_energy_saddle"]);
@@ -395,8 +397,9 @@ max_energy = 10.0
   auto results = runJob();
 
   // SVN reference (data/reference/saddle_search_lanczos_morse_pt.dat):
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   double energy = std::stod(results["potential_energy_saddle"]);
   REQUIRE(energy == Catch::Approx(-1462.008706).epsilon(1e-4));
@@ -439,8 +442,9 @@ max_move = 0.2
   // SVN reference (data/reference/neb_lj.dat):
   // termination_reason = 0 (converged)
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   int nImages = std::stoi(results["number_of_images"]);
   REQUIRE(nImages == 3);
@@ -533,8 +537,9 @@ max_iterations = 200
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0); // GOOD
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   // SVN reference (data/reference/minimization_morse_pt.dat):
   // Energy must be exact
@@ -995,8 +1000,9 @@ max_energy = 10.0
 
   // SVN reference (data/reference/process_search_morse_pt.dat):
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   // Force calls must be <= SVN (67)
   REQUIRE(forceCalls_ <= 67);
@@ -1016,7 +1022,6 @@ max_energy = 10.0
   REQUIRE(barrier == Catch::Approx(0.158077).epsilon(1e-3));
 }
 
-#ifdef WITH_ARTN
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob ARTn converges on Morse Pt",
                  "[job][saddle_search][artn][integration]") {
@@ -1052,17 +1057,18 @@ max_iterations = 500
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
   // ARTn may not converge, but should not crash
-  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
-           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
-           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+  REQUIRE((status == SaddleStatus::Good ||
+           status == SaddleStatus::BadMaxIterations ||
+           status == SaddleStatus::BadArtnError));
 
   // Energy must be finite
   double energy = std::stod(results["potential_energy_saddle"]);
   REQUIRE(std::isfinite(energy));
 
-  if (status == ARTnSaddleSearch::STATUS_GOOD) {
+  if (status == SaddleStatus::Good) {
     // Eigenvalue must be negative for a converged first-order saddle
     double eigenvalue = std::stod(results["final_eigenvalue"]);
     REQUIRE(eigenvalue < 0.0);
@@ -1119,10 +1125,11 @@ max_spawns = 5
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
-           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
-           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE((status == SaddleStatus::Good ||
+           status == SaddleStatus::BadMaxIterations ||
+           status == SaddleStatus::BadArtnError));
 
   // Force calls must be reasonable
   REQUIRE(forceCalls_ > 0);
@@ -1144,6 +1151,8 @@ max_spawns = 5
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob standalone ARTn works without direction file",
                  "[job][saddle_search][artn][optional-mode][integration]") {
+  if (!eonc::get_artn_resource().is_loaded())
+    SKIP("libartn not available at runtime");
   copyTestData("../saddle_search");
   std::filesystem::remove(workdir / "direction.dat");
   std::filesystem::remove(workdir / "displacement.con");
@@ -1168,17 +1177,21 @@ max_iterations = 5
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE((status == ARTnSaddleSearch::STATUS_GOOD ||
-           status == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
-           status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE((status == SaddleStatus::Good ||
+           status == SaddleStatus::BadMaxIterations ||
+           status == SaddleStatus::BadArtnError));
 }
-#endif // WITH_ARTN
-
-#ifndef WITH_ARTN
+// Runtime-missing-libartn rejection tests. ARTnResource is always
+// compiled in; the failure path now triggers when libartn.so is not
+// found at first dlopen. These tests skip when libartn is loaded so
+// they only run on builds without the library on LD_LIBRARY_PATH.
 TEST_CASE_METHOD(JobIntegrationFixture,
-                 "SaddleSearchJob rejects standalone ARTn when not compiled",
+                 "SaddleSearchJob rejects standalone ARTn when libartn missing",
                  "[job][saddle_search][artn][config][integration]") {
+  if (eonc::get_artn_resource().is_loaded())
+    SKIP("libartn loaded; runtime-missing path not exercised");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -1192,14 +1205,15 @@ method = artn
 )");
 
   REQUIRE_THROWS_WITH(
-      runJob(),
-      Catch::Matchers::ContainsSubstring(
-          "saddle_search.method=artn requires a build with ARTn support"));
+      runJob(), Catch::Matchers::ContainsSubstring(
+                    "saddle_search.method=artn requires libartn at runtime"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
-                 "SaddleSearchJob rejects ARTn min-mode when not compiled",
+                 "SaddleSearchJob rejects ARTn min-mode when libartn missing",
                  "[job][saddle_search][artn][min_mode][config][integration]") {
+  if (eonc::get_artn_resource().is_loaded())
+    SKIP("libartn loaded; runtime-missing path not exercised");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -1215,12 +1229,15 @@ min_mode_method = artn
 
   REQUIRE_THROWS_WITH(runJob(), Catch::Matchers::ContainsSubstring(
                                     "saddle_search.minmode_method=artn "
-                                    "requires a build with ARTn support"));
+                                    "requires libartn at runtime"));
 }
 
-TEST_CASE_METHOD(JobIntegrationFixture,
-                 "ProcessSearchJob rejects standalone ARTn when not compiled",
-                 "[job][process_search][artn][config][integration]") {
+TEST_CASE_METHOD(
+    JobIntegrationFixture,
+    "ProcessSearchJob rejects standalone ARTn when libartn missing",
+    "[job][process_search][artn][config][integration]") {
+  if (eonc::get_artn_resource().is_loaded())
+    SKIP("libartn loaded; runtime-missing path not exercised");
   copyTestData("../saddle_search");
   writeConfig(R"(
 [Main]
@@ -1234,11 +1251,9 @@ method = artn
 )");
 
   REQUIRE_THROWS_WITH(
-      runJob(),
-      Catch::Matchers::ContainsSubstring(
-          "saddle_search.method=artn requires a build with ARTn support"));
+      runJob(), Catch::Matchers::ContainsSubstring(
+                    "saddle_search.method=artn requires libartn at runtime"));
 }
-#endif
 
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob ARTn parameters parsed correctly",

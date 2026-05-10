@@ -1,0 +1,1 @@
+Add `MetatomicPotential.cpp` PCH (`pch/metatomic_pch.h`) covering the `torch/script.h` + `torch/cuda.h` + `torch/mps.h` + `metatensor/torch` + `metatomic/torch` header chain. Cuts cold compile time of the heaviest TU in the project from minutes to seconds.

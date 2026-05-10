@@ -18,9 +18,9 @@
 #include "SteepestDescent.h"
 
 namespace eonc::helpers::create {
-std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
-                                   OptType a_otype,
-                                   const Parameters &a_params) {
+std::unique_ptr<Optimizer>
+mkOptim(const std::shared_ptr<ObjectiveFunction> &a_objf, OptType a_otype,
+        const Parameters &a_params) {
   switch (a_otype) {
   case OptType::FIRE: {
     return std::make_unique<FIRE>(a_objf, a_params);

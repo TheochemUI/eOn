@@ -18,6 +18,7 @@ py.install_sources(
         'locking.py',
         'server.py',
         'schema.py',
+        'status_codes.py',
         # TODO(rg): Spin mcamc out and use as a dependency
         # This will only use the python variant for now
         'mcamc/__init__.py',

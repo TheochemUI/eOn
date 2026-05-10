@@ -1,0 +1,1 @@
+Add `ci_sanitizers.yml` workflow that builds with `b_sanitize=address,undefined` and runs the test suite under ASan + UBSan. Catches use-after-free / out-of-bounds / signed-overflow / null-deref regressions in the `LAMMPSBundle` extract path, the `MetatomicPotential` neighbor list code, and the `LBFGS` / `CG` minimizer paths.

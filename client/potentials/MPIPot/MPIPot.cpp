@@ -11,21 +11,37 @@
 */
 
 #include "MPIPot.h"
+
 #include <mpi.h>
-#include <stdio.h>
-#include <time.h>
+
 #ifndef _WIN32
 #include <unistd.h>
 #endif
+
+// MPI C++ bindings (MPI::COMM_WORLD, MPI::INT, MPI::DOUBLE) were
+// deprecated in MPI-2.2 and removed in MPI-3.0 (~2012); modern
+// conda-forge MPICH 4.x and OpenMPI 5.x ship without mpicxx.h. The
+// translations below use the C bindings, which every MPI
+// implementation guarantees:
+//   MPI::COMM_WORLD.Send(...)   ->  MPI_Send(..., MPI_COMM_WORLD)
+//   MPI::COMM_WORLD.Recv(...)   ->  MPI_Recv(..., MPI_COMM_WORLD,
+//                                            MPI_STATUS_IGNORE)
+//   MPI::COMM_WORLD.Iprobe(...) ->  MPI_Iprobe(..., MPI_COMM_WORLD,
+//                                              &flag, MPI_STATUS_IGNORE)
+//   MPI::INT / MPI::DOUBLE      ->  MPI_INT / MPI_DOUBLE
+//
+// This is a pure compile fix; it doesn't change wire semantics.
+// Runtime-loadable libmpi via an MpiLoader (the FlexiBLAS-of-MPI
+// pattern) is a separate follow-up; see the ABI note in
+// MPIPot's docs/source/user_guide/mpi_potential.md.
 
 MPIPot::MPIPot(const Parameters &p)
     : Potential(p) {
   potentialRank = p.potential_options.MPIPotentialRank;
   poll_period = p.potential_options.MPIPollPeriod;
-  return;
 }
 
-void MPIPot::cleanMemory(void) { return; }
+void MPIPot::cleanMemory(void) {}
 
 MPIPot::~MPIPot() { cleanMemory(); }
 
@@ -34,37 +50,51 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
   variance = nullptr;
   // Send data to potential
   int pbc = 1;
-  int failed;
+  int failed = 0;
   char cwd[1024];
-  long icwd[1024];
-  getcwd(cwd, 1024);
+  // Wire format pre-dates this commit: 1024 MPI_INTs holding char
+  // values (cwd[i] cast through int). The original C++-bindings code
+  // declared a long[1024] but tagged the message MPI::INT, which on
+  // little-endian sent the low 4 bytes of each long. Switching the
+  // local buffer to int[] keeps the wire format identical on every
+  // endianness (any deployed MPI server still parses it correctly).
+  int icwd[1024];
+  if (getcwd(cwd, sizeof(cwd)) == nullptr) {
+    cwd[0] = '\0';
+  }
   for (int i = 0; i < 1024; i++) {
-    icwd[i] = static_cast<long>(cwd[i]);
+    icwd[i] = static_cast<int>(cwd[i]);
   }
   int intn = static_cast<int>(N);
-  MPI::COMM_WORLD.Send(&intn, 1, MPI::INT, potentialRank, 0);
-  MPI::COMM_WORLD.Send(atomicNrs, N, MPI::INT, potentialRank, 0);
-  MPI::COMM_WORLD.Send(R, 3 * N, MPI::DOUBLE, potentialRank, 0);
-  MPI::COMM_WORLD.Send(box, 9, MPI::DOUBLE, potentialRank, 0);
-  MPI::COMM_WORLD.Send(&pbc, 1, MPI::INT, potentialRank, 0);
-  MPI::COMM_WORLD.Send(&icwd[0], 1024, MPI::INT, potentialRank, 0);
+  MPI_Send(&intn, 1, MPI_INT, potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(const_cast<int *>(atomicNrs), static_cast<int>(N), MPI_INT,
+           potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(const_cast<double *>(R), static_cast<int>(3 * N), MPI_DOUBLE,
+           potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(const_cast<double *>(box), 9, MPI_DOUBLE, potentialRank, 0,
+           MPI_COMM_WORLD);
+  MPI_Send(&pbc, 1, MPI_INT, potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(icwd, 1024, MPI_INT, potentialRank, 0, MPI_COMM_WORLD);
 
   if (poll_period > 0.0) {
-    while (MPI::COMM_WORLD.Iprobe(potentialRank, 0) == false) {
-      usleep(static_cast<useconds_t>(poll_period / 1000000.0));
-    }
+    int flag = 0;
+    do {
+      MPI_Iprobe(potentialRank, 0, MPI_COMM_WORLD, &flag, MPI_STATUS_IGNORE);
+      if (!flag) {
+        usleep(static_cast<useconds_t>(poll_period / 1000000.0));
+      }
+    } while (!flag);
   }
 
   // Recv data from potential
-  MPI::COMM_WORLD.Recv(&failed, 1, MPI::INT, potentialRank, 0);
+  MPI_Recv(&failed, 1, MPI_INT, potentialRank, 0, MPI_COMM_WORLD,
+           MPI_STATUS_IGNORE);
   if (failed == 1) {
     throw 100;
   }
 
-  MPI::COMM_WORLD.Recv(U, 1, MPI::DOUBLE, potentialRank, 0);
-  MPI::COMM_WORLD.Recv(F, 3 * N, MPI::DOUBLE, potentialRank, 0);
-  // printf("energy: %12.4e\n", *U);
-  // printf("forces:\n");
-  // for (int i=0;i<N;i++) printf("%12.4e %12.4e %12.4e\n", F[3*i], F[3*i+1],
-  // F[3*i+2]);
+  MPI_Recv(U, 1, MPI_DOUBLE, potentialRank, 0, MPI_COMM_WORLD,
+           MPI_STATUS_IGNORE);
+  MPI_Recv(F, static_cast<int>(3 * N), MPI_DOUBLE, potentialRank, 0,
+           MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 }

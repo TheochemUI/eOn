@@ -9,12 +9,96 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
+# -fvisibility-inlines-hidden: stops the compiler from emitting
+# inline / template-instantiation symbols with default visibility,
+# which otherwise duplicate across every TU that includes the
+# header. Safe to apply universally -- inline functions don't need
+# to be visible across DSO boundaries because every consumer has
+# the body via the header.
+#
+# We deliberately do NOT pass -fvisibility=hidden globally: that
+# would require annotating every cross-DSO entry point in libeonclib
+# (Matter::compare, Potential::*, Job::*, ...) with
+# __attribute__((visibility("default"))), which is a separate
+# multi-day refactor. cppc.get_supported_arguments() filters out
+# flags MSVC doesn't accept, so the same line is a no-op on Windows.
+add_project_arguments(
+    cppc.get_supported_arguments(['-fvisibility-inlines-hidden']),
+    language: 'cpp',
+)
+
+# DynLib.h (used by LammpsLoader / XtbLoader / ARTnResource /
+# IRAResource and any future runtime-loaded shim) calls dlopen +
+# dlsym + dlclose on POSIX. On Linux these symbols live in libdl;
+# on macOS and BSDs they're in libc and find_library('dl') returns
+# not-found -- harmless. Hoist dl_dep to file scope so every
+# eonclib / eoncbase / per-potential library() call already links
+# -ldl when the toolchain needs it. Pre-fix #338, only LAMMPS got
+# this for free and XTB / ARTn / IRA hit
+# `undefined reference to dlopen` at link time in CI.
+dl_dep = cppc.find_library('dl', required: false)
+if dl_dep.found()
+    _deps += [dl_dep]
+endif
+
 use_fortran = false
 if get_option('with_fortran') or get_option('with_cuh2')
     use_fortran = true
     add_languages('fortran', required: true)
     fc = meson.get_compiler('fortran')
     _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
+endif
+
+# Centralised pybind11 lookup -- pre-2.15 every Python-embedding
+# potential block (with_catlearn / with_ase / with_ase_orca /
+# with_ase_nwchem) re-ran dependency('pybind11'), which isn't
+# expensive but bloats configure-time logs and duplicates the
+# include-path resolution. Resolve once, append once; downstream
+# blocks reuse the entry already in _deps.
+need_pybind11 = (
+    get_option('with_catlearn')
+    or get_option('with_ase')
+    or get_option('with_ase_orca')
+    or get_option('with_ase_nwchem')
+)
+if need_pybind11
+    _deps += [dependency('pybind11', required: true)]
+endif
+
+# BLAS / LAPACK acceleration for Eigen.
+#
+# Three operating modes, mutually exclusive:
+#
+#   with_flexiblas (default off, recommended)
+#     Link Eigen against FlexiBLAS -- the FlexiBLAS-of-MPI analogue
+#     for BLAS. One eonclient binary forwards every BLAS / LAPACK
+#     call to any installed backend (OpenBLAS, MKL, BLIS, ATLAS,
+#     ARMPL, ...) at run time, picked via the FLEXIBLAS env var:
+#       FLEXIBLAS=OPENBLAS ./eonclient   # OpenBLAS at runtime
+#       FLEXIBLAS=INTELMKL ./eonclient   # Intel MKL at runtime
+#     subprojects/flexiblas.wrap pins upstream and CMake-builds it
+#     when the host doesn't ship a FlexiBLAS install, so there's
+#     never a "no BLAS" failure mode.
+#
+#   use_mkl (default off, legacy direct link)
+#     Hard-link to Intel MKL via mkl-dynamic-ilp64-iomp. ABI-locks
+#     the binary to MKL. Kept for users who explicitly want MKL
+#     without the FlexiBLAS indirection. Mutually exclusive with
+#     with_flexiblas.
+#
+#   neither (default)
+#     Pure-header Eigen, no external BLAS link. Eigen falls back to
+#     its own routines.
+if get_option('with_flexiblas') and get_option('use_mkl')
+    error('with_flexiblas and use_mkl are mutually exclusive; FlexiBLAS '
+        + 'can route to MKL at run time via FLEXIBLAS=INTELMKL')
+endif
+
+if get_option('with_flexiblas')
+    flexiblas_dep = dependency('flexiblas', required: true)
+    add_project_arguments('-DEIGEN_USE_BLAS', language: 'cpp')
+    add_project_arguments('-DEIGEN_USE_LAPACKE', language: 'cpp')
+    _deps += [flexiblas_dep]
 endif
 
 if get_option('use_mkl')
@@ -137,25 +221,55 @@ architecture = host_machine.cpu_family()
 message(host_system)
 message(architecture)
 
-# Generate features string for version.h.in
+# Generate features string for version.h.in.
+#
+# Each entry is (compile_flag, display_name, mode) where mode is one of:
+#   'compile'    -- check '-Dflag' in _args (compile-time CPP define).
+#                   Reports 'enabled' (compile-linked) or 'disabled'.
+#   'runtime'    -- always compiled into the client; loaded via dlopen
+#                   at run time (LAMMPS, ARTn, IRA, XTB). Always reports
+#                   'enabled (dlopen at runtime)' since the shim is
+#                   present, irrespective of whether the dynamic library
+#                   is found at run time. Call sites use is_loaded() /
+#                   require_loaded() to gate the runtime path.
+#   'subprocess' -- POSIX-only subprocess shim (VASP). Always compiled
+#                   on POSIX, omitted on Windows.
 features_list = [
-    ['WITH_GPRD', 'GPRD'],
-    ['WITH_GP_SURROGATE', 'GP Surrogate'],
-    ['WITH_CATLEARN', 'CatLearn'],
-    ['WITH_VASP', 'VASP'],
-    ['WITH_WATER', 'Water'],
-    ['WITH_AMS', 'AMS'],
-    ['WITH_XTB', 'XTB'],
-    ['LAMMPS_POT', 'LAMMPS'],
-    ['WITH_ASE_POT', 'ASE Potentials'],
-    ['EONMPI', 'MPI'],
-    ['WITH_FORTRAN', 'Fortran'],
-    ['CUH2_POT', 'CuH2'],
-    ['WITH_ASE_ORCA', 'ASE-ORCA'],
-    ['WITH_ASE_NWCHEM', 'ASE-NWChem'],
-    ['WITH_METATOMIC', 'Metatomic'],
-    ['WITH_SERVE_MODE', 'Serve Mode'],
-    ['EMBED_PYTHON', 'Embedded Python'],
+    ['WITH_GPRD',          'GPRD',           'compile'],
+    ['WITH_GP_SURROGATE',  'GP Surrogate',   'compile'],
+    ['WITH_CATLEARN',      'CatLearn',       'compile'],
+    # VASP is unconditionally compiled on POSIX (omitted on Windows).
+    # The class spawns ./runvasp.sh and reads FU/POSCAR files; nothing
+    # is linked or dlopen'd. The banner reports the shim's presence,
+    # not whether VASP itself is on PATH.
+    ['VASP_POT',           'VASP',           'subprocess'],
+    ['WITH_WATER',         'Water',          'compile'],
+    ['WITH_AMS',           'AMS',            'compile'],
+    # XTB: always compiled, dlopen at runtime via XtbLoader.
+    ['XTB_POT',            'XTB',            'runtime'],
+    # LAMMPS is unconditionally compiled (see subdir('potentials/LAMMPS')
+    # below). The dlopen lookup of liblammps.so happens at run time inside
+    # LammpsLoader::instance(); the banner just tells the user the shim is
+    # present, not whether liblammps was located.
+    ['LAMMPS_POT',         'LAMMPS',         'runtime'],
+    ['WITH_ASE_POT',       'ASE Potentials', 'compile'],
+    ['EONMPI',             'MPI',            'compile'],
+    ['WITH_FORTRAN',       'Fortran',        'compile'],
+    ['CUH2_POT',           'CuH2',           'compile'],
+    ['WITH_ASE_ORCA',      'ASE-ORCA',       'compile'],
+    ['WITH_ASE_NWCHEM',    'ASE-NWChem',     'compile'],
+    # Metatomic is compile-linked (subdir('potentials/Metatomic') links
+    # the metatomic_pot library directly via library() with link_with).
+    # No dlopen; static check on -DWITH_METATOMIC is correct.
+    ['WITH_METATOMIC',     'Metatomic',      'compile'],
+    ['WITH_SERVE_MODE',    'Serve Mode',     'compile'],
+    ['EMBED_PYTHON',       'Embedded Python','compile'],
+    # ARTn / IRA: same pattern as LAMMPS. The *Resource shim is
+    # unconditionally compiled; libartn.so / libira.so are dlopen'd
+    # inside *Resource::instance(); is_loaded() / require_loaded()
+    # gate the call sites at run time.
+    ['ARTN_POT',           'ARTn',           'runtime'],
+    ['IRA_POT',            'IRA',            'runtime'],
 ]
 
 # Join _args into a single string for checking
@@ -165,7 +279,19 @@ features_string = ''
 foreach feature : features_list
     feature_flag = feature[0]
     feature_name = feature[1]
-    if '-D' + feature_flag in _args_str
+    feature_mode = feature.length() > 2 ? feature[2] : 'compile'
+    if feature_mode == 'runtime'
+        features_string += '  ' + feature_name + ': enabled (dlopen at runtime)\n'
+    elif feature_mode == 'subprocess'
+        # POSIX-only subprocess shims (VASP). Always compiled where the
+        # platform supports it; the user supplies the external binary
+        # at run time on PATH.
+        if host_system == 'windows'
+            features_string += '  ' + feature_name + ': disabled (POSIX only)\n'
+        else
+            features_string += '  ' + feature_name + ': enabled (subprocess)\n'
+        endif
+    elif '-D' + feature_flag in _args_str
         features_string += '  ' + feature_name + ': enabled\n'
     else
         features_string += '  ' + feature_name + ': disabled\n'
@@ -218,11 +344,15 @@ _args += ['-DQUILL_DISABLE_NON_PREFIXED_MACROS']
 
 inireader_dep = dependency('INIReader', required: false)
 if not inireader_dep.found()
+    # warning_level=0 on the subproject silences `unused parameter
+    # 'user'` in inih-r62/tests/unittest_alloc.c -- vendored upstream
+    # test code, not ours to fix; inheriting our -Wall -Wextra would
+    # otherwise leak the warning into our build log.
     inireader_dep = dependency(
         'inireader',
         fallback: ['inih', 'INIReader_dep'],
         required: true,
-        default_options: ['default_library=static'],
+        default_options: ['default_library=static', 'warning_level=0'],
     )
 endif
 _deps += inireader_dep
@@ -305,71 +435,114 @@ if not is_windows
     potentials += [socket_nwchem]
 endif
 
-eonclib_sources = [
-    'Parameters.cpp',
-    'ParametersINI.cpp',
-    'ParametersJSON.cpp',
-    'ConFileIO.cpp',
-    'GeometryAnalysis.cpp',
-    'Optimizer.cpp',
-    'IDPPObjectiveFunction.cpp',
-    'PrefactorJob.cpp',
-    'LBFGS.cpp',
-    'ReplicaExchangeJob.cpp',
-    'BondBoost.cpp',
-    'Job.cpp',
-    'GlobalOptimization.cpp',
-    'LowestEigenmode.cpp',
-    'MinModeSaddleSearch.cpp',
-    'StructureComparisonJob.cpp',
-    'SteepestDescent.cpp',
-    'ImprovedDimer.cpp',
-    'PointJob.cpp',
-    'Prefactor.cpp',
-    'ConjugateGradients.cpp',
-    'Matter.cpp',
-    'FiniteDifferenceJob.cpp',
-    'Lanczos.cpp',
-    'HessianJob.cpp',
-    'ReplicaDynamicsJob.cpp',
-    'TADJob.cpp',
-    'ProcessSearchJob.cpp',
-    'Bundling.cpp',
-    'NEBInitialPaths.cpp',
-    'NEBForceProjection.cpp',
-    'NEBObjectiveFunction.cpp',
-    'NEBProjection.cpp',
-    'NEBOcinebController.cpp',
-    'NEBSplineExtrema.cpp',
-    'NEBSpringForce.cpp',
-    'NEBTangent.cpp',
-    'NudgedElasticBand.cpp',
-    'MonteCarloJob.cpp',
-    'DynamicsJob.cpp',
-    'MonteCarlo.cpp',
-    'Hessian.cpp',
-    'NudgedElasticBandJob.cpp',
-    'DynamicsSaddleSearch.cpp',
-    'HelperFunctions.cpp',
-    'RandomNumbers.cpp',
-    'StringHelpers.cc',
-    'MatrixHelpers.hpp',  # Template
-    'Dimer.cpp',
-    'Dynamics.cpp',
-    'GlobalOptimizationJob.cpp',
-    'BiasedGradientSquaredDescent.cpp',
-    'SafeHyperJob.cpp',
-    'MinimizationJob.cpp',
-    'Quickmin.cpp',
-    'ParallelReplicaJob.cpp',
-    'Potential.cpp',
-    'SurrogatePotential.cpp',  # Part of the interface
-    'BasinHoppingJob.cpp',
-    'FIRE.cpp',
-    'EpiCenters.cpp',
-    'SaddleSearchJob.cpp',
-    'BasinHoppingSaddleSearch.cpp',
-]
+# eonclib source set (issue #177). Resolves the historical thicket of
+# conditional `eonclib_sources +=` accretions across the file by
+# moving every source-list decision into one sourceset driven by a
+# configuration_data of feature flags. Side-effecting feature blocks
+# (subproject(), find_library(), -DWITH_X args, _deps additions) stay
+# where they are; only the source-membership question moves here.
+eonclib_ss = import('sourceset').source_set()
+
+eonclib_ss.add(
+    files(
+        'BasinHoppingJob.cpp',
+        'BasinHoppingSaddleSearch.cpp',
+        'BiasedGradientSquaredDescent.cpp',
+        'BondBoost.cpp',
+        'Bundling.cpp',
+        'ConFileIO.cpp',
+        'ConjugateGradients.cpp',
+        'Dimer.cpp',
+        'Dynamics.cpp',
+        'DynamicsJob.cpp',
+        'DynamicsSaddleSearch.cpp',
+        'EpiCenters.cpp',
+        'FIRE.cpp',
+        'FiniteDifferenceJob.cpp',
+        'GeometryAnalysis.cpp',
+        'GlobalOptimization.cpp',
+        'GlobalOptimizationJob.cpp',
+        'HelperFunctions.cpp',
+        'Hessian.cpp',
+        'HessianJob.cpp',
+        'IDPPObjectiveFunction.cpp',
+        'ImprovedDimer.cpp',
+        'Job.cpp',
+        'LBFGS.cpp',
+        'Lanczos.cpp',
+        'LowestEigenmode.cpp',
+        'MatrixHelpers.hpp',
+        'Matter.cpp',
+        'MinModeSaddleSearch.cpp',
+        'MinimizationJob.cpp',
+        'MonteCarlo.cpp',
+        'MonteCarloJob.cpp',
+        'NEBForceProjection.cpp',
+        'NEBInitialPaths.cpp',
+        'NEBObjectiveFunction.cpp',
+        'NEBOcinebController.cpp',
+        'NEBProjection.cpp',
+        'NEBSplineExtrema.cpp',
+        'NEBSpringForce.cpp',
+        'NEBTangent.cpp',
+        'NudgedElasticBand.cpp',
+        'NudgedElasticBandJob.cpp',
+        'Optimizer.cpp',
+        'ParallelReplicaJob.cpp',
+        'Parameters.cpp',
+        'ParametersINI.cpp',
+        'ParametersJSON.cpp',
+        'PointJob.cpp',
+        'Potential.cpp',
+        'Prefactor.cpp',
+        'PrefactorJob.cpp',
+        'ProcessSearchJob.cpp',
+        'Quickmin.cpp',
+        'RandomNumbers.cpp',
+        'ReplicaDynamicsJob.cpp',
+        'ReplicaExchangeJob.cpp',
+        'SaddleSearchJob.cpp',
+        'SafeHyperJob.cpp',
+        'SteepestDescent.cpp',
+        'StringHelpers.cc',
+        'StructureComparisonJob.cpp',
+        'SurrogatePotential.cpp',
+        'TADJob.cpp',
+    ),
+)
+
+# ARTn / IRA: shim + driver always compiled, libs dlopen'd at run
+# time. ARTnResource.h / IRAResource.h redeclare the C entry points
+# inline, so neither needs an external header at compile time.
+eonclib_ss.add(
+    files(
+        'ARTnSaddleSearch.cpp',
+        'libs/ARTn/ARTnResource.cpp',
+        'IRACompare.cpp',
+        'libs/IRA/IRAResource.cpp',
+    ),
+)
+
+# Conditional sources, gated by configuration_data flags built up
+# below. Every -DWITH_<X> addition + subproject + dependency lives in
+# the matching feature block; sourceset only owns source membership.
+eonclib_ss.add(
+    when: 'WITH_GPRD',
+    if_true: files('AtomicGPDimer.cpp', 'GPRHelpers.cpp'),
+)
+eonclib_ss.add(
+    when: 'WITH_GP_SURROGATE',
+    if_true: files('GPSurrogateJob.cpp'),
+)
+eonclib_ss.add(
+    when: 'WITH_SERVE_MODE',
+    if_true: files('ServeMode.cpp', 'ServeRpcServer.cpp'),
+)
+
+eonclib_cfg = configuration_data()
+eonclib_cfg.set('WITH_GPRD', get_option('with_gprd'))
+eonclib_cfg.set('WITH_GP_SURROGATE', get_option('with_gp_surrogate'))
+eonclib_cfg.set('WITH_SERVE_MODE', get_option('with_serve'))
 
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
 
@@ -390,30 +563,29 @@ if get_option('with_gprd')
     # subdir('potentials/GPRPotential')
     # potentials += [ gprpot ]
     _args += ['-DWITH_GPRD']
-    eonclib_sources += ['AtomicGPDimer.cpp', 'GPRHelpers.cpp']
+    # Source membership for AtomicGPDimer.cpp + GPRHelpers.cpp is
+    # owned by the eonclib sourceset above (when: 'WITH_GPRD').
     _deps += [libgprd, gprd_deps]
 endif
 
 if get_option('with_gp_surrogate')
     _args += ['-DWITH_GP_SURROGATE']
-    eonclib_sources += ['GPSurrogateJob.cpp']
+    # Source membership owned by sourceset (when: 'WITH_GP_SURROGATE').
     if get_option('with_catlearn')
-        # TODO: Cleanup, used for ase_orca too
-        # Embedding the interpreter
-        pyb11f_deps = [dependency('pybind11')]
-        _deps += [pyb11f_deps]
+        # pybind11 is provided by the central need_pybind11 block above.
         subdir('potentials/CatLearnPot')
         potentials += [catlearnpot]
         _args += ['-DWITH_CATLEARN']
     endif
 endif
 
-if get_option('with_vasp')
-    if host_system != 'windows'
-        subdir('potentials/VASP')
-        potentials += [vasp]
-        _args += ['-DWITH_VASP']
-    endif
+# VASP: always compiled on POSIX (Windows omits via #ifndef _WIN32 in
+# Potential.cpp). The shim spawns `runvasp.sh` at use time; no library
+# dependency at build time. The user gets VASP support iff the script is
+# on PATH and PotType::VASP is requested.
+if host_system != 'windows'
+    subdir('potentials/VASP')
+    potentials += [vasp]
 endif
 
 if get_option('with_water')
@@ -450,17 +622,10 @@ if get_option('with_ams')
     _args += ['-DWITH_AMS']
 endif
 
-if get_option('with_xtb')
-    # Try finding system 'xtb' via pkg-config or cmake.
-    # Users who need to build xtb from source can place it in subprojects/
-    # and Meson's implicit fallback will find it.
-    xtb_dep = dependency('xtb', required: true)
-
-    _deps += [xtb_dep]
-    subdir('potentials/XTBPot')
-    potentials += xtb_eon
-    _args += ['-DWITH_XTB']
-endif
+# XTB: always compiled, dlopens libxtb at runtime via XtbLoader.
+# Mirrors the LAMMPS / ARTn / IRA pattern; no link-time xtb dependency.
+subdir('potentials/XTBPot')
+potentials += xtb_eon
 
 # LAMMPS: always compiled, loaded at runtime via dlopen
 subdir('potentials/LAMMPS')
@@ -473,8 +638,7 @@ if py_embed
     # subdir('potentials/QSC')
     # potentials += [ qsc ]
     if get_option('with_ase')
-        pyb11f_deps = [dependency('pybind11')]
-        _deps += [pyb11f_deps]
+        # pybind11 supplied by need_pybind11 block.
         subdir('potentials/ASE')
         potentials += [ase]
         _args += ['-DWITH_ASE_POT']
@@ -482,11 +646,26 @@ if py_embed
 endif
 
 if get_option('with_mpi')
+    # MPI goes through MPItrampoline -- the FlexiBLAS-of-MPI. We link
+    # against its stable wrapper ABI; one eonclient binary then works
+    # against any spec-compliant libmpi at run time, picked via the
+    # MPITRAMPOLINE_LIB env var (see
+    # docs/source/user_guide/mpi_potential.md).
+    #
+    # subprojects/mpitrampoline.wrap pins upstream v5.5.1 and
+    # declares MPItrampoline as a provided dependency, so meson
+    # auto-builds the wrap if no system install is found. There is
+    # never a "no MPI library" failure mode here -- either the host
+    # already has MPItrampoline, or meson fetches and CMake-builds
+    # it from the wrap. We deliberately do NOT fall back to a
+    # direct dependency('mpi') link, since that would silently
+    # ABI-lock the binary to one MPI flavour and defeat the whole
+    # point.
+    mpi_dep = dependency('MPItrampoline', required: true)
+    _deps += [mpi_dep]
     subdir('potentials/MPIPot')
     potentials += [mpipot]
     _args += ['-DEONMPI']
-    mpi_dep = dependency('mpi')
-    _deps += [mpi_dep]
 endif
 
 if get_option('with_fortran')
@@ -511,25 +690,17 @@ if get_option('with_cuh2')
 endif
 
 if get_option('with_ase_orca')
-    # TODO: Cleanup, used for Catlearn too
-    # Embedding the interpreter
-    pyb11f_deps = [python_dep, dependency('pybind11')]
-    _deps += [pyb11f_deps]
+    # python_dep + pybind11_dep both supplied by the central
+    # py_embed and need_pybind11 blocks above.
     subdir('potentials/ASE_ORCA')
     potentials += [aseorca]
     _args += ['-DWITH_ASE_ORCA']
 endif
 
 if get_option('with_ase_nwchem')
-    # TODO: Cleanup, used for Catlearn too
-    # Embedding the interpreter
-    python_dep = py.dependency(embed: true, required: true)
-    pyb11f_deps = [
-        python_dep,
-        dependency('pybind11'),
-        declare_dependency(link_args: '-lstdc++'),
-    ]
-    _deps += [pyb11f_deps]
+    # python_dep + pybind11_dep supplied centrally; only the
+    # libstdc++ link arg is unique to this potential.
+    _deps += [declare_dependency(link_args: '-lstdc++')]
     subdir('potentials/ASE_NWCHEM')
     potentials += [asenwchem]
     _args += ['-DWITH_ASE_NWCHEM']
@@ -553,16 +724,22 @@ if get_option('with_metatomic')
     ]
 
 
-    lib_torch_list = ['c10', 'torch', 'torch_cpu']
-    if not is_windows
-        lib_torch_list += 'torch_global_deps'
-    endif
+    lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
     # On Windows, torch DLLs live in <prefix>/bin not <prefix>/lib
     LIB_TORCH_BIN_PATH = LIB_TORCH_PATH / 'bin'
     lib_torch_dirs = is_windows ? [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH] : [LIB_TORCH_LIB_PATH]
+    # Each lookup is required: false because some installs ship a
+    # different set than the canonical Linux layout: Windows torch
+    # builds skip the torch_global_deps .lib (only the .dll exists);
+    # libtorch *cpu* conda packages strip torch_cuda; etc. The CMake
+    # build's find_package(Torch) handles this gracefully and so
+    # should we (closes #304).
     tdeps = []
     foreach lib_name : lib_torch_list
-        tdeps += cppc.find_library(lib_name, dirs: lib_torch_dirs)
+        _lib = cppc.find_library(lib_name, dirs: lib_torch_dirs, required: false)
+        if _lib.found()
+            tdeps += _lib
+        endif
     endforeach
 
     torch_inc_args = []
@@ -705,114 +882,10 @@ if get_option('with_parallel_neb')
     _args += ['-DEON_PARALLEL_NEB']
 endif
 
-if get_option('with_artn')
-    # ARTn (pARTn): Fortran library for saddle point search.
-    # Try system/pkg-config first, then manual artn_libdir, then cmake-build
-    # the subproject. Meson's Fortran scanner breaks with -cpp + submodules,
-    # so we build artn-plugin via cmake at configure time as a workaround.
-    # We redeclare pARTn's C signatures inline in ARTnResource.h, so we
-    # never need an -I for artn.h; hence no artn_includedir option.
-    artn_dep = dependency('artn', required: false)
-    if not artn_dep.found()
-        artn_libdir = get_option('artn_libdir')
-        artn_lib = disabler()
-        if artn_libdir == ''
-            # Auto-build artn-plugin from subprojects/ via cmake
-            artn_src = meson.project_source_root() / 'subprojects' / 'artn-plugin'
-            artn_bld = meson.project_build_root() / 'subprojects' / '_artn_cmake_build'
-            message('ARTn: building subproject via cmake (meson Fortran scanner workaround)')
-            run_command('cmake', '-S', artn_src, '-B', artn_bld,
-                '-DCMAKE_BUILD_TYPE=Release',
-                '-DWITH_LAMMPS=OFF', '-DWITH_QE=OFF', '-DWITH_SIESTA=OFF',
-                check: true)
-            run_command('cmake', '--build', artn_bld, '--parallel', '4', check: true)
-            # LIBRARY_OUTPUT_DIRECTORY in artn-plugin's CMakeLists.txt puts
-            # libartn.so at ${CMAKE_BINARY_DIR}; search a couple of plausible
-            # locations symmetrically with the IRA block below in case a
-            # future cmake refactor moves it.
-            artn_candidates = [artn_bld, artn_bld / 'src', artn_bld / 'lib']
-            foreach candidate : artn_candidates
-                artn_lib = meson.get_compiler('cpp').find_library(
-                    'artn',
-                    dirs: [candidate],
-                    required: false,
-                )
-                if artn_lib.found()
-                    artn_libdir = candidate
-                    break
-                endif
-            endforeach
-            if not artn_lib.found()
-                error('ARTn enabled but libartn was not found in the built subproject directory')
-            endif
-        else
-            artn_lib = meson.get_compiler('cpp').find_library('artn',
-                dirs: [artn_libdir], required: true)
-        endif
-        _runtime_rpath += [artn_libdir]
-        artn_dep = declare_dependency(dependencies: artn_lib)
-    endif
-    _deps += [artn_dep]
-    _args += ['-DWITH_ARTN']
-    eonclib_sources += ['ARTnSaddleSearch.cpp']
-    eonclib_sources += ['libs/ARTn/ARTnResource.cpp']
-endif
-
-if get_option('with_ira')
-    # IRA (Iterative Rotations and Assignments): Fortran library for structure comparison.
-    # Same cmake workaround as ARTn.
-    ira_dep = dependency('ira', required: false)
-    if not ira_dep.found()
-        ira_libdir = get_option('ira_libdir')
-        ira_incdir = get_option('ira_includedir')
-        if ira_libdir == '' or ira_incdir == ''
-            ira_src = meson.project_source_root() / 'subprojects' / 'ira'
-            ira_bld = meson.project_build_root() / 'subprojects' / '_ira_cmake_build'
-            message('IRA: building subproject via cmake (meson Fortran scanner workaround)')
-            run_command('cmake', '-S', ira_src, '-B', ira_bld,
-                '-DCMAKE_BUILD_TYPE=Release',
-                check: true)
-            run_command('cmake', '--build', ira_bld, '--parallel', '4', check: true)
-            ira_incdir = 'interface'
-            ira_includes = ['-I' + ira_src / ira_incdir]
-            ira_candidates = [ira_bld / 'src', ira_src / 'lib']
-            ira_lib = disabler()
-            foreach candidate : ira_candidates
-                ira_lib = meson.get_compiler('cpp').find_library(
-                    'ira',
-                    dirs: [candidate],
-                    required: false,
-                )
-                if ira_lib.found()
-                    ira_libdir = candidate
-                    break
-                endif
-            endforeach
-            if not ira_lib.found()
-                error('IRA enabled but libira was not found in the built or vendored library directories')
-            endif
-        else
-            ira_includes = ['-I' + ira_incdir]
-            ira_lib = meson.get_compiler('cpp').find_library(
-                'ira',
-                dirs: [ira_libdir],
-                required: false,
-            )
-            if not ira_lib.found()
-                error('IRA enabled but libira was not found in ira_libdir=' + ira_libdir)
-            endif
-        endif
-        _runtime_rpath += [ira_libdir]
-        ira_dep = declare_dependency(
-            dependencies: ira_lib,
-            compile_args: ira_includes,
-        )
-    endif
-    _deps += [ira_dep]
-    _args += ['-DWITH_IRA']
-    eonclib_sources += ['IRACompare.cpp']
-    eonclib_sources += ['libs/IRA/IRAResource.cpp']
-endif
+# ARTn / IRA source membership is owned by the eonclib sourceset above
+# (always-on add). Users supply libartn.so / libira.so on
+# LD_LIBRARY_PATH; ARTnSaddleSearch / IRACompare gate at the call site
+# with is_loaded() / require_loaded().
 
 if get_option('with_serve')
     # rgpot-compatible RPC serve mode: wraps any eOn potential and serves it
@@ -829,7 +902,7 @@ if get_option('with_serve')
     rgpot_proj = subproject('rgpot', default_options: rgpot_serve_opts)
     ptlrpc_dep = rgpot_proj.get_variable('ptlrpc_dep')
     _args += ['-DWITH_SERVE_MODE']
-    eonclib_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
+    # Source membership owned by sourceset (when: 'WITH_SERVE_MODE').
     _deps += [serve_capnp_dep, ptlrpc_dep]
 endif
 
@@ -863,9 +936,14 @@ endif
 
 # --------------------- Library
 
+# Resolve the sourceset against the configuration_data assembled
+# above. result.sources() is the final, deduplicated list, identical
+# to what the pre-#177 chain of `eonclib_sources +=` produced.
+eonclib_resolved = eonclib_ss.apply(eonclib_cfg)
+
 eclib = library(
     'eonclib',
-    sources: eonclib_sources,
+    sources: eonclib_resolved.sources(),
     include_directories: _incdirs,
     dependencies: _deps,
     link_with: _linkto,
@@ -927,14 +1005,42 @@ endif
 if get_option('with_tests')
     test_args = _args
     test_deps = _exe_deps
-    testMain = library(
-        'TestMain',
-        ['unit_tests/TestMain.cpp', 'thirdparty/catch2/catch_amalgamated.cpp'],
-        dependencies: _deps,  # static lib: use _deps (no readcon link_args)
-        include_directories: _incdirs,
-        cpp_args: test_args,
-        link_with: _linkto,
+    # Catch2 amalgamated dedup. On Linux/macOS (gcc/clang + ld/lld)
+    # we compile catch_amalgamated.cpp ONCE into a static library and
+    # `link_whole:` it into every test exe so LTO at --buildtype release
+    # cannot prune main() / the EventListener vtables. The static lib
+    # also gets `-Wno-maybe-uninitialized` to silence the libstdc++ 13.3
+    # std::regex move-ctor false positive at -O3 + LTO (GCC PR93499 /
+    # 96012). The flag is filtered through get_supported_arguments so
+    # MSVC -- which rejects it as D8021 invalid numeric argument -- does
+    # not see it.
+    #
+    # On Windows the dedup path doesn't work: meson's static_library
+    # under conda-forge clang 19 emits a GNU `.a` archive, but
+    # MSVC link.exe's /WHOLEARCHIVE expects a COFF `.lib` and bails
+    # with LNK1136 invalid or corrupt file. Fall back to compiling the
+    # amalgamated TU into each test executable directly there. This is
+    # the pre-d60a9b80 behaviour; it costs one extra compile per test
+    # target but only on a single matrix entry.
+    _catch2_extra_cpp_args = cppc.get_supported_arguments(
+        ['-Wno-maybe-uninitialized'],
     )
+    if host_machine.system() == 'windows'
+        catch2_lib = []
+        _catch2_per_target_sources = ['thirdparty/catch2/catch_amalgamated.cpp']
+    else
+        catch2_lib = static_library(
+            'catch2_amalgamated',
+            ['thirdparty/catch2/catch_amalgamated.cpp'],
+            include_directories: _incdirs,
+            cpp_args: test_args + _catch2_extra_cpp_args,
+        )
+        _catch2_per_target_sources = []
+    endif
+    # Note: there is no separate `TestMain` library target -- the
+    # `unit_tests/TestMain.cpp` source is compiled directly into
+    # bench_pot (only consumer in this build). Test executables get
+    # their `main()` via the Catch2 amalgamated lib.
     test_array = [  #
         ['test_impldim', 'ImpDimerTest.cpp', 'saddle_search'],
         ['strparse_run', 'StringHelpersTest.cpp', ''],
@@ -974,19 +1080,17 @@ if get_option('with_tests')
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
     endif
-    if get_option('with_xtb')
-        test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
-        test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb', 120]]
-    endif
+    # XTB tests are always built; SKIP at runtime when libxtb isn't on
+    # LD_LIBRARY_PATH (mirrors LAMMPS / ARTn / IRA tests).
+    test_array += [['test_xtb', 'XTBTest.cpp', 'sulfolene']]
+    test_array += [['test_cineb_xtb', 'CINEBXTBTest.cpp', 'cineb_xtb', 120]]
     if get_option('with_serve')
         test_array += [['test_serve_spec', 'ServeSpecParseTest.cpp', '']]
     endif
-    if get_option('with_artn')
-        test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
-    endif
-    if get_option('with_ira')
-        test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
-    endif
+    # ARTn / IRA tests are always built; they SKIP at runtime when the
+    # respective .so is not on LD_LIBRARY_PATH (see is_loaded() guards).
+    test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
+    test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     foreach test : test_array
         test_timeout = test.get(3, 30)
         test(
@@ -995,14 +1099,32 @@ if get_option('with_tests')
                 test.get(0),
                 sources: [
                     'unit_tests/' + test.get(1),
-                    'thirdparty/catch2/catch_amalgamated.cpp',
-                ],
+                ] + _catch2_per_target_sources,
                 dependencies: test_deps,
                 include_directories: _incdirs,
                 cpp_args: test_args,
                 link_with: _linkto,
+                # Catch2 amalgamated provides main() and the
+                # AssertionHandler / EventListener vtables. Under
+                # -flto=auto (release buildtype) `link_with` on a
+                # static lib lets LTO prune objects whose symbols
+                # aren't directly referenced by the test source,
+                # including main(), and the link fails. `link_whole`
+                # forces every catch2_lib object into the executable
+                # so the LTO pass keeps them. On Windows catch2_lib
+                # is `[]` and the amalgamated TU is in `sources`
+                # instead -- see the catch2_lib branch above.
+                link_whole: catch2_lib,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
+            # Catch2 v3 returns exit code 4 from a process that ran no
+            # tests / no assertions, even when every TEST_CASE issued
+            # SKIP() cleanly. Pass --allow-running-no-tests so tests
+            # gated on runtime-loaded libraries (libxtb, libartn,
+            # libira, ...) skip silently with exit 0 on systems where
+            # the .so is not on LD_LIBRARY_PATH (e.g. macOS CI without
+            # libxtb installed).
+            args: ['--allow-running-no-tests'],
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
                 2,
             ),
@@ -1018,12 +1140,12 @@ if get_option('with_tests')
             'test_socket_nwchem',
             sources: [
                 'unit_tests/SocketNWChemPotTest.cpp',
-                'thirdparty/catch2/catch_amalgamated.cpp',
-            ],
+            ] + _catch2_per_target_sources,
             dependencies: test_deps,
             include_directories: _incdirs,
             cpp_args: test_args,
             link_with: _linkto,
+            link_whole: catch2_lib,
         )
 
         test_workdir = meson.project_source_root() + '/client/unit_tests/data/systems/nwchem_test'
@@ -1046,16 +1168,21 @@ if get_option('with_tests')
     endif
 
     # Benchmarks (not in default test suite -- run via: meson test --benchmark)
+    # bench_pot is the only target gated to `meson test --benchmark`;
+    # default builds (including the sanitizer matrix) skip it via
+    # build_by_default = false to avoid instrumenting + linking a
+    # benchmark binary nobody runs in the test pass.
     bench_pot_exe = executable('bench_pot',
         [
             'unit_tests/PotBenchmark.cpp',
             'unit_tests/TestMain.cpp',
-            'thirdparty/catch2/catch_amalgamated.cpp',
-        ],
+        ] + _catch2_per_target_sources,
         dependencies: test_deps,
         include_directories: _incdirs,
         cpp_args: test_args,
         link_with: _linkto,
+        link_whole: catch2_lib,
+        build_by_default: false,
     )
     benchmark('bench_pot', bench_pot_exe,
         args: ['[.benchmark]'],

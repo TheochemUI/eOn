@@ -20,6 +20,7 @@
 
 #include "EonLogger.h"
 #include <sstream>
+#include <utility>
 
 std::vector<std::string> GPSurrogateJob::run() {
   // Start working
@@ -238,7 +239,7 @@ std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
 Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   const auto ncols = (m1.numberOfFreeAtoms() * 3) + 1;
   Eigen::VectorXd target(ncols);
-  m1.setPotential(true_pot);
+  m1.setPotential(std::move(true_pot));
   target(0) = m1.getPotentialEnergy();
   target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
   // EONC_LOG_TRACE("Generated Target:\n{}",
@@ -265,7 +266,8 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
   auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
   Matter candidate{*matobjs[maxIndex + 1]};
   return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
-      candidate.getPositionsFreeV(), make_target(candidate, true_pot));
+      candidate.getPositionsFreeV(),
+      make_target(candidate, std::move(true_pot)));
 }
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot) {

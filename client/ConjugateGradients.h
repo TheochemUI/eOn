@@ -45,9 +45,10 @@ public:
    */
   ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
                      const Parameters &a_params)
-      : Optimizer(a_objf, OptType::CG, a_params),
-        m_directionOld{(a_objf->getPositions()).setZero()},
-        m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
+      : Optimizer(std::move(a_objf), OptType::CG,
+                  OptimizerConfig::fromParams(a_params)),
+        m_directionOld{(m_objf->getPositions()).setZero()},
+        m_forceOld{(m_objf->getPositions()).setZero()}, // use setZero instead
         m_cg_i{0} {}
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
@@ -57,13 +58,13 @@ public:
    * Either calls the single_step or line_search method depending on the
    * parameters \return whether or not the algorithm has converged
    */
-  int step(double a_maxMove) override;
+  StepResult step(double a_maxMove) override;
   //! Runs the conjugate gradient
   /**
    * \todo method should also return an error code and message if the algorithm
    * errors out \return algorithm convergence
    */
-  int run(size_t a_maxIterations, double a_maxMove) override;
+  StepResult run(size_t a_maxIterations, double a_maxMove) override;
   //! Gets the direction of the next step
   Eigen::VectorXd getStep();
 

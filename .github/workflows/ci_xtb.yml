@@ -29,11 +29,14 @@ jobs:
       - name: Install eon
         shell: pixi run bash -e {0}
         run: |
+          # XTB is unconditionally compiled and dlopens libxtb at run
+          # time via XtbLoader -- no -Dwith_xtb needed. The dev-xtb
+          # pixi env supplies libxtb on LD_LIBRARY_PATH so test_xtb /
+          # test_cineb_xtb run; on envs without it the tests SKIP.
           meson setup --reconfigure bbdir  \
           --prefix=$CONDA_PREFIX           \
           --buildtype release              \
           --libdir=lib                     \
-          -Dwith_xtb=True            \
           -Dwith_tests=True
           meson install -C bbdir
       - name: Run tests

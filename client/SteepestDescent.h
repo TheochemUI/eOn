@@ -25,12 +25,13 @@ class SteepestDescent final : public Optimizer {
 public:
   SteepestDescent(std::shared_ptr<ObjectiveFunction> a_objf,
                   const Parameters &a_params)
-      : Optimizer(a_objf, OptType::SD, a_params),
+      : Optimizer(std::move(a_objf), OptType::SD,
+                  OptimizerConfig::fromParams(a_params)),
         iteration{0} {}
   ~SteepestDescent() = default;
 
-  int step(double a_maxMove) override;
-  int run(size_t a_maxIterations, double a_maxMove) override;
+  StepResult step(double a_maxMove) override;
+  StepResult run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
   eonc::log::FileScoped m_log{"sd", "_sd.log"};

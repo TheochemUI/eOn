@@ -1,0 +1,1 @@
+Convert the `#define LBFGS_EPS 1e-30` macro to a typed `inline constexpr double` and document its role as the curvature-update gate (the threshold below which `s_0 . y_0` is too small to invert into the L-BFGS history without amplifying denormals). Brings it in line with the `ARTN_MODE_TOLERANCE` / `ARTN_SMALL_DISPLACEMENT` constexpr style already used in `ARTnSaddleSearch.h`.

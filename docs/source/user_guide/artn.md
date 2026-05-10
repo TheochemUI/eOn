@@ -55,10 +55,14 @@ rate is expected to be lower.
 
 ## Usage
 
-ARTn requires the `artn-plugin` Fortran subproject source to be available under
-`subprojects/` (for example via `meson subprojects download artn-plugin`). When
-present, eOn builds it via CMake at configure time as a workaround for Meson's
-current Fortran submodule scanner limitations.
+```{versionchanged} 2.15
+ARTn is now loaded at runtime via `dlopen` / `LoadLibrary`, mirroring
+the LAMMPS pattern. No `-Dwith_artn` build flag is needed and no
+configure-time CMake build of `artn-plugin` is required. A single
+eOn binary picks up ARTn iff `libartn.so` is on the library search
+path. The pre-2.15 `meson subprojects download artn-plugin` workflow
+is no longer required.
+```
 
 ARTn can be used in two ways:
 
@@ -125,22 +129,30 @@ max_iterations = 500
   section. Any non-empty value is required to exist; eOn checks before setup
   and aborts with a clear error when it does not. Maps to pARTn's ``filin``.
 
-## Build requirements
+## Runtime requirements
 
-ARTn requires a Fortran compiler and LAPACK. Download the subproject first, then
-let eOn build it automatically at configure time:
-
-```{code-block} shell
-meson subprojects download artn-plugin
-meson setup builddir -Dwith_artn=true
-```
-
-Or with a prebuilt library:
+ARTn needs `libartn.so` (or `libartn.dylib` / `libartn.dll`) on the
+library search path at run time. The shim and the SaddleSearch driver
+are unconditionally compiled into eonclient; only the dynamic library
+is supplied externally.
 
 ```{code-block} shell
-meson setup builddir -Dwith_artn=true \
-  -Dartn_libdir=/path/to/lib -Dartn_includedir=/path/to/include
+# Build libartn from the upstream Fortran subproject (one-time):
+git clone https://gitlab.com/mammasmias/artn-plugin
+cd artn-plugin
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_LAMMPS=OFF -DWITH_QE=OFF -DWITH_SIESTA=OFF
+cmake --build build -j
+
+# Make eonclient see it:
+export LD_LIBRARY_PATH=$PWD/build:$LD_LIBRARY_PATH      # Linux
+export DYLD_LIBRARY_PATH=$PWD/build:$DYLD_LIBRARY_PATH  # macOS
 ```
+
+If the library is missing, the eonclient banner still says
+``ARTn: enabled (dlopen at runtime)`` but `method = artn` (or
+`min_mode_method = artn`) raises a runtime error naming the entry
+point and pointing at `LD_LIBRARY_PATH`.
 
 ## Comparison with kart
 

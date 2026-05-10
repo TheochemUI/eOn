@@ -58,11 +58,11 @@ public:
 
 private:
   //! Runs the correct saddle search; also checks if the run was successful
-  int doSaddleSearch();
+  SaddleStatus doSaddleSearch();
   //! Logs the run status and makes sure the run was successful
-  void printEndState(int status);
+  void printEndState(SaddleStatus status);
   //! Writes the results from the run to file
-  void saveData(int status);
+  void saveData(SaddleStatus status);
 
   //! Container for the results of the run
   std::vector<std::string> returnFiles;

@@ -17,13 +17,14 @@
 #include "ImprovedDimer.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
+#include "StatusTypes.h"
 #include "TestUtils.hpp"
-#ifdef WITH_ARTN
-#include "libs/ARTn/ARTnResource.h"
-#endif
 #include "catch2/catch_amalgamated.hpp"
+#include "libs/ARTn/ARTnResource.h"
 
 namespace tests {
+
+using eonc::SaddleStatus;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
@@ -90,14 +91,14 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   auto dimerSearch = std::make_shared<MinModeSaddleSearch>(
       matter_dimer, displacement, initialEnergy, params, pot);
 
-  int dimerStatus = dimerSearch->run();
+  SaddleStatus dimerStatus = dimerSearch->run();
   double dimerSaddleEnergy = matter_dimer->getPotentialEnergy();
   double dimerEigenvalue = dimerSearch->getEigenvalue();
   int dimerIters = dimerSearch->getIterationCount();
 
   // Dimer should not crash (may converge, hit max iters, or abort on
   // nonnegative eigenvalue depending on the starting displacement)
-  REQUIRE(dimerStatus >= 0);
+  REQUIRE(dimerStatus >= SaddleStatus::Good);
   REQUIRE(std::isfinite(dimerSaddleEnergy));
 
   INFO("Dimer: status=" << dimerStatus << " energy=" << dimerSaddleEnergy
@@ -107,15 +108,15 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // --- Run ARTn saddle search ---
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
-  int artnStatus = artnSearch->run();
+  SaddleStatus artnStatus = artnSearch->run();
   double artnSaddleEnergy = matter_artn->getPotentialEnergy();
   double artnEigenvalue = artnSearch->getEigenvalue();
   int artnIters = artnSearch->getIterationCount();
 
   // ARTn should not crash (0=good, 5=max_iterations, 22=artn_error)
-  REQUIRE((artnStatus == ARTnSaddleSearch::STATUS_GOOD ||
-           artnStatus == ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS ||
-           artnStatus == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR));
+  REQUIRE((artnStatus == SaddleStatus::Good ||
+           artnStatus == SaddleStatus::BadMaxIterations ||
+           artnStatus == SaddleStatus::BadArtnError));
   REQUIRE(std::isfinite(artnSaddleEnergy));
 
   INFO("ARTn: status=" << artnStatus << " energy=" << artnSaddleEnergy
@@ -130,10 +131,9 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // 50% relative-energy tolerance below is intentionally generous to avoid
   // flaky failures when that happens; saddle structural identity is checked
   // by the dedicated IRA-based comparison tests.
-  if (dimerStatus == MinModeSaddleSearch::STATUS_GOOD &&
-      artnStatus == ARTnSaddleSearch::STATUS_GOOD) {
+  if (dimerStatus == SaddleStatus::Good && artnStatus == SaddleStatus::Good) {
     // Both found a first-order saddle: negative eigenvalue
-    REQUIRE(dimerStatus == MinModeSaddleSearch::STATUS_GOOD);
+    REQUIRE(dimerStatus == SaddleStatus::Good);
     REQUIRE(dimerEigenvalue < 0.0);
     REQUIRE(artnEigenvalue < 0.0);
 
@@ -151,9 +151,9 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
     SKIP("libartn not available at runtime");
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
-  int status = artnSearch->run();
+  SaddleStatus status = artnSearch->run();
 
-  if (status == 0) {
+  if (status == SaddleStatus::Good) {
     // Converged: must have negative eigenvalue (first-order saddle)
     REQUIRE(artnSearch->getEigenvalue() < 0.0);
 
@@ -177,11 +177,12 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // Empty filin is the default -- pARTn keeps its NAN_STR sentinel and reads
   // nothing. Setting filin to a path that does not exist has to trip the
   // eager existence check in ARTnSaddleSearch::run(), before setup_artn gets
-  // a chance to surface its own ERR_FILE, and return STATUS_BAD_ARTN_ERROR.
+  // a chance to surface its own ERR_FILE, and return
+  // SaddleStatus::BadArtnError.
   params.artn_options.filin = "this_artn_input_does_not_exist.in";
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
-  REQUIRE(artnSearch->run() == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+  REQUIRE(artnSearch->run() == SaddleStatus::BadArtnError);
   REQUIRE(artnSearch->getForceCalls() == 0);
 }
 

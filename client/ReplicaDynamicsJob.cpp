@@ -80,7 +80,7 @@ void ReplicaDynamicsJob::dephase() {
   long DephaseSteps =
       static_cast<long>(params.parallel_replica_options.dephase_time /
                         params.dynamics_options.time_step);
-  Dynamics dephaseDynamics(current.get(), params);
+  Dynamics dephaseDynamics(current.get(), DynamicsConfig::fromParams(params));
   QUILL_LOG_DEBUG(log, "Dephasing for {:.2f} fs",
                   params.parallel_replica_options.dephase_time *
                       params.constants.timeUnit);

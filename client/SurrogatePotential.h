@@ -23,7 +23,8 @@ public:
   virtual ~SurrogatePotential() = default;
   [[nodiscard]] bool isSurrogate() const noexcept override { return true; }
   std::tuple<double, AtomMatrix, double> // energy, forces, energy variance
-  get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
+  get_ef_var(const AtomMatrix &pos, const VectorXi &atmnrs,
+             const Matrix3d &box);
   virtual void train_optimize(const MatrixXd &a_features,
                               const MatrixXd &a_targets) = 0;
 };

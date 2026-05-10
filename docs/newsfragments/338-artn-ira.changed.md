@@ -1,0 +1,1 @@
+ARTn (`pARTn`) and IRA are now always compiled and dlopen libartn.so / libira.so at runtime, mirroring LAMMPS. The `with_artn` / `with_ira` meson options + `-DWITH_ARTN` / `-DWITH_IRA` defines + configure-time cmake build of `subprojects/artn-plugin` and `subprojects/ira` are gone. Users install the .so via the same channels they already use for liblammps.so.

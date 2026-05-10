@@ -79,7 +79,7 @@ int TADJob::dynamics() {
   }
   timeBuffer.resize(mdBufferLength);
 
-  Dynamics TAD(current.get(), params);
+  Dynamics TAD(current.get(), DynamicsConfig::fromParams(params));
   TAD.setThermalVelocity();
 
   {

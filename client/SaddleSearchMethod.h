@@ -13,6 +13,7 @@
 
 #include "Parameters.h"
 #include "Potential.h"
+#include "StatusTypes.h"
 
 #include <string_view>
 
@@ -26,14 +27,22 @@ protected:
 public:
   SaddleSearchMethod(std::shared_ptr<Potential> potPassed,
                      const Parameters &paramsPassed)
-      : pot{potPassed},
-        params{paramsPassed} {};
-  virtual ~SaddleSearchMethod() {};
-  virtual int run() = 0;
+      : pot{std::move(potPassed)},
+        params{paramsPassed} {}
+  virtual ~SaddleSearchMethod() = default;
+  /// Run the saddle search. Returns the typed terminal status; the
+  /// underlying int value is preserved for results.dat / driver
+  /// round-trips via to_int(SaddleStatus).
+  virtual SaddleStatus run() = 0;
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;
-  virtual std::string_view describeStatus(int status) const = 0;
-  virtual int getStatus() const { return 0; }
+  /// Human-readable message for a status value. Default forwards to
+  /// the StatusTypes.h overload; subclasses override only if they
+  /// need a different vocabulary.
+  virtual std::string_view describeStatus(SaddleStatus status) const {
+    return statusMessage(status);
+  }
+  virtual SaddleStatus getStatus() const { return SaddleStatus::Good; }
   virtual int getIterationCount() const { return 0; }
   virtual int getForceCalls() const { return 0; }
 };

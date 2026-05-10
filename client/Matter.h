@@ -228,11 +228,12 @@ private:
   eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
-  bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
-  mutable bool recomputePotential; // boolean indicating if the potential energy
-                                   // and forces need to be recalculated
+  bool usePeriodicBoundaries{}; // boolean telling periodic boundaries are used
+  mutable bool
+      recomputePotential{}; // boolean indicating if the potential energy
+                            // and forces need to be recalculated
   mutable long
-      forceCalls; // keep track of how many force calls have been performed
+      forceCalls{}; // keep track of how many force calls have been performed
 
   // CON file header lines (indices 0-4 map to old headerCon1,2,4,5,6)
   std::array<std::string, 5> headerCon;
@@ -246,13 +247,13 @@ private:
   bool removeNetForce{true};
   Parameters::structure_comparison_options_t structComp;
   // Full Parameters pointer retained solely for relax() delegation
-  const Parameters *parameters;
-  long nAtoms;
+  const Parameters *parameters{};
+  long nAtoms{};
   AtomMatrix positions;
   AtomMatrix velocities;
   mutable AtomMatrix forces;
   AtomMatrix biasForces;
-  BondBoost *biasPotential;
+  BondBoost *biasPotential{};
   VectorXd masses;
   VectorXi atomicNrs;
   VectorXi isFixed;   // array of bool, false for movable atom, true for fixed
@@ -264,8 +265,8 @@ private:
   mutable bool recomputeMaskedForces{true};
   Matrix3d cell;
   Matrix3d cellInverse;
-  mutable double energyVariance;
-  mutable double potentialEnergy;
+  mutable double energyVariance{};
+  mutable double potentialEnergy{};
 };
 
 } // namespace eonc

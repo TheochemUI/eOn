@@ -64,6 +64,7 @@ json to_json(const Parameters &p) {
       {"mpi_poll_period", p.potential_options.MPIPollPeriod},
       {"lammps_logging", p.potential_options.LAMMPSLogging},
       {"lammps_threads", p.potential_options.LAMMPSThreads},
+      {"lammps_bundle", p.potential_options.LAMMPSBundlePath},
       {"emt_rasmussen", p.potential_options.EMTRasmussen},
       {"log_potential", p.potential_options.LogPotential},
       {"ext_pot_path", p.potential_options.extPotPath},
@@ -209,6 +210,7 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "mpi_poll_period", p.potential_options.MPIPollPeriod);
     JSON_OPT(s, "lammps_logging", p.potential_options.LAMMPSLogging);
     JSON_OPT(s, "lammps_threads", p.potential_options.LAMMPSThreads);
+    JSON_OPT(s, "lammps_bundle", p.potential_options.LAMMPSBundlePath);
     JSON_OPT(s, "emt_rasmussen", p.potential_options.EMTRasmussen);
     JSON_OPT(s, "log_potential", p.potential_options.LogPotential);
     JSON_OPT(s, "ext_pot_path", p.potential_options.extPotPath);

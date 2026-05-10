@@ -22,32 +22,29 @@ namespace eonc {
 
 class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
-  BiasedGradientSquaredDescent(std::shared_ptr<Matter> matterPassed,
+  BiasedGradientSquaredDescent(const std::shared_ptr<Matter> &matterPassed,
                                double reactantEnergyPassed,
                                const Parameters &parametersPassed)
       : SaddleSearchMethod(matterPassed->getPotential(), parametersPassed),
-        saddle{matterPassed} {
-    reactantEnergy = reactantEnergyPassed;
-    saddle = matterPassed;
+        eigenvalue{0.0},
+        saddle{matterPassed},
+        reactantEnergy{reactantEnergyPassed} {
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
   }
   ~BiasedGradientSquaredDescent() = default;
 
-  int run();
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
-  std::string_view describeStatus(int status) const override {
-    return MinModeSaddleSearch::statusMessage(status);
-  }
-  int getStatus() const override { return status; }
+  SaddleStatus run() override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
+  SaddleStatus getStatus() const override { return status; }
 
   double eigenvalue;
   AtomMatrix eigenvector;
 
   std::shared_ptr<Matter> saddle;
 
-  int status;
+  SaddleStatus status{SaddleStatus::Good};
 
 private:
   double reactantEnergy;

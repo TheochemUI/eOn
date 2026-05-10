@@ -13,19 +13,17 @@
 #include "Eigen.h"
 #include <cstdlib>
 
-#ifdef WITH_IRA
-extern "C" {
-#include "iralib_interf.h"
-}
-#include "libs/IRA/IRAResource.h" // Include IRA resource after IRA interfaces are defined
-#endif
+// IRAResource is always compiled in. Its header redeclares libira's C
+// entry points inline, so iralib_interf.h is not pulled in at compile
+// time. libira.so is dlopen'd inside IRAResource::instance(); the call
+// sites guard with try { res.require_loaded(); } catch { error = -1; }.
+#include "libs/IRA/IRAResource.h"
 
 namespace eonc {
 
 IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
                                           double distThreshold) {
   MatchResult result;
-#ifdef WITH_IRA
   auto &res = get_ira_resource();
 
   // Lock the library for the duration of this specific comparison
@@ -110,16 +108,12 @@ IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
     std::free(tr_ptr);
   if (perm_ptr != perm_buf.data())
     std::free(perm_ptr);
-#else
-  result.error = -1;
-#endif
   return result;
 }
 
 IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
                                              double distThreshold) {
   MatchResult result;
-#ifdef WITH_IRA
   auto &res = get_ira_resource();
 
   // Lock the library for the duration of this specific comparison
@@ -178,16 +172,12 @@ IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
   result.rotation = Eigen::Matrix3d::Identity();
   result.translation = Eigen::Vector3d::Zero();
   result.error = 0;
-#else
-  result.error = -1;
-#endif
   return result;
 }
 
 IRACompare::SymmetryResult
 IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
   SymmetryResult result;
-#ifdef WITH_IRA
   auto &res = get_ira_resource();
 
   // Lock the library for the duration of this specific symmetry analysis
@@ -292,9 +282,6 @@ IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
     std::free(pg);
   if (prin_ax != prin_ax_buf.data())
     std::free(prin_ax);
-#else
-  result.error = -1;
-#endif
   return result;
 }
 

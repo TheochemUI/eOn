@@ -44,6 +44,12 @@ LammpsLoader::LammpsLoader() {
   extract_variable =
       dynlib::loadSym<extract_var_fn>(m_handle, "lammps_extract_variable");
 
+  // Optional: error-introspection. Present in LAMMPS >= 3Mar2020.
+  // Null on older builds; LAMMPSPot null-checks before calling.
+  has_error = dynlib::loadSym<has_error_fn>(m_handle, "lammps_has_error");
+  get_last_error_message = dynlib::loadSym<get_last_error_fn>(
+      m_handle, "lammps_get_last_error_message");
+
 #ifdef EONMPI
   open_mpi = dynlib::loadSym<open_mpi_fn>(m_handle, "lammps_open");
 #endif
@@ -59,7 +65,13 @@ LammpsLoader::LammpsLoader() {
   m_loaded = true;
 }
 
-LammpsLoader::~LammpsLoader() { dynlib::close(m_handle); }
+LammpsLoader::~LammpsLoader() {
+  // Intentionally do NOT dlclose at static destruction. liblammps holds
+  // global state (MPI handles, OpenMP threadpools, KIM model registry)
+  // whose teardown via atexit / __attribute__((destructor)) collides
+  // with running this Meyer-singleton dtor at process shutdown. The
+  // mapping is process-lifetime; OS reclaims it at exit.
+}
 
 void LammpsLoader::require_loaded() const {
   if (!m_loaded) {

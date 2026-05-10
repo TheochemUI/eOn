@@ -1,0 +1,1 @@
+Pass `--allow-running-no-tests` to every Catch2 unit test so an all-skipped run (e.g. `test_xtb` / `test_artn` / `test_ira` / `test_cineb_xtb` on a system without the matching .so on `LD_LIBRARY_PATH`) returns exit 0 instead of Catch2's default `exit 4` for "no tests / assertions executed". Lets the macOS CI matrix keep running where libxtb / libartn / libira aren't installed.

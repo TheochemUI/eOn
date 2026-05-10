@@ -54,7 +54,7 @@ bool matter2con(Matter &m, std::string filename, bool append = false,
                 const ConFrameMetadata *metadata = nullptr);
 bool matter2convel(Matter &m, std::string filename);
 void matter2xyz(Matter &m, std::string filename, bool append = false);
-void writeTibble(Matter &m, std::string filename);
+void writeTibble(Matter &m, const std::string &filename);
 
 // Helper
 std::pair<std::array<double, 3>, std::array<double, 3>>

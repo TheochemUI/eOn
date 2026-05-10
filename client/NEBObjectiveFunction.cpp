@@ -16,7 +16,10 @@ namespace eonc {
 VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
   if (neb->movedAfterForceCall)
     neb->updateForces();
-  const long seg = 3 * neb->atoms;
+  // long * int chain has to start in long so the implicit widening
+  // doesn't trip bugprone-implicit-widening-of-multiplication-result
+  // (atoms is `int` on the eOn side, seg / numImages are long).
+  const long seg = static_cast<long>(3) * neb->atoms;
   VectorXd gradV(seg * neb->numImages);
   for (long i = 1; i <= neb->numImages; i++) {
     // Negate in-place during copy to avoid a second pass over 40KB
@@ -36,19 +39,20 @@ double NEBObjectiveFunction::getEnergy() {
 
 void NEBObjectiveFunction::setPositions(const VectorXd &x) {
   neb->movedAfterForceCall = true;
+  const long seg = static_cast<long>(3) * neb->atoms;
   for (long i = 1; i <= neb->numImages; i++) {
-    neb->path[i]->setPositions(AtomMatrix::Map(
-        x.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms).data(), neb->atoms,
-        3));
+    neb->path[i]->setPositions(
+        AtomMatrix::Map(x.segment(seg * (i - 1), seg).data(), neb->atoms, 3));
   }
 }
 
 VectorXd NEBObjectiveFunction::getPositions() {
   VectorXd posV;
-  posV.resize(3 * neb->atoms * neb->numImages);
+  const long seg = static_cast<long>(3) * neb->atoms;
+  posV.resize(seg * neb->numImages);
   for (long i = 1; i <= neb->numImages; i++) {
-    posV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
-        VectorXd::Map(neb->path[i]->getPositions().data(), 3 * neb->atoms);
+    posV.segment(seg * (i - 1), seg) =
+        VectorXd::Map(neb->path[i]->getPositions().data(), seg);
   }
   return posV;
 }

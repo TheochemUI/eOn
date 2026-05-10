@@ -7,12 +7,20 @@ project(
     meson_version: '>= 1.8.0',
     default_options: [  #
         'buildtype=debugoptimized',
-        'warning_level=0',
+        # warning_level=2 -> -Wall -Wextra. Pre-2.15 we shipped 0
+        # to suppress build noise ahead of the CECAM school (#117);
+        # the suppression has outlived its use. =3 also passes
+        # -fimplicit-none to gfortran which breaks eonclient's
+        # vendored Fortran TUs that rely on implicit typing -- can't
+        # bump to 3 without a Fortran-side cleanup.
+        'warning_level=2',
         'cpp_std=c++20',
     ],
 )
-# IMPORTANT!! warning_level=3 passes -fimplicit-none
-# eonclient needs implicit typing!!
+# Visibility flags applied in client/meson.build once cppc is created
+# (-fvisibility=hidden + -fvisibility-inlines-hidden). Cuts the
+# dynamic symbol table by ~10x, stops internal namespace symbols from
+# leaking into downstream conda envs.
 
 host_system = host_machine.system()
 

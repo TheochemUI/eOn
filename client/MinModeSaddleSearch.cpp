@@ -24,8 +24,11 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <utility>
 
 using namespace eonc::helpers;
+using eonc::SaddleStatus;
+using eonc::StepResult;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
@@ -41,12 +44,12 @@ public:
       AtomMatrix modePassed, const Parameters &paramsPassed)
       : ObjectiveFunction(paramsPassed),
         matter{std::move(matterPassed)},
-        minModeMethod{minModeMethodPassed},
+        minModeMethod{std::move(minModeMethodPassed)},
         eigenvector{std::move(modePassed)} {}
 
   ~MinModeObjectiveFunction() override = default;
 
-  VectorXd getGradient(bool fdstep = false) {
+  VectorXd getGradient(bool fdstep = false) override {
     AtomMatrix force = matter->getForces();
 
     if (!fdstep || iteration == 0) {
@@ -136,15 +139,15 @@ public:
     return -forceV;
   }
 
-  double getEnergy() { return matter->getPotentialEnergy(); }
-  void setPositions(const VectorXd &x) { matter->setPositionsV(x); }
-  VectorXd getPositions() { return matter->getPositionsV(); }
-  int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
-  bool isConverged() {
+  double getEnergy() override { return matter->getPotentialEnergy(); }
+  void setPositions(const VectorXd &x) override { matter->setPositionsV(x); }
+  VectorXd getPositions() override { return matter->getPositionsV(); }
+  int degreesOfFreedom() override { return 3 * matter->numberOfAtoms(); }
+  bool isConverged() override {
     return getConvergence() < params.saddle_search_options.converged_force;
   }
 
-  double getConvergence() {
+  double getConvergence() override {
     if (params.optimizer_options.convergence_metric == "norm") {
       return matter->getForcesFreeV().norm();
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
@@ -158,22 +161,22 @@ public:
     }
   }
 
-  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return matter->pbcV(a - b);
   }
 };
 
 MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
-                                         AtomMatrix modePassed,
+                                         const AtomMatrix &modePassed,
                                          double reactantEnergyPassed,
                                          const Parameters &parametersPassed,
                                          std::shared_ptr<Potential> potPassed)
-    : SaddleSearchMethod(potPassed, parametersPassed),
-      matter{matterPassed} {
+    : SaddleSearchMethod(std::move(potPassed), parametersPassed),
+      matter{std::move(matterPassed)} {
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
   initialTangent_ = modePassed;
-  status = STATUS_GOOD;
+  status = SaddleStatus::Good;
   iteration = 0;
 
   minModeMethod = eonc::buildEigenmodeStrategy(matter, params, pot);
@@ -186,17 +189,17 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
   }
 }
 
-int MinModeSaddleSearch::run() {
+SaddleStatus MinModeSaddleSearch::run() {
   return run(params.saddle_search_options.max_iterations);
 }
 
-int MinModeSaddleSearch::run(long max_iterations_override) {
+SaddleStatus MinModeSaddleSearch::run(long max_iterations_override) {
   long effectiveMaxIter = max_iterations_override;
   QUILL_LOG_DEBUG(
       log, "Saddle point search started from reactant with energy {} eV.",
       reactantEnergy);
 
-  int optStatus;
+  StepResult optStatus = StepResult::NotConverged;
   bool firstIteration = true;
   const char *forceLabel =
       params.optimizer_options.convergence_metric_label.c_str();
@@ -209,17 +212,17 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
       QUILL_LOG_DEBUG(log, "GPR eigenvalue: {}",
                       eonc::eigenmodeGetEigenvalue(*minModeMethod));
-      return STATUS_NONNEGATIVE_ABORT;
+      return SaddleStatus::NonnegativeAbort;
     }
-    if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
+    if (getEigenvalue() > 0.0 && status == SaddleStatus::Good) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
-      status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
+      status = SaddleStatus::BadNoNegativeModeAtSaddle;
     }
     if (std::abs(eonc::eigenmodeGetEigenvalue(*minModeMethod)) <
         params.saddle_search_options.zero_mode_abort_curvature) {
       QUILL_LOG_DEBUG(log, "Zero mode eigenvalue: {}",
                       eonc::eigenmodeGetEigenvalue(*minModeMethod));
-      status = STATUS_ZEROMODE_ABORT;
+      status = SaddleStatus::ZeromodeAbort;
     }
     iteration = eonc::eigenmodeTotalIterations(*minModeMethod);
     forcecalls = eonc::eigenmodeTotalForceCalls(*minModeMethod);
@@ -297,7 +300,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
         QUILL_LOG_DEBUG(log, "Nonnegative eigenvalue: {}",
                         eonc::eigenmodeGetEigenvalue(*minModeMethod));
-        return STATUS_NONNEGATIVE_ABORT;
+        return SaddleStatus::NonnegativeAbort;
       }
     }
 
@@ -313,7 +316,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
               initialPosition - matter->getPositions(),
               params.saddle_search_options.nonlocal_distance_abort);
           if (nm >= params.saddle_search_options.nonlocal_count_abort) {
-            status = STATUS_NONLOCAL_ABORT;
+            status = SaddleStatus::NonlocalAbort;
             break;
           }
         }
@@ -322,14 +325,14 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
             params.saddle_search_options.zero_mode_abort_curvature) {
           QUILL_LOG_DEBUG(log, "Zero mode eigenvalue: {}",
                           eonc::eigenmodeGetEigenvalue(*minModeMethod));
-          status = STATUS_ZEROMODE_ABORT;
+          status = SaddleStatus::ZeromodeAbort;
           break;
         }
       }
       firstIteration = false;
 
       if (iteration >= effectiveMaxIter) {
-        status = STATUS_BAD_MAX_ITERATIONS;
+        status = SaddleStatus::BadMaxIterations;
         break;
       }
 
@@ -346,16 +349,17 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       } catch (const eonc::DimerModeRestoredException &) {
         QUILL_LOG_DEBUG(
             log, "Dimer restored to best state. Checking convergence...");
-        status = objf->isConverged() ? STATUS_GOOD : STATUS_DIMER_RESTORED_BEST;
+        status = objf->isConverged() ? SaddleStatus::Good
+                                     : SaddleStatus::DimerRestoredBest;
         break;
       } catch (const eonc::DimerModeLostException &) {
         QUILL_LOG_WARNING(log, "Dimer lost mode completely. Aborting.");
-        status = STATUS_DIMER_LOST_MODE;
+        status = SaddleStatus::DimerLostMode;
         break;
       }
 
-      if (optStatus < 0) {
-        status = STATUS_OPTIMIZER_ERROR;
+      if (optStatus == StepResult::Failed) {
+        status = SaddleStatus::OptimizerError;
         break;
       }
 
@@ -403,16 +407,17 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       }
 
       if (de > params.saddle_search_options.max_energy) {
-        status = STATUS_BAD_HIGH_ENERGY;
+        status = SaddleStatus::BadHighEnergy;
         break;
       }
 
       // Check ImprovedDimer mode convergence
       if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
         if (!dimer->rotationDidConverge) {
-          status = (dimer->getEigenvalue() < 0.0) ? STATUS_DIMER_RESTORED_BEST
-                                                  : STATUS_DIMER_LOST_MODE;
-          if (status == STATUS_DIMER_RESTORED_BEST) {
+          status = (dimer->getEigenvalue() < 0.0)
+                       ? SaddleStatus::DimerRestoredBest
+                       : SaddleStatus::DimerLostMode;
+          if (status == SaddleStatus::DimerRestoredBest) {
             QUILL_LOG_DEBUG(log, "Dimer restored to valid state. C_tau={:.4f}",
                             dimer->getEigenvalue());
           }
@@ -425,9 +430,9 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       eonc::eigenmodeCompute(*minModeMethod, matter, mode);
     }
 
-    if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
+    if (getEigenvalue() > 0.0 && status == SaddleStatus::Good) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
-      status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
+      status = SaddleStatus::BadNoNegativeModeAtSaddle;
     }
   }
 

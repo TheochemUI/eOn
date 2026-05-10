@@ -1,0 +1,1 @@
+Centralise the `dependency('pybind11')` lookup behind a `need_pybind11` flag; pre-2.15 each of `with_catlearn` / `with_ase` / `with_ase_orca` / `with_ase_nwchem` re-ran the dep search and re-appended to `_deps`. Lookup runs once now; downstream blocks reuse the `_deps` entry.

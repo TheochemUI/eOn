@@ -9,12 +9,21 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+
 #include "BiasedGradientSquaredDescent.h"
+
+using eonc::SaddleStatus;
+
 #include "EigenmodeStrategy.h"
+
 #include "HelperFunctions.h"
+
 #include "Matter.h"
+
 #include "ObjectiveFunction.h"
+
 #include "Optimizer.h"
+
 #include "SaddleSearchMethod.h"
 
 #include <cassert>
@@ -38,7 +47,7 @@ public:
 
   ~BGSDObjectiveFunction() = default;
 
-  double getEnergy() {
+  double getEnergy() override {
     VectorXd Vforce = matter.getForcesFreeV();
     double Henergy = 0.5 * Vforce.dot(Vforce) +
                      0.5 * bgsdAlpha *
@@ -49,7 +58,7 @@ public:
     return Henergy;
   }
 
-  VectorXd getGradient(bool fdstep = false) {
+  VectorXd getGradient(bool fdstep = false) override {
     VectorXd Vforce = matter.getForcesFreeV();
     double magVforce = Vforce.norm();
     VectorXd normVforce = Vforce / magVforce;
@@ -74,10 +83,10 @@ public:
     return Hnorm;
   }
 
-  void setPositions(const VectorXd &x) { matter.setPositionsFreeV(x); }
-  VectorXd getPositions() { return matter.getPositionsFreeV(); }
-  int degreesOfFreedom() { return 3 * matter.numberOfFreeAtoms(); }
-  bool isConverged() { return isConvergedH() && isConvergedV(); }
+  void setPositions(const VectorXd &x) override { matter.setPositionsFreeV(x); }
+  VectorXd getPositions() override { return matter.getPositionsFreeV(); }
+  int degreesOfFreedom() override { return 3 * matter.numberOfFreeAtoms(); }
+  bool isConverged() override { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
     return getConvergenceH() < params.bgsd_options.h_force_convergence;
   }
@@ -88,10 +97,12 @@ public:
     return getConvergenceH() < params.bgsd_options.grad2force_convergence;
   }
 
-  double getConvergence() { return getEnergy() && getGradient().norm(); }
+  double getConvergence() override {
+    return getEnergy() && getGradient().norm();
+  }
   double getConvergenceH() { return getGradient().norm(); }
   double getConvergenceV() { return getEnergy(); }
-  VectorXd difference(const VectorXd &a, const VectorXd &b) {
+  VectorXd difference(const VectorXd &a, const VectorXd &b) override {
     return matter.pbcV(a - b);
   }
 
@@ -100,7 +111,7 @@ private:
   double bgsdAlpha;
 };
 
-int BiasedGradientSquaredDescent::run() {
+SaddleStatus BiasedGradientSquaredDescent::run() {
   auto objf = std::make_shared<BGSDObjectiveFunction>(
       *saddle, reactantEnergy, params.bgsd_options.alpha, params);
   auto optim = eonc::helpers::create::mkOptim(
@@ -151,13 +162,11 @@ int BiasedGradientSquaredDescent::run() {
   eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
   eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);
   QUILL_LOG_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
-  if (objf2->isConvergedV()) {
-    return 0;
-  } else if (objf2->isConvergedIP()) {
-    return 1;
-  } else {
-    return 1;
-  };
+  // Two convergence flavours: V (true convergence on a saddle) and
+  // IP (inflection-point fallback). isConvergedIP() and the trailing
+  // else both signal "not-V converged" -- preserve the pre-typed-
+  // status mapping (0 -> Good, 1 -> Init).
+  return objf2->isConvergedV() ? SaddleStatus::Good : SaddleStatus::Init;
 }
 
 double BiasedGradientSquaredDescent::getEigenvalue() { return eigenvalue; }

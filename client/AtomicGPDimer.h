@@ -34,7 +34,8 @@ public:
                 std::shared_ptr<Potential> pot);
   ~AtomicGPDimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  void compute(std::shared_ptr<Matter> matter,
+               const AtomMatrix &initialDirection);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
@@ -43,12 +44,12 @@ private:
   AtomMatrix direction;                 // direction along the dimer
   AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation
 
-  gpr::InputParameters p;
-  atmd::AtomicDimer atomic_dimer;
-  aux::ProblemSetUp problem_setup;
-  gpr::AtomsConfiguration atoms_config;
-  gpr::Observation init_observations, init_middle_point;
-  gpr::Coord orient_init, R_init;
+  gpr::InputParameters p{};
+  atmd::AtomicDimer atomic_dimer{};
+  aux::ProblemSetUp problem_setup{};
+  gpr::AtomsConfiguration atoms_config{};
+  gpr::Observation init_observations{}, init_middle_point{};
+  gpr::Coord orient_init{}, R_init{};
 };
 
 } // namespace eonc

@@ -14,6 +14,7 @@
 #include "Eigen.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
+#include "StatusTypes.h"
 
 #include "EonLogger.h"
 
@@ -72,7 +73,7 @@ public:
             const OptimizerConfig &a_config)
       : m_otype{a_config.opts.method},
         m_optConfig{a_config},
-        m_objf{a_objf} {
+        m_objf{std::move(a_objf)} {
     EONC_LOG_WARNING(
         "You should explicitly set an optimizer while constructing the "
         "optimizer!!\n Defaulting to opt_method from the parameters");
@@ -81,26 +82,28 @@ public:
             const OptimizerConfig &a_config)
       : m_otype{a_optype},
         m_optConfig{a_config},
-        m_objf{a_objf} {}
+        m_objf{std::move(a_objf)} {}
 
   // Backward-compat constructors
   [[deprecated("Pass OptimizerConfig directly")]]
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf,
             const Parameters &a_params)
-      : Optimizer(a_objf, OptimizerConfig::fromParams(a_params)) {}
+      : Optimizer(std::move(a_objf), OptimizerConfig::fromParams(a_params)) {}
   [[deprecated("Pass OptimizerConfig directly")]]
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
             const Parameters &a_params)
-      : Optimizer(a_objf, a_optype, OptimizerConfig::fromParams(a_params)) {}
+      : Optimizer(std::move(a_objf), a_optype,
+                  OptimizerConfig::fromParams(a_params)) {}
 
-  virtual ~Optimizer() {};
-  virtual int step(double a_maxMove) = 0;
-  virtual int run(size_t a_maxIterations, double a_maxMove) = 0;
+  virtual ~Optimizer() = default;
+  virtual StepResult step(double a_maxMove) = 0;
+  virtual StepResult run(size_t a_maxIterations, double a_maxMove) = 0;
 };
 
 namespace helpers::create {
-std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
-                                   OptType a_otype, const Parameters &a_params);
+std::unique_ptr<Optimizer>
+mkOptim(const std::shared_ptr<ObjectiveFunction> &a_objf, OptType a_otype,
+        const Parameters &a_params);
 }
 
 } // namespace eonc
