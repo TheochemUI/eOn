@@ -17,11 +17,14 @@
 #include "ImprovedDimer.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
+#include "StatusTypes.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "libs/ARTn/ARTnResource.h"
 
 namespace tests {
+
+using eonc::SaddleStatus;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
@@ -88,14 +91,14 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   auto dimerSearch = std::make_shared<MinModeSaddleSearch>(
       matter_dimer, displacement, initialEnergy, params, pot);
 
-  int dimerStatus = dimerSearch->run();
+  SaddleStatus dimerStatus = dimerSearch->run();
   double dimerSaddleEnergy = matter_dimer->getPotentialEnergy();
   double dimerEigenvalue = dimerSearch->getEigenvalue();
   int dimerIters = dimerSearch->getIterationCount();
 
   // Dimer should not crash (may converge, hit max iters, or abort on
   // nonnegative eigenvalue depending on the starting displacement)
-  REQUIRE(dimerStatus >= 0);
+  REQUIRE(dimerStatus >= SaddleStatus::Good);
   REQUIRE(std::isfinite(dimerSaddleEnergy));
 
   INFO("Dimer: status=" << dimerStatus << " energy=" << dimerSaddleEnergy
@@ -105,7 +108,7 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // --- Run ARTn saddle search ---
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
-  int artnStatus = artnSearch->run();
+  SaddleStatus artnStatus = artnSearch->run();
   double artnSaddleEnergy = matter_artn->getPotentialEnergy();
   double artnEigenvalue = artnSearch->getEigenvalue();
   int artnIters = artnSearch->getIterationCount();
@@ -148,9 +151,9 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
     SKIP("libartn not available at runtime");
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
-  int status = artnSearch->run();
+  SaddleStatus status = artnSearch->run();
 
-  if (status == 0) {
+  if (status == SaddleStatus::Good) {
     // Converged: must have negative eigenvalue (first-order saddle)
     REQUIRE(artnSearch->getEigenvalue() < 0.0);
 

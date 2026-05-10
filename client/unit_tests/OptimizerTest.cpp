@@ -17,11 +17,14 @@
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 #include "Quickmin.h"
+#include "StatusTypes.h"
 #include "SteepestDescent.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
 namespace tests {
+
+using eonc::StepResult;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
@@ -92,11 +95,11 @@ TEST_CASE("FIRE optimizer converges on quadratic", "[optimizer][fire]") {
   objf->setPositions(start);
 
   FIRE opt(objf, params);
-  int status = opt.run(1000, params.optimizer_options.max_move);
+  StepResult status = opt.run(1000, params.optimizer_options.max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 1e-4);
-  CHECK(status == 1); // converged
+  CHECK(status == StepResult::Converged);
 }
 
 TEST_CASE("LBFGS optimizer converges on quadratic", "[optimizer][lbfgs]") {
@@ -107,11 +110,11 @@ TEST_CASE("LBFGS optimizer converges on quadratic", "[optimizer][lbfgs]") {
   objf->setPositions(start);
 
   LBFGS opt(objf, params);
-  int status = opt.run(1000, params.optimizer_options.max_move);
+  StepResult status = opt.run(1000, params.optimizer_options.max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.01);
-  CHECK(status == 1);
+  CHECK(status == StepResult::Converged);
 }
 
 TEST_CASE("CG optimizer converges on quadratic", "[optimizer][cg]") {
@@ -123,11 +126,11 @@ TEST_CASE("CG optimizer converges on quadratic", "[optimizer][cg]") {
   objf->setPositions(start);
 
   ConjugateGradients opt(objf, params);
-  int status = opt.run(5000, params.optimizer_options.max_move);
+  StepResult status = opt.run(5000, params.optimizer_options.max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.01);
-  CHECK(status == 1);
+  CHECK(status == StepResult::Converged);
 }
 
 TEST_CASE("CG with line search converges on quadratic",
@@ -196,11 +199,11 @@ TEST_CASE("SteepestDescent optimizer converges on quadratic",
   objf->setPositions(start);
 
   SteepestDescent opt(objf, params);
-  int status = opt.run(5000, params.optimizer_options.max_move);
+  StepResult status = opt.run(5000, params.optimizer_options.max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.01);
-  CHECK(status == 1);
+  CHECK(status == StepResult::Converged);
 }
 
 } /* namespace tests */

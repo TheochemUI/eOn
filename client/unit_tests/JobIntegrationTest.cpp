@@ -19,6 +19,7 @@
 #include "Job.h"
 #include "Parameters.h"
 #include "PotRegistry.h"
+#include "StatusTypes.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "libs/ARTn/ARTnResource.h"
@@ -28,6 +29,8 @@
 #include <string>
 
 namespace tests {
+
+using eonc::SaddleStatus;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
@@ -345,8 +348,9 @@ max_energy = 10.0
   REQUIRE(results.count("termination_reason") > 0);
   // SVN reference (data/reference/saddle_search_morse_pt.dat):
   // 0 termination_reason (converged)
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   // Energy must match SVN exactly
   double energy = std::stod(results["potential_energy_saddle"]);
@@ -393,8 +397,9 @@ max_energy = 10.0
   auto results = runJob();
 
   // SVN reference (data/reference/saddle_search_lanczos_morse_pt.dat):
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   double energy = std::stod(results["potential_energy_saddle"]);
   REQUIRE(energy == Catch::Approx(-1462.008706).epsilon(1e-4));
@@ -437,8 +442,9 @@ max_move = 0.2
   // SVN reference (data/reference/neb_lj.dat):
   // termination_reason = 0 (converged)
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   int nImages = std::stoi(results["number_of_images"]);
   REQUIRE(nImages == 3);
@@ -531,8 +537,9 @@ max_iterations = 200
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0); // GOOD
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   // SVN reference (data/reference/minimization_morse_pt.dat):
   // Energy must be exact
@@ -993,8 +1000,9 @@ max_energy = 10.0
 
   // SVN reference (data/reference/process_search_morse_pt.dat):
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
-  REQUIRE(status == 0);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
+  REQUIRE(status == SaddleStatus::Good);
 
   // Force calls must be <= SVN (67)
   REQUIRE(forceCalls_ <= 67);
@@ -1049,7 +1057,8 @@ max_iterations = 500
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
   // ARTn may not converge, but should not crash
   REQUIRE((status == SaddleStatus::Good ||
            status == SaddleStatus::BadMaxIterations ||
@@ -1116,7 +1125,8 @@ max_spawns = 5
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
   REQUIRE((status == SaddleStatus::Good ||
            status == SaddleStatus::BadMaxIterations ||
            status == SaddleStatus::BadArtnError));
@@ -1165,7 +1175,8 @@ max_iterations = 5
   auto results = runJob();
 
   REQUIRE(results.count("termination_reason") > 0);
-  int status = std::stoi(results["termination_reason"]);
+  SaddleStatus status =
+      static_cast<SaddleStatus>(std::stoi(results["termination_reason"]));
   REQUIRE((status == SaddleStatus::Good ||
            status == SaddleStatus::BadMaxIterations ||
            status == SaddleStatus::BadArtnError));

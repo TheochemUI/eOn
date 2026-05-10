@@ -28,6 +28,7 @@
 /// strings, JSON, saved fixture files); use magic_enum::enum_name()
 /// for the symbolic name in logs.
 
+#include <ostream>
 #include <string_view>
 
 namespace eonc {
@@ -149,6 +150,19 @@ enum class SaddleStatus : int {
 /// stored fixtures). Casts to SaddleStatus and dispatches.
 [[nodiscard]] constexpr std::string_view statusMessage(int status) {
   return statusMessage(static_cast<SaddleStatus>(status));
+}
+
+/// Stream insertion overloads. Required for Catch2 v3 assertion-failure
+/// formatting (`m_oss << value` in the StringMaker chain) and useful
+/// anywhere Quill / iostream wants to surface a typed status. SaddleStatus
+/// prints the symbolic message + numeric value; StepResult prints the
+/// signed underlying so `-1 / 0 / 1` stays diff-friendly in logs.
+inline std::ostream &operator<<(std::ostream &os, SaddleStatus s) {
+  return os << statusMessage(s) << " (" << to_int(s) << ")";
+}
+
+inline std::ostream &operator<<(std::ostream &os, StepResult r) {
+  return os << to_int(r);
 }
 
 } // namespace eonc
