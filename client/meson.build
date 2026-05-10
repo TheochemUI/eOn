@@ -9,6 +9,20 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
+# DynLib.h (used by LammpsLoader / XtbLoader / ARTnResource /
+# IRAResource and any future runtime-loaded shim) calls dlopen +
+# dlsym + dlclose on POSIX. On Linux these symbols live in libdl;
+# on macOS and BSDs they're in libc and find_library('dl') returns
+# not-found -- harmless. Hoist dl_dep to file scope so every
+# eonclib / eoncbase / per-potential library() call already links
+# -ldl when the toolchain needs it. Pre-fix #338, only LAMMPS got
+# this for free and XTB / ARTn / IRA hit
+# `undefined reference to dlopen` at link time in CI.
+dl_dep = cppc.find_library('dl', required: false)
+if dl_dep.found()
+    _deps += [dl_dep]
+endif
+
 use_fortran = false
 if get_option('with_fortran') or get_option('with_cuh2')
     use_fortran = true
@@ -684,16 +698,22 @@ if get_option('with_metatomic')
     ]
 
 
-    lib_torch_list = ['c10', 'torch', 'torch_cpu']
-    if not is_windows
-        lib_torch_list += 'torch_global_deps'
-    endif
+    lib_torch_list = ['c10', 'torch', 'torch_cpu', 'torch_global_deps']
     # On Windows, torch DLLs live in <prefix>/bin not <prefix>/lib
     LIB_TORCH_BIN_PATH = LIB_TORCH_PATH / 'bin'
     lib_torch_dirs = is_windows ? [LIB_TORCH_LIB_PATH, LIB_TORCH_BIN_PATH] : [LIB_TORCH_LIB_PATH]
+    # Each lookup is required: false because some installs ship a
+    # different set than the canonical Linux layout: Windows torch
+    # builds skip the torch_global_deps .lib (only the .dll exists);
+    # libtorch *cpu* conda packages strip torch_cuda; etc. The CMake
+    # build's find_package(Torch) handles this gracefully and so
+    # should we (closes #304).
     tdeps = []
     foreach lib_name : lib_torch_list
-        tdeps += cppc.find_library(lib_name, dirs: lib_torch_dirs)
+        _lib = cppc.find_library(lib_name, dirs: lib_torch_dirs, required: false)
+        if _lib.found()
+            tdeps += _lib
+        endif
     endforeach
 
     torch_inc_args = []
@@ -1033,6 +1053,14 @@ if get_option('with_tests')
                 link_with: _linkto,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
+            # Catch2 v3 returns exit code 4 from a process that ran no
+            # tests / no assertions, even when every TEST_CASE issued
+            # SKIP() cleanly. Pass --allow-running-no-tests so tests
+            # gated on runtime-loaded libraries (libxtb, libartn,
+            # libira, ...) skip silently with exit 0 on systems where
+            # the .so is not on LD_LIBRARY_PATH (e.g. macOS CI without
+            # libxtb installed).
+            args: ['--allow-running-no-tests'],
             workdir: meson.project_source_root() + '/client/unit_tests/data/systems/' + test.get(
                 2,
             ),
