@@ -156,42 +156,68 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   requested_output->set_unit("eV");
   evaluations_options_->outputs.insert(this->energy_key_, requested_output);
 
-  // 7. Optionally request energy uncertainty if threshold is positive
+  // 7. Optionally request energy uncertainty if threshold is positive.
+  //
+  // Models that don't ship an "energy_uncertainty" output are common (and
+  // expected -- it's strictly optional). pre-fix: we called
+  // metatomic_torch::pick_output("energy_uncertainty", ...) blind and
+  // caught the c10::Error. The catch handled the logical case fine but
+  // c10::Error captures + prints its construction stack to stderr
+  // unconditionally, so every load of an uncertainty-less model
+  // surfaced a multi-frame backtrace that looked like a real crash to
+  // users (issue #309). pre-check `outputs.contains(...)` for any
+  // variant that could resolve so we never trigger the throw path.
   if (m_metatomic_opts.uncertainty_threshold > 0) {
     this->uncertainty_threshold_ = m_metatomic_opts.uncertainty_threshold;
-    try {
-      this->energy_uncertainty_key_ = metatomic_torch::pick_output(
-          "energy_uncertainty", outputs, v_energy_uq);
 
-      if (outputs.contains(this->energy_uncertainty_key_)) {
-        auto uncertainty_info = outputs.at(this->energy_uncertainty_key_);
-        if (uncertainty_info->per_atom) {
-          auto requested_uncertainty =
-              torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
-          requested_uncertainty->per_atom = true;
-          requested_uncertainty->explicit_gradients = {};
-          requested_uncertainty->set_quantity("energy");
-          requested_uncertainty->set_unit("eV");
-          evaluations_options_->outputs.insert(this->energy_uncertainty_key_,
-                                               requested_uncertainty);
-          QUILL_LOG_INFO(m_log,
-                         "[MetatomicPotential] Requested per-atom "
-                         "'{}' from model (threshold = {})",
-                         this->energy_uncertainty_key_,
-                         this->uncertainty_threshold_);
-        } else {
-          QUILL_LOG_DEBUG(m_log,
-                          "[MetatomicPotential] Model provides '{}' "
-                          "but not per-atom; skipping uncertainty checks.",
-                          this->energy_uncertainty_key_);
-          this->uncertainty_threshold_ = -1.0;
-        }
+    // Build the candidate set pick_output would consider, mirroring its
+    // own algorithm: try "<base>::energy_uncertainty" then plain
+    // "energy_uncertainty". If none of them are present in outputs, the
+    // model has no uncertainty head and we silently disable the check
+    // -- no exception, no stderr backtrace.
+    std::vector<std::string> candidates;
+    if (v_energy_uq.has_value() && !v_energy_uq->empty()) {
+      candidates.push_back(*v_energy_uq + "::energy_uncertainty");
+    }
+    candidates.emplace_back("energy_uncertainty");
+
+    bool found = false;
+    for (const auto &cand : candidates) {
+      if (outputs.contains(cand)) {
+        this->energy_uncertainty_key_ = cand;
+        found = true;
+        break;
       }
-    } catch (const std::exception &e) {
-      QUILL_LOG_DEBUG(
-          m_log, "[MetatomicPotential] No uncertainty output available: {}",
-          e.what());
+    }
+
+    if (!found) {
+      QUILL_LOG_DEBUG(m_log, "[MetatomicPotential] model exports no "
+                             "energy_uncertainty output; uncertainty checks "
+                             "disabled.");
       this->uncertainty_threshold_ = -1.0;
+    } else {
+      auto uncertainty_info = outputs.at(this->energy_uncertainty_key_);
+      if (uncertainty_info->per_atom) {
+        auto requested_uncertainty =
+            torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
+        requested_uncertainty->per_atom = true;
+        requested_uncertainty->explicit_gradients = {};
+        requested_uncertainty->set_quantity("energy");
+        requested_uncertainty->set_unit("eV");
+        evaluations_options_->outputs.insert(this->energy_uncertainty_key_,
+                                             requested_uncertainty);
+        QUILL_LOG_INFO(m_log,
+                       "[MetatomicPotential] Requested per-atom "
+                       "'{}' from model (threshold = {})",
+                       this->energy_uncertainty_key_,
+                       this->uncertainty_threshold_);
+      } else {
+        QUILL_LOG_DEBUG(m_log,
+                        "[MetatomicPotential] Model provides '{}' "
+                        "but not per-atom; skipping uncertainty checks.",
+                        this->energy_uncertainty_key_);
+        this->uncertainty_threshold_ = -1.0;
+      }
     }
   }
 
