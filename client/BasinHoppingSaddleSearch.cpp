@@ -12,6 +12,8 @@
 
 #include "BasinHoppingSaddleSearch.h"
 
+using eonc::SaddleStatus;
+
 #include "Dimer.h"
 
 #include "ImprovedDimer.h"

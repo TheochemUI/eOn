@@ -27,6 +27,7 @@
 #include <utility>
 
 using namespace eonc::helpers;
+using eonc::SaddleStatus;
 using eonc::StepResult;
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
@@ -348,7 +349,8 @@ SaddleStatus MinModeSaddleSearch::run(long max_iterations_override) {
       } catch (const eonc::DimerModeRestoredException &) {
         QUILL_LOG_DEBUG(
             log, "Dimer restored to best state. Checking convergence...");
-        status = objf->isConverged() ? SaddleStatus::Good : SaddleStatus::DimerRestoredBest;
+        status = objf->isConverged() ? SaddleStatus::Good
+                                     : SaddleStatus::DimerRestoredBest;
         break;
       } catch (const eonc::DimerModeLostException &) {
         QUILL_LOG_WARNING(log, "Dimer lost mode completely. Aborting.");
@@ -412,8 +414,9 @@ SaddleStatus MinModeSaddleSearch::run(long max_iterations_override) {
       // Check ImprovedDimer mode convergence
       if (auto *dimer = eonc::asImprovedDimer(*minModeMethod)) {
         if (!dimer->rotationDidConverge) {
-          status = (dimer->getEigenvalue() < 0.0) ? SaddleStatus::DimerRestoredBest
-                                                  : SaddleStatus::DimerLostMode;
+          status = (dimer->getEigenvalue() < 0.0)
+                       ? SaddleStatus::DimerRestoredBest
+                       : SaddleStatus::DimerLostMode;
           if (status == SaddleStatus::DimerRestoredBest) {
             QUILL_LOG_DEBUG(log, "Dimer restored to valid state. C_tau={:.4f}",
                             dimer->getEigenvalue());

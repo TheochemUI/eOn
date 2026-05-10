@@ -12,6 +12,8 @@
 
 #include "BiasedGradientSquaredDescent.h"
 
+using eonc::SaddleStatus;
+
 #include "EigenmodeStrategy.h"
 
 #include "HelperFunctions.h"

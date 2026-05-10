@@ -12,6 +12,8 @@
 
 #include "DynamicsSaddleSearch.h"
 
+using eonc::SaddleStatus;
+
 #include "BondBoost.h"
 
 #include "Dynamics.h"
