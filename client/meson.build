@@ -140,10 +140,22 @@ message(architecture)
 # Generate features string for version.h.in.
 #
 # Each entry is (compile_flag, display_name, mode) where mode is one of:
-#   'compile'  -- check '-Dflag' presence in _args (Build-time CPP define)
-#   'runtime'  -- always compiled into the client; loaded later via dlopen.
-#                 Reporting 'enabled' here means the compiled-in shim exists,
-#                 not that the dynamic library was found at run time.
+#   'compile'         -- check '-Dflag' in _args (compile-time CPP define).
+#                        Reports 'enabled' (compile-linked) or 'disabled'.
+#   'runtime'         -- always compiled into the client; loaded via dlopen
+#                        at run time (e.g. LAMMPS via LammpsLoader). Always
+#                        reports 'enabled (dlopen at runtime)' since the
+#                        shim is present, irrespective of whether the
+#                        dynamic library is found at run time.
+#   'compile_runtime' -- conditionally compiled (-Dflag controls inclusion
+#                        of the resource shim); WHEN compiled, the actual
+#                        library is dlopen'd at run time. Reports 'enabled
+#                        (dlopen at runtime)' or 'disabled' depending on
+#                        whether '-Dflag' is in _args. ARTn (with_artn) and
+#                        IRA (with_ira) follow this pattern: their *Resource
+#                        classes use dynlib::openFirst then load_sym for
+#                        the C entry points, with require_loaded() throwing
+#                        only when the user actually requests the feature.
 features_list = [
     ['WITH_GPRD',          'GPRD',           'compile'],
     ['WITH_GP_SURROGATE',  'GP Surrogate',   'compile'],
@@ -163,9 +175,20 @@ features_list = [
     ['CUH2_POT',           'CuH2',           'compile'],
     ['WITH_ASE_ORCA',      'ASE-ORCA',       'compile'],
     ['WITH_ASE_NWCHEM',    'ASE-NWChem',     'compile'],
+    # Metatomic is compile-linked (subdir('potentials/Metatomic') links
+    # the metatomic_pot library directly via library() with link_with).
+    # No dlopen; static check on -DWITH_METATOMIC is correct.
     ['WITH_METATOMIC',     'Metatomic',      'compile'],
     ['WITH_SERVE_MODE',    'Serve Mode',     'compile'],
     ['EMBED_PYTHON',       'Embedded Python','compile'],
+    # ARTn is conditionally compiled (with_artn=true builds ARTnResource
+    # + ARTnSaddleSearch + sets -DWITH_ARTN). When compiled, the actual
+    # libartn.so is dlopen'd at run time inside ARTnResource::instance().
+    ['WITH_ARTN',          'ARTn',           'compile_runtime'],
+    # IRA is conditionally compiled (with_ira=true builds IRAResource +
+    # sets -DWITH_IRA). When compiled, libira.so is dlopen'd at run time
+    # inside IRAResource::instance().
+    ['WITH_IRA',           'IRA',            'compile_runtime'],
 ]
 
 # Join _args into a single string for checking
@@ -178,6 +201,12 @@ foreach feature : features_list
     feature_mode = feature.length() > 2 ? feature[2] : 'compile'
     if feature_mode == 'runtime'
         features_string += '  ' + feature_name + ': enabled (dlopen at runtime)\n'
+    elif feature_mode == 'compile_runtime'
+        if '-D' + feature_flag in _args_str
+            features_string += '  ' + feature_name + ': enabled (dlopen at runtime)\n'
+        else
+            features_string += '  ' + feature_name + ': disabled\n'
+        endif
     elif '-D' + feature_flag in _args_str
         features_string += '  ' + feature_name + ': enabled\n'
     else
