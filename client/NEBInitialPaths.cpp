@@ -220,10 +220,18 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
 
   auto log = eonc::log::get();
   const auto &init = params.neb_options.initialization;
+  // Bind the conditional literal to a sized std::string before logging.
+  // The bare `use_zbl ? "-ZBL" : ""` ternary feeds a const char* into
+  // quill's safe_strnlen specialisation which calls memchr with
+  // n=SIZE_MAX; gcc 13's -Wstringop-overread loses the early-exit
+  // analysis and complains the source size (5 bytes for "-ZBL\0") is
+  // smaller than the bound. Routing through std::string takes the
+  // string overload that already knows the length.
+  const std::string zbl_suffix = use_zbl ? "-ZBL" : "";
   QUILL_LOG_INFO(log,
                  "Generating initial path using S-IDPP{} ({} images, "
                  "alpha={:.2f}, frontier_tol={:.4f})...",
-                 use_zbl ? "-ZBL" : "", target_nimgs, init.sidpp_alpha,
+                 zbl_suffix, target_nimgs, init.sidpp_alpha,
                  init.sidpp_frontier_tol);
 
   // 1. Start with endpoints [Reactant, Product]

@@ -24,11 +24,12 @@ class Quickmin final : public Optimizer {
 public:
   Quickmin(std::shared_ptr<ObjectiveFunction> a_objf,
            const Parameters &a_params)
-      : Optimizer(a_objf, OptType::QM, OptimizerConfig::fromParams(a_params)),
+      : Optimizer(std::move(a_objf), OptType::QM,
+                  OptimizerConfig::fromParams(a_params)),
         m_dt{a_params.optimizer_options.time_step},
         m_dt_max{a_params.optimizer_options.max_time_step},
         m_max_move{a_params.optimizer_options.max_move},
-        m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_vel{Eigen::VectorXd::Zero(m_objf->degreesOfFreedom())},
         m_iteration{0},
         m_max_iter{a_params.optimizer_options.max_iterations} {}
   ~Quickmin() = default;

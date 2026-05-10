@@ -45,9 +45,10 @@ public:
    */
   ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
                      const Parameters &a_params)
-      : Optimizer(a_objf, OptType::CG, OptimizerConfig::fromParams(a_params)),
-        m_directionOld{(a_objf->getPositions()).setZero()},
-        m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
+      : Optimizer(std::move(a_objf), OptType::CG,
+                  OptimizerConfig::fromParams(a_params)),
+        m_directionOld{(m_objf->getPositions()).setZero()},
+        m_forceOld{(m_objf->getPositions()).setZero()}, // use setZero instead
         m_cg_i{0} {}
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
