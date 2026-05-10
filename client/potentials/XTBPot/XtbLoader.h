@@ -44,7 +44,7 @@ public:
 
   // Function pointer types -- one per xtb.h entry point used in
   // XTBPot::force / XTBPot ctor / XTBPot dtor.
-  using new_environment_fn = env_t (*)(void);
+  using new_environment_fn = env_t (*)();
   using del_environment_fn = void (*)(env_t *);
   using check_environment_fn = int (*)(env_t);
   using get_error_fn = void (*)(env_t, char *, const int *);
@@ -58,7 +58,7 @@ public:
   using update_molecule_fn = void (*)(env_t, mol_t, const double *,
                                       const double *);
 
-  using new_calculator_fn = calc_t (*)(void);
+  using new_calculator_fn = calc_t (*)();
   using del_calculator_fn = void (*)(calc_t *);
   using load_gfnff_fn = void (*)(env_t, mol_t, calc_t, char *);
   using load_gfn0_fn = void (*)(env_t, mol_t, calc_t, char *);
@@ -70,7 +70,7 @@ public:
 
   using singlepoint_fn = void (*)(env_t, mol_t, calc_t, res_t);
 
-  using new_results_fn = res_t (*)(void);
+  using new_results_fn = res_t (*)();
   using del_results_fn = void (*)(res_t *);
   using get_energy_fn = void (*)(env_t, res_t, double *);
   using get_gradient_fn = void (*)(env_t, res_t, double *);

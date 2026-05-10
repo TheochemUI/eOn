@@ -30,9 +30,11 @@ namespace eonc::dynlib {
 #ifdef _WIN32
 using Handle = HMODULE;
 
-inline Handle open(const char *name) noexcept { return LoadLibraryA(name); }
+[[nodiscard]] inline Handle open(const char *name) noexcept {
+  return LoadLibraryA(name);
+}
 
-inline void *sym(Handle h, const char *name) noexcept {
+[[nodiscard]] inline void *sym(Handle h, const char *name) noexcept {
   return reinterpret_cast<void *>(GetProcAddress(h, name));
 }
 
@@ -41,7 +43,7 @@ inline void close(Handle h) noexcept {
     FreeLibrary(h);
 }
 
-inline std::string error() {
+[[nodiscard]] inline std::string error() {
   DWORD err = GetLastError();
   if (err == 0)
     return {};
@@ -59,25 +61,27 @@ inline std::string error() {
 #else // POSIX (Linux, macOS)
 using Handle = void *;
 
-inline Handle open(const char *name) noexcept {
+[[nodiscard]] inline Handle open(const char *name) noexcept {
   return dlopen(name, RTLD_NOW | RTLD_LOCAL);
 }
 
-inline void *sym(Handle h, const char *name) noexcept { return dlsym(h, name); }
+[[nodiscard]] inline void *sym(Handle h, const char *name) noexcept {
+  return dlsym(h, name);
+}
 
 inline void close(Handle h) noexcept {
   if (h)
     dlclose(h);
 }
 
-inline std::string error() {
+[[nodiscard]] inline std::string error() {
   const char *msg = dlerror();
   return msg ? std::string(msg) : std::string{};
 }
 #endif
 
 /// Try a list of library names in order, return first successful handle.
-inline Handle openFirst(const char *const names[]) noexcept {
+[[nodiscard]] inline Handle openFirst(const char *const names[]) noexcept {
   for (const char *const *name = names; *name; ++name) {
     Handle h = open(*name);
     if (h)
@@ -87,7 +91,8 @@ inline Handle openFirst(const char *const names[]) noexcept {
 }
 
 /// Load a symbol and cast to a function pointer type.
-template <typename Fn> Fn loadSym(Handle h, const char *name) noexcept {
+template <typename Fn>
+[[nodiscard]] Fn loadSym(Handle h, const char *name) noexcept {
   return reinterpret_cast<Fn>(sym(h, name));
 }
 

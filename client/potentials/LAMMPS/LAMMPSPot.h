@@ -18,14 +18,20 @@
 
 #include <filesystem>
 
+/// Thread safety: NOT safe to share an instance across threads.
+/// Internally calls std::filesystem::current_path() (process-wide
+/// state) and uses a `shell cd` LAMMPS command to pin liblammps's
+/// working directory; both are global side effects. liblammps itself
+/// also keeps process-global state per LAMMPSObj. Use one LAMMPSPot
+/// instance per thread / per NEB image.
 class LAMMPSPot : public Potential {
 
 public:
   LAMMPSPot(const Parameters &p);
-  ~LAMMPSPot();
+  ~LAMMPSPot() override;
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+             double *U, double *variance, const double *box) override;
 
 private:
   int lammpsThr{0};

@@ -1,0 +1,1 @@
+Mark the `DynLib.h` lookup helpers (`open`, `sym`, `openFirst`, `error`, `loadSym<>`) `[[nodiscard]]` -- callers must inspect the returned handle / pointer / error string. Document the threading contract on `LAMMPSPot`: not safe to share across threads because `std::filesystem::current_path()` and the `shell cd` LAMMPS command both touch process-global state.
