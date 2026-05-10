@@ -88,7 +88,16 @@ XtbLoader::XtbLoader() {
   m_loaded = true;
 }
 
-XtbLoader::~XtbLoader() { dynlib::close(m_handle); }
+XtbLoader::~XtbLoader() {
+  // Intentionally do NOT dlclose at static destruction. libxtb pulls in
+  // the gfortran runtime, which installs its own atexit / __attribute__
+  // ((destructor)) hooks that depend on stdio + global state that is
+  // already being torn down by the time this Meyer-singleton dtor runs.
+  // dlclose-then-Fortran-fini-during-process-shutdown crashes on the
+  // Linux GHA runner (test_xtb / test_cineb_xtb SIGSEGV after all
+  // assertions pass). The handle is process-lifetime; the OS reaps the
+  // mapping at exit, so leaking it here is the right move.
+}
 
 void XtbLoader::require_loaded() const {
   if (!m_loaded) {
