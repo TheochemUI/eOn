@@ -20,7 +20,7 @@ majority of publications are reported in the major release.
   + [Github reproduction](https://github.com/TheochemUI/otgpd_repro)
 - **Review ::** Bayesian Hierarchical measures for benchmarking computational
    chemistry software by {cite:t}`2.8.1-goswamiEfficientExplorationChemical2025`.
-   + [ArXiV preprint](https://arxiv.org/abs/2510.21368)
+   + [ArXiV preprint](goswamiEfficientExplorationChemical2025)
   <!-- todo(rg): setup kudos -->
   <!-- todo(rg): materials archive -->
   <!-- todo(rg): GHA reproducer -->

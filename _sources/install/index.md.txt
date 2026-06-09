@@ -90,44 +90,6 @@ passed with `--native-file`:
 - With `ccache` installed, add `--native-file nativeFiles/ccache_gnu.ini`
 - With `mold` installed, add `--native-file nativeFiles/mold.ini`
 
-### Inspecting what was compiled in
-
-Run `eonclient --features` to see the live banner of compile-time
-options the binary was built with (LAMMPS, ARTn, IRA, XTB, VASP,
-Metatomic, MPI, FlexiBLAS, Serve mode, ...) along with `enabled` /
-`disabled` / `enabled (dlopen at runtime)` / `enabled (subprocess)`
-markers. Useful to confirm a conda env or a source build before
-launching long ensemble jobs.
-
-```{code-block} bash
-eonclient --features
-```
-
-### Runtime-pluggable BLAS / LAPACK (FlexiBLAS)
-
-```{versionadded} 2.15
-```
-
-For BLAS-bound workloads (large GPRD / Hessian / NEB), pass
-`-Dwith_flexiblas=true` (meson) or `-DWITH_FLEXIBLAS=ON` (cmake)
-to link Eigen via [FlexiBLAS](https://github.com/mpimd-csc/flexiblas).
-One eonclient binary then forwards every BLAS / LAPACK call to any
-installed backend at run time, picked by the `FLEXIBLAS` env var:
-
-```{code-block} bash
-meson setup builddir -Dwith_flexiblas=true
-meson compile -C builddir
-FLEXIBLAS=OPENBLAS ./eonclient   # OpenBLAS at run time
-FLEXIBLAS=INTELMKL ./eonclient   # Intel MKL at run time
-FLEXIBLAS=BLIS     ./eonclient
-```
-
-`subprojects/flexiblas.wrap` pins upstream v3.5.0 and CMake-builds
-FlexiBLAS when no system install is found, so the option never
-fails for "no FlexiBLAS available". Mutually exclusive with the
-legacy `-Duse_mkl=true` direct-MKL link; FlexiBLAS can route to
-MKL at run time via `FLEXIBLAS=INTELMKL` instead.
-
 ### Troubleshooting: rolling distros (Arch, Fedora)
 
 On rolling-release distributions with newer system packages, the conda-forge
