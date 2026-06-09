@@ -482,11 +482,13 @@ if py_embed
 endif
 
 if get_option('with_mpi')
-    subdir('potentials/MPIPot')
-    potentials += [mpipot]
-    _args += ['-DEONMPI']
     mpi_dep = dependency('mpi')
     _deps += [mpi_dep]
+    python_dep = py.dependency(embed: true, required: true)
+    _deps += [python_dep]
+    _args += ['-DEONMPI']
+    subdir('potentials/MPIPot')
+    potentials += [mpipot]
 endif
 
 if get_option('with_fortran')
