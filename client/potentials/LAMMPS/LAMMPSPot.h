@@ -19,6 +19,7 @@
 class LAMMPSPot : public Potential {
 
 public:
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override { return true; }
   LAMMPSPot(const Parameters &p);
   ~LAMMPSPot();
   void cleanMemory();

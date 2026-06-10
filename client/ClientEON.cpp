@@ -205,7 +205,8 @@ int main(int argc, char **argv) {
   int eon_mpi_inited = 0;
   MPI_Initialized(&eon_mpi_inited);
   if (!eon_mpi_inited) {
-    MPI_Init(&argc, &argv);
+    int eon_mpi_provided = 0;
+    MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &eon_mpi_provided);
   }
 
   int error;

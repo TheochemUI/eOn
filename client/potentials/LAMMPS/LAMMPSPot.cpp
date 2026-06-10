@@ -127,8 +127,10 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
         "LAMMPS library found but lacks MPI support (lammps_open not found).\n"
         "Install an MPI-enabled LAMMPS build.");
   }
+  MPI_Comm inst_comm = MPI_COMM_NULL;
+  MPI_Comm_dup(mpiComm, &inst_comm);  // private comm per per-image instance
   LAMMPSObj =
-      lmp.open_mpi(lmpargc, const_cast<char **>(lmpargv), mpiComm, nullptr);
+      lmp.open_mpi(lmpargc, const_cast<char **>(lmpargv), inst_comm, nullptr);
 #else
   const char *lmpargv[] = {"liblammps", "-log",    "none", "-echo",
                            "log",       "-screen", "none"};
