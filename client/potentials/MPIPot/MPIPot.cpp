@@ -42,27 +42,30 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
     icwd[i] = static_cast<long>(cwd[i]);
   }
   int intn = static_cast<int>(N);
-  MPI::COMM_WORLD.Send(&intn, 1, MPI::INT, potentialRank, 0);
-  MPI::COMM_WORLD.Send(atomicNrs, N, MPI::INT, potentialRank, 0);
-  MPI::COMM_WORLD.Send(R, 3 * N, MPI::DOUBLE, potentialRank, 0);
-  MPI::COMM_WORLD.Send(box, 9, MPI::DOUBLE, potentialRank, 0);
-  MPI::COMM_WORLD.Send(&pbc, 1, MPI::INT, potentialRank, 0);
-  MPI::COMM_WORLD.Send(&icwd[0], 1024, MPI::INT, potentialRank, 0);
+  MPI_Send(&intn, 1, MPI_INT, potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(atomicNrs, N, MPI_INT, potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(R, 3 * N, MPI_DOUBLE, potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(box, 9, MPI_DOUBLE, potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(&pbc, 1, MPI_INT, potentialRank, 0, MPI_COMM_WORLD);
+  MPI_Send(&icwd[0], 1024, MPI_INT, potentialRank, 0, MPI_COMM_WORLD);
 
   if (poll_period > 0.0) {
-    while (MPI::COMM_WORLD.Iprobe(potentialRank, 0) == false) {
+    int eon_flag = 0;
+    MPI_Iprobe(potentialRank, 0, MPI_COMM_WORLD, &eon_flag, MPI_STATUS_IGNORE);
+    while (!eon_flag) {
       usleep(static_cast<useconds_t>(poll_period / 1000000.0));
+      MPI_Iprobe(potentialRank, 0, MPI_COMM_WORLD, &eon_flag, MPI_STATUS_IGNORE);
     }
   }
 
   // Recv data from potential
-  MPI::COMM_WORLD.Recv(&failed, 1, MPI::INT, potentialRank, 0);
+  MPI_Recv(&failed, 1, MPI_INT, potentialRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   if (failed == 1) {
     throw 100;
   }
 
-  MPI::COMM_WORLD.Recv(U, 1, MPI::DOUBLE, potentialRank, 0);
-  MPI::COMM_WORLD.Recv(F, 3 * N, MPI::DOUBLE, potentialRank, 0);
+  MPI_Recv(U, 1, MPI_DOUBLE, potentialRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  MPI_Recv(F, 3 * N, MPI_DOUBLE, potentialRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   // printf("energy: %12.4e\n", *U);
   // printf("forces:\n");
   // for (int i=0;i<N;i++) printf("%12.4e %12.4e %12.4e\n", F[3*i], F[3*i+1],
