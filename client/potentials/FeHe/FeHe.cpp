@@ -30,8 +30,8 @@ void FeHe::force(long N, const double *R, const int *atomicNrs, double *F,
     ISPEC[i] = (atomicNrs[i] == 26) ? 0 : 1;
   }
 
-  feforce_(&N, RX.data(), RY.data(), RZ.data(), ISPEC.data(), FX.data(),
-           FY.data(), FZ.data(), U, &box[0], &box[4], &box[8]);
+  m_feforce(&N, RX.data(), RY.data(), RZ.data(), ISPEC.data(), FX.data(),
+            FY.data(), FZ.data(), U, &box[0], &box[4], &box[8]);
 
   for (long i = 0; i < N; i++) {
     F[i * 3] = FX[i];

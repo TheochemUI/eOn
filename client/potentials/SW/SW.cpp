@@ -15,5 +15,5 @@
 void SW::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
                double *U, double *variance, const double *box) {
   variance = nullptr;
-  sw_(&N, R, F, U, &box[0], &box[4], &box[8]);
+  m_force(&N, R, F, U, &box[0], &box[4], &box[8]);
 }

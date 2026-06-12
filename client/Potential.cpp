@@ -41,14 +41,14 @@
 #endif
 #include "potentials/ZBL/ZBLPot.h"
 
-#ifdef WITH_FORTRAN
+// Fortran potentials: always compiled, loaded at runtime via dlopen
 #include "potentials/Aluminum/Aluminum.h"
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/SW/SW.h"
 #include "potentials/Tersoff/Tersoff.h"
-#endif
+#include "potentials/FortranPotLoader.h"
 
 #ifdef EMBED_PYTHON
 
@@ -133,10 +133,17 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
 
 namespace eonc::helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
+  // Inject config-file path before any potential constructor runs
+  FortranPotLoader::instance().add_config_paths(
+      params.potential_options.potentialsPath);
   return makePotential(params.potential_options.potential, params);
 }
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params) {
+  // Inject config-file path before any potential constructor runs.
+  // Called on every code path including Job::Job which uses this overload.
+  FortranPotLoader::instance().add_config_paths(
+      params.potential_options.potentialsPath);
   switch (ptype) {
   // TODO: Every potential must know their own type
   case PotType::EMT: {
@@ -197,7 +204,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #endif
-#ifdef WITH_FORTRAN
+  // Fortran potentials: always available, loaded at runtime via dlopen
   case PotType::EAM_AL: {
     return (std::make_shared<Aluminum>(params));
     break;
@@ -222,7 +229,6 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     return (std::make_shared<Tersoff>(params));
     break;
   }
-#endif
 #ifndef _WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {

@@ -12,26 +12,26 @@
 #pragma once
 
 #include "../../Potential.h"
+#include "../FortranPotLoader.h"
 
-/** Fortran interface for the Aluminum EAM potential.
-@param[in]  N           number of atoms
-@param[in]  R           array of positions in Angstrom
-@param[out] F           array of forces in eV/Angstrom
-@param[out] U           pointer to energy in eV
-@param[in]  bx, by, bz pointer to box dimensions in Angstrom
-*/
-extern "C" {
-void force_(const long int *N, const double *R, double *F, double *U,
-            const double *bx, const double *by, const double *bz);
-void potinit_();
-}
-
-/// Aluminum EAM potential (Fortran implementation).
+/// Aluminum EAM potential (Fortran implementation, loaded at runtime).
 class Aluminum final : public Potential {
 public:
+  using force_fn = void (*)(const long int *N, const double *R, double *F,
+                            double *U, const double *bx, const double *by,
+                            const double *bz);
+  using potinit_fn = void (*)();
+
   explicit Aluminum(const Parameters &params)
       : Potential(PotType::EAM_AL, params) {
-    potinit_();
+    auto &loader = eonc::FortranPotLoader::instance();
+    m_force = loader.load_sym<force_fn>("eon_aluminum", "force_");
+    m_potinit = loader.load_sym<potinit_fn>("eon_aluminum", "potinit_");
+    if (!m_force || !m_potinit) {
+      loader.throw_not_found("eon_aluminum",
+                             "Aluminum EAM potential (Fortran)");
+    }
+    m_potinit();
   }
   ~Aluminum() override = default;
 
@@ -39,4 +39,8 @@ public:
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+
+private:
+  force_fn m_force{nullptr};
+  potinit_fn m_potinit{nullptr};
 };

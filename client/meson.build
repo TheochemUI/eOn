@@ -263,7 +263,11 @@ else
     message('Highway SIMD: disabled (not found)')
 endif
 
-eoncbase_sources = ['fpe_handler.cpp', 'PotRegistry.cpp']
+# dl_dep needed for dlopen (FortranPotLoader, LammpsLoader)
+dl_dep = cppc.find_library('dl', required: false)
+_deps += dl_dep
+
+eoncbase_sources = ['fpe_handler.cpp', 'PotRegistry.cpp', 'potentials/FortranPotLoader.cpp']
 
 eoncbase = library(
     'eoncbase',
@@ -482,15 +486,29 @@ if py_embed
 endif
 
 if get_option('with_mpi')
-    mpi_dep = dependency('mpi')
-    _deps += [mpi_dep]
-    python_dep = py.dependency(embed: true, required: true)
-    _deps += [python_dep]
-    _args += ['-DEONMPI']
     subdir('potentials/MPIPot')
     potentials += [mpipot]
+    _args += ['-DEONMPI']
+    mpi_dep = dependency('mpi')
+    _deps += [mpi_dep]
 endif
 
+# Fortran potential C++ wrappers: always compiled (load Fortran libs at runtime)
+# The C++ wrappers use dlopen via FortranPotLoader to find the Fortran shared
+# libraries at runtime, so the client binary does not need Fortran at link time.
+fortran_pot_cpp_sources = [
+    'potentials/Aluminum/Aluminum.cpp',
+    'potentials/EDIP/EDIP.cpp',
+    'potentials/FeHe/FeHe.cpp',
+    'potentials/Lenosky/Lenosky.cpp',
+    'potentials/SW/SW.cpp',
+    'potentials/Tersoff/Tersoff.cpp',
+]
+eonclib_sources += fortran_pot_cpp_sources
+
+# Fortran shared libraries: built only when a Fortran compiler is available,
+# installed separately, and loaded at runtime via dlopen.
+_fortran_pot_libs = []
 if get_option('with_fortran')
     subdir('potentials/Aluminum')
     subdir('potentials/EDIP')
@@ -498,11 +516,11 @@ if get_option('with_fortran')
     subdir('potentials/Lenosky')
     subdir('potentials/SW')
     subdir('potentials/Tersoff')
+    _fortran_pot_libs += [eon_aluminum, eon_edip, eon_fehe, eon_lenosky, eon_sw, eon_tersoff]
     if get_option('with_water')
         subdir('potentials/Water_H')
         potentials += [water_h]
     endif
-    potentials += [aluminum, edip, fehe, lenosky, sw, tersoff]
     _args += ['-DWITH_FORTRAN']
 endif
 
@@ -961,15 +979,20 @@ if get_option('with_tests')
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
         ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
-        ['test_si_pot', 'SiPotTest.cpp', 'si_diamond'],
-        ['test_eam_al', 'EAMAlTest.cpp', 'al_fcc'],
-        ['test_fehe', 'FeHeTest.cpp', 'fe_bcc'],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
         ['test_bondboost', 'BondBoostTest.cpp', 'neb_morse'],
         ['test_emt_cu', 'EMTCuTest.cpp', 'cu_fcc'],
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
     ]
+    # Fortran potential tests: require Fortran shared libs at runtime
+    if get_option('with_fortran')
+        test_array += [
+            ['test_si_pot', 'SiPotTest.cpp', 'si_diamond'],
+            ['test_eam_al', 'EAMAlTest.cpp', 'al_fcc'],
+            ['test_fehe', 'FeHeTest.cpp', 'fe_bcc'],
+        ]
+    endif
     if get_option('with_ase')
         test_array += [['test_ase_pot', 'ASEPotTest.cpp', 'ase_pot']]
     endif
@@ -989,6 +1012,21 @@ if get_option('with_tests')
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     endif
+    # Build the Fortran potential library search path for tests.
+    # Each Fortran shared lib lives in its subdir of the build tree,
+    # matching the source layout: build/client/potentials/<Name>/
+    _fortran_pot_subdirs = ['Aluminum', 'EDIP', 'FeHe', 'Lenosky', 'SW', 'Tersoff']
+    _fortran_pot_dirs = []
+    if get_option('with_fortran')
+        foreach sub : _fortran_pot_subdirs
+            _fortran_pot_dirs += meson.project_build_root() / 'client' / 'potentials' / sub
+        endforeach
+    endif
+    _test_env = environment()
+    if _fortran_pot_dirs.length() > 0
+        _test_env.set('EON_POTENTIALS_PATH', ':'.join(_fortran_pot_dirs))
+    endif
+
     foreach test : test_array
         test_timeout = test.get(3, 30)
         test(
@@ -1009,6 +1047,7 @@ if get_option('with_tests')
                 2,
             ),
             timeout: test_timeout,
+            env: _test_env,
         )
     endforeach
     # Special handling for the nwchem test (due to the client server bit)

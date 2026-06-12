@@ -19,5 +19,5 @@ void Aluminum::force(long N, const double *R, const int * /*atomicNrs*/,
                      const double *box) {
   assert(N > 1);
   variance = nullptr;
-  force_(&N, R, F, U, &box[0], &box[4], &box[8]);
+  m_force(&N, R, F, U, &box[0], &box[4], &box[8]);
 }
