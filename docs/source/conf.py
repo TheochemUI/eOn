@@ -71,6 +71,9 @@ html_theme = "shibuya"
 html_title = "eOn"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
+html_js_files = [
+    ("https://antics-api.turtletech.us/antics.js", {"defer": "defer"}),
+]
 html_baseurl = 'https://eondocs.org/'
 
 html_context = {
