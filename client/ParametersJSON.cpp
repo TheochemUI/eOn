@@ -67,6 +67,7 @@ json to_json(const Parameters &p) {
       {"emt_rasmussen", p.potential_options.EMTRasmussen},
       {"log_potential", p.potential_options.LogPotential},
       {"ext_pot_path", p.potential_options.extPotPath},
+      {"potentials_path", p.potential_options.potentialsPath},
   };
 
   // [Structure Comparison]
@@ -212,6 +213,7 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "emt_rasmussen", p.potential_options.EMTRasmussen);
     JSON_OPT(s, "log_potential", p.potential_options.LogPotential);
     JSON_OPT(s, "ext_pot_path", p.potential_options.extPotPath);
+    JSON_OPT(s, "potentials_path", p.potential_options.potentialsPath);
   }
 
   // [Structure Comparison]

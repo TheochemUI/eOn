@@ -12,28 +12,30 @@
 #pragma once
 
 #include "../../Potential.h"
+#include "../FortranPotLoader.h"
 
-/** Fortran interface for the Stillinger-Weber potential.
-@param[in]  N           number of atoms
-@param[in]  R           array of positions in Angstrom
-@param[out] F           array of forces in eV/Angstrom
-@param[out] U           pointer to energy in eV
-@param[in]  bx, by, bz pointer to box dimensions in Angstrom
-*/
-extern "C" {
-void sw_(const long int *N, const double *R, double *F, double *U,
-         const double *bx, const double *by, const double *bz);
-}
-
-/// Stillinger-Weber potential for Si (Fortran implementation).
+/// Stillinger-Weber potential for Si (Fortran implementation, loaded at runtime).
 class SW final : public Potential {
 public:
+  using force_fn = void (*)(const long int *N, const double *R, double *F,
+                            double *U, const double *bx, const double *by,
+                            const double *bz);
+
   explicit SW(const Parameters &p)
-      : Potential(p) {}
+      : Potential(p) {
+    auto &loader = eonc::FortranPotLoader::instance();
+    m_force = loader.load_sym<force_fn>("eon_sw", "sw_");
+    if (!m_force) {
+      loader.throw_not_found("eon_sw", "Stillinger-Weber potential (Fortran)");
+    }
+  }
   ~SW() override = default;
 
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+
+private:
+  force_fn m_force{nullptr};
 };
