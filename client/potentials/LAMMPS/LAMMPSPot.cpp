@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 
-#ifndef EONMPI
+#if !defined(EONMPI) && !defined(IS_WINDOWS)
 #include <cerrno>
 #include <cstdlib>
 #include <vector>
@@ -42,7 +42,7 @@ LAMMPSPot::LAMMPSPot(const Parameters &p)
 {
   // Fail fast if LAMMPS library not available
   eonc::LammpsLoader::instance().require_loaded();
-#ifndef EONMPI
+#if !defined(EONMPI) && !defined(IS_WINDOWS)
   // Fork the worker NOW, at construction, before this process ever opens a
   // LAMMPS instance (and thus before liblammps initialises MPI).  Open MPI
   // does not support using MPI in a process that called MPI_Init before fork,
@@ -56,7 +56,7 @@ LAMMPSPot::LAMMPSPot(const Parameters &p)
 LAMMPSPot::~LAMMPSPot() { cleanMemory(); }
 
 void LAMMPSPot::cleanMemory() {
-#ifndef EONMPI
+#if !defined(EONMPI) && !defined(IS_WINDOWS)
   stopWorker();
 #endif
   if (LAMMPSObj != nullptr) {
@@ -65,9 +65,9 @@ void LAMMPSPot::cleanMemory() {
   }
 }
 
-#ifndef EONMPI
+#if !defined(EONMPI) && !defined(IS_WINDOWS)
 // ---------------------------------------------------------------------------
-// Process-per-image worker plumbing
+// Process-per-image worker plumbing (POSIX only)
 // ---------------------------------------------------------------------------
 namespace {
 // Blocking read/write of exactly n bytes over a pipe.  Returns false on EOF or
@@ -198,13 +198,16 @@ void LAMMPSPot::stopWorker() {
   }
   workerSpawned = false;
 }
-#endif // !EONMPI
+#endif // !EONMPI && !IS_WINDOWS
 
 void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
                       double *U, double *variance, const double *box) {
   variance = nullptr;
 
 #ifdef EONMPI
+  forceLocal(N, R, atomicNrs, F, U, box);
+#elif defined(IS_WINDOWS)
+  // No fork/pipe on Windows; call forceLocal directly.
   forceLocal(N, R, atomicNrs, F, U, box);
 #else
   // Drive the dedicated worker process so this image's LAMMPS runs in its own
