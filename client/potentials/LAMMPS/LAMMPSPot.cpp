@@ -19,6 +19,15 @@
 #include <map>
 #include <string>
 
+#ifndef EONMPI
+#include <cerrno>
+#include <cstdlib>
+#include <vector>
+
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
+
 #ifdef EONMPI
 #define LAMMPS_LIB_MPI
 #endif
@@ -33,20 +42,197 @@ LAMMPSPot::LAMMPSPot(const Parameters &p)
 {
   // Fail fast if LAMMPS library not available
   eonc::LammpsLoader::instance().require_loaded();
+#ifndef EONMPI
+  // Fork the worker NOW, at construction, before this process ever opens a
+  // LAMMPS instance (and thus before liblammps initialises MPI).  Open MPI
+  // does not support using MPI in a process that called MPI_Init before fork,
+  // so the worker must be spawned from a still-MPI-clean parent.  Every
+  // LAMMPSPot -- endpoints and per-image alike -- runs its LAMMPS in its own
+  // child process, so the parent never initialises MPI at all.
+  ensureWorker();
+#endif
 }
 
 LAMMPSPot::~LAMMPSPot() { cleanMemory(); }
 
 void LAMMPSPot::cleanMemory() {
+#ifndef EONMPI
+  stopWorker();
+#endif
   if (LAMMPSObj != nullptr) {
     eonc::LammpsLoader::instance().close(LAMMPSObj);
     LAMMPSObj = nullptr;
   }
 }
 
+#ifndef EONMPI
+// ---------------------------------------------------------------------------
+// Process-per-image worker plumbing
+// ---------------------------------------------------------------------------
+namespace {
+// Blocking read/write of exactly n bytes over a pipe.  Returns false on EOF or
+// error, so a dead peer is detected rather than silently producing garbage.
+bool readExact(int fd, void *buf, size_t n) {
+  auto *p = static_cast<char *>(buf);
+  while (n > 0) {
+    ssize_t r = read(fd, p, n);
+    if (r <= 0) {
+      if (r < 0 && errno == EINTR)
+        continue;
+      return false;
+    }
+    p += r;
+    n -= static_cast<size_t>(r);
+  }
+  return true;
+}
+bool writeExact(int fd, const void *buf, size_t n) {
+  const auto *p = static_cast<const char *>(buf);
+  while (n > 0) {
+    ssize_t w = write(fd, p, n);
+    if (w < 0) {
+      if (errno == EINTR)
+        continue;
+      return false;
+    }
+    p += w;
+    n -= static_cast<size_t>(w);
+  }
+  return true;
+}
+} // namespace
+
+void LAMMPSPot::ensureWorker() {
+  if (workerSpawned)
+    return;
+
+  int reqPipe[2]; // parent -> child
+  int resPipe[2]; // child -> parent
+  if (pipe(reqPipe) != 0 || pipe(resPipe) != 0) {
+    throw std::runtime_error("LAMMPSPot: failed to create worker pipes");
+  }
+
+  // Fork BEFORE opening any LAMMPS instance in this process, so MPI is first
+  // initialised inside the child.  Each child is its own process with its own
+  // MPI_COMM_WORLD; concurrent children never share a communicator.
+  pid_t pid = fork();
+  if (pid < 0) {
+    throw std::runtime_error("LAMMPSPot: fork for worker failed");
+  }
+
+  if (pid == 0) {
+    // Child: keep reqPipe read end and resPipe write end.
+    close(reqPipe[1]);
+    close(resPipe[0]);
+    reqFd = reqPipe[0];
+    resFd = resPipe[1];
+    runWorkerLoop(); // never returns
+  }
+
+  // Parent: keep reqPipe write end and resPipe read end.
+  close(reqPipe[0]);
+  close(resPipe[1]);
+  reqFd = reqPipe[1];
+  resFd = resPipe[0];
+  workerPid = pid;
+  workerSpawned = true;
+}
+
+void LAMMPSPot::runWorkerLoop() {
+  // Running in the forked child.  Evaluate forces with an in-process LAMMPS
+  // (this child's own MPI_COMM_WORLD) and stream results back to the parent.
+  for (;;) {
+    long N = 0;
+    if (!readExact(reqFd, &N, sizeof(N))) {
+      _exit(0); // request pipe closed -> shut down cleanly
+    }
+    if (N < 0) {
+      _exit(0); // explicit shutdown sentinel from stopWorker()
+    }
+    std::vector<int> atomicNrs(static_cast<size_t>(N));
+    std::vector<double> R(static_cast<size_t>(3 * N));
+    double box[9];
+    if (!readExact(reqFd, atomicNrs.data(), sizeof(int) * static_cast<size_t>(N)) ||
+        !readExact(reqFd, box, sizeof(box)) ||
+        !readExact(reqFd, R.data(), sizeof(double) * static_cast<size_t>(3 * N))) {
+      _exit(1);
+    }
+
+    std::vector<double> F(static_cast<size_t>(3 * N), 0.0);
+    double U = 0.0;
+    int status = 0;
+    try {
+      forceLocal(N, R.data(), atomicNrs.data(), F.data(), &U, box);
+    } catch (...) {
+      status = 1;
+    }
+
+    if (!writeExact(resFd, &status, sizeof(status)) ||
+        !writeExact(resFd, &U, sizeof(U)) ||
+        !writeExact(resFd, F.data(), sizeof(double) * static_cast<size_t>(3 * N))) {
+      _exit(1);
+    }
+  }
+}
+
+void LAMMPSPot::stopWorker() {
+  if (!workerSpawned)
+    return;
+  if (reqFd >= 0) {
+    // Send an explicit shutdown sentinel, then close.  A sentinel (rather than
+    // relying on pipe EOF) guarantees the child exits even when sibling worker
+    // processes hold an inherited copy of this write end.
+    long sentinel = -1;
+    writeExact(reqFd, &sentinel, sizeof(sentinel));
+    close(reqFd);
+    reqFd = -1;
+  }
+  if (resFd >= 0) {
+    close(resFd);
+    resFd = -1;
+  }
+  if (workerPid > 0) {
+    int st = 0;
+    waitpid(workerPid, &st, 0);
+    workerPid = -1;
+  }
+  workerSpawned = false;
+}
+#endif // !EONMPI
+
 void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
                       double *U, double *variance, const double *box) {
   variance = nullptr;
+
+#ifdef EONMPI
+  forceLocal(N, R, atomicNrs, F, U, box);
+#else
+  // Drive the dedicated worker process so this image's LAMMPS runs in its own
+  // process (own MPI_COMM_WORLD).  Per-image NEB threads thus evaluate forces
+  // as truly concurrent processes with no shared-communicator contention.
+  ensureWorker();
+
+  if (!writeExact(reqFd, &N, sizeof(N)) ||
+      !writeExact(reqFd, atomicNrs, sizeof(int) * static_cast<size_t>(N)) ||
+      !writeExact(reqFd, box, sizeof(double) * 9) ||
+      !writeExact(reqFd, R, sizeof(double) * static_cast<size_t>(3 * N))) {
+    throw std::runtime_error("LAMMPSPot: failed to send request to worker");
+  }
+
+  int status = 0;
+  if (!readExact(resFd, &status, sizeof(status)) ||
+      !readExact(resFd, U, sizeof(double)) ||
+      !readExact(resFd, F, sizeof(double) * static_cast<size_t>(3 * N))) {
+    throw std::runtime_error("LAMMPSPot: worker process died during force eval");
+  }
+  if (status != 0) {
+    throw std::runtime_error("LAMMPSPot: worker reported a force evaluation error");
+  }
+#endif
+}
+
+void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
+                           double *F, double *U, const double *box) {
   auto &lmp = eonc::LammpsLoader::instance();
 
   bool newLammps = false;
@@ -106,7 +292,8 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   std::memcpy(oldBox, box, 9 * sizeof(double));
 
   if (LAMMPSObj != nullptr) {
-    cleanMemory();
+    eonc::LammpsLoader::instance().close(LAMMPSObj);
+    LAMMPSObj = nullptr;
   }
 
   // Map atomic numbers to LAMMPS type indices (1-based)
