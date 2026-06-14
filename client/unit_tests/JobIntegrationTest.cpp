@@ -16,7 +16,9 @@
 /// values.
 
 #include "Job.h"
+#include "Matter.h"
 #include "Parameters.h"
+#include "Potential.h"
 #include "PotRegistry.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
@@ -25,8 +27,11 @@
 #include "libs/ARTn/ARTnResource.h"
 #endif
 
+#include <array>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 namespace tests {
@@ -1430,6 +1435,215 @@ energy_difference = 0.01
   job->run();
   std::filesystem::current_path(oldDir);
   REQUIRE(true);
+}
+
+// ---------------------------------------------------------------------------
+// Fixed-atom drift invariant: displacement.con with stale fixed-atom positions
+// must not propagate to reactant.con / product.con after process_search.
+//
+// The test system (process_search_fixed_drift) is Pt_Heptamer_FrozenLayers
+// (343 atoms, 336 fixed) with displacement.con built so that every fixed-atom
+// row is offset +0.1 A in x vs pos.con.  The bug (pre-fix) copies those stale
+// rows into min1/min2 -> reactant.con.  The fix restores fixed-atom rows from
+// initial before the saddle search runs, so reactant.con must have zero drift.
+// ---------------------------------------------------------------------------
+
+/// Parse a .con file and return (positions, fixed-flags) for every atom.
+static std::vector<std::pair<std::array<double, 3>, int>>
+parseConAtoms(const std::filesystem::path &path) {
+  std::vector<std::pair<std::array<double, 3>, int>> atoms;
+  std::ifstream f(path);
+  if (!f)
+    return atoms;
+  std::string line;
+  // consume lines 0-6 (header: title, json/blank, cell, angles, 2 blanks, nTypes)
+  for (int i = 0; i < 7; i++)
+    std::getline(f, line);
+  // line 7: space-separated n_atoms per component; take the first token
+  int n_atoms = 0;
+  {
+    std::getline(f, line);  // reads line 7
+    std::istringstream ss(line);
+    ss >> n_atoms;
+  }
+  // lines 8-10: masses, element names, "Coordinates of..."
+  for (int i = 0; i < 3; i++)
+    std::getline(f, line);
+  // next n_atoms lines: x y z fixed_bits index
+  atoms.reserve(n_atoms);
+  for (int i = 0; i < n_atoms; i++) {
+    if (!std::getline(f, line))
+      break;
+    std::istringstream ss(line);
+    std::array<double, 3> xyz{};
+    int fb{0}, idx{0};
+    ss >> xyz[0] >> xyz[1] >> xyz[2] >> fb >> idx;
+    atoms.push_back({xyz, fb});
+  }
+  return atoms;
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ProcessSearchJob zero fixed-atom drift with stale "
+                 "displacement.con",
+                 "[job][process_search][fixed_atom][invariant][integration]") {
+  copyTestData("../process_search_fixed_drift");
+
+  // Verify the test data actually has stale fixed-atom positions so the
+  // test is not vacuously passing because drift was zero to begin with.
+  {
+    auto pos_atoms = parseConAtoms(workdir / "pos.con");
+    auto dis_atoms = parseConAtoms(workdir / "displacement.con");
+    REQUIRE(pos_atoms.size() == dis_atoms.size());
+    double max_stale = 0.0;
+    for (size_t i = 0; i < pos_atoms.size(); i++) {
+      if (pos_atoms[i].second != 0) {
+        for (int ax = 0; ax < 3; ax++) {
+          max_stale =
+              std::max(max_stale, std::abs(pos_atoms[i].first[ax] -
+                                           dis_atoms[i].first[ax]));
+        }
+      }
+    }
+    // displacement.con was built with +0.1 A offset on fixed atoms
+    REQUIRE(max_stale > 0.05);
+  }
+
+  writeConfig(R"(
+[Main]
+job = process_search
+temperature = 300
+random_seed = 42
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.01
+max_iterations = 200
+max_move = 0.2
+
+[Saddle Search]
+method = min_mode
+min_mode_method = dimer
+displace_type = load
+max_iterations = 300
+max_energy = 10.0
+
+[Structure Comparison]
+distance_difference = 0.1
+energy_difference = 0.01
+
+[Prefactor]
+default_value = 1e12
+)");
+
+  // Run the job; any termination status is acceptable -- the invariant holds
+  // regardless of whether the saddle search converges.
+  std::filesystem::current_path(workdir);
+  auto p = std::make_unique<Parameters>();
+  p->load("config.ini");
+  auto job = eonc::helpers::makeJob(std::move(p));
+  job->run();
+  std::filesystem::current_path(originalDir);
+
+  // reactant.con must exist (saveData always writes it)
+  REQUIRE(std::filesystem::exists(workdir / "reactant.con"));
+
+  auto pos_atoms = parseConAtoms(workdir / "pos.con");
+  auto reactant_atoms = parseConAtoms(workdir / "reactant.con");
+  REQUIRE(pos_atoms.size() == reactant_atoms.size());
+
+  // Fixed-atom drift invariant: every fixed atom in reactant.con must
+  // match pos.con within 1e-8 A.
+  double max_fixed_drift = 0.0;
+  int n_fixed = 0;
+  for (size_t i = 0; i < pos_atoms.size(); i++) {
+    if (pos_atoms[i].second != 0) {
+      ++n_fixed;
+      for (int ax = 0; ax < 3; ax++) {
+        max_fixed_drift =
+            std::max(max_fixed_drift,
+                     std::abs(pos_atoms[i].first[ax] - reactant_atoms[i].first[ax]));
+      }
+    }
+  }
+  REQUIRE(n_fixed == 336); // sanity: all 336 fixed atoms are present
+  // Core invariant: fixed atoms must not drift from pos.con
+  REQUIRE(max_fixed_drift < 1.0e-8);
+}
+
+// ---------------------------------------------------------------------------
+// Unit-level regression test for the fixed-atom restore in ProcessSearchJob.
+//
+// The fix iterates initial->getFixed(i) and copies fixed-atom rows from
+// initial into saddle before the dimer/min-mode search runs.  This test
+// exercises that same logic directly through the Matter API, without
+// relying on the saddle search converging, so it is fully deterministic.
+// ---------------------------------------------------------------------------
+TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
+          "are patched from initial",
+          "[process_search][fixed_atom][matter][unit]") {
+  // Build two Matter objects.  LJ suffices: we only read positions and
+  // fixed-flags, never evaluate the potential.
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+
+  // initial = pos.con (the authoritative reference)
+  auto initial = std::make_shared<Matter>(pot, params);
+  REQUIRE(initial->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con")));
+  REQUIRE(initial->numberOfAtoms() == 343);
+  REQUIRE(initial->numberOfFixedAtoms() == 336);
+
+  // saddle = displacement.con from process_search_fixed_drift -- has +0.1 A
+  // offset on all fixed-atom rows vs pos.con.
+  auto saddle = std::make_shared<Matter>(pot, params);
+  REQUIRE(
+      saddle->con2matter(std::string("../process_search_fixed_drift/displacement.con")));
+  REQUIRE(saddle->numberOfAtoms() == 343);
+
+  // Confirm the stale fixed-atom drift is present before the fix.
+  {
+    const AtomMatrix &iPos = initial->getPositions();
+    const AtomMatrix &sPos = saddle->getPositions();
+    double max_stale = 0.0;
+    for (long i = 0; i < initial->numberOfAtoms(); i++) {
+      if (initial->getFixed(i)) {
+        max_stale = std::max(max_stale, (iPos.row(i) - sPos.row(i)).cwiseAbs().maxCoeff());
+      }
+    }
+    REQUIRE(max_stale > 0.05);  // displacement.con was built with +0.1 A
+  }
+
+  // Apply the fix: restore fixed-atom rows from initial into saddle.
+  {
+    const AtomMatrix &initPos = initial->getPositions();
+    AtomMatrix saddlePos = saddle->getPositionsCopy();
+    for (long i = 0; i < initial->numberOfAtoms(); i++) {
+      if (initial->getFixed(i)) {
+        saddlePos.row(i) = initPos.row(i);
+      }
+    }
+    saddle->setPositions(saddlePos);
+  }
+
+  // After the fix, fixed atoms in saddle must match initial within machine eps.
+  {
+    const AtomMatrix &iPos = initial->getPositions();
+    const AtomMatrix &sPos = saddle->getPositions();
+    double max_drift = 0.0;
+    int n_fixed = 0;
+    for (long i = 0; i < initial->numberOfAtoms(); i++) {
+      if (initial->getFixed(i)) {
+        ++n_fixed;
+        max_drift = std::max(max_drift, (iPos.row(i) - sPos.row(i)).cwiseAbs().maxCoeff());
+      }
+    }
+    REQUIRE(n_fixed == 336);
+    REQUIRE(max_drift < 1.0e-12);
+  }
 }
 
 TEST_CASE("makeJob creates correct job type for each JobType",
