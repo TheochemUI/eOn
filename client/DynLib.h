@@ -60,7 +60,16 @@ inline std::string error() {
 using Handle = void *;
 
 inline Handle open(const char *name) noexcept {
+  // RTLD_DEEPBIND (Linux-only): make the library prefer its own symbols over
+  // globally-visible ones.  Without this, Fortran helper symbols exported by
+  // Fortran shared libraries (e.g. neighbours_ in libeon_sw.so) can be
+  // hijacked by identically-named symbols in other loaded libraries (e.g.
+  // libxtb.so.6 also exports neighbours_), causing mis-dispatch and SIGSEGV.
+#if defined(__linux__)
+  return dlopen(name, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
+#else
   return dlopen(name, RTLD_NOW | RTLD_LOCAL);
+#endif
 }
 
 inline void *sym(Handle h, const char *name) noexcept { return dlsym(h, name); }
