@@ -78,6 +78,21 @@ std::vector<std::string> ProcessSearchJob::run() {
         EONC_LOG_CRITICAL("Failed to load {}", displacementFilename);
         exit(1);
       }
+      // displacement.con may carry stale fixed-atom coordinates from a prior
+      // run.  Restore every fixed-atom row in saddle from the initial
+      // structure so the invariant "fixed atoms never move" holds through all
+      // downstream endpoint writes (reactant.con, product.con).
+      {
+        const AtomMatrix &initPos = initial->getPositions();
+        AtomMatrix saddlePos = saddle->getPositionsCopy();
+        long n = initial->numberOfAtoms();
+        for (long i = 0; i < n; i++) {
+          if (initial->getFixed(i)) {
+            saddlePos.row(i) = initPos.row(i);
+          }
+        }
+        saddle->setPositions(saddlePos);
+      }
       *min1 = *min2 = *initial;
     } else {
       *saddle = *min1 = *min2 = *initial;
