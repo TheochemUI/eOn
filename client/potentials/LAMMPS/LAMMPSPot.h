@@ -19,7 +19,9 @@
 class LAMMPSPot : public Potential {
 
 public:
-  [[nodiscard]] bool needsPerImageInstance() const noexcept override { return true; }
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return true;
+  }
   LAMMPSPot(const Parameters &p);
   ~LAMMPSPot();
   void cleanMemory();
@@ -47,8 +49,8 @@ private:
   // in its own process with its own MPI_COMM_WORLD and true parallelism.
   // Not available on Windows (no fork/pipe).
   int workerPid{-1};
-  int reqFd{-1};  // parent writes requests here (child stdin side)
-  int resFd{-1};  // parent reads results here (child stdout side)
+  int reqFd{-1}; // parent writes requests here (child stdin side)
+  int resFd{-1}; // parent reads results here (child stdout side)
   bool workerSpawned{false};
 
   // Fork the worker child on first use; child enters runWorkerLoop().

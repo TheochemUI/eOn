@@ -59,8 +59,7 @@ public:
                                     const char *description) const;
 
   /// Get the current search paths (for diagnostics).
-  [[nodiscard]] const std::vector<std::string> &
-  search_paths() const noexcept {
+  [[nodiscard]] const std::vector<std::string> &search_paths() const noexcept {
     return m_search_paths;
   }
 

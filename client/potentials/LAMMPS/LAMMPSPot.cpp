@@ -152,9 +152,11 @@ void LAMMPSPot::runWorkerLoop() {
     std::vector<int> atomicNrs(static_cast<size_t>(N));
     std::vector<double> R(static_cast<size_t>(3 * N));
     double box[9];
-    if (!readExact(reqFd, atomicNrs.data(), sizeof(int) * static_cast<size_t>(N)) ||
+    if (!readExact(reqFd, atomicNrs.data(),
+                   sizeof(int) * static_cast<size_t>(N)) ||
         !readExact(reqFd, box, sizeof(box)) ||
-        !readExact(reqFd, R.data(), sizeof(double) * static_cast<size_t>(3 * N))) {
+        !readExact(reqFd, R.data(),
+                   sizeof(double) * static_cast<size_t>(3 * N))) {
       _exit(1);
     }
 
@@ -169,7 +171,8 @@ void LAMMPSPot::runWorkerLoop() {
 
     if (!writeExact(resFd, &status, sizeof(status)) ||
         !writeExact(resFd, &U, sizeof(U)) ||
-        !writeExact(resFd, F.data(), sizeof(double) * static_cast<size_t>(3 * N))) {
+        !writeExact(resFd, F.data(),
+                    sizeof(double) * static_cast<size_t>(3 * N))) {
       _exit(1);
     }
   }
@@ -226,10 +229,12 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   if (!readExact(resFd, &status, sizeof(status)) ||
       !readExact(resFd, U, sizeof(double)) ||
       !readExact(resFd, F, sizeof(double) * static_cast<size_t>(3 * N))) {
-    throw std::runtime_error("LAMMPSPot: worker process died during force eval");
+    throw std::runtime_error(
+        "LAMMPSPot: worker process died during force eval");
   }
   if (status != 0) {
-    throw std::runtime_error("LAMMPSPot: worker reported a force evaluation error");
+    throw std::runtime_error(
+        "LAMMPSPot: worker reported a force evaluation error");
   }
 #endif
 }
@@ -318,7 +323,7 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
         "Install an MPI-enabled LAMMPS build.");
   }
   MPI_Comm inst_comm = MPI_COMM_NULL;
-  MPI_Comm_dup(mpiComm, &inst_comm);  // private comm per per-image instance
+  MPI_Comm_dup(mpiComm, &inst_comm); // private comm per per-image instance
   LAMMPSObj =
       lmp.open_mpi(lmpargc, const_cast<char **>(lmpargv), inst_comm, nullptr);
 #else

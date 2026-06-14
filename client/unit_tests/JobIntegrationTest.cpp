@@ -18,8 +18,8 @@
 #include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "Potential.h"
 #include "PotRegistry.h"
+#include "Potential.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #ifdef WITH_ARTN
@@ -1456,13 +1456,14 @@ parseConAtoms(const std::filesystem::path &path) {
   if (!f)
     return atoms;
   std::string line;
-  // consume lines 0-6 (header: title, json/blank, cell, angles, 2 blanks, nTypes)
+  // consume lines 0-6 (header: title, json/blank, cell, angles, 2 blanks,
+  // nTypes)
   for (int i = 0; i < 7; i++)
     std::getline(f, line);
   // line 7: space-separated n_atoms per component; take the first token
   int n_atoms = 0;
   {
-    std::getline(f, line);  // reads line 7
+    std::getline(f, line); // reads line 7
     std::istringstream ss(line);
     ss >> n_atoms;
   }
@@ -1499,9 +1500,8 @@ TEST_CASE_METHOD(JobIntegrationFixture,
     for (size_t i = 0; i < pos_atoms.size(); i++) {
       if (pos_atoms[i].second != 0) {
         for (int ax = 0; ax < 3; ax++) {
-          max_stale =
-              std::max(max_stale, std::abs(pos_atoms[i].first[ax] -
-                                           dis_atoms[i].first[ax]));
+          max_stale = std::max(max_stale, std::abs(pos_atoms[i].first[ax] -
+                                                   dis_atoms[i].first[ax]));
         }
       }
     }
@@ -1564,8 +1564,8 @@ default_value = 1e12
       ++n_fixed;
       for (int ax = 0; ax < 3; ax++) {
         max_fixed_drift =
-            std::max(max_fixed_drift,
-                     std::abs(pos_atoms[i].first[ax] - reactant_atoms[i].first[ax]));
+            std::max(max_fixed_drift, std::abs(pos_atoms[i].first[ax] -
+                                               reactant_atoms[i].first[ax]));
       }
     }
   }
@@ -1593,15 +1593,16 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
 
   // initial = pos.con (the authoritative reference)
   auto initial = std::make_shared<Matter>(pot, params);
-  REQUIRE(initial->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con")));
+  REQUIRE(
+      initial->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con")));
   REQUIRE(initial->numberOfAtoms() == 343);
   REQUIRE(initial->numberOfFixedAtoms() == 336);
 
   // saddle = displacement.con from process_search_fixed_drift -- has +0.1 A
   // offset on all fixed-atom rows vs pos.con.
   auto saddle = std::make_shared<Matter>(pot, params);
-  REQUIRE(
-      saddle->con2matter(std::string("../process_search_fixed_drift/displacement.con")));
+  REQUIRE(saddle->con2matter(
+      std::string("../process_search_fixed_drift/displacement.con")));
   REQUIRE(saddle->numberOfAtoms() == 343);
 
   // Confirm the stale fixed-atom drift is present before the fix.
@@ -1611,10 +1612,11 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
     double max_stale = 0.0;
     for (long i = 0; i < initial->numberOfAtoms(); i++) {
       if (initial->getFixed(i)) {
-        max_stale = std::max(max_stale, (iPos.row(i) - sPos.row(i)).cwiseAbs().maxCoeff());
+        max_stale = std::max(max_stale,
+                             (iPos.row(i) - sPos.row(i)).cwiseAbs().maxCoeff());
       }
     }
-    REQUIRE(max_stale > 0.05);  // displacement.con was built with +0.1 A
+    REQUIRE(max_stale > 0.05); // displacement.con was built with +0.1 A
   }
 
   // Apply the fix: restore fixed-atom rows from initial into saddle.
@@ -1638,7 +1640,8 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
     for (long i = 0; i < initial->numberOfAtoms(); i++) {
       if (initial->getFixed(i)) {
         ++n_fixed;
-        max_drift = std::max(max_drift, (iPos.row(i) - sPos.row(i)).cwiseAbs().maxCoeff());
+        max_drift = std::max(max_drift,
+                             (iPos.row(i) - sPos.row(i)).cwiseAbs().maxCoeff());
       }
     }
     REQUIRE(n_fixed == 336);
