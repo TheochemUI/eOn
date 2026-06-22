@@ -35,6 +35,11 @@ jobs:
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib
           meson install -C bbdir
 
+      # windows-latest (windows-2025-vs2026) no longer puts cl.exe on PATH by default
+      - name: Activate MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Compile and install [windows]
         if: runner.os == 'Windows'
         shell: pixi run bash -e {0}
