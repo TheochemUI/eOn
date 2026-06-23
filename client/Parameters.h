@@ -67,7 +67,8 @@ public:
     bool EMTRasmussen{false};
     bool LogPotential{false};
     std::string extPotPath{"./ext_pot"};
-    std::string potentialsPath{""};  // colon-separated dirs for Fortran potential .so files
+    std::string potentialsPath{
+        ""}; // colon-separated dirs for Fortran potential .so files
     int MPIPotentialRank{-1};
 #ifdef EONMPI
     MPI_Comm MPIClientComm;

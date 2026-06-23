@@ -14,7 +14,8 @@
 #include "../../Potential.h"
 #include "../FortranPotLoader.h"
 
-/// Stillinger-Weber potential for Si (Fortran implementation, loaded at runtime).
+/// Stillinger-Weber potential for Si (Fortran implementation, loaded at
+/// runtime).
 class SW final : public Potential {
 public:
   using force_fn = void (*)(const long int *N, const double *R, double *F,

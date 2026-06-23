@@ -90,8 +90,8 @@ int load_ini(INIReader &ini, Parameters &params) {
       "Potential", "emt_rasmussen", params.potential_options.EMTRasmussen);
   params.potential_options.extPotPath =
       ini.Get("Potential", "ext_pot_path", params.potential_options.extPotPath);
-  params.potential_options.potentialsPath =
-      ini.Get("Potential", "potentials_path", params.potential_options.potentialsPath);
+  params.potential_options.potentialsPath = ini.Get(
+      "Potential", "potentials_path", params.potential_options.potentialsPath);
 
   if (params.potential_options.potential == PotType::MPI ||
       params.potential_options.potential == PotType::VASP) {

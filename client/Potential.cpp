@@ -45,10 +45,10 @@
 #include "potentials/Aluminum/Aluminum.h"
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/FeHe/FeHe.h"
+#include "potentials/FortranPotLoader.h"
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/SW/SW.h"
 #include "potentials/Tersoff/Tersoff.h"
-#include "potentials/FortranPotLoader.h"
 
 #ifdef EMBED_PYTHON
 

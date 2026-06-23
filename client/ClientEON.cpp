@@ -290,8 +290,8 @@ int main(int argc, char **argv) {
       MPI_Group orig_group, new_group;
       MPI_Comm_group(MPI_COMM_WORLD, &orig_group);
       int offset = i * potential_group_size;
-      MPI_Group_incl(orig_group, potential_group_size,
-                     &potential_ranks[offset], &new_group);
+      MPI_Group_incl(orig_group, potential_group_size, &potential_ranks[offset],
+                     &new_group);
       MPI_Comm pot_comm;
       MPI_Comm_create(MPI_COMM_WORLD, new_group, &pot_comm);
     }
@@ -375,10 +375,15 @@ int main(int argc, char **argv) {
           irank, server_rank);
       // Tag "1" is to interrupt the main loop and tell the communicator that a
       // client is ready
-      { MPI_Request eon_rq; MPI_Isend(&ready, 1, MPI_INT, server_rank, 1, MPI_COMM_WORLD, &eon_rq); MPI_Request_free(&eon_rq); }
+      {
+        MPI_Request eon_rq;
+        MPI_Isend(&ready, 1, MPI_INT, server_rank, 1, MPI_COMM_WORLD, &eon_rq);
+        MPI_Request_free(&eon_rq);
+      }
 
       // Get the path we should run in from the server
-      MPI_Recv(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,
+               MPI_STATUS_IGNORE);
       if (path.starts_with("STOPCAR")) {
         QUILL_LOG_INFO(logger, "rank {} got STOPCAR", irank);
         MPI_Finalize();
@@ -493,7 +498,12 @@ int main(int argc, char **argv) {
     if (client_standalone) {
       break;
     }
-    { MPI_Request eon_rq; MPI_Isend(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD, &eon_rq); MPI_Request_free(&eon_rq); }
+    {
+      MPI_Request eon_rq;
+      MPI_Isend(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,
+                &eon_rq);
+      MPI_Request_free(&eon_rq);
+    }
 
     // End of MPI while loop
   }
