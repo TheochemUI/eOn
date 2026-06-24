@@ -181,6 +181,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -249,6 +253,11 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#version-surfaces-single-semver">Version surfaces (single semver)</a></li>
+<li><a class="reference internal" href="#tooling-map">Tooling map</a></li>
+<li><a class="reference internal" href="#ci-generation-nickel-rgpot-style">CI generation (Nickel, rgpot-style)</a></li>
+<li><a class="reference internal" href="#maintainer-secrets-one-time-setup">Maintainer secrets / one-time setup</a></li>
+<li><a class="reference internal" href="#windows-and-conda-forge-issue-15">Windows and conda-forge (issue #15)</a></li>
 <li><a class="reference internal" href="#pre-release-checklist">1. Pre-release checklist</a></li>
 <li><a class="reference internal" href="#running-cog-bump">2. Running <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code></a><ul>
 <li><a class="reference internal" href="#what-cog-bump-does">What <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> does</a></li>
@@ -256,8 +265,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#post-bump-actions">3. Post-bump actions</a></li>
 <li><a class="reference internal" href="#conda-forge-feedstock-bump">4. conda-forge feedstock bump</a></li>
-<li><a class="reference internal" href="#manual-fallback">5. Manual fallback</a></li>
-<li><a class="reference internal" href="#paper-tags">6. Paper tags</a></li>
+<li><a class="reference internal" href="#incomplete-stuck-releases">5. Incomplete / stuck releases</a><ul>
+<li><a class="reference internal" href="#decision-tree">Decision tree</a></li>
+<li><a class="reference internal" href="#finalize-a-stuck-vn-m-p-no-new-semver">Finalize a stuck <code class="docutils literal notranslate">M.P</span></code> (no new semver)</a></li>
+<li><a class="reference internal" href="#supersede-with-a-new-semver">Supersede with a new semver</a></li>
+<li><a class="reference internal" href="#anti-patterns">Anti-patterns</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pre-release-rc-tags">6. Pre-release / RC tags</a></li>
+<li><a class="reference internal" href="#manual-fallback-cog-unavailable">7. Manual fallback (cog unavailable)</a></li>
+<li><a class="reference internal" href="#api-doxygen-documentation-gate">8. API / Doxygen documentation gate</a></li>
+<li><a class="reference internal" href="#paper-tags">9. Paper tags</a></li>
+<li><a class="reference internal" href="#changelog-fragments-every-user-facing-pr">10. Changelog fragments (every user-facing PR)</a></li>
+<li><a class="reference internal" href="#how-to-verify-this-release-process-pr-no-live-cut-required">11. How to verify this release-process PR (no live cut required)</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -352,90 +372,311 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue dark-code" role="main">
           <section id="release-workflow">
 <h1>Release workflow<a class="headerlink" href="#release-workflow" title="Link to this heading">¶</a></h1>
-<p>eOn releases use <a class="reference external" href="https://docs.cocogitto.io/">cocogitto (<code class="docutils literal notranslate"><span class="pre">cog</span></code>)</a> to derive the
+<p>eOn releases use <a class="reference external" href="https://docs.cocogitto.io/">cocogitto (<code class="docutils literal notranslate"><span class="pre">cog</span></code>)</a> 7+ to derive the
 next semver tag from the conventional-commit log, run the mechanical bump
-steps, create an atomic signed tag, and emit the source tarball. The
-<code class="docutils literal notranslate"><span class="pre">cog.toml</span></code> at the repo root wires this up; the hand checklist below documents
-what it automates and the manual steps that precede and follow it.</p>
+steps, create an atomic signed tag, and emit the source tarball. Towncrier owns
+<code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>. Tag push triggers <code class="docutils literal notranslate"><span class="pre">.github/workflows/release.yml</span></code> (GitHub
+Release + tarball asset + optional PyPI). Maintainers then open a
+<a class="reference external" href="https://github.com/conda-forge/eon-feedstock">conda-forge/eon-feedstock</a> PR.</p>
+<p>This page is the maintainer source of truth. Patterns are adapted from rgpot
+(<code class="docutils literal notranslate"><span class="pre">release</span> <span class="pre">assert</span></code> / <code class="docutils literal notranslate"><span class="pre">release-prepare</span></code> / towncrier CI / staged <code class="docutils literal notranslate"><span class="pre">release.yml</span></code>) to
+eOn surfaces (<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>, <code class="docutils literal notranslate"><span class="pre">condaEnvs/</span></code>, meson via
+<code class="docutils literal notranslate"><span class="pre">client/get_version.py</span></code>).</p>
+<section id="version-surfaces-single-semver">
+<h2>Version surfaces (single semver)<a class="headerlink" href="#version-surfaces-single-semver" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Surface</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> <code class="docutils literal notranslate"><span class="pre">project.version</span></code></p></td>
+<td><p><strong>Source of truth</strong> for Python/meson-python; docs <code class="docutils literal notranslate"><span class="pre">conf.py</span></code>, <code class="docutils literal notranslate"><span class="pre">client/get_version.py</span></code>, meson/CMake read here</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> <code class="docutils literal notranslate"><span class="pre">version</span></code></p></td>
+<td><p>Lockstep mirror (cog <code class="docutils literal notranslate"><span class="pre">sed</span></code> on bump)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code></p></td>
+<td><p>Towncrier-only; <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">[X.Y.Z](...)</span></code> section per cut</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs/source/releases/vX.Y.Z/</span></code></p></td>
+<td><p>Curated Sphinx release notes (not auto-generated by cog)</p></td>
+</tr>
+<tr class="row-even"><td><p>Git tag <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code></p></td>
+<td><p>Annotated (prefer signed) tag; drives <code class="docutils literal notranslate"><span class="pre">release.yml</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>GH asset <code class="docutils literal notranslate"><span class="pre">eon-vX.Y.Z.tar.xz</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">archive</span></code> tarball (not GitHub auto-archive; hash stability)</p></td>
+</tr>
+<tr class="row-even"><td><p>PyPI project <code class="docutils literal notranslate"><span class="pre">eon-akmc</span></code></p></td>
+<td><p>Wheel/sdist via meson-python; <strong><code class="docutils literal notranslate"><span class="pre">eon</span></code> on PyPI is taken</strong> (EoN epidemics — do not use). Import package stays <code class="docutils literal notranslate"><span class="pre">eon/</span></code>. Config: <code class="docutils literal notranslate"><span class="pre">ci/gha/pypi.ncl</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>conda-forge <code class="docutils literal notranslate"><span class="pre">eon</span></code></p></td>
+<td><p>Feedstock consumes GH tarball URL + sha256</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Do <strong>not</strong> hand-edit a <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">[X.Y.Z]</span></code> block above the towncrier marker; fragments
+under <code class="docutils literal notranslate"><span class="pre">docs/newsfragments/</span></code> are the only input for the next section.</p>
+<p>Gate locally or in CI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python3<span class="w"> </span>scripts/release_assert.py<span class="w">              </span><span class="c1"># pyproject == pixi semver</span>
+</span><span data-line="2">python3<span class="w"> </span>scripts/release_assert.py<span class="w"> </span><span class="m">2</span>.14.0<span class="w"> </span>--require-changelog
+</span><span data-line="3">python3<span class="w"> </span>scripts/release_assert.py<span class="w"> </span><span class="m">2</span>.14.0<span class="w"> </span>--notes<span class="w"> </span>/tmp/release_notes.md
+</span></pre></div>
+</div>
+</section>
+<section id="tooling-map">
+<h2>Tooling map<a class="headerlink" href="#tooling-map" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://docs.cocogitto.io">cocogitto</a> (<code class="docutils literal notranslate"><span class="pre">cog</span></code>) 7+</p></td>
+<td><p>Bump, version commit, annotated tag</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://towncrier.readthedocs.io">towncrier</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> from <code class="docutils literal notranslate"><span class="pre">docs/newsfragments/</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">scripts/release_assert.py</span></code></p></td>
+<td><p>Lockstep + optional CHANGELOG section gate (rgpot <code class="docutils literal notranslate"><span class="pre">potctl</span> <span class="pre">release</span> <span class="pre">assert</span></code> analogue)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/release.yml</span></code></p></td>
+<td><p>On <code class="docutils literal notranslate"><span class="pre">v*</span></code>: gate → tarball → GH release → PyPI (stable only)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/release-prepare.yml</span></code></p></td>
+<td><p>Advisory dry-run on PRs / <code class="docutils literal notranslate"><span class="pre">workflow_dispatch</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/towncrier.yml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">towncrier</span> <span class="pre">check</span></code> when shipped paths change</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECURITY.md</span></code></p></td>
+<td><p>Supported versions + report path</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.github/CODEOWNERS</span></code></p></td>
+<td><p>Release-surface review hints</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="ci-generation-nickel-rgpot-style">
+<h2>CI generation (Nickel, rgpot-style)<a class="headerlink" href="#ci-generation-nickel-rgpot-style" title="Link to this heading">¶</a></h2>
+<p>Release-related Actions workflows are <strong>authored in Nickel</strong> under <code class="docutils literal notranslate"><span class="pre">ci/gha/</span></code> and
+exported to <code class="docutils literal notranslate"><span class="pre">.github/workflows/</span></code> (same contract as rgpot’s <code class="docutils literal notranslate"><span class="pre">ci/gha/workflow.ncl</span></code>
+→ <code class="docutils literal notranslate"><span class="pre">build.yml</span></code>; eOn applies it to <strong>release</strong> workflows since we do not yet own
+a combinatorial build matrix in Nickel). Internal write-up context:
+rgpot <code class="docutils literal notranslate"><span class="pre">release_process_v1.2.0_lockstep_potctl_cog_towncrier.org</span></code> (Nickel section:
+matrix is Nickel-owned; release publish can stay YAML in rgpot — here release
+publish is Nickel-owned so the process PR cannot drift from hand-edited YAML).</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Nickel</p></th>
+<th class="head"><p>Generated (commit both; do not hand-edit YAML alone)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/gha/common.ncl</span></code></p></td>
+<td><p>shared pins/helpers</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/gha/release.ncl</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/release.yml</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci/gha/release_prepare.ncl</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/release-prepare.yml</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ci/gha/towncrier_check.ncl</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/towncrier.yml</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">./ci/gha/gen.sh
+</span><span data-line="2"><span class="c1"># or: pixi r -e cigen gen-gha   # once cigen env/lock is available</span>
+</span><span data-line="3">nickel<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--format<span class="w"> </span>yaml<span class="w"> </span>ci/gha/release.ncl<span class="w"> </span>-o<span class="w"> </span>.github/workflows/release.yml
+</span></pre></div>
+</div>
+<p>See <code class="docutils literal notranslate"><span class="pre">ci/gha/README.md</span></code>. Other <code class="docutils literal notranslate"><span class="pre">ci_*.yml</span></code> workflows remain hand-maintained until ported.</p>
+</section>
+<section id="maintainer-secrets-one-time-setup">
+<h2>Maintainer secrets / one-time setup<a class="headerlink" href="#maintainer-secrets-one-time-setup" title="Link to this heading">¶</a></h2>
+<p>Do once per GitHub repo (Settings):</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Secret / config</p></th>
+<th class="head"><p>Used by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PYPI_API_TOKEN</span></code> or trusted publisher (PyPI → GitHub, environment <code class="docutils literal notranslate"><span class="pre">release</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">release.yml</span></code> job <code class="docutils literal notranslate"><span class="pre">pypi</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Optional environment <code class="docutils literal notranslate"><span class="pre">release</span></code> with required reviewers</p></td>
+<td><p>Gate publishes</p></td>
+</tr>
+<tr class="row-even"><td><p>GPG/signing keys on maintainer machines</p></td>
+<td><p>Prefer <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-s</span></code> / signed commits; GHA does not replace maintainer GPG</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>PyPI first-time (<code class="docutils literal notranslate"><span class="pre">eon-akmc</span></code>; do <strong>not</strong> use <code class="docutils literal notranslate"><span class="pre">eon</span></code> — already taken by EoN epidemics):</strong></p>
+<ol class="arabic">
+<li><p>Create account at <a class="reference external" href="https://pypi.org">pypi.org</a>; enable 2FA.</p></li>
+<li><p>Preferred: configure <a class="reference external" href="https://docs.pypi.org/trusted-publishers/">Trusted Publishing</a>
+for owner/repo <code class="docutils literal notranslate"><span class="pre">TheochemUI/eOn</span></code> (or your fork), workflow <code class="docutils literal notranslate"><span class="pre">release.yml</span></code>,
+environment <code class="docutils literal notranslate"><span class="pre">release</span></code>, project name <code class="docutils literal notranslate"><span class="pre">eon-akmc</span></code> (see <code class="docutils literal notranslate"><span class="pre">ci/gha/pypi.ncl</span></code>). Then <code class="docutils literal notranslate"><span class="pre">release.yml</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code> with OIDC (no long-lived token).</p></li>
+<li><p>Fallback: create API token scoped to project <code class="docutils literal notranslate"><span class="pre">eon-akmc</span></code>, store as repo secret
+<code class="docutils literal notranslate"><span class="pre">PYPI_API_TOKEN</span></code> (<code class="docutils literal notranslate"><span class="pre">pypi-...</span></code> prefix).</p></li>
+<li><p>Local dry-run (no upload):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>build<span class="w"> </span>twine
+</span><span data-line="2">python3<span class="w"> </span>-m<span class="w"> </span>build
+</span><span data-line="3">twine<span class="w"> </span>check<span class="w"> </span>dist/*
+</span></pre></div>
+</div>
+</li>
+<li><p>Never <code class="docutils literal notranslate"><span class="pre">twine</span> <span class="pre">upload</span></code> by hand unless CI is down; the tag workflow is the
+source of truth for stable tags.</p></li>
+</ol>
+<p><strong>conda-forge first-time:</strong> feedstock already exists at
+<a class="reference external" href="https://github.com/conda-forge/eon-feedstock">conda-forge/eon-feedstock</a>. New
+maintainers request access via the feedstock <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code> maintainers
+list / staged recipes process.</p>
+</section>
+<section id="windows-and-conda-forge-issue-15">
+<h2>Windows and conda-forge (issue #15)<a class="headerlink" href="#windows-and-conda-forge-issue-15" title="Link to this heading">¶</a></h2>
+<p>win-64 must ship <strong>in-tree Fortran</strong> (EAM/GAGAFE-class pots), not a Fortran-free
+stub. See <a class="reference external" href="https://github.com/conda-forge/eon-feedstock/issues/15">conda-forge/eon-feedstock#15</a>,
+feedstock <code class="docutils literal notranslate"><span class="pre">build.bat</span></code>, and <a class="reference external" href="https://rgoswami.me/posts/windows-compat-sci-cpp/">Windows Compatibility and Scientific Computing</a>
+(stack sizes, MinGW/MSVC ABI, xtb import libs).</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Platform</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">compiler('fortran')</span></code></p></th>
+<th class="head"><p>meson (feedstock / GHA Windows)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>linux / osx</p></td>
+<td><p>yes</p></td>
+<td><p>defaults (<code class="docutils literal notranslate"><span class="pre">with_fortran</span></code> on unless opted out)</p></td>
+</tr>
+<tr class="row-odd"><td><p>win-64</p></td>
+<td><p><strong>yes</strong> (m2w64 gfortran; no MSVC Fortran)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--default-library=static</span> <span class="pre">-Dwith_fortran=true</span> <span class="pre">-Dwith_cuh2=true</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p>Meson already adds <strong><code class="docutils literal notranslate"><span class="pre">/STACK:16777216</span></code></strong> on MSVC links (Windows 1 MB default
+overflows large Fortran stack arrays; Linux is ~8 MB).</p></li>
+<li><p>MinGW-built <strong>xtb</strong> still needs the <strong>dumpbin / <code class="docutils literal notranslate"><span class="pre">lib</span> <span class="pre">/DEF:</span></code></strong> MSVC import library
+step in feedstock <code class="docutils literal notranslate"><span class="pre">build.bat</span></code> (C++/torch stay MSVC).</p></li>
+<li><p><strong>CuH2</strong> is on with the rest of in-tree Fortran (iso_c_binding via m2w64 gfortran).</p></li>
+<li><p>Runtime pot <strong>DLLs</strong> (<code class="docutils literal notranslate"><span class="pre">LoadLibrary</span></code>) are complementary, not a substitute for
+in-tree Fortran in the conda package.</p></li>
+<li><p>Before feedstock go-live after a cut: confirm Azure <strong>win-64</strong> is green with
+<code class="docutils literal notranslate"><span class="pre">with_fortran=true</span></code> and <code class="docutils literal notranslate"><span class="pre">with_cuh2=true</span></code> on the version/sha256 PR.</p></li>
+</ul>
+</section>
 <section id="pre-release-checklist">
 <h2>1. Pre-release checklist<a class="headerlink" href="#pre-release-checklist" title="Link to this heading">¶</a></h2>
 <p>Before invoking <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code>, verify:</p>
 <ul>
 <li><p>[ ] Every PR intended for the release is merged into <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
-<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> is up to date <em>through the previous release only</em> –
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> is up to date <em>through the previous release only</em> —
 towncrier will prepend the new section from <code class="docutils literal notranslate"><span class="pre">docs/newsfragments/*</span></code>. If
-fragments are missing for user-facing changes, add them first.</p></li>
+fragments are missing for user-facing changes, add them first
+(<code class="docutils literal notranslate"><span class="pre">uvx</span> <span class="pre">towncrier</span> <span class="pre">create</span></code> or see <code class="docutils literal notranslate"><span class="pre">docs/newsfragments/README.md</span></code>).</p></li>
+<li><p>[ ] Preview fragments: <code class="docutils literal notranslate"><span class="pre">uvx</span> <span class="pre">towncrier</span> <span class="pre">build</span> <span class="pre">--draft</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">r</span> <span class="pre">-e</span> <span class="pre">dev</span> <span class="pre">towncrier</span> <span class="pre">build</span> <span class="pre">--draft</span></code> if the env has towncrier).</p></li>
 <li><p>[ ] <code class="docutils literal notranslate"><span class="pre">docs/source/releases/v&lt;X.Y.Z&gt;/release-notes.md</span></code> and <code class="docutils literal notranslate"><span class="pre">index.md</span></code> exist
 and are linked from <code class="docutils literal notranslate"><span class="pre">docs/source/releases/index.md</span></code> (cog cannot generate
-these – they are curated).</p></li>
-<li><p>[ ] CI is green on <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+these — they are curated).</p></li>
+<li><p>[ ] CI is green on <code class="docutils literal notranslate"><span class="pre">main</span></code> (build, docs, pre-commit, serve/xtb/metatomic as
+relevant).</p></li>
 <li><p>[ ] <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">install</span> <span class="pre">--locked</span></code> succeeds cleanly (so the lockfile regeneration
 hook has something stable to work from).</p></li>
-<li><p>[ ] <strong>Downstream integration test passes.</strong> The
-<a class="reference external" href="https://github.com/lab-cosmo/atomistic-cookbook">lab-cosmo/atomistic-cookbook</a>
-example <code class="docutils literal notranslate"><span class="pre">eon-pet-neb</span></code> exercises eOn + PET-MAD on the oxadiazole NEB and
-is the canonical smoke gate for metatomic consumers. Point a cookbook
-checkout at the prospective release commit of eOn (edit its
-<code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> to override the <code class="docutils literal notranslate"><span class="pre">eon</span></code> dependency, or
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span></code> the eOn source tree into the nox-managed env) and run:</p>
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">scripts/release_assert.py</span></code> passes (surfaces already agree, or
+you are about to let cog set both).</p></li>
+<li><p>[ ] PyPI dry-run considered: <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">build</span> <span class="pre">&amp;&amp;</span> <span class="pre">twine</span> <span class="pre">check</span> <span class="pre">dist/*</span></code> on a
+clean tree (optional but recommended before first-ever PyPI cut).</p></li>
+<li><p>[ ] <strong>Incomplete prior release reconciled</strong> — see
+<a class="reference internal" href="#incomplete--stuck-releases"><span class="xref myst">§ Incomplete / stuck releases</span></a>. Do not start a
+new semver while <code class="docutils literal notranslate"><span class="pre">vN.M.P</span></code> is tagged but GH asset / PyPI / feedstock are
+unfinished unless you explicitly choose <strong>finalize-first</strong> or <strong>supersede</strong>.</p></li>
+<li><p>[ ] <strong>Downstream integration test passes</strong> (blocking for metatomic consumers).
+The <a class="reference external" href="https://github.com/lab-cosmo/atomistic-cookbook">lab-cosmo/atomistic-cookbook</a>
+example <code class="docutils literal notranslate"><span class="pre">eon-pet-neb</span></code> exercises eOn + PET-MAD on the oxadiazole NEB. Point a
+cookbook checkout at the prospective release commit (override <code class="docutils literal notranslate"><span class="pre">eon</span></code> in its
+<code class="docutils literal notranslate"><span class="pre">environment.yml</span></code>, or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span></code> the eOn tree) and run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">nox<span class="w"> </span>-e<span class="w"> </span>eon-pet-neb
 </span></pre></div>
 </div>
-<p>A pass means the nox session exits 0, the generated gallery artefacts
-regenerate, and <code class="docutils literal notranslate"><span class="pre">client_traceback.log</span></code> inside the example directory is
-empty. A regression here blocks the release.</p>
+<p>Pass = nox exits 0, gallery artefacts regenerate, <code class="docutils literal notranslate"><span class="pre">client_traceback.log</span></code> in
+the example dir is empty. A regression blocks the release.</p>
 </li>
 </ul>
 </section>
 <section id="running-cog-bump">
 <h2>2. Running <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code><a class="headerlink" href="#running-cog-bump" title="Link to this heading">¶</a></h2>
-<p>The one-command happy path on <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
+<p>Happy path on <code class="docutils literal notranslate"><span class="pre">main</span></code> (cocogitto 7+):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cog<span class="w"> </span>bump<span class="w"> </span>--auto<span class="w"> </span>--annotated<span class="w"> </span><span class="s1">&#39;Release v&lt;X.Y.Z&gt;</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="s1">&lt;one-paragraph body listing headline features, e.g.:</span>
-</span><span data-line="4"><span class="s1">ARTn saddle search (pARTn), OCINEB hybrid CI-NEB + min-mode,</span>
-</span><span data-line="5"><span class="s1">IRA structure comparison, ...&gt;</span>
-</span><span data-line="6"><span class="s1">See CHANGELOG.md.&#39;</span>
+</span><span data-line="3"><span class="s1">&lt;one-paragraph body listing headline features&gt;</span>
+</span><span data-line="4"><span class="s1">See CHANGELOG.md.&#39;</span>
 </span></pre></div>
 </div>
-<p>Override cog’s commit-log inference with <code class="docutils literal notranslate"><span class="pre">--minor</span></code>, <code class="docutils literal notranslate"><span class="pre">--major</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">--version</span> <span class="pre">X.Y.Z</span></code> when needed (e.g. the only <code class="docutils literal notranslate"><span class="pre">feat:</span></code> commits since the
-last tag are <code class="docutils literal notranslate"><span class="pre">feat(docs)</span></code> and a patch bump is incorrect).</p>
+<p>Override inference with <code class="docutils literal notranslate"><span class="pre">--minor</span></code>, <code class="docutils literal notranslate"><span class="pre">--major</span></code>, or <code class="docutils literal notranslate"><span class="pre">--version</span> <span class="pre">X.Y.Z</span></code> when needed
+(e.g. only <code class="docutils literal notranslate"><span class="pre">feat(docs)</span></code> since last tag but you want a patch).</p>
+<p>Dry-run first (also available via Actions → <strong>Release prepare</strong> workflow
+dispatch):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cog<span class="w"> </span>bump<span class="w"> </span>--auto<span class="w"> </span>--dry-run
+</span><span data-line="2"><span class="c1"># or pin: cog bump --version 2.15.0 --dry-run</span>
+</span></pre></div>
+</div>
 <section id="what-cog-bump-does">
 <h3>What <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> does<a class="headerlink" href="#what-cog-bump-does" title="Link to this heading">¶</a></h3>
 <p>Defined in <code class="docutils literal notranslate"><span class="pre">cog.toml</span></code>:</p>
 <ol class="arabic simple">
-<li><p>Picks the next version (semver increment inferred from conventional
-commit types since the last tag, or taken from the flag).</p></li>
+<li><p>Picks the next version (semver from conventional commits since last tag, or
+from the flag).</p></li>
 <li><p>Runs <code class="docutils literal notranslate"><span class="pre">pre_bump_hooks</span></code>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">sed</span></code> the new version into <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>. All
-other consumers (<code class="docutils literal notranslate"><span class="pre">docs/source/conf.py</span></code>, <code class="docutils literal notranslate"><span class="pre">client/get_version.py</span></code>,
-the meson and CMake builds) read from <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sed</span></code> the new version into <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uvx</span> <span class="pre">pixi-to-conda-lock</span> <span class="pre">pixi.lock</span> <span class="pre">--output</span> <span class="pre">condaEnvs</span></code> regenerates
-every <code class="docutils literal notranslate"><span class="pre">condaEnvs/*.conda-lock.yml</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">r</span> <span class="pre">-e</span> <span class="pre">dev</span> <span class="pre">towncrier</span> <span class="pre">build</span> <span class="pre">--version</span> <span class="pre">{{version}}</span> <span class="pre">--date</span> <span class="pre">$(date</span> <span class="pre">+%Y-%m-%d)</span> <span class="pre">--yes</span></code> consumes every file in
-<code class="docutils literal notranslate"><span class="pre">docs/newsfragments/</span></code> and prepends the new section to
-<code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">condaEnvs/*.conda-lock.yml</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">r</span> <span class="pre">-e</span> <span class="pre">dev</span> <span class="pre">towncrier</span> <span class="pre">build</span> <span class="pre">--version</span> <span class="pre">{{version}}</span> <span class="pre">--date</span> <span class="pre">$(date</span> <span class="pre">+%Y-%m-%d)</span> <span class="pre">--yes</span></code> consumes <code class="docutils literal notranslate"><span class="pre">docs/newsfragments/</span></code> and prepends <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">scripts/release_assert.py</span> <span class="pre">{{version}}</span> <span class="pre">--require-changelog</span></code> fails
+the bump if surfaces diverged or the new section is missing.</p></li>
 </ul>
 </li>
-<li><p>Stages the resulting diff and writes the atomic release commit
-(<code class="docutils literal notranslate"><span class="pre">chore(version):</span> <span class="pre">&lt;X.Y.Z&gt;</span></code> by default; override via the
-<code class="docutils literal notranslate"><span class="pre">--annotated</span></code> body if you want custom wording).</p></li>
-<li><p>Creates the signed annotated tag <code class="docutils literal notranslate"><span class="pre">v&lt;X.Y.Z&gt;</span></code>.</p></li>
+<li><p>Stages the diff and writes the release commit
+(<code class="docutils literal notranslate"><span class="pre">chore(version):</span> <span class="pre">&lt;X.Y.Z&gt;</span></code> by default).</p></li>
+<li><p>Creates the annotated tag <code class="docutils literal notranslate"><span class="pre">v&lt;X.Y.Z&gt;</span></code> (configure local git for signed tags if
+policy requires).</p></li>
 <li><p>Runs <code class="docutils literal notranslate"><span class="pre">post_bump_hooks</span></code>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">archive</span> <span class="pre">--format=tar</span> <span class="pre">v&lt;X.Y.Z&gt;</span> <span class="pre">|</span> <span class="pre">xz</span> <span class="pre">-9</span> <span class="pre">&gt;</span> <span class="pre">eon-v&lt;X.Y.Z&gt;.tar.xz</span></code>
-produces the source tarball. Automatic GitHub tag archives are
-avoided because their contents have a
-<a class="reference external" href="https://github.blog/open-source/git/update-on-the-future-stability-of-source-code-archives-and-hashes/">documented stability caveat</a>.</p></li>
-<li><p>Prints a reminder for the remaining manual steps.</p></li>
+<li><p>Prints reminder that <code class="docutils literal notranslate"><span class="pre">release.yml</span></code> on tag push builds the tarball, creates
+the GH release, and publishes PyPI (stable only).</p></li>
+<li><p>Optional local tarball (also produced in CI):
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">archive</span> <span class="pre">--format=tar</span> <span class="pre">v{{version}}</span> <span class="pre">|</span> <span class="pre">xz</span> <span class="pre">-9</span> <span class="pre">&gt;</span> <span class="pre">eon-v{{version}}.tar.xz</span></code></p></li>
 </ul>
 </li>
 </ol>
-<p><code class="docutils literal notranslate"><span class="pre">cog.toml</span></code> sets <code class="docutils literal notranslate"><span class="pre">disable_changelog</span> <span class="pre">=</span> <span class="pre">true</span></code> so cog stays out of
-<code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> (towncrier owns it) and <code class="docutils literal notranslate"><span class="pre">branch_whitelist</span> <span class="pre">=</span> <span class="pre">[&quot;main&quot;]</span></code>
-so <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> refuses to run on a PR branch.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cog.toml</span></code> sets <code class="docutils literal notranslate"><span class="pre">disable_changelog</span> <span class="pre">=</span> <span class="pre">true</span></code> (towncrier owns <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">branch_whitelist</span> <span class="pre">=</span> <span class="pre">[&quot;main&quot;]</span></code> so <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> refuses non-main branches.</p>
 </section>
 </section>
 <section id="post-bump-actions">
@@ -443,94 +684,258 @@ so <code class="docutils literal notranslate"><span class="pre">cog</span> <span
 <ol class="arabic">
 <li><p>Inspect the release commit:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>show<span class="w"> </span>HEAD
+</span><span data-line="2">python3<span class="w"> </span>scripts/release_assert.py<span class="w"> </span>--print-version
 </span></pre></div>
 </div>
-<p>The diff should look like <code class="docutils literal notranslate"><span class="pre">1edaf4d8</span></code> from v2.12.0 – version bumps
-in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>/<code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>, regenerated <code class="docutils literal notranslate"><span class="pre">condaEnvs/*.conda-lock.yml</span></code>,
-an appended block in <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>, every
-<code class="docutils literal notranslate"><span class="pre">docs/newsfragments/*</span></code> file deleted, and the new release-notes page.</p>
+<p>Expect: version bumps in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>/<code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>, regenerated
+<code class="docutils literal notranslate"><span class="pre">condaEnvs/*.conda-lock.yml</span></code>, new <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> section, consumed
+newsfragments deleted, plus your curated <code class="docutils literal notranslate"><span class="pre">docs/source/releases/vX.Y.Z/</span></code>
+pages if you added them in the same commit or just before.</p>
 </li>
 <li><p>Push the commit and tag together:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main<span class="w"> </span>--follow-tags
 </span></pre></div>
 </div>
 </li>
-<li><p>Create the GitHub release with the tarball attached:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span>eon-v&lt;X.Y.Z&gt;.tar.xz<span class="w"> </span><span class="se">\</span>
-</span><span data-line="2"><span class="w">  </span>--title<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span><span class="se">\</span>
-</span><span data-line="3"><span class="w">  </span>--notes-file<span class="w"> </span>docs/source/releases/v&lt;X.Y.Z&gt;/release-notes.md
+<li><p><strong>GitHub Actions</strong> (<code class="docutils literal notranslate"><span class="pre">release.yml</span></code>) on the tag:</p>
+<ul class="simple">
+<li><p><strong>gate</strong>: checkout, <code class="docutils literal notranslate"><span class="pre">release_assert.py</span> <span class="pre">$VERSION</span> <span class="pre">--require-changelog</span></code>, emit
+notes artifact (CHANGELOG section or curated <code class="docutils literal notranslate"><span class="pre">release-notes.md</span></code>).</p></li>
+<li><p><strong>tarball</strong>: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">archive</span></code> → <code class="docutils literal notranslate"><span class="pre">eon-vX.Y.Z.tar.xz</span></code> artifact.</p></li>
+<li><p><strong>gh-release</strong>: create/update GitHub Release with tarball attached and
+notes body (idempotent if release already exists — uploads asset if missing).</p></li>
+<li><p><strong>pypi</strong> (stable tags only, not <code class="docutils literal notranslate"><span class="pre">X.Y.Z-rc.N</span></code>): build + publish via trusted
+publisher or <code class="docutils literal notranslate"><span class="pre">PYPI_API_TOKEN</span></code>.</p></li>
+</ul>
+<p>Manual fallback if Actions is unavailable:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-v&lt;X.Y.Z&gt;.tar.xz
+</span><span data-line="2">gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span>eon-v&lt;X.Y.Z&gt;.tar.xz<span class="w"> </span><span class="se">\</span>
+</span><span data-line="3"><span class="w">  </span>--title<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span><span class="se">\</span>
+</span><span data-line="4"><span class="w">  </span>--notes-file<span class="w"> </span>docs/source/releases/v&lt;X.Y.Z&gt;/release-notes.md
 </span></pre></div>
 </div>
-<p>The feedstock URL assumes this exact tarball filename; do not rename
-the asset.</p>
+<p>The feedstock URL assumes this exact asset name; do not rename it.</p>
+</li>
+<li><p>Confirm channels before feedstock PR:</p>
+<ul class="simple">
+<li><p>[ ] GitHub release <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> exists with asset <code class="docutils literal notranslate"><span class="pre">eon-vX.Y.Z.tar.xz</span></code></p></li>
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">scripts/release_assert.py</span> <span class="pre">X.Y.Z</span> <span class="pre">--require-changelog</span></code> on the
+tagged commit</p></li>
+<li><p>[ ] PyPI shows <code class="docutils literal notranslate"><span class="pre">eon-akmc==X.Y.Z</span></code> (stable only; check
+<code class="docutils literal notranslate"><span class="pre">https://pypi.org/project/eon-akmc/X.Y.Z/</span></code>) <strong>or</strong> document intentional skip
+for this cut</p></li>
+<li><p>[ ] Then proceed to <a class="reference internal" href="#4-conda-forge-feedstock-bump"><span class="xref myst">§4 conda-forge</span></a></p></li>
+</ul>
 </li>
 </ol>
 </section>
 <section id="conda-forge-feedstock-bump">
 <h2>4. conda-forge feedstock bump<a class="headerlink" href="#conda-forge-feedstock-bump" title="Link to this heading">¶</a></h2>
-<p>Once the GitHub release is published (so the asset URL resolves), update
-the feedstock at
+<p>Once the GitHub release is published (asset URL resolves), update
 <a class="reference external" href="https://github.com/conda-forge/eon-feedstock">conda-forge/eon-feedstock</a>:</p>
 <ol class="arabic">
-<li><p>Branch <code class="docutils literal notranslate"><span class="pre">release-&lt;X.Y.Z&gt;</span></code> off <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
-<li><p>In <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code>, bump <code class="docutils literal notranslate"><span class="pre">context.version</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;&lt;X.Y.Z&gt;&quot;</span></code>.</p></li>
-<li><p>Compute the tarball sha256 and replace the first <code class="docutils literal notranslate"><span class="pre">source[].sha256</span></code>:</p>
+<li><p>Fork/clone feedstock; branch <code class="docutils literal notranslate"><span class="pre">release-&lt;X.Y.Z&gt;</span></code> off <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">recipe/recipe.yaml</span></code>, set <code class="docutils literal notranslate"><span class="pre">context.version</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;&lt;X.Y.Z&gt;&quot;</span></code>.</p></li>
+<li><p>Compute tarball sha256 and replace the first <code class="docutils literal notranslate"><span class="pre">source[].sha256</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">curl<span class="w"> </span>-sSL<span class="w"> </span><span class="s2">&quot;https://github.com/TheochemUI/eOn/releases/download/v&lt;X.Y.Z&gt;/eon-v&lt;X.Y.Z&gt;.tar.xz&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span data-line="2"><span class="w">  </span><span class="p">|</span><span class="w"> </span>sha256sum
 </span></pre></div>
 </div>
 </li>
-<li><p>Reset <code class="docutils literal notranslate"><span class="pre">build.number:</span> <span class="pre">0</span></code>.</p></li>
-<li><p>Verify <code class="docutils literal notranslate"><span class="pre">fix_vesin_const.patch</span></code> and <code class="docutils literal notranslate"><span class="pre">fix_capnpc.patch</span></code> still apply
-cleanly; if not, regenerate them against the new source tree.</p></li>
-<li><p>Commit, push, <code class="docutils literal notranslate"><span class="pre">gh</span> <span class="pre">pr</span> <span class="pre">create</span></code> against <code class="docutils literal notranslate"><span class="pre">conda-forge/eon-feedstock</span></code>.</p></li>
-<li><p>Watch the Azure Pipelines matrix (linux-64, osx-64, osx-arm64, win-64)
-via <code class="docutils literal notranslate"><span class="pre">cf-ci</span> <span class="pre">watch</span> <span class="pre">conda-forge/eon-feedstock#&lt;N&gt;</span></code>.</p></li>
+<li><p>Reset <code class="docutils literal notranslate"><span class="pre">build.number:</span> <span class="pre">0</span></code> (or <code class="docutils literal notranslate"><span class="pre">0</span></code> under <code class="docutils literal notranslate"><span class="pre">build:</span></code> per recipe schema).</p></li>
+<li><p>Verify patches still apply (<code class="docutils literal notranslate"><span class="pre">fix_vesin_const.patch</span></code>, <code class="docutils literal notranslate"><span class="pre">fix_capnpc.patch</span></code>,
+or current recipe patch set); regenerate against the new tree if not.</p></li>
+<li><p>Commit, push, open PR against <code class="docutils literal notranslate"><span class="pre">conda-forge/eon-feedstock</span></code> (title e.g.
+<code class="docutils literal notranslate"><span class="pre">eon</span> <span class="pre">&lt;X.Y.Z&gt;</span></code>).</p></li>
+<li><p>Watch Azure Pipelines (linux-64, osx-64, osx-arm64, win-64) via
+<code class="docutils literal notranslate"><span class="pre">cf-ci</span> <span class="pre">watch</span> <span class="pre">conda-forge/eon-feedstock#&lt;N&gt;</span></code> or the PR checks UI.</p></li>
+<li><p>After merge, verify <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">eon=&lt;X.Y.Z&gt;</span></code> in a clean env.</p></li>
 </ol>
-</section>
-<section id="manual-fallback">
-<h2>5. Manual fallback<a class="headerlink" href="#manual-fallback" title="Link to this heading">¶</a></h2>
-<p>When <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> fails mid-run (hook script error, unexpected prompt, etc.)
-the state is recoverable: no commit has been written yet. Fix the root
-cause and re-run. If you must cut by hand, this is the equivalent
-sequence; <code class="docutils literal notranslate"><span class="pre">1edaf4d8</span> <span class="pre">chore:</span> <span class="pre">release</span> <span class="pre">v2.12.0</span></code> is the canonical reference.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Version</span>
-</span><span data-line="2">sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/^version = &quot;[^&quot;]*&quot;/version = &quot;&lt;X.Y.Z&gt;&quot;/&#39;</span><span class="w"> </span>pyproject.toml<span class="w"> </span>pixi.toml
-</span><span data-line="3">
-</span><span data-line="4"><span class="c1"># Lockfiles</span>
-</span><span data-line="5">uvx<span class="w"> </span>pixi-to-conda-lock<span class="w"> </span>pixi.lock<span class="w"> </span>--output<span class="w"> </span>condaEnvs
-</span><span data-line="6">
-</span><span data-line="7"><span class="c1"># Changelog</span>
-</span><span data-line="8">pixi<span class="w"> </span>r<span class="w"> </span>-e<span class="w"> </span>dev<span class="w"> </span>towncrier<span class="w"> </span>build<span class="w"> </span>--version<span class="w"> </span>&lt;X.Y.Z&gt;<span class="w"> </span><span class="se">\</span>
-</span><span data-line="9"><span class="w">  </span>--date<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>--yes
-</span><span data-line="10">
-</span><span data-line="11"><span class="c1"># Release notes page (manual)</span>
-</span><span data-line="12"><span class="c1"># Create docs/source/releases/v&lt;X.Y.Z&gt;/{index.md,release-notes.md} and</span>
-</span><span data-line="13"><span class="c1"># add to docs/source/releases/index.md toctree.</span>
-</span><span data-line="14">
-</span><span data-line="15"><span class="c1"># Atomic commit + signed tag</span>
-</span><span data-line="16">git<span class="w"> </span>add<span class="w"> </span>-A
-</span><span data-line="17">git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: release v&lt;X.Y.Z&gt;&quot;</span>
-</span><span data-line="18">git<span class="w"> </span>tag<span class="w"> </span>-s<span class="w"> </span>-a<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release v&lt;X.Y.Z&gt;</span>
-</span><span data-line="19">
-</span><span data-line="20"><span class="s2">&lt;body&gt;&quot;</span>
-</span><span data-line="21">
-</span><span data-line="22"><span class="c1"># Tarball</span>
-</span><span data-line="23">git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-v&lt;X.Y.Z&gt;.tar.xz
+<p>Paste-ready PR body template (fill version/sha256):</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gu">## eon &lt;X.Y.Z&gt;</span>
+</span><span data-line="2">
+</span><span data-line="3">Bump eon to &lt;X.Y.Z&gt; from upstream GitHub release.
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">-</span><span class="w"> </span>Source: https://github.com/TheochemUI/eOn/releases/download/v&lt;X.Y.Z&gt;/eon-v&lt;X.Y.Z&gt;.tar.xz
+</span><span data-line="6"><span class="k">-</span><span class="w"> </span>sha256: &lt;PASTE&gt;
+</span><span data-line="7"><span class="k">-</span><span class="w"> </span>build number reset to 0
+</span><span data-line="8"><span class="k">-</span><span class="w"> </span>Patches: verified apply / updated as needed
+</span><span data-line="9">
+</span><span data-line="10">Checklist:
+</span><span data-line="11"><span class="k">- [ ]</span> context.version == &lt;X.Y.Z&gt;
+</span><span data-line="12"><span class="k">- [ ]</span> source sha256 matches tarball
+</span><span data-line="13"><span class="k">- [ ]</span> build.number 0
+</span><span data-line="14"><span class="k">- [ ]</span> patches apply
+</span><span data-line="15"><span class="k">- [ ]</span> CI matrix green
 </span></pre></div>
 </div>
-<p>Then continue from <a class="reference internal" href="#post-bump-actions"><span class="xref myst">§3 post-bump actions</span></a>.</p>
+</section>
+<section id="incomplete-stuck-releases">
+<h2>5. Incomplete / stuck releases<a class="headerlink" href="#incomplete-stuck-releases" title="Link to this heading">¶</a></h2>
+<p>eOn has had cuts where <strong>version / tag / CHANGELOG / release-notes exist</strong> but
+<strong>GitHub release asset, PyPI, and/or feedstock were never finished</strong>, and/or
+<strong>commits landed on <code class="docutils literal notranslate"><span class="pre">main</span></code> after the version chore</strong> without a new semver.</p>
+<p>Example state at process-nail-down time: tip may report <code class="docutils literal notranslate"><span class="pre">2.14.0</span></code> in
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>/<code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code> with tag <code class="docutils literal notranslate"><span class="pre">v2.14.0</span></code> and a <code class="docutils literal notranslate"><span class="pre">CHANGELOG</span></code> section, while
+post-tag commits (fixes/features) sit on <code class="docutils literal notranslate"><span class="pre">main</span></code> and newsfragments may be empty
+again. Treat that as <strong>incomplete multi-channel state</strong>, not a green field.</p>
+<section id="decision-tree">
+<h3>Decision tree<a class="headerlink" href="#decision-tree" title="Link to this heading">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">Is there a tag vN.M.P on origin?
+</span><span data-line="2">├─ NO  → normal path: fragments + curated notes + cog bump (§1–3)
+</span><span data-line="3">└─ YES
+</span><span data-line="4">   ├─ Are ALL channels done for N.M.P?
+</span><span data-line="5">   │    (GH release + eon-vN.M.P.tar.xz asset + PyPI eon==N.M.P [stable] + feedstock PR/merge)
+</span><span data-line="6">   │    ├─ YES, and main == tag tip (or only docs/ci after tag)
+</span><span data-line="7">   │    │    → start next semver (fragments for post-tag user-facing work)
+</span><span data-line="8">   │    └─ YES, but main has user-facing commits after tag
+</span><span data-line="9">   │         → next semver (do NOT retag N.M.P; add fragments for post-tag work)
+</span><span data-line="10">   └─ NO (missing GH asset and/or PyPI and/or feedstock)
+</span><span data-line="11">        ├─ main tip is still the release commit (or only trivial fixes you accept as N.M.P)
+</span><span data-line="12">        │    → FINALIZE N.M.P (below); do not cog-bump a new version yet
+</span><span data-line="13">        └─ main has diverged with commits that must ship as a newer semver
+</span><span data-line="14">             → SUPERSEDE: document N.M.P as partially published; cut N.M.P+1 (or minor)
+</span><span data-line="15">               with fragments covering post-tag work; finalize missing N.M.P channels
+</span><span data-line="16">               only if consumers need that exact tag (usually: finish tarball/GH for
+</span><span data-line="17">               historical accuracy, skip re-PyPI if you never uploaded, feedstock only
+</span><span data-line="18">               for the version you intend conda users to get)
+</span></pre></div>
+</div>
+</section>
+<section id="finalize-a-stuck-vn-m-p-no-new-semver">
+<h3>Finalize a stuck <code class="docutils literal notranslate"><span class="pre">vN.M.P</span></code> (no new semver)<a class="headerlink" href="#finalize-a-stuck-vn-m-p-no-new-semver" title="Link to this heading">¶</a></h3>
+<p>On the tagged commit (detached or temporary branch at the tag):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>fetch<span class="w"> </span>origin<span class="w"> </span>tag<span class="w"> </span>vN.M.P
+</span><span data-line="2">git<span class="w"> </span>switch<span class="w"> </span>--detach<span class="w"> </span>vN.M.P
+</span><span data-line="3">python3<span class="w"> </span>scripts/release_assert.py<span class="w"> </span>N.M.P<span class="w"> </span>--require-changelog
+</span><span data-line="4">git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>vN.M.P<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-vN.M.P.tar.xz
+</span><span data-line="5"><span class="c1"># If GH release missing or asset missing:</span>
+</span><span data-line="6">gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>vN.M.P<span class="w"> </span>eon-vN.M.P.tar.xz<span class="w"> </span>--title<span class="w"> </span>vN.M.P<span class="w"> </span><span class="se">\</span>
+</span><span data-line="7"><span class="w">  </span>--notes-file<span class="w"> </span>docs/source/releases/vN.M.P/release-notes.md
+</span><span data-line="8"><span class="c1"># or: gh release upload vN.M.P eon-vN.M.P.tar.xz --clobber</span>
+</span></pre></div>
+</div>
+<p>PyPI: only if <code class="docutils literal notranslate"><span class="pre">N.M.P</span></code> was never uploaded and you still want that exact version
+on the index (metadata must match the tag tree). If post-tag <code class="docutils literal notranslate"><span class="pre">main</span></code> differs and
+you already decided to supersede, <strong>skip</strong> PyPI for <code class="docutils literal notranslate"><span class="pre">N.M.P</span></code> and publish only the
+new semver.</p>
+<p>Feedstock: open/update PR only for the version you want conda-forge to ship
+(usually the semver you fully finalized, often the newest complete cut).</p>
+</section>
+<section id="supersede-with-a-new-semver">
+<h3>Supersede with a new semver<a class="headerlink" href="#supersede-with-a-new-semver" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>List post-tag commits: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">vN.M.P..main</span> <span class="pre">--oneline</span></code>.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">docs/newsfragments/*</span></code> for user-facing post-tag changes (and any that
+lacked fragments at <code class="docutils literal notranslate"><span class="pre">N.M.P</span></code> time if they still lack a changelog voice).</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">docs/source/releases/v&lt;NEW&gt;/</span></code> pages; link from <code class="docutils literal notranslate"><span class="pre">releases/index.md</span></code>.</p></li>
+<li><p>On <code class="docutils literal notranslate"><span class="pre">main</span></code>: <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span> <span class="pre">--version</span> <span class="pre">&lt;NEW&gt;</span></code> (or <code class="docutils literal notranslate"><span class="pre">--auto</span></code> / <code class="docutils literal notranslate"><span class="pre">--patch</span></code> / <code class="docutils literal notranslate"><span class="pre">--minor</span></code>).</p></li>
+<li><p>Complete <a class="reference internal" href="#3-post-bump-actions"><span class="xref myst">§3</span></a> and <a class="reference internal" href="#4-conda-forge-feedstock-bump"><span class="xref myst">§4</span></a>
+for <strong>NEW</strong> only.</p></li>
+<li><p>Optionally still attach <code class="docutils literal notranslate"><span class="pre">eon-vN.M.P.tar.xz</span></code> to the old GH release for
+reproducibility; do not double-publish conflicting PyPI/conda builds.</p></li>
+</ol>
+</section>
+<section id="anti-patterns">
+<h3>Anti-patterns<a class="headerlink" href="#anti-patterns" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Retagging <code class="docutils literal notranslate"><span class="pre">vN.M.P</span></code> to a different commit (breaks tarball/sha256 consumers).</p></li>
+<li><p>Running <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> while intending to finalize an incomplete same version
+(creates <code class="docutils literal notranslate"><span class="pre">N.M.P+1</span></code> or fails assert if versions already at next).</p></li>
+<li><p>Opening a feedstock PR before the GH asset URL returns 200.</p></li>
+<li><p>Publishing PyPI from a dirty/unreleased tree that does not match the tag.</p></li>
+</ul>
+</section>
+</section>
+<section id="pre-release-rc-tags">
+<h2>6. Pre-release / RC tags<a class="headerlink" href="#pre-release-rc-tags" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">cog<span class="w"> </span>bump<span class="w"> </span>--version<span class="w"> </span><span class="m">2</span>.15.0-rc.1
+</span><span data-line="2">git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main<span class="w"> </span>--follow-tags
+</span></pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">release.yml</span></code> creates a <strong>prerelease</strong> GitHub Release.</p></li>
+<li><p><strong>Skips PyPI</strong> (stable index only; avoid yanking/pollution).</p></li>
+<li><p>Promote with a normal stable bump to <code class="docutils literal notranslate"><span class="pre">2.15.0</span></code> and full fragment set as needed.</p></li>
+</ul>
+</section>
+<section id="manual-fallback-cog-unavailable">
+<h2>7. Manual fallback (cog unavailable)<a class="headerlink" href="#manual-fallback-cog-unavailable" title="Link to this heading">¶</a></h2>
+<p>When <code class="docutils literal notranslate"><span class="pre">cog</span> <span class="pre">bump</span></code> fails mid-run (hook error, unexpected prompt) no commit is
+written yet — fix and re-run. Hand sequence (reference commits like
+<code class="docutils literal notranslate"><span class="pre">1edaf4d8</span> <span class="pre">chore:</span> <span class="pre">release</span> <span class="pre">v2.12.0</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/^version = &quot;[^&quot;]*&quot;/version = &quot;&lt;X.Y.Z&gt;&quot;/&#39;</span><span class="w"> </span>pyproject.toml<span class="w"> </span>pixi.toml
+</span><span data-line="2">uvx<span class="w"> </span>pixi-to-conda-lock<span class="w"> </span>pixi.lock<span class="w"> </span>--output<span class="w"> </span>condaEnvs
+</span><span data-line="3">pixi<span class="w"> </span>r<span class="w"> </span>-e<span class="w"> </span>dev<span class="w"> </span>towncrier<span class="w"> </span>build<span class="w"> </span>--version<span class="w"> </span>&lt;X.Y.Z&gt;<span class="w"> </span><span class="se">\</span>
+</span><span data-line="4"><span class="w">  </span>--date<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>--yes
+</span><span data-line="5"><span class="c1"># Curate docs/source/releases/v&lt;X.Y.Z&gt;/{index.md,release-notes.md} + toctree</span>
+</span><span data-line="6">python3<span class="w"> </span>scripts/release_assert.py<span class="w"> </span>&lt;X.Y.Z&gt;<span class="w"> </span>--require-changelog
+</span><span data-line="7">git<span class="w"> </span>add<span class="w"> </span>-A
+</span><span data-line="8">git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: release v&lt;X.Y.Z&gt;&quot;</span>
+</span><span data-line="9">git<span class="w"> </span>tag<span class="w"> </span>-s<span class="w"> </span>-a<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release v&lt;X.Y.Z&gt;</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="s2">&lt;body&gt;&quot;</span>
+</span><span data-line="12">git<span class="w"> </span>archive<span class="w"> </span>--format<span class="o">=</span>tar<span class="w"> </span>v&lt;X.Y.Z&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>xz<span class="w"> </span>-9<span class="w"> </span>&gt;<span class="w"> </span>eon-v&lt;X.Y.Z&gt;.tar.xz
+</span></pre></div>
+</div>
+<p>Then <a class="reference internal" href="#3-post-bump-actions"><span class="xref myst">§3</span></a> push and channel completion.</p>
+</section>
+<section id="api-doxygen-documentation-gate">
+<h2>8. API / Doxygen documentation gate<a class="headerlink" href="#api-doxygen-documentation-gate" title="Link to this heading">¶</a></h2>
+<p>rgpot maintains <code class="docutils literal notranslate"><span class="pre">docs/source/Doxyfile_*.cfg</span></code> and integrates Doxygen output into
+the Sphinx site. <strong>eOn does not yet ship an equivalent in-tree Doxygen pipeline</strong>
+for the C++ <code class="docutils literal notranslate"><span class="pre">client/</span></code> tree; Python API docs use Sphinx autodoc/autodoc2 in the
+existing <code class="docutils literal notranslate"><span class="pre">docs/</span></code> build (<code class="docutils literal notranslate"><span class="pre">ci_docs.yml</span></code> / <code class="docutils literal notranslate"><span class="pre">docs/source/devdocs/docbuild.md</span></code>).</p>
+<p><strong>Release gate (current policy):</strong></p>
+<ul class="simple">
+<li><p>[ ] Sphinx docs build is green on <code class="docutils literal notranslate"><span class="pre">main</span></code> (<code class="docutils literal notranslate"><span class="pre">ci_docs.yml</span></code> or local
+<code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">r</span> <span class="pre">-e</span> <span class="pre">docs</span> <span class="pre">…</span></code> / project-documented doc target).</p></li>
+<li><p>[ ] Curated release notes exist under <code class="docutils literal notranslate"><span class="pre">docs/source/releases/vX.Y.Z/</span></code>.</p></li>
+<li><p>[ ] No broken “run doxygen” step is required for a cut.</p></li>
+</ul>
+<p><strong>Deferred (explicit non-goal until a dedicated docs PR):</strong> full Doxygen +
+doxyrest/breathe wiring for <code class="docutils literal notranslate"><span class="pre">client/**/*.h</span></code> analogous to rgpot. Track as
+follow-up; do not block semver cuts solely on Doxygen absence. When added,
+extend this section with the generate command and wire it into <code class="docutils literal notranslate"><span class="pre">ci_docs.yml</span></code>
+plus this checklist.</p>
 </section>
 <section id="paper-tags">
-<h2>6. Paper tags<a class="headerlink" href="#paper-tags" title="Link to this heading">¶</a></h2>
-<p>Preprints and other paper-related tags do not need the release
-machinery; just a lightweight annotated tag:</p>
+<h2>9. Paper tags<a class="headerlink" href="#paper-tags" title="Link to this heading">¶</a></h2>
+<p>Preprints and paper-related tags do not need the release machinery; lightweight
+annotated tags only:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>arXiv_2510.06030v3<span class="w"> </span>45c077cb
 </span><span data-line="2"><span class="c1"># feat(arxiv): descriptive one-line summary</span>
 </span><span data-line="3"><span class="c1">#</span>
 </span><span data-line="4"><span class="c1"># body, including the arXiv link</span>
 </span></pre></div>
 </div>
+</section>
+<section id="changelog-fragments-every-user-facing-pr">
+<h2>10. Changelog fragments (every user-facing PR)<a class="headerlink" href="#changelog-fragments-every-user-facing-pr" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>towncrier<span class="w"> </span>create<span class="w"> </span>--content<span class="w"> </span><span class="s2">&quot;Short user-facing note.&quot;</span><span class="w"> </span><span class="m">42</span>.added.md
+</span><span data-line="2"><span class="c1"># or interactive:</span>
+</span><span data-line="3">uvx<span class="w"> </span>towncrier<span class="w"> </span>create
+</span></pre></div>
+</div>
+<p>Types (<code class="docutils literal notranslate"><span class="pre">towncrier.toml</span></code>): <code class="docutils literal notranslate"><span class="pre">security</span></code>, <code class="docutils literal notranslate"><span class="pre">removed</span></code>, <code class="docutils literal notranslate"><span class="pre">deprecated</span></code>, <code class="docutils literal notranslate"><span class="pre">added</span></code>, <code class="docutils literal notranslate"><span class="pre">dev</span></code>,
+<code class="docutils literal notranslate"><span class="pre">changed</span></code>, <code class="docutils literal notranslate"><span class="pre">fixed</span></code>. Preview: <code class="docutils literal notranslate"><span class="pre">uvx</span> <span class="pre">towncrier</span> <span class="pre">build</span> <span class="pre">--draft</span></code>.</p>
+<p>CI runs <code class="docutils literal notranslate"><span class="pre">towncrier</span> <span class="pre">check</span></code> on PRs when shipped paths change (<code class="docutils literal notranslate"><span class="pre">towncrier.yml</span></code>).
+Pure <code class="docutils literal notranslate"><span class="pre">docs</span></code> / <code class="docutils literal notranslate"><span class="pre">ci</span></code> / <code class="docutils literal notranslate"><span class="pre">chore</span></code> commits may omit fragments if they avoid those
+paths.</p>
+</section>
+<section id="how-to-verify-this-release-process-pr-no-live-cut-required">
+<h2>11. How to verify this release-process PR (no live cut required)<a class="headerlink" href="#how-to-verify-this-release-process-pr-no-live-cut-required" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python3<span class="w"> </span>scripts/release_assert.py
+</span><span data-line="2">python3<span class="w"> </span>scripts/release_assert.py<span class="w"> </span><span class="m">2</span>.14.0<span class="w"> </span>--require-changelog
+</span><span data-line="3">python3<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/release/<span class="w"> </span>-q
+</span><span data-line="4">uvx<span class="w"> </span>towncrier<span class="w"> </span>build<span class="w"> </span>--draft<span class="w">   </span><span class="c1"># ok if no fragments (empty output / skip)</span>
+</span><span data-line="5">python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import tomllib, pathlib; tomllib.loads(pathlib.Path(&#39;cog.toml&#39;).read_text()); print(&#39;cog.toml ok&#39;)&quot;</span>
+</span><span data-line="6"><span class="c1"># optional if build deps present:</span>
+</span><span data-line="7"><span class="c1"># python3 -m build &amp;&amp; twine check dist/*</span>
+</span></pre></div>
+</div>
+<p>Confirm docs name GH release/tarball, PyPI, and conda-forge/eon-feedstock;
+incomplete-release recovery (§5); and Doxygen deferral (§8).</p>
 </section>
 </section>
 
@@ -577,7 +982,7 @@ machinery; just a lightweight annotated tag:</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=7bb62513"></script>
+      <script src="../_static/documentation_options.js?v=0a636f4a"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
