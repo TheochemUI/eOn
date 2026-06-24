@@ -19,7 +19,7 @@ jobs:
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
-          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          cache-write: true
           activate-environment: true
           environments: >-
             dev-xtb

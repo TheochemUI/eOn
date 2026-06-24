@@ -14,7 +14,8 @@ on:
     - cron: '0 8 * * 1' # run every Monday at 8am UTC
 
 env:
-  SCCACHE_GHA_ENABLED: "true"
+  # Execute notebook cells on cache miss; reuse outputs on hit (local default remains force in conf.py).
+  NB_EXECUTION_MODE: cache
 
 jobs:
   build_docs:
@@ -26,36 +27,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # gitversion.py only needs `git log -1`
+          fetch-depth: 1
 
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
-          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          cache-write: true
           activate-environment: true
           environments: >-
             docs-mta
 
-      - name: Configure sccache
-        uses: actions/github-script@v7
+      - name: Restore myst-nb execution cache
+        uses: actions/cache@v4
         with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+          path: docs/source/.jupyter_cache
+          key: mystnb-${{ runner.os }}-${{ hashFiles('docs/source/**/*.md', 'docs/source/conf.py', 'eon/**/*.py') }}
+          restore-keys: |
+            mystnb-${{ runner.os }}-
 
-      - name: Build and install eonclient
+      - name: Ensure cbindgen
+        shell: bash
+        run: command -v cbindgen || cargo install --root "$CONDA_PREFIX" cbindgen
+
+      - name: Build and install eonclient (once)
         shell: pixi run -e docs-mta bash -e {0}
         run: |
-          pixi run ensure_cbindgen
-          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib \
+          # Single C++ compile into the pixi env prefix (no second pip/meson-python rebuild).
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
             -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True
           meson install -C bbdir
 
       - name: Generate Docs
         shell: pixi run -e docs-mta bash -e {0}
+        env:
+          NB_EXECUTION_MODE: ${{ env.NB_EXECUTION_MODE }}
         run: |
-          pip install . --no-build-isolation
-          sphinx-build -b html docs/source docs/build/html
+          # Python package is already installed by meson install; only install pure-python if needed.
+          python -c "import eon" 2>/dev/null || pip install --no-build-isolation --no-deps .
+          sphinx-build -b html -j auto docs/source docs/build/html
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
