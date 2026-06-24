@@ -2,6 +2,7 @@ _incdirs += [include_directories('thirdparty')]
 _runtime_rpath = []
 
 cmake = import('cmake')
+fs = import('fs')
 
 # Argum (C++20 argument parser) - single header in thirdparty
 
@@ -51,6 +52,28 @@ if is_windows
         _linkargs += ['-Wl,--stack,16777216']
     elif cppc.get_id() == 'msvc'
         _linkargs += ['/STACK:16777216']
+        # conda-forge flang ships flang_rt import libs under the clang resource
+        # dir (e.g. Library/lib/clang/19/lib/x86_64-pc-windows-msvc/).  Meson
+        # links Fortran objects with MSVC link.exe, which does not search that
+        # path by default and fails with LNK1104 on flang_rt.runtime.dynamic.lib.
+        if use_fortran and fc.get_id() == 'flang'
+            _flang_rt_libpath = run_command(
+                fc,
+                '-print-resource-dir',
+                check: false,
+            )
+            if _flang_rt_libpath.returncode() == 0
+                _flang_rt_res = _flang_rt_libpath.stdout().strip()
+                _flang_rt_dir = join_paths(
+                    _flang_rt_res,
+                    'lib',
+                    'x86_64-pc-windows-msvc',
+                )
+                if fs.is_dir(_flang_rt_dir)
+                    _linkargs += ['/LIBPATH:' + _flang_rt_dir]
+                endif
+            endif
+        endif
     endif
     # Workaround used in INIFile.cpp
     # ../11.4.0/include/c++/bits/basic_string.h:1059: std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator[](std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::reference = char&; std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type = long unsigned int]: Assertion '__pos <= size()' failed.

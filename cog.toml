@@ -1,9 +1,11 @@
-## Cocogitto config for automated releases.
-## See docs/source/devdocs/release.md for the full release workflow.
+## Cocogitto 7+ config for automated releases.
+## See docs/source/devdocs/release.md for the full release workflow (GH + PyPI + feedstock).
 ## Run with: cog bump --auto --annotated 'Release v{{version}}\n\n<body>'
+## Tag push triggers .github/workflows/release.yml (tarball, GH release, PyPI on stable tags).
 
 from_latest_tag = true
 ignore_merge_commits = true
+# Towncrier owns CHANGELOG.md; cog still creates the version commit + tag.
 disable_changelog = true
 disable_bump_commit = false
 skip_ci = "[skip ci]"
@@ -13,16 +15,32 @@ tag_prefix = "v"
 pre_bump_hooks = [
   "sed -i 's/^version = \"[^\"]*\"/version = \"{{version}}\"/' pyproject.toml",
   "sed -i 's/^version = \"[^\"]*\"/version = \"{{version}}\"/' pixi.toml",
+  "sed -i 's/^version = \"[^\"]*\"/version = \"{{version}}\"/' towncrier.toml",
   "uvx pixi-to-conda-lock pixi.lock --output condaEnvs",
   "pixi r -e dev towncrier build --version {{version}} --date $(date +%Y-%m-%d) --yes",
+  "python3 scripts/release_assert.py {{version}} --require-changelog",
 ]
 
 post_bump_hooks = [
-  "git archive --format=tar v{{version}} | xz -9 > eon-v{{version}}.tar.xz",
-  "echo 'Tarball eon-v{{version}}.tar.xz ready. Next: git push origin main --follow-tags; gh release create v{{version}} eon-v{{version}}.tar.xz --title v{{version}} --notes-file docs/source/releases/v{{version}}/release-notes.md'",
+  "git --no-pager show --stat HEAD",
+  "echo 'Prepared v{{version}}. Push: git push origin main --follow-tags'",
+  "echo 'Tag push runs release.yml: gate + eon-v{{version}}.tar.xz + GH release + PyPI (stable only; RC skips PyPI).'",
+  "echo 'Then conda-forge/eon-feedstock PR (see docs/source/devdocs/release.md §4).'",
+  "echo 'Optional local tarball: git archive --format=tar v{{version}} | xz -9 > eon-v{{version}}.tar.xz'",
 ]
+
+[commit_types]
+feat     = { changelog_title = "Features" }
+fix      = { changelog_title = "Bug Fixes" }
+perf     = { changelog_title = "Performance" }
+refactor = { changelog_title = "Refactoring" }
+docs     = { changelog_title = "Documentation" }
+test     = { changelog_title = "Tests" }
+build    = { changelog_title = "Build System" }
+ci       = { changelog_title = "CI" }
+chore    = { changelog_title = "Miscellaneous" }
+style    = { changelog_title = "Style" }
+revert   = { changelog_title = "Reverts" }
 
 [changelog]
 path = "CHANGELOG.md"
-
-[packages]

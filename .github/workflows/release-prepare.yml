@@ -1,0 +1,86 @@
+---
+concurrency:
+  cancel-in-progress: true
+  group: release-prepare-${{ github.ref }}
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Assert lockstep surfaces agree
+      run: |-
+        python3 scripts/release_assert.py
+        python3 -c "import tomllib, pathlib; tomllib.loads(pathlib.Path('cog.toml').read_text()); print('cog.toml parse ok')"
+        python3 -c "import tomllib, pathlib; tomllib.loads(pathlib.Path('pyproject.toml').read_text()); print('pyproject.toml parse ok')"
+    - name: Unit tests for release_assert
+      run: |-
+        python3 -m pip install --quiet pytest
+        python3 -m pytest tests/release/ -q
+    - name: Towncrier draft (fragments must build cleanly)
+      run: |-
+        python3 -m pip install --quiet towncrier
+        if compgen -G "docs/newsfragments/*.md" > /dev/null 2>&1 || \
+           compgen -G "docs/newsfragments/+*.md" > /dev/null 2>&1; then
+          # towncrier.toml carries name/version so draft does not import eon
+          towncrier build --draft
+        else
+          echo "No newsfragments; skip draft (ok if this PR only touches tooling)"
+        fi
+    - name: Optional cog dry-run
+      run: |-
+        if command -v cog >/dev/null 2>&1; then
+          VER=$(python3 scripts/release_assert.py --print-version)
+          cog bump --version "$VER" --dry-run 2>&1 | head -40 || \
+            echo "note: cog dry-run non-zero (often dirty/unpushed PR tip); lockstep ok above"
+        else
+          echo "cog not installed on runner; skip cog dry-run (run locally with cocogitto 7+)"
+        fi
+    - if: github.event_name == 'workflow_dispatch'
+      name: Cog bump dry-run (workflow_dispatch)
+      run: |-
+        if ! command -v cog >/dev/null 2>&1; then
+          echo "Install cocogitto 7+ locally for cog dry-run; runner has no cog."
+          exit 0
+        fi
+        BUMP="${{ inputs.bump }}"
+        case "$BUMP" in
+          auto)  cog bump --auto --dry-run ;;
+          patch) cog bump --patch --dry-run ;;
+          minor) cog bump --minor --dry-run ;;
+          major) cog bump --major --dry-run ;;
+        esac
+name: Release prepare (dry-run)
+on:
+  pull_request:
+    paths:
+    - cog.toml
+    - towncrier.toml
+    - scripts/release_assert.py
+    - tests/release/**
+    - pyproject.toml
+    - pixi.toml
+    - docs/newsfragments/**
+    - CHANGELOG.md
+    - .github/workflows/release.yml
+    - .github/workflows/release-prepare.yml
+    - .github/workflows/towncrier.yml
+    - ci/gha/**
+  workflow_dispatch:
+    inputs:
+      bump:
+        default: auto
+        description: SemVer component for cog dry-run (if cog installed on runner)
+        options:
+        - auto
+        - patch
+        - minor
+        - major
+        required: true
+        type: choice
+permissions:
+  contents: read

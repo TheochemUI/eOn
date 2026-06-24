@@ -50,21 +50,16 @@ jobs:
         shell: bash
         run: command -v cbindgen || cargo install --root "$CONDA_PREFIX" cbindgen
 
-      - name: Build and install eonclient (once)
-        shell: pixi run -e docs-mta bash -e {0}
-        run: |
-          # Single C++ compile into the pixi env prefix (no second pip/meson-python rebuild).
-          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
-            -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True
-          meson install -C bbdir
-
       - name: Generate Docs
         shell: pixi run -e docs-mta bash -e {0}
         env:
           NB_EXECUTION_MODE: ${{ env.NB_EXECUTION_MODE }}
         run: |
-          # Python package is already installed by meson install; only install pure-python if needed.
-          python -c "import eon" 2>/dev/null || pip install --no-build-isolation --no-deps .
+          # One meson build/install only (eonclient + python package into pixi prefix).
+          # Do not pip install . here — that would re-run meson-python and compile twice.
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
+            -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True
+          meson install -C bbdir
           sphinx-build -b html -j auto docs/source docs/build/html
 
       - name: Upload artifact

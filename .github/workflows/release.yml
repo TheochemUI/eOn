@@ -1,20 +1,175 @@
+---
+concurrency:
+  cancel-in-progress: false
+  group: release-${{ github.ref }}
+jobs:
+  gate:
+    outputs:
+      is_prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - id: meta
+      name: Tag / version meta
+      run: |-
+        TAG="${GITHUB_REF#refs/tags/}"
+        VERSION="${TAG#v}"
+        echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        echo "Release gate for ${TAG} (${VERSION})"
+    - name: Assert lockstep + CHANGELOG section
+      run: |-
+        VERSION="${{ steps.meta.outputs.version }}"
+        python3 scripts/release_assert.py "$VERSION" --require-changelog
+        NOTES="${RUNNER_TEMP}/release_notes.md"
+        if [[ -f "docs/source/releases/v${VERSION}/release-notes.md" ]]; then
+          cp "docs/source/releases/v${VERSION}/release-notes.md" "$NOTES"
+        else
+          python3 scripts/release_assert.py "$VERSION" --notes "$NOTES"
+        fi
+        echo "--- release notes (head) ---"
+        head -40 "$NOTES" || true
+    - name: Upload release notes
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-notes-${{ github.sha }}
+        path: ${{ runner.temp }}/release_notes.md
+        retention-days: 5
+    - id: prerelease
+      name: Detect pre-release (RC) tag
+      run: |-
+        VERSION="${{ steps.meta.outputs.version }}"
+        if [[ "$VERSION" == *-* ]]; then
+          echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
+          echo "Pre-release: will skip PyPI (stable index only)."
+        else
+          echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+        fi
+  gh-release:
+    needs:
+    - gate
+    - tarball
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download release notes
+      uses: actions/download-artifact@v4
+      with:
+        name: release-notes-${{ github.sha }}
+        path: ${{ runner.temp }}/release-notes
+    - name: Download tarball
+      uses: actions/download-artifact@v4
+      with:
+        name: eon-tarball-${{ needs.gate.outputs.version }}
+        path: ${{ runner.temp }}/tarball
+    - env:
+        GH_TOKEN: ${{ github.token }}
+        IS_PRE: ${{ needs.gate.outputs.is_prerelease }}
+        TAG: ${{ needs.gate.outputs.tag }}
+        VERSION: ${{ needs.gate.outputs.version }}
+      name: Create or update GitHub Release
+      run: |-
+        set -euo pipefail
+        ASSET="${RUNNER_TEMP}/tarball/eon-v${VERSION}.tar.xz"
+        NOTES="${RUNNER_TEMP}/release-notes/release_notes.md"
+        PRE_FLAG=()
+        if [[ "$IS_PRE" == "true" ]]; then
+          PRE_FLAG=(--prerelease)
+        fi
+        if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+          echo "Release $TAG exists; ensuring notes/asset..."
+          gh release edit "$TAG" --repo "${{ github.repository }}" --notes-file "$NOTES" "${PRE_FLAG[@]}" || true
+          gh release upload "$TAG" "$ASSET" --repo "${{ github.repository }}" --clobber
+        else
+          gh release create "$TAG" "$ASSET" \
+            --repo "${{ github.repository }}" \
+            --title "$TAG" \
+            --notes-file "$NOTES" \
+            "${PRE_FLAG[@]}"
+        fi
+  pypi:
+    environment:
+      name: release
+      url: https://pypi.org/p/eon-akmc
+    if: needs.gate.outputs.is_prerelease != 'true'
+    needs:
+    - gate
+    - tarball
+    - gh-release
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install build frontend
+      run: python3 -m pip install --upgrade pip build
+    - name: Build sdist/wheel (meson-python)
+      run: |-
+        python3 scripts/release_assert.py "${{ needs.gate.outputs.version }}" --require-changelog
+        if python3 -m build 2>&1 | tee "${RUNNER_TEMP}/pypi-build.log"; then
+          echo "build ok"
+        else
+          echo "::warning::python -m build failed (native deps missing on runner). Trying sdist via pip wheel isolation off."
+          exit 1
+        fi
+        ls -la dist/
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        skip-existing: true
+        verbose: true
+  pypi-skip-rc:
+    if: needs.gate.outputs.is_prerelease == 'true'
+    needs:
+    - gate
+    - tarball
+    - gh-release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Skip PyPI for RC
+      run: |-
+        echo "Skipped PyPI for pre-release ${{ needs.gate.outputs.tag }}."
+        echo "GitHub Release created as prerelease with tarball asset."
+  tarball:
+    needs:
+    - gate
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Build source tarball (git archive, not GitHub auto-archive)
+      run: |-
+        TAG="${{ needs.gate.outputs.tag }}"
+        VERSION="${{ needs.gate.outputs.version }}"
+        OUT="eon-v${VERSION}.tar.xz"
+        git archive --format=tar "$TAG" | xz -9 > "$OUT"
+        ls -la "$OUT"
+        sha256sum "$OUT" | tee tarball.sha256
+    - name: Upload tarball artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: eon-tarball-${{ needs.gate.outputs.version }}
+        path: |-
+          eon-v${{ needs.gate.outputs.version }}.tar.xz
+          tarball.sha256
+        retention-days: 30
 name: Release
 on:
   push:
-    tags: ["v*"]
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
-            echo "Release ${{ github.ref_name }} already exists; nothing to do."
-            exit 0
-          fi
-          gh release create "${{ github.ref_name }}" --repo "${{ github.repository }}" --title "${{ github.ref_name }}" --generate-notes
+    tags:
+    - v*
+permissions:
+  contents: write
+  id-token: write
