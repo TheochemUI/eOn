@@ -1,6 +1,7 @@
 # towncrier check when shipped surfaces change (rgpot towncrier.yml intent).
-# Regenerate: nickel export --format yaml ci/gha/towncrier_check.ncl -o .github/workflows/towncrier.yml
-let C = import "./common.ncl" in
+# Regenerate: pixi r -e cigen gen-gha   OR   ./ci/gha/gen.sh
+let S = import "./lib/steps.ncl" in
+let P = S.pins in
 
 let shipped_paths = [
   "eon/**",
@@ -26,11 +27,11 @@ in
   },
   jobs = {
     towncrier = {
-      "runs-on" = "ubuntu-latest",
+      "runs-on" = P.ubuntu,
       steps = [
-        C.checkout_full,
-        C.setup_python C.python_version,
-        C.run_script "Install towncrier" "python3 -m pip install --quiet towncrier",
+        S.checkout_full,
+        S.setup_python_default,
+        S.run_script "Install towncrier" "python3 -m pip install --quiet towncrier",
         {
           name = "towncrier check",
           env = { BASE_REF = "${{ github.event.pull_request.base.ref }}" },

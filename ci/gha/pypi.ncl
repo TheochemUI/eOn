@@ -12,7 +12,7 @@
 # Or set repository secret PYPI_API_TOKEN scoped to that project.
 #
 # Wire-up: imported by release.ncl; keep pyproject.toml [project].name in sync.
-# Regenerate workflows after edits: ./ci/gha/gen.sh
+# Regenerate workflows after edits: pixi r -e cigen gen-gha   OR   ./ci/gha/gen.sh
 {
   # Distribution / PyPI project name (pip install <this>)
   distribution_name = "eon-akmc",

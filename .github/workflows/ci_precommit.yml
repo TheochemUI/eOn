@@ -13,6 +13,17 @@ jobs:
     - name: Run prek (faster pre-commit)
       run: |
         uvx prek -a
+    # Autonomy: release/prepare/towncrier YAML must match ci/gha/*.ncl (when nickel available).
+    - name: GHA nickel drift (release workflows)
+      run: |
+        set -euo pipefail
+        if command -v nickel >/dev/null 2>&1; then
+          bash ci/gha/check-drift.sh
+        elif command -v pixi >/dev/null 2>&1; then
+          pixi r -e cigen gha-drift
+        else
+          echo "nickel/pixi not on runner; skip gha-drift (enforced on release-prepare + local cigen)"
+        fi
     - name: Audit for large files
       uses: HaoZeke/large-file-auditor@v0.1.0
       with:

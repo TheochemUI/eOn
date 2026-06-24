@@ -1,6 +1,7 @@
 # Advisory release preparation (does not publish).
-# Regenerate: nickel export --format yaml ci/gha/release_prepare.ncl -o .github/workflows/release-prepare.yml
-let C = import "./common.ncl" in
+# Regenerate: pixi r -e cigen gen-gha   OR   ./ci/gha/gen.sh
+let S = import "./lib/steps.ncl" in
+let P = S.pins in
 
 let release_paths = [
   "cog.toml",
@@ -19,20 +20,31 @@ let release_paths = [
 in
 
 let job_prepare = {
-  "runs-on" = "ubuntu-latest",
+  "runs-on" = P.ubuntu,
   steps = [
-    C.checkout_full,
-    C.setup_python C.python_version,
-    C.run_script "Assert lockstep surfaces agree" m%"
+    S.checkout_full,
+    S.setup_python_default,
+    # Autonomy: fail if committed YAML drifted from Nickel (rgpot gha-drift pattern).
+    S.run_script "GHA nickel drift (release workflows)" m%"
+      set -euo pipefail
+      if command -v nickel >/dev/null 2>&1; then
+        bash ci/gha/check-drift.sh
+      elif command -v pixi >/dev/null 2>&1; then
+        pixi r -e cigen gha-drift
+      else
+        echo "::warning::nickel/pixi unavailable; skipping gha-drift (install nickel or pixi cigen locally)"
+      fi
+    "%,
+    S.run_script "Assert lockstep surfaces agree" m%"
       python3 scripts/release_assert.py
       python3 -c "import tomllib, pathlib; tomllib.loads(pathlib.Path('cog.toml').read_text()); print('cog.toml parse ok')"
       python3 -c "import tomllib, pathlib; tomllib.loads(pathlib.Path('pyproject.toml').read_text()); print('pyproject.toml parse ok')"
     "%,
-    C.run_script "Unit tests for release_assert" m%"
+    S.run_script "Unit tests for release_assert" m%"
       python3 -m pip install --quiet pytest
       python3 -m pytest tests/release/ -q
     "%,
-    C.run_script "Towncrier draft (fragments must build cleanly)" m%"
+    S.run_script "Towncrier draft (fragments must build cleanly)" m%"
       python3 -m pip install --quiet towncrier
       if compgen -G "docs/newsfragments/*.md" > /dev/null 2>&1 || \
          compgen -G "docs/newsfragments/+*.md" > /dev/null 2>&1; then
@@ -42,7 +54,7 @@ let job_prepare = {
         echo "No newsfragments; skip draft (ok if this PR only touches tooling)"
       fi
     "%,
-    C.run_script "Optional cog dry-run" m%"
+    S.run_script "Optional cog dry-run" m%"
       if command -v cog >/dev/null 2>&1; then
         VER=$(python3 scripts/release_assert.py --print-version)
         cog bump --version "$VER" --dry-run 2>&1 | head -40 || \

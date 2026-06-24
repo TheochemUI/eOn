@@ -116,6 +116,9 @@ eggs/
 .eggs/
 lib/
 lib64/
+# Nickel GHA shared pins/steps (rgpot-style); not a compiled library tree.
+!ci/gha/lib/
+!ci/gha/lib/**
 parts/
 sdist/
 var/

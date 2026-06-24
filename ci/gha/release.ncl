@@ -1,20 +1,21 @@
 # Tag-triggered release: gate → tarball → GitHub Release → PyPI (stable only).
-# Source of truth; regenerate: nickel export --format yaml ci/gha/release.ncl -o .github/workflows/release.yml
+# Source of truth; regenerate: pixi r -e cigen gen-gha   OR   ./ci/gha/gen.sh
 # See docs/source/devdocs/release.md and ci/gha/README.md.
 # Mirrors rgpot staged release.yml; eOn uses scripts/release_assert.py (not potctl).
-let C = import "./common.ncl" in
+let S = import "./lib/steps.ncl" in
+let P = S.pins in
 let Pypi = import "./pypi.ncl" in
 
 let job_gate = {
-  "runs-on" = "ubuntu-latest",
+  "runs-on" = P.ubuntu,
   outputs = {
     is_prerelease = "${{ steps.prerelease.outputs.is_prerelease }}",
     version = "${{ steps.meta.outputs.version }}",
     tag = "${{ steps.meta.outputs.tag }}",
   },
   steps = [
-    C.checkout_full,
-    C.run_script "Tag / version meta" m%"
+    S.checkout_full,
+    S.run_script "Tag / version meta" m%"
       TAG="${GITHUB_REF#refs/tags/}"
       VERSION="${TAG#v}"
       echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
@@ -22,7 +23,7 @@ let job_gate = {
       echo "Release gate for ${TAG} (${VERSION})"
     "%
     & { id = "meta" },
-    C.run_script "Assert lockstep + CHANGELOG section" m%"
+    S.run_script "Assert lockstep + CHANGELOG section" m%"
       VERSION="${{ steps.meta.outputs.version }}"
       python3 scripts/release_assert.py "$VERSION" --require-changelog
       NOTES="${RUNNER_TEMP}/release_notes.md"
@@ -36,14 +37,14 @@ let job_gate = {
     "%,
     {
       name = "Upload release notes",
-      uses = C.upload_artifact_v4,
+      uses = P.upload_artifact,
       with = {
         name = "release-notes-${{ github.sha }}",
         path = "${{ runner.temp }}/release_notes.md",
         "retention-days" = 5,
       },
     },
-    C.run_script "Detect pre-release (RC) tag" m%"
+    S.run_script "Detect pre-release (RC) tag" m%"
       VERSION="${{ steps.meta.outputs.version }}"
       if [[ "$VERSION" == *-* ]]; then
         echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
@@ -59,10 +60,10 @@ in
 
 let job_tarball = {
   needs = ["gate"],
-  "runs-on" = "ubuntu-latest",
+  "runs-on" = P.ubuntu,
   steps = [
-    C.checkout_full,
-    C.run_script "Build source tarball (git archive, not GitHub auto-archive)" m%"
+    S.checkout_full,
+    S.run_script "Build source tarball (git archive, not GitHub auto-archive)" m%"
       TAG="${{ needs.gate.outputs.tag }}"
       VERSION="${{ needs.gate.outputs.version }}"
       OUT="eon-v${VERSION}.tar.xz"
@@ -72,7 +73,7 @@ let job_tarball = {
     "%,
     {
       name = "Upload tarball artifact",
-      uses = C.upload_artifact_v4,
+      uses = P.upload_artifact,
       with = {
         name = "eon-tarball-${{ needs.gate.outputs.version }}",
         path = m%"
@@ -88,12 +89,12 @@ in
 
 let job_gh_release = {
   needs = ["gate", "tarball"],
-  "runs-on" = "ubuntu-latest",
+  "runs-on" = P.ubuntu,
   steps = [
-    C.checkout_default,
+    S.checkout_default,
     {
       name = "Download release notes",
-      uses = C.download_artifact_v4,
+      uses = P.download_artifact,
       with = {
         name = "release-notes-${{ github.sha }}",
         path = "${{ runner.temp }}/release-notes",
@@ -101,7 +102,7 @@ let job_gh_release = {
     },
     {
       name = "Download tarball",
-      uses = C.download_artifact_v4,
+      uses = P.download_artifact,
       with = {
         name = "eon-tarball-${{ needs.gate.outputs.version }}",
         path = "${{ runner.temp }}/tarball",
@@ -143,9 +144,9 @@ in
 let job_pypi = {
   needs = ["gate", "tarball", "gh-release"],
   "if" = "needs.gate.outputs.is_prerelease != 'true'",
-  "runs-on" = "ubuntu-latest",
+  "runs-on" = P.ubuntu,
   environment = {
-    name = "release",
+    name = Pypi.gha_environment,
     url = Pypi.pypi_project_url,
   },
   permissions = {
@@ -153,10 +154,10 @@ let job_pypi = {
     "id-token" = "write",
   },
   steps = [
-    C.checkout_full,
-    C.setup_python C.python_version,
-    C.run_script "Install build frontend" "python3 -m pip install --upgrade pip build",
-    C.run_script "Build sdist/wheel (meson-python)" m%"
+    S.checkout_full,
+    S.setup_python_default,
+    S.run_script "Install build frontend" "python3 -m pip install --upgrade pip build",
+    S.run_script "Build sdist/wheel (meson-python)" m%"
       python3 scripts/release_assert.py "${{ needs.gate.outputs.version }}" --require-changelog
       if python3 -m build 2>&1 | tee "${RUNNER_TEMP}/pypi-build.log"; then
         echo "build ok"
@@ -166,15 +167,7 @@ let job_pypi = {
       fi
       ls -la dist/
     "%,
-    {
-      name = "Publish to PyPI",
-      uses = C.pypi_publish,
-      with = {
-        password = "${{ secrets.PYPI_API_TOKEN }}",
-        "skip-existing" = true,
-        verbose = true,
-      },
-    },
+    S.pypi_publish_step "${{ secrets.PYPI_API_TOKEN }}",
   ],
 }
 in
@@ -182,9 +175,9 @@ in
 let job_pypi_skip_rc = {
   needs = ["gate", "tarball", "gh-release"],
   "if" = "needs.gate.outputs.is_prerelease == 'true'",
-  "runs-on" = "ubuntu-latest",
+  "runs-on" = P.ubuntu,
   steps = [
-    C.run_script "Skip PyPI for RC" m%"
+    S.run_script "Skip PyPI for RC" m%"
       echo "Skipped PyPI for pre-release ${{ needs.gate.outputs.tag }}."
       echo "GitHub Release created as prerelease with tarball asset."
     "%,

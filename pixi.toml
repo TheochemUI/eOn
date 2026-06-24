@@ -46,7 +46,19 @@ readcon = ">=0.8.0, <0.9"
 extra-index-urls = ["https://download.pytorch.org/whl/cpu"]
 index-strategy = "unsafe-best-match"
 
+[feature.cigen]
+# Hermetic Nickel for GHA export/drift (rgpot ci/gha pattern; release/towncrier/prepare only).
+
+[feature.cigen.dependencies]
+nickel = ">=1.9.0,<2"
+
+[feature.cigen.tasks]
+gen-gha = { cmd = "bash ci/gha/gen.sh", description = "Export release/prepare/towncrier workflows from ci/gha/*.ncl" }
+gha-drift = { cmd = "bash ci/gha/check-drift.sh", description = "Fail if committed .github/workflows release trio diverges from Nickel" }
+nickel-fmt = { cmd = "bash ci/gha/format.sh", description = "nickel format ci/gha/*.ncl and lib/*.ncl" }
+
 [environments]
+cigen = { features = ["cigen"] }
 metatomic = {features = ["metatomic"]}
 dev-lite = {features = ["lint", "develop"]}
 dev-xtb = {features = ["lint", "develop", "xtb"]}

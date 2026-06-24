@@ -1,57 +1,67 @@
 # CI workflow generation (Nickel)
 
 Release-related GitHub Actions workflows are **generated** from Nickel sources
-(rgpot `ci/gha/workflow.ncl` pattern; see internal note
-`Software/rgpot/release_process_v1.2.0_lockstep_potctl_cog_towncrier.org` § Nickel
-build matrix — eOn extends the idea to **release** workflows because we do not
-have a combinatorial build matrix in Nickel yet).
+(rgpot `ci/gha` tooling layer — pins/steps/drift/cigen — **not** the full
+orchestrator/build matrix). eOn uses Nickel for the **release trio only**;
+hand-maintained `ci_*.yml` (build/test/docs/bench) stay outside this contract.
 
 | Nickel source | Generated YAML (do not hand-edit) |
 |---------------|-----------------------------------|
-| [`common.ncl`](common.ncl) | Shared pins / step builders (imported) |
+| [`lib/pins.ncl`](lib/pins.ncl) | Shared action/runner pins (imported only) |
+| [`lib/steps.ncl`](lib/steps.ncl) | Step builders (`checkout_*`, `setup_python_*`, `run_script`, …) |
+| [`pypi.ncl`](pypi.ncl) | PyPI distribution config (`eon-akmc`; never `eon`) |
 | [`release.ncl`](release.ncl) | [`.github/workflows/release.yml`](../../.github/workflows/release.yml) |
 | [`release_prepare.ncl`](release_prepare.ncl) | [`.github/workflows/release-prepare.yml`](../../.github/workflows/release-prepare.yml) |
 | [`towncrier_check.ncl`](towncrier_check.ncl) | [`.github/workflows/towncrier.yml`](../../.github/workflows/towncrier.yml) |
+| [`common.ncl`](common.ncl) | Thin shim re-exporting `lib/steps.ncl` (compat only) |
 
-Other workflows under `.github/workflows/` (`ci_*.yml`) remain hand-maintained
-YAML unless/until ported.
-
-## Regenerate
-
-Requires [Nickel](https://nickel-lang.org/) ≥ 1.x (`nickel` on PATH, or pixi
-`cigen` environment when configured):
+## Regenerate (autonomous)
 
 ```bash
-# all three release-related workflows
+# preferred (hermetic nickel via pixi feature cigen)
+pixi r -e cigen gen-gha
+
+# or nickel on PATH
 ./ci/gha/gen.sh
-# or one at a time:
-nickel export --format yaml ci/gha/release.ncl -o .github/workflows/release.yml
-nickel export --format yaml ci/gha/release_prepare.ncl -o .github/workflows/release-prepare.yml
-nickel export --format yaml ci/gha/towncrier_check.ncl -o .github/workflows/towncrier.yml
 ```
 
-With pixi (after `cigen` feature is in the lockfile on your machine):
+Drift gate (fails if committed YAML ≠ export):
 
 ```bash
-# pixi cigen env optional; use ./ci/gha/gen.sh with nickel on PATH
-pixi r -e cigen nickel format ci/gha/*.ncl   # optional format
+pixi r -e cigen gha-drift
+# or
+bash ci/gha/check-drift.sh
 ```
+
+Optional format:
+
+```bash
+pixi r -e cigen nickel-fmt
+```
+
+**CI enforcement:** `release-prepare` runs `check-drift.sh` when `nickel` or `pixi`
+is available; `ci_precommit.yml` runs the same best-effort step so hand-edited
+release/prepare/towncrier YAML cannot merge unnoticed on paths that install tools.
 
 ## Design notes (rgpot-aligned, eOn-native)
 
-- **Modular steps**: `common.ncl` holds action pins (`checkout@v4`, `setup-python@v5`,
-  artifact actions, `pypa/gh-action-pypi-publish`) and `run_script` / `setup_python`
-  builders — same idea as rgpot's `run_pixi` / `checkout_full` / `ensure_potctl`.
+- **Modular pins/steps**: workflow modules import `lib/steps.ncl` only — no raw
+  `actions/checkout@…` strings in `release.ncl` / `release_prepare.ncl` /
+  `towncrier_check.ncl`. Bump versions in `lib/pins.ncl` once.
+- **Caching**: `setup_python_default` sets `cache: pip` so pytest/towncrier/build
+  pip installs on prepare/release are faster without new workflow families.
 - **Staged `release.ncl` jobs**: `gate` → `tarball` → `gh-release` → `pypi` |
   `pypi-skip-rc` (RC tags skip PyPI; stable uses environment `release` + OIDC/token).
 - **Gate uses** `scripts/release_assert.py` (lockstep + CHANGELOG), not rgpot `potctl`.
-- **`release_prepare.ncl`**: PR + `workflow_dispatch` dry-run (assert, pytest,
-  towncrier draft, optional cog); path filters include `ci/gha/**` so Nickel edits
-  re-run prepare.
+- **`release_prepare.ncl`**: PR + `workflow_dispatch` dry-run (drift, assert, pytest,
+  towncrier draft, optional cog); path filters include `ci/gha/**`.
 - **`towncrier_check.ncl`**: `towncrier check` on shipped-path PRs.
-- **Contract**: edit `.ncl` → run `gen.sh` → commit **both** source and generated
-  YAML in the same change (like rgpot `chore/modernize-nickel-gha`). Drift between
-  only-YAML edits and Nickel source is a bug.
+- **Contract**: edit `.ncl` → `pixi r -e cigen gen-gha` → commit **both** source and
+  generated YAML. Drift between only-YAML edits and Nickel is a bug (`gha-drift`).
+- **Non-goals here**: porting `ci_build_akmc.yml` / `ci_xtb.yml` / etc. into Nickel.
+
+Hand `ci_*.yml` may still pin `checkout@v4` while this tree centralizes pins for the
+release trio only; dual pins are intentional until those workflows migrate.
 
 ## Maintainer docs
 

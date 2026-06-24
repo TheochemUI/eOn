@@ -11,7 +11,18 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-python@v5
       with:
+        cache: pip
         python-version: '3.12'
+    - name: GHA nickel drift (release workflows)
+      run: |-
+        set -euo pipefail
+        if command -v nickel >/dev/null 2>&1; then
+          bash ci/gha/check-drift.sh
+        elif command -v pixi >/dev/null 2>&1; then
+          pixi r -e cigen gha-drift
+        else
+          echo "::warning::nickel/pixi unavailable; skipping gha-drift (install nickel or pixi cigen locally)"
+        fi
     - name: Assert lockstep surfaces agree
       run: |-
         python3 scripts/release_assert.py
