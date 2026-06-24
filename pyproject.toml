@@ -1,6 +1,6 @@
 [project]
 name = "eon-akmc"
-version = "2.14.0"
+version = "2.15.0"
 description = "eOn kinetic Monte Carlo / AKMC (PyPI: eon-akmc; import eon)"
 authors = [
     {name = "Rohit Goswami", email = "rgoswami@ieee.org"},

@@ -2,6 +2,24 @@
 
 <!-- towncrier release notes start -->
 
+## [2.15.0](https://github.com/TheochemUI/eOn/tree/2.15.0) - 2026-06-24
+
+### Added
+
+- MPI build revived on the C API (`with_mpi`) after retiring the obsolete C++ MPI bindings path. ([#339](https://github.com/TheochemUI/eOn/issues/339))
+- Runtime-loadable Fortran potentials via `dlopen` and `[Potential] potentials_path` (no rebuild to swap pot modules). ([#342](https://github.com/TheochemUI/eOn/issues/342))
+
+### Developer
+
+- Documented and automated the full maintainer release path (cog/towncrier lockstep assert, GitHub tarball release, PyPI, conda-forge/eon-feedstock checklist, incomplete-release recovery). ([#343](https://github.com/TheochemUI/eOn/issues/343))
+
+### Fixed
+
+- Windows/conda-forge builds enable in-tree Fortran including CuH2 (m2w64 gfortran + MSVC C++, 16 MiB stack, xtb MinGW import lib) per feedstock#15. ([#15](https://github.com/TheochemUI/eOn/issues/15))
+- NEB isolates per-image LAMMPS instances on private MPI communicators so parallel image evaluation does not corrupt neighbor state. ([#340](https://github.com/TheochemUI/eOn/issues/340))
+- Process search restores fixed-atom rows after loading `displacement.con`, avoiding drift of constrained atoms. ([#341](https://github.com/TheochemUI/eOn/issues/341))
+
+
 ## [2.14.0](https://github.com/TheochemUI/eOn/tree/2.14.0) - 2026-04-24
 
 ### Added
