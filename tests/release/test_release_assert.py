@@ -28,16 +28,25 @@ def test_script_exists_and_is_executable_entry():
     assert SCRIPT.read_text(encoding="utf-8").startswith("#!/usr/bin/env python3")
 
 
+def _current_version() -> str:
+    """Live semver from shipped pyproject (tests must follow bumps, not hardcode)."""
+    import tomllib
+
+    data = tomllib.loads((REPO / "pyproject.toml").read_text(encoding="utf-8"))
+    return data["project"]["version"]
+
+
 def test_assert_passes_on_real_repo_lockstep():
     """Drive the real script against the live eOn tree."""
     proc = _run()
     assert proc.returncode == 0, proc.stderr
     assert "ok: lockstep version" in proc.stdout
-    assert "2.14.0" in proc.stdout or "ok:" in proc.stdout
+    assert _current_version() in proc.stdout or "ok:" in proc.stdout
 
 
-def test_assert_require_changelog_for_2140_on_real_repo():
-    proc = _run("2.14.0", "--require-changelog")
+def test_assert_require_changelog_for_current_version_on_real_repo():
+    ver = _current_version()
+    proc = _run(ver, "--require-changelog")
     assert proc.returncode == 0, proc.stderr
     assert "CHANGELOG.md has section" in proc.stdout
 
@@ -50,7 +59,7 @@ def test_assert_fails_wrong_expected_version():
 
 def test_assert_fails_missing_changelog_section():
     proc = _run("99.0.0", "--require-changelog")
-    # surfaces are 2.14.0 not 99.0.0, so either version mismatch or missing section
+    # surfaces are current semver not 99.0.0, so either version mismatch or missing section
     assert proc.returncode == 1
     assert proc.stderr.strip()
 
@@ -65,12 +74,13 @@ def test_print_version_flag():
 
 
 def test_notes_extract_writes_file(tmp_path: Path):
+    ver = _current_version()
     out = tmp_path / "notes.md"
-    proc = _run("2.14.0", "--notes", str(out))
+    proc = _run(ver, "--notes", str(out))
     assert proc.returncode == 0, proc.stderr
     assert out.is_file()
     body = out.read_text(encoding="utf-8")
-    assert "2.14.0" in body or "Release" in body or body.strip()
+    assert ver in body or "Release" in body or body.strip()
 
 
 def test_lockstep_helpers_on_fixture_tree(tmp_path: Path):
@@ -178,10 +188,13 @@ def test_nickel_gha_sources_exist_and_match_generated_header():
     """Nickel is the source of truth; generated YAML must exist alongside .ncl."""
     gha = REPO / "ci" / "gha"
     assert (gha / "common.ncl").is_file()
+    assert (gha / "lib" / "pins.ncl").is_file()
+    assert (gha / "lib" / "steps.ncl").is_file()
     assert (gha / "release.ncl").is_file()
     assert (gha / "release_prepare.ncl").is_file()
     assert (gha / "towncrier_check.ncl").is_file()
     assert (gha / "gen.sh").is_file()
+    assert (gha / "check-drift.sh").is_file()
     assert (gha / "README.md").is_file()
     for yml in (
         REPO / ".github" / "workflows" / "release.yml",

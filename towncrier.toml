@@ -3,7 +3,7 @@
 # (avoids numpy/native deps in CI/release-prepare). cog/bump passes --version explicitly.
 name = "eon"
 # Keep in sync with pyproject.toml on cuts; draft-only if this lags (cog passes --version).
-version = "2.14.0"
+version = "2.15.0"
 directory = "docs/newsfragments"
 filename = "CHANGELOG.md"
 start_string = "<!-- towncrier release notes start -->\n"
