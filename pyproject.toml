@@ -10,7 +10,8 @@ dependencies = [
     "readcon>=0.8.0",
 ]
 requires-python = ">=3.11"
-readme = "Readme.org"
+# Org readme is not a meson-python/packaging content-type; keep long form in repo only.
+# readme = "Readme.org"
 license = {text = "BSD-3-Clause"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
