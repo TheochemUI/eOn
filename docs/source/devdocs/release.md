@@ -129,18 +129,17 @@ feedstock `build.bat`, and [Windows Compatibility and Scientific Computing](http
 | Platform | `compiler('fortran')` | meson (feedstock / GHA Windows) |
 |----------|----------------------|----------------------------------|
 | linux / osx | yes | defaults (`with_fortran` on unless opted out) |
-| win-64 | **yes** (m2w64 gfortran; no MSVC Fortran) | `--default-library=static -Dwith_fortran=true -Dwith_cuh2=false` |
+| win-64 | **yes** (m2w64 gfortran; no MSVC Fortran) | `--default-library=static -Dwith_fortran=true -Dwith_cuh2=true` |
 
 - Meson already adds **`/STACK:16777216`** on MSVC links (Windows 1 MB default
   overflows large Fortran stack arrays; Linux is ~8 MB).
 - MinGW-built **xtb** still needs the **dumpbin / `lib /DEF:`** MSVC import library
   step in feedstock `build.bat` (C++/torch stay MSVC).
-- **CuH2** may stay off on win until iso_c_binding is verified; that is separate
-  from issue #15 (main in-tree pots).
+- **CuH2** is on with the rest of in-tree Fortran (iso_c_binding via m2w64 gfortran).
 - Runtime pot **DLLs** (`LoadLibrary`) are complementary, not a substitute for
   in-tree Fortran in the conda package.
 - Before feedstock go-live after a cut: confirm Azure **win-64** is green with
-  `with_fortran=true` on the version/sha256 PR.
+  `with_fortran=true` and `with_cuh2=true` on the version/sha256 PR.
 
 
 ## 1. Pre-release checklist

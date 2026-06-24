@@ -68,7 +68,7 @@ win-64 packages enable **in-tree Fortran** (`compiler('fortran')` / m2w64 gfortr
 `-Dwith_fortran=true`, static objects, `/STACK:16M` via meson) per
 [conda-forge/eon-feedstock#15](https://github.com/conda-forge/eon-feedstock/issues/15)
 and [windows-compat-sci-cpp](https://rgoswami.me/posts/windows-compat-sci-cpp/).
-CuH2 may remain off on win; main EAM/legacy pots are in the build.
+CuH2 is enabled on win with the rest of in-tree Fortran (m2w64 gfortran).
 
 ### Maintainer / distribution
 

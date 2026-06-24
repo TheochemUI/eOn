@@ -45,10 +45,10 @@ jobs:
         run: |
           # Git Bash puts GNU link.exe on PATH which shadows MSVC link.exe
           export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '^/usr/bin$' | paste -sd:)
-          # Build static on Windows (no __declspec(dllexport) annotations)
-          # Also disable CuH2 (Windows gfortran can't handle iso_c_binding)
+          # Align with conda-forge/eon-feedstock#15 / build.bat: in-tree Fortran ON
+          # (m2w64/gfortran pots + MSVC C++; /STACK:16M in meson for GAGAFE; CuH2 on).
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
-            --default-library=static -Dwith_cuh2=false
+            --default-library=static -Dwith_fortran=true -Dwith_cuh2=true
           meson install -C bbdir
 
       - name: Run tests

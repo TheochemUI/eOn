@@ -207,9 +207,9 @@ def test_windows_ci_aligns_with_feedstock_fortran_policy():
     assert "Compile and install [windows]" in yml
     block = yml.split("Compile and install [windows]", 1)[1].split("Run tests", 1)[0]
     assert "-Dwith_fortran=true" in block
-    assert "-Dwith_cuh2=false" in block
+    assert "-Dwith_cuh2=true" in block
     assert "--default-library=static" in block
     rel = (REPO / "docs" / "source" / "devdocs" / "release.md").read_text(encoding="utf-8")
     assert "feedstock#15" in rel or "eon-feedstock#15" in rel
     assert "with_fortran=true" in rel
-    assert "with_cuh2=false" in rel
+    assert "with_cuh2=true" in rel
