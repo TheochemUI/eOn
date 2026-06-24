@@ -1,7 +1,7 @@
 [project]
-name = "eon"
+name = "eon-akmc"
 version = "2.14.0"
-description = "Server component of eon project"
+description = "eOn kinetic Monte Carlo / AKMC (PyPI: eon-akmc; import eon)"
 authors = [
     {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
 ]
@@ -10,8 +10,8 @@ dependencies = [
     "readcon>=0.8.0",
 ]
 requires-python = ">=3.11"
-# readme = "readme.md"
-license = {text = "MIT"}
+readme = "Readme.org"
+license = {text = "BSD-3-Clause"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
@@ -32,6 +32,15 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
+
+[project.urls]
+Homepage = "https://github.com/TheochemUI/eOn"
+Documentation = "https://theochemuieon.readthedocs.io/"
+Repository = "https://github.com/TheochemUI/eOn"
+Changelog = "https://github.com/TheochemUI/eOn/blob/main/CHANGELOG.md"
+"Release process" = "https://github.com/TheochemUI/eOn/blob/main/docs/source/devdocs/release.md"
+Issues = "https://github.com/TheochemUI/eOn/issues"
+
 
 [build-system]
 requires = ["meson-python", "numpy"]

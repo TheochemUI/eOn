@@ -1,0 +1,17 @@
+# Release / version surfaces — request review when these change.
+# Enable required CODEOWNERS checks on branch protection if desired.
+
+/cog.toml                          @HaoZeke
+/towncrier.toml                    @HaoZeke
+/CHANGELOG.md                      @HaoZeke
+/pyproject.toml                    @HaoZeke
+/pixi.toml                         @HaoZeke
+/scripts/release_assert.py         @HaoZeke
+/docs/source/devdocs/release.md    @HaoZeke
+/docs/newsfragments/               @HaoZeke
+/docs/source/releases/             @HaoZeke
+/.github/workflows/release.yml     @HaoZeke
+/.github/workflows/release-prepare.yml @HaoZeke
+/.github/workflows/towncrier.yml   @HaoZeke
+/SECURITY.md                       @HaoZeke
+/ci/gha/                            @HaoZeke
