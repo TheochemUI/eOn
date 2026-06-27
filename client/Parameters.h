@@ -318,6 +318,8 @@ public:
   struct ase_nwchem_options_t {
     std::string path;
     std::string nproc{"1"};
+    // MPI launcher for ASE NWChem command (issue #193): "mpirun" or "srun".
+    std::string mpi_launcher{"mpirun"};
     std::string multiplicity;
     double scf_thresh{1e-5};
     long scf_maxiter{200};
@@ -331,6 +333,10 @@ public:
     std::string extensions_directory;
     bool check_consistency{false};
     double uncertainty_threshold{-1.0};
+    // Literal model output keys (issue #215). When set, bypass pick_output
+    // variant resolution and use this key if present in model capabilities.
+    std::string energy_output;
+    std::string energy_uncertainty_output;
     struct variants_t {
       std::string base;
       std::string energy;

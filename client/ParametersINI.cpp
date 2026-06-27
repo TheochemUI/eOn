@@ -405,6 +405,8 @@ int load_ini(INIReader &ini, Parameters &params) {
   if (ini.HasSection("ASE_NWCHEM")) {
     params.ase_nwchem_options.path = ini.Get("ASE_NWCHEM", "nwchem_path", "");
     params.ase_nwchem_options.nproc = ini.Get("ASE_NWCHEM", "nproc", "1");
+    params.ase_nwchem_options.mpi_launcher = ini.Get(
+        "ASE_NWCHEM", "mpi_launcher", params.ase_nwchem_options.mpi_launcher);
     params.ase_nwchem_options.multiplicity =
         ini.Get("ASE_NWCHEM", "multiplicity", "");
     params.ase_nwchem_options.scf_thresh =
@@ -425,6 +427,11 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.GetBoolean("Metatomic", "check_consistency", false);
     params.metatomic_options.uncertainty_threshold =
         ini.GetReal("Metatomic", "uncertainty_threshold", -1.0);
+    params.metatomic_options.energy_output = ini.Get(
+        "Metatomic", "energy_output", params.metatomic_options.energy_output);
+    params.metatomic_options.energy_uncertainty_output =
+        ini.Get("Metatomic", "energy_uncertainty_output",
+                params.metatomic_options.energy_uncertainty_output);
     auto &_variant = params.metatomic_options.variant;
     _variant.base = ini.Get("Metatomic", "variant_base", "");
     _variant.energy = ini.Get("Metatomic", "variant_energy", "");
