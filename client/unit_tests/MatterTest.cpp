@@ -173,7 +173,8 @@ TEST_CASE("MinimumImage PBC centers fractional coords",
 
   REQUIRE(legacy.getPbcConvention() == eonc::PbcConvention::Legacy);
   REQUIRE(mic.getPbcConvention() == eonc::PbcConvention::MinimumImage);
-  // MinimumImage should differ from Legacy for this placement (0.9 -> -0.1 frac)
+  // MinimumImage should differ from Legacy for this placement (0.9 -> -0.1
+  // frac)
   REQUIRE((legacyPos.row(0) - micPos.row(0)).norm() > 1e-6);
 }
 

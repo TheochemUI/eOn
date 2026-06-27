@@ -27,7 +27,8 @@ class BondBoost;
 
 // Position / difference MIC conventions (issue #176). Legacy matches historical
 // applyPeriodicBoundary (fmod to [0,1) fractional). MinimumImage matches the
-// existing eonc::pbc::apply path used for interatomic distances (frac in [-0.5,0.5)).
+// existing eonc::pbc::apply path used for interatomic distances (frac in
+// [-0.5,0.5)).
 enum class PbcConvention {
   Legacy = 0,
   MinimumImage = 1,
@@ -46,7 +47,8 @@ inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
   return frac * cell;
 }
 
-// Legacy position wrap: fractional coords into [0, 1) via fmod (historical Matter).
+// Legacy position wrap: fractional coords into [0, 1) via fmod (historical
+// Matter).
 inline AtomMatrix applyLegacy(const AtomMatrix &coords, const Matrix3d &cell,
                               const Matrix3d &cellInverse) {
   AtomMatrix frac = coords * cellInverse;
@@ -267,7 +269,7 @@ private:
   eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
-  bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
+  bool usePeriodicBoundaries;  // boolean telling periodic boundaries are used
   PbcConvention pbcConvention; // position-wrap MIC convention (issue #176)
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated

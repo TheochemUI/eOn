@@ -414,8 +414,8 @@ void Matter::computePotential() const {
 // Legacy: fractional [0,1) via fmod (historical). MinimumImage: fractional
 // [-0.5,0.5) via floor (same MIC as eonc::pbc::apply for differences).
 void Matter::applyPeriodicBoundary() {
-  positions = eonc::pbc::applyPositions(positions, cell, cellInverse,
-                                       pbcConvention);
+  positions =
+      eonc::pbc::applyPositions(positions, cell, cellInverse, pbcConvention);
 }
 
 double Matter::maxForce() const {
