@@ -357,6 +357,7 @@ eonclib_sources = [
     'Matter.cpp',
     'FiniteDifferenceJob.cpp',
     'Lanczos.cpp',
+    'Davidson.cpp',
     'HessianJob.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',

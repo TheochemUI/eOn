@@ -458,6 +458,15 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.lanczos_options.quit_early = ini.GetBoolean(
       "Lanczos", "quit_early", params.lanczos_options.quit_early);
 
+  // [Davidson] //
+  params.davidson_options.tolerance =
+      ini.GetReal("Davidson", "tolerance", params.davidson_options.tolerance);
+  params.davidson_options.max_iterations = ini.GetInteger(
+      "Davidson", "max_iterations", params.davidson_options.max_iterations);
+  params.davidson_options.diagonal_preconditioner =
+      ini.GetBoolean("Davidson", "diagonal_preconditioner",
+                     params.davidson_options.diagonal_preconditioner);
+
   // [ARTn] //
   params.artn_options.push_step_size =
       ini.GetReal("ARTn", "push_step_size", params.artn_options.push_step_size);

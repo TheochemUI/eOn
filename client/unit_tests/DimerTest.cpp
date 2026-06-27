@@ -11,6 +11,7 @@
 */
 
 #include "Dimer.h"
+#include "Davidson.h"
 #include "EigenmodeStrategy.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
@@ -101,6 +102,43 @@ TEST_CASE_METHOD(DimerFixture, "Lanczos computes negative eigenvalue",
   REQUIRE(eigenvalue < 0.0);
 }
 
+TEST_CASE_METHOD(DimerFixture, "Davidson computes negative eigenvalue",
+                 "[davidson][eigenmode]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_DAVIDSON;
+  auto davidson = std::make_unique<Davidson>(matter, params, pot);
+  davidson->compute(matter, mode);
+
+  double eigenvalue = davidson->getEigenvalue();
+  REQUIRE(std::isfinite(eigenvalue));
+  REQUIRE(eigenvalue < 0.0);
+}
+
+TEST_CASE_METHOD(DimerFixture, "Davidson and Lanczos agree on lowest mode sign",
+                 "[davidson][lanczos][eigenmode]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_LANCZOS;
+  Lanczos lanczos(matter, params, pot);
+  lanczos.compute(matter, mode);
+  const double ewL = lanczos.getEigenvalue();
+
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_DAVIDSON;
+  Davidson davidson(matter, params, pot);
+  davidson.compute(matter, mode);
+  const double ewD = davidson.getEigenvalue();
+
+  REQUIRE(std::isfinite(ewL));
+  REQUIRE(std::isfinite(ewD));
+  // Both should find a negative curvature direction on this saddle-ish LJ
+  // setup.
+  REQUIRE(ewL < 0.0);
+  REQUIRE(ewD < 0.0);
+  // Magnitudes within a loose factor (FD noise + method differences).
+  REQUIRE(std::fabs(ewD - ewL) <
+          0.5 * (std::fabs(ewL) + std::fabs(ewD) + 1e-6));
+}
+
 // --- EigenmodeStrategy variant dispatch tests ---
 
 TEST_CASE_METHOD(DimerFixture,
@@ -133,6 +171,17 @@ TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
   REQUIRE(std::holds_alternative<Lanczos>(*strategy));
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "buildEigenmodeStrategy returns Davidson variant",
+                 "[eigenmode][strategy][davidson]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_DAVIDSON;
+
+  auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
+  REQUIRE(strategy != nullptr);
+  REQUIRE(std::holds_alternative<Davidson>(*strategy));
 }
 
 // --- asImprovedDimer tests ---

@@ -345,6 +345,15 @@ public:
     bool quit_early{true};
   } lanczos_options;
 
+  // [Davidson] min-mode (alternative to dimer rotation / Lanczos)
+  struct davidson_options_t {
+    double tolerance{0.01};
+    long max_iterations{20};
+    /// Heuristic | (H v)_i / v_i | preconditioner (not true diag(H); off by
+    /// default).
+    bool diagonal_preconditioner{false};
+  } davidson_options;
+
   // [Prefactor] //
   struct prefactor_options_t {
     double default_value{0.0};
