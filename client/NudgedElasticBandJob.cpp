@@ -11,6 +11,7 @@
 */
 #include "NudgedElasticBandJob.h"
 #include "ConjugateGradients.h"
+#include "EonLogger.h"
 #include "NEBInitialPaths.hpp"
 #include "NEBSplineExtrema.h"
 #include "Potential.h"
@@ -18,6 +19,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <stdexcept>
 
 std::vector<std::string> NudgedElasticBandJob::run() {
   NudgedElasticBand::NEBStatus status;
@@ -42,8 +44,44 @@ std::vector<std::string> NudgedElasticBandJob::run() {
   auto initial = std::make_shared<Matter>(pot, params);
   auto final_state = std::make_shared<Matter>(pot, params);
 
-  initial->con2matter(reactantFilename);
-  final_state->con2matter(productFilename);
+  // When initializer=file and initial_path_in is set, endpoints are the first
+  // and last frames of that list — do not require reactant.con / product.con
+  // (issue #278; buggy endpoint files were still loaded and could crash).
+  const bool usePathEndpoints =
+      params.neb_options.initialization.method == NEBInit::FILE &&
+      !params.neb_options.initialization.input_path.empty();
+
+  if (usePathEndpoints) {
+    const auto file_paths = eonc::helpers::neb_paths::readFilePaths(
+        params.neb_options.initialization.input_path);
+    if (file_paths.size() < 2) {
+      throw std::runtime_error(
+          "NEB initial_path_in must list at least two frames "
+          "(reactant and product endpoints)");
+    }
+    if (!initial->con2matter(file_paths.front().string())) {
+      EONC_LOG_CRITICAL("Failed to load NEB path reactant frame {}",
+                        file_paths.front().string());
+      throw std::runtime_error("failed to load NEB path reactant frame");
+    }
+    if (!final_state->con2matter(file_paths.back().string())) {
+      EONC_LOG_CRITICAL("Failed to load NEB path product frame {}",
+                        file_paths.back().string());
+      throw std::runtime_error("failed to load NEB path product frame");
+    }
+    QUILL_LOG_INFO(m_log,
+                   "NEB endpoints from initial path list (skipped {} / {})",
+                   reactantFilename, productFilename);
+  } else {
+    if (!initial->con2matter(reactantFilename)) {
+      EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
+      throw std::runtime_error("failed to load reactant.con");
+    }
+    if (!final_state->con2matter(productFilename)) {
+      EONC_LOG_CRITICAL("Failed to load {}", productFilename);
+      throw std::runtime_error("failed to load product.con");
+    }
+  }
 
   // Endpoint minimization logic:
   // - If params.neb_options.endpoints.minimize is false: never minimize
