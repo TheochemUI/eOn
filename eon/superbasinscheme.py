@@ -221,10 +221,20 @@ class EnergyLevel(SuperbasinScheme):
     def __init__(self, superbasin_path, states, kT, energy_increment):
         self.energy_increment = energy_increment
         self.levels = {}
+        # Lowest state energy seen in this run (seeded from states on resume).
+        self.global_energy_min = None
         SuperbasinScheme.__init__(self,superbasin_path, states, kT)
 
+    def _note_state_energy(self, energy):
+        if self.global_energy_min is None or energy < self.global_energy_min:
+            self.global_energy_min = energy
+
     def get_energy_increment(self, e_min, e_global_min, e_saddle):
-        return self.energy_increment * (e_saddle - e_min) / (e_saddle - e_global_min)
+        # Avoid divide-by-zero if saddle coincides with the global minimum.
+        denom = e_saddle - e_global_min
+        if denom == 0.0:
+            return 0.0
+        return self.energy_increment * (e_saddle - e_min) / denom
 
     def get_statelist(self, state):
         sb = self.get_containing_superbasin(state)
@@ -251,6 +261,10 @@ class EnergyLevel(SuperbasinScheme):
         if end_state not in self.levels:
             self.levels[end_state] = end_state.get_energy()
 
+        # Track true global minimum over all states seen so far (issue #212).
+        self._note_state_energy(start_state.get_energy())
+        self._note_state_energy(end_state.get_energy())
+
         # determine wheter or not the start and end states belong to a superbasin.
         # if they belong to a superbasin, we need to know the ids of the states inside
         # that superbasin to determine the minimum energy state inside the superbasin.
@@ -258,12 +272,15 @@ class EnergyLevel(SuperbasinScheme):
         start_statelist = self.get_statelist(start_state)
         end_statelist   = self.get_statelist(end_state)
 
-        e_min        = min ( state.get_energy() for state in end_statelist )
-        # First, find the minimum energy in the start_statelist.
-        min_start_energy = min(state.get_energy() for state in start_statelist)
-        # Then, find the global minimum by comparing the two basin minimums.
-        # XXX(rg): This isn't really the "global" minima in any sense, for that we need a counter on the class object itself
-        e_global_min = min(e_min, min_start_energy)
+        for state in start_statelist:
+            self._note_state_energy(state.get_energy())
+        for state in end_statelist:
+            self._note_state_energy(state.get_energy())
+
+        e_min = min(state.get_energy() for state in end_statelist)
+        # Scaling uses the most stable energy observed in the simulation, not
+        # only the local start/end basin minima (see issue #212).
+        e_global_min = self.global_energy_min
 
         # determine the barrier
         # (LJ: What happens if there is more then one path between start_state and end_state???)
@@ -301,6 +318,8 @@ class EnergyLevel(SuperbasinScheme):
                 f = open(data_path, 'r')
                 self.levels[self.states.get_state(i)] = float(f.read().strip())
                 f.close()
+            # Resume global min from state energies even without a levels file.
+            self._note_state_energy(state.get_energy())
 
     def write_data(self):
         logger.debug('writing')
