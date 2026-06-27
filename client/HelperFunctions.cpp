@@ -141,6 +141,49 @@ AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
   return loadMode(modeFile.get(), nAtoms);
 }
 
+bool eonc::helpers::loadOrSynthesizeDisplacement(
+    Matter &target, const Matter &initial, const std::string &displacementPath,
+    const std::string &modePath, double scale) {
+  if (target.con2matter(displacementPath)) {
+    // displacement.con may carry stale fixed-atom coordinates from a prior run.
+    const AtomMatrix &initPos = initial.getPositions();
+    AtomMatrix pos = target.getPositionsCopy();
+    const long n = initial.numberOfAtoms();
+    for (long i = 0; i < n; i++) {
+      if (initial.getFixed(i)) {
+        pos.row(i) = initPos.row(i);
+      }
+    }
+    target.setPositions(pos);
+    return true;
+  }
+  if (!existsFile(modePath)) {
+    return false;
+  }
+  AtomMatrix mode =
+      loadMode(modePath, static_cast<int>(initial.numberOfAtoms()));
+  const double norm = mode.norm();
+  if (!(norm > 0.0)) {
+    return false;
+  }
+  mode *= (scale / norm);
+  target = initial;
+  AtomMatrix pos = initial.getPositionsCopy();
+  pos += mode;
+  const AtomMatrix &initPos = initial.getPositions();
+  const long n = initial.numberOfAtoms();
+  for (long i = 0; i < n; i++) {
+    if (initial.getFixed(i)) {
+      pos.row(i) = initPos.row(i);
+    }
+  }
+  target.setPositions(pos);
+  EONC_LOG_INFO("Synthesized displacement from pos.con + scale {:.6g} * unit "
+                "mode in {} (missing {})",
+                scale, modePath, displacementPath);
+  return true;
+}
+
 void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
                              AtomMatrix mode) {
   long const nAtoms = matter->numberOfAtoms();

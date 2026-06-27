@@ -13,6 +13,7 @@
 #ifdef WITH_ARTN
 #include "ARTnSaddleSearch.h"
 #endif
+#include "EonLogger.h"
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Potential.h"
@@ -49,7 +50,14 @@ std::vector<std::string> SaddleSearchJob::run() {
 
   if (!standaloneARTn && params.saddle_search_options.displace_type ==
                              eonc::EpiCenters::DISP_LOAD) {
-    saddle->con2matter(displacementFilename);
+    // Load displacement.con, or synthesize from pos.con + direction.dat (#79).
+    if (!eonc::helpers::loadOrSynthesizeDisplacement(
+            *saddle, *initial, displacementFilename, modeFilename,
+            params.saddle_search_options.displace_magnitude)) {
+      EONC_LOG_CRITICAL("Failed to load {} (and no usable {})",
+                        displacementFilename, modeFilename);
+      throw std::runtime_error("missing displacement.con and direction.dat");
+    }
   } else {
     *saddle = *initial;
   }
