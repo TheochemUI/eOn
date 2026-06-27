@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "Davidson.h"
 #include "Dimer.h"
 #include "EigenmodeStrategy.h"
 #include "ImprovedDimer.h"
@@ -99,6 +100,42 @@ TEST_CASE_METHOD(DimerFixture, "Lanczos computes negative eigenvalue",
   double eigenvalue = lanczos->getEigenvalue();
   REQUIRE(std::isfinite(eigenvalue));
   REQUIRE(eigenvalue < 0.0);
+}
+
+TEST_CASE_METHOD(DimerFixture, "Davidson computes negative eigenvalue",
+                 "[davidson][eigenmode]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_DAVIDSON;
+  auto davidson = std::make_unique<Davidson>(matter, params, pot);
+  davidson->compute(matter, mode);
+
+  double eigenvalue = davidson->getEigenvalue();
+  REQUIRE(std::isfinite(eigenvalue));
+  REQUIRE(eigenvalue < 0.0);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "Davidson and Lanczos agree on lowest mode sign",
+                 "[davidson][lanczos][eigenmode]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_LANCZOS;
+  Lanczos lanczos(matter, params, pot);
+  lanczos.compute(matter, mode);
+  const double ewL = lanczos.getEigenvalue();
+
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_DAVIDSON;
+  Davidson davidson(matter, params, pot);
+  davidson.compute(matter, mode);
+  const double ewD = davidson.getEigenvalue();
+
+  REQUIRE(std::isfinite(ewL));
+  REQUIRE(std::isfinite(ewD));
+  // Both should find a negative curvature direction on this saddle-ish LJ setup.
+  REQUIRE(ewL < 0.0);
+  REQUIRE(ewD < 0.0);
+  // Magnitudes within a loose factor (FD noise + method differences).
+  REQUIRE(std::fabs(ewD - ewL) < 0.5 * (std::fabs(ewL) + std::fabs(ewD) + 1e-6));
 }
 
 // --- EigenmodeStrategy variant dispatch tests ---

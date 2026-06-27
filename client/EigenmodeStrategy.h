@@ -11,6 +11,7 @@
 */
 #pragma once
 
+#include "Davidson.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
@@ -25,12 +26,14 @@ namespace eonc {
 
 #ifdef WITH_GPRD
 using EigenmodeStrategy =
-    std::variant<Dimer, ImprovedDimer, Lanczos, AtomicGPDimer>;
+    std::variant<Dimer, ImprovedDimer, Lanczos, Davidson, AtomicGPDimer>;
 #else
-using EigenmodeStrategy = std::variant<Dimer, ImprovedDimer, Lanczos>;
+using EigenmodeStrategy =
+    std::variant<Dimer, ImprovedDimer, Lanczos, Davidson>;
 #endif
 
 /// Build the eigenmode solver from parameters.
+/// min_mode_method: dimer (rotation CG) | lanczos | davidson | gprdimer
 inline std::shared_ptr<EigenmodeStrategy>
 buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
                        std::shared_ptr<Potential> pot) {
@@ -44,6 +47,9 @@ buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
   } else if (params.saddle_search_options.minmode_method ==
              LowestEigenmode::MINMODE_LANCZOS) {
     return std::make_shared<EigenmodeStrategy>(Lanczos(matter, params, pot));
+  } else if (params.saddle_search_options.minmode_method ==
+             LowestEigenmode::MINMODE_DAVIDSON) {
+    return std::make_shared<EigenmodeStrategy>(Davidson(matter, params, pot));
   }
 #ifdef WITH_GPRD
   else if (params.saddle_search_options.minmode_method ==
