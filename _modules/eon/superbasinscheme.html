@@ -568,213 +568,232 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="221">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin_path</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">kT</span><span class="p">,</span> <span class="n">energy_increment</span><span class="p">):</span>
 </span><span data-line="222">        <span class="bp">self</span><span class="o">.</span><span class="n">energy_increment</span> <span class="o">=</span> <span class="n">energy_increment</span>
 </span><span data-line="223">        <span class="bp">self</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="224">        <span class="n">SuperbasinScheme</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">superbasin_path</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span>
-</span><span data-line="225">
+</span><span data-line="224">        <span class="c1"># Lowest state energy seen in this run (seeded from states on resume).</span>
+</span><span data-line="225">        <span class="bp">self</span><span class="o">.</span><span class="n">global_energy_min</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="226">        <span class="n">SuperbasinScheme</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">superbasin_path</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span>
+</span><span data-line="227">
+</span><span data-line="228">    <span class="k">def</span><span class="w"> </span><span class="nf">_note_state_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="p">):</span>
+</span><span data-line="229">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_energy_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">energy</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_energy_min</span><span class="p">:</span>
+</span><span data-line="230">            <span class="bp">self</span><span class="o">.</span><span class="n">global_energy_min</span> <span class="o">=</span> <span class="n">energy</span>
+</span><span data-line="231">
 <div class="viewcode-block" id="EnergyLevel.get_energy_increment">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.EnergyLevel.get_energy_increment">[docs]</a>
-</span><span data-line="226">    <span class="k">def</span><span class="w"> </span><span class="nf">get_energy_increment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_min</span><span class="p">,</span> <span class="n">e_global_min</span><span class="p">,</span> <span class="n">e_saddle</span><span class="p">):</span>
-</span><span data-line="227">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_increment</span> <span class="o">*</span> <span class="p">(</span><span class="n">e_saddle</span> <span class="o">-</span> <span class="n">e_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">e_saddle</span> <span class="o">-</span> <span class="n">e_global_min</span><span class="p">)</span></div>
+</span><span data-line="232">    <span class="k">def</span><span class="w"> </span><span class="nf">get_energy_increment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_min</span><span class="p">,</span> <span class="n">e_global_min</span><span class="p">,</span> <span class="n">e_saddle</span><span class="p">):</span>
+</span><span data-line="233">        <span class="c1"># Avoid divide-by-zero if saddle coincides with the global minimum.</span>
+</span><span data-line="234">        <span class="n">denom</span> <span class="o">=</span> <span class="n">e_saddle</span> <span class="o">-</span> <span class="n">e_global_min</span>
+</span><span data-line="235">        <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+</span><span data-line="236">            <span class="k">return</span> <span class="mf">0.0</span>
+</span><span data-line="237">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy_increment</span> <span class="o">*</span> <span class="p">(</span><span class="n">e_saddle</span> <span class="o">-</span> <span class="n">e_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span></div>
 
-</span><span data-line="228">
+</span><span data-line="238">
 <div class="viewcode-block" id="EnergyLevel.get_statelist">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.EnergyLevel.get_statelist">[docs]</a>
-</span><span data-line="229">    <span class="k">def</span><span class="w"> </span><span class="nf">get_statelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-</span><span data-line="230">        <span class="n">sb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-</span><span data-line="231">        <span class="k">if</span> <span class="n">sb</span><span class="p">:</span>
-</span><span data-line="232">            <span class="k">return</span> <span class="n">sb</span><span class="o">.</span><span class="n">states</span>
-</span><span data-line="233">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="234">            <span class="k">return</span> <span class="p">[</span> <span class="n">state</span> <span class="p">]</span></div>
+</span><span data-line="239">    <span class="k">def</span><span class="w"> </span><span class="nf">get_statelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+</span><span data-line="240">        <span class="n">sb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span><span data-line="241">        <span class="k">if</span> <span class="n">sb</span><span class="p">:</span>
+</span><span data-line="242">            <span class="k">return</span> <span class="n">sb</span><span class="o">.</span><span class="n">states</span>
+</span><span data-line="243">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="244">            <span class="k">return</span> <span class="p">[</span> <span class="n">state</span> <span class="p">]</span></div>
 
-</span><span data-line="235">
-</span><span data-line="236">    <span class="c1"># start_state and end_state are the non-sb ids.</span>
+</span><span data-line="245">
+</span><span data-line="246">    <span class="c1"># start_state and end_state are the non-sb ids.</span>
 <div class="viewcode-block" id="EnergyLevel.register_transition">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.EnergyLevel.register_transition">[docs]</a>
-</span><span data-line="237">    <span class="k">def</span><span class="w"> </span><span class="nf">register_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">):</span>
-</span><span data-line="238"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Increments the energy level of the end state or sets it equal to the energy</span>
-</span><span data-line="239"><span class="sd">           of the end_state if it hasn&#39;t been visited before.&#39;&#39;&#39;</span>
-</span><span data-line="240">
-</span><span data-line="241">        <span class="c1"># error</span>
-</span><span data-line="242">        <span class="k">if</span> <span class="n">start_state</span> <span class="o">==</span> <span class="n">end_state</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">comp_use_identical</span><span class="p">:</span>
-</span><span data-line="243">        <span class="c1">#if start_state == end_state:</span>
-</span><span data-line="244">            <span class="k">return</span>
-</span><span data-line="245">
-</span><span data-line="246">        <span class="c1"># if the start state does not have an energy level yet, we set it to the energy of the state.</span>
-</span><span data-line="247">        <span class="k">if</span> <span class="n">start_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
-</span><span data-line="248">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">start_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
-</span><span data-line="249">
-</span><span data-line="250">        <span class="c1"># if the end state does not have an energy level yet, set it to the energy of the state.</span>
-</span><span data-line="251">        <span class="k">if</span> <span class="n">end_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
-</span><span data-line="252">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">end_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
-</span><span data-line="253">
-</span><span data-line="254">        <span class="c1"># determine wheter or not the start and end states belong to a superbasin.</span>
-</span><span data-line="255">        <span class="c1"># if they belong to a superbasin, we need to know the ids of the states inside</span>
-</span><span data-line="256">        <span class="c1"># that superbasin to determine the minimum energy state inside the superbasin.</span>
-</span><span data-line="257">
-</span><span data-line="258">        <span class="n">start_statelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_statelist</span><span class="p">(</span><span class="n">start_state</span><span class="p">)</span>
-</span><span data-line="259">        <span class="n">end_statelist</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_statelist</span><span class="p">(</span><span class="n">end_state</span><span class="p">)</span>
-</span><span data-line="260">
-</span><span data-line="261">        <span class="n">e_min</span>        <span class="o">=</span> <span class="nb">min</span> <span class="p">(</span> <span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">end_statelist</span> <span class="p">)</span>
-</span><span data-line="262">        <span class="c1"># First, find the minimum energy in the start_statelist.</span>
-</span><span data-line="263">        <span class="n">min_start_energy</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">start_statelist</span><span class="p">)</span>
-</span><span data-line="264">        <span class="c1"># Then, find the global minimum by comparing the two basin minimums.</span>
-</span><span data-line="265">        <span class="c1"># XXX(rg): This isn&#39;t really the &quot;global&quot; minima in any sense, for that we need a counter on the class object itself</span>
-</span><span data-line="266">        <span class="n">e_global_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">e_min</span><span class="p">,</span> <span class="n">min_start_energy</span><span class="p">)</span>
+</span><span data-line="247">    <span class="k">def</span><span class="w"> </span><span class="nf">register_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">):</span>
+</span><span data-line="248"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Increments the energy level of the end state or sets it equal to the energy</span>
+</span><span data-line="249"><span class="sd">           of the end_state if it hasn&#39;t been visited before.&#39;&#39;&#39;</span>
+</span><span data-line="250">
+</span><span data-line="251">        <span class="c1"># error</span>
+</span><span data-line="252">        <span class="k">if</span> <span class="n">start_state</span> <span class="o">==</span> <span class="n">end_state</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">comp_use_identical</span><span class="p">:</span>
+</span><span data-line="253">        <span class="c1">#if start_state == end_state:</span>
+</span><span data-line="254">            <span class="k">return</span>
+</span><span data-line="255">
+</span><span data-line="256">        <span class="c1"># if the start state does not have an energy level yet, we set it to the energy of the state.</span>
+</span><span data-line="257">        <span class="k">if</span> <span class="n">start_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
+</span><span data-line="258">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">start_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
+</span><span data-line="259">
+</span><span data-line="260">        <span class="c1"># if the end state does not have an energy level yet, set it to the energy of the state.</span>
+</span><span data-line="261">        <span class="k">if</span> <span class="n">end_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
+</span><span data-line="262">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">end_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
+</span><span data-line="263">
+</span><span data-line="264">        <span class="c1"># Track true global minimum over all states seen so far (issue #212).</span>
+</span><span data-line="265">        <span class="bp">self</span><span class="o">.</span><span class="n">_note_state_energy</span><span class="p">(</span><span class="n">start_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">())</span>
+</span><span data-line="266">        <span class="bp">self</span><span class="o">.</span><span class="n">_note_state_energy</span><span class="p">(</span><span class="n">end_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">())</span>
 </span><span data-line="267">
-</span><span data-line="268">        <span class="c1"># determine the barrier</span>
-</span><span data-line="269">        <span class="c1"># (LJ: What happens if there is more then one path between start_state and end_state???)</span>
-</span><span data-line="270">        <span class="n">barrier</span> <span class="o">=</span> <span class="mf">1e200</span>
-</span><span data-line="271">        <span class="n">proc_tab</span> <span class="o">=</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
-</span><span data-line="272">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">proc_tab</span><span class="p">:</span>
-</span><span data-line="273">            <span class="k">if</span> <span class="n">proc_tab</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-</span><span data-line="274">                <span class="n">barrier</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">proc_tab</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;barrier&#39;</span><span class="p">],</span> <span class="n">barrier</span><span class="p">)</span>
-</span><span data-line="275">
-</span><span data-line="276">        <span class="k">if</span> <span class="n">barrier</span> <span class="o">&gt;</span> <span class="mf">1e199</span><span class="p">:</span>
-</span><span data-line="277">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Start and end state have no direct connection&quot;</span><span class="p">)</span>
-</span><span data-line="278">            <span class="k">return</span>
-</span><span data-line="279">        <span class="n">saddle_energy</span> <span class="o">=</span> <span class="n">barrier</span> <span class="o">+</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
-</span><span data-line="280">
-</span><span data-line="281">        <span class="c1"># increment the level of the end_state.</span>
-</span><span data-line="282">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">end_statelist</span><span class="p">:</span>
-</span><span data-line="283">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy_increment</span><span class="p">(</span><span class="n">e_min</span><span class="p">,</span> <span class="n">e_global_min</span><span class="p">,</span> <span class="n">saddle_energy</span><span class="p">)</span>
+</span><span data-line="268">        <span class="c1"># determine wheter or not the start and end states belong to a superbasin.</span>
+</span><span data-line="269">        <span class="c1"># if they belong to a superbasin, we need to know the ids of the states inside</span>
+</span><span data-line="270">        <span class="c1"># that superbasin to determine the minimum energy state inside the superbasin.</span>
+</span><span data-line="271">
+</span><span data-line="272">        <span class="n">start_statelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_statelist</span><span class="p">(</span><span class="n">start_state</span><span class="p">)</span>
+</span><span data-line="273">        <span class="n">end_statelist</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_statelist</span><span class="p">(</span><span class="n">end_state</span><span class="p">)</span>
+</span><span data-line="274">
+</span><span data-line="275">        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">start_statelist</span><span class="p">:</span>
+</span><span data-line="276">            <span class="bp">self</span><span class="o">.</span><span class="n">_note_state_energy</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">())</span>
+</span><span data-line="277">        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">end_statelist</span><span class="p">:</span>
+</span><span data-line="278">            <span class="bp">self</span><span class="o">.</span><span class="n">_note_state_energy</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">())</span>
+</span><span data-line="279">
+</span><span data-line="280">        <span class="n">e_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">end_statelist</span><span class="p">)</span>
+</span><span data-line="281">        <span class="c1"># Scaling uses the most stable energy observed in the simulation, not</span>
+</span><span data-line="282">        <span class="c1"># only the local start/end basin minima (see issue #212).</span>
+</span><span data-line="283">        <span class="n">e_global_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_energy_min</span>
 </span><span data-line="284">
-</span><span data-line="285">        <span class="c1"># merge states if one of the two levels is higher than the saddle energy</span>
-</span><span data-line="286">        <span class="n">largest_level</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">start_state</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">end_state</span><span class="p">])</span>
-</span><span data-line="287">
-</span><span data-line="288">        <span class="k">if</span> <span class="n">largest_level</span> <span class="o">&gt;</span> <span class="n">saddle_energy</span><span class="p">:</span>
-</span><span data-line="289">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">start_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">largest_level</span>
-</span><span data-line="290">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">end_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">largest_level</span>
-</span><span data-line="291">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">end_statelist</span><span class="p">:</span> <span class="c1">#this may also be just [ end_state ]</span>
-</span><span data-line="292">                <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">largest_level</span>
-</span><span data-line="293">            <span class="bp">self</span><span class="o">.</span><span class="n">make_basin</span><span class="p">([</span><span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">])</span></div>
+</span><span data-line="285">        <span class="c1"># determine the barrier</span>
+</span><span data-line="286">        <span class="c1"># (LJ: What happens if there is more then one path between start_state and end_state???)</span>
+</span><span data-line="287">        <span class="n">barrier</span> <span class="o">=</span> <span class="mf">1e200</span>
+</span><span data-line="288">        <span class="n">proc_tab</span> <span class="o">=</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="289">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">proc_tab</span><span class="p">:</span>
+</span><span data-line="290">            <span class="k">if</span> <span class="n">proc_tab</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+</span><span data-line="291">                <span class="n">barrier</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">proc_tab</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;barrier&#39;</span><span class="p">],</span> <span class="n">barrier</span><span class="p">)</span>
+</span><span data-line="292">
+</span><span data-line="293">        <span class="k">if</span> <span class="n">barrier</span> <span class="o">&gt;</span> <span class="mf">1e199</span><span class="p">:</span>
+</span><span data-line="294">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Start and end state have no direct connection&quot;</span><span class="p">)</span>
+</span><span data-line="295">            <span class="k">return</span>
+</span><span data-line="296">        <span class="n">saddle_energy</span> <span class="o">=</span> <span class="n">barrier</span> <span class="o">+</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
+</span><span data-line="297">
+</span><span data-line="298">        <span class="c1"># increment the level of the end_state.</span>
+</span><span data-line="299">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">end_statelist</span><span class="p">:</span>
+</span><span data-line="300">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy_increment</span><span class="p">(</span><span class="n">e_min</span><span class="p">,</span> <span class="n">e_global_min</span><span class="p">,</span> <span class="n">saddle_energy</span><span class="p">)</span>
+</span><span data-line="301">
+</span><span data-line="302">        <span class="c1"># merge states if one of the two levels is higher than the saddle energy</span>
+</span><span data-line="303">        <span class="n">largest_level</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">start_state</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">end_state</span><span class="p">])</span>
+</span><span data-line="304">
+</span><span data-line="305">        <span class="k">if</span> <span class="n">largest_level</span> <span class="o">&gt;</span> <span class="n">saddle_energy</span><span class="p">:</span>
+</span><span data-line="306">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">start_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">largest_level</span>
+</span><span data-line="307">            <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">end_state</span><span class="p">]</span> <span class="o">=</span> <span class="n">largest_level</span>
+</span><span data-line="308">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">end_statelist</span><span class="p">:</span> <span class="c1">#this may also be just [ end_state ]</span>
+</span><span data-line="309">                <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">largest_level</span>
+</span><span data-line="310">            <span class="bp">self</span><span class="o">.</span><span class="n">make_basin</span><span class="p">([</span><span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">])</span></div>
 
-</span><span data-line="294">
+</span><span data-line="311">
 <div class="viewcode-block" id="EnergyLevel.read_data">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.EnergyLevel.read_data">[docs]</a>
-</span><span data-line="295">    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="296">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;reading&#39;</span><span class="p">)</span>
-</span><span data-line="297">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()):</span>
-</span><span data-line="298">            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span data-line="299">            <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">sb_state_file</span><span class="p">)</span>
-</span><span data-line="300">            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
-</span><span data-line="301">                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-</span><span data-line="302">                <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-</span><span data-line="303">                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</span><span data-line="312">    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="313">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;reading&#39;</span><span class="p">)</span>
+</span><span data-line="314">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()):</span>
+</span><span data-line="315">            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span data-line="316">            <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">sb_state_file</span><span class="p">)</span>
+</span><span data-line="317">            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
+</span><span data-line="318">                <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</span><span data-line="319">                <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+</span><span data-line="320">                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="321">            <span class="c1"># Resume global min from state energies even without a levels file.</span>
+</span><span data-line="322">            <span class="bp">self</span><span class="o">.</span><span class="n">_note_state_energy</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">())</span></div>
 
-</span><span data-line="304">
+</span><span data-line="323">
 <div class="viewcode-block" id="EnergyLevel.write_data">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.EnergyLevel.write_data">[docs]</a>
-</span><span data-line="305">    <span class="k">def</span><span class="w"> </span><span class="nf">write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="306">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;writing&#39;</span><span class="p">)</span>
-</span><span data-line="307">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
-</span><span data-line="308">            <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">sb_state_file</span><span class="p">)</span>
-</span><span data-line="309">            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</span><span data-line="310">            <span class="c1">#print(&quot;%f\n&quot; % self.levels[i], f)</span>
-</span><span data-line="311">            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span data-line="312">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</span><span data-line="324">    <span class="k">def</span><span class="w"> </span><span class="nf">write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="325">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;writing&#39;</span><span class="p">)</span>
+</span><span data-line="326">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
+</span><span data-line="327">            <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">sb_state_file</span><span class="p">)</span>
+</span><span data-line="328">            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span><span data-line="329">            <span class="c1">#print(&quot;%f\n&quot; % self.levels[i], f)</span>
+</span><span data-line="330">            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span data-line="331">            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </div>
 
-</span><span data-line="313">
-</span><span data-line="314">
+</span><span data-line="332">
+</span><span data-line="333">
 <div class="viewcode-block" id="RateThreshold">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.RateThreshold">[docs]</a>
-</span><span data-line="315"><span class="k">class</span><span class="w"> </span><span class="nc">RateThreshold</span><span class="p">(</span><span class="n">SuperbasinScheme</span><span class="p">):</span>
-</span><span data-line="316"><span class="w">    </span><span class="sd">&#39;&#39;&#39; Implements a superbasin scheme where states are merged if the transition</span>
-</span><span data-line="317"><span class="sd">        rate between them is faster than a specified threshold. &#39;&#39;&#39;</span>
-</span><span data-line="318">
-</span><span data-line="319">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin_path</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">kT</span><span class="p">,</span> <span class="n">rate_threshold</span><span class="p">):</span>
-</span><span data-line="320"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="321"><span class="sd">        Initializes the RateThreshold scheme.</span>
-</span><span data-line="322">
-</span><span data-line="323"><span class="sd">        Args:</span>
-</span><span data-line="324"><span class="sd">            superbasin_path (str): The path to the superbasin directory.</span>
-</span><span data-line="325"><span class="sd">            states (States): The global states object.</span>
-</span><span data-line="326"><span class="sd">            kT (float): The thermal energy (k_B * T) in the appropriate units.</span>
-</span><span data-line="327"><span class="sd">            rate_threshold (float): The rate (in 1/time) above which states</span>
-</span><span data-line="328"><span class="sd">                                    will be merged into a superbasin.</span>
-</span><span data-line="329"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="330">        <span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span> <span class="o">=</span> <span class="n">rate_threshold</span>
-</span><span data-line="331">        <span class="n">SuperbasinScheme</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin_path</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span>
-</span><span data-line="332">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialized RateThreshold scheme with a threshold of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="333">
+</span><span data-line="334"><span class="k">class</span><span class="w"> </span><span class="nc">RateThreshold</span><span class="p">(</span><span class="n">SuperbasinScheme</span><span class="p">):</span>
+</span><span data-line="335"><span class="w">    </span><span class="sd">&#39;&#39;&#39; Implements a superbasin scheme where states are merged if the transition</span>
+</span><span data-line="336"><span class="sd">        rate between them is faster than a specified threshold. &#39;&#39;&#39;</span>
+</span><span data-line="337">
+</span><span data-line="338">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin_path</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">kT</span><span class="p">,</span> <span class="n">rate_threshold</span><span class="p">):</span>
+</span><span data-line="339"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="340"><span class="sd">        Initializes the RateThreshold scheme.</span>
+</span><span data-line="341">
+</span><span data-line="342"><span class="sd">        Args:</span>
+</span><span data-line="343"><span class="sd">            superbasin_path (str): The path to the superbasin directory.</span>
+</span><span data-line="344"><span class="sd">            states (States): The global states object.</span>
+</span><span data-line="345"><span class="sd">            kT (float): The thermal energy (k_B * T) in the appropriate units.</span>
+</span><span data-line="346"><span class="sd">            rate_threshold (float): The rate (in 1/time) above which states</span>
+</span><span data-line="347"><span class="sd">                                    will be merged into a superbasin.</span>
+</span><span data-line="348"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="349">        <span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span> <span class="o">=</span> <span class="n">rate_threshold</span>
+</span><span data-line="350">        <span class="n">SuperbasinScheme</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbasin_path</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">kT</span><span class="p">)</span>
+</span><span data-line="351">        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialized RateThreshold scheme with a threshold of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="352">
 <div class="viewcode-block" id="RateThreshold.register_transition">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.RateThreshold.register_transition">[docs]</a>
-</span><span data-line="334">    <span class="k">def</span><span class="w"> </span><span class="nf">register_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">):</span>
-</span><span data-line="335"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="336"><span class="sd">        Checks if the transition rate between start_state and end_state</span>
-</span><span data-line="337"><span class="sd">        exceeds the defined threshold. If it does, it merges them.</span>
-</span><span data-line="338"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="339">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Checking rate between state </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</span><span data-line="340">
-</span><span data-line="341">        <span class="c1"># Do not process self-transitions if configured to ignore them</span>
-</span><span data-line="342">        <span class="k">if</span> <span class="n">start_state</span> <span class="o">==</span> <span class="n">end_state</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">comp_use_identical</span><span class="p">:</span>
-</span><span data-line="343">            <span class="k">return</span>
-</span><span data-line="344">
-</span><span data-line="345">        <span class="c1"># Efficiently check if both states are already in the same superbasin</span>
-</span><span data-line="346">        <span class="n">sb_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="n">start_state</span><span class="p">)</span>
-</span><span data-line="347">        <span class="n">sb_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="n">end_state</span><span class="p">)</span>
-</span><span data-line="348">        <span class="k">if</span> <span class="n">sb_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sb_start</span> <span class="o">==</span> <span class="n">sb_end</span><span class="p">:</span>
-</span><span data-line="349">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;States </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> are already in the same superbasin.&quot;</span><span class="p">)</span>
-</span><span data-line="350">            <span class="k">return</span>
-</span><span data-line="351">
-</span><span data-line="352">        <span class="c1"># Find the fastest transition rate from start_state to end_state</span>
-</span><span data-line="353">        <span class="c1"># Adapted from EnergyLevel scheme</span>
-</span><span data-line="354">        <span class="n">fastest_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span data-line="355">        <span class="n">found_process</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="356">        <span class="n">proc_tab</span> <span class="o">=</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
-</span><span data-line="357">
-</span><span data-line="358">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">proc_tab</span><span class="p">:</span>
-</span><span data-line="359">            <span class="n">process</span> <span class="o">=</span> <span class="n">proc_tab</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-</span><span data-line="360">            <span class="c1"># Check if this process leads to the correct product state</span>
-</span><span data-line="361">            <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;product&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-</span><span data-line="362">                <span class="n">found_process</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="363">                <span class="c1"># To calculate the rate, we need the energy barrier and the prefactor.</span>
-</span><span data-line="364">                <span class="c1"># This assumes the process table contains these keys.</span>
-</span><span data-line="365">                <span class="k">try</span><span class="p">:</span>
-</span><span data-line="366">                    <span class="n">barrier</span> <span class="o">=</span> <span class="n">process</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">]</span>
-</span><span data-line="367">                    <span class="n">prefactor</span> <span class="o">=</span> <span class="n">process</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">]</span>
-</span><span data-line="368">                    <span class="c1"># Calculate the rate using the Arrhenius equation: k = A * exp(-Ea / kT)</span>
-</span><span data-line="369">                    <span class="n">rate</span> <span class="o">=</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">barrier</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
-</span><span data-line="370">                    <span class="c1"># In case of multiple pathways, we are interested in the fastest one.</span>
-</span><span data-line="371">                    <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="n">fastest_rate</span><span class="p">:</span>
-</span><span data-line="372">                        <span class="n">fastest_rate</span> <span class="o">=</span> <span class="n">rate</span>
-</span><span data-line="373">                <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="374">                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Process from state </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> is missing a key: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="375">                    <span class="k">continue</span> <span class="c1"># Skip this process and check the next one.</span>
+</span><span data-line="353">    <span class="k">def</span><span class="w"> </span><span class="nf">register_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">):</span>
+</span><span data-line="354"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="355"><span class="sd">        Checks if the transition rate between start_state and end_state</span>
+</span><span data-line="356"><span class="sd">        exceeds the defined threshold. If it does, it merges them.</span>
+</span><span data-line="357"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="358">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Checking rate between state </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span><span data-line="359">
+</span><span data-line="360">        <span class="c1"># Do not process self-transitions if configured to ignore them</span>
+</span><span data-line="361">        <span class="k">if</span> <span class="n">start_state</span> <span class="o">==</span> <span class="n">end_state</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">comp_use_identical</span><span class="p">:</span>
+</span><span data-line="362">            <span class="k">return</span>
+</span><span data-line="363">
+</span><span data-line="364">        <span class="c1"># Efficiently check if both states are already in the same superbasin</span>
+</span><span data-line="365">        <span class="n">sb_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="n">start_state</span><span class="p">)</span>
+</span><span data-line="366">        <span class="n">sb_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="n">end_state</span><span class="p">)</span>
+</span><span data-line="367">        <span class="k">if</span> <span class="n">sb_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sb_start</span> <span class="o">==</span> <span class="n">sb_end</span><span class="p">:</span>
+</span><span data-line="368">            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;States </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> are already in the same superbasin.&quot;</span><span class="p">)</span>
+</span><span data-line="369">            <span class="k">return</span>
+</span><span data-line="370">
+</span><span data-line="371">        <span class="c1"># Find the fastest transition rate from start_state to end_state</span>
+</span><span data-line="372">        <span class="c1"># Adapted from EnergyLevel scheme</span>
+</span><span data-line="373">        <span class="n">fastest_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="374">        <span class="n">found_process</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="375">        <span class="n">proc_tab</span> <span class="o">=</span> <span class="n">start_state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
 </span><span data-line="376">
-</span><span data-line="377">        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_process</span><span class="p">:</span>
-</span><span data-line="378">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No direct process found from state </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-</span><span data-line="379">            <span class="k">return</span>
-</span><span data-line="380">
-</span><span data-line="381">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculated fastest rate from </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">fastest_rate</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span data-line="382">
-</span><span data-line="383">        <span class="c1"># The core logic: if the rate is above the threshold, merge the states.</span>
-</span><span data-line="384">        <span class="k">if</span> <span class="n">fastest_rate</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span><span class="p">:</span>
-</span><span data-line="385">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="386">                <span class="sa">f</span><span class="s2">&quot;Rate </span><span class="si">{</span><span class="n">fastest_rate</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> exceeds threshold </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">. &quot;</span>
-</span><span data-line="387">                <span class="sa">f</span><span class="s2">&quot;Merging basins containing states </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">.&quot;</span>
-</span><span data-line="388">            <span class="p">)</span>
-</span><span data-line="389">            <span class="c1"># Use the method from the base class to perform the merge.</span>
-</span><span data-line="390">            <span class="bp">self</span><span class="o">.</span><span class="n">make_basin_from_sets</span><span class="p">(</span><span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">)</span></div>
+</span><span data-line="377">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">proc_tab</span><span class="p">:</span>
+</span><span data-line="378">            <span class="n">process</span> <span class="o">=</span> <span class="n">proc_tab</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+</span><span data-line="379">            <span class="c1"># Check if this process leads to the correct product state</span>
+</span><span data-line="380">            <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;product&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+</span><span data-line="381">                <span class="n">found_process</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="382">                <span class="c1"># To calculate the rate, we need the energy barrier and the prefactor.</span>
+</span><span data-line="383">                <span class="c1"># This assumes the process table contains these keys.</span>
+</span><span data-line="384">                <span class="k">try</span><span class="p">:</span>
+</span><span data-line="385">                    <span class="n">barrier</span> <span class="o">=</span> <span class="n">process</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">]</span>
+</span><span data-line="386">                    <span class="n">prefactor</span> <span class="o">=</span> <span class="n">process</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">]</span>
+</span><span data-line="387">                    <span class="c1"># Calculate the rate using the Arrhenius equation: k = A * exp(-Ea / kT)</span>
+</span><span data-line="388">                    <span class="n">rate</span> <span class="o">=</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">barrier</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+</span><span data-line="389">                    <span class="c1"># In case of multiple pathways, we are interested in the fastest one.</span>
+</span><span data-line="390">                    <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="n">fastest_rate</span><span class="p">:</span>
+</span><span data-line="391">                        <span class="n">fastest_rate</span> <span class="o">=</span> <span class="n">rate</span>
+</span><span data-line="392">                <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="393">                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Process from state </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> is missing a key: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="394">                    <span class="k">continue</span> <span class="c1"># Skip this process and check the next one.</span>
+</span><span data-line="395">
+</span><span data-line="396">        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_process</span><span class="p">:</span>
+</span><span data-line="397">            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No direct process found from state </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span data-line="398">            <span class="k">return</span>
+</span><span data-line="399">
+</span><span data-line="400">        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculated fastest rate from </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">fastest_rate</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="401">
+</span><span data-line="402">        <span class="c1"># The core logic: if the rate is above the threshold, merge the states.</span>
+</span><span data-line="403">        <span class="k">if</span> <span class="n">fastest_rate</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span><span class="p">:</span>
+</span><span data-line="404">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="405">                <span class="sa">f</span><span class="s2">&quot;Rate </span><span class="si">{</span><span class="n">fastest_rate</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> exceeds threshold </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rate_threshold</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">. &quot;</span>
+</span><span data-line="406">                <span class="sa">f</span><span class="s2">&quot;Merging basins containing states </span><span class="si">{</span><span class="n">start_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end_state</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span data-line="407">            <span class="p">)</span>
+</span><span data-line="408">            <span class="c1"># Use the method from the base class to perform the merge.</span>
+</span><span data-line="409">            <span class="bp">self</span><span class="o">.</span><span class="n">make_basin_from_sets</span><span class="p">(</span><span class="n">start_state</span><span class="p">,</span> <span class="n">end_state</span><span class="p">)</span></div>
 
-</span><span data-line="391">
+</span><span data-line="410">
 <div class="viewcode-block" id="RateThreshold.write_data">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.RateThreshold.write_data">[docs]</a>
-</span><span data-line="392">    <span class="k">def</span><span class="w"> </span><span class="nf">write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="393"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="394"><span class="sd">        This scheme is stateless, so no data needs to be written. The</span>
-</span><span data-line="395"><span class="sd">        creation of superbasins is handled by the base class and the</span>
-</span><span data-line="396"><span class="sd">        Superbasin objects, which persist their own state.</span>
-</span><span data-line="397"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="398">        <span class="k">pass</span></div>
+</span><span data-line="411">    <span class="k">def</span><span class="w"> </span><span class="nf">write_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="412"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="413"><span class="sd">        This scheme is stateless, so no data needs to be written. The</span>
+</span><span data-line="414"><span class="sd">        creation of superbasins is handled by the base class and the</span>
+</span><span data-line="415"><span class="sd">        Superbasin objects, which persist their own state.</span>
+</span><span data-line="416"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="417">        <span class="k">pass</span></div>
 
-</span><span data-line="399">
+</span><span data-line="418">
 <div class="viewcode-block" id="RateThreshold.read_data">
 <a class="viewcode-back" href="../../apidocs/eon/eon.superbasinscheme.html#eon.superbasinscheme.RateThreshold.read_data">[docs]</a>
-</span><span data-line="400">    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="401"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="402"><span class="sd">        This scheme is stateless, so no data needs to be read on startup.</span>
-</span><span data-line="403"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="404">        <span class="k">pass</span></div>
+</span><span data-line="419">    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="420"><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="421"><span class="sd">        This scheme is stateless, so no data needs to be read on startup.</span>
+</span><span data-line="422"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="423">        <span class="k">pass</span></div>
 </div>
 
 </span></pre></div>

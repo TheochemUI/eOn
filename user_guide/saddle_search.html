@@ -534,330 +534,331 @@ config; no server displacement file needed)</p></li>
 </span><span data-line="21"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 </span><span data-line="22"><span class="w">            </span><span class="s2">&quot;dimer&quot;</span><span class="p">,</span>
 </span><span data-line="23"><span class="w">            </span><span class="s2">&quot;lanczos&quot;</span><span class="p">,</span>
-</span><span data-line="24"><span class="w">            </span><span class="s2">&quot;gprdimer&quot;</span><span class="p">,</span>
-</span><span data-line="25"><span class="w">            </span><span class="s2">&quot;artn&quot;</span>
-</span><span data-line="26"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="27"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Min Mode Method&quot;</span><span class="p">,</span>
-</span><span data-line="28"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="29"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="30"><span class="w">      </span><span class="nt">&quot;disp_at_random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="31"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Legacy displacement control flag used by the client.&quot;</span><span class="p">,</span>
-</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Disp At Random&quot;</span><span class="p">,</span>
-</span><span data-line="34"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="35"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="36"><span class="w">      </span><span class="nt">&quot;max_energy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="37"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
-</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The energy at which a saddle search is considered bad and terminated.&quot;</span><span class="p">,</span>
-</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Energy&quot;</span><span class="p">,</span>
-</span><span data-line="40"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="41"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="42"><span class="w">      </span><span class="nt">&quot;max_step_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
-</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum step size for saddle-search displacement updates.&quot;</span><span class="p">,</span>
-</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Step Size&quot;</span><span class="p">,</span>
-</span><span data-line="46"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="47"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="48"><span class="w">      </span><span class="nt">&quot;displace_radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
-</span><span data-line="50"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atoms within this distance of the epicenter will be displaced.&quot;</span><span class="p">,</span>
-</span><span data-line="51"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Radius&quot;</span><span class="p">,</span>
-</span><span data-line="52"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="53"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="54"><span class="w">      </span><span class="nt">&quot;displace_magnitude&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="55"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-</span><span data-line="56"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.&quot;</span><span class="p">,</span>
-</span><span data-line="57"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Magnitude&quot;</span><span class="p">,</span>
-</span><span data-line="58"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="59"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="60"><span class="w">      </span><span class="nt">&quot;displace_min_norm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="61"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="62"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum displacement norm enforced for the initial perturbation.&quot;</span><span class="p">,</span>
-</span><span data-line="63"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Min Norm&quot;</span><span class="p">,</span>
-</span><span data-line="64"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="65"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="66"><span class="w">      </span><span class="nt">&quot;displace_random_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="67"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="68"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with a random epicenter.&quot;</span><span class="p">,</span>
-</span><span data-line="69"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Random Weight&quot;</span><span class="p">,</span>
-</span><span data-line="70"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="71"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="72"><span class="w">      </span><span class="nt">&quot;displace_not_FCC_HCP_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="73"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="74"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not FCC or HCP coordinated.&quot;</span><span class="p">,</span>
-</span><span data-line="75"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Fcc Hcp Weight&quot;</span><span class="p">,</span>
-</span><span data-line="76"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="77"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="78"><span class="w">      </span><span class="nt">&quot;displace_not_TCP_BCC_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="80"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not TCP or BCC coordinated.&quot;</span><span class="p">,</span>
-</span><span data-line="81"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Tcp Bcc Weight&quot;</span><span class="p">,</span>
-</span><span data-line="82"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="83"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="84"><span class="w">      </span><span class="nt">&quot;displace_not_TCP_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="85"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="86"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not TCP coordinated.&quot;</span><span class="p">,</span>
-</span><span data-line="87"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Tcp Weight&quot;</span><span class="p">,</span>
-</span><span data-line="88"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="89"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="90"><span class="w">      </span><span class="nt">&quot;displace_water_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="91"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="92"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter selected by the water heuristic.&quot;</span><span class="p">,</span>
-</span><span data-line="93"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Water Weight&quot;</span><span class="p">,</span>
-</span><span data-line="94"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="95"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="96"><span class="w">      </span><span class="nt">&quot;displace_least_coordinated_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="97"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="98"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration.&quot;</span><span class="p">,</span>
-</span><span data-line="99"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Least Coordinated Weight&quot;</span><span class="p">,</span>
-</span><span data-line="100"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="101"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="102"><span class="w">      </span><span class="nt">&quot;displace_under_coordinated_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="103"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="104"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.&quot;</span><span class="p">,</span>
-</span><span data-line="105"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Under Coordinated Weight&quot;</span><span class="p">,</span>
-</span><span data-line="106"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="107"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="108"><span class="w">      </span><span class="nt">&quot;displace_listed_atom_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="109"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="110"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter listed in displace_atom_list.&quot;</span><span class="p">,</span>
-</span><span data-line="111"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Listed Atom Weight&quot;</span><span class="p">,</span>
-</span><span data-line="112"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="113"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="114"><span class="w">      </span><span class="nt">&quot;displace_atom_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="115"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="116"><span class="w">            </span><span class="p">{</span>
-</span><span data-line="117"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="118"><span class="w">            </span><span class="p">},</span>
-</span><span data-line="119"><span class="w">            </span><span class="p">{</span>
-</span><span data-line="120"><span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="121"><span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="122"><span class="w">               </span><span class="p">},</span>
-</span><span data-line="123"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
-</span><span data-line="124"><span class="w">            </span><span class="p">}</span>
-</span><span data-line="125"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="126"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
-</span><span data-line="127"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0-based atom indices to use as displacement epicenters, separated by commas. Example: 10, 20, -1 would be atoms 10, 20, and the last atom. When displace_atom_kmc_state_script is set, this list is populated dynamically per AKMC state from the script&#39;s output.&quot;</span><span class="p">,</span>
-</span><span data-line="128"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom List&quot;</span>
-</span><span data-line="129"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="130"><span class="w">      </span><span class="nt">&quot;displace_atom_kmc_state_script&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="131"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span data-line="132"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to a Python script that determines which atoms to displace. The script receives the path to a .con file as its sole positional argument and must print a comma-separated list of 0-based atom indices to stdout. It is executed once per new AKMC state; the result is cached in state.info. The path can be relative (resolved against the eOn root directory) or absolute. See the displacement scripts tutorial for worked examples.&quot;</span><span class="p">,</span>
-</span><span data-line="133"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom Kmc State Script&quot;</span><span class="p">,</span>
-</span><span data-line="134"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="135"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="136"><span class="w">      </span><span class="nt">&quot;displace_listed_type_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="137"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="138"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter listed in displace_type_list.&quot;</span><span class="p">,</span>
-</span><span data-line="139"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Listed Type Weight&quot;</span><span class="p">,</span>
-</span><span data-line="140"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="141"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="142"><span class="w">      </span><span class="nt">&quot;displace_type_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="143"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="144"><span class="w">            </span><span class="p">{</span>
-</span><span data-line="145"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="146"><span class="w">            </span><span class="p">},</span>
-</span><span data-line="147"><span class="w">            </span><span class="p">{</span>
-</span><span data-line="148"><span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="149"><span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="150"><span class="w">               </span><span class="p">},</span>
-</span><span data-line="151"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
-</span><span data-line="152"><span class="w">            </span><span class="p">}</span>
-</span><span data-line="153"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="154"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
-</span><span data-line="155"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The atom types should be separated by a comma.&quot;</span><span class="p">,</span>
-</span><span data-line="156"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Type List&quot;</span>
-</span><span data-line="157"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="158"><span class="w">      </span><span class="nt">&quot;molecule_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="159"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[]&quot;</span><span class="p">,</span>
-</span><span data-line="160"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Legacy molecule list used by molecular displacement logic.&quot;</span><span class="p">,</span>
-</span><span data-line="161"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Molecule List&quot;</span><span class="p">,</span>
-</span><span data-line="162"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="163"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="164"><span class="w">      </span><span class="nt">&quot;displace_all_listed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="165"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="166"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, displace all atoms in displace_atom_list (or displace_type_list) simultaneously. If false, one atom is chosen at random from the list per saddle search. In either case, atoms within displace_radius of any displaced atom are also included. Set displace_radius to 0 to restrict displacement strictly to listed atoms.&quot;</span><span class="p">,</span>
-</span><span data-line="167"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace All Listed&quot;</span><span class="p">,</span>
-</span><span data-line="168"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="169"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="170"><span class="w">      </span><span class="nt">&quot;displace_max_coordination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="171"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span>
-</span><span data-line="172"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.&quot;</span><span class="p">,</span>
-</span><span data-line="173"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Max Coordination&quot;</span><span class="p">,</span>
-</span><span data-line="174"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="175"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="176"><span class="w">      </span><span class="nt">&quot;displace_1d&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="177"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="178"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Restrict the initial displacement to a single dimension.&quot;</span><span class="p">,</span>
-</span><span data-line="179"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace 1D&quot;</span><span class="p">,</span>
-</span><span data-line="180"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="181"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="182"><span class="w">      </span><span class="nt">&quot;converged_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="183"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
-</span><span data-line="184"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.&quot;</span><span class="p">,</span>
-</span><span data-line="185"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Converged Force&quot;</span><span class="p">,</span>
-</span><span data-line="186"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="187"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="188"><span class="w">      </span><span class="nt">&quot;max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="189"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
-</span><span data-line="190"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum number of translation steps to be taken.&quot;</span><span class="p">,</span>
-</span><span data-line="191"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Iterations&quot;</span><span class="p">,</span>
-</span><span data-line="192"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="193"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="194"><span class="w">      </span><span class="nt">&quot;nonlocal_count_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="195"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-</span><span data-line="196"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If this is not zero, the saddle search will abort when this many atoms have moved more than nonlocal_distance_abort from the initial displacement.&quot;</span><span class="p">,</span>
-</span><span data-line="197"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonlocal Count Abort&quot;</span><span class="p">,</span>
-</span><span data-line="198"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="199"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="200"><span class="w">      </span><span class="nt">&quot;nonlocal_distance_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="201"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="202"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.&quot;</span><span class="p">,</span>
-</span><span data-line="203"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonlocal Distance Abort&quot;</span><span class="p">,</span>
-</span><span data-line="204"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="205"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="206"><span class="w">      </span><span class="nt">&quot;client_displace_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="207"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
-</span><span data-line="208"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Epicenter selection method used by the C++ client. &#39;random&#39;: uniform random atom. &#39;last_atom&#39;: the last atom in the configuration. &#39;least_coordinated&#39;: the atom with the fewest neighbours. &#39;not_fcc_hcp_coordinated&#39;: an atom whose local structure is neither FCC nor HCP. &#39;listed_atoms&#39;: an atom from displace_atom_list (parsed from config, no server displacement file needed). &#39;load&#39;: read a displacement vector from a file written by the server.&quot;</span><span class="p">,</span>
-</span><span data-line="209"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="210"><span class="w">            </span><span class="s2">&quot;load&quot;</span><span class="p">,</span>
-</span><span data-line="211"><span class="w">            </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
-</span><span data-line="212"><span class="w">            </span><span class="s2">&quot;last_atom&quot;</span><span class="p">,</span>
-</span><span data-line="213"><span class="w">            </span><span class="s2">&quot;least_coordinated&quot;</span><span class="p">,</span>
-</span><span data-line="214"><span class="w">            </span><span class="s2">&quot;not_fcc_hcp_coordinated&quot;</span><span class="p">,</span>
-</span><span data-line="215"><span class="w">            </span><span class="s2">&quot;listed_atoms&quot;</span>
-</span><span data-line="216"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="217"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Client Displace Type&quot;</span><span class="p">,</span>
-</span><span data-line="218"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="219"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="220"><span class="w">      </span><span class="nt">&quot;stdev_translation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="221"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
-</span><span data-line="222"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard deviation for translational displacement components.&quot;</span><span class="p">,</span>
-</span><span data-line="223"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stdev Translation&quot;</span><span class="p">,</span>
-</span><span data-line="224"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="225"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="226"><span class="w">      </span><span class="nt">&quot;stdev_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="227"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-</span><span data-line="228"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard deviation for rotational displacement components.&quot;</span><span class="p">,</span>
-</span><span data-line="229"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stdev Rotation&quot;</span><span class="p">,</span>
-</span><span data-line="230"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="231"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="232"><span class="w">      </span><span class="nt">&quot;void_bias_fraction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="233"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="234"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bias fraction applied to the void-based displacement heuristic.&quot;</span><span class="p">,</span>
-</span><span data-line="235"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Void Bias Fraction&quot;</span><span class="p">,</span>
-</span><span data-line="236"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="237"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="238"><span class="w">      </span><span class="nt">&quot;random_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="239"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-</span><span data-line="240"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Enable randomized initial-mode generation.&quot;</span><span class="p">,</span>
-</span><span data-line="241"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Random Mode&quot;</span><span class="p">,</span>
-</span><span data-line="242"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="243"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="244"><span class="w">      </span><span class="nt">&quot;zero_mode_abort_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="245"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="246"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The saddle search will abort when the magnitude of the minmode curvature is less than this value.&quot;</span><span class="p">,</span>
-</span><span data-line="247"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Zero Mode Abort Curvature&quot;</span><span class="p">,</span>
-</span><span data-line="248"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="249"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="250"><span class="w">      </span><span class="nt">&quot;confine_positive&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="251"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="252"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Activates a confinement scheme when the search is within a positive region of the PES.&quot;</span><span class="p">,</span>
-</span><span data-line="253"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive&quot;</span><span class="p">,</span>
-</span><span data-line="254"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="255"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="256"><span class="w">      </span><span class="nt">&quot;bowl_breakout&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="257"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="258"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When activated, the search within positive regions of PES is confined to a subset of atoms.&quot;</span><span class="p">,</span>
-</span><span data-line="259"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bowl Breakout&quot;</span><span class="p">,</span>
-</span><span data-line="260"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="261"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="262"><span class="w">      </span><span class="nt">&quot;bowl_active_atoms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="263"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
-</span><span data-line="264"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Size of the applied confinement in the bowl breakout scheme.&quot;</span><span class="p">,</span>
-</span><span data-line="265"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bowl Active Atoms&quot;</span><span class="p">,</span>
-</span><span data-line="266"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="267"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="268"><span class="w">      </span><span class="nt">&quot;dynamics_temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="269"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
-</span><span data-line="270"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The temperature, in Kelvin, for the molecular dynamics run.&quot;</span><span class="p">,</span>
-</span><span data-line="271"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Temperature&quot;</span><span class="p">,</span>
-</span><span data-line="272"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="273"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="274"><span class="w">      </span><span class="nt">&quot;dynamics_state_check_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="275"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-</span><span data-line="276"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The time interval, in femtoseconds, to minimize the geometry and check if the system has left the initial state.&quot;</span><span class="p">,</span>
-</span><span data-line="277"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics State Check Interval&quot;</span><span class="p">,</span>
-</span><span data-line="278"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="279"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="280"><span class="w">      </span><span class="nt">&quot;dynamics_record_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="281"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
-</span><span data-line="282"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory.&quot;</span><span class="p">,</span>
-</span><span data-line="283"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Record Interval&quot;</span><span class="p">,</span>
-</span><span data-line="284"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="285"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="286"><span class="w">      </span><span class="nt">&quot;dynamics_linear_interpolation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="287"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="288"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;- If true, then the band connecting the initial and final states will be\n  initialized using a linear interpolation.\n- If false, then the band is interpolated through the first snapshot that\n  minimizes to the final state.&quot;</span><span class="p">,</span>
-</span><span data-line="289"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Linear Interpolation&quot;</span><span class="p">,</span>
-</span><span data-line="290"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="291"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="292"><span class="w">      </span><span class="nt">&quot;dynamics_max_init_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="293"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="294"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum initial curvature for the dynamics method in eV/\u00c5^2.&quot;</span><span class="p">,</span>
-</span><span data-line="295"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Max Init Curvature&quot;</span><span class="p">,</span>
-</span><span data-line="296"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="297"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="298"><span class="w">      </span><span class="nt">&quot;nonnegative_displacement_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="299"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="300"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Abort the search if a non-negative displacement is detected.&quot;</span><span class="p">,</span>
-</span><span data-line="301"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonnegative Displacement Abort&quot;</span><span class="p">,</span>
-</span><span data-line="302"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="303"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="304"><span class="w">      </span><span class="nt">&quot;max_single_displace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="305"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
-</span><span data-line="306"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum single displacement value.&quot;</span><span class="p">,</span>
-</span><span data-line="307"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Single Displace&quot;</span><span class="p">,</span>
-</span><span data-line="308"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="309"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="310"><span class="w">      </span><span class="nt">&quot;remove_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="311"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-</span><span data-line="312"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove rotational components from the displacement.&quot;</span><span class="p">,</span>
-</span><span data-line="313"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove Rotation&quot;</span><span class="p">,</span>
-</span><span data-line="314"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="315"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="316"><span class="w">      </span><span class="nt">&quot;perp_force_ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="317"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-</span><span data-line="318"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The ratio of perpendicular force, undocumented.&quot;</span><span class="p">,</span>
-</span><span data-line="319"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Perp Force Ratio&quot;</span><span class="p">,</span>
-</span><span data-line="320"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="321"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="322"><span class="w">      </span><span class="nt">&quot;confine_positive_min_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="323"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
-</span><span data-line="324"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The minimum force for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
-</span><span data-line="325"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Min Force&quot;</span><span class="p">,</span>
-</span><span data-line="326"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="327"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="328"><span class="w">      </span><span class="nt">&quot;confine_positive_scale_ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="329"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span>
-</span><span data-line="330"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The scaling ratio for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
-</span><span data-line="331"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Scale Ratio&quot;</span><span class="p">,</span>
-</span><span data-line="332"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="333"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="334"><span class="w">      </span><span class="nt">&quot;confine_positive_boost&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="335"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
-</span><span data-line="336"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The boost factor for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
-</span><span data-line="337"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Boost&quot;</span><span class="p">,</span>
-</span><span data-line="338"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
-</span><span data-line="339"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="340"><span class="w">      </span><span class="nt">&quot;confine_positive_min_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="341"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
-</span><span data-line="342"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The minimum number of active atoms for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
-</span><span data-line="343"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Min Active&quot;</span><span class="p">,</span>
-</span><span data-line="344"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-</span><span data-line="345"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="346"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="347"><span class="p">}</span>
+</span><span data-line="24"><span class="w">            </span><span class="s2">&quot;davidson&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">            </span><span class="s2">&quot;gprdimer&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">            </span><span class="s2">&quot;artn&quot;</span>
+</span><span data-line="27"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="28"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Min Mode Method&quot;</span><span class="p">,</span>
+</span><span data-line="29"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="30"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="31"><span class="w">      </span><span class="nt">&quot;disp_at_random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="32"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="33"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Legacy displacement control flag used by the client.&quot;</span><span class="p">,</span>
+</span><span data-line="34"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Disp At Random&quot;</span><span class="p">,</span>
+</span><span data-line="35"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="36"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="37"><span class="w">      </span><span class="nt">&quot;max_energy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="38"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The energy at which a saddle search is considered bad and terminated.&quot;</span><span class="p">,</span>
+</span><span data-line="40"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Energy&quot;</span><span class="p">,</span>
+</span><span data-line="41"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="42"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="43"><span class="w">      </span><span class="nt">&quot;max_step_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="44"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
+</span><span data-line="45"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maximum step size for saddle-search displacement updates.&quot;</span><span class="p">,</span>
+</span><span data-line="46"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Step Size&quot;</span><span class="p">,</span>
+</span><span data-line="47"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="48"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="49"><span class="w">      </span><span class="nt">&quot;displace_radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="50"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+</span><span data-line="51"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Atoms within this distance of the epicenter will be displaced.&quot;</span><span class="p">,</span>
+</span><span data-line="52"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Radius&quot;</span><span class="p">,</span>
+</span><span data-line="53"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="54"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="55"><span class="w">      </span><span class="nt">&quot;displace_magnitude&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="56"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+</span><span data-line="57"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.&quot;</span><span class="p">,</span>
+</span><span data-line="58"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Magnitude&quot;</span><span class="p">,</span>
+</span><span data-line="59"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="60"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="61"><span class="w">      </span><span class="nt">&quot;displace_min_norm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="62"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="63"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minimum displacement norm enforced for the initial perturbation.&quot;</span><span class="p">,</span>
+</span><span data-line="64"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Min Norm&quot;</span><span class="p">,</span>
+</span><span data-line="65"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="66"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="67"><span class="w">      </span><span class="nt">&quot;displace_random_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="68"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="69"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with a random epicenter.&quot;</span><span class="p">,</span>
+</span><span data-line="70"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Random Weight&quot;</span><span class="p">,</span>
+</span><span data-line="71"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="72"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="73"><span class="w">      </span><span class="nt">&quot;displace_not_FCC_HCP_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="74"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="75"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not FCC or HCP coordinated.&quot;</span><span class="p">,</span>
+</span><span data-line="76"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Fcc Hcp Weight&quot;</span><span class="p">,</span>
+</span><span data-line="77"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="78"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="79"><span class="w">      </span><span class="nt">&quot;displace_not_TCP_BCC_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="80"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="81"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not TCP or BCC coordinated.&quot;</span><span class="p">,</span>
+</span><span data-line="82"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Tcp Bcc Weight&quot;</span><span class="p">,</span>
+</span><span data-line="83"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="84"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="85"><span class="w">      </span><span class="nt">&quot;displace_not_TCP_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="86"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="87"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that is not TCP coordinated.&quot;</span><span class="p">,</span>
+</span><span data-line="88"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Not Tcp Weight&quot;</span><span class="p">,</span>
+</span><span data-line="89"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="90"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="91"><span class="w">      </span><span class="nt">&quot;displace_water_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="92"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="93"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter selected by the water heuristic.&quot;</span><span class="p">,</span>
+</span><span data-line="94"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Water Weight&quot;</span><span class="p">,</span>
+</span><span data-line="95"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="96"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="97"><span class="w">      </span><span class="nt">&quot;displace_least_coordinated_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="98"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="99"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration.&quot;</span><span class="p">,</span>
+</span><span data-line="100"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Least Coordinated Weight&quot;</span><span class="p">,</span>
+</span><span data-line="101"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="102"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="103"><span class="w">      </span><span class="nt">&quot;displace_under_coordinated_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="104"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="105"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.&quot;</span><span class="p">,</span>
+</span><span data-line="106"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Under Coordinated Weight&quot;</span><span class="p">,</span>
+</span><span data-line="107"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="108"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="109"><span class="w">      </span><span class="nt">&quot;displace_listed_atom_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="110"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="111"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter listed in displace_atom_list.&quot;</span><span class="p">,</span>
+</span><span data-line="112"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Listed Atom Weight&quot;</span><span class="p">,</span>
+</span><span data-line="113"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="114"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="115"><span class="w">      </span><span class="nt">&quot;displace_atom_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="116"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="117"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="118"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="119"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="120"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="121"><span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="122"><span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="123"><span class="w">               </span><span class="p">},</span>
+</span><span data-line="124"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+</span><span data-line="125"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="126"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="127"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+</span><span data-line="128"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0-based atom indices to use as displacement epicenters, separated by commas. Example: 10, 20, -1 would be atoms 10, 20, and the last atom. When displace_atom_kmc_state_script is set, this list is populated dynamically per AKMC state from the script&#39;s output.&quot;</span><span class="p">,</span>
+</span><span data-line="129"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom List&quot;</span>
+</span><span data-line="130"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="131"><span class="w">      </span><span class="nt">&quot;displace_atom_kmc_state_script&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="132"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="133"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to a Python script that determines which atoms to displace. The script receives the path to a .con file as its sole positional argument and must print a comma-separated list of 0-based atom indices to stdout. It is executed once per new AKMC state; the result is cached in state.info. The path can be relative (resolved against the eOn root directory) or absolute. See the displacement scripts tutorial for worked examples.&quot;</span><span class="p">,</span>
+</span><span data-line="134"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Atom Kmc State Script&quot;</span><span class="p">,</span>
+</span><span data-line="135"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="136"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="137"><span class="w">      </span><span class="nt">&quot;displace_listed_type_weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="138"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="139"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Relative probability to displace with an epicenter listed in displace_type_list.&quot;</span><span class="p">,</span>
+</span><span data-line="140"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Listed Type Weight&quot;</span><span class="p">,</span>
+</span><span data-line="141"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="142"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="143"><span class="w">      </span><span class="nt">&quot;displace_type_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="144"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="145"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="146"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="147"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="148"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="149"><span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="150"><span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="151"><span class="w">               </span><span class="p">},</span>
+</span><span data-line="152"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+</span><span data-line="153"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="154"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="155"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+</span><span data-line="156"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The atom types should be separated by a comma.&quot;</span><span class="p">,</span>
+</span><span data-line="157"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Type List&quot;</span>
+</span><span data-line="158"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="159"><span class="w">      </span><span class="nt">&quot;molecule_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="160"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[]&quot;</span><span class="p">,</span>
+</span><span data-line="161"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Legacy molecule list used by molecular displacement logic.&quot;</span><span class="p">,</span>
+</span><span data-line="162"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Molecule List&quot;</span><span class="p">,</span>
+</span><span data-line="163"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="164"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="165"><span class="w">      </span><span class="nt">&quot;displace_all_listed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="166"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="167"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, displace all atoms in displace_atom_list (or displace_type_list) simultaneously. If false, one atom is chosen at random from the list per saddle search. In either case, atoms within displace_radius of any displaced atom are also included. Set displace_radius to 0 to restrict displacement strictly to listed atoms.&quot;</span><span class="p">,</span>
+</span><span data-line="168"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace All Listed&quot;</span><span class="p">,</span>
+</span><span data-line="169"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="170"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="171"><span class="w">      </span><span class="nt">&quot;displace_max_coordination&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="172"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span>
+</span><span data-line="173"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.&quot;</span><span class="p">,</span>
+</span><span data-line="174"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace Max Coordination&quot;</span><span class="p">,</span>
+</span><span data-line="175"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="176"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="177"><span class="w">      </span><span class="nt">&quot;displace_1d&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="178"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="179"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Restrict the initial displacement to a single dimension.&quot;</span><span class="p">,</span>
+</span><span data-line="180"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Displace 1D&quot;</span><span class="p">,</span>
+</span><span data-line="181"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="182"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="183"><span class="w">      </span><span class="nt">&quot;converged_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="184"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
+</span><span data-line="185"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.&quot;</span><span class="p">,</span>
+</span><span data-line="186"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Converged Force&quot;</span><span class="p">,</span>
+</span><span data-line="187"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="188"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="189"><span class="w">      </span><span class="nt">&quot;max_iterations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="190"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+</span><span data-line="191"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum number of translation steps to be taken.&quot;</span><span class="p">,</span>
+</span><span data-line="192"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Iterations&quot;</span><span class="p">,</span>
+</span><span data-line="193"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="194"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="195"><span class="w">      </span><span class="nt">&quot;nonlocal_count_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="196"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="197"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If this is not zero, the saddle search will abort when this many atoms have moved more than nonlocal_distance_abort from the initial displacement.&quot;</span><span class="p">,</span>
+</span><span data-line="198"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonlocal Count Abort&quot;</span><span class="p">,</span>
+</span><span data-line="199"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="200"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="201"><span class="w">      </span><span class="nt">&quot;nonlocal_distance_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="202"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="203"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If nonlocal_count_abort is not zero, the saddle search will abort when nonlocal_count_abort atoms have moved more than this distance.&quot;</span><span class="p">,</span>
+</span><span data-line="204"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonlocal Distance Abort&quot;</span><span class="p">,</span>
+</span><span data-line="205"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="206"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="207"><span class="w">      </span><span class="nt">&quot;client_displace_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="208"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+</span><span data-line="209"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Epicenter selection method used by the C++ client. &#39;random&#39;: uniform random atom. &#39;last_atom&#39;: the last atom in the configuration. &#39;least_coordinated&#39;: the atom with the fewest neighbours. &#39;not_fcc_hcp_coordinated&#39;: an atom whose local structure is neither FCC nor HCP. &#39;listed_atoms&#39;: an atom from displace_atom_list (parsed from config, no server displacement file needed). &#39;load&#39;: read a displacement vector from a file written by the server.&quot;</span><span class="p">,</span>
+</span><span data-line="210"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="211"><span class="w">            </span><span class="s2">&quot;load&quot;</span><span class="p">,</span>
+</span><span data-line="212"><span class="w">            </span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+</span><span data-line="213"><span class="w">            </span><span class="s2">&quot;last_atom&quot;</span><span class="p">,</span>
+</span><span data-line="214"><span class="w">            </span><span class="s2">&quot;least_coordinated&quot;</span><span class="p">,</span>
+</span><span data-line="215"><span class="w">            </span><span class="s2">&quot;not_fcc_hcp_coordinated&quot;</span><span class="p">,</span>
+</span><span data-line="216"><span class="w">            </span><span class="s2">&quot;listed_atoms&quot;</span>
+</span><span data-line="217"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="218"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Client Displace Type&quot;</span><span class="p">,</span>
+</span><span data-line="219"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="220"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="221"><span class="w">      </span><span class="nt">&quot;stdev_translation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="222"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
+</span><span data-line="223"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard deviation for translational displacement components.&quot;</span><span class="p">,</span>
+</span><span data-line="224"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stdev Translation&quot;</span><span class="p">,</span>
+</span><span data-line="225"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="226"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="227"><span class="w">      </span><span class="nt">&quot;stdev_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="228"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+</span><span data-line="229"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard deviation for rotational displacement components.&quot;</span><span class="p">,</span>
+</span><span data-line="230"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stdev Rotation&quot;</span><span class="p">,</span>
+</span><span data-line="231"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="232"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="233"><span class="w">      </span><span class="nt">&quot;void_bias_fraction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="234"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="235"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bias fraction applied to the void-based displacement heuristic.&quot;</span><span class="p">,</span>
+</span><span data-line="236"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Void Bias Fraction&quot;</span><span class="p">,</span>
+</span><span data-line="237"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="238"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="239"><span class="w">      </span><span class="nt">&quot;random_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="240"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="241"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Enable randomized initial-mode generation.&quot;</span><span class="p">,</span>
+</span><span data-line="242"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Random Mode&quot;</span><span class="p">,</span>
+</span><span data-line="243"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="244"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="245"><span class="w">      </span><span class="nt">&quot;zero_mode_abort_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="246"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="247"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The saddle search will abort when the magnitude of the minmode curvature is less than this value.&quot;</span><span class="p">,</span>
+</span><span data-line="248"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Zero Mode Abort Curvature&quot;</span><span class="p">,</span>
+</span><span data-line="249"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="250"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="251"><span class="w">      </span><span class="nt">&quot;confine_positive&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="252"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="253"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Activates a confinement scheme when the search is within a positive region of the PES.&quot;</span><span class="p">,</span>
+</span><span data-line="254"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive&quot;</span><span class="p">,</span>
+</span><span data-line="255"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="256"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="257"><span class="w">      </span><span class="nt">&quot;bowl_breakout&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="258"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="259"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;When activated, the search within positive regions of PES is confined to a subset of atoms.&quot;</span><span class="p">,</span>
+</span><span data-line="260"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bowl Breakout&quot;</span><span class="p">,</span>
+</span><span data-line="261"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="262"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="263"><span class="w">      </span><span class="nt">&quot;bowl_active_atoms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="264"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
+</span><span data-line="265"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Size of the applied confinement in the bowl breakout scheme.&quot;</span><span class="p">,</span>
+</span><span data-line="266"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bowl Active Atoms&quot;</span><span class="p">,</span>
+</span><span data-line="267"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="268"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="269"><span class="w">      </span><span class="nt">&quot;dynamics_temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="270"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
+</span><span data-line="271"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The temperature, in Kelvin, for the molecular dynamics run.&quot;</span><span class="p">,</span>
+</span><span data-line="272"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Temperature&quot;</span><span class="p">,</span>
+</span><span data-line="273"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="274"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="275"><span class="w">      </span><span class="nt">&quot;dynamics_state_check_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="276"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
+</span><span data-line="277"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The time interval, in femtoseconds, to minimize the geometry and check if the system has left the initial state.&quot;</span><span class="p">,</span>
+</span><span data-line="278"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics State Check Interval&quot;</span><span class="p">,</span>
+</span><span data-line="279"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="280"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="281"><span class="w">      </span><span class="nt">&quot;dynamics_record_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="282"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+</span><span data-line="283"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory.&quot;</span><span class="p">,</span>
+</span><span data-line="284"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Record Interval&quot;</span><span class="p">,</span>
+</span><span data-line="285"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="286"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="287"><span class="w">      </span><span class="nt">&quot;dynamics_linear_interpolation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="288"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="289"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;- If true, then the band connecting the initial and final states will be\n  initialized using a linear interpolation.\n- If false, then the band is interpolated through the first snapshot that\n  minimizes to the final state.&quot;</span><span class="p">,</span>
+</span><span data-line="290"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Linear Interpolation&quot;</span><span class="p">,</span>
+</span><span data-line="291"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="292"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="293"><span class="w">      </span><span class="nt">&quot;dynamics_max_init_curvature&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="294"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="295"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum initial curvature for the dynamics method in eV/\u00c5^2.&quot;</span><span class="p">,</span>
+</span><span data-line="296"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dynamics Max Init Curvature&quot;</span><span class="p">,</span>
+</span><span data-line="297"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="298"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="299"><span class="w">      </span><span class="nt">&quot;nonnegative_displacement_abort&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="300"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="301"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Abort the search if a non-negative displacement is detected.&quot;</span><span class="p">,</span>
+</span><span data-line="302"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nonnegative Displacement Abort&quot;</span><span class="p">,</span>
+</span><span data-line="303"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="304"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="305"><span class="w">      </span><span class="nt">&quot;max_single_displace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="306"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+</span><span data-line="307"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum single displacement value.&quot;</span><span class="p">,</span>
+</span><span data-line="308"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Single Displace&quot;</span><span class="p">,</span>
+</span><span data-line="309"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="310"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="311"><span class="w">      </span><span class="nt">&quot;remove_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="312"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="313"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove rotational components from the displacement.&quot;</span><span class="p">,</span>
+</span><span data-line="314"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove Rotation&quot;</span><span class="p">,</span>
+</span><span data-line="315"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="316"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="317"><span class="w">      </span><span class="nt">&quot;perp_force_ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="318"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="319"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The ratio of perpendicular force, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="320"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Perp Force Ratio&quot;</span><span class="p">,</span>
+</span><span data-line="321"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="322"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="323"><span class="w">      </span><span class="nt">&quot;confine_positive_min_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="324"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+</span><span data-line="325"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The minimum force for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="326"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Min Force&quot;</span><span class="p">,</span>
+</span><span data-line="327"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="328"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="329"><span class="w">      </span><span class="nt">&quot;confine_positive_scale_ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="330"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span>
+</span><span data-line="331"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The scaling ratio for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="332"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Scale Ratio&quot;</span><span class="p">,</span>
+</span><span data-line="333"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="334"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="335"><span class="w">      </span><span class="nt">&quot;confine_positive_boost&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="336"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+</span><span data-line="337"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The boost factor for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="338"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Boost&quot;</span><span class="p">,</span>
+</span><span data-line="339"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+</span><span data-line="340"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="341"><span class="w">      </span><span class="nt">&quot;confine_positive_min_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="342"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+</span><span data-line="343"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The minimum number of active atoms for confining the positive region of the PES, undocumented.&quot;</span><span class="p">,</span>
+</span><span data-line="344"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Confine Positive Min Active&quot;</span><span class="p">,</span>
+</span><span data-line="345"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="346"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="347"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="348"><span class="p">}</span>
 </span></pre></div>
 </div>
 </details></p><dl class="field-list simple">
@@ -906,7 +907,7 @@ config; no server displacement file needed)</p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_single_displace" title="eon.schema.SaddleSearchConfig.max_single_displace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_single_displace</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.max_step_size" title="eon.schema.SaddleSearchConfig.max_step_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_step_size</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.method" title="eon.schema.SaddleSearchConfig.method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span> <span class="pre">(Literal['min_mode',</span> <span class="pre">'dynamics',</span> <span class="pre">'basin_hopping',</span> <span class="pre">'bgsd',</span> <span class="pre">'artn'])</span></code></a></p></li>
-<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="eon.schema.SaddleSearchConfig.min_mode_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">(Literal['dimer',</span> <span class="pre">'lanczos',</span> <span class="pre">'gprdimer',</span> <span class="pre">'artn'])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="eon.schema.SaddleSearchConfig.min_mode_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_mode_method</span> <span class="pre">(Literal['dimer',</span> <span class="pre">'lanczos',</span> <span class="pre">'davidson',</span> <span class="pre">'gprdimer',</span> <span class="pre">'artn'])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.molecule_list" title="eon.schema.SaddleSearchConfig.molecule_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule_list</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonlocal_count_abort" title="eon.schema.SaddleSearchConfig.nonlocal_count_abort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonlocal_count_abort</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.SaddleSearchConfig.nonlocal_distance_abort" title="eon.schema.SaddleSearchConfig.nonlocal_distance_abort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonlocal_distance_abort</span> <span class="pre">(float)</span></code></a></p></li>
@@ -1192,11 +1193,12 @@ the initial push when present.</p></li>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.SaddleSearchConfig.min_mode_method">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">min_mode_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'dimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'davidson'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gprdimer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'artn'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dimer'</span></span><a class="headerlink" href="#eon.schema.SaddleSearchConfig.min_mode_method" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">dimer</span></code>: Use the dimer min-mode method from <span id="id2">Henkelman and Jónsson [<a class="reference internal" href="#id30" title="Graeme Henkelman and Hannes Jónsson. A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives. The Journal of Chemical Physics, 111(15):7010–7022, October 1999. doi:10.1063/1.480097.">SS_HJonsson99</a>]</span></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lanczos</span></code>: Use the Lanczos min-mode method from <span id="id3">Malek and Mousseau [<a class="reference internal" href="#id56" title="Rachid Malek and Normand Mousseau. Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique. Physical Review E, 62(6):7723–7728, December 2000. doi:10.1103/PhysRevE.62.7723.">SS_MM00</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">davidson</span></code>: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gprdimer</span></code>: Use the GP accelerated dimer method.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">artn</span></code>: Use ARTn as a drop-in for min-mode search. eOn’s displacement
 seeds the initial mode; ARTn takes over from the displaced structure.</p></li>
