@@ -463,9 +463,9 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetReal("Davidson", "tolerance", params.davidson_options.tolerance);
   params.davidson_options.max_iterations = ini.GetInteger(
       "Davidson", "max_iterations", params.davidson_options.max_iterations);
-  params.davidson_options.diagonal_preconditioner = ini.GetBoolean(
-      "Davidson", "diagonal_preconditioner",
-      params.davidson_options.diagonal_preconditioner);
+  params.davidson_options.diagonal_preconditioner =
+      ini.GetBoolean("Davidson", "diagonal_preconditioner",
+                     params.davidson_options.diagonal_preconditioner);
 
   // [ARTn] //
   params.artn_options.push_step_size =

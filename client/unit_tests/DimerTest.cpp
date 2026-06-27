@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "Davidson.h"
 #include "Dimer.h"
+#include "Davidson.h"
 #include "EigenmodeStrategy.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
@@ -114,8 +114,7 @@ TEST_CASE_METHOD(DimerFixture, "Davidson computes negative eigenvalue",
   REQUIRE(eigenvalue < 0.0);
 }
 
-TEST_CASE_METHOD(DimerFixture,
-                 "Davidson and Lanczos agree on lowest mode sign",
+TEST_CASE_METHOD(DimerFixture, "Davidson and Lanczos agree on lowest mode sign",
                  "[davidson][lanczos][eigenmode]") {
   params.saddle_search_options.minmode_method =
       LowestEigenmode::MINMODE_LANCZOS;
@@ -131,11 +130,13 @@ TEST_CASE_METHOD(DimerFixture,
 
   REQUIRE(std::isfinite(ewL));
   REQUIRE(std::isfinite(ewD));
-  // Both should find a negative curvature direction on this saddle-ish LJ setup.
+  // Both should find a negative curvature direction on this saddle-ish LJ
+  // setup.
   REQUIRE(ewL < 0.0);
   REQUIRE(ewD < 0.0);
   // Magnitudes within a loose factor (FD noise + method differences).
-  REQUIRE(std::fabs(ewD - ewL) < 0.5 * (std::fabs(ewL) + std::fabs(ewD) + 1e-6));
+  REQUIRE(std::fabs(ewD - ewL) <
+          0.5 * (std::fabs(ewL) + std::fabs(ewD) + 1e-6));
 }
 
 // --- EigenmodeStrategy variant dispatch tests ---

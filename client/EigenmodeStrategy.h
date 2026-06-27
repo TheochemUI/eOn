@@ -28,8 +28,7 @@ namespace eonc {
 using EigenmodeStrategy =
     std::variant<Dimer, ImprovedDimer, Lanczos, Davidson, AtomicGPDimer>;
 #else
-using EigenmodeStrategy =
-    std::variant<Dimer, ImprovedDimer, Lanczos, Davidson>;
+using EigenmodeStrategy = std::variant<Dimer, ImprovedDimer, Lanczos, Davidson>;
 #endif
 
 /// Build the eigenmode solver from parameters.

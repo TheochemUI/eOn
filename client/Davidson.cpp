@@ -64,7 +64,8 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   auto tmpMatter = std::make_unique<Matter>(*matter);
   const VectorXd force0 = tmpMatter->getForcesFreeV();
 
-  // Apply H via one-sided FD of forces (same as Lanczos): H v ≈ -(F(x+dr v)-F(x))/dr
+  // Apply H via one-sided FD of forces (same as Lanczos): H v ≈ -(F(x+dr
+  // v)-F(x))/dr
   auto applyH = [&](const VectorXd &v) -> VectorXd {
     tmpMatter->setPositionsFreeV(matter->getPositionsFreeV() + dr * v);
     const VectorXd force1 = tmpMatter->getForcesFreeV();
@@ -72,8 +73,8 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   };
 
   // Optional cheap diagonal preconditioner: one FD probe along e_k is too
-  // expensive, so approximate diag(H) from the first H*v0 components | (Hv)_i / v_i |
-  // when |v_i| is appreciable; else 1.0.
+  // expensive, so approximate diag(H) from the first H*v0 components | (Hv)_i /
+  // v_i | when |v_i| is appreciable; else 1.0.
   VectorXd diagH = VectorXd::Ones(size);
 
   V.col(0) = r;
@@ -112,10 +113,9 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
     VectorXd resid = Hx - ew * evEst;
     const double residNorm = resid.norm();
     const double ewAbsRelErr =
-        (iter == 0)
-            ? 1.0
-            : eonc::safemath::safe_div(std::fabs(ew - ewOld), std::fabs(ewOld),
-                                      1.0);
+        (iter == 0) ? 1.0
+                    : eonc::safemath::safe_div(std::fabs(ew - ewOld),
+                                               std::fabs(ewOld), 1.0);
     ewOld = ew;
     statsTorque = std::max(ewAbsRelErr, residNorm / (std::fabs(ew) + 1e-12));
     statsAngle = eonc::safemath::safe_acos(std::fabs(evEst.dot(evOldEst))) *

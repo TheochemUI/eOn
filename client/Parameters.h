@@ -349,7 +349,8 @@ public:
   struct davidson_options_t {
     double tolerance{0.01};
     long max_iterations{20};
-    /// Heuristic | (H v)_i / v_i | preconditioner (not true diag(H); off by default).
+    /// Heuristic | (H v)_i / v_i | preconditioner (not true diag(H); off by
+    /// default).
     bool diagonal_preconditioner{false};
   } davidson_options;
 
