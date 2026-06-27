@@ -172,6 +172,17 @@ TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
   REQUIRE(std::holds_alternative<Lanczos>(*strategy));
 }
 
+TEST_CASE_METHOD(DimerFixture,
+                 "buildEigenmodeStrategy returns Davidson variant",
+                 "[eigenmode][strategy][davidson]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_DAVIDSON;
+
+  auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
+  REQUIRE(strategy != nullptr);
+  REQUIRE(std::holds_alternative<Davidson>(*strategy));
+}
+
 // --- asImprovedDimer tests ---
 
 TEST_CASE_METHOD(DimerFixture,
