@@ -823,13 +823,14 @@ class SaddleSearchConfig(BaseModel):
         relaxation internally. ``direction.dat`` is optional and only biases
         the initial push when present.
     """
-    min_mode_method: Literal["dimer", "lanczos", "gprdimer", "artn"] = Field(
-        default="dimer", description="Min-mode method to use."
-    )
+    min_mode_method: Literal[
+        "dimer", "lanczos", "davidson", "gprdimer", "artn"
+    ] = Field(default="dimer", description="Min-mode method to use.")
     """
     Options:
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
      - ``lanczos``: Use the Lanczos min-mode method from :cite:t:`ss-malekDynamicsLennardJonesClusters2000`
+     - ``davidson``: Davidson Ritz subspace with FD Hessian-vector products (alternative to dimer rotation).
      - ``gprdimer``: Use the GP accelerated dimer method.
      - ``artn``: Use ARTn as a drop-in for min-mode search. eOn's displacement
        seeds the initial mode; ARTn takes over from the displaced structure.
@@ -1711,6 +1712,23 @@ class LanczosConfig(BaseModel):
     )
 
 
+class DavidsonConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    tolerance: float = Field(
+        default=0.01,
+        description="Convergence on relative eigenvalue change and residual norm for the Davidson min-mode Ritz pair.",
+    )
+    max_iterations: int = Field(
+        default=20,
+        description="Maximum subspace dimension / Davidson iterations.",
+    )
+    diagonal_preconditioner: bool = Field(
+        default=False,
+        description="Use a cheap | (H v)_i / v_i | heuristic preconditioner (not the true Hessian diagonal).",
+    )
+
+
 class ARTnConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -2000,6 +2018,7 @@ class Config(BaseModel):
     dimer: DimerConfig
     neb: NudgedElasticBandConfig
     lanczos: LanczosConfig
+    davidson: DavidsonConfig
     hessian: HessianConfig
     communicator: CommunicatorConfig
     process_search: ProcessSearchConfig

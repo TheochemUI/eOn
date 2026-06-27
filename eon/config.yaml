@@ -1057,6 +1057,24 @@ Lanczos:
 
 ################################################################################
 
+Davidson:
+
+    options:
+
+        tolerance:
+            kind: float
+            default: 0.01
+
+        max_iterations:
+            kind: int
+            default: 20
+
+        diagonal_preconditioner:
+            kind: boolean
+            default: false
+
+################################################################################
+
 ARTn:
 
     options:
@@ -1308,6 +1326,7 @@ Saddle Search:
             values:
                 - dimer
                 - lanczos
+                - davidson
                 - gprdimer
                 - artn
 
