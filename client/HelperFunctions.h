@@ -63,6 +63,12 @@ getRelevantFile(std::string filename); // return filename containing _checkpoint
 VectorXd loadMasses(std::string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
 AtomMatrix loadMode(std::string filename, int nAtoms);
+// Load displacement.con, or synthesize initial + unit(direction.dat) (issue
+// #79). Fixed-atom rows are always restored from initial. Returns false if
+// neither displacement nor mode file is usable.
+bool loadOrSynthesizeDisplacement(Matter &target, const Matter &initial,
+                                  const std::string &displacementPath,
+                                  const std::string &modePath);
 void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 void saveMode(const std::string &filename, std::shared_ptr<Matter> matter,
               AtomMatrix mode);
