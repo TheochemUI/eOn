@@ -41,6 +41,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   parameters = matter.parameters;
 
   usePeriodicBoundaries = matter.usePeriodicBoundaries;
+  pbcConvention = matter.pbcConvention;
 
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
@@ -263,9 +264,9 @@ VectorXd Matter::getForcesV() const {
   return VectorXd::Map(getForces().data(), 3 * numberOfAtoms());
 }
 
-AtomMatrix Matter::getForcesFree() {
+AtomMatrix Matter::getForcesFree() const {
   AtomMatrix allForces = getForces();
-  getFree(); // ensure freeIndices is up to date
+  getFree(); // ensure freeIndices is up to date (mutable cache)
   AtomMatrix ret(static_cast<long>(freeIndices.size()), 3);
   for (size_t j = 0; j < freeIndices.size(); j++) {
     ret.row(static_cast<long>(j)) = allForces.row(freeIndices[j]);
@@ -273,8 +274,9 @@ AtomMatrix Matter::getForcesFree() {
   return ret;
 }
 
-VectorXd Matter::getForcesFreeV() {
-  return VectorXd::Map(getForcesFree().data(), 3 * numberOfFreeAtoms());
+VectorXd Matter::getForcesFreeV() const {
+  AtomMatrix freeForces = getForcesFree();
+  return VectorXd::Map(freeForces.data(), 3 * numberOfFreeAtoms());
 }
 
 // return distance between the atoms with index1 and index2
@@ -408,17 +410,12 @@ void Matter::computePotential() const {
   }
 }
 
-// Transform the coordinate to use the minimum image convention.
+// Transform coordinates into the cell using the selected PBC convention (#176).
+// Legacy: fractional [0,1) via fmod (historical). MinimumImage: fractional
+// [-0.5,0.5) via floor (same MIC as eonc::pbc::apply for differences).
 void Matter::applyPeriodicBoundary() {
-  AtomMatrix ddiff = positions * cellInverse;
-
-  int i, j;
-  for (i = 0; i < ddiff.rows(); i++) {
-    for (j = 0; j < 3; j++) {
-      ddiff(i, j) = fmod(ddiff(i, j) + 1.0, 1.0);
-    }
-  }
-  positions = ddiff * cell;
+  positions =
+      eonc::pbc::applyPositions(positions, cell, cellInverse, pbcConvention);
 }
 
 double Matter::maxForce() const {

@@ -136,6 +136,48 @@ TEST_CASE("getForces zeroes fixed atoms", "[MatterTest][forces]") {
   REQUIRE(forces.row(1).norm() > 0.0);
 }
 
+TEST_CASE("getForcesFree is const and drops fixed rows",
+          "[MatterTest][forces][const]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixed(0, true);
+  const Matter &cref = *m1;
+  AtomMatrix freeF = cref.getForcesFree();
+  REQUIRE(freeF.rows() == m1->numberOfFreeAtoms());
+  REQUIRE(freeF.rows() == m1->numberOfAtoms() - 1);
+  // All remaining rows should be non-zero for this LJ cluster
+  REQUIRE(freeF.row(0).norm() > 0.0);
+}
+
+TEST_CASE("MinimumImage PBC centers fractional coords",
+          "[MatterTest][pbc][convention]") {
+  auto [m1, params] = makeLJCluster();
+  auto cell = m1->getCell();
+  auto pos = m1->getPositionsCopy();
+  // Place atom 0 just past +0.5 in fractional x so Legacy keeps it in [0,1)
+  // near 1.0 while MinimumImage maps toward the cell origin (negative frac).
+  pos(0, 0) = cell(0, 0) * 0.9;
+  pos(0, 1) = cell(1, 1) * 0.1;
+  pos(0, 2) = cell(2, 2) * 0.1;
+  m1->setPositions(pos);
+
+  Matter legacy(*m1);
+  legacy.setPbcConvention(eonc::PbcConvention::Legacy);
+  // Force re-wrap by setPositions (applies PBC when enabled)
+  legacy.setPositions(pos);
+  auto legacyPos = legacy.getPositions();
+
+  Matter mic(*m1);
+  mic.setPbcConvention(eonc::PbcConvention::MinimumImage);
+  mic.setPositions(pos);
+  auto micPos = mic.getPositions();
+
+  REQUIRE(legacy.getPbcConvention() == eonc::PbcConvention::Legacy);
+  REQUIRE(mic.getPbcConvention() == eonc::PbcConvention::MinimumImage);
+  // MinimumImage should differ from Legacy for this placement (0.9 -> -0.1
+  // frac)
+  REQUIRE((legacyPos.row(0) - micPos.row(0)).norm() > 1e-6);
+}
+
 TEST_CASE("getForcesRaw includes fixed atoms", "[MatterTest][forces]") {
   auto [m1, params] = makeLJCluster();
   m1->setFixed(0, true);

@@ -17,6 +17,7 @@
 #include "Potential.h"
 #include "SurrogatePotential.h"
 #include <array>
+#include <cmath>
 #include <memory>
 #include <string>
 
@@ -24,8 +25,18 @@
 namespace eonc {
 class BondBoost;
 
+// Position / difference MIC conventions (issue #176). Legacy matches historical
+// applyPeriodicBoundary (fmod to [0,1) fractional). MinimumImage matches the
+// existing eonc::pbc::apply path used for interatomic distances (frac in
+// [-0.5,0.5)).
+enum class PbcConvention {
+  Legacy = 0,
+  MinimumImage = 1,
+};
+
 namespace pbc {
 
+// Minimum-image on a difference vector (fractional in [-0.5, 0.5)).
 inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
                         const Matrix3d &cellInverse) {
   // Transform to fractional coordinates, wrap to [-0.5, 0.5), transform back.
@@ -34,6 +45,29 @@ inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
   AtomMatrix frac = diff * cellInverse;
   frac.array() -= (frac.array() + 0.5).floor();
   return frac * cell;
+}
+
+// Legacy position wrap: fractional coords into [0, 1) via fmod (historical
+// Matter).
+inline AtomMatrix applyLegacy(const AtomMatrix &coords, const Matrix3d &cell,
+                              const Matrix3d &cellInverse) {
+  AtomMatrix frac = coords * cellInverse;
+  for (int i = 0; i < frac.rows(); i++) {
+    for (int j = 0; j < 3; j++) {
+      frac(i, j) = std::fmod(frac(i, j) + 1.0, 1.0);
+    }
+  }
+  return frac * cell;
+}
+
+// Position wrap selecting convention (Legacy vs MinimumImage centering).
+inline AtomMatrix applyPositions(const AtomMatrix &coords, const Matrix3d &cell,
+                                 const Matrix3d &cellInverse,
+                                 PbcConvention convention) {
+  if (convention == PbcConvention::MinimumImage) {
+    return apply(coords, cell, cellInverse);
+  }
+  return applyLegacy(coords, cell, cellInverse);
 }
 
 inline VectorXd applyV(const VectorXd &diffVector, const Matrix3d &cell,
@@ -59,6 +93,7 @@ public:
   Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       : potential{pot},
         usePeriodicBoundaries{true},
+        pbcConvention{PbcConvention::Legacy},
         recomputePotential{true},
         forceCalls{0},
         removeNetForce{params.main_options.removeNetForce},
@@ -139,8 +174,14 @@ public:
   const AtomMatrix &getForcesRaw() const;
   AtomMatrix getBiasForces();
   VectorXd getForcesV() const;
-  AtomMatrix getForcesFree();
-  VectorXd getForcesFreeV();
+  // Const so callers can read free-atom forces without mutating Matter (#171).
+  AtomMatrix getForcesFree() const;
+  VectorXd getForcesFreeV() const;
+
+  PbcConvention getPbcConvention() const { return pbcConvention; }
+  void setPbcConvention(PbcConvention convention) {
+    pbcConvention = convention;
+  }
 
   double getMass(long int atom) const; // return the mass of the atom specified
   void setMass(long int atom, double mass); // set the mass of an atom
@@ -228,7 +269,8 @@ private:
   eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
-  bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
+  bool usePeriodicBoundaries;  // boolean telling periodic boundaries are used
+  PbcConvention pbcConvention; // position-wrap MIC convention (issue #176)
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated
   mutable long
