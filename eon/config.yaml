@@ -1827,6 +1827,14 @@ Metatomic:
             kind: string
             default: ""
 
+        energy_output:
+            kind: string
+            default: ""
+
+        energy_uncertainty_output:
+            kind: string
+            default: ""
+
 ################################################################################
 
 ASE_NWCHEM:
@@ -1838,6 +1846,10 @@ ASE_NWCHEM:
         nproc:
             kind: string
             default: "auto"
+
+        mpi_launcher:
+            kind: string
+            default: "mpirun"
 
         multiplicity:
             kind: string
