@@ -64,7 +64,7 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   auto tmpMatter = std::make_unique<Matter>(*matter);
   const VectorXd force0 = tmpMatter->getForcesFreeV();
 
-  // Apply H via central finite difference of forces: H v ≈ -(F(x+dr v) - F(x)) / dr
+  // Apply H via one-sided FD of forces (same as Lanczos): H v ≈ -(F(x+dr v)-F(x))/dr
   auto applyH = [&](const VectorXd &v) -> VectorXd {
     tmpMatter->setPositionsFreeV(matter->getPositionsFreeV() + dr * v);
     const VectorXd force1 = tmpMatter->getForcesFreeV();
