@@ -77,7 +77,8 @@ std::vector<std::string> ProcessSearchJob::run() {
       // Load displacement.con, or synthesize from pos.con + direction.dat
       // (#79).
       if (!eonc::helpers::loadOrSynthesizeDisplacement(
-              *saddle, *initial, displacementFilename, modeFilename)) {
+              *saddle, *initial, displacementFilename, modeFilename,
+              params.saddle_search_options.displace_magnitude)) {
         EONC_LOG_CRITICAL("Failed to load {} (and no usable {})",
                           displacementFilename, modeFilename);
         exit(1);

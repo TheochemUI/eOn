@@ -143,7 +143,7 @@ AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
 
 bool eonc::helpers::loadOrSynthesizeDisplacement(
     Matter &target, const Matter &initial, const std::string &displacementPath,
-    const std::string &modePath) {
+    const std::string &modePath, double scale) {
   if (target.con2matter(displacementPath)) {
     // displacement.con may carry stale fixed-atom coordinates from a prior run.
     const AtomMatrix &initPos = initial.getPositions();
@@ -163,9 +163,10 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
   AtomMatrix mode =
       loadMode(modePath, static_cast<int>(initial.numberOfAtoms()));
   const double norm = mode.norm();
-  if (norm > 0.0) {
-    mode /= norm;
+  if (!(norm > 0.0)) {
+    return false;
   }
+  mode *= (scale / norm);
   target = initial;
   AtomMatrix pos = initial.getPositionsCopy();
   pos += mode;
@@ -177,9 +178,9 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
     }
   }
   target.setPositions(pos);
-  EONC_LOG_INFO("Synthesized displacement from pos.con + unit mode in {} "
-                "(missing {})",
-                modePath, displacementPath);
+  EONC_LOG_INFO("Synthesized displacement from pos.con + scale {:.6g} * unit "
+                "mode in {} (missing {})",
+                scale, modePath, displacementPath);
   return true;
 }
 
