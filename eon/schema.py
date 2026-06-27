@@ -705,6 +705,14 @@ class Metatomic(BaseModel):
     variant_energy_uncertainty: str = Field(
         default="", description="Override variant for energy_uncertainty."
     )
+    energy_output: str = Field(
+        default="",
+        description="Literal model energy output key; empty uses variant resolution.",
+    )
+    energy_uncertainty_output: str = Field(
+        default="",
+        description="Literal energy uncertainty output key; empty uses variant resolution.",
+    )
 
 
 class ASE_NWCHEM(BaseModel):
@@ -716,6 +724,10 @@ class ASE_NWCHEM(BaseModel):
     nproc: Union[int, Literal["auto"]] = Field(
         default="auto",
         description="Number of processors to use for NWChem. Can be 'auto' or an integer string.",
+    )
+    mpi_launcher: str = Field(
+        default="mpirun",
+        description="MPI launcher for NWChem (mpirun default, or srun on Slurm).",
     )
     multiplicity: str = Field(
         default="1", description="Spin multiplicity for the NWChem calculation."

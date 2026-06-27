@@ -41,13 +41,23 @@ ASENwchemPot::ASENwchemPot(const Parameters &a_params)
 
   // TODO(rg): Directory should be set by the user, and created here
   // dont_verify so we always get an energy and gradient
+  // mpi_launcher: mpirun (default) or srun on Slurm nodes (issue #193)
+  const std::string &launcher = a_params.ase_nwchem_options.mpi_launcher;
+  std::string mpi_cmd;
+  if (launcher == "srun") {
+    // srun uses -n for tasks; avoid OpenMPI-specific flags.
+    mpi_cmd =
+        std::format("srun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth);
+  } else {
+    // Default and any other launcher treated as OpenMPI-style mpirun -n.
+    mpi_cmd = std::format("{} -n {} {} PREFIX.nwi > PREFIX.nwo", launcher,
+                          nproc, nwchempth);
+  }
   // Common NWCHEM parameters
   py::dict nwchem_params = py::dict(
       "label"_a = "_eonpot_engrad",
       "set"_a = py::dict("geom:dont_verify"_a = true),
-      "command"_a = py::str(std::format(
-          "mpirun -n {} {} PREFIX.nwi > PREFIX.nwo", nproc, nwchempth)),
-      "memory"_a = py::str("2 gb"),
+      "command"_a = py::str(mpi_cmd), "memory"_a = py::str("2 gb"),
       "scf"_a = py::dict("nopen"_a = mult - 1,
                          "thresh"_a = a_params.ase_nwchem_options.scf_thresh,
                          "maxiter"_a = a_params.ase_nwchem_options.scf_maxiter),
