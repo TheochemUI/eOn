@@ -34,13 +34,54 @@ std::vector<std::string> HessianJob::run(void) {
   moved.setConstant(-1);
 
   int nMoved = 0;
-  for (int i = 0; i < nAtoms; i++) {
-    if (!matter->getFixed(i)) {
-      moved[nMoved] = i;
-      nMoved++;
+  // Optional [Hessian] atom_list restricts the FD block (comma-separated
+  // 0-based indices, or "All" for every non-fixed atom). Intersect with free
+  // atoms so callers cannot request coordinates that are frozen in pos.con.
+  const std::string &atomList = params.hessian_options.atom_list;
+  const bool useExplicitList =
+      !atomList.empty() &&
+      atomList != "All" && atomList != "all" && atomList != "ALL";
+
+  if (useExplicitList) {
+    std::string token;
+    for (size_t p = 0; p <= atomList.size(); ++p) {
+      const char c = (p < atomList.size()) ? atomList[p] : ',';
+      if (c == ',' || c == ' ' || c == '\t' || p == atomList.size()) {
+        if (!token.empty()) {
+          try {
+            const long idx = std::stol(token);
+            if (idx >= 0 && idx < nAtoms && !matter->getFixed(idx)) {
+              moved[nMoved++] = static_cast<int>(idx);
+            }
+          } catch (const std::exception &) {
+            // skip non-integer tokens
+          }
+          token.clear();
+        }
+      } else {
+        token.push_back(c);
+      }
+    }
+  } else {
+    for (int i = 0; i < nAtoms; i++) {
+      if (!matter->getFixed(i)) {
+        moved[nMoved] = i;
+        nMoved++;
+      }
     }
   }
   moved = moved.head(nMoved);
+  if (nMoved == 0) {
+    // No free atoms: leave results.dat with force_calls only (no crash).
+    std::string results_file("results.dat");
+    returnFiles.push_back(results_file);
+    std::ofstream out(results_file, std::ios::binary);
+    if (out) {
+      out << std::format("{} force_calls\n",
+                         PotRegistry::get().total_force_calls());
+    }
+    return returnFiles;
+  }
   hessian.getFreqs(matter.get(), moved);
 
   std::string results_file("results.dat");

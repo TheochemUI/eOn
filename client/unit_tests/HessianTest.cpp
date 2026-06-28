@@ -65,6 +65,21 @@ TEST_CASE("Hessian getFreqs returns finite eigenvalues", "[hessian]") {
   }
 }
 
+TEST_CASE("Hessian getFreqs rejects out-of-range atom indices", "[hessian]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->con2matter(std::string("reactant.con"));
+
+  VectorXi bad(2);
+  bad << 0, 99; // 99 is OOB for 13-atom LJ cluster
+
+  Hessian hess(params, matter.get());
+  VectorXd freqs = hess.getFreqs(matter.get(), bad);
+  REQUIRE(freqs.size() == 0);
+}
+
 TEST_CASE("Hessian on Pt frozen layers system handles mixed fixed/free",
           "[hessian][morse_pt]") {
   Parameters params;

@@ -58,15 +58,33 @@ bool Hessian::calculate() {
 
   // Determine the Hessian size
   int size = 0;
-  size = atoms.rows() * 3;
+  size = static_cast<int>(atoms.rows()) * 3;
   QUILL_LOG_DEBUG(log, "[Hessian] Hessian size: {}\n", size);
   if (size == 0) {
     return false;
   }
 
+  // Out-of-range atom indices used to OOB-write AtomMatrix rows and segfault
+  // inside potential force evaluation / Eigen (seen with VTST partial Hessians
+  // and portable eonclient builds). Fail cleanly instead.
+  for (int a = 0; a < atoms.rows(); ++a) {
+    const long idx = atoms(a);
+    if (idx < 0 || idx >= nAtoms) {
+      QUILL_LOG_ERROR(log,
+                      "[Hessian] atom index {} out of range [0, {}) at list "
+                      "entry {}; aborting FD Hessian",
+                      idx, nAtoms, a);
+      return false;
+    }
+  }
+
   // Build the hessian
   Matter matterTemp(*matter);
   double dr = parameters.main_options.finiteDifference;
+  if (!(dr > 0.0) || !std::isfinite(dr)) {
+    QUILL_LOG_ERROR(log, "[Hessian] invalid finiteDifference dr={}\n", dr);
+    return false;
+  }
 
   AtomMatrix pos = matter->getPositions();
   AtomMatrix posDisplace(nAtoms, 3);
@@ -78,6 +96,12 @@ bool Hessian::calculate() {
   hessian.resize(size, size);
 
   force1 = matterTemp.getForces();
+  if (!force1.allFinite()) {
+    QUILL_LOG_ERROR(log,
+                    "[Hessian] non-finite forces at undisplaced geometry; "
+                    "aborting FD Hessian");
+    return false;
+  }
   for (int i = 0; i < size; i++) {
     posDisplace.setZero();
 
@@ -87,6 +111,13 @@ bool Hessian::calculate() {
     posTemp = pos + posDisplace;
     matterTemp.setPositions(posTemp);
     force2 = matterTemp.getForces();
+    if (!force2.allFinite()) {
+      QUILL_LOG_ERROR(log,
+                      "[Hessian] non-finite forces for FD column {}; "
+                      "aborting FD Hessian",
+                      i);
+      return false;
+    }
 
     // To use central difference estimate of the hessian uncomment following
     // (and divide by 2*dr) in the following. This does use an additional 'size'
@@ -121,6 +152,13 @@ bool Hessian::calculate() {
     }
   }
 
+  if (!hessian.allFinite()) {
+    QUILL_LOG_ERROR(log,
+                    "[Hessian] non-finite entries after FD assembly; "
+                    "aborting eigen solve");
+    return false;
+  }
+
   if (!parameters.main_options.quiet) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
     std::ofstream hessfile;
@@ -132,11 +170,30 @@ bool Hessian::calculate() {
   double t0, t1;
   eonc::helpers::getTime(&t0, nullptr, nullptr);
   QUILL_LOG_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
-  Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
+  // eOn's MatrixXd is RowMajor (atom-block layout). Eigen's
+  // SelfAdjointEigenSolver is only well-defined for ColMajor storage; running
+  // it on RowMajor has caused segfaults in HessianJob (VTST partial blocks,
+  // size ~42) on some toolchains. Copy to ColMajor for the eigen solve only.
+  using ColMajorXd =
+      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
+  ColMajorXd hessianCol = hessian;
+  Eigen::SelfAdjointEigenSolver<ColMajorXd> es(hessianCol,
+                                               Eigen::EigenvaluesOnly);
   eonc::helpers::getTime(&t1, nullptr, nullptr);
   QUILL_LOG_DEBUG(log, "[Hessian] eigenvalue problem took {:.4e} seconds\n",
                   t1 - t0);
+  if (es.info() != Eigen::Success) {
+    QUILL_LOG_ERROR(log,
+                    "[Hessian] SelfAdjointEigenSolver failed (info={}); "
+                    "aborting",
+                    static_cast<int>(es.info()));
+    return false;
+  }
   freqs = es.eigenvalues();
+  if (!freqs.allFinite()) {
+    QUILL_LOG_ERROR(log, "[Hessian] non-finite eigenvalues; aborting");
+    return false;
+  }
 
   return true;
 }
