@@ -120,6 +120,26 @@ public:
     bool make_template_input{true};
   } socket_nwchem_options;
 
+  // [RgpotPot] — Cap'n Proto client to rgpot potserv (NWChem / CPMD backends)
+  struct rgpot_options_t {
+    std::string host{"127.0.0.1"};
+    int port{12345};
+    /// potserv backend name: "NWChem" or "CPMD"
+    std::string backend{"NWChem"};
+    // NWChemParams (subset used for configure)
+    std::string nwchem_basis{"sto-3g"};
+    std::string nwchem_theory{"scf"};
+    std::string nwchem_scf_type{"rhf"};
+    int nwchem_charge{0};
+    int nwchem_multiplicity{1};
+    // CPMDParams (subset)
+    std::string cpmd_functional{"BLYP"};
+    std::string cpmd_task{"gradient"};
+    double cpmd_cut_off_ry{70.0};
+    int cpmd_charge{0};
+    int cpmd_multiplicity{1};
+  } rgpot_options;
+
   // [Structure Comparison] //
   struct structure_comparison_options_t {
     double distance_difference{0.1};

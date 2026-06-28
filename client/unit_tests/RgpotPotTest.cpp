@@ -1,0 +1,70 @@
+/*
+** Integration: RgpotPot against potserv + fake engines (env-driven).
+*/
+#include "../MatrixHelpers.hpp"
+#include "Matter.h"
+#include "Parameters.h"
+#include "Potential.h"
+#include "catch2/catch_amalgamated.hpp"
+
+#include <cmath>
+#include <cstdlib>
+#include <memory>
+#include <string>
+
+using Catch::Matchers::WithinAbs;
+
+TEST_CASE("RgpotPot force via potserv (requires WITH_RGPOT_CLIENT + server)",
+          "[rgpot][integration]") {
+#ifndef WITH_RGPOT_CLIENT
+  SKIP("built without with_rgpot");
+#else
+  const char *host = std::getenv("RGPOT_POTSERV_HOST");
+  const char *port_s = std::getenv("RGPOT_POTSERV_PORT");
+  if (!host || !port_s) {
+    SKIP("set RGPOT_POTSERV_HOST and RGPOT_POTSERV_PORT to potserv");
+  }
+
+  Parameters params;
+  params.potential_options.potential = PotType::RGPOT;
+  params.rgpot_options.host = host;
+  params.rgpot_options.port = std::atoi(port_s);
+  const char *backend = std::getenv("RGPOT_BACKEND");
+  params.rgpot_options.backend = backend ? backend : "NWChem";
+  params.rgpot_options.nwchem_basis = "sto-3g";
+  params.rgpot_options.nwchem_theory = "scf";
+  params.rgpot_options.nwchem_scf_type = "rhf";
+  params.rgpot_options.cpmd_functional = "BLYP";
+  params.rgpot_options.cpmd_task = "gradient";
+
+  auto pot = eonc::helpers::makePotential(params);
+  REQUIRE(pot != nullptr);
+  REQUIRE(pot->getType() == PotType::RGPOT);
+
+  // Water-like 3 atoms (Å)
+  const long N = 3;
+  double R[9] = {0.0, 0.0, 0.0, 0.96, 0.0, 0.0, -0.24, 0.93, 0.0};
+  int Z[3] = {8, 1, 1};
+  double F[9] = {};
+  double U = 0.0;
+  double var = 0.0;
+  double box[9] = {20, 0, 0, 0, 20, 0, 0, 0, 20};
+
+  pot->force(N, R, Z, F, &U, &var, box);
+  REQUIRE(std::isfinite(U));
+  REQUIRE(U != 0.0);
+  bool any_f = false;
+  for (int i = 0; i < 9; ++i) {
+    REQUIRE(std::isfinite(F[i]));
+    if (std::abs(F[i]) > 1e-12)
+      any_f = true;
+  }
+  REQUIRE(any_f);
+
+  // Second call (configure once)
+  double U2 = 0.0;
+  pot->force(N, R, Z, F, &U2, &var, box);
+  REQUIRE(std::isfinite(U2));
+  REQUIRE_THAT(U2, WithinAbs(U, 1e-9));
+#endif
+}

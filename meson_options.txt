@@ -20,6 +20,7 @@ option('use_mkl', type: 'boolean', value: false, description: 'Enable Intel MKL 
 option('gprd_linalg_backend', type: 'combo', choices: ['eigen', 'cusolver', 'kokkos', 'stdpar'], value: 'eigen', description: 'Linear algebra backend for GPR-dimer hot-path operations')
 option('with_metatomic', type : 'boolean', value : false)
 option('with_serve', type : 'boolean', value : false, description : 'Enable rgpot-compatible RPC serve mode (eonclient --serve)')
+option('with_rgpot', type : 'boolean', value : false, description : 'Enable RgpotPot Cap\'n Proto client (potserv NWChem/CPMD)')
 option('with_parallel_neb', type : 'boolean', value : false, description : 'Enable parallel NEB bead force evaluations (requires TBB)')
 option('native_arch', type : 'boolean', value : false, description : 'Use -march=native for CPU-specific optimizations (not portable)')
 option('fast_math', type : 'boolean', value : false, description : 'Enable -ffast-math (unsafe FP reordering, safe for atomic coords)')

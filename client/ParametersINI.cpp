@@ -191,6 +191,39 @@ int load_ini(INIReader &ini, Parameters &params) {
                        params.socket_nwchem_options.make_template_input);
   }
 
+
+  // [RgpotPot]
+  if (params.potential_options.potential == PotType::RGPOT) {
+    params.rgpot_options.host =
+        ini.Get("RgpotPot", "host", params.rgpot_options.host);
+    params.rgpot_options.port =
+        ini.GetInteger("RgpotPot", "port", params.rgpot_options.port);
+    params.rgpot_options.backend =
+        ini.Get("RgpotPot", "backend", params.rgpot_options.backend);
+    params.rgpot_options.nwchem_basis =
+        ini.Get("RgpotPot", "nwchem_basis", params.rgpot_options.nwchem_basis);
+    params.rgpot_options.nwchem_theory =
+        ini.Get("RgpotPot", "nwchem_theory", params.rgpot_options.nwchem_theory);
+    params.rgpot_options.nwchem_scf_type = ini.Get(
+        "RgpotPot", "nwchem_scf_type", params.rgpot_options.nwchem_scf_type);
+    params.rgpot_options.nwchem_charge = ini.GetInteger(
+        "RgpotPot", "nwchem_charge", params.rgpot_options.nwchem_charge);
+    params.rgpot_options.nwchem_multiplicity = ini.GetInteger(
+        "RgpotPot", "nwchem_multiplicity",
+        params.rgpot_options.nwchem_multiplicity);
+    params.rgpot_options.cpmd_functional = ini.Get(
+        "RgpotPot", "cpmd_functional", params.rgpot_options.cpmd_functional);
+    params.rgpot_options.cpmd_task =
+        ini.Get("RgpotPot", "cpmd_task", params.rgpot_options.cpmd_task);
+    params.rgpot_options.cpmd_cut_off_ry = ini.GetReal(
+        "RgpotPot", "cpmd_cut_off_ry", params.rgpot_options.cpmd_cut_off_ry);
+    params.rgpot_options.cpmd_charge = ini.GetInteger(
+        "RgpotPot", "cpmd_charge", params.rgpot_options.cpmd_charge);
+    params.rgpot_options.cpmd_multiplicity = ini.GetInteger(
+        "RgpotPot", "cpmd_multiplicity",
+        params.rgpot_options.cpmd_multiplicity);
+  }
+
   // [Debug] //
 
   params.debug_options.write_movies = ini.GetBoolean(
