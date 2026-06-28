@@ -363,6 +363,8 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetReal("Dimer", "torque_max", params.dimer_options.torque_max);
   params.dimer_options.remove_rotation = ini.GetBoolean(
       "Dimer", "remove_rotation", params.dimer_options.remove_rotation);
+  params.dimer_options.rotation_backend = toLowerCase(ini.Get(
+      "Dimer", "rotation_backend", params.dimer_options.rotation_backend));
 
   // GP Surrogate Parameters
   params.gp_surrogate_options.enabled =

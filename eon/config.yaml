@@ -552,6 +552,10 @@ Dimer:
             kind: boolean
             default: True
 
+        rotation_backend:
+            kind: string
+            default: classical
+
         remove_rotation:
             kind: boolean
             default: False

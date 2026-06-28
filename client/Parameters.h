@@ -228,6 +228,9 @@ public:
     double torque_max{1.0};
     double torque_min{0.1};
     bool remove_rotation{false};
+    // Mode estimation for dimer: classical rotation loop, or FD min-mode
+    // (Lanczos/Davidson) replacing constrained IDimerRot / Dimer::rotate.
+    std::string rotation_backend{"classical"}; // classical | lanczos | davidson
   } dimer_options;
 
   // [GPR Dimer] //

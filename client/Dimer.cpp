@@ -10,7 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Dimer.h"
+#include "Davidson.h"
 #include "HelperFunctions.h"
+#include "Lanczos.h"
 #include "SafeMath.h"
 
 #include <cassert>
@@ -43,6 +45,40 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
                     AtomMatrix initialDirection) {
   *matterCenter = *matter;
 
+  eonc::safemath::safe_normalize_inplace(initialDirection);
+  direction = initialDirection;
+
+  // Optional: replace classical torque rotation with FD min-mode finder.
+  const std::string &rotBackend = params.dimer_options.rotation_backend;
+  if (rotBackend == "lanczos" || rotBackend == "davidson") {
+    if (rotBackend == "lanczos") {
+      QUILL_LOG_INFO(log,
+                     "[DimerRot] rotation_backend=lanczos (FD min-mode; "
+                     "skipping classical constrained rotation loop)");
+      Lanczos solver(matter, params, pot);
+      solver.compute(matter, direction);
+      eigenvalue = solver.getEigenvalue();
+      direction = solver.getEigenvector();
+      totalForceCalls += solver.totalForceCalls;
+      statsRotations = solver.statsRotations;
+    } else {
+      QUILL_LOG_INFO(log,
+                     "[DimerRot] rotation_backend=davidson (FD min-mode; "
+                     "skipping classical constrained rotation loop)");
+      Davidson solver(matter, params, pot);
+      solver.compute(matter, direction);
+      eigenvalue = solver.getEigenvalue();
+      direction = solver.getEigenvector();
+      totalForceCalls += solver.totalForceCalls;
+      statsRotations = solver.statsRotations;
+    }
+    eonc::safemath::safe_normalize_inplace(direction);
+    *matterCenter = *matter;
+    QUILL_LOG_INFO(log, "[DimerRot] hybrid mode estimate eigenvalue={:.6f}",
+                   eigenvalue);
+    return;
+  }
+
   long rotations = 0;
   long forceCallsCenter = matterCenter->getForceCalls();
   long forceCallsDimer = matterDimer->getForceCalls();
@@ -57,8 +93,6 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   rotationalForceOld.setZero();
   rotationalPlaneOld.setZero();
 
-  eonc::safemath::safe_normalize_inplace(initialDirection);
-  direction = initialDirection;
   statsAngle = 0;
   double lengthRotationalForceOld = 0.0;
 

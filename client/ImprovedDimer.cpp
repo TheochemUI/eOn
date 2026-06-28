@@ -13,7 +13,9 @@
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
 #include "ImprovedDimer.h"
+#include "Davidson.h"
 #include "HelperFunctions.h"
+#include "Lanczos.h"
 #include "LowestEigenmode.h"
 #include "SafeMath.h"
 #include "eonExceptions.hpp"
@@ -99,6 +101,50 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     x1->setPositionsV(x0_r + delta * tau);
     QUILL_LOG_DEBUG(
         log, "[IDimer] Initial tangent flipped due to high energy wall.");
+  }
+
+  // Optional: replace constrained rotation (IDimerRot) with FD min-mode finder.
+  const std::string &rotBackend = params.dimer_options.rotation_backend;
+  if (rotBackend == "lanczos" || rotBackend == "davidson") {
+    AtomMatrix initMode =
+        AtomMatrix::Map(tau.data(), matter->numberOfAtoms(), 3);
+    if (rotBackend == "lanczos") {
+      QUILL_LOG_INFO(log,
+                     "[IDimerRot] rotation_backend=lanczos (FD min-mode; "
+                     "skipping classical constrained rotation loop)");
+      Lanczos solver(matter, params, pot);
+      solver.compute(matter, initMode);
+      C_tau = solver.getEigenvalue();
+      AtomMatrix ev = solver.getEigenvector();
+      tau = VectorXd::Map(ev.data(), 3 * matter->numberOfAtoms());
+      totalForceCalls += solver.totalForceCalls;
+      statsRotations = solver.statsRotations;
+    } else {
+      QUILL_LOG_INFO(log,
+                     "[IDimerRot] rotation_backend=davidson (FD min-mode; "
+                     "skipping classical constrained rotation loop)");
+      Davidson solver(matter, params, pot);
+      solver.compute(matter, initMode);
+      C_tau = solver.getEigenvalue();
+      AtomMatrix ev = solver.getEigenvector();
+      tau = VectorXd::Map(ev.data(), 3 * matter->numberOfAtoms());
+      totalForceCalls += solver.totalForceCalls;
+      statsRotations = solver.statsRotations;
+    }
+    tau = tau.array() * matter->getFreeV().array();
+    if (tau.norm() > 1e-10) {
+      tau.normalize();
+    }
+    x0_r = matter->getPositionsV();
+    x0->setPositionsV(x0_r);
+    x1->setPositionsV(x0_r + delta * tau);
+    *matter = *x0;
+    rotationDidConverge = true;
+    foundNegativeCurvature = (C_tau < 0.0);
+    QUILL_LOG_INFO(log,
+                   "[IDimerRot] hybrid mode estimate C_tau={:.6f} backend={}",
+                   C_tau, rotBackend);
+    return;
   }
 
   if (params.dimer_options.opt_method == OPT_LBFGS) {
