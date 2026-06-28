@@ -53,6 +53,12 @@ bool rgpotClientConfigure(void *holder, const RgpotConfigureSpec &spec,
     nw.setScfType(spec.nwchem_scf_type);
     nw.setCharge(spec.nwchem_charge);
     nw.setMultiplicity(spec.nwchem_multiplicity);
+    if (!spec.nwchem_input_blocks.empty()) {
+      auto blocks = nw.initInputBlocks(
+          static_cast<unsigned>(spec.nwchem_input_blocks.size()));
+      for (unsigned i = 0; i < blocks.size(); ++i)
+        blocks.set(i, spec.nwchem_input_blocks[i]);
+    }
   }
 
   auto result = req.send().wait(waitScope);

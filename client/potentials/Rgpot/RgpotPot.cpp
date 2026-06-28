@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 
 RgpotPot::RgpotPot(const Parameters &p)
     : Potential(PotType::RGPOT, p) {
@@ -45,10 +46,41 @@ RgpotPot::~RgpotPot() {
   }
 }
 
+namespace {
+
+// DFT XC carried only in scfType (theory=dft) needs an input block on embeds
+// that do not promote scfType→XC (older libnwchemc).
+bool looks_like_dft_xc(const std::string &s) {
+  if (s.empty())
+    return false;
+  static const char *k[] = {"b3lyp", "blyp", "pbe", "pw91", "bp86",
+                            "hcth",  "ft97", "hfexch", "xperpbe", nullptr};
+  for (int i = 0; k[i]; ++i) {
+    if (s.size() >= std::char_traits<char>::length(k[i]) &&
+        s.compare(0, std::char_traits<char>::length(k[i]), k[i]) == 0)
+      return true;
+  }
+  return false;
+}
+
+std::string dft_xc_input_block(const std::string &xc, int mult) {
+  return "dft\n  xc " + xc + "\n  mult " + std::to_string(mult) + "\nend";
+}
+
+} // namespace
+
 void RgpotPot::ensureConfigured() {
   if (configured_) {
     return;
   }
+  // Env overrides for method (CI / integration scripts)
+  if (const char *e = std::getenv("RGPOT_NWCHEM_BASIS"))
+    nwchem_basis_ = e;
+  if (const char *e = std::getenv("RGPOT_NWCHEM_THEORY"))
+    nwchem_theory_ = e;
+  if (const char *e = std::getenv("RGPOT_NWCHEM_SCF_TYPE"))
+    nwchem_scf_type_ = e;
+
   RgpotConfigureSpec spec;
   spec.backend = backend_;
   spec.nwchem_basis = nwchem_basis_;
@@ -61,6 +93,19 @@ void RgpotPot::ensureConfigured() {
   spec.cpmd_cut_off_ry = cpmd_cut_off_ry_;
   spec.cpmd_charge = cpmd_charge_;
   spec.cpmd_multiplicity = cpmd_multiplicity_;
+
+  if (const char *blk = std::getenv("RGPOT_NWCHEM_INPUT_BLOCK")) {
+    if (blk[0])
+      spec.nwchem_input_blocks.emplace_back(blk);
+  } else if ((nwchem_theory_ == "dft" || nwchem_theory_ == "DFT") &&
+             looks_like_dft_xc(nwchem_scf_type_)) {
+    spec.nwchem_input_blocks.push_back(
+        dft_xc_input_block(nwchem_scf_type_, nwchem_multiplicity_));
+  } else if (looks_like_dft_xc(nwchem_theory_)) {
+    // theory=b3lyp legacy shape — still emit block so XC is explicit
+    spec.nwchem_input_blocks.push_back(
+        dft_xc_input_block(nwchem_theory_, nwchem_multiplicity_));
+  }
 
   std::string msg;
   const bool ok = rgpotClientConfigure(client_holder_, spec, &msg);

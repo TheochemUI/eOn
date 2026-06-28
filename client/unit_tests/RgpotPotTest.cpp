@@ -51,14 +51,15 @@ TEST_CASE("RgpotPot force via potserv (requires WITH_RGPOT_CLIENT + server)",
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 
-  // Water-like 3 atoms (Å)
+  // Water geometry (Å) — matches rgpot NWChem B3LYP demos when env sets method
   const long N = 3;
-  double R[9] = {0.0, 0.0, 0.0, 0.96, 0.0, 0.0, -0.24, 0.93, 0.0};
+  double R[9] = {0.0, 0.0, 0.11779, 0.0, 0.75545, -0.47116,
+                 0.0, -0.75545, -0.47116};
   int Z[3] = {8, 1, 1};
   double F[9] = {};
   double U = 0.0;
   double var = 0.0;
-  double box[9] = {20, 0, 0, 0, 20, 0, 0, 0, 20};
+  double box[9] = {100, 0, 0, 0, 100, 0, 0, 0, 100};
 
   pot->force(N, R, Z, F, &U, &var, box);
   REQUIRE(std::isfinite(U));
@@ -71,14 +72,27 @@ TEST_CASE("RgpotPot force via potserv (requires WITH_RGPOT_CLIENT + server)",
   }
   REQUIRE(any_f);
 
+  const bool want_b3lyp =
+      (std::getenv("RGPOT_NWCHEM_SCF_TYPE") &&
+       std::string(std::getenv("RGPOT_NWCHEM_SCF_TYPE")).find("b3lyp") == 0) ||
+      (std::getenv("RGPOT_NWCHEM_THEORY") &&
+       std::string(std::getenv("RGPOT_NWCHEM_THEORY")).find("b3lyp") == 0);
+  if (want_b3lyp) {
+    // Water B3LYP/6-31G* ~ -2079 eV (not LDA ~-2063)
+    REQUIRE(U < -2070.0);
+  }
+
   // Second call (configure once). Real DFT may differ slightly between SCFs.
   double U2 = 0.0;
   pot->force(N, R, Z, F, &U2, &var, box);
   REQUIRE(std::isfinite(U2));
-  const double etol = (std::getenv("RGPOT_NWCHEM_THEORY") != nullptr &&
-                       std::string(std::getenv("RGPOT_NWCHEM_THEORY")) == "dft")
-                          ? 1e-3
-                          : 1e-9;
+  const bool dft_like =
+      want_b3lyp ||
+      (std::getenv("RGPOT_NWCHEM_THEORY") != nullptr &&
+       std::string(std::getenv("RGPOT_NWCHEM_THEORY")) == "dft");
+  const double etol = dft_like ? 1e-3 : 1e-9;
   REQUIRE_THAT(U2, WithinAbs(U, etol));
+  if (want_b3lyp)
+    REQUIRE(U2 < -2070.0);
 #endif
 }

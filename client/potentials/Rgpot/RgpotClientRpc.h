@@ -13,6 +13,9 @@ struct RgpotConfigureSpec {
   std::string nwchem_scf_type;
   int nwchem_charge{0};
   int nwchem_multiplicity{1};
+  /// Optional NWChem input blocks (e.g. "dft\\n  xc b3lyp\\nend") for reliable XC
+  /// when host libnwchemc does not promote scfType alone.
+  std::vector<std::string> nwchem_input_blocks;
   std::string cpmd_functional;
   std::string cpmd_task;
   double cpmd_cut_off_ry{70.0};
