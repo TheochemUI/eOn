@@ -164,6 +164,9 @@ json to_json(const Parameters &p) {
   j["Hessian"] = {
       {"atom_list", p.hessian_options.atom_list},
       {"zero_freq_value", p.hessian_options.zero_freq_value},
+      {"fd_scheme", p.hessian_options.fd_scheme},
+      {"resume", p.hessian_options.resume},
+      {"checkpoint_path", p.hessian_options.checkpoint_path},
   };
 
   // [Debug]

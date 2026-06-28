@@ -381,9 +381,18 @@ public:
   } prefactor_options;
 
   // [Hessian] //
+  // atom_list: mobile/displaced atoms for FD (hybrid/PHVA-class active set),
+  // or "All" = every non-fixed atom. Intersected with free flags in HessianJob.
   struct hessian_options_t {
     std::string atom_list{"All"};
     double zero_freq_value{1e-6};
+    // FD scheme: "one_sided" (default, ~3M force evals) or "central" (~6M).
+    // Step size is Main.finite_difference (dx).
+    std::string fd_scheme{"one_sided"};
+    // If true and checkpoint_path is set, resume FD columns from checkpoint.
+    bool resume{false};
+    // Column checkpoint file (e.g. hessian.ckpt). Cleared on successful finish.
+    std::string checkpoint_path{""};
   } hessian_options;
 
   // [Nudged Elastic Band] //

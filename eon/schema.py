@@ -1843,10 +1843,31 @@ class HessianConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
     atom_list: Union[str, list[int]] = Field(
         default="All",
-        description="The atoms that will be displaced in the calculation of the Hessian: a comma delimited list of atom indices, e.g. 0,1,2. Default is 'All'.",
+        description=(
+            "Mobile/displaced atoms for FD Hessian (hybrid/PHVA-class active set): "
+            "comma-delimited indices, e.g. 0,1,2, or 'All' for every non-fixed atom. "
+            "Intersects with free flags in pos.con."
+        ),
     )
     zero_freq_value: float = Field(
         default=1e-6, description="The value assigned to zero frequencies."
+    )
+    fd_scheme: Literal["one_sided", "central"] = Field(
+        default="one_sided",
+        description=(
+            "Finite-difference scheme for Hessian columns. one_sided uses F(x+h)-F(x) "
+            "(~3M force calls for M active DOF); central uses F(x+h)-F(x-h) (~6M). "
+            "Step size is Main.finite_difference. Default one_sided matches historical "
+            "eOn client behavior and is preferred for classical EAM VTST cost."
+        ),
+    )
+    resume: bool = Field(
+        default=False,
+        description="Resume FD columns from checkpoint_path if the file exists.",
+    )
+    checkpoint_path: str = Field(
+        default="",
+        description="Path for FD column checkpoint (e.g. hessian.ckpt). Removed on success.",
     )
 
 

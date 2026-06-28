@@ -34,9 +34,9 @@ std::vector<std::string> HessianJob::run(void) {
   moved.setConstant(-1);
 
   int nMoved = 0;
-  // Optional [Hessian] atom_list restricts the FD block (comma-separated
-  // 0-based indices, or "All" for every non-fixed atom). Intersect with free
-  // atoms so callers cannot request coordinates that are frozen in pos.con.
+  // [Hessian] atom_list = mobile/displaced atoms for FD (hybrid/PHVA-class
+  // active set), comma-separated 0-based indices, or "All" = every non-fixed
+  // atom. Intersect with free flags so frozen CON atoms are never displaced.
   const std::string &atomList = params.hessian_options.atom_list;
   const bool useExplicitList =
       !atomList.empty() &&

@@ -1050,6 +1050,18 @@ Hessian:
             kind: float
             default: 1e-6
 
+        fd_scheme:
+            kind: string
+            default: one_sided
+
+        resume:
+            kind: bool
+            default: false
+
+        checkpoint_path:
+            kind: string
+            default: ""
+
 ################################################################################
 
 Lanczos:

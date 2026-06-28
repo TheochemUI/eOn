@@ -16,13 +16,70 @@
 
 #include <cmath>
 #include <fstream>
+#include <sstream>
+#include <string>
+
+namespace {
+
+// atom_list entries are *mobile / displaced* atoms for FD (hybrid/PHVA-class
+// active set). Intersect with non-fixed atoms in HessianJob.
+
+bool isCentralScheme(const std::string &scheme) {
+  return scheme == "central" || scheme == "CENTRAL" || scheme == "Central";
+}
+
+// Checkpoint: first line "eon_hess_ckpt <size> <next_col>", then size*size
+// doubles in row-major order matching MatrixXd storage.
+bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
+                          MatrixXd &H) {
+  std::ifstream in(path);
+  if (!in) {
+    return false;
+  }
+  std::string tag;
+  int fileSize = 0;
+  in >> tag >> fileSize >> nextCol;
+  if (!in || tag != "eon_hess_ckpt" || fileSize != size || nextCol < 0 ||
+      nextCol > size) {
+    return false;
+  }
+  H.resize(size, size);
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      double v = 0.0;
+      in >> v;
+      if (!in) {
+        return false;
+      }
+      H(i, j) = v;
+    }
+  }
+  return true;
+}
+
+bool saveColumnCheckpoint(const std::string &path, int size, int nextCol,
+                          const MatrixXd &H) {
+  std::ofstream out(path);
+  if (!out) {
+    return false;
+  }
+  out << "eon_hess_ckpt " << size << " " << nextCol << "\n";
+  out.precision(17);
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      out << H(i, j) << (j + 1 == size ? '\n' : ' ');
+    }
+  }
+  return static_cast<bool>(out);
+}
+
+} // namespace
 
 Hessian::Hessian(const Parameters &params, Matter *matter)
     : matter{matter},
       parameters{params} {
   hessian.resize(0, 0);
   freqs.resize(0);
-  /* Logger initialized via class member */
 }
 
 MatrixXd Hessian::getHessian(Matter *matterIn, const VectorXi &atomsIn) {
@@ -56,17 +113,13 @@ VectorXd Hessian::getFreqs(Matter *matterIn, const VectorXi &atomsIn) {
 bool Hessian::calculate() {
   int nAtoms = matter->numberOfAtoms();
 
-  // Determine the Hessian size
-  int size = 0;
-  size = static_cast<int>(atoms.rows()) * 3;
+  int size = static_cast<int>(atoms.rows()) * 3;
   QUILL_LOG_DEBUG(log, "[Hessian] Hessian size: {}\n", size);
   if (size == 0) {
     return false;
   }
 
-  // Out-of-range atom indices used to OOB-write AtomMatrix rows and segfault
-  // inside potential force evaluation / Eigen (seen with VTST partial Hessians
-  // and portable eonclient builds). Fail cleanly instead.
+  // Mobile-atom polarity: indices in `atoms` are FD-displaced DOF owners.
   for (int a = 0; a < atoms.rows(); ++a) {
     const long idx = atoms(a);
     if (idx < 0 || idx >= nAtoms) {
@@ -78,7 +131,6 @@ bool Hessian::calculate() {
     }
   }
 
-  // Build the hessian
   Matter matterTemp(*matter);
   double dr = parameters.main_options.finiteDifference;
   if (!(dr > 0.0) || !std::isfinite(dr)) {
@@ -86,65 +138,92 @@ bool Hessian::calculate() {
     return false;
   }
 
+  const bool useCentral =
+      isCentralScheme(parameters.hessian_options.fd_scheme);
+  const std::string &ckptPath = parameters.hessian_options.checkpoint_path;
+  const bool wantResume = parameters.hessian_options.resume && !ckptPath.empty();
+
   AtomMatrix pos = matter->getPositions();
   AtomMatrix posDisplace(nAtoms, 3);
   AtomMatrix posTemp(nAtoms, 3);
-  AtomMatrix force1(nAtoms, 3);
-  AtomMatrix force2(nAtoms, 3);
+  AtomMatrix force0(nAtoms, 3);
+  AtomMatrix forcePlus(nAtoms, 3);
+  AtomMatrix forceMinus(nAtoms, 3);
 
-  //    Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian(size, size);
   hessian.resize(size, size);
+  hessian.setZero();
 
-  force1 = matterTemp.getForces();
-  if (!force1.allFinite()) {
+  int startCol = 0;
+  if (wantResume && loadColumnCheckpoint(ckptPath, size, startCol, hessian)) {
+    QUILL_LOG_DEBUG(log, "[Hessian] resume from column {} / {}\n", startCol,
+                    size);
+  } else {
+    startCol = 0;
+    hessian.setZero();
+  }
+
+  force0 = matterTemp.getForces();
+  if (!force0.allFinite()) {
     QUILL_LOG_ERROR(log,
                     "[Hessian] non-finite forces at undisplaced geometry; "
                     "aborting FD Hessian");
     return false;
   }
-  for (int i = 0; i < size; i++) {
-    posDisplace.setZero();
 
-    // Displacing one coordinate
+  for (int i = startCol; i < size; i++) {
+    posDisplace.setZero();
     posDisplace(atoms(i / 3), i % 3) = dr;
 
     posTemp = pos + posDisplace;
     matterTemp.setPositions(posTemp);
-    force2 = matterTemp.getForces();
-    if (!force2.allFinite()) {
+    forcePlus = matterTemp.getForces();
+    if (!forcePlus.allFinite()) {
       QUILL_LOG_ERROR(log,
-                      "[Hessian] non-finite forces for FD column {}; "
+                      "[Hessian] non-finite forces for FD column {} (+); "
                       "aborting FD Hessian",
                       i);
       return false;
     }
 
-    // To use central difference estimate of the hessian uncomment following
-    // (and divide by 2*dr) in the following. This does use an additional 'size'
-    // forcecalls and will generally not lead to very different results. In most
-    // cases, the additional accuracy is not worth the computation time.
+    if (useCentral) {
+      posTemp = pos - posDisplace;
+      matterTemp.setPositions(posTemp);
+      forceMinus = matterTemp.getForces();
+      if (!forceMinus.allFinite()) {
+        QUILL_LOG_ERROR(log,
+                        "[Hessian] non-finite forces for FD column {} (-); "
+                        "aborting FD Hessian",
+                        i);
+        return false;
+      }
+      // Central: H_ij ≈ -(F+(xj) - F-(xj)) / (2 dr), mass-weighted
+      for (int j = 0; j < size; j++) {
+        const double dF =
+            forcePlus(atoms(j / 3), j % 3) - forceMinus(atoms(j / 3), j % 3);
+        hessian(i, j) = -dF / (2.0 * dr);
+        const double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
+                                         matter->getMass(atoms(i / 3)));
+        hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
+      }
+    } else {
+      // One-sided (forward): H_ij ≈ -(F+(xj) - F0(xj)) / dr  [default; cheaper]
+      for (int j = 0; j < size; j++) {
+        const double dF =
+            forcePlus(atoms(j / 3), j % 3) - force0(atoms(j / 3), j % 3);
+        hessian(i, j) = -dF / dr;
+        const double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
+                                         matter->getMass(atoms(i / 3)));
+        hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
+      }
+    }
 
-    /*
-    posTemp = pos - posDisplace;
-    matterTemp.setPositions(posTemp);
-    force1 = matterTemp.getForces();
-    */
-
-    for (int j = 0; j < size; j++) {
-      hessian(i, j) =
-          -(force2(atoms(j / 3), j % 3) - force1(atoms(j / 3), j % 3)) / dr;
-      double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
-                                 matter->getMass(atoms(i / 3)));
-      hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
+    if (!ckptPath.empty()) {
+      // next column to compute after a clean interrupt
+      saveColumnCheckpoint(ckptPath, size, i + 1, hessian);
     }
   }
 
-  // Force hessian to be symmetric
-
-  // hessian = (hessian + hessian.transpose())/2;
-  // cannot be used, messes up the lower trianguler
-  // transpose does not seem to be a hardcopy, rather just an index manipulation
-
+  // Symmetrize (FD noise breaks H=H^T; required for vib analysis)
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < i; j++) {
       hessian(i, j) = (hessian(i, j) + hessian(j, i)) / 2;
@@ -167,13 +246,15 @@ bool Hessian::calculate() {
     hessfile.close();
   }
 
+  // Completed run: remove checkpoint so a later job does not resume stale cols
+  if (!ckptPath.empty()) {
+    std::remove(ckptPath.c_str());
+  }
+
   double t0, t1;
   eonc::helpers::getTime(&t0, nullptr, nullptr);
   QUILL_LOG_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
-  // eOn's MatrixXd is RowMajor (atom-block layout). Eigen's
-  // SelfAdjointEigenSolver is only well-defined for ColMajor storage; running
-  // it on RowMajor has caused segfaults in HessianJob (VTST partial blocks,
-  // size ~42) on some toolchains. Copy to ColMajor for the eigen solve only.
+  // ColMajor copy for SelfAdjointEigenSolver (eOn MatrixXd is RowMajor)
   using ColMajorXd =
       Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
   ColMajorXd hessianCol = hessian;
@@ -197,14 +278,6 @@ bool Hessian::calculate() {
 
   return true;
 }
-
-// If we are checking for rotation, then the system has no frozen atoms and
-// can rotate and translate. This gives effectively zero eigenvalues. We
-// need to remove them from the prefactor calculation.
-// the condition requires that every atom moves. Otherwise, we don't
-// get the 6 rotational and translational modes.
-// XXX: what happens if the entire particle rotates about one atom or a line of
-// atoms?
 
 VectorXd Hessian::removeZeroFreqs(const VectorXd &freqs) {
   QUILL_LOG_DEBUG(log, "[Hessian] removing zero frequency modes");
