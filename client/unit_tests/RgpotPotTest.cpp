@@ -31,9 +31,19 @@ TEST_CASE("RgpotPot force via potserv (requires WITH_RGPOT_CLIENT + server)",
   params.rgpot_options.port = std::atoi(port_s);
   const char *backend = std::getenv("RGPOT_BACKEND");
   params.rgpot_options.backend = backend ? backend : "NWChem";
-  params.rgpot_options.nwchem_basis = "sto-3g";
-  params.rgpot_options.nwchem_theory = "scf";
-  params.rgpot_options.nwchem_scf_type = "rhf";
+  // Optional: RGPOT_NWCHEM_BASIS / THEORY / SCF_TYPE (e.g. 6-31g* / dft / b3lyp)
+  if (const char *b = std::getenv("RGPOT_NWCHEM_BASIS"))
+    params.rgpot_options.nwchem_basis = b;
+  else
+    params.rgpot_options.nwchem_basis = "sto-3g";
+  if (const char *t = std::getenv("RGPOT_NWCHEM_THEORY"))
+    params.rgpot_options.nwchem_theory = t;
+  else
+    params.rgpot_options.nwchem_theory = "scf";
+  if (const char *s = std::getenv("RGPOT_NWCHEM_SCF_TYPE"))
+    params.rgpot_options.nwchem_scf_type = s;
+  else
+    params.rgpot_options.nwchem_scf_type = "rhf";
   params.rgpot_options.cpmd_functional = "BLYP";
   params.rgpot_options.cpmd_task = "gradient";
 
