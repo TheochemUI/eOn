@@ -1544,6 +1544,13 @@ class DimerConfig(BaseModel):
             "2013 Locally Optimal Rotation) replacing IDimerRot."
         ),
     )
+    lor_residual_tol: float = Field(
+        default=0.1,
+        description=(
+            "LOR only: relative residual stop ||F_perp||/(|C_N|+1) < "
+            "max(1e-3, lor_residual_tol). Independent of torque_min."
+        ),
+    )
     """
     Implements the method of :cite:t:`dm-melanderRemovingExternalDegrees2015`
     """

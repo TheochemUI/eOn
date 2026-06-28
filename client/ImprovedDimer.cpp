@@ -119,7 +119,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     x0->setPositionsV(x0_r);
     x1->setPositionsV(x0_r + delta * tau);
     *matter = *x0;
-    rotationDidConverge = true;
+    rotationDidConverge = alt->converged;
     foundNegativeCurvature = (C_tau < 0.0);
     return;
   }

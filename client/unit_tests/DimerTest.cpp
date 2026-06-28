@@ -12,6 +12,7 @@
 
 #include "Dimer.h"
 #include "Davidson.h"
+#include "DimerRotationDispatch.h"
 #include "EigenmodeStrategy.h"
 #include "ImprovedDimer.h"
 #include "LORRotation.h"
@@ -21,6 +22,8 @@
 #include "Parameters.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+
+#include <algorithm>
 
 namespace tests {
 
@@ -332,11 +335,17 @@ TEST_CASE_METHOD(DimerFixture,
   lor.compute(matter, lanczos.getEigenvector());
 
   REQUIRE_FALSE(lor.curvatureHistory.empty());
-  // appendHistory keeps cn <= last+1e-4; allow +0.5 FD slack on the chain.
+  // Production appendHistory: cn <= previous + 1e-4 (float margin 1e-6).
   for (size_t i = 1; i < lor.curvatureHistory.size(); ++i) {
-    REQUIRE(lor.curvatureHistory[i] <= lor.curvatureHistory[i - 1] + 0.5);
+    REQUIRE(lor.curvatureHistory[i] <=
+            lor.curvatureHistory[i - 1] + 1e-4 + 1e-6);
   }
+  // Returned eigenpair matches best accepted history sample.
+  const double histMin = *std::min_element(lor.curvatureHistory.begin(),
+                                           lor.curvatureHistory.end());
+  REQUIRE(lor.getEigenvalue() == Catch::Approx(histMin).margin(1e-4));
   REQUIRE(lor.getEigenvalue() < 0.0);
+  REQUIRE(lor.getEigenvector().norm() == Catch::Approx(1.0).margin(1e-6));
 }
 
 TEST_CASE_METHOD(
@@ -356,12 +365,10 @@ TEST_CASE_METHOD(
   lanczos.compute(matter, mode);
   AtomMatrix mLanc = lanczos.getEigenvector();
 
-  // Start LOR from the Lanczos mode so both solve the same softest-mode problem
-  // from a shared FD min-mode basin (plan: |cos| > 0.7 vs classical *or*
-  // Lanczos).
+  // Seed LOR from the shared fixture mode (not Lanczos self-agreement).
   params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
   LORRotation lor(matter, params, pot);
-  lor.compute(matter, mLanc);
+  lor.compute(matter, mode);
   AtomMatrix mLor = lor.getEigenvector();
 
   auto absCos = [](const AtomMatrix &a, const AtomMatrix &b) {
@@ -374,7 +381,7 @@ TEST_CASE_METHOD(
   };
   const double cosClass = absCos(mClass, mLor);
   const double cosLanc = absCos(mLanc, mLor);
-  // Plan criterion 3: sign-insensitive |cos| > 0.7 vs classical or Lanczos.
+  // Must agree with classical or Lanczos softest mode (|cos| > 0.7).
   REQUIRE(std::max(cosClass, cosLanc) > 0.7);
   REQUIRE(lor.getEigenvalue() < 0.0);
   REQUIRE(classical.getEigenvalue() < 0.0);
@@ -390,6 +397,74 @@ TEST_CASE_METHOD(DimerFixture,
   ImprovedDimer dimer(matter, params, pot);
   dimer.compute(matter, mode);
   REQUIRE(std::isfinite(dimer.getEigenvalue()));
+  REQUIRE(dimer.getEigenvalue() < 0.0);
+  REQUIRE(dimer.totalForceCalls > 0);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "rotation_backend lanczos/davidson report force calls",
+                 "[dimer][lor][force_calls]") {
+  params.dimer_options.improved = true;
+  params.dimer_options.rotations_max = 20;
+
+  params.dimer_options.rotation_backend = DimerRotationBackend::Lanczos;
+  ImprovedDimer dimL(matter, params, pot);
+  dimL.compute(matter, mode);
+  REQUIRE(dimL.totalForceCalls > 0);
+  REQUIRE(std::isfinite(dimL.getEigenvalue()));
+
+  params.dimer_options.rotation_backend = DimerRotationBackend::Davidson;
+  ImprovedDimer dimD(matter, params, pot);
+  dimD.compute(matter, mode);
+  REQUIRE(dimD.totalForceCalls > 0);
+  REQUIRE(std::isfinite(dimD.getEigenvalue()));
+
+  // Direct solvers also expose totalForceCalls.
+  Lanczos lan(matter, params, pot);
+  lan.compute(matter, mode);
+  REQUIRE(lan.totalForceCalls > 0);
+  Davidson dav(matter, params, pot);
+  dav.compute(matter, mode);
+  REQUIRE(dav.totalForceCalls > 0);
+}
+
+TEST_CASE_METHOD(DimerFixture, "LOR residual convergence flag via dispatch",
+                 "[dimer][lor][convergence]") {
+  params.dimer_options.improved = true;
+  params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+  // Impossible residual with minimal budget → not convergedOnResidual.
+  params.dimer_options.lor_residual_tol = 1e-15;
+  params.dimer_options.rotations_max = 2;
+  ImprovedDimer tight(matter, params, pot);
+  tight.compute(matter, mode);
+  REQUIRE_FALSE(tight.rotationDidConverge);
+
+  // Loose residual → converges on residual when budget allows.
+  params.dimer_options.lor_residual_tol = 10.0;
+  params.dimer_options.rotations_max = 20;
+  ImprovedDimer loose(matter, params, pot);
+  loose.compute(matter, mode);
+  REQUIRE(loose.rotationDidConverge);
+  REQUIRE(loose.totalForceCalls > 0);
+}
+
+TEST_CASE_METHOD(DimerFixture, "classical rotation_backend skips alt dispatch",
+                 "[dimer][lor][dispatch]") {
+  params.dimer_options.rotation_backend = DimerRotationBackend::Classical;
+  auto none = eonc::runAlternativeRotation(DimerRotationBackend::Classical,
+                                           matter, params, pot, mode);
+  REQUIRE_FALSE(none.has_value());
+}
+
+TEST_CASE_METHOD(DimerFixture, "non-improved Dimer uses LOR rotation_backend",
+                 "[dimer][lor][eigenmode]") {
+  params.dimer_options.improved = false;
+  params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+  params.dimer_options.rotations_max = 20;
+  Dimer dimer(matter, params, pot);
+  dimer.compute(matter, mode);
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+  REQUIRE(dimer.totalForceCalls > 0);
   REQUIRE(dimer.getEigenvalue() < 0.0);
 }
 

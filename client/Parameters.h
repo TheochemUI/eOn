@@ -231,6 +231,9 @@ public:
     // Mode estimation for dimer: classical rotation loop, or FD min-mode
     // (Lanczos/Davidson) replacing constrained IDimerRot / Dimer::rotate.
     DimerRotationBackend rotation_backend{DimerRotationBackend::Classical};
+    // LOR relative residual stop: ||F_perp|| / (|C_N|+1) < max(1e-3, this).
+    // Independent of classical torque_min (angular criterion).
+    double lor_residual_tol{0.1};
   } dimer_options;
 
   // [GPR Dimer] //

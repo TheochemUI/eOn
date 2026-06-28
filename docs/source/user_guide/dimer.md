@@ -51,12 +51,22 @@ H·P in ambient space), residual / `rotations_max` / stall stops, and a best-mod
 restore when the Ritz sequence is non-monotonic under FD noise.
 ```
 
+LOR stops when the *relative* residual
+`‖F_⊥‖ / (|C_N| + 1) < max(1e-3, lor_residual_tol)` (default
+`lor_residual_tol = 0.1`). That parameter is **not** classical `torque_min`
+(angular torque for the constrained rotation loop); it only applies when
+`rotation_backend = lor`. Budget is `rotations_max` (default 10; values
+`<= 0` fall back to 10). Exhausting the budget without meeting the residual
+stop sets `rotationDidConverge` false on `ImprovedDimer`.
+
 Example:
 
 ```{code-block} ini
 [Dimer]
 improved = True
 rotation_backend = lor
+lor_residual_tol = 0.1
+rotations_max = 20
 ```
 
 `improved = True` (default) uses `ImprovedDimer`; non-classical backends skip the

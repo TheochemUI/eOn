@@ -22,6 +22,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <type_traits>
 
 namespace eonc {
 
@@ -31,6 +32,9 @@ struct DimerRotationResult {
   double eigenvalue{0.0};
   long forceCalls{0};
   long rotations{0};
+  /// LOR: true only when residual stop fired; Lanczos/Davidson: true (internal
+  /// convergence criteria, not residual-exposed here).
+  bool converged{true};
 };
 
 [[nodiscard]] inline constexpr bool
@@ -51,6 +55,11 @@ template <typename Solver>
   out.eigenvalue = solver.getEigenvalue();
   out.forceCalls = solver.totalForceCalls;
   out.rotations = solver.statsRotations;
+  if constexpr (std::is_same_v<Solver, LORRotation>) {
+    out.converged = solver.convergedOnResidual;
+  } else {
+    out.converged = true;
+  }
   return out;
 }
 

@@ -32,6 +32,8 @@ Davidson::Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
 }
 
 void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
+  totalForceCalls = 0;
+  statsRotations = 0;
   const int size = 3 * matter->numberOfFreeAtoms();
   const long maxIter = params.davidson_options.max_iterations;
   const double tol = params.davidson_options.tolerance;
@@ -62,6 +64,7 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   r /= beta;
 
   auto tmpMatter = std::make_unique<Matter>(*matter);
+  const long forceCallsStart = tmpMatter->getForceCalls();
   const VectorXd force0 = tmpMatter->getForcesFreeV();
 
   // Apply H via one-sided FD of forces (same as Lanczos): H v ≈ -(F(x+dr
@@ -178,6 +181,7 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   }
 
   lowestEw = ew;
+  totalForceCalls = tmpMatter->getForceCalls() - forceCallsStart;
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
   for (i = 0, j = 0; i < matter->numberOfAtoms(); i++) {

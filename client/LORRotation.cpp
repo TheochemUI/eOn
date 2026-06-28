@@ -58,35 +58,32 @@ LORRotation::translateHUnitOrthoP3(const VectorXd &N, const VectorXd &Theta,
   return HPortho / pNrm; // = H (P_ortho / ||P_ortho||) = H P3
 }
 
-// Member used only via compute(); keep signature for header compatibility.
-VectorXd LORRotation::hessianVector(const VectorXd & /*unused*/,
-                                    const VectorXd &x0_r, const VectorXd &v,
-                                    const VectorXd &freeMask, double delta) {
-  VectorXd F0 = x0->getForcesV();
-  VectorXd dir = v.array() * freeMask.array();
-  const double nrm = dir.norm();
-  if (nrm < 1e-14) {
-    return VectorXd::Zero(v.size());
-  }
-  dir /= nrm;
-  x1->setPositionsV(x0_r + delta * dir);
-  VectorXd F1 = x1->getForcesV();
-  totalForceCalls += 1;
-  VectorXd Hv = -(F1 - F0) / delta;
-  Hv = Hv.array() * freeMask.array();
-  return Hv * nrm;
-}
-
 void LORRotation::compute(std::shared_ptr<Matter> matter,
                           AtomMatrix initialDirectionAtomMatrix) {
   const int dim = static_cast<int>(3 * matter->numberOfAtoms());
   const VectorXd freeMask = matter->getFreeV();
+  totalForceCalls = 0;
+  statsRotations = 0;
+  curvatureHistory.clear();
+  convergedOnResidual = false;
+  eigenvalue = 0.0;
+  eigenvector = VectorXd::Zero(dim);
+
+  // Fully fixed system: no free DOF — avoid normalize() NaN.
+  if (freeMask.norm() < 1e-14 || matter->numberOfFreeAtoms() == 0) {
+    QUILL_LOG_WARNING(log, "[LOR] no free atoms; skipping rotation");
+    return;
+  }
 
   VectorXd N = VectorXd::Map(initialDirectionAtomMatrix.data(), dim);
   N = N.array() * freeMask.array();
   if (N.norm() < 1e-10) {
     N.setRandom();
     N = N.array() * freeMask.array();
+  }
+  if (N.norm() < 1e-14) {
+    QUILL_LOG_WARNING(log, "[LOR] free mask yields zero direction; skip");
+    return;
   }
   N.normalize();
 
@@ -95,24 +92,22 @@ void LORRotation::compute(std::shared_ptr<Matter> matter,
   const VectorXd x0_r = x0->getPositionsV();
   const double delta = params.main_options.finiteDifference;
 
-  const int rotmax =
-      std::clamp(static_cast<int>(params.dimer_options.rotations_max > 0
-                                      ? params.dimer_options.rotations_max
-                                      : 20),
-                 1, 50);
+  // rotations_max <= 0 → Parameters default (10); no silent upper clamp.
+  const long rotBudget = params.dimer_options.rotations_max > 0
+                             ? params.dimer_options.rotations_max
+                             : 10;
+  const int rotmax = static_cast<int>(std::max<long>(1, rotBudget));
 
-  const double residualTol = std::max(1e-3, params.dimer_options.torque_min);
+  // Dedicated LOR residual tolerance (not classical torque_min).
+  const double residualTol =
+      std::max(1e-3, params.dimer_options.lor_residual_tol);
   auto relativeResidual = [](double fnorm, double cn) {
     return fnorm / (std::abs(cn) + 1.0);
   };
 
-  curvatureHistory.clear();
-  convergedOnResidual = false;
   double bestCN = std::numeric_limits<double>::infinity();
   VectorXd bestN = N;
   VectorXd bestHN = VectorXd::Zero(dim);
-  statsRotations = 0;
-  totalForceCalls = 0;
 
   // Cache center forces once (paper: FD products reuse F(R0)).
   const VectorXd F0 = x0->getForcesV();

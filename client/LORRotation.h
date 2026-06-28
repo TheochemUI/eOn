@@ -30,12 +30,6 @@ private:
   std::shared_ptr<Matter> x0;
   std::shared_ptr<Matter> x1;
 
-  // FD Hessian-vector product at x0 along unit direction v (free atoms only).
-  // Uses gradients g = -forces; H v ≈ (g(x0+δv) - g(x0)) / δ.
-  VectorXd hessianVector(const VectorXd &g0, const VectorXd &x0_r,
-                         const VectorXd &v, const VectorXd &freeMask,
-                         double delta);
-
 public:
   LORRotation(std::shared_ptr<Matter> matter, const Parameters &params,
               std::shared_ptr<Potential> pot);
