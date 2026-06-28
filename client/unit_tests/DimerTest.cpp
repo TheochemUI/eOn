@@ -14,6 +14,7 @@
 #include "Davidson.h"
 #include "EigenmodeStrategy.h"
 #include "ImprovedDimer.h"
+#include "LORRotation.h"
 #include "Lanczos.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
@@ -296,6 +297,136 @@ TEST_CASE_METHOD(DimerFixedAtomFixture,
 
   double eigenvalue = dimer->getEigenvalue();
   REQUIRE(std::isfinite(eigenvalue));
+}
+
+// --- LOR (Leng et al. JCP 2013) rotation backend ---
+
+TEST_CASE_METHOD(DimerFixture, "LOR rotation finds finite lowest curvature",
+                 "[dimer][lor][eigenmode]") {
+  params.dimer_options.improved = true;
+  params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+  params.dimer_options.max_iterations = 20;
+  params.dimer_options.rotations_max = 20;
+  auto lor = std::make_unique<LORRotation>(matter, params, pot);
+  lor->compute(matter, mode);
+
+  double ev = lor->getEigenvalue();
+  REQUIRE(std::isfinite(ev));
+  REQUIRE(lor->totalForceCalls > 0);
+  REQUIRE(lor->statsRotations >= 0);
+  // Softest mode on displaced LJ (same fixture as classic/improved dimer).
+  REQUIRE(ev < 0.0);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "LOR curvature history is non-increasing within tolerance",
+                 "[dimer][lor][eigenmode]") {
+  params.dimer_options.improved = true;
+  params.dimer_options.max_iterations = 20;
+  params.dimer_options.rotations_max = 20;
+  // Start from Lanczos softest mode so LOR operates in a negative-C basin.
+  Lanczos lanczos(matter, params, pot);
+  lanczos.compute(matter, mode);
+  params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+  LORRotation lor(matter, params, pot);
+  lor.compute(matter, lanczos.getEigenvector());
+
+  REQUIRE_FALSE(lor.curvatureHistory.empty());
+  // appendHistory keeps cn <= last+1e-4; allow +0.5 FD slack on the chain.
+  for (size_t i = 1; i < lor.curvatureHistory.size(); ++i) {
+    REQUIRE(lor.curvatureHistory[i] <= lor.curvatureHistory[i - 1] + 0.5);
+  }
+  REQUIRE(lor.getEigenvalue() < 0.0);
+}
+
+TEST_CASE_METHOD(
+    DimerFixture,
+    "LOR mode agrees with classical ImprovedDimer (sign-insensitive)",
+    "[dimer][lor][eigenmode]") {
+  params.dimer_options.improved = true;
+  params.dimer_options.max_iterations = 50;
+  params.dimer_options.rotations_max = 20;
+
+  params.dimer_options.rotation_backend = DimerRotationBackend::Classical;
+  ImprovedDimer classical(matter, params, pot);
+  classical.compute(matter, mode);
+  AtomMatrix mClass = classical.getEigenvector();
+
+  Lanczos lanczos(matter, params, pot);
+  lanczos.compute(matter, mode);
+  AtomMatrix mLanc = lanczos.getEigenvector();
+
+  // Start LOR from the Lanczos mode so both solve the same softest-mode problem
+  // from a shared FD min-mode basin (plan: |cos| > 0.7 vs classical *or*
+  // Lanczos).
+  params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+  LORRotation lor(matter, params, pot);
+  lor.compute(matter, mLanc);
+  AtomMatrix mLor = lor.getEigenvector();
+
+  auto absCos = [](const AtomMatrix &a, const AtomMatrix &b) {
+    const double n1 = a.norm();
+    const double n2 = b.norm();
+    if (n1 < 1e-10 || n2 < 1e-10) {
+      return 0.0;
+    }
+    return std::abs((a.array() * b.array()).sum() / (n1 * n2));
+  };
+  const double cosClass = absCos(mClass, mLor);
+  const double cosLanc = absCos(mLanc, mLor);
+  // Plan criterion 3: sign-insensitive |cos| > 0.7 vs classical or Lanczos.
+  REQUIRE(std::max(cosClass, cosLanc) > 0.7);
+  REQUIRE(lor.getEigenvalue() < 0.0);
+  REQUIRE(classical.getEigenvalue() < 0.0);
+  REQUIRE(lanczos.getEigenvalue() < 0.0);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "ImprovedDimer rotation_backend=lor is live path",
+                 "[dimer][lor][eigenmode]") {
+  params.dimer_options.improved = true;
+  params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+  params.dimer_options.rotations_max = 20;
+  ImprovedDimer dimer(matter, params, pot);
+  dimer.compute(matter, mode);
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+  REQUIRE(dimer.getEigenvalue() < 0.0);
+}
+
+// Pure linear-algebra check of shipped force-translation identity for H·P3
+// (Algorithm I H·P reuse). Uses a synthetic SPD H so the oracle is exact H*v,
+// but the code under test is LORRotation::translateHUnitOrthoP3 (production).
+TEST_CASE("LOR translateHUnitOrthoP3 matches H*P3 for linear H",
+          "[dimer][lor][translation]") {
+  constexpr int n = 12;
+  Eigen::MatrixXd A = Eigen::MatrixXd::Random(n, n);
+  Eigen::MatrixXd Hmat = A.transpose() * A + Eigen::MatrixXd::Identity(n, n);
+
+  VectorXd N = VectorXd::Random(n);
+  N.normalize();
+  VectorXd Theta = VectorXd::Random(n);
+  Theta = Theta - N.dot(Theta) * N;
+  Theta.normalize();
+  VectorXd P = VectorXd::Random(n);
+
+  const VectorXd HN = Hmat * N;
+  const VectorXd HTheta = Hmat * Theta;
+  const VectorXd HP = Hmat * P;
+
+  const VectorXd P_ortho = P - N.dot(P) * N - Theta.dot(P) * Theta;
+  REQUIRE(P_ortho.norm() > 1e-8);
+  const VectorXd P3 = P_ortho / P_ortho.norm();
+  const VectorXd HP3_exact = Hmat * P3;
+  const VectorXd HP3_code =
+      LORRotation::translateHUnitOrthoP3(N, Theta, P, HN, HTheta, HP);
+
+  // Wrong ambient GS on HP would give O(1) error on this toy; linearity is ~0.
+  const double err = (HP3_exact - HP3_code).norm();
+  const VectorXd HP3_wrong_gs =
+      HP - N.dot(HP) * N - Theta.dot(HP) * Theta; // skeptic's counterexample
+  const double err_wrong = (HP3_exact - HP3_wrong_gs).norm();
+  REQUIRE(err < 1e-9);
+  REQUIRE(err_wrong > 0.1); // documents that GS-on-HP is not H·P3
 }
 
 } /* namespace tests */
