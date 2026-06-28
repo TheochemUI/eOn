@@ -70,7 +70,6 @@ std::vector<std::string> HessianJob::run(void) {
       }
     }
   }
-  moved = moved.head(nMoved);
   if (nMoved == 0) {
     // No free atoms: leave results.dat with force_calls only (no crash).
     std::string results_file("results.dat");
@@ -82,7 +81,13 @@ std::vector<std::string> HessianJob::run(void) {
     }
     return returnFiles;
   }
-  hessian.getFreqs(matter.get(), moved);
+  // Copy into a dense VectorXi — Eigen head() blocks must not be passed as
+  // the sole owner of mobile indices (can alias/garbage on some builds).
+  VectorXi mobile(nMoved);
+  for (int i = 0; i < nMoved; ++i) {
+    mobile(i) = moved(i);
+  }
+  hessian.getFreqs(matter.get(), mobile);
 
   std::string results_file("results.dat");
   returnFiles.push_back(results_file);
