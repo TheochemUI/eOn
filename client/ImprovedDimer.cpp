@@ -13,6 +13,7 @@
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
 #include "ImprovedDimer.h"
+#include "DimerRotationDispatch.h"
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
 #include "SafeMath.h"
@@ -99,6 +100,28 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     x1->setPositionsV(x0_r + delta * tau);
     QUILL_LOG_DEBUG(
         log, "[IDimer] Initial tangent flipped due to high energy wall.");
+  }
+
+  // Optional: LOR / Lanczos / Davidson rotation backends (enum dispatch).
+  if (auto alt = runAlternativeRotation(
+          params.dimer_options.rotation_backend, matter, params, pot,
+          AtomMatrix::Map(tau.data(), matter->numberOfAtoms(), 3),
+          static_cast<quill::Logger *>(log))) {
+    C_tau = alt->eigenvalue;
+    tau = VectorXd::Map(alt->eigenvector.data(), 3 * matter->numberOfAtoms());
+    totalForceCalls += alt->forceCalls;
+    statsRotations = alt->rotations;
+    tau = tau.array() * matter->getFreeV().array();
+    if (tau.norm() > 1e-10) {
+      tau.normalize();
+    }
+    x0_r = matter->getPositionsV();
+    x0->setPositionsV(x0_r);
+    x1->setPositionsV(x0_r + delta * tau);
+    *matter = *x0;
+    rotationDidConverge = true;
+    foundNegativeCurvature = (C_tau < 0.0);
+    return;
   }
 
   if (params.dimer_options.opt_method == OPT_LBFGS) {
