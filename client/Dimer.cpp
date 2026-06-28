@@ -52,9 +52,8 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   const std::string &rotBackend = params.dimer_options.rotation_backend;
   if (rotBackend == "lanczos" || rotBackend == "davidson") {
     if (rotBackend == "lanczos") {
-      QUILL_LOG_INFO(log,
-                     "[DimerRot] rotation_backend=lanczos (FD min-mode; "
-                     "skipping classical constrained rotation loop)");
+      QUILL_LOG_INFO(log, "[DimerRot] rotation_backend=lanczos (FD min-mode; "
+                          "skipping classical constrained rotation loop)");
       Lanczos solver(matter, params, pot);
       solver.compute(matter, direction);
       eigenvalue = solver.getEigenvalue();
@@ -62,9 +61,8 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       totalForceCalls += solver.totalForceCalls;
       statsRotations = solver.statsRotations;
     } else {
-      QUILL_LOG_INFO(log,
-                     "[DimerRot] rotation_backend=davidson (FD min-mode; "
-                     "skipping classical constrained rotation loop)");
+      QUILL_LOG_INFO(log, "[DimerRot] rotation_backend=davidson (FD min-mode; "
+                          "skipping classical constrained rotation loop)");
       Davidson solver(matter, params, pot);
       solver.compute(matter, direction);
       eigenvalue = solver.getEigenvalue();

@@ -109,9 +109,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     AtomMatrix initMode =
         AtomMatrix::Map(tau.data(), matter->numberOfAtoms(), 3);
     if (rotBackend == "lanczos") {
-      QUILL_LOG_INFO(log,
-                     "[IDimerRot] rotation_backend=lanczos (FD min-mode; "
-                     "skipping classical constrained rotation loop)");
+      QUILL_LOG_INFO(log, "[IDimerRot] rotation_backend=lanczos (FD min-mode; "
+                          "skipping classical constrained rotation loop)");
       Lanczos solver(matter, params, pot);
       solver.compute(matter, initMode);
       C_tau = solver.getEigenvalue();
@@ -120,9 +119,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       totalForceCalls += solver.totalForceCalls;
       statsRotations = solver.statsRotations;
     } else {
-      QUILL_LOG_INFO(log,
-                     "[IDimerRot] rotation_backend=davidson (FD min-mode; "
-                     "skipping classical constrained rotation loop)");
+      QUILL_LOG_INFO(log, "[IDimerRot] rotation_backend=davidson (FD min-mode; "
+                          "skipping classical constrained rotation loop)");
       Davidson solver(matter, params, pot);
       solver.compute(matter, initMode);
       C_tau = solver.getEigenvalue();
