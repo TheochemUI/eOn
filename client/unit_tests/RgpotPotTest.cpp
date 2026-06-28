@@ -71,10 +71,14 @@ TEST_CASE("RgpotPot force via potserv (requires WITH_RGPOT_CLIENT + server)",
   }
   REQUIRE(any_f);
 
-  // Second call (configure once)
+  // Second call (configure once). Real DFT may differ slightly between SCFs.
   double U2 = 0.0;
   pot->force(N, R, Z, F, &U2, &var, box);
   REQUIRE(std::isfinite(U2));
-  REQUIRE_THAT(U2, WithinAbs(U, 1e-9));
+  const double etol = (std::getenv("RGPOT_NWCHEM_THEORY") != nullptr &&
+                       std::string(std::getenv("RGPOT_NWCHEM_THEORY")) == "dft")
+                          ? 1e-3
+                          : 1e-9;
+  REQUIRE_THAT(U2, WithinAbs(U, etol));
 #endif
 }
