@@ -42,7 +42,7 @@ obtained differs.
 | `davidson` | Finite-difference Davidson min-mode | Same role as Lanczos with a different iterative subspace |
 | `lor` | Locally optimal rotation (LOR), Algorithm I | {cite:t}`dm-lengEfficientSoftestMode2013`; at most one new FD force per rotation iteration via Hessian–vector products and force translation of prior H·N / H·F⊥ products |
 
-```{versionadded} 2.15
+```{versionadded} TBD
 `rotation_backend` (`classical` \| `lanczos` \| `davidson` \| `lor`). The LOR path
 implements Leng et al. {cite:p}`dm-lengEfficientSoftestMode2013`: 2×2 then 3×3 Ritz
 problems in the rotation subspace, force translation for H·P₃ (linear action of H
