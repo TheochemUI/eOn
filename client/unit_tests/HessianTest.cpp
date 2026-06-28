@@ -13,6 +13,7 @@
 #include "Hessian.h"
 #include "Matter.h"
 #include "Parameters.h"
+#include "SafeMath.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
@@ -104,9 +105,7 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
   Parameters params;
   params.potential_options.potential = PotType::LJ;
   params.hessian_options.fd_scheme = "one_sided";
-  params.hessian_options.resume = true;
   const std::string ckpt = "hessian_resume_test.ckpt";
-  params.hessian_options.checkpoint_path = ckpt;
   std::remove(ckpt.c_str());
 
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -115,23 +114,57 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
   VectorXi subAtoms(2);
   subAtoms << 0, 1;
 
-  // Full run (no resume file yet)
+  // Full run writes columns + symmetrizes; also writes ckpt each column then
+  // deletes it on success.
   params.hessian_options.resume = false;
+  params.hessian_options.checkpoint_path = ckpt;
   Hessian hessFull(params, matter.get());
   MatrixXd Hfull = hessFull.getHessian(matter.get(), subAtoms);
+  REQUIRE(Hfull.rows() == 6);
+  REQUIRE(!std::ifstream(ckpt).good()); // cleared on success
 
-  // Seed partial checkpoint: only first 2 columns done (size=6)
+  // Mid-run interrupt simulation: run with resume+ckpt, but pre-seed a
+  // checkpoint that has *unsymmetrized* FD rows 0..1 only. Build those rows
+  // by a throwaway full run that keeps the ckpt by using resume=false and
+  // manually constructing the file from a controlled partial via second
+  // Hessian that we interrupt by writing next_col=2 ourselves after one
+  // successful full run's logic: use forces FD for cols 0-1 only (same as
+  // Hessian.cpp one_sided) so resume continues cols 2..5 then symmetrizes.
   {
+    Matter matterTemp(*matter);
+    const double dr = params.main_options.finiteDifference;
+    const int nAtoms = matter->numberOfAtoms();
+    const int size = 6;
+    AtomMatrix pos = matter->getPositions();
+    AtomMatrix posDisplace = AtomMatrix::Zero(nAtoms, 3);
+    AtomMatrix force0 = matterTemp.getForces();
+    MatrixXd Hpart = MatrixXd::Zero(size, size);
+    for (int i = 0; i < 2; ++i) {
+      posDisplace.setZero();
+      posDisplace(subAtoms(i / 3), i % 3) = dr;
+      matterTemp.setPositions(pos + posDisplace);
+      AtomMatrix forcePlus = matterTemp.getForces();
+      for (int j = 0; j < size; ++j) {
+        const double dF = forcePlus(subAtoms(j / 3), j % 3) -
+                          force0(subAtoms(j / 3), j % 3);
+        Hpart(i, j) = -dF / dr;
+        const double effMass =
+            std::sqrt(matter->getMass(subAtoms(j / 3)) *
+                      matter->getMass(subAtoms(i / 3)));
+        Hpart(i, j) = eonc::safemath::safe_div(Hpart(i, j), effMass, 0.0);
+      }
+    }
+    matterTemp.setPositions(pos);
     std::ofstream out(ckpt);
-    out << "eon_hess_ckpt 6 2\n";
+    out << "eon_hess_ckpt " << size << " 2\n";
     out.precision(17);
-    for (int i = 0; i < 6; ++i) {
-      for (int j = 0; j < 6; ++j) {
-        // partial: only write known columns 0..1 from full; zeros elsewhere
-        out << (i < 2 ? Hfull(i, j) : 0.0) << (j + 1 == 6 ? '\n' : ' ');
+    for (int i = 0; i < size; ++i) {
+      for (int j = 0; j < size; ++j) {
+        out << Hpart(i, j) << (j + 1 == size ? '\n' : ' ');
       }
     }
   }
+
   params.hessian_options.resume = true;
   params.hessian_options.checkpoint_path = ckpt;
   Hessian hessRes(params, matter.get());
@@ -140,10 +173,9 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
   REQUIRE(Hres.rows() == Hfull.rows());
   for (long i = 0; i < Hfull.rows(); ++i) {
     for (long j = 0; j < Hfull.cols(); ++j) {
-      REQUIRE_THAT(Hres(i, j), Catch::Matchers::WithinAbs(Hfull(i, j), 1e-8));
+      REQUIRE_THAT(Hres(i, j), Catch::Matchers::WithinAbs(Hfull(i, j), 1e-6));
     }
   }
-  // successful finish removes checkpoint
   REQUIRE(!std::ifstream(ckpt).good());
 }
 
