@@ -354,21 +354,25 @@ TEST_CASE_METHOD(
     "[dimer][lor][eigenmode]") {
   params.dimer_options.improved = true;
   params.dimer_options.max_iterations = 50;
-  params.dimer_options.rotations_max = 20;
+  params.dimer_options.rotations_max = 30;
+
+  // Shared deterministic seed (not Lanczos output — avoids self-agreement).
+  AtomMatrix seed = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
+  seed(0, 0) = 1.0;
+  seed.normalize();
 
   params.dimer_options.rotation_backend = DimerRotationBackend::Classical;
   ImprovedDimer classical(matter, params, pot);
-  classical.compute(matter, mode);
+  classical.compute(matter, seed);
   AtomMatrix mClass = classical.getEigenvector();
 
   Lanczos lanczos(matter, params, pot);
-  lanczos.compute(matter, mode);
+  lanczos.compute(matter, seed);
   AtomMatrix mLanc = lanczos.getEigenvector();
 
-  // Seed LOR from the shared fixture mode (not Lanczos self-agreement).
   params.dimer_options.rotation_backend = DimerRotationBackend::LOR;
   LORRotation lor(matter, params, pot);
-  lor.compute(matter, mode);
+  lor.compute(matter, seed);
   AtomMatrix mLor = lor.getEigenvector();
 
   auto absCos = [](const AtomMatrix &a, const AtomMatrix &b) {
