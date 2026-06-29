@@ -670,6 +670,12 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.Get("Hessian", "atom_list", params.hessian_options.atom_list));
   params.hessian_options.zero_freq_value = ini.GetReal(
       "Hessian", "zero_freq_value", params.hessian_options.zero_freq_value);
+  params.hessian_options.fd_scheme = toLowerCase(
+      ini.Get("Hessian", "fd_scheme", params.hessian_options.fd_scheme));
+  params.hessian_options.resume =
+      ini.GetBoolean("Hessian", "resume", params.hessian_options.resume);
+  params.hessian_options.checkpoint_path = ini.Get(
+      "Hessian", "checkpoint_path", params.hessian_options.checkpoint_path);
 
   // [Nudged Elastic Band] //
   const std::string neb_section = "Nudged Elastic Band";

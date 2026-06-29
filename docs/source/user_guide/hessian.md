@@ -21,52 +21,53 @@ atomic coordinates) is used for:
 
 ## How It Works
 
-eOn computes the Hessian numerically via central finite differences:
+eOn computes the Hessian numerically with a selectable finite-difference scheme
+on the **mobile** (displaced) atoms: non-fixed atoms in `pos.con`, optionally
+restricted by `[Hessian] atom_list` (comma-separated indices, or `All`). That
+list is the hybrid/PHVA-class *active set* — atoms that are moved in FD, not
+the frozen environment (Li & Jensen, *Theor. Chem. Acc.* **107**, 211, 2002).
 
-$$H_{ij} = \frac{F_i(x + \delta e_j) - F_i(x - \delta e_j)}{2\delta}$$
+Step size is `Main.finite_difference` (historically also called finite-difference
+displacement; default \(0.01\,\text{Å}\)).
 
-where $\delta$ is the finite difference step size (`min_displacement`). This
-requires $2 \times 3N$ gradient evaluations for $N$ atoms (or $2 \times 3N_\text{free}$
-if some atoms are frozen).
+### FD schemes (`[Hessian] fd_scheme`)
 
-The Hessian is then mass-weighted:
+**one_sided** (default) — forward difference, \(\sim M\) force evaluations for
+\(M = 3 N_\text{mobile}\) active DOF (plus one base gradient):
 
-$$\tilde{H}_{ij} = \frac{H_{ij}}{\sqrt{m_i m_j}}$$
+$$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x)}{h}$$
 
-and diagonalized to obtain vibrational frequencies $\nu_k = \sqrt{\lambda_k} / (2\pi)$.
+**central** — central difference, \(\sim 2M\) force evaluations:
+
+$$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x - h e_i)}{2h}$$
+
+One-sided is preferred for classical EAM AKMC cost; central reduces \(O(h)\) bias
+when validating prefactors. The assembled matrix is symmetrized \((H+H^T)/2\)
+before diagonalization. Mass-weighting uses \(\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}\).
+
+### Column resume
+
+Long partial Hessians can checkpoint FD columns to `checkpoint_path` (e.g.
+`hessian.ckpt`) with `resume = true`. Interrupted jobs continue from the next
+column; a successful run removes the checkpoint.
 
 ## Usage
-
-The Hessian job computes and reports the vibrational frequencies:
 
 ```{code-block} ini
 [Main]
 job = hessian
+finite_difference = 0.01
 
 [Hessian]
-min_displacement = 0.001
+atom_list = All
+fd_scheme = one_sided
+# fd_scheme = central
+# resume = true
+# checkpoint_path = hessian.ckpt
+zero_freq_value = 1e-6
 ```
 
-The output `results.dat` contains the eigenvalues (squared frequencies) of the
-mass-weighted Hessian matrix.
-
-## Configuration
-
-```{code-block} ini
-[Hessian]
-```
-
-```{eval-rst}
-.. autopydantic_model:: eon.schema.HessianConfig
-```
-
-## References
-
-```{bibliography}
----
-style: alpha
-filter: docname in docnames
-labelprefix: HESS_
-keyprefix: hess-
----
-```
+The output `results.dat` records force-call counts; `hessian.dat` holds the
+mass-weighted matrix when `quiet = false`. Eigenvalues (squared frequencies)
+are obtained by diagonalizing the symmetrized matrix (ColMajor eigen solve in
+the client).
