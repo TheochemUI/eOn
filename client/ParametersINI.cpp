@@ -191,6 +191,50 @@ int load_ini(INIReader &ini, Parameters &params) {
                        params.socket_nwchem_options.make_template_input);
   }
 
+  // [RgpotPot] — in-process NWChemPot/CPMDPot (also accept legacy [RGPot] keys)
+  if (params.potential_options.potential == PotType::RGPOT) {
+    const char *sec = "RgpotPot";
+    // Prefer [RgpotPot]; fall back to [RGPot] field names used by direct-link
+    // design
+    params.rgpot_options.backend =
+        ini.Get(sec, "backend", params.rgpot_options.backend);
+    params.rgpot_options.basis = ini.Get(
+        sec, "basis", ini.Get(sec, "nwchem_basis", params.rgpot_options.basis));
+    params.rgpot_options.theory =
+        ini.Get(sec, "theory",
+                ini.Get(sec, "nwchem_theory", params.rgpot_options.theory));
+    params.rgpot_options.scf_type =
+        ini.Get(sec, "scf_type",
+                ini.Get(sec, "nwchem_scf_type", params.rgpot_options.scf_type));
+    params.rgpot_options.functional = ini.Get(
+        sec, "functional",
+        ini.Get(sec, "cpmd_functional", params.rgpot_options.functional));
+    params.rgpot_options.cutoff_ry = ini.GetReal(
+        sec, "cutoff_ry",
+        ini.GetReal(sec, "cpmd_cut_off_ry", params.rgpot_options.cutoff_ry));
+    params.rgpot_options.charge = ini.GetInteger(
+        sec, "charge",
+        ini.GetInteger(sec, "nwchem_charge", params.rgpot_options.charge));
+    params.rgpot_options.multiplicity =
+        ini.GetInteger(sec, "multiplicity",
+                       ini.GetInteger(sec, "nwchem_multiplicity",
+                                      params.rgpot_options.multiplicity));
+    params.rgpot_options.engine_path =
+        ini.Get(sec, "engine_path", params.rgpot_options.engine_path);
+    params.rgpot_options.engine_library =
+        ini.Get(sec, "engine_library", params.rgpot_options.engine_library);
+    params.rgpot_options.engine_root =
+        ini.Get(sec, "engine_root", params.rgpot_options.engine_root);
+    params.rgpot_options.title =
+        ini.Get(sec, "title", params.rgpot_options.title);
+    params.rgpot_options.memory_mb =
+        ini.GetInteger(sec, "memory_mb", params.rgpot_options.memory_mb);
+    params.rgpot_options.scratch_dir =
+        ini.Get(sec, "scratch_dir", params.rgpot_options.scratch_dir);
+    params.rgpot_options.input_block =
+        ini.Get(sec, "input_block", params.rgpot_options.input_block);
+  }
+
   // [Debug] //
 
   params.debug_options.write_movies = ini.GetBoolean(

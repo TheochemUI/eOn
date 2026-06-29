@@ -178,6 +178,7 @@ features_list = [
     ['WITH_ASE_NWCHEM', 'ASE-NWChem'],
     ['WITH_METATOMIC', 'Metatomic'],
     ['WITH_SERVE_MODE', 'Serve Mode'],
+    ['WITH_RGPOT', 'RGPOT direct in-process (NWChemPot/CPMDPot dlopen)'],
     ['EMBED_PYTHON', 'Embedded Python'],
 ]
 
@@ -317,6 +318,33 @@ if not is_windows
 endif
 subdir('potentials/NewPot')
 
+# rgpot roles (see docs/user_guide/rgpot_integration.md):
+#   with_rgpot  -> nwchempot_dep + cpmdpot_dep (direct dlopen engines in eOn)
+#   with_serve  -> ptlrpc_dep (eOn is Cap'n Proto RPC server)
+# potserv RPC *client* is not wired as an eOn Potential.
+_rgpot_proj = []
+ptlrpc_dep = disabler()
+if get_option('with_rgpot') or get_option('with_serve')
+    rgpot_opts = {
+        'with_rpc_client_only': true,
+        'pure_lib': true,
+        'with_tests': false,
+        'with_examples': false,
+    }
+    _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+endif
+if get_option('with_serve')
+    serve_capnp_dep = dependency('capnp-rpc', required: true)
+    ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+endif
+if get_option('with_rgpot') and not is_windows
+    nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
+    cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
+    _deps += [nwchempot_dep, cpmdpot_dep]
+    _args += ['-DWITH_RGPOT']
+    subdir('potentials/Rgpot')
+endif
+
 potentials = [
     eam,
     emt,
@@ -330,6 +358,9 @@ potentials = [
 ]
 if not is_windows
     potentials += [socket_nwchem]
+endif
+if get_option('with_rgpot') and not is_windows
+    potentials += [rgpot_pot]
 endif
 
 eonclib_sources = [
@@ -859,19 +890,10 @@ if get_option('with_ira')
 endif
 
 if get_option('with_serve')
-    # rgpot-compatible RPC serve mode: wraps any eOn potential and serves it
-    # over Cap'n Proto RPC using the rgpot Potentials.capnp schema.
-    # Only links capnp-rpc and the generated schema (ptlrpc); does NOT link
-    # rgpot types to avoid the AtomMatrix name collision with eOn's Eigen.h.
-    serve_capnp_dep = dependency('capnp-rpc', required: true)
-    rgpot_serve_opts = {
-        'with_rpc_client_only': true,
-        'pure_lib': true,
-        'with_tests': false,
-        'with_examples': false,
-    }
-    rgpot_proj = subproject('rgpot', default_options: rgpot_serve_opts)
-    ptlrpc_dep = rgpot_proj.get_variable('ptlrpc_dep')
+    # eOn as rgpot-compatible RPC *server* (clients connect to eOn; not potserv client).
+    if ptlrpc_dep.found() == false
+        error('with_serve requires Cap\'n Proto / rgpot ptlrpc_dep')
+    endif
     _args += ['-DWITH_SERVE_MODE']
     eonclib_sources += ['ServeMode.cpp', 'ServeRpcServer.cpp']
     _deps += [serve_capnp_dep, ptlrpc_dep]
@@ -1108,6 +1130,27 @@ if get_option('with_tests')
         )
     else
         message('NWChem executable not found, skipping SocketNWChemPotTest.')
+    endif
+
+    if get_option('with_rgpot') and not is_windows
+        test_rgpot_exe = executable(
+            'test_rgpot_pot',
+            sources: [
+                'unit_tests/RgpotPotTest.cpp',
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            dependencies: test_deps,
+            include_directories: _incdirs,
+            cpp_args: test_args,
+            link_with: _linkto,
+        )
+        test(
+            'test_rgpot_pot',
+            test_rgpot_exe,
+            timeout: 120,
+            suite: 'rgpot',
+            is_parallel: false,
+        )
     endif
 
     # Benchmarks (not in default test suite -- run via: meson test --benchmark)
