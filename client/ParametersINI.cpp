@@ -363,6 +363,16 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetReal("Dimer", "torque_max", params.dimer_options.torque_max);
   params.dimer_options.remove_rotation = ini.GetBoolean(
       "Dimer", "remove_rotation", params.dimer_options.remove_rotation);
+  params.dimer_options.lor_residual_tol = ini.GetReal(
+      "Dimer", "lor_residual_tol", params.dimer_options.lor_residual_tol);
+  {
+    const auto rotTok =
+        toLowerCase(ini.Get("Dimer", "rotation_backend", "classical"));
+    params.dimer_options.rotation_backend =
+        magic_enum::enum_cast<DimerRotationBackend>(
+            rotTok, magic_enum::case_insensitive)
+            .value_or(DimerRotationBackend::Classical);
+  }
 
   // GP Surrogate Parameters
   params.gp_surrogate_options.enabled =

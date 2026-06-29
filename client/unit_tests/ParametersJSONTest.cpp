@@ -99,6 +99,25 @@ TEST_CASE("JSON to_json includes dynamics section", "[params][json]") {
   REQUIRE(s.find("Dynamics") != std::string::npos);
 }
 
+TEST_CASE("JSON round-trip preserves dimer rotation_backend",
+          "[params][json][lor]") {
+  Parameters p1;
+  p1.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+
+  auto j = eonc::config::to_json(p1);
+  REQUIRE(j["Dimer"].contains("rotation_backend"));
+
+  Parameters p2;
+  eonc::config::from_json(j, p2);
+  REQUIRE(p2.dimer_options.rotation_backend == DimerRotationBackend::LOR);
+
+  // Case-insensitive load (serve / Python schema use lowercase tokens)
+  nlohmann::json j_lor = {{"Dimer", {{"rotation_backend", "lor"}}}};
+  Parameters p3;
+  eonc::config::from_json(j_lor, p3);
+  REQUIRE(p3.dimer_options.rotation_backend == DimerRotationBackend::LOR);
+}
+
 TEST_CASE("JSON round-trip preserves debug compatibility flags",
           "[params][json]") {
   Parameters p1;

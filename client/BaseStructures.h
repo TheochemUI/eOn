@@ -113,9 +113,20 @@ enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, SIDPP, SIDPP_ZBL, FILE };
 
 enum class RunStatus { GOOD = 0, FAIL_MAX_ITERATIONS, FAIL_POTENTIAL_FAILED };
 
+// Dimer rotation / softest-mode estimation backend (Leng et al. JCP 2013 LOR,
+// classical constrained rotation, or FD min-mode Lanczos/Davidson).
+// Names match INI tokens (magic_enum, case-insensitive).
+enum class DimerRotationBackend {
+  Classical = 0,
+  Lanczos,
+  Davidson,
+  LOR,
+};
+
 } // namespace eonc
 
 // Backward-compat aliases during migration
+using eonc::DimerRotationBackend;
 using eonc::JobType;
 using eonc::NEBInit;
 using eonc::OptType;

@@ -1,0 +1,1 @@
+Dimer supports `rotation_backend = classical|lanczos|davidson|lor` (Leng et al. JCP 2013 LOR for softest-mode with force translation; Lanczos/Davidson FD min-mode; classical constrained rotation). Climb remains on the dimer path.

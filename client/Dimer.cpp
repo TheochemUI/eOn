@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "Dimer.h"
+#include "DimerRotationDispatch.h"
 #include "HelperFunctions.h"
 #include "SafeMath.h"
 
@@ -43,6 +44,23 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
                     AtomMatrix initialDirection) {
   *matterCenter = *matter;
 
+  eonc::safemath::safe_normalize_inplace(initialDirection);
+  direction = initialDirection;
+
+  // Optional: LOR / Lanczos / Davidson (enum dispatch; classical falls
+  // through).
+  if (auto alt = runAlternativeRotation(params.dimer_options.rotation_backend,
+                                        matter, params, pot, direction,
+                                        static_cast<quill::Logger *>(log))) {
+    eigenvalue = alt->eigenvalue;
+    direction = alt->eigenvector;
+    totalForceCalls += alt->forceCalls;
+    statsRotations = alt->rotations;
+    eonc::safemath::safe_normalize_inplace(direction);
+    *matterCenter = *matter;
+    return;
+  }
+
   long rotations = 0;
   long forceCallsCenter = matterCenter->getForceCalls();
   long forceCallsDimer = matterDimer->getForceCalls();
@@ -57,8 +75,6 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   rotationalForceOld.setZero();
   rotationalPlaneOld.setZero();
 
-  eonc::safemath::safe_normalize_inplace(initialDirection);
-  direction = initialDirection;
   statsAngle = 0;
   double lengthRotationalForceOld = 0.0;
 

@@ -1536,6 +1536,21 @@ class DimerConfig(BaseModel):
     dimer_remove_rotation: bool = Field(
         default=False, description="Indicates if the rotation should be removed."
     )
+    rotation_backend: Literal["classical", "lanczos", "davidson", "lor"] = Field(
+        default="classical",
+        description=(
+            "Mode estimation under dimer: classical constrained rotation; "
+            "lanczos/davidson FD min-mode; or lor (Leng et al. JCP 138, 094110 "
+            "2013 Locally Optimal Rotation) replacing IDimerRot."
+        ),
+    )
+    lor_residual_tol: float = Field(
+        default=0.1,
+        description=(
+            "LOR only: relative residual stop ||F_perp||/(|C_N|+1) < "
+            "max(1e-3, lor_residual_tol). Independent of torque_min."
+        ),
+    )
     """
     Implements the method of :cite:t:`dm-melanderRemovingExternalDegrees2015`
     """

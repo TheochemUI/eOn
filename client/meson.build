@@ -351,6 +351,7 @@ eonclib_sources = [
     'StructureComparisonJob.cpp',
     'SteepestDescent.cpp',
     'ImprovedDimer.cpp',
+    'LORRotation.cpp',
     'PointJob.cpp',
     'Prefactor.cpp',
     'ConjugateGradients.cpp',

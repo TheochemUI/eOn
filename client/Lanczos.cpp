@@ -34,6 +34,8 @@ Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
 // The 1 character variables in this method match the variables in the
 // equations in the paper given at the top of this file.
 void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
+  totalForceCalls = 0;
+  statsRotations = 0;
   int size = 3 * matter->numberOfFreeAtoms();
   MatrixXd T(size, params.lanczos_options.max_iterations),
       Q(size, params.lanczos_options.max_iterations);
@@ -66,6 +68,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   // Use the potential passed to LowestEigenmode (via the Matter object),
   // not a fresh instance -- otherwise force calls aren't tracked.
   auto tmpMatter = std::make_unique<Matter>(*matter);
+  const long forceCallsStart = tmpMatter->getForceCalls();
   force1 = tmpMatter->getForcesFreeV();
 
   for (i = 0; i < size; i++) {
@@ -157,6 +160,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   }
 
   lowestEw = ew;
+  totalForceCalls = tmpMatter->getForceCalls() - forceCallsStart;
 
   // Convert back from free atom coordinate column vector
   // to AtomMatrix style.

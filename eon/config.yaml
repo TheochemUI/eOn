@@ -552,6 +552,19 @@ Dimer:
             kind: boolean
             default: True
 
+        rotation_backend:
+            kind: string
+            default: classical
+            values:
+                - classical
+                - lanczos
+                - davidson
+                - lor
+
+        lor_residual_tol:
+            kind: float
+            default: 0.1
+
         remove_rotation:
             kind: boolean
             default: False
