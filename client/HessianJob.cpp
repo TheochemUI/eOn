@@ -38,9 +38,8 @@ std::vector<std::string> HessianJob::run(void) {
   // active set), comma-separated 0-based indices, or "All" = every non-fixed
   // atom. Intersect with free flags so frozen CON atoms are never displaced.
   const std::string &atomList = params.hessian_options.atom_list;
-  const bool useExplicitList =
-      !atomList.empty() &&
-      atomList != "All" && atomList != "all" && atomList != "ALL";
+  const bool useExplicitList = !atomList.empty() && atomList != "All" &&
+                               atomList != "all" && atomList != "ALL";
 
   if (useExplicitList) {
     std::string token;

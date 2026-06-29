@@ -138,10 +138,10 @@ bool Hessian::calculate() {
     return false;
   }
 
-  const bool useCentral =
-      isCentralScheme(parameters.hessian_options.fd_scheme);
+  const bool useCentral = isCentralScheme(parameters.hessian_options.fd_scheme);
   const std::string &ckptPath = parameters.hessian_options.checkpoint_path;
-  const bool wantResume = parameters.hessian_options.resume && !ckptPath.empty();
+  const bool wantResume =
+      parameters.hessian_options.resume && !ckptPath.empty();
 
   AtomMatrix pos = matter->getPositions();
   AtomMatrix posDisplace(nAtoms, 3);
@@ -164,9 +164,8 @@ bool Hessian::calculate() {
 
   force0 = matterTemp.getForces();
   if (!force0.allFinite()) {
-    QUILL_LOG_ERROR(log,
-                    "[Hessian] non-finite forces at undisplaced geometry; "
-                    "aborting FD Hessian");
+    QUILL_LOG_ERROR(log, "[Hessian] non-finite forces at undisplaced geometry; "
+                         "aborting FD Hessian");
     return false;
   }
 
@@ -232,9 +231,8 @@ bool Hessian::calculate() {
   }
 
   if (!hessian.allFinite()) {
-    QUILL_LOG_ERROR(log,
-                    "[Hessian] non-finite entries after FD assembly; "
-                    "aborting eigen solve");
+    QUILL_LOG_ERROR(log, "[Hessian] non-finite entries after FD assembly; "
+                         "aborting eigen solve");
     return false;
   }
 

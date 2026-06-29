@@ -145,12 +145,11 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
       matterTemp.setPositions(pos + posDisplace);
       AtomMatrix forcePlus = matterTemp.getForces();
       for (int j = 0; j < size; ++j) {
-        const double dF = forcePlus(subAtoms(j / 3), j % 3) -
-                          force0(subAtoms(j / 3), j % 3);
+        const double dF =
+            forcePlus(subAtoms(j / 3), j % 3) - force0(subAtoms(j / 3), j % 3);
         Hpart(i, j) = -dF / dr;
-        const double effMass =
-            std::sqrt(matter->getMass(subAtoms(j / 3)) *
-                      matter->getMass(subAtoms(i / 3)));
+        const double effMass = std::sqrt(matter->getMass(subAtoms(j / 3)) *
+                                         matter->getMass(subAtoms(i / 3)));
         Hpart(i, j) = eonc::safemath::safe_div(Hpart(i, j), effMass, 0.0);
       }
     }
