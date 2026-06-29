@@ -315,6 +315,34 @@ class ConfigClass:
             self.sb_rt_rate_threshold = parser.getfloat('Coarse Graining', 'rate_threshold')
         self.sb_superbasin_confidence = parser.getboolean('Coarse Graining', 'superbasin_confidence')
 
+        # [amsel] optional discover_decide gate before Superbasin.step (default off)
+        try:
+            self.amsel_discover_decide = parser.getboolean('amsel', 'discover_decide')
+        except Exception:
+            self.amsel_discover_decide = False
+        try:
+            self.amsel_e_min_init = parser.getfloat('amsel', 'e_min_init')
+        except Exception:
+            self.amsel_e_min_init = 0.5
+        try:
+            self.amsel_e_min_step = parser.getfloat('amsel', 'e_min_step')
+        except Exception:
+            self.amsel_e_min_step = 0.05
+        try:
+            self.amsel_e_min_floor = parser.getfloat('amsel', 'e_min_floor')
+        except Exception:
+            self.amsel_e_min_floor = 0.05
+        try:
+            self.amsel_cv_threshold = parser.getfloat('amsel', 'cv_threshold')
+        except Exception:
+            self.amsel_cv_threshold = 10.0
+        # Back-compat aliases used by Superbasin.step getattr
+        self.sb_amsel_discover_decide = self.amsel_discover_decide
+        self.sb_amsel_e_min_init = self.amsel_e_min_init
+        self.sb_amsel_e_min_step = self.amsel_e_min_step
+        self.sb_amsel_e_min_floor = self.amsel_e_min_floor
+        self.sb_amsel_cv_threshold = self.amsel_cv_threshold
+
         self.askmc_on = parser.getboolean('Coarse Graining','use_askmc')
         if self.askmc_on:
             self.askmc_confidence = parser.getfloat('Coarse Graining','askmc_confidence')

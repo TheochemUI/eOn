@@ -1143,6 +1143,32 @@ class RecyclingConfig(BaseModel):
     )
 
 
+
+class AmselConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    discover_decide: bool = Field(
+        default=False,
+        description="If true and the amsel package is installed, run amsel.discover_decide_status on the superbasin process graph before MCAMC Superbasin.step. split_required restricts to the primary basin; rejected raises so AKMC can fall back to single-state KMC.",
+    )
+    e_min_init: float = Field(
+        default=0.5,
+        description="Initial TS-energy cutoff (eV) for amsel adaptive discover_decide.",
+    )
+    e_min_step: float = Field(
+        default=0.05,
+        description="TS-energy retighten step (eV) for amsel discover_decide.",
+    )
+    e_min_floor: float = Field(
+        default=0.05,
+        description="TS-energy floor (eV) for amsel discover_decide.",
+    )
+    cv_threshold: float = Field(
+        default=10.0,
+        description="Coefficient-of-variation threshold passed to amsel discover_decide.",
+    )
+
+
 class CoarseGrainingConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
@@ -2080,6 +2106,7 @@ class Config(BaseModel):
     hyperdyn: HyperdynamicsConfig
     recycling: RecyclingConfig
     coarse_graining: CoarseGrainingConfig
+    amsel: AmselConfig = Field(default_factory=AmselConfig)
     optimizer: OptimizerConfig
     distributed_replica: DistributedReplicaConfig
     gprdimer: GPRDimerConfig

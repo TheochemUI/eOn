@@ -36,6 +36,47 @@ class Superbasin:
             self.state_dict[state.number] = state
 
     def step(self, entry_state, get_product_state):
+        # Optional amsel discover_decide gate (L6): validate/split/reject the
+        # candidate basin *before* spending MCAMC on a non-metastable set.
+        # Off by default; requires the amsel Python package when enabled.
+        # [amsel] stanza (config.amsel_*); sb_amsel_* kept as back-compat aliases
+        _amsel_on = bool(
+            getattr(config, "amsel_discover_decide", False)
+            or getattr(config, "sb_amsel_discover_decide", False)
+        )
+        if _amsel_on:
+            from eon.amsel_superbasin_gate import (
+                apply_gate_to_superbasin,
+                discover_decide_for_superbasin,
+            )
+            decision = discover_decide_for_superbasin(
+                self,
+                entry_state,
+                e_min_init=float(
+                    getattr(config, "amsel_e_min_init",
+                            getattr(config, "sb_amsel_e_min_init", 0.5))
+                ),
+                e_min_step=float(
+                    getattr(config, "amsel_e_min_step",
+                            getattr(config, "sb_amsel_e_min_step", 0.05))
+                ),
+                e_min_floor=float(
+                    getattr(config, "amsel_e_min_floor",
+                            getattr(config, "sb_amsel_e_min_floor", 0.05))
+                ),
+                cv_threshold=float(
+                    getattr(config, "amsel_cv_threshold",
+                            getattr(config, "sb_amsel_cv_threshold", 10.0))
+                ),
+            )
+            status = apply_gate_to_superbasin(self, entry_state, decision)
+            logger.info(
+                "amsel discover_decide status=%s available=%s primary=%s",
+                status,
+                decision.get("available"),
+                decision.get("primary_transient"),
+            )
+
         # c_i (forming vector c) is the inverse of the sum of the rates for each transient state i
         # Q is the transient matrix of the canonical markov matrix.
         # R is the recurrent matrix of the canonical markov matrix.
@@ -79,16 +120,6 @@ class Superbasin:
                     Q[st2i[number], st2i[proc['product']]] += proc['rate']
                 else:
                     R[st2i[number], st2col[(number, id)]] += proc['rate']
-
-        #lei debug
-        print("################")
-        print(str(self.id)+" c is: ")
-        print(c)
-        print(str(self.id)+" Q is: ")
-        print(Q)
-        print(str(self.id)+" R is: ")
-        print(R)
-        # import pdb; pdb.set_trace()
 
         t, B, residual = mcamc(Q, R, c)
         logger.debug("residual %e" % residual)

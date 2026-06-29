@@ -65,6 +65,33 @@ the approximate amount of error the user might expect in eventual superbasin
 exit direction and time compared to normal KMC simulation
 ({any}`eon.schema.CoarseGrainingConfig.askmc_confidence`).
 
+## Optional AMSEl discover/decide gate
+
+```{versionadded} TBD
+```
+
+When MCAMC superbasins are active, an optional pre-step gate can call
+`amsel.discover_decide_status` on the superbasin process graph before
+`Superbasin.step`. Enable it under **[amsel]** (default off):
+
+```{code-block} ini
+[amsel]
+discover_decide = True
+e_min_init = 0.5
+e_min_step = 0.05
+e_min_floor = 0.05
+cv_threshold = 10.0
+```
+
+If the `amsel` Python package is not installed, the gate is a no-op and legacy
+MCAMC behaviour is unchanged. Status outcomes:
+
+- **ok** — proceed with MCAMC as usual
+- **split_required** — restrict dynamics to the primary basin
+- **rejected_no_metastable_basin** — raise so AKMC can fall back to single-state KMC
+
+See {any}`eon.schema.AmselConfig` and `eon.amsel_superbasin_gate`.
+
 ## Configuration
 
 ```{code-block} ini
@@ -74,6 +101,14 @@ exit direction and time compared to normal KMC simulation
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.CoarseGrainingConfig
+```
+
+```{code-block} ini
+[amsel]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.AmselConfig
 ```
 
 ## References
