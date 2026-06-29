@@ -337,10 +337,29 @@ public:
     // variant resolution and use this key if present in model capabilities.
     std::string energy_output;
     std::string energy_uncertainty_output;
+    // Literal non-conservative force output key (issue #296); empty uses
+    // pick_output("non_conservative_force", ...) when non_conservative.
+    std::string force_output;
+    // When true, read forces from non_conservative_force (with variants)
+    // instead of autograd on energy (issue #296).
+    bool non_conservative{false};
+    // Apply a fresh random SO(3) rotation per force() call and rotate forces
+    // back (issue #287 / PET-MAD broken-symmetry mitigation).
+    bool random_rotation{false};
+    // If >0, average energy/forces over this many random rotations for
+    // approximate O(3) symmetrization (issue #292). Overrides single-shot
+    // random_rotation when both are set.
+    long n_symmetry_rotations{0};
+    // PyTorch determinism (JIT profiling off, deterministic algorithms,
+    // cudnn benchmark off). See rgoswami.me/snippets/pytorch-deterministic-regression/
+    bool deterministic{true};
+    // If true, fail on nondeterministic CUDA ops (needs CUBLAS_WORKSPACE_CONFIG).
+    bool deterministic_strict{false};
     struct variants_t {
       std::string base;
       std::string energy;
       std::string energy_uncertainty;
+      std::string force; // non_conservative_force variant (#296)
     } variant;
   } metatomic_options;
 

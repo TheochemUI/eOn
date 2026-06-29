@@ -432,11 +432,24 @@ int load_ini(INIReader &ini, Parameters &params) {
     params.metatomic_options.energy_uncertainty_output =
         ini.Get("Metatomic", "energy_uncertainty_output",
                 params.metatomic_options.energy_uncertainty_output);
+    params.metatomic_options.force_output = ini.Get(
+        "Metatomic", "force_output", params.metatomic_options.force_output);
+    params.metatomic_options.non_conservative =
+        ini.GetBoolean("Metatomic", "non_conservative", false);
+    params.metatomic_options.random_rotation =
+        ini.GetBoolean("Metatomic", "random_rotation", false);
+    params.metatomic_options.n_symmetry_rotations = static_cast<long>(
+        ini.GetInteger("Metatomic", "n_symmetry_rotations", 0));
+    params.metatomic_options.deterministic =
+        ini.GetBoolean("Metatomic", "deterministic", true);
+    params.metatomic_options.deterministic_strict =
+        ini.GetBoolean("Metatomic", "deterministic_strict", false);
     auto &_variant = params.metatomic_options.variant;
     _variant.base = ini.Get("Metatomic", "variant_base", "");
     _variant.energy = ini.Get("Metatomic", "variant_energy", "");
     _variant.energy_uncertainty =
         ini.Get("Metatomic", "variant_energy_uncertainty", "");
+    _variant.force = ini.Get("Metatomic", "variant_force", "");
   }
   // [Serve]
   if (ini.HasSection("Serve")) {

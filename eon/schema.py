@@ -697,13 +697,19 @@ class Metatomic(BaseModel):
         description="Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.",
     )
     variant_base: str = Field(
-        default="", description="Global variant for energy and uncertainty."
+        default="",
+        description=(
+            "Default variant suffix for energy, uncertainty, and "
+            "non_conservative_force unless overridden."
+        ),
     )
     variant_energy: str = Field(
-        default="", description="Override variant for energy."
+        default="",
+        description="Override variant for energy (use 'off' for the base key).",
     )
     variant_energy_uncertainty: str = Field(
-        default="", description="Override variant for energy_uncertainty."
+        default="",
+        description="Override variant for energy_uncertainty.",
     )
     energy_output: str = Field(
         default="",
@@ -712,6 +718,40 @@ class Metatomic(BaseModel):
     energy_uncertainty_output: str = Field(
         default="",
         description="Literal energy uncertainty output key; empty uses variant resolution.",
+    )
+    force_output: str = Field(
+        default="",
+        description="Literal non-conservative force output key; empty uses pick_output.",
+    )
+    non_conservative: bool = Field(
+        default=False,
+        description="Read forces from non_conservative_force instead of energy gradients.",
+    )
+    random_rotation: bool = Field(
+        default=False,
+        description="Apply a random SO(3) rotation per evaluation and rotate forces back.",
+    )
+    n_symmetry_rotations: int = Field(
+        default=0,
+        description="If >0, average over this many random rotations (O(3) symmetrization).",
+    )
+    variant_force: str = Field(
+        default="",
+        description="Override variant for non_conservative_force (defaults to energy variant).",
+    )
+    deterministic: bool = Field(
+        default=True,
+        description=(
+            "Disable JIT profiling and enable PyTorch deterministic algorithms "
+            "(reproducible NEB / multi-image forces)."
+        ),
+    )
+    deterministic_strict: bool = Field(
+        default=False,
+        description=(
+            "Fail on nondeterministic CUDA ops; requires CUBLAS_WORKSPACE_CONFIG "
+            "(e.g. :4096:8)."
+        ),
     )
 
 

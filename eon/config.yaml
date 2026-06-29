@@ -1835,6 +1835,34 @@ Metatomic:
             kind: string
             default: ""
 
+        force_output:
+            kind: string
+            default: ""
+
+        non_conservative:
+            kind: boolean
+            default: false
+
+        random_rotation:
+            kind: boolean
+            default: false
+
+        n_symmetry_rotations:
+            kind: integer
+            default: 0
+
+        variant_force:
+            kind: string
+            default: ""
+
+        deterministic:
+            kind: boolean
+            default: true
+
+        deterministic_strict:
+            kind: boolean
+            default: false
+
 ################################################################################
 
 ASE_NWCHEM:

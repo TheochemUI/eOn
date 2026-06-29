@@ -623,10 +623,18 @@ if get_option('with_metatomic')
 
     if get_option('pip_metatomic')
         torch_ver = get_option('torch_version')
+        # metatensor-torch >=0.10 installs as top-level metatensor_torch/;
+        # older wheels used metatensor/torch/torch-X.Y/. Probe both layouts.
+        _mts_torch_lib_new = py.get_install_dir() / 'metatensor_torch' / f'torch-@torch_ver@' / 'lib'
+        _mts_torch_lib_old = py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib'
+        _mts_torch_inc_new = py.get_install_dir() / 'metatensor_torch' / f'torch-@torch_ver@' / 'include'
+        _mts_torch_inc_old = py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include'
+        _mts_torch_lib_dirs = [_mts_torch_lib_new, _mts_torch_lib_old]
         pip_metatomic_runtime_dirs = [
             LIB_TORCH_LIB_PATH,
             py.get_install_dir() / 'metatensor' / 'lib',
-            py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib',
+            _mts_torch_lib_new,
+            _mts_torch_lib_old,
             py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'lib',
             py.get_install_dir() / 'vesin' / 'lib',
         ]
@@ -636,7 +644,8 @@ if get_option('with_metatomic')
         mts_inc_args = []
         foreach d : [
             py.get_install_dir() / 'metatensor' / 'include',
-            py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'include',
+            _mts_torch_inc_new,
+            _mts_torch_inc_old,
             py.get_install_dir() / 'metatomic' / 'torch' / f'torch-@torch_ver@' / 'include',
         ]
             mts_inc_args += ['-isystem', d]
@@ -649,9 +658,7 @@ if get_option('with_metatomic')
                 ),
                 cppc.find_library(
                     'metatensor_torch',
-                    dirs: [
-                        py.get_install_dir() / 'metatensor' / 'torch' / f'torch-@torch_ver@' / 'lib',
-                    ],
+                    dirs: _mts_torch_lib_dirs,
                 ),
                 cppc.find_library(
                     'metatomic_torch',
