@@ -86,9 +86,11 @@ cv_threshold = 10.0
 If the `amsel` Python package is not installed, the gate is a no-op and legacy
 MCAMC behaviour is unchanged. Status outcomes:
 
-- **ok** — proceed with MCAMC as usual
-- **split_required** — restrict dynamics to the primary basin
-- **rejected_no_metastable_basin** — raise so AKMC can fall back to single-state KMC
+- **accepted** / **retightened** — proceed with MCAMC as usual
+- **split_required** — restrict the superbasin to the primary transient set
+  (entry state is always retained; membership is persisted via `write_data`)
+- **rejected_no_metastable_basin** — AKMC skips the superbasin step and uses
+  ordinary single-state KMC for that iteration
 
 See {any}`eon.schema.AmselConfig` and `eon.amsel_superbasin_gate`.
 

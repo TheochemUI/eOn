@@ -19,7 +19,7 @@ behaviour is unchanged from legacy MCAMC.
 from __future__ import annotations
 
 import logging
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping
 
 logger = logging.getLogger("superbasin.amsel_gate")
 
@@ -114,7 +114,14 @@ def discover_decide_for_superbasin(
     barriers = barriers[: len(rate_triples)]
     e_init = float(e_min_init)
     if barriers:
-        e_init = max(e_init, max(barriers) + 0.05)
+        floor = max(barriers) + 0.05
+        if floor > e_init:
+            logger.info(
+                "amsel e_min_init raised from %s to %s (max barrier + 0.05 eV)",
+                e_init,
+                floor,
+            )
+            e_init = floor
 
     try:
         raw = discover_decide_status(
@@ -174,6 +181,9 @@ def apply_gate_to_superbasin(
             )
             return status
         primary_set = set(int(x) for x in primary)
+        # Entry must remain for MCAMC indexing (st2i[entry_state.number]).
+        entry_n = int(entry_state.number)
+        primary_set.add(entry_n)
         # Restrict member list to primary transient states that exist
         keep = [n for n in superbasin.state_numbers if int(n) in primary_set]
         if not keep:
@@ -193,6 +203,12 @@ def apply_gate_to_superbasin(
         for n in list(superbasin.state_dict.keys()):
             if n not in keep:
                 del superbasin.state_dict[n]
+        # Persist so in-memory membership matches on-disk after resume.
+        if hasattr(superbasin, "write_data"):
+            try:
+                superbasin.write_data()
+            except Exception as exc:
+                logger.warning("amsel split: write_data failed: %s", exc)
         return status
     if status in ("rejected_no_metastable_basin", "rejected"):
         raise AmselSuperbasinReject(

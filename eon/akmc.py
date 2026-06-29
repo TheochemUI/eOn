@@ -213,9 +213,24 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
 
         # Do a KMC step.
         steps += 1
+        used_superbasin = False
         if config.sb_on and sb:
-            mean_time, current_state, next_state, sb_proc_id_out, sb_id = sb.step(current_state, states.get_product_state)
-        else:
+            from eon.amsel_superbasin_gate import AmselSuperbasinReject
+
+            try:
+                mean_time, current_state, next_state, sb_proc_id_out, sb_id = sb.step(
+                    current_state, states.get_product_state
+                )
+                used_superbasin = True
+            except AmselSuperbasinReject as amsel_exc:
+                # Fall back to ordinary single-state KMC for this step.
+                logger.info(
+                    "amsel rejected superbasin; falling back to single-state KMC: %s",
+                    amsel_exc,
+                )
+                sb = None
+
+        if not used_superbasin:
             if config.askmc_on:
                 rate_table = asKMC.get_ratetable(current_state)
             else:

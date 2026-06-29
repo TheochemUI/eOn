@@ -99,3 +99,41 @@ def test_apply_gate_reject_raises():
                 "reason": "test",
             },
         )
+
+
+def test_split_keeps_entry_state():
+    from eon.amsel_superbasin_gate import apply_gate_to_superbasin
+
+    class _St:
+        def __init__(self, n):
+            self.number = n
+
+        def get_process_table(self):
+            return {}
+
+    class _SB:
+        def __init__(self):
+            self.state_numbers = [0, 1, 2]
+            self.state_dict = {0: _St(0), 1: _St(1), 2: _St(2)}
+            self.states = [self.state_dict[n] for n in self.state_numbers]
+            self.written = False
+
+        def write_data(self):
+            self.written = True
+
+    sb = _SB()
+    entry = _St(0)
+    # primary omits entry 0 — gate must re-add it
+    status = apply_gate_to_superbasin(
+        sb,
+        entry,
+        {
+            "available": True,
+            "status": "split_required",
+            "primary_transient": [1, 2],
+            "reason": "",
+        },
+    )
+    assert status == "split_required"
+    assert 0 in sb.state_numbers
+    assert sb.written
