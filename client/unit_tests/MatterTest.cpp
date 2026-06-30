@@ -146,6 +146,23 @@ TEST_CASE("getForcesFree is const and drops fixed rows",
   REQUIRE(freeF.rows() == m1->numberOfAtoms() - 1);
   // All remaining rows should be non-zero for this LJ cluster
   REQUIRE(freeF.row(0).norm() > 0.0);
+  // Vector form also works on const Matter (#171)
+  VectorXd freeV = cref.getForcesFreeV();
+  REQUIRE(freeV.size() == 3 * m1->numberOfFreeAtoms());
+  REQUIRE(freeV.norm() > 0.0);
+}
+
+TEST_CASE("Matter copy is independent snapshot (#135)",
+          "[MatterTest][copy][dynamics_saddle]") {
+  // DynamicsSaddleSearch must deep-copy Matter into mdSnapshots; shared
+  // ownership would let later MD steps overwrite earlier frames.
+  auto [m1, params] = makeLJCluster();
+  auto snapshot = std::make_shared<Matter>(*m1);
+  auto pos = m1->getPositionsCopy();
+  pos(0, 0) += 2.0;
+  m1->setPositions(pos);
+  REQUIRE(m1->distanceTo(*snapshot) > 1.0);
+  REQUIRE(snapshot->compare(*m1) == false);
 }
 
 TEST_CASE("MinimumImage PBC centers fractional coords",
