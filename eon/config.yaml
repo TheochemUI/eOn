@@ -1573,7 +1573,33 @@ Coarse Graining:
             kind: boolean
             default: True
 
+
 ################################################################################
+
+amsel:
+
+    options:
+
+        discover_decide:
+            kind: boolean
+            default: False
+
+        e_min_init:
+            kind: float
+            default: 0.5
+
+        e_min_step:
+            kind: float
+            default: 0.05
+
+        e_min_floor:
+            kind: float
+            default: 0.05
+
+        cv_threshold:
+            kind: float
+            default: 10.0
+
 
 Optimizer:
 
