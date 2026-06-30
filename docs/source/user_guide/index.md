@@ -139,6 +139,8 @@ described in the subsequent sections.
 :caption: External linkage
 
 kdb
+rgpot_integration
+rgpot_pot
 serve_mode
 ```
 

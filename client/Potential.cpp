@@ -38,6 +38,9 @@
 #include "potentials/Morse/Morse.h"
 #ifndef IS_WINDOWS
 #include "potentials/SocketNWChem/SocketNWChemPot.h"
+#ifdef WITH_RGPOT
+#include "potentials/Rgpot/RgpotPot.h"
+#endif
 #endif
 #include "potentials/ZBL/ZBLPot.h"
 
@@ -323,6 +326,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifndef IS_WINDOWS
   case PotType::SocketNWChem: {
     return (std::make_shared<SocketNWChemPot>(params));
+    break;
+  }
+#endif
+#ifdef WITH_RGPOT
+  case PotType::RGPOT: {
+    return (std::make_shared<RgpotPot>(params));
     break;
   }
 #endif

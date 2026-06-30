@@ -120,6 +120,27 @@ public:
     bool make_template_input{true};
   } socket_nwchem_options;
 
+  // [RgpotPot] — in-process rgpot NWChemPot / CPMDPot (dlopen engines; no
+  // potserv)
+  struct rgpot_options_t {
+    /// "nwchemc" or "cpmdc" (also accepts nwchem / cpmd / NWChem / CPMD)
+    std::string backend{"nwchemc"};
+    std::string basis{"sto-3g"};
+    std::string theory{"scf"};
+    std::string scf_type{"rhf"};
+    std::string functional{"BLYP"};
+    double cutoff_ry{70.0};
+    int charge{0};
+    int multiplicity{1};
+    std::string engine_path{};
+    std::string engine_library{};
+    std::string engine_root{};
+    std::string title{};
+    int memory_mb{0};
+    std::string scratch_dir{};
+    std::string input_block{};
+  } rgpot_options;
+
   // [Structure Comparison] //
   struct structure_comparison_options_t {
     double distance_difference{0.1};
