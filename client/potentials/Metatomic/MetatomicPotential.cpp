@@ -189,9 +189,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   auto requested_output =
       torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
 
-  // Prefer sample_kind when available (metatomic-torch >=0.1.15); fall back
-  // to set_per_atom for older headers / models.
-  requested_output->set_per_atom(model_output->get_per_atom());
+  // Per-atom granularity is sample_kind == "atom" (get/set_per_atom removed).
+  requested_output->set_sample_kind(model_output->sample_kind());
   requested_output->explicit_gradients = {};
   requested_output->set_unit("eV");
   evaluations_options_->outputs.insert(this->energy_key_, requested_output);
@@ -201,7 +200,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     auto nc_info = outputs.at(this->nc_forces_key_);
     auto requested_nc =
         torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
-    requested_nc->set_per_atom(nc_info->get_per_atom());
+    requested_nc->set_sample_kind(nc_info->sample_kind());
     requested_nc->explicit_gradients = {};
     requested_nc->set_unit("eV/Angstrom");
     evaluations_options_->outputs.insert(this->nc_forces_key_, requested_nc);
@@ -239,10 +238,10 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 
     if (this->uncertainty_threshold_ > 0) {
       auto uncertainty_info = outputs.at(this->energy_uncertainty_key_);
-      if (uncertainty_info->get_per_atom()) {
+      if (uncertainty_info->sample_kind() == "atom") {
         auto requested_uncertainty =
             torch::make_intrusive<metatomic_torch::ModelOutputHolder>();
-        requested_uncertainty->set_per_atom(true);
+        requested_uncertainty->set_sample_kind("atom");
         requested_uncertainty->explicit_gradients = {};
         requested_uncertainty->set_unit("eV");
         evaluations_options_->outputs.insert(this->energy_uncertainty_key_,
@@ -255,7 +254,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
       } else {
         QUILL_LOG_DEBUG(m_log,
                         "[MetatomicPotential] Model provides '{}' "
-                        "but not per-atom; skipping uncertainty checks.",
+                        "but sample_kind is not \"atom\"; skipping uncertainty "
+                        "checks.",
                         this->energy_uncertainty_key_);
         this->uncertainty_threshold_ = -1.0;
       }
