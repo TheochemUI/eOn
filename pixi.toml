@@ -148,8 +148,8 @@ sphinxcontrib-bibtex = "*"
 sphinxcontrib-spelling = "*"
 autodoc-pydantic = "*"
 sphinx-autodoc2 = "*"
-rgpycrumbs = { git = "https://github.com/HaoZeke/rgpycrumbs.git", rev = "52ecbd2", extras = ["analysis"] }
-chemparseplot = { git = "https://github.com/HaoZeke/chemparseplot.git", rev = "f71d79b", extras = ["neb", "plot"] }
+rgpycrumbs = { version = ">=1.8.0,<2", extras = ["analysis"] }
+chemparseplot = { version = ">=1.8.0,<2", extras = ["neb", "plot"] }
 adjustText = "*"
 
 [feature.docs.tasks.makedocs]
