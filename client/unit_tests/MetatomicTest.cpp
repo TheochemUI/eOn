@@ -68,8 +68,7 @@ TEST_CASE_METHOD(PotTest, "Metatomic", "[PotTest]") {
   REQUIRE_THAT(e_mta, WithinAbs(expected_energy, threshold * expected_energy));
   if (!matEq(f_mta, expected_forces)) {
     // Forces may rotate with model export; check magnitude budget.
-    REQUIRE(f_mta.norm() ==
-            Catch::Approx(expected_forces.norm()).epsilon(0.5));
+    REQUIRE(f_mta.norm() == Catch::Approx(expected_forces.norm()).epsilon(0.5));
   }
   TearDown();
 }
