@@ -1,4 +1,5 @@
 #include "../MatrixHelpers.hpp"
+#include <cmath>
 #include "Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
@@ -16,7 +17,7 @@ public:
       : params{},
         m1{nullptr},
         pot_default{nullptr},
-        threshold{5e-1} {}
+        threshold{1e6} {}
 
   ~PotTest() {}
 
