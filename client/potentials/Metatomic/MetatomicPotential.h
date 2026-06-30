@@ -60,9 +60,13 @@ private:
   c10::DeviceType device_type_;
   torch::Device device_;
   bool check_consistency_;
-  // -- Variants
+  // -- Variants / output keys
   std::string energy_key_;
   std::string energy_uncertainty_key_;
+  std::string nc_forces_key_; // empty => conservative (autograd) forces
+  bool non_conservative_{false};
+  bool random_rotation_{false};
+  long n_symmetry_rotations_{0};
   // --- Uncertainty handling ---
   // If non-positive, uncertainty checks are effectively disabled.
   double uncertainty_threshold_{-1.0};
