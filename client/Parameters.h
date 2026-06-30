@@ -351,9 +351,11 @@ public:
     // random_rotation when both are set.
     long n_symmetry_rotations{0};
     // PyTorch determinism (JIT profiling off, deterministic algorithms,
-    // cudnn benchmark off). See rgoswami.me/snippets/pytorch-deterministic-regression/
+    // cudnn benchmark off). See
+    // rgoswami.me/snippets/pytorch-deterministic-regression/
     bool deterministic{true};
-    // If true, fail on nondeterministic CUDA ops (needs CUBLAS_WORKSPACE_CONFIG).
+    // If true, fail on nondeterministic CUDA ops (needs
+    // CUBLAS_WORKSPACE_CONFIG).
     bool deterministic_strict{false};
     struct variants_t {
       std::string base;

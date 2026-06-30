@@ -37,11 +37,12 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {
 
-  // Determinism knobs (see https://rgoswami.me/snippets/pytorch-deterministic-regression/):
-  // JIT profiling specializes graphs after the first few forwards, so a fresh
-  // model instance can differ at ULP level from a warm one — bad for parallel
-  // NEB. cuBLAS / index_add_ on CUDA are likewise nondeterministic unless
-  // forced. [Metatomic] deterministic=true (default) applies the safe defaults;
+  // Determinism knobs (see
+  // https://rgoswami.me/snippets/pytorch-deterministic-regression/): JIT
+  // profiling specializes graphs after the first few forwards, so a fresh model
+  // instance can differ at ULP level from a warm one — bad for parallel NEB.
+  // cuBLAS / index_add_ on CUDA are likewise nondeterministic unless forced.
+  // [Metatomic] deterministic=true (default) applies the safe defaults;
   // deterministic_strict=true requires CUBLAS_WORKSPACE_CONFIG (e.g. :4096:8)
   // and fails on nondeterministic ops instead of warning.
   if (m_metatomic_opts.deterministic) {
@@ -167,8 +168,8 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
                    "[MetatomicPotential] Symmetry averaging over {} rotations",
                    this->n_symmetry_rotations_);
   } else if (this->random_rotation_) {
-    QUILL_LOG_INFO(m_log,
-                   "[MetatomicPotential] Per-call random SO(3) rotation enabled");
+    QUILL_LOG_INFO(
+        m_log, "[MetatomicPotential] Per-call random SO(3) rotation enabled");
   }
 
   if (!outputs.contains(this->energy_key_)) {
@@ -293,7 +294,8 @@ namespace {
 // Uniform random rotation in SO(3) via QR of a Gaussian matrix with positive
 // determinant (Arvo / Shoemake style, sufficient for stochastic averaging).
 torch::Tensor random_so3(torch::Device device, torch::ScalarType dtype) {
-  auto A = torch::randn({3, 3}, torch::TensorOptions().dtype(dtype).device(device));
+  auto A =
+      torch::randn({3, 3}, torch::TensorOptions().dtype(dtype).device(device));
   auto qr = torch::linalg_qr(A);
   auto Q = std::get<0>(qr);
   auto R = std::get<1>(qr);
@@ -345,9 +347,8 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   bool variance_set = false;
 
   for (long i_pass = 0; i_pass < n_passes; ++i_pass) {
-    torch::Tensor R = torch::eye(3, torch::TensorOptions()
-                                        .dtype(this->dtype_)
-                                        .device(this->device_));
+    torch::Tensor R = torch::eye(
+        3, torch::TensorOptions().dtype(this->dtype_).device(this->device_));
     if (use_rotation) {
       R = random_so3(this->device_, this->dtype_);
     }
@@ -380,10 +381,9 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
             .to(this->device_)
             .set_requires_grad(!this->non_conservative_);
 
-    auto torch_cell =
-        torch::from_blob(cell_buf.data(), {3, 3}, f64_options)
-            .to(this->dtype_)
-            .to(this->device_);
+    auto torch_cell = torch::from_blob(cell_buf.data(), {3, 3}, f64_options)
+                          .to(this->dtype_)
+                          .to(this->device_);
 
     auto cell_norms = torch::norm(torch_cell, 2, /*dim=*/1);
     auto torch_pbc = cell_norms.abs() > 1e-9;
@@ -411,9 +411,8 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
           this->check_consistency_,
       });
       auto dict_output = ivalue_output.toGenericDict();
-      auto output_map =
-          dict_output.at(this->energy_key_)
-              .toCustomClass<metatensor_torch::TensorMapHolder>();
+      auto output_map = dict_output.at(this->energy_key_)
+                            .toCustomClass<metatensor_torch::TensorMapHolder>();
 
       if (this->uncertainty_threshold_ > 0 && i_pass == 0) {
         try {
@@ -446,8 +445,7 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                   atom_indices_all.index({atoms_above_threshold});
               std::ostringstream ss;
               ss << "atoms at index [";
-              auto n_report =
-                  std::min<int64_t>(10, atom_indices_above.size(0));
+              auto n_report = std::min<int64_t>(10, atom_indices_above.size(0));
               for (int64_t i = 0; i < n_report; ++i) {
                 if (i > 0)
                   ss << ", ";
@@ -461,7 +459,8 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
               QUILL_LOG_WARNING(
                   m_log,
                   "[MetatomicPotential] The uncertainty on atomic energies for "
-                  "{} are larger than the threshold of {}. (Key: {}) Be careful "
+                  "{} are larger than the threshold of {}. (Key: {}) Be "
+                  "careful "
                   "when analyzing the results, and consider retraining the "
                   "model to better describe these configurations.",
                   ss.str(), this->uncertainty_threshold_,
@@ -492,17 +491,16 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
       } else {
         energy_tensor.backward(torch::ones_like(energy_tensor));
         auto positions_grad = system->positions().grad();
-        forces_tensor =
-            (-positions_grad).to(torch::kCPU).to(torch::kFloat64);
+        forces_tensor = (-positions_grad).to(torch::kCPU).to(torch::kFloat64);
       }
     } catch (const std::exception &e) {
-      QUILL_LOG_ERROR(m_log,
-                      "[MetatomicPotential] Model evaluation failed: {}",
+      QUILL_LOG_ERROR(m_log, "[MetatomicPotential] Model evaluation failed: {}",
                       e.what());
       throw;
     }
 
-    // Rotate forces back to original frame: F = F' @ R  (since pos' = pos @ R^T)
+    // Rotate forces back to original frame: F = F' @ R  (since pos' = pos @
+    // R^T)
     if (use_rotation) {
       forces_tensor = forces_tensor.matmul(R_cpu);
     }
