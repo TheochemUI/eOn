@@ -105,13 +105,7 @@ See {any}`eon.schema.AmselConfig` and `eon.amsel_superbasin_gate`.
 .. autopydantic_model:: eon.schema.CoarseGrainingConfig
 ```
 
-```{code-block} ini
-[amsel]
-```
-
-```{eval-rst}
-.. autopydantic_model:: eon.schema.AmselConfig
-```
+See {any}`eon.schema.AmselConfig` for field documentation.
 
 ## References
 
