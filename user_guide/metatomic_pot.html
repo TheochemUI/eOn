@@ -129,6 +129,8 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -262,10 +264,15 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#variance">Variance</a></li>
 <li><a class="reference internal" href="#variants">Variants</a><ul>
-<li><a class="reference internal" href="#variant-configuration">Variant Configuration</a></li>
+<li><a class="reference internal" href="#variant-configuration">Variant configuration</a></li>
+<li><a class="reference internal" href="#explicit-output-keys">Explicit output keys</a></li>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#non-conservative-forces">Non-conservative forces</a></li>
+<li><a class="reference internal" href="#random-rotations-and-symmetrization">Random rotations and symmetrization</a></li>
+<li><a class="reference internal" href="#determinism-pytorch">Determinism (PyTorch)</a></li>
+<li><a class="reference internal" href="#device-selection">Device selection</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -371,28 +378,36 @@ data-aria-dark="Switch to auto color mode">
 with the <code class="docutils literal notranslate"><span class="pre">metatensor</span></code> and <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> libraries.</p>
 <section id="setup-and-compilation">
 <h2>Setup and Compilation<a class="headerlink" href="#setup-and-compilation" title="Link to this heading">¶</a></h2>
-<p>The most robust way to handle the dependencies is to use <code class="docutils literal notranslate"><span class="pre">-Dwith_metatomic=True</span> <span class="pre">-Dpip_metatomic=True</span> <span class="pre">-Dtorch_version=2.9</span></code> inside the <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">s</span> <span class="pre">-e</span> <span class="pre">meta-dev</span></code>
-environment.</p>
-<p>Some notes about this implemetnation:</p>
+<p>The most robust way to handle the dependencies is to use <code class="docutils literal notranslate"><span class="pre">-Dwith_metatomic=True</span> <span class="pre">-Dpip_metatomic=True</span> <span class="pre">-Dtorch_version=2.10</span></code> inside a <code class="docutils literal notranslate"><span class="pre">pixi</span></code> environment with the
+<code class="docutils literal notranslate"><span class="pre">metatomic</span></code> feature (for example <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">run</span> <span class="pre">-e</span> <span class="pre">dev-mta</span></code> / <code class="docutils literal notranslate"><span class="pre">setupeon</span></code> + <code class="docutils literal notranslate"><span class="pre">mkeon</span></code>).
+That path expects <strong>metatomic-torch &gt;= 0.1.15</strong> and <strong>metatensor-torch &gt;= 0.10</strong>
+(pip layout <code class="docutils literal notranslate"><span class="pre">metatensor_torch/torch-&lt;ver&gt;/</span></code> for the shared library).</p>
+<p>Some notes about this implementation:</p>
 <ul class="simple">
 <li><p>Unlike the <code class="docutils literal notranslate"><span class="pre">python</span></code> potentials, using <code class="docutils literal notranslate"><span class="pre">pip_metatomic</span></code> does not share a <code class="docutils literal notranslate"><span class="pre">guard</span></code>
 across the client</p></li>
 <li><p>These models are typically stored in <code class="docutils literal notranslate"><span class="pre">.pt</span></code> files.</p></li>
+<li><p>Prefer <code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">=</span> <span class="pre">cuda</span></code> (or <code class="docutils literal notranslate"><span class="pre">auto</span></code>) on a GPU host; CPU remains the default when
+unset in the INI reader legacy path.</p></li>
 </ul>
 <p>For more details including building from source, refer to the <a class="reference external" href="https://docs.metatensor.org/latest/index.html">upstream documentation</a>.</p>
 </section>
 <section id="basic-configuration">
 <h2>Basic Configuration<a class="headerlink" href="#basic-configuration" title="Link to this heading">¶</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
-</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">metatomic</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Metatomic</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">[Metatomic]</span>
 </span><span data-line="5"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">lennard-jones.pt</span>
+</span><span data-line="6"><span class="na">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpu</span>
+</span><span data-line="7"><span class="na">deterministic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
 </span></pre></div>
 </div>
-<p>The model_path is the path to the PyTorch model file (<code class="docutils literal notranslate"><span class="pre">.pt</span></code>). As with other
+<p>The <code class="docutils literal notranslate"><span class="pre">model_path</span></code> is the path to the PyTorch model file (<code class="docutils literal notranslate"><span class="pre">.pt</span></code>). As with other
 external files, it is highly recommended to provide the full absolute path to
-the model.</p>
+the model. Configuration keys are defined in <code class="docutils literal notranslate"><span class="pre">eon/schema.py</span></code> (<code class="docutils literal notranslate"><span class="pre">Metatomic</span></code>
+Pydantic model) and mirrored in <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code> for the YAML front end;
+<code class="docutils literal notranslate"><span class="pre">config.ini</span></code> / <code class="docutils literal notranslate"><span class="pre">[Metatomic]</span></code> INI keys are read in <code class="docutils literal notranslate"><span class="pre">ParametersINI.cpp</span></code>.</p>
 </section>
 <section id="usage-example">
 <h2>Usage example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
@@ -445,7 +460,7 @@ file. Run this Python script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">ase.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">aseio</span>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">metatomic.torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_atomistic_model</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">metatomic.torch.ase_calculator</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetatomicCalculator</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">metatomic_ase</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetatomicCalculator</span>
 </span><span data-line="5"><span class="n">atomistic_model</span> <span class="o">=</span> <span class="n">load_atomistic_model</span><span class="p">(</span><span class="s2">&quot;lennard-jones.pt&quot;</span><span class="p">)</span>
 </span><span data-line="6"><span class="n">mta_calculator</span> <span class="o">=</span> <span class="n">MetatomicCalculator</span><span class="p">(</span><span class="n">atomistic_model</span><span class="p">)</span>
 </span><span data-line="7"><span class="n">atoms</span> <span class="o">=</span> <span class="n">aseio</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;pos.con&quot;</span><span class="p">)</span>
@@ -498,20 +513,38 @@ the <code class="docutils literal notranslate"><span class="pre">[Metatomic]</sp
 <p>The implementation follows the <a class="reference external" href="https://docs.metatensor.org/metatomic/latest/outputs/variants.html#output-variants">upstream Metatomic
 specification</a>
 where variants appear as suffixes to the base quantity (e.g.,
-<code class="docutils literal notranslate"><span class="pre">energy/&lt;variant&gt;</span></code>).</p>
+<code class="docutils literal notranslate"><span class="pre">energy/&lt;variant&gt;</span></code>), via <code class="docutils literal notranslate"><span class="pre">metatomic_torch::pick_output</span></code>.</p>
 <section id="variant-configuration">
-<h3>Variant Configuration<a class="headerlink" href="#variant-configuration" title="Link to this heading">¶</a></h3>
-<p>Three keys control variant selection:</p>
+<h3>Variant configuration<a class="headerlink" href="#variant-configuration" title="Link to this heading">¶</a></h3>
+<p>Four keys control variant selection:</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_base</span></code></strong>: Appends the specified string to <em>all</em> requested outputs
-(energy, forces, and uncertainty). For example, setting this to <code class="docutils literal notranslate"><span class="pre">pbe</span></code> targets
-<code class="docutils literal notranslate"><span class="pre">energy/pbe</span></code> and <code class="docutils literal notranslate"><span class="pre">energy_uncertainty/pbe</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_base</span></code></strong>: Default variant suffix for outputs that do not set an
+override. For example, setting this to <code class="docutils literal notranslate"><span class="pre">pbe</span></code> targets <code class="docutils literal notranslate"><span class="pre">energy/pbe</span></code> and, when
+uncertainty is enabled, <code class="docutils literal notranslate"><span class="pre">energy_uncertainty/pbe</span></code>.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_energy</span></code></strong>: Overrides the energy selection specifically. Setting
 this takes precedence over <code class="docutils literal notranslate"><span class="pre">variant_base</span></code>. Use the special value <code class="docutils literal notranslate"><span class="pre">off</span></code> to
 revert to the default <code class="docutils literal notranslate"><span class="pre">energy</span></code> output even if <code class="docutils literal notranslate"><span class="pre">variant_base</span></code> remains active
 for other quantities.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_energy_uncertainty</span></code></strong>: Overrides the uncertainty selection
 specifically, functioning identically to <code class="docutils literal notranslate"><span class="pre">variant_energy</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_force</span></code></strong>: Override for the non-conservative force head (see
+below). Defaults to the energy variant when empty.</p></li>
+</ul>
+</section>
+<section id="explicit-output-keys">
+<h3>Explicit output keys<a class="headerlink" href="#explicit-output-keys" title="Link to this heading">¶</a></h3>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.15.</span></p>
+</div>
+<p>When a model uses non-standard output names (for example a custom energy head),
+set the literal keys instead of relying on <code class="docutils literal notranslate"><span class="pre">pick_output</span></code>:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">energy_output</span></code></strong>: Literal energy key in the model capabilities.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">energy_uncertainty_output</span></code></strong>: Literal uncertainty key (used when
+<code class="docutils literal notranslate"><span class="pre">uncertainty_threshold</span></code> is positive).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">force_output</span></code></strong>: Literal non-conservative force key (used when
+<code class="docutils literal notranslate"><span class="pre">non_conservative</span> <span class="pre">=</span> <span class="pre">true</span></code>). Missing explicit keys raise at potential
+construction.</p></li>
 </ul>
 </section>
 <section id="example">
@@ -533,6 +566,106 @@ uncertainty quantification:</p>
 </span></pre></div>
 </div>
 </section>
+</section>
+<section id="non-conservative-forces">
+<h2>Non-conservative forces<a class="headerlink" href="#non-conservative-forces" title="Link to this heading">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.16.</span></p>
+</div>
+<p>By default, forces are the negative gradient of the requested energy output
+(conservative). Set <strong><code class="docutils literal notranslate"><span class="pre">non_conservative</span> <span class="pre">=</span> <span class="pre">true</span></code></strong> to read forces from the
+model’s <code class="docutils literal notranslate"><span class="pre">non_conservative_force</span></code> (or variant) output instead, matching
+<code class="docutils literal notranslate"><span class="pre">metatomic_ase.MetatomicCalculator(non_conservative=...)</span></code>.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">non_conservative</span></code></strong>: <code class="docutils literal notranslate"><span class="pre">false</span></code> (default) uses autograd on energy; <code class="docutils literal notranslate"><span class="pre">true</span></code>
+requests the NC force output.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">variant_force</span></code></strong>: Variant suffix for <code class="docutils literal notranslate"><span class="pre">non_conservative_force</span></code>
+(defaults to the energy variant).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">force_output</span></code></strong>: Literal key override for the NC force output.</p></li>
+</ul>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Metatomic]</span>
+</span><span data-line="2"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">pet-mad.pt</span>
+</span><span data-line="3"><span class="na">non_conservative</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span><span data-line="4"><span class="na">variant_force</span><span class="w"> </span><span class="o">=</span><span class="w">   </span><span class="c1"># empty -&gt; same as energy variant / variant_base</span>
+</span></pre></div>
+</div>
+<p>Use non-conservative forces for speed only when the model documents them; they
+are not guaranteed to be energy-conserving in MD or long NEB runs.</p>
+</section>
+<section id="random-rotations-and-symmetrization">
+<h2>Random rotations and symmetrization<a class="headerlink" href="#random-rotations-and-symmetrization" title="Link to this heading">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.16.</span></p>
+</div>
+<p>Broken rotational symmetry in some ML potentials can be mitigated by evaluating
+structures in a randomly rotated frame and rotating forces back (see Langer,
+Pozdnyakov, Ceriotti, <em>Mach. Learn.: Sci. Technol.</em> <strong>5</strong>, 4LT01 (2024)).</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">random_rotation</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">true</span></code>, each <code class="docutils literal notranslate"><span class="pre">force()</span></code> call draws a uniform SO(3)
+rotation, evaluates the model on rotated positions (and cell), and maps
+forces back to the lab frame.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">n_symmetry_rotations</span></code></strong>: If greater than zero, average energy and forces
+over that many independent random rotations (approximate O(3)
+symmetrization). When set, it supersedes single-shot <code class="docutils literal notranslate"><span class="pre">random_rotation</span></code>.</p></li>
+</ul>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Metatomic]</span>
+</span><span data-line="2"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">pet-mad.pt</span>
+</span><span data-line="3"><span class="na">random_rotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span><span data-line="4"><span class="c1"># or, for averaging:</span>
+</span><span data-line="5"><span class="c1"># n_symmetry_rotations = 8</span>
+</span></pre></div>
+</div>
+<p>These options increase cost proportionally to the number of rotations and are
+orthogonal to non-conservative forces (NC forces are rotated the same way).</p>
+</section>
+<section id="determinism-pytorch">
+<h2>Determinism (PyTorch)<a class="headerlink" href="#determinism-pytorch" title="Link to this heading">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 2.16.</span></p>
+</div>
+<p>Parallel NEB and multi-image workloads need bit-stable forces across model
+instances. eOn applies the same mitigations discussed in
+<a class="reference external" href="https://rgoswami.me/snippets/pytorch-deterministic-regression/">PyTorch deterministic regression</a>
+when determinism is enabled:</p>
+<ul class="simple">
+<li><p>Disable TorchScript profiling-guided optimization (<code class="docutils literal notranslate"><span class="pre">getProfilingMode()</span> <span class="pre">=</span> <span class="pre">false</span></code>).</p></li>
+<li><p>Enable <code class="docutils literal notranslate"><span class="pre">at::globalContext().setDeterministicAlgorithms(...)</span></code>.</p></li>
+<li><p>Disable cuDNN benchmarking.</p></li>
+</ul>
+<p>Keys:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">deterministic</span></code></strong>: <code class="docutils literal notranslate"><span class="pre">true</span></code> (default) applies the above. Set <code class="docutils literal notranslate"><span class="pre">false</span></code> only for
+exploratory runs where speed matters more than reproducibility across
+images or processes.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">deterministic_strict</span></code></strong>: When <code class="docutils literal notranslate"><span class="pre">true</span></code>, nondeterministic CUDA ops fail
+instead of warning. Requires <code class="docutils literal notranslate"><span class="pre">CUBLAS_WORKSPACE_CONFIG</span></code> in the environment
+(for example <code class="docutils literal notranslate"><span class="pre">:4096:8</span></code>). If that variable is set, strict mode is also
+inferred even when <code class="docutils literal notranslate"><span class="pre">deterministic_strict</span></code> is left <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
+</ul>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Metatomic]</span>
+</span><span data-line="2"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">pet-mad.pt</span>
+</span><span data-line="3"><span class="na">deterministic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span><span data-line="4"><span class="na">deterministic_strict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+</span></pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">CUBLAS_WORKSPACE_CONFIG</span><span class="o">=</span>:4096:8
+</span><span data-line="2"><span class="c1"># then set deterministic_strict = true for hard failures on nondeterministic ops</span>
+</span></pre></div>
+</div>
+</section>
+<section id="device-selection">
+<h2>Device selection<a class="headerlink" href="#device-selection" title="Link to this heading">¶</a></h2>
+<p>Set <strong><code class="docutils literal notranslate"><span class="pre">device</span></code></strong> to <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, <code class="docutils literal notranslate"><span class="pre">cuda</span></code>, <code class="docutils literal notranslate"><span class="pre">mps</span></code>, or leave empty / <code class="docutils literal notranslate"><span class="pre">auto</span></code> to let
+<code class="docutils literal notranslate"><span class="pre">metatomic_torch::pick_device</span></code> choose from the model’s
+<code class="docutils literal notranslate"><span class="pre">supported_devices</span></code>. GPU builds must link a CUDA-enabled libtorch; the
+cookbook and conda packages typically ship a CPU libtorch with optional CUDA
+at runtime when the host provides it.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Metatomic]</span>
+</span><span data-line="2"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/abs/path/pet-mad.pt</span>
+</span><span data-line="3"><span class="na">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cuda</span>
+</span><span data-line="4"><span class="na">deterministic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</span></pre></div>
+</div>
 </section>
 </section>
 

@@ -15,12 +15,16 @@ myst:
 Included in the `conda-forge` package (v2.12+). No additional build flags required.
 ```
 
-Serve mode wraps any eOn potential as an
-[rgpot](https://github.com/OmniPotentRPC/rgpot)-compatible server, exposing it
-over Cap'n Proto RPC. This allows external tools, such as Julia-based
-optimization frameworks (e.g.,
-[ChemGP](https://github.com/HaoZeke/ChemGP)), to evaluate energies and forces
-without embedding C++ code directly.
+Serve mode makes **eOn the Cap'n Proto RPC *server***: it wraps any eOn
+potential as an
+[rgpot](https://github.com/OmniPotentRPC/rgpot)-compatible endpoint so external
+tools (e.g. [ChemGP](https://github.com/HaoZeke/ChemGP)) can evaluate energies
+and forces without embedding C++.
+
+This is **not** the direct in-process **RGPOT** pot (`-Dwith_rgpot`,
+`dlopen` of `libnwchemc` / `libcpmdc` via rgpot NWChemPot/CPMDPot), and **not**
+an eOn client connecting to **potserv**. See
+[rgpot integration](project:rgpot_integration.md) for the three roles.
 
 ## Compilation
 

@@ -129,6 +129,8 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -274,16 +276,23 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#metatomic">Metatomic</a><ul>
 <li><a class="reference internal" href="#eon.schema.Metatomic"><code class="docutils literal notranslate"><span class="pre">Metatomic</span></code></a><ul>
 <li><a class="reference internal" href="#eon.schema.Metatomic.check_consistency"><code class="docutils literal notranslate">check_consistency</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.deterministic"><code class="docutils literal notranslate">deterministic</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.deterministic_strict"><code class="docutils literal notranslate">deterministic_strict</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.device"><code class="docutils literal notranslate">device</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.energy_output"><code class="docutils literal notranslate">energy_output</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.energy_uncertainty_output"><code class="docutils literal notranslate">energy_uncertainty_output</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.extensions_directory"><code class="docutils literal notranslate">extensions_directory</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.force_output"><code class="docutils literal notranslate">force_output</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.length_unit"><code class="docutils literal notranslate">length_unit</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.model_path"><code class="docutils literal notranslate">model_path</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.n_symmetry_rotations"><code class="docutils literal notranslate">n_symmetry_rotations</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.non_conservative"><code class="docutils literal notranslate">non_conservative</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.random_rotation"><code class="docutils literal notranslate">random_rotation</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.uncertainty_threshold"><code class="docutils literal notranslate">uncertainty_threshold</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.variant_base"><code class="docutils literal notranslate">variant_base</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.variant_energy"><code class="docutils literal notranslate">variant_energy</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.Metatomic.variant_energy_uncertainty"><code class="docutils literal notranslate">variant_energy_uncertainty</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.Metatomic.variant_force"><code class="docutils literal notranslate">variant_force</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -788,13 +797,13 @@ bopfox
 </span><span data-line="40"><span class="w">      </span><span class="p">},</span>
 </span><span data-line="41"><span class="w">      </span><span class="nt">&quot;variant_base&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span data-line="42"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Global variant for energy and uncertainty.&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Default variant suffix for energy, uncertainty, and non_conservative_force unless overridden.&quot;</span><span class="p">,</span>
 </span><span data-line="44"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variant Base&quot;</span><span class="p">,</span>
 </span><span data-line="45"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 </span><span data-line="46"><span class="w">      </span><span class="p">},</span>
 </span><span data-line="47"><span class="w">      </span><span class="nt">&quot;variant_energy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span data-line="48"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Override variant for energy.&quot;</span><span class="p">,</span>
+</span><span data-line="49"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Override variant for energy (use &#39;off&#39; for the base key).&quot;</span><span class="p">,</span>
 </span><span data-line="50"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variant Energy&quot;</span><span class="p">,</span>
 </span><span data-line="51"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 </span><span data-line="52"><span class="w">      </span><span class="p">},</span>
@@ -815,9 +824,51 @@ bopfox
 </span><span data-line="67"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Literal energy uncertainty output key; empty uses variant resolution.&quot;</span><span class="p">,</span>
 </span><span data-line="68"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Energy Uncertainty Output&quot;</span><span class="p">,</span>
 </span><span data-line="69"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="70"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="71"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="72"><span class="p">}</span>
+</span><span data-line="70"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="71"><span class="w">      </span><span class="nt">&quot;force_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="72"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="73"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Literal non-conservative force output key; empty uses pick_output.&quot;</span><span class="p">,</span>
+</span><span data-line="74"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Force Output&quot;</span><span class="p">,</span>
+</span><span data-line="75"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="76"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="77"><span class="w">      </span><span class="nt">&quot;non_conservative&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="78"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Read forces from non_conservative_force instead of energy gradients.&quot;</span><span class="p">,</span>
+</span><span data-line="80"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Non Conservative&quot;</span><span class="p">,</span>
+</span><span data-line="81"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="82"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="83"><span class="w">      </span><span class="nt">&quot;random_rotation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="84"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="85"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Apply a random SO(3) rotation per evaluation and rotate forces back.&quot;</span><span class="p">,</span>
+</span><span data-line="86"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Random Rotation&quot;</span><span class="p">,</span>
+</span><span data-line="87"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="88"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="89"><span class="w">      </span><span class="nt">&quot;n_symmetry_rotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="90"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="91"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If &gt;0, average over this many random rotations (O(3) symmetrization).&quot;</span><span class="p">,</span>
+</span><span data-line="92"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;N Symmetry Rotations&quot;</span><span class="p">,</span>
+</span><span data-line="93"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="94"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="95"><span class="w">      </span><span class="nt">&quot;variant_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="96"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="97"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Override variant for non_conservative_force (defaults to energy variant).&quot;</span><span class="p">,</span>
+</span><span data-line="98"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Variant Force&quot;</span><span class="p">,</span>
+</span><span data-line="99"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="100"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="101"><span class="w">      </span><span class="nt">&quot;deterministic&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="102"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="103"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Disable JIT profiling and enable PyTorch deterministic algorithms (reproducible NEB / multi-image forces).&quot;</span><span class="p">,</span>
+</span><span data-line="104"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deterministic&quot;</span><span class="p">,</span>
+</span><span data-line="105"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="106"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="107"><span class="w">      </span><span class="nt">&quot;deterministic_strict&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="108"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="109"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Fail on nondeterministic CUDA ops; requires CUBLAS_WORKSPACE_CONFIG (e.g. :4096:8).&quot;</span><span class="p">,</span>
+</span><span data-line="110"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deterministic Strict&quot;</span><span class="p">,</span>
+</span><span data-line="111"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="112"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="113"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="114"><span class="p">}</span>
 </span></pre></div>
 </div>
 </details></p><dl class="field-list simple">
@@ -829,16 +880,23 @@ bopfox
 <dt class="field-even">Fields<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.check_consistency" title="eon.schema.Metatomic.check_consistency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_consistency</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.deterministic" title="eon.schema.Metatomic.deterministic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deterministic</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.deterministic_strict" title="eon.schema.Metatomic.deterministic_strict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deterministic_strict</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.device" title="eon.schema.Metatomic.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.energy_output" title="eon.schema.Metatomic.energy_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">energy_output</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.energy_uncertainty_output" title="eon.schema.Metatomic.energy_uncertainty_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">energy_uncertainty_output</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.extensions_directory" title="eon.schema.Metatomic.extensions_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extensions_directory</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.force_output" title="eon.schema.Metatomic.force_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">force_output</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.length_unit" title="eon.schema.Metatomic.length_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">length_unit</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.model_path" title="eon.schema.Metatomic.model_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_path</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.n_symmetry_rotations" title="eon.schema.Metatomic.n_symmetry_rotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_symmetry_rotations</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.non_conservative" title="eon.schema.Metatomic.non_conservative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">non_conservative</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.random_rotation" title="eon.schema.Metatomic.random_rotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_rotation</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.uncertainty_threshold" title="eon.schema.Metatomic.uncertainty_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uncertainty_threshold</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.variant_base" title="eon.schema.Metatomic.variant_base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variant_base</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.variant_energy" title="eon.schema.Metatomic.variant_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variant_energy</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.Metatomic.variant_energy_uncertainty" title="eon.schema.Metatomic.variant_energy_uncertainty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variant_energy_uncertainty</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.Metatomic.variant_force" title="eon.schema.Metatomic.variant_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variant_force</span> <span class="pre">(str)</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -846,6 +904,18 @@ bopfox
 <dt class="sig sig-object py" id="eon.schema.Metatomic.check_consistency">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_consistency</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.Metatomic.check_consistency" title="Link to this definition">¶</a></dt>
 <dd><p>Whether to check consistency of the Metatomic model.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.deterministic">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">deterministic</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.Metatomic.deterministic" title="Link to this definition">¶</a></dt>
+<dd><p>Disable JIT profiling and enable PyTorch deterministic algorithms (reproducible NEB / multi-image forces).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.deterministic_strict">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">deterministic_strict</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.Metatomic.deterministic_strict" title="Link to this definition">¶</a></dt>
+<dd><p>Fail on nondeterministic CUDA ops; requires CUBLAS_WORKSPACE_CONFIG (e.g. :4096:8).</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -873,6 +943,12 @@ bopfox
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.force_output">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">force_output</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.force_output" title="Link to this definition">¶</a></dt>
+<dd><p>Literal non-conservative force output key; empty uses pick_output.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.Metatomic.length_unit">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">length_unit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Angstrom'</span></span><a class="headerlink" href="#eon.schema.Metatomic.length_unit" title="Link to this definition">¶</a></dt>
 <dd><p>Length unit used by the Metatomic model.</p>
@@ -885,6 +961,24 @@ bopfox
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.n_symmetry_rotations">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">n_symmetry_rotations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.Metatomic.n_symmetry_rotations" title="Link to this definition">¶</a></dt>
+<dd><p>If &gt;0, average over this many random rotations (O(3) symmetrization).</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.non_conservative">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">non_conservative</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.Metatomic.non_conservative" title="Link to this definition">¶</a></dt>
+<dd><p>Read forces from non_conservative_force instead of energy gradients.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.random_rotation">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">random_rotation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.Metatomic.random_rotation" title="Link to this definition">¶</a></dt>
+<dd><p>Apply a random SO(3) rotation per evaluation and rotate forces back.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.Metatomic.uncertainty_threshold">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">uncertainty_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></span><a class="headerlink" href="#eon.schema.Metatomic.uncertainty_threshold" title="Link to this definition">¶</a></dt>
 <dd><p>Threshold to report per-atom uncertainties, if positive. Also used to populate the variance.</p>
@@ -893,19 +987,25 @@ bopfox
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.Metatomic.variant_base">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variant_base</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.variant_base" title="Link to this definition">¶</a></dt>
-<dd><p>Global variant for energy and uncertainty.</p>
+<dd><p>Default variant suffix for energy, uncertainty, and non_conservative_force unless overridden.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.Metatomic.variant_energy">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variant_energy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.variant_energy" title="Link to this definition">¶</a></dt>
-<dd><p>Override variant for energy.</p>
+<dd><p>Override variant for energy (use ‘off’ for the base key).</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.Metatomic.variant_energy_uncertainty">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variant_energy_uncertainty</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.variant_energy_uncertainty" title="Link to this definition">¶</a></dt>
 <dd><p>Override variant for energy_uncertainty.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.Metatomic.variant_force">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variant_force</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#eon.schema.Metatomic.variant_force" title="Link to this definition">¶</a></dt>
+<dd><p>Override variant for non_conservative_force (defaults to energy variant).</p>
 </dd></dl>
 
 </dd></dl>

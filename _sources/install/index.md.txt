@@ -31,7 +31,9 @@ features enabled:
 
 - [Metatomic](project:../user_guide/metatomic_pot.md) (machine-learned potentials via libtorch)
 - [xTB](https://xtb-docs.readthedocs.io/) (semi-empirical tight-binding)
-- [Serve mode](project:../user_guide/serve_mode.md) (rgpot-compatible RPC server)
+- [rgpot integration](project:../user_guide/rgpot_integration.md) (direct dlopen vs serve vs potserv client)
+- [RgpotPot / RGPOT](project:../user_guide/rgpot_pot.md) (`-Dwith_rgpot`: in-process NWChemPot/CPMDPot)
+- [Serve mode](project:../user_guide/serve_mode.md) (`-Dwith_serve`: eOn as rgpot-compatible RPC *server*)
 
 The server is accessed through `python -m eon.server`, and the `eonclient`
 binary is automatically made available in the activated environment.

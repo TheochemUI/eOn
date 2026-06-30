@@ -129,6 +129,8 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -379,7 +381,9 @@ features enabled:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../user_guide/metatomic_pot.html"><span class="std std-doc">Metatomic</span></a> (machine-learned potentials via libtorch)</p></li>
 <li><p><a class="reference external" href="https://xtb-docs.readthedocs.io/">xTB</a> (semi-empirical tight-binding)</p></li>
-<li><p><a class="reference internal" href="../user_guide/serve_mode.html"><span class="std std-doc">Serve mode</span></a> (rgpot-compatible RPC server)</p></li>
+<li><p><a class="reference internal" href="../user_guide/rgpot_integration.html"><span class="std std-doc">rgpot integration</span></a> (direct dlopen vs serve vs potserv client)</p></li>
+<li><p><a class="reference internal" href="../user_guide/rgpot_pot.html"><span class="std std-doc">RgpotPot / RGPOT</span></a> (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgpot</span></code>: in-process NWChemPot/CPMDPot)</p></li>
+<li><p><a class="reference internal" href="../user_guide/serve_mode.html"><span class="std std-doc">Serve mode</span></a> (<code class="docutils literal notranslate"><span class="pre">-Dwith_serve</span></code>: eOn as rgpot-compatible RPC <em>server</em>)</p></li>
 </ul>
 <p>The server is accessed through <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">eon.server</span></code>, and the <code class="docutils literal notranslate"><span class="pre">eonclient</span></code>
 binary is automatically made available in the activated environment.</p>

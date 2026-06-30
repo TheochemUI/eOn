@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Serve Mode - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Development Documentation" href="../devdocs/index.html" /><link rel="prev" title="Kinetic Database" href="kdb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Serve Mode - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Development Documentation" href="../devdocs/index.html" /><link rel="prev" title="RgpotPot (direct in-process rgpot)" href="rgpot_pot.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/serve_mode.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -129,6 +129,8 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="paths.html">Paths</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Serve Mode</a></li>
 </ul>
 </li>
@@ -383,12 +385,15 @@ data-aria-dark="Switch to auto color mode">
 <p class="admonition-title">conda-forge availability</p>
 <p>Included in the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> package (v2.12+). No additional build flags required.</p>
 </div>
-<p>Serve mode wraps any eOn potential as an
-<a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a>-compatible server, exposing it
-over Cap’n Proto RPC. This allows external tools, such as Julia-based
-optimization frameworks (e.g.,
-<a class="reference external" href="https://github.com/HaoZeke/ChemGP">ChemGP</a>), to evaluate energies and forces
-without embedding C++ code directly.</p>
+<p>Serve mode makes <strong>eOn the Cap’n Proto RPC <em>server</em></strong>: it wraps any eOn
+potential as an
+<a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a>-compatible endpoint so external
+tools (e.g. <a class="reference external" href="https://github.com/HaoZeke/ChemGP">ChemGP</a>) can evaluate energies
+and forces without embedding C++.</p>
+<p>This is <strong>not</strong> the direct in-process <strong>RGPOT</strong> pot (<code class="docutils literal notranslate"><span class="pre">-Dwith_rgpot</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dlopen</span></code> of <code class="docutils literal notranslate"><span class="pre">libnwchemc</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc</span></code> via rgpot NWChemPot/CPMDPot), and <strong>not</strong>
+an eOn client connecting to <strong>potserv</strong>. See
+<a class="reference internal" href="rgpot_integration.html"><span class="std std-doc">rgpot integration</span></a> for the three roles.</p>
 <section id="compilation">
 <h2>Compilation<a class="headerlink" href="#compilation" title="Link to this heading">¶</a></h2>
 <p>Serve mode requires the <code class="docutils literal notranslate"><span class="pre">with_serve</span></code> build option and a Cap’n Proto installation.
@@ -733,10 +738,10 @@ more on the integration pattern, see the
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="kdb.html">
+    <a href="rgpot_pot.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">Kinetic Database</div></div>
+        <span>Previous</span><div class="title">RgpotPot (direct in-process rgpot)</div></div>
     </a>
   </div><div class="navigation-next">
     <a href="../devdocs/index.html">
