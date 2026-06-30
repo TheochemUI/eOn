@@ -7,7 +7,8 @@ namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
-TEST_CASE("Metatomic LJ model evaluates finite energy and forces", "[PotTest]") {
+TEST_CASE("Metatomic LJ model evaluates finite energy and forces",
+          "[PotTest]") {
   Parameters params;
   params.potential_options.potential = PotType::METATOMIC;
   params.metatomic_options.model_path = "lennard-jones.pt";
