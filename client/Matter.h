@@ -92,7 +92,8 @@ public:
   ~Matter() = default;
   Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       : potential{pot},
-        usePeriodicBoundaries{true},
+        // Isolated molecular QM (NWChem/ORCA) must start with PBC off (#188).
+        usePeriodicBoundaries{!(pot && pot->requiresIsolatedMoleculeLayout())},
         pbcConvention{PbcConvention::Legacy},
         recomputePotential{true},
         forceCalls{0},
@@ -255,6 +256,15 @@ public:
   AtomMatrix getFree() const;
   VectorXd getFreeV() const;
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
+
+  [[nodiscard]] bool getPeriodic() const noexcept {
+    return usePeriodicBoundaries;
+  }
+  void setPeriodic(bool periodic) {
+    usePeriodicBoundaries = periodic;
+    recomputePotential = true;
+    recomputeMaskedForces = true;
+  }
 
 private:
   // Friend declarations for eonc::io free functions that need private access

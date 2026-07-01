@@ -512,6 +512,16 @@ Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const { return masses; }
 
 void Matter::setPotential(std::shared_ptr<Potential> pot) {
   this->potential = pot;
+  // Molecular QM backends (NWChem/ORCA) must not use PBC wraps (#188). Auto-off
+  // with a hard fail if code later forces PBC while this pot is attached.
+  if (potential && potential->requiresIsolatedMoleculeLayout() &&
+      usePeriodicBoundaries) {
+    usePeriodicBoundaries = false;
+    QUILL_LOG_WARNING(
+        log,
+        "Disabled PBC for isolated-molecule potential (NWChem/ORCA-class); "
+        "re-enabling PBC will throw (issue #188)");
+  }
   recomputePotential = true;
   recomputeMaskedForces = true;
 }

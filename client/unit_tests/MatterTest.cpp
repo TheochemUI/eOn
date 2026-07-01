@@ -208,14 +208,18 @@ struct IsolatedMoleculePot final : Potential {
 };
 } // namespace
 
-TEST_CASE("isolated molecule pot hard-fails under PBC (#188)",
+TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
           "[MatterTest][pbc][molecular]") {
   Parameters params;
   params.potential_options.potential = PotType::LJ;
   auto pot = std::make_shared<IsolatedMoleculePot>();
   Matter m(pot, params);
+  // Constructor turns PBC off for isolated-molecule pots.
+  REQUIRE_FALSE(m.getPeriodic());
   REQUIRE(m.con2matter(std::string("reactant.con")));
-  // Default Matter uses PBC; force evaluation must abort.
+  REQUIRE_NOTHROW(m.getPotentialEnergy());
+  // Re-enabling PBC must hard-fail (would tear non-centered molecules).
+  m.setPeriodic(true);
   REQUIRE_THROWS_AS(m.getPotentialEnergy(), std::runtime_error);
 }
 
