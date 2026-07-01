@@ -10,15 +10,20 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "StructureComparisonJob.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
 #include "Optimizer.h"
+#include <stdexcept>
 
 std::vector<std::string> StructureComparisonJob::run() {
   std::vector<std::string> returnFiles;
 
   auto matter1 = std::make_unique<Matter>(pot, params);
-  matter1->con2matter("matter1.con");
+  if (!eonc::io::io_ok(matter1->con2matter("matter1.con"))) {
+    EONC_LOG_CRITICAL("Failed to load matter1.con");
+    throw std::runtime_error("failed to load matter1.con");
+  }
 
   return returnFiles;
 }

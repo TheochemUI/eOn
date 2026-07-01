@@ -44,7 +44,10 @@ std::vector<std::string> SaddleSearchJob::run() {
   displacement = std::make_shared<Matter>(pot, params);
   saddle = std::make_shared<Matter>(pot, params);
 
-  initial->con2matter(reactantFilename);
+  if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
+    EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
+    throw std::runtime_error("failed to load " + reactantFilename);
+  }
 
   const bool standaloneARTn = params.saddle_search_options.method == "artn";
 
@@ -175,7 +178,9 @@ void SaddleSearchJob::saveData(int status) {
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);
-  saddle->matter2con(saddleFilename);
+  if (!eonc::io::io_ok(saddle->matter2con(saddleFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", saddleFilename);
+  }
 }
 
 void SaddleSearchJob::printEndState(int status) {

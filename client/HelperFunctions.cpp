@@ -144,7 +144,7 @@ AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
 bool eonc::helpers::loadOrSynthesizeDisplacement(
     Matter &target, const Matter &initial, const std::string &displacementPath,
     const std::string &modePath, double scale) {
-  if (target.con2matter(displacementPath)) {
+  if (eonc::io::io_ok(target.con2matter(displacementPath))) {
     // displacement.con may carry stale fixed-atom coordinates from a prior run.
     const AtomMatrix &initPos = initial.getPositions();
     AtomMatrix pos = target.getPositionsCopy();
@@ -294,7 +294,9 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
     metadata.energy = matter.getPotentialEnergy();
     metadata.scalars.push_back({"step_size", stepSize});
     metadata.scalars.push_back({"convergence", objf->getConvergence()});
-    matter.matter2con(min.str(), append, &metadata);
+    if (!eonc::io::io_ok(matter.matter2con(min.str(), append, &metadata))) {
+      QUILL_LOG_WARNING(m_log, "Failed to write movie frame {}", min.str());
+    }
 
     if (params.debug_options.write_deprecated_outs) {
       std::ofstream minDat(minDatFilename,
@@ -349,7 +351,9 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
     if (checkpoint) {
       std::ostringstream chk;
       chk << prefixCheckpoint << "_cp";
-      matter.matter2con(chk.str(), false);
+      if (!eonc::io::io_ok(matter.matter2con(chk.str(), false))) {
+        QUILL_LOG_WARNING(m_log, "Failed to write checkpoint {}", chk.str());
+      }
     }
   }
 

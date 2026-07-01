@@ -82,6 +82,17 @@ public:
     return "Unknown status";
   }
 
+  /// Issue #20 policy: never leave climb as STATUS_GOOD when the climb
+  /// objective is still unconverged (unfeasible systems must not look like
+  /// success). Used by run(); unit-tested so deleting this rule fails CI.
+  [[nodiscard]] static constexpr int
+  finalizeClimbStatus(int climbStatus, bool objectiveConverged) noexcept {
+    if (climbStatus == STATUS_GOOD && !objectiveConverged) {
+      return STATUS_BAD_MAX_ITERATIONS;
+    }
+    return climbStatus;
+  }
+
   MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
                       AtomMatrix modePassed, double reactantEnergyPassed,
                       const Parameters &parametersPassed,

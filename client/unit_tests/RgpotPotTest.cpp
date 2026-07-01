@@ -23,9 +23,14 @@ TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
 #ifndef WITH_RGPOT
   SKIP("built without WITH_RGPOT");
 #else
-  REQUIRE(env_nonempty("NWCHEMC_LIBRARY") ||
-          env_nonempty("RGPOT_NWCHEMC_ENGINE") ||
-          env_nonempty("RGPOT_NWCHEM_ENGINE"));
+  // Engine is a runtime dlopen dep; packaging CI may build WITH_RGPOT without
+  // a local libnwchemc — skip rather than fail the default suite.
+  if (!(env_nonempty("NWCHEMC_LIBRARY") ||
+        env_nonempty("RGPOT_NWCHEMC_ENGINE") ||
+        env_nonempty("RGPOT_NWCHEM_ENGINE"))) {
+    SKIP("no NWChem embed library in environment "
+         "(set NWCHEMC_LIBRARY / RGPOT_NWCHEMC_ENGINE)");
+  }
 
   Parameters params{};
   params.potential_options.potential = PotType::RGPOT;
@@ -42,7 +47,7 @@ TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
   REQUIRE(pot->getType() == PotType::RGPOT);
 
   auto matter = std::make_shared<Matter>(pot, params);
-  REQUIRE(matter->con2matter("pos.con"));
+  REQUIRE(eonc::io::io_ok(matter->con2matter("pos.con")));
   REQUIRE(matter->numberOfAtoms() == 9);
 
   double energy = 0.0;

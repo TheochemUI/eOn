@@ -97,7 +97,9 @@ void Dynamics::run() {
   }
 
   if (m_config.write_movies) {
-    matter->matter2con("dynamics", false);
+    if (!eonc::io::io_ok(matter->matter2con("dynamics", false))) {
+      QUILL_LOG_WARNING(log, "Failed to write dynamics movie header frame");
+    }
   }
 
   QUILL_LOG_DEBUG(log, "{} {:8} {:10} {:12} {:12} {:10}\n", "[Dynamics]",
@@ -118,7 +120,9 @@ void Dynamics::run() {
     }
 
     if (m_config.write_movies && (step % m_config.write_movies_interval == 0)) {
-      matter->matter2con("dynamics", true);
+      if (!eonc::io::io_ok(matter->matter2con("dynamics", true))) {
+        QUILL_LOG_WARNING(log, "Failed to append dynamics movie frame");
+      }
     }
   }
 

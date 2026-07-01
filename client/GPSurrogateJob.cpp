@@ -20,6 +20,7 @@
 
 #include "EonLogger.h"
 #include <sstream>
+#include <stdexcept>
 
 std::vector<std::string> GPSurrogateJob::run() {
   // Start working
@@ -36,9 +37,15 @@ std::vector<std::string> GPSurrogateJob::run() {
 
   // Get possible initial data source
   auto initial = std::make_shared<Matter>(pot, *true_params);
-  initial->con2matter(reactantFilename);
+  if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
+    EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
+    throw std::runtime_error("failed to load " + reactantFilename);
+  }
   auto final_state = std::make_shared<Matter>(pot, *true_params);
-  final_state->con2matter(productFilename);
+  if (!eonc::io::io_ok(final_state->con2matter(productFilename))) {
+    EONC_LOG_CRITICAL("Failed to load {}", productFilename);
+    throw std::runtime_error("failed to load " + productFilename);
+  }
   auto init_path = eonc::helpers::neb_paths::linearPath(
       *initial, *final_state, params.neb_options.image_count);
   auto init_data = eonc::helpers::surrogate::getMidSlice(init_path);
@@ -89,10 +96,10 @@ std::vector<std::string> GPSurrogateJob::run() {
 
     std::string nebFilename(std::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
-    if (!eonc::neb::writePathCon(neb->path, neb->tangent,
-                                 neb->eigenmode_solvers, neb->numImages,
-                                 params.debug_options.estimate_neb_eigenvalues,
-                                 nebFilename, static_cast<size_t>(n_gp))) {
+    if (!eonc::io::io_ok(eonc::neb::writePathCon(
+            neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
+            params.debug_options.estimate_neb_eigenvalues, nebFilename,
+            static_cast<size_t>(n_gp)))) {
       throw std::runtime_error("Failed to write file: " + nebFilename);
     }
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
@@ -152,9 +159,9 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string nebFilename = "neb.con";
   returnFiles.push_back(nebFilename);
 
-  if (!eonc::neb::writePathCon(
+  if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
-          params.debug_options.estimate_neb_eigenvalues, nebFilename)) {
+          params.debug_options.estimate_neb_eigenvalues, nebFilename))) {
     throw std::runtime_error("Failed to write file: " + nebFilename);
   }
 

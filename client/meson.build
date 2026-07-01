@@ -908,28 +908,40 @@ endif
 
 _linkto += potentials
 
-# readcon-core: Rust-based .con file I/O (required)
-readcon_proj = subproject(
+# readcon-core: Rust-based .con file I/O (required).
+# Prefer cargo-c / pkg-config install (conda-forge host package); fall back to
+# the meson subproject when the system package is not available. Upstreaming
+# this removes the need for use_readcon_pkgconfig.patch on the feedstock.
+# ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
+readcon_dep = dependency(
     'readcon-core',
-    default_options: {
-        'with_tests': false,
-        'with_examples': false,
-        'default_library': 'static',
-    },
+    version: '>=0.13.1',
+    method: 'pkg-config',
+    required: false,
 )
-readcon_dep = readcon_proj.get_variable('readcon_dep')
+if not readcon_dep.found()
+    readcon_proj = subproject(
+        'readcon-core',
+        default_options: {
+            'with_tests': false,
+            'with_examples': false,
+            'default_library': 'static',
+        },
+    )
+    readcon_dep = readcon_proj.get_variable('readcon_dep')
+endif
 if is_windows
-    # On Windows, readcon_dep's sources (custom_target .lib) get passed to
-    # llvm-ar which misinterprets the .lib as the archive output name.
-    # Strip sources and link_args for the static library; the full dep
-    # with link_args goes to executables via _exe_deps.
-    # Build ordering is ensured by the `depends` kwarg on the library target.
+    # On Windows with the meson subproject path, readcon_dep's sources
+    # (custom_target .lib) get passed to llvm-ar which misinterprets the .lib
+    # as the archive output name. Strip sources and link_args for the static
+    # library; the full dep with link_args goes to executables via _exe_deps.
+    # With cargo-c/pkg-config there are no custom_target sources, so partial
+    # dependency still works (includes + compile_args only).
     readcon_compile_dep = readcon_dep.partial_dependency(
         includes: true,
         compile_args: true,
     )
     _deps += [readcon_compile_dep]
-    # No need for explicit depends: cbindgen in-tree header already exists
 else
     _deps += [readcon_dep]
 endif
@@ -1019,7 +1031,8 @@ if get_option('with_tests')
         ['test_proj_rot_trans', 'ProjectOutRotTransTest.cpp', ''],
         ['test_epicenters', 'EpiCentersTest.cpp', 'Pt_Heptamer_FrozenLayers'],
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
-        ['test_helpers', 'HelperFunctionsTest.cpp', ''],
+        # neb_morse workdir: displacement synth test needs reactant.con (#189)
+        ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_pot_registry', 'PotRegistryTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
@@ -1027,6 +1040,7 @@ if get_option('with_tests')
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
         ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],
+        ['test_approve_confileio', 'ApproveConFileIO.cpp', 'neb_morse'],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
@@ -1157,6 +1171,8 @@ if get_option('with_tests')
             timeout: 120,
             suite: 'rgpot',
             is_parallel: false,
+            workdir: meson.project_source_root() +
+                     '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
     endif
 

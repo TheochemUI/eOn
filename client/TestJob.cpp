@@ -14,6 +14,7 @@
 #include "MinModeSaddleSearch.h"
 #include "Parameters.h"
 #include "Potential.h"
+#include <stdexcept>
 
 #include <cmath>
 #include <cstdlib>
@@ -47,8 +48,12 @@ void TestJob::checkFullSearch() {
   auto min2 = std::make_unique<Matter>(pot, params);
   auto matterTemp = std::make_unique<Matter>(pot, params);
 
-  saddle->con2matter(displacementFilename);
-  initial->con2matter(reactantFilename);
+  if (!eonc::io::io_ok(saddle->con2matter(displacementFilename))) {
+    throw std::runtime_error("failed to load " + displacementFilename);
+  }
+  if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
+    throw std::runtime_error("failed to load " + reactantFilename);
+  }
   *min1 = *min2 = *initial;
 
   printf("\n---Output for saddle point search start---\n");
@@ -268,7 +273,9 @@ double TestJob::getEnergyDiff(string pot, double refEnergy) {
   string posFilename("pos_test.con");
   params.potential_options.potential = pot;
   auto pos = std::make_unique<Matter>(pot, params);
-  pos->con2matter(posFilename);
+  if (!eonc::io::io_ok(pos->con2matter(posFilename))) {
+    throw std::runtime_error("failed to load " + posFilename);
+  }
   return pos->getPotentialEnergy() - refEnergy;
 }
 
@@ -276,6 +283,8 @@ double TestJob::getForceDiff(string pot, double refForce) {
   std::string posFilename("pos_test.con");
   params.potential_options.potential = pot;
   auto pos = std::make_unique<Matter>(pot, params);
-  pos->con2matter(posFilename);
+  if (!eonc::io::io_ok(pos->con2matter(posFilename))) {
+    throw std::runtime_error("failed to load " + posFilename);
+  }
   return pos->maxForce() - refForce;
 }

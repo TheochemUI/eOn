@@ -108,6 +108,51 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
 }
 
+// Issue #20: unfeasible / unconverged climb must not report STATUS_GOOD.
+// finalizeClimbStatus is the shipped policy used by MinModeSaddleSearch::run.
+// If the guard body is deleted (always returns climbStatus), these fail.
+TEST_CASE("finalizeClimbStatus refuses STATUS_GOOD when unconverged (#20)",
+          "[saddle_search][issue_20]") {
+  using S = MinModeSaddleSearch;
+  REQUIRE(
+      S::finalizeClimbStatus(S::STATUS_GOOD, /*objectiveConverged=*/false) ==
+      S::STATUS_BAD_MAX_ITERATIONS);
+  REQUIRE(S::finalizeClimbStatus(S::STATUS_GOOD, /*objectiveConverged=*/true) ==
+          S::STATUS_GOOD);
+  // Non-GOOD statuses are left alone regardless of convergence flag.
+  REQUIRE(S::finalizeClimbStatus(S::STATUS_BAD_MAX_ITERATIONS, false) ==
+          S::STATUS_BAD_MAX_ITERATIONS);
+  REQUIRE(S::finalizeClimbStatus(S::STATUS_BAD_HIGH_ENERGY, false) ==
+          S::STATUS_BAD_HIGH_ENERGY);
+  REQUIRE(S::finalizeClimbStatus(S::STATUS_DIMER_RESTORED_BEST, false) ==
+          S::STATUS_DIMER_RESTORED_BEST);
+  // Removing the unconverged branch of finalizeClimbStatus makes the first
+  // REQUIRE fail (would return STATUS_GOOD).
+}
+
+TEST_CASE_METHOD(
+    SaddleSearchFixture,
+    "MinModeSaddleSearch run never returns STATUS_GOOD if unconverged (#20)",
+    "[saddle_search][issue_20]") {
+  // Force a non-converged climb: tiny iteration budget + absurd force target.
+  params.saddle_search_options.max_iterations = 1;
+  params.saddle_search_options.converged_force = 1e-20;
+  params.optimizer_options.converged_force = 1e-20;
+
+  long nAtoms = matter->numberOfAtoms();
+  AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
+  mode.normalize();
+
+  double reactantEnergy = matter->getPotentialEnergy();
+  MinModeSaddleSearch search(matter, mode, reactantEnergy, params, pot);
+  int status = search.run(1);
+
+  // Real entry path: with an unconverged climb objective the search must not
+  // report success (covers finalizeClimbStatus applied inside run()).
+  REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
+  REQUIRE(status != MinModeSaddleSearch::STATUS_INIT);
+}
+
 TEST_CASE_METHOD(SaddleSearchFixture,
                  "MinModeSaddleSearch forces on fixed atoms remain zero",
                  "[saddle_search][fixed_atoms]") {

@@ -52,7 +52,7 @@ std::vector<std::string> ProcessSearchJob::run() {
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
 
-  if (!initial->con2matter(reactantFilename)) {
+  if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
     EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
     exit(1);
   }
@@ -349,7 +349,9 @@ void ProcessSearchJob::saveData(int status) {
 
   std::string reactantFilename("reactant.con");
   returnFiles.push_back(reactantFilename);
-  min1->matter2con(reactantFilename);
+  if (!eonc::io::io_ok(min1->matter2con(reactantFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", reactantFilename);
+  }
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
@@ -357,11 +359,15 @@ void ProcessSearchJob::saveData(int status) {
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);
-  saddle->matter2con(saddleFilename);
+  if (!eonc::io::io_ok(saddle->matter2con(saddleFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", saddleFilename);
+  }
 
   std::string productFilename("product.con");
   returnFiles.push_back(productFilename);
-  min2->matter2con(productFilename);
+  if (!eonc::io::io_ok(min2->matter2con(productFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", productFilename);
+  }
 }
 
 void ProcessSearchJob::printEndState(int status) {

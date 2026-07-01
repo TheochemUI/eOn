@@ -219,6 +219,11 @@ void Matter::setPositionsFree(const AtomMatrix &pos) {
   for (size_t j = 0; j < freeIndices.size(); j++) {
     positions.row(freeIndices[j]) = pos.row(static_cast<long>(j));
   }
+  // Optimizers write free-atom coords only (TIP4P/SPCE and any PBC pot).
+  // Match setPositions: wrap the full configuration when PBC is on (#171).
+  if (usePeriodicBoundaries) {
+    applyPeriodicBoundary();
+  }
   recomputePotential = true;
   recomputeMaskedForces = true;
 }
@@ -369,12 +374,25 @@ void Matter::resetForceCalls() {
   return;
 }
 
+void Matter::assertIsolatedMoleculeLayoutSafe() const {
+  if (!potential || !potential->requiresIsolatedMoleculeLayout()) {
+    return;
+  }
+  if (usePeriodicBoundaries) {
+    throw std::runtime_error(
+        "Potential requires an isolated (non-periodic) molecular layout "
+        "(NWChem/ORCA-class). Disable periodic boundaries before optimizing; "
+        "PBC wraps can tear non-centered molecules (issue #188).");
+  }
+}
+
 void Matter::computePotential() const {
   if (recomputePotential) {
     if (!potential) {
       throw std::runtime_error(
           "Matter::computePotential called without a potential");
     }
+    assertIsolatedMoleculeLayoutSafe();
     if (potential->isSurrogate()) {
       // Surrogate potential case: uses free-atom subset interface
       auto surrogatePotential =
@@ -414,6 +432,7 @@ void Matter::computePotential() const {
 // Legacy: fractional [0,1) via fmod (historical). MinimumImage: fractional
 // [-0.5,0.5) via floor (same MIC as eonc::pbc::apply for differences).
 void Matter::applyPeriodicBoundary() {
+  assertIsolatedMoleculeLayoutSafe();
   positions =
       eonc::pbc::applyPositions(positions, cell, cellInverse, pbcConvention);
 }
@@ -493,6 +512,18 @@ Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const { return masses; }
 
 void Matter::setPotential(std::shared_ptr<Potential> pot) {
   this->potential = pot;
+  // Molecular QM backends (NWChem/ORCA) must not use PBC wraps (#188). Auto-off
+  // with a hard fail if code later forces PBC while this pot is attached.
+  if (potential && potential->requiresIsolatedMoleculeLayout() &&
+      usePeriodicBoundaries) {
+    usePeriodicBoundaries = false;
+    // Use EONC_LOG_* (not bare QUILL_LOG_* with eonc::log::get() as arg): the
+    // quill macros expand logger->… and choke on a call expression as the first
+    // macro argument on some GCC versions (CI: expected primary-expression).
+    EONC_LOG_WARNING(
+        "Disabled PBC for isolated-molecule potential (NWChem/ORCA-class); "
+        "re-enabling PBC will throw (issue #188)");
+  }
   recomputePotential = true;
   recomputeMaskedForces = true;
 }

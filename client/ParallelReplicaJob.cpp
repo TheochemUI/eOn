@@ -1,4 +1,5 @@
 /*
+#include <stdexcept>
 ** This file is part of eOn.
 **
 ** SPDX-License-Identifier: BSD-3-Clause
@@ -23,12 +24,20 @@
 
 std::vector<std::string> ParallelReplicaJob::run() {
   reactant = std::make_shared<Matter>(pot, params);
-  reactant->con2matter(
-      eonc::helpers::getRelevantFile(params.main_options.conFilename));
+  {
+    const auto posIn =
+        eonc::helpers::getRelevantFile(params.main_options.conFilename);
+    if (!eonc::io::io_ok(reactant->con2matter(posIn))) {
+      QUILL_LOG_CRITICAL(log, "Failed to load {}", posIn);
+      throw std::runtime_error("failed to load " + posIn);
+    }
+  }
 
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Minimizing initial position");
   reactant->relax();
-  reactant->matter2con("reactant.con");
+  if (!eonc::io::io_ok(reactant->matter2con("reactant.con"))) {
+    QUILL_LOG_ERROR(log, "Failed to write reactant.con");
+  }
 
   auto trajectory = std::make_shared<Matter>(pot, params);
   *trajectory = *reactant;
@@ -183,7 +192,9 @@ std::vector<std::string> ParallelReplicaJob::run() {
   Matter product(pot, params);
   product = *trajectory;
   product.relax();
-  product.matter2con("product.con");
+  if (!eonc::io::io_ok(product.matter2con("product.con"))) {
+    QUILL_LOG_ERROR(log, "Failed to write product.con");
+  }
 
   // Write results
   std::string resultsFilename("results.dat");

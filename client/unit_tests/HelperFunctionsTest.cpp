@@ -14,10 +14,14 @@
 
 #include "HelperFunctions.h"
 #include "Eigen.h"
+#include "Matter.h"
+#include "Parameters.h"
+#include "Potential.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
 #include <cmath>
+#include <cstdio>
 
 namespace tests {
 
@@ -46,6 +50,40 @@ TEST_CASE("HelperFunctions: randomDouble() returns value in [0,1)",
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
   REQUIRE(r < 1.0);
+}
+
+TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
+          "[helpers][displacement]") {
+  // Standalone saddle_search needs displacement without AKMC (#189).
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter initial(pot, params);
+  REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
+  const long nAtoms = initial.numberOfAtoms();
+  REQUIRE(nAtoms > 0);
+
+  const std::string modePath = "test_mode_for_synth.dat";
+  {
+    FILE *f = fopen(modePath.c_str(), "w");
+    REQUIRE(f != nullptr);
+    for (long i = 0; i < nAtoms; ++i) {
+      if (initial.getFixed(i)) {
+        fprintf(f, "0 0 0\n");
+      } else {
+        fprintf(f, "1 0 0\n");
+      }
+    }
+    fclose(f);
+  }
+  Matter target(pot, params);
+  const double scale = 0.1;
+  AtomMatrix before = initial.getPositionsCopy();
+  REQUIRE(eonc::helpers::loadOrSynthesizeDisplacement(
+      target, initial, "missing_displacement.con", modePath, scale));
+  // At least one free atom should move from the synthesized mode
+  REQUIRE((target.getPositions() - before).norm() > 1e-6);
+  std::remove(modePath.c_str());
 }
 
 TEST_CASE("HelperFunctions: randomDouble(max) respects upper bound",

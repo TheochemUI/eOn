@@ -248,28 +248,34 @@ void printImageData(
   }
 }
 
-bool writePathCon(
+eonc::io::IoStatus writePathCon(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,
     long numImages, bool estimateEigenvalues, std::string filename,
     std::optional<size_t> bandIndex) {
+  const size_t nframes = static_cast<size_t>(numImages) + 2;
+  if (path.size() < nframes) {
+    return eonc::io::IoStatus::InvalidArgument;
+  }
+
   double distTotal = 0.0;
+  std::vector<eonc::io::ConFrameMetadata> metas;
+  metas.reserve(nframes);
 
   for (long i = 0; i <= numImages + 1; i++) {
     if (i > 0) {
       distTotal += path[i]->distanceTo(*path[i - 1]);
     }
-
-    auto metadata =
-        neb_frame_metadata(path, tangent, eigenmode_solvers, numImages,
-                           estimateEigenvalues, i, distTotal, bandIndex);
-    if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
-      return false;
-    }
+    metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,
+                                       numImages, estimateEigenvalues, i,
+                                       distTotal, bandIndex));
   }
 
-  return true;
+  // Clone-based single write of the full band (no per-image file re-read).
+  std::vector<std::shared_ptr<Matter>> band(
+      path.begin(), path.begin() + static_cast<std::ptrdiff_t>(nframes));
+  return eonc::io::writeNebPath(std::move(filename), band, metas);
 }
 
 } // namespace eonc::neb

@@ -1,4 +1,5 @@
 /*
+#include <stdexcept>
 ** This file is part of eOn.
 **
 ** SPDX-License-Identifier: BSD-3-Clause
@@ -31,7 +32,10 @@ std::vector<std::string> ReplicaDynamicsJob::run() {
 
   std::string reactantFilename =
       eonc::helpers::getRelevantFile(params.main_options.conFilename);
-  current->con2matter(reactantFilename);
+  if (!eonc::io::io_ok(current->con2matter(reactantFilename))) {
+    QUILL_LOG_CRITICAL(log, "Failed to load {}", reactantFilename);
+    throw std::runtime_error("failed to load " + reactantFilename);
+  }
 
   QUILL_LOG_DEBUG(log, "Minimizing initial reactant");
   {
@@ -176,17 +180,23 @@ void ReplicaDynamicsJob::saveData(int status) {
 
   std::string reactantFilename("reactant.con");
   returnFiles.push_back(reactantFilename);
-  reactant->matter2con(reactantFilename);
+  if (!eonc::io::io_ok(reactant->matter2con(reactantFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", reactantFilename);
+  }
 
   if (newStateFlag) {
     std::string productFilename("product.con");
     returnFiles.push_back(productFilename);
-    product->matter2con(productFilename);
+    if (!eonc::io::io_ok(product->matter2con(productFilename))) {
+      QUILL_LOG_ERROR(log, "Failed to write {}", productFilename);
+    }
 
     if (params.parallel_replica_options.refine_transition) {
       std::string saddleFilename("saddle.con");
       returnFiles.push_back(saddleFilename);
-      saddle->matter2con(saddleFilename);
+      if (!eonc::io::io_ok(saddle->matter2con(saddleFilename))) {
+        QUILL_LOG_ERROR(log, "Failed to write {}", saddleFilename);
+      }
     }
   }
 }

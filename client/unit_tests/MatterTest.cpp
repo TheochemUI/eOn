@@ -146,6 +146,82 @@ TEST_CASE("getForcesFree is const and drops fixed rows",
   REQUIRE(freeF.rows() == m1->numberOfAtoms() - 1);
   // All remaining rows should be non-zero for this LJ cluster
   REQUIRE(freeF.row(0).norm() > 0.0);
+  // Vector form also works on const Matter (#171)
+  VectorXd freeV = cref.getForcesFreeV();
+  REQUIRE(freeV.size() == 3 * m1->numberOfFreeAtoms());
+  REQUIRE(freeV.norm() > 0.0);
+}
+
+TEST_CASE("Matter copy is independent snapshot (#135)",
+          "[MatterTest][copy][dynamics_saddle]") {
+  // DynamicsSaddleSearch must deep-copy Matter into mdSnapshots; shared
+  // ownership would let later MD steps overwrite earlier frames.
+  auto [m1, params] = makeLJCluster();
+  auto snapshot = std::make_shared<Matter>(*m1);
+  auto pos = m1->getPositionsCopy();
+  pos(0, 0) += 2.0;
+  m1->setPositions(pos);
+  REQUIRE(m1->distanceTo(*snapshot) > 1.0);
+  REQUIRE(snapshot->compare(*m1) == false);
+}
+
+TEST_CASE("setPositionsFree applies PBC like setPositions (#171)",
+          "[MatterTest][forces][pbc]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixed(0, true);
+  // Displace a free atom far outside the cell along x; free-set path must wrap.
+  AtomMatrix freePos = m1->getPositionsFree();
+  const double Lx = m1->getCell()(0, 0);
+  freePos(0, 0) += 1.5 * Lx;
+  m1->setPositionsFree(freePos);
+  AtomMatrix all = m1->getPositions();
+  // After wrap, every free atom coordinate should be inside a cell-sized box
+  // (Legacy fractional [0,1) * L).
+  for (long i = 0; i < m1->numberOfAtoms(); ++i) {
+    if (m1->getFixed(i)) {
+      continue;
+    }
+    REQUIRE(all(i, 0) >= -1e-6);
+    REQUIRE(all(i, 0) < Lx + 1e-6);
+  }
+}
+
+namespace {
+// Minimal pot that refuses PBC (#188).
+struct IsolatedMoleculePot final : Potential {
+  IsolatedMoleculePot()
+      : Potential(PotType::LJ) {}
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    (void)positions;
+    (void)atomicNrs;
+    (void)box;
+    *energy = 0.0;
+    *variance = 0.0;
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return true;
+  }
+};
+} // namespace
+
+TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
+          "[MatterTest][pbc][molecular]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = std::make_shared<IsolatedMoleculePot>();
+  Matter m(pot, params);
+  // Constructor turns PBC off for isolated-molecule pots.
+  REQUIRE_FALSE(m.getPeriodic());
+  REQUIRE(eonc::io::io_ok(m.con2matter(std::string("reactant.con"))));
+  REQUIRE_NOTHROW(m.getPotentialEnergy());
+  // Re-enabling PBC must hard-fail (would tear non-centered molecules).
+  m.setPeriodic(true);
+  REQUIRE_THROWS_AS(m.getPotentialEnergy(), std::runtime_error);
 }
 
 TEST_CASE("MinimumImage PBC centers fractional coords",

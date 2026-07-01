@@ -20,6 +20,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <vector>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 namespace eonc {
@@ -92,7 +93,8 @@ public:
   ~Matter() = default;
   Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       : potential{pot},
-        usePeriodicBoundaries{true},
+        // Isolated molecular QM (NWChem/ORCA) must start with PBC off (#188).
+        usePeriodicBoundaries{!(pot && pot->requiresIsolatedMoleculeLayout())},
         pbcConvention{PbcConvention::Legacy},
         recomputePotential{true},
         forceCalls{0},
@@ -230,47 +232,85 @@ public:
 
   double maxForce(void) const;
 
-  // I/O delegates to eonc::io free functions
-  void writeTibble(std::string filename) { io::writeTibble(*this, filename); }
-  bool con2matter(std::string filename) {
+  // I/O delegates to eonc::io free functions (IoStatus for bindings).
+  [[nodiscard]] io::IoStatus writeTibble(std::string filename) {
+    return io::writeTibble(*this, filename);
+  }
+  [[nodiscard]] io::IoStatus con2matter(std::string filename) {
     return io::con2matter(*this, filename);
   }
-  bool con2matter(const readcon::ConFrame &frame) {
-    return io::con2matter(*this, frame);
+  [[nodiscard]] io::IoStatus
+  con2matter(const readcon::ConFrame &frame,
+             io::ConFrameMetadata *out_metadata = nullptr) {
+    return io::con2matter(*this, frame, out_metadata);
   }
-  bool convel2matter(std::string filename) {
+  [[nodiscard]] io::IoStatus convel2matter(std::string filename) {
     return io::convel2matter(*this, filename);
   }
-  bool matter2con(std::string filename, bool append = false,
-                  const io::ConFrameMetadata *metadata = nullptr) {
+  [[nodiscard]] io::IoStatus
+  matter2con(std::string filename, bool append = false,
+             const io::ConFrameMetadata *metadata = nullptr) {
     return io::matter2con(*this, filename, append, metadata);
   }
-  bool matter2convel(std::string filename) {
+  [[nodiscard]] io::IoStatus matter2convel(std::string filename) {
     return io::matter2convel(*this, filename);
   }
-  void matter2xyz(std::string filename, bool append = false) {
-    io::matter2xyz(*this, filename, append);
+  [[nodiscard]] io::IoStatus matter2xyz(std::string filename,
+                                        bool append = false) {
+    return io::matter2xyz(*this, filename, append);
   }
 
   AtomMatrix getFree() const;
   VectorXd getFreeV() const;
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
+  /// .con column-5 index (pre-grouping); public for I/O / bindings.
+  [[nodiscard]] int getAtomIndex(long int atom) const {
+    return atomIndex(atom);
+  }
+  void setAtomIndex(long int atom, int index) { atomIndex(atom) = index; }
+
+  /// CON header lines (indices 0..4); public for I/O / bindings.
+  [[nodiscard]] const std::array<std::string, 5> &getHeaderCon() const {
+    return headerCon;
+  }
+  void setHeaderCon(const std::array<std::string, 5> &headers) {
+    headerCon = headers;
+  }
+  void setHeaderConLine(size_t i, std::string line) {
+    headerCon.at(i) = std::move(line);
+  }
+
+  [[nodiscard]] bool getPeriodic() const noexcept {
+    return usePeriodicBoundaries;
+  }
+  void setPeriodic(bool periodic) {
+    usePeriodicBoundaries = periodic;
+    recomputePotential = true;
+    recomputeMaskedForces = true;
+  }
+  /// Apply MIC wrap when periodic boundaries are enabled (I/O path).
+  void applyPeriodicBoundaryIfEnabled() {
+    if (usePeriodicBoundaries) {
+      applyPeriodicBoundary();
+    }
+  }
+
 private:
   // Friend declarations for eonc::io free functions that need private access
-  friend bool io::con2matter(Matter &, const readcon::ConFrame &);
-  friend bool io::matter2con(Matter &, std::string, bool,
-                             const io::ConFrameMetadata *);
-  friend bool io::matter2convel(Matter &, std::string);
-  friend void io::matter2xyz(Matter &, std::string, bool);
-  friend std::pair<std::array<double, 3>, std::array<double, 3>>
-  io::cell_to_lengths_angles(const Matter &);
+  // con2matter still needs private headerCon + recompute flags for faithful
+  // force/energy restore without an extra potential evaluation.
+  friend io::IoStatus io::con2matter(Matter &, const readcon::ConFrame &,
+                                     io::ConFrameMetadata *);
 
   eonc::log::Scoped m_log;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
-  bool usePeriodicBoundaries;  // boolean telling periodic boundaries are used
-  PbcConvention pbcConvention; // position-wrap MIC convention (issue #176)
+  bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
+
+  /// Throw if pot forbids PBC (isolated molecular QM backends, issue #188).
+  void assertIsolatedMoleculeLayoutSafe() const;
+  PbcConvention pbcConvention;     // position-wrap MIC convention (issue #176)
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated
   mutable long

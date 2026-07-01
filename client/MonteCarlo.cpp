@@ -18,7 +18,9 @@ using namespace eonc::helpers;
 
 void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
 
-  matter->matter2con("movie.con");
+  if (!eonc::io::io_ok(matter->matter2con("movie.con"))) {
+    QUILL_LOG_WARNING(log, "Failed to write movie.con header frame");
+  }
   AtomMatrix current;
   AtomMatrix trial;
   double T = temperature;
@@ -31,7 +33,9 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
     trial = current;
     double ecurrent, etrial;
     ecurrent = matter->getPotentialEnergy();
-    matter->matter2con("movie.con", true);
+    if (!eonc::io::io_ok(matter->matter2con("movie.con", true))) {
+      QUILL_LOG_WARNING(log, "Failed to append movie.con frame");
+    }
     for (int i = 0; i < trial.rows(); i++) {
       for (int j = 0; j < 3; j++) {
         double d = gaussRandom(0.0, stepSize);

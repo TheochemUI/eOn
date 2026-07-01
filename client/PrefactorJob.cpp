@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "PrefactorJob.h"
+#include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "Hessian.h"
 #include "Matter.h"
@@ -19,6 +20,7 @@
 #include <cmath>
 #include <format>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
@@ -37,9 +39,12 @@ std::vector<std::string> PrefactorJob::run() {
   auto saddle = std::make_unique<Matter>(pot, params);
   auto product = std::make_unique<Matter>(pot, params);
 
-  reactant->con2matter("reactant.con");
-  saddle->con2matter("saddle.con");
-  product->con2matter("product.con");
+  if (!eonc::io::io_ok(reactant->con2matter("reactant.con")) ||
+      !eonc::io::io_ok(saddle->con2matter("saddle.con")) ||
+      !eonc::io::io_ok(product->con2matter("product.con"))) {
+    EONC_LOG_CRITICAL("Failed to load reactant/saddle/product for prefactor");
+    throw std::runtime_error("failed to load prefactor geometries");
+  }
   double pref1, pref2;
   eonc::Prefactor::getPrefactors(params, reactant.get(), saddle.get(),
                                  product.get(), pref1, pref2);
@@ -57,15 +62,23 @@ std::vector<std::string> PrefactorJob::run() {
                PrefactorJob::PREFACTOR_PRODUCT) {
       matterFilename = productFilename;
     }
-    reactant->con2matter(matterFilename);
-    saddle->con2matter(matterFilename);
-    product->con2matter(matterFilename);
+    if (!eonc::io::io_ok(reactant->con2matter(matterFilename)) ||
+        !eonc::io::io_ok(saddle->con2matter(matterFilename)) ||
+        !eonc::io::io_ok(product->con2matter(matterFilename))) {
+      EONC_LOG_CRITICAL("Failed to reload {} for all-free-atoms prefactor",
+                        matterFilename);
+      throw std::runtime_error("failed to load prefactor configuration");
+    }
 
     atoms = eonc::Prefactor::allFreeAtoms(reactant.get());
   } else {
-    reactant->con2matter(reactantFilename);
-    saddle->con2matter(saddleFilename);
-    product->con2matter(productFilename);
+    if (!eonc::io::io_ok(reactant->con2matter(reactantFilename)) ||
+        !eonc::io::io_ok(saddle->con2matter(saddleFilename)) ||
+        !eonc::io::io_ok(product->con2matter(productFilename))) {
+      EONC_LOG_CRITICAL(
+          "Failed to reload reactant/saddle/product for prefactor");
+      throw std::runtime_error("failed to load prefactor geometries");
+    }
 
     atoms = eonc::Prefactor::movedAtoms(params, reactant.get(), saddle.get(),
                                         product.get());

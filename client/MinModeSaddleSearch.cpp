@@ -269,7 +269,10 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       metadata.scalars.push_back({"torque", torque});
       metadata.scalars.push_back({"angle", angle});
       metadata.scalars.push_back({"rotations", static_cast<double>(rotations)});
-      matter->matter2con(climbLabel, append, &metadata);
+      if (!eonc::io::io_ok(matter->matter2con(climbLabel, append, &metadata))) {
+        QUILL_LOG_WARNING(log, "Failed to write climb movie frame {}",
+                          climbLabel);
+      }
 
       if (params.debug_options.write_deprecated_outs) {
         std::ofstream climbDat(climbDatFilename,
@@ -397,7 +400,10 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       }
 
       if (params.main_options.checkpoint) {
-        matter->matter2con("displacement_cp.con", false);
+        if (!eonc::io::io_ok(
+                matter->matter2con("displacement_cp.con", false))) {
+          QUILL_LOG_WARNING(log, "Failed to write displacement_cp.con");
+        }
         eonc::helpers::saveMode("mode_cp.dat", matter,
                                 eonc::eigenmodeGetEigenvector(*minModeMethod));
       }
@@ -423,6 +429,16 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
 
     if (iteration == 0) {
       eonc::eigenmodeCompute(*minModeMethod, matter, mode);
+    }
+
+    // Never report STATUS_GOOD when the climb objective is unconverged
+    // (issue #20: unfeasible systems must not look like success).
+    const bool climbConverged = objf->isConverged();
+    const int statusBeforeGuard = status;
+    status = finalizeClimbStatus(status, climbConverged);
+    if (statusBeforeGuard == STATUS_GOOD && status != STATUS_GOOD) {
+      QUILL_LOG_WARNING(log, "[MinModeSaddleSearch] objective not converged; "
+                             "refusing STATUS_GOOD");
     }
 
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {

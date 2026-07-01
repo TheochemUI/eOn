@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 std::vector<std::string> MonteCarloJob::run(void) {
@@ -36,7 +37,10 @@ std::vector<std::string> MonteCarloJob::run(void) {
   returnFiles.push_back(posOutFilename);
 
   auto matter = std::make_shared<Matter>(pot, params);
-  matter->con2matter(posInFilename);
+  if (!eonc::io::io_ok(matter->con2matter(posInFilename))) {
+    QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
+    throw std::runtime_error("failed to load " + posInFilename);
+  }
 
   MonteCarlo mc = MonteCarlo(matter, params);
   mc.run(params.monte_carlo_options.steps, params.main_options.temperature,

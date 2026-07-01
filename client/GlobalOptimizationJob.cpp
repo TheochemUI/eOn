@@ -1,4 +1,5 @@
 /*
+#include <stdexcept>
 ** This file is part of eOn.
 **
 ** SPDX-License-Identifier: BSD-3-Clause
@@ -33,7 +34,10 @@ std::vector<std::string> GlobalOptimizationJob::run() {
   // returnFiles.push_back(reactant_output);
   auto matter_cur = std::make_unique<Matter>(pot, params);
   auto matter_hop = std::make_unique<Matter>(pot, params);
-  matter_cur->con2matter(reactant_passed);
+  if (!eonc::io::io_ok(matter_cur->con2matter(reactant_passed))) {
+    QUILL_LOG_CRITICAL(log, "Failed to load {}", reactant_passed);
+    throw std::runtime_error("failed to load " + reactant_passed);
+  }
   bool converged;
   long nstep = params.global_optimization_options.steps;
   AtomMatrix rat_t(matter_cur->numberOfAtoms(), 3);

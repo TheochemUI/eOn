@@ -42,7 +42,7 @@ public:
     matter = std::make_shared<Matter>(pot, params);
 
     const std::string confile("pos.con");
-    const bool file_read_ok = matter->con2matter(confile);
+    const bool file_read_ok = eonc::io::io_ok(matter->con2matter(confile));
     REQUIRE(file_read_ok);
   }
 

@@ -56,7 +56,10 @@ std::vector<Matter> filePathInit(const std::vector<fs::path> &fsrcs,
   // For all images
   for (const auto &filePath : fsrcs) {
     Matter img(refImg);
-    img.con2matter(filePath.string());
+    if (!eonc::io::io_ok(img.con2matter(filePath.string()))) {
+      throw std::runtime_error("failed to load NEB path frame: " +
+                               filePath.string());
+    }
     all_images_on_path.push_back(img);
   }
   return all_images_on_path;

@@ -1,5 +1,6 @@
 #include "EnvHelpers.hpp"
 #include "BaseStructures.h"
+#include "EonLogger.h"
 
 namespace eonc::helpers {
 
@@ -25,7 +26,7 @@ std::string get_value_from_env_or_param(const char *env_variable,
   }
 
   if (!default_value.empty() && !warning_message.empty()) {
-    QUILL_LOG_WARNING(eonc::log::get(), "{}", warning_message);
+    EONC_LOG_WARNING("{}", warning_message);
   }
 
   return default_value;

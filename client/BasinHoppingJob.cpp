@@ -14,6 +14,7 @@
 #include <cmath>
 #include <format>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 #include "BasinHoppingJob.h"
@@ -37,7 +38,10 @@ std::vector<std::string> BasinHoppingJob::run() {
   std::unique_ptr<Matter> swapTrial = std::make_unique<Matter>(pot, params);
 
   std::string conFilename = getRelevantFile(params.main_options.conFilename);
-  current->con2matter(conFilename);
+  if (!eonc::io::io_ok(current->con2matter(conFilename))) {
+    QUILL_LOG_CRITICAL(log, "Failed to load {}", conFilename);
+    throw std::runtime_error("failed to load " + conFilename);
+  }
 
   // Sanity Check
   std::vector<long> Elements;
@@ -117,7 +121,9 @@ std::vector<std::string> BasinHoppingJob::run() {
     }
 
     if (params.debug_options.write_movies) {
-      trial->matter2con("trials", true);
+      if (!eonc::io::io_ok(trial->matter2con("trials", true))) {
+        QUILL_LOG_WARNING(log, "Failed to append trials movie frame");
+      }
     }
 
     // Potential::fcalls = 0;
@@ -160,7 +166,9 @@ std::vector<std::string> BasinHoppingJob::run() {
       if (currentEnergy < minimumEnergy) {
         minimumEnergy = currentEnergy;
         *minimumEnergyStructure = *minTrial;
-        minimumEnergyStructure->matter2con("min.con");
+        if (!eonc::io::io_ok(minimumEnergyStructure->matter2con("min.con"))) {
+          QUILL_LOG_WARNING(log, "Failed to write min.con");
+        }
       }
 
       if (params.basin_hopping_options.write_unique) {
@@ -186,7 +194,9 @@ std::vector<std::string> BasinHoppingJob::run() {
 
           char fname[128];
           snprintf(fname, 128, "min_%.5i.con", step + 1);
-          current->matter2con(fname);
+          if (!eonc::io::io_ok(current->matter2con(fname))) {
+            QUILL_LOG_WARNING(log, "Failed to write {}", fname);
+          }
           returnFiles.push_back(fname);
 
           snprintf(fname, 128, "energy_%.5i.dat", step + 1);
@@ -205,7 +215,9 @@ std::vector<std::string> BasinHoppingJob::run() {
     }
 
     if (params.debug_options.write_movies) {
-      minTrial->matter2con("movie", true);
+      if (!eonc::io::io_ok(minTrial->matter2con("movie", true))) {
+        QUILL_LOG_WARNING(log, "Failed to append basin-hopping movie frame");
+      }
     }
 
     // totalfc = Potential::fcallsTotal;
@@ -302,7 +314,9 @@ std::vector<std::string> BasinHoppingJob::run() {
 
   std::string productFilename("min.con");
   returnFiles.push_back(productFilename);
-  minimumEnergyStructure->matter2con(productFilename);
+  if (!eonc::io::io_ok(minimumEnergyStructure->matter2con(productFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", productFilename);
+  }
 
   std::string bhFilename("bh.dat");
   returnFiles.push_back(bhFilename);

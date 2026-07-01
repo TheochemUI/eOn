@@ -228,10 +228,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     if (params.debug_options.write_movies &&
         (iteration % params.debug_options.write_movies_interval == 0)) {
       bool append = (iteration != 0);
-      if (!eonc::neb::writePathCon(
+      if (!eonc::io::io_ok(eonc::neb::writePathCon(
               path, tangent, eigenmode_solvers, numImages,
               params.debug_options.estimate_neb_eigenvalues,
-              std::format("neb_path_{:03d}.con", iteration), iteration)) {
+              std::format("neb_path_{:03d}.con", iteration), iteration))) {
         QUILL_LOG_ERROR(log, "Failed to write NEB path movie for iteration {}",
                         iteration);
       }
@@ -259,8 +259,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
           {"parallel_force",
            matDot(path[maxEnergyImage]->getForces(), maxTang)});
       maxImageMetadata.strings.push_back({"movie_kind", "neb_maximage"});
-      path[maxEnergyImage]->matter2con("neb_maximage.con", append,
-                                       &maxImageMetadata);
+      if (!eonc::io::io_ok(path[maxEnergyImage]->matter2con(
+              "neb_maximage.con", append, &maxImageMetadata))) {
+        EONC_LOG_WARNING("Failed to write neb_maximage.con");
+      }
       printImageData(true, iteration);
     }
 
