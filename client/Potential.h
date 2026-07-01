@@ -65,6 +65,12 @@ public:
   /// SurrogatePotential.
   [[nodiscard]] virtual bool isSurrogate() const noexcept { return false; }
 
+  /// True for molecular QM / non-PBC backends (NWChem socket, ASE ORCA/NWChem,
+  /// …). Callers must not apply periodic wraps that can tear molecules (#188).
+  [[nodiscard]] virtual bool requiresIsolatedMoleculeLayout() const noexcept {
+    return false;
+  }
+
   /// Whether this potential's force() can be called from multiple threads
   /// on the SAME instance. Python-based potentials return false.
   /// Potentials with internal mutex (MetatomicPotential) return true but

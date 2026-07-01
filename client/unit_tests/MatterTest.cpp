@@ -165,6 +165,60 @@ TEST_CASE("Matter copy is independent snapshot (#135)",
   REQUIRE(snapshot->compare(*m1) == false);
 }
 
+TEST_CASE("setPositionsFree applies PBC like setPositions (#171)",
+          "[MatterTest][forces][pbc]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixed(0, true);
+  // Displace a free atom far outside the cell along x; free-set path must wrap.
+  AtomMatrix freePos = m1->getPositionsFree();
+  const double Lx = m1->getCell()(0, 0);
+  freePos(0, 0) += 1.5 * Lx;
+  m1->setPositionsFree(freePos);
+  AtomMatrix all = m1->getPositions();
+  // After wrap, every free atom coordinate should be inside a cell-sized box
+  // (Legacy fractional [0,1) * L).
+  for (long i = 0; i < m1->numberOfAtoms(); ++i) {
+    if (m1->getFixed(i)) {
+      continue;
+    }
+    REQUIRE(all(i, 0) >= -1e-6);
+    REQUIRE(all(i, 0) < Lx + 1e-6);
+  }
+}
+
+namespace {
+// Minimal pot that refuses PBC (#188).
+struct IsolatedMoleculePot final : Potential {
+  IsolatedMoleculePot() : Potential(PotType::LJ) {}
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    (void)positions;
+    (void)atomicNrs;
+    (void)box;
+    *energy = 0.0;
+    *variance = 0.0;
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return true;
+  }
+};
+} // namespace
+
+TEST_CASE("isolated molecule pot hard-fails under PBC (#188)",
+          "[MatterTest][pbc][molecular]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = std::make_shared<IsolatedMoleculePot>();
+  Matter m(pot, params);
+  REQUIRE(m.con2matter(std::string("reactant.con")));
+  // Default Matter uses PBC; force evaluation must abort.
+  REQUIRE_THROWS_AS(m.getPotentialEnergy(), std::runtime_error);
+}
+
 TEST_CASE("MinimumImage PBC centers fractional coords",
           "[MatterTest][pbc][convention]") {
   auto [m1, params] = makeLJCluster();

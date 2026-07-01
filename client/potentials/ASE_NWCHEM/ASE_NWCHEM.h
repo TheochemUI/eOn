@@ -43,4 +43,8 @@ public:
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
   }
+  /// ASE-NWChem molecular SCF does not support PBC (#188).
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return true;
+  }
 };

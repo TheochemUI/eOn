@@ -270,6 +270,9 @@ private:
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries;  // boolean telling periodic boundaries are used
+
+  /// Throw if pot forbids PBC (isolated molecular QM backends, issue #188).
+  void assertIsolatedMoleculeLayoutSafe() const;
   PbcConvention pbcConvention; // position-wrap MIC convention (issue #176)
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated

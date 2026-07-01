@@ -39,6 +39,10 @@ public:
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// ORCA does not support PBC; non-centered PBC wraps tear molecules (#188).
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return true;
+  }
   /// ORCA runs as external subprocess; separate instances are independent.
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;

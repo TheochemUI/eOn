@@ -59,6 +59,12 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
 
+  /// NWChem socket SCF does not support PBC (#188).
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return true;
+  }
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+
 private:
   // --- Private Methods ---
   void setup_server();
