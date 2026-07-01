@@ -36,26 +36,20 @@ namespace fs = std::filesystem;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
-/// Deterministic geometry dump for golden masters (main-era shared fields).
-/// Omits forces/energy so classic fixtures compare with pre-0.13 dumps.
 std::string dump_geometry(const Matter &m) {
   std::ostringstream os;
-  os << std::format("n_atoms={}
-", m.numberOfAtoms());
+  os << std::format("n_atoms={}\n", m.numberOfAtoms());
   const auto cell = m.getCell();
   os << std::format(
-      "cell={:.8f},{:.8f},{:.8f};{:.8f},{:.8f},{:.8f};{:.8f},{:.8f},{:.8f}
-",
+      "cell={:.8f},{:.8f},{:.8f};{:.8f},{:.8f},{:.8f};{:.8f},{:.8f},{:.8f}\n",
       cell(0, 0), cell(0, 1), cell(0, 2), cell(1, 0), cell(1, 1), cell(1, 2),
       cell(2, 0), cell(2, 1), cell(2, 2));
   const auto pos = m.getPositions();
   for (long i = 0; i < m.numberOfAtoms(); ++i) {
     os << std::format(
-        "a {} Z={} mass={:.8f} fixed={} id={} pos={:.8f},{:.8f},{:.8f}
-        ", i,
-        m.getAtomicNr(i),
-        m.getMass(i), m.getFixed(i), m.getAtomIndex(i), pos(i, 0), pos(i, 1),
-        pos(i, 2));
+        "a {} Z={} mass={:.8f} fixed={} id={} pos={:.8f},{:.8f},{:.8f}\n", i,
+        m.getAtomicNr(i), m.getMass(i), m.getFixed(i), m.getAtomIndex(i),
+        pos(i, 0), pos(i, 1), pos(i, 2));
   }
   return os.str();
 }
@@ -82,13 +76,11 @@ size_t count_substr(const std::string &hay, const std::string &needle) {
 } // namespace
 
 TEST_CASE("VerifyClassicFixtureRead", "[approval][confileio][compat]") {
-  // Back-compat: reading a main-era classic .con must yield stable geometry.
   auto m = load_reactant();
   ApprovalTests::Approvals::verify(dump_geometry(*m));
 }
 
 TEST_CASE("VerifyGeometryOnlyRoundTrip", "[approval][confileio][compat]") {
-  // Dirty pot cache → no forces/energy on write (classic movie layout).
   auto m = load_reactant();
   REQUIRE(m->needsForceUpdate());
 
@@ -106,7 +98,6 @@ TEST_CASE("VerifyGeometryOnlyRoundTrip", "[approval][confileio][compat]") {
 }
 
 TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
-  // Intentional 0.13 layout (forces + energy); own golden master.
   auto m = load_reactant();
   const double E = m->getPotentialEnergy();
   REQUIRE_FALSE(m->needsForceUpdate());
@@ -126,8 +117,6 @@ TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));
   fs::remove(tmp);
 
-  // Exact potential energy is pot-implementation detail; lock I/O shape +
-  // geometry (compat) and that energy was restored so forces stay trusted.
   std::ostringstream summary;
   summary << "energy_finite=" << (std::isfinite(E) ? "true" : "false") << "\n";
   summary << "has_forces_token="
