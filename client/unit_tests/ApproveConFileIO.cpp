@@ -9,7 +9,13 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
+#define APPROVALS_CATCH2_V3
 #include "ApprovalTests.hpp"
+
+// Masters live under workdir approval_tests/ (meson workdir = neb_morse).
+auto directoryDisposer =
+    ApprovalTests::Approvals::useApprovalsSubdirectory("approval_tests");
+
 #include "ConFileIO.h"
 #include "HelperFunctions.h"
 #include "Matter.h"

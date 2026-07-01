@@ -21,10 +21,4 @@ H    1   1.00000000 0    8    50.43411000    50.97642300    51.87906200
 H    1   1.00000000 0    9    51.69500700    51.91947200    52.03868000
 H    1   1.00000000 0   10    51.36359600    52.19910100    53.06492300
 H    1   1.00000000 0   11    52.01748300    51.63907400    51.00838900
-H    1   1.00000000 0   12    51.18784300    51.16521700    52.67822500EOF
-
-cat > "/home/rgoswami/Git/Github/TheochemUI/eOn/client/unit_tests/approval_tests/ApproveConFileIO.VerifyNebPathCloneWrite.approved.txt" << 'EOF'
-neb_band_markers
-count_neb_band_7=3
-count_neb_bead=3
-has_con_spec=true
+H    1   1.00000000 0   12    51.18784300    51.16521700    52.67822500
