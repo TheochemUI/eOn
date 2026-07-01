@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ConFileIO.h"
+#include "Eigen.h"
 #include "EonLogger.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
@@ -22,6 +23,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -57,6 +59,16 @@ std::string ensure_extension(std::string filename, std::string_view ext) {
 
 std::string symbol_for_z(long atomic_nr) {
   return readcon::z_to_symbol(static_cast<uint64_t>(atomic_nr));
+}
+
+/// Copy an Nx3 RowMajor AtomMatrix into a flat [x0,y0,z0,...] buffer for
+/// readcon bulk setters (set_*_from_flat).
+std::vector<double> flat_row_major(const AtomMatrix &m) {
+  const auto n = static_cast<size_t>(m.rows());
+  std::vector<double> flat(n * 3);
+  // AtomMatrix is already RowMajor Nx3 — one contiguous memcpy.
+  std::memcpy(flat.data(), m.data(), flat.size() * sizeof(double));
+  return flat;
 }
 
 void apply_frame_metadata(readcon::ConFrameBuilder &builder,
@@ -99,7 +111,6 @@ void apply_frame_metadata(readcon::ConFrameBuilder &builder,
 bool write_frames(const fs::path &path, std::vector<readcon::ConFrame> frames,
                   uint8_t precision) {
   try {
-    // readcon-core >=0.13: route .con.gz / .con.zst via compression codec.
     const auto compression =
         readcon::ConFrameWriter::compression_from_extension(path);
     readcon::ConFrameWriter writer(path, compression, precision);
@@ -109,6 +120,77 @@ bool write_frames(const fs::path &path, std::vector<readcon::ConFrame> frames,
     EONC_LOG_ERROR("Failed to write {}: {}", path.string(), e.what());
     return false;
   }
+}
+
+/**
+ * Preferred write path for readcon-core >=0.13 mutation API:
+ *  1. seed atoms (symbol / fixed mask / id / mass)
+ *  2. set_positions_from_flat (bulk)
+ *  3. set_forces_from_flat when the pot cache is current
+ *  4. set_atom_velocity per atom when requested
+ *  5. frame metadata via set_energy / set_*_metadata
+ *
+ * atom_ids + prebox/postbox are passed in so this helper only needs Matter's
+ * public surface (private headerCon / atomIndex stay in the friend callers).
+ */
+readcon::ConFrame frame_from_matter(Matter &m,
+                                    const std::array<std::string, 2> &prebox,
+                                    const std::array<std::string, 2> &postbox,
+                                    const std::vector<uint64_t> &atom_ids,
+                                    const eonc::io::ConFrameMetadata *metadata,
+                                    bool with_velocities) {
+  auto [lengths, angles_deg] = eonc::io::cell_to_lengths_angles(m);
+
+  readcon::ConFrameBuilder builder(
+      {lengths[0], lengths[1], lengths[2]},
+      {angles_deg[0], angles_deg[1], angles_deg[2]}, prebox, postbox);
+
+  eonc::io::ConFrameMetadata auto_meta;
+  const eonc::io::ConFrameMetadata *meta_ptr = metadata;
+  if (!m.needsForceUpdate()) {
+    if (metadata == nullptr) {
+      auto_meta.energy = m.getPotentialEnergy();
+      meta_ptr = &auto_meta;
+    } else if (!metadata->energy) {
+      auto_meta = *metadata;
+      auto_meta.energy = m.getPotentialEnergy();
+      meta_ptr = &auto_meta;
+    }
+  }
+  apply_frame_metadata(builder, meta_ptr);
+
+  const long n = m.numberOfAtoms();
+  if (atom_ids.size() != static_cast<size_t>(n)) {
+    throw std::runtime_error(
+        "frame_from_matter: atom_ids size does not match numberOfAtoms");
+  }
+
+  // (1) Seed identity fields. Geometry/dynamics via bulk/in-place setters.
+  for (long i = 0; i < n; ++i) {
+    const bool fixed = m.getFixed(i) != 0;
+    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), 0.0, 0.0, 0.0,
+                     std::array<bool, 3>{fixed, fixed, fixed},
+                     atom_ids[static_cast<size_t>(i)], m.getMass(i));
+  }
+
+  // (2) Bulk positions — AtomMatrix is RowMajor Nx3, matching the flat layout.
+  builder.set_positions_from_flat(flat_row_major(m.getPositions()));
+
+  // (3) Bulk forces when the force cache is current.
+  if (!m.needsForceUpdate()) {
+    builder.set_forces_from_flat(flat_row_major(m.getForcesRaw()));
+  }
+
+  // (4) Velocities via set_atom_velocity (declares the velocities section).
+  if (with_velocities) {
+    const AtomMatrix vel = m.getVelocities();
+    for (long i = 0; i < n; ++i) {
+      builder.set_atom_velocity(static_cast<size_t>(i),
+                                {vel(i, 0), vel(i, 1), vel(i, 2)});
+    }
+  }
+
+  return builder.build();
 }
 
 } // namespace
@@ -133,7 +215,6 @@ ConFrameMetadata metadata_from_frame(const readcon::ConFrame &frame) {
 
 std::pair<std::array<double, 3>, std::array<double, 3>>
 cell_to_lengths_angles(const Matter &m) {
-  // Friend of Matter: may read private cell matrix.
   std::array<double, 3> lengths;
   lengths[0] = m.cell.row(0).norm();
   lengths[1] = m.cell.row(1).norm();
@@ -159,50 +240,19 @@ bool matter2con(Matter &m, std::string filename, bool append,
     m.applyPeriodicBoundary();
   }
 
-  auto [lengths, angles_deg] = cell_to_lengths_angles(m);
-
-  readcon::ConFrameBuilder builder(
-      {lengths[0], lengths[1], lengths[2]},
-      {angles_deg[0], angles_deg[1], angles_deg[2]},
-      {canonical_generator_header(m.headerCon[0]), strip_nl(m.headerCon[1])},
-      {strip_nl(m.headerCon[3]), strip_nl(m.headerCon[4])});
-
-  // Auto-attach total energy when the potential cache is current and the
-  // caller did not already supply energy metadata.
-  ConFrameMetadata auto_meta;
-  const ConFrameMetadata *meta_ptr = metadata;
-  if (!m.needsForceUpdate()) {
-    if (metadata == nullptr) {
-      auto_meta.energy = m.getPotentialEnergy();
-      meta_ptr = &auto_meta;
-    } else if (!metadata->energy) {
-      auto_meta = *metadata;
-      auto_meta.energy = m.getPotentialEnergy();
-      meta_ptr = &auto_meta;
-    }
-  }
-  apply_frame_metadata(builder, meta_ptr);
-
-  // Forces section when the cache is valid (movies/checkpoints carry forces).
-  const bool write_forces = !m.needsForceUpdate();
-  const AtomMatrix *forces_ptr = write_forces ? &m.getForcesRaw() : nullptr;
-
   const long n = m.numberOfAtoms();
-  for (long i = 0; i < n; i++) {
-    const bool fixed = m.getFixed(i) != 0;
-    const std::array<bool, 3> fixed_axes{fixed, fixed, fixed};
-    std::optional<std::array<double, 3>> force;
-    if (forces_ptr != nullptr) {
-      force = std::array<double, 3>{(*forces_ptr)(i, 0), (*forces_ptr)(i, 1),
-                                    (*forces_ptr)(i, 2)};
-    }
-    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), m.getPosition(i, 0),
-                     m.getPosition(i, 1), m.getPosition(i, 2), fixed_axes,
-                     static_cast<uint64_t>(m.atomIndex(i)), m.getMass(i),
-                     /*velocity=*/std::nullopt, force);
+  std::vector<uint64_t> atom_ids(static_cast<size_t>(n));
+  for (long i = 0; i < n; ++i) {
+    atom_ids[static_cast<size_t>(i)] = static_cast<uint64_t>(m.atomIndex(i));
   }
+  const std::array<std::string, 2> prebox{
+      canonical_generator_header(m.headerCon[0]), strip_nl(m.headerCon[1])};
+  const std::array<std::string, 2> postbox{strip_nl(m.headerCon[3]),
+                                           strip_nl(m.headerCon[4])};
 
-  auto frame = builder.build();
+  auto frame = frame_from_matter(m, prebox, postbox, atom_ids, metadata,
+                                 /*with_velocities=*/false);
+
   std::vector<readcon::ConFrame> frames;
   if (append) {
     if (fs::exists(filename)) {
@@ -244,68 +294,77 @@ bool con2matter(Matter &m, const readcon::ConFrame &frame,
 
   double angles[3] = {angles_deg[0], angles_deg[1], angles_deg[2]};
   if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-    m.cell.setZero();
-    m.cell(0, 0) = lengths[0];
-    m.cell(1, 1) = lengths[1];
-    m.cell(2, 2) = lengths[2];
+    Matrix3d cell = Matrix3d::Zero();
+    cell(0, 0) = lengths[0];
+    cell(1, 1) = lengths[1];
+    cell(2, 2) = lengths[2];
+    m.setCell(cell);
   } else {
     angles[0] *= eonc::helpers::pi / 180.0;
     angles[1] *= eonc::helpers::pi / 180.0;
     angles[2] *= eonc::helpers::pi / 180.0;
 
-    m.cell(0, 0) = 1.0;
-    m.cell(1, 0) = cos(angles[0]);
-    m.cell(1, 1) = sin(angles[0]);
-    m.cell(2, 0) = cos(angles[1]);
-    m.cell(2, 1) =
-        (cos(angles[2]) - m.cell(1, 0) * m.cell(2, 0)) / m.cell(1, 1);
-    m.cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(m.cell(2, 0), 2) -
-                                             pow(m.cell(2, 1), 2));
+    Matrix3d cell = Matrix3d::Zero();
+    cell(0, 0) = 1.0;
+    cell(1, 0) = cos(angles[0]);
+    cell(1, 1) = sin(angles[0]);
+    cell(2, 0) = cos(angles[1]);
+    cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+    cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
+                                           pow(cell(2, 1), 2));
 
-    m.cell(0, 0) *= lengths[0];
-    m.cell(1, 0) *= lengths[1];
-    m.cell(1, 1) *= lengths[1];
-    m.cell(2, 0) *= lengths[2];
-    m.cell(2, 1) *= lengths[2];
-    m.cell(2, 2) *= lengths[2];
+    cell(0, 0) *= lengths[0];
+    cell(1, 0) *= lengths[1];
+    cell(1, 1) *= lengths[1];
+    cell(2, 0) *= lengths[2];
+    cell(2, 1) *= lengths[2];
+    cell(2, 2) *= lengths[2];
+    m.setCell(cell);
   }
-  m.cellInverse = m.cell.inverse();
   m.headerCon[2] =
       std::format("{} {} {}\n", angles_deg[0], angles_deg[1], angles_deg[2]);
 
+  const auto n = static_cast<Eigen::Index>(atoms.size());
   m.resize(static_cast<long>(atoms.size()));
-  AtomMatrix forces =
-      AtomMatrix::Zero(static_cast<Eigen::Index>(atoms.size()), 3);
-  AtomMatrix velocities =
-      AtomMatrix::Zero(static_cast<Eigen::Index>(atoms.size()), 3);
+
+  // Assemble full matrices then use Matter setters instead of poking private
+  // storage field-by-field.
+  AtomMatrix positions = AtomMatrix::Zero(n, 3);
+  AtomMatrix forces = AtomMatrix::Zero(n, 3);
+  AtomMatrix velocities = AtomMatrix::Zero(n, 3);
   bool any_force = false;
   bool any_velocity = false;
 
-  for (size_t i = 0; i < atoms.size(); ++i) {
-    const auto &atom = atoms[i];
-    m.positions(i, 0) = atom.x;
-    m.positions(i, 1) = atom.y;
-    m.positions(i, 2) = atom.z;
-    m.setMass(i, atom.mass);
-    m.setAtomicNr(i, static_cast<int>(atom.atomic_number));
+  for (Eigen::Index i = 0; i < n; ++i) {
+    const auto &atom = atoms[static_cast<size_t>(i)];
+    positions(i, 0) = atom.x;
+    positions(i, 1) = atom.y;
+    positions(i, 2) = atom.z;
+    m.setMass(static_cast<long>(i), atom.mass);
+    m.setAtomicNr(static_cast<long>(i), static_cast<int>(atom.atomic_number));
+    // Prefer fixed_mask() over the deprecated is_fixed aggregate.
     const auto fixed = atom.fixed_mask();
-    const bool is_fixed = fixed[0] || fixed[1] || fixed[2];
-    m.setFixed(i, is_fixed ? 1 : 0);
-    m.atomIndex(i) = static_cast<int>(atom.atom_id);
+    m.setFixed(static_cast<long>(i),
+               (fixed[0] || fixed[1] || fixed[2]) ? 1 : 0);
+    m.atomIndex(static_cast<long>(i)) = static_cast<int>(atom.atom_id);
 
     if (auto vel = atom.velocity()) {
       any_velocity = true;
-      velocities(static_cast<Eigen::Index>(i), 0) = (*vel)[0];
-      velocities(static_cast<Eigen::Index>(i), 1) = (*vel)[1];
-      velocities(static_cast<Eigen::Index>(i), 2) = (*vel)[2];
+      velocities(i, 0) = (*vel)[0];
+      velocities(i, 1) = (*vel)[1];
+      velocities(i, 2) = (*vel)[2];
     }
     if (auto force = atom.force()) {
       any_force = true;
-      forces(static_cast<Eigen::Index>(i), 0) = (*force)[0];
-      forces(static_cast<Eigen::Index>(i), 1) = (*force)[1];
-      forces(static_cast<Eigen::Index>(i), 2) = (*force)[2];
+      forces(i, 0) = (*force)[0];
+      forces(i, 1) = (*force)[1];
+      forces(i, 2) = (*force)[2];
     }
   }
+
+  // setPositions applies PBC when enabled and marks the pot dirty; we re-trust
+  // file energy/forces below when present.
+  m.setPositions(positions);
 
   if (any_velocity || frame.has_velocities()) {
     m.setVelocities(velocities);
@@ -330,9 +389,6 @@ bool con2matter(Matter &m, const readcon::ConFrame &frame,
     }
   }
 
-  if (m.usePeriodicBoundaries) {
-    m.applyPeriodicBoundary();
-  }
   return true;
 }
 
@@ -343,40 +399,18 @@ bool matter2convel(Matter &m, std::string filename) {
     m.applyPeriodicBoundary();
   }
 
-  auto [lengths, angles_deg] = cell_to_lengths_angles(m);
-
-  readcon::ConFrameBuilder builder(
-      {lengths[0], lengths[1], lengths[2]},
-      {angles_deg[0], angles_deg[1], angles_deg[2]},
-      {canonical_generator_header(m.headerCon[0]), strip_nl(m.headerCon[1])},
-      {strip_nl(m.headerCon[3]), strip_nl(m.headerCon[4])});
-
-  if (!m.needsForceUpdate()) {
-    builder.set_energy(m.getPotentialEnergy());
-  }
-
-  const bool write_forces = !m.needsForceUpdate();
-  const AtomMatrix *forces_ptr = write_forces ? &m.getForcesRaw() : nullptr;
-  const AtomMatrix velocities = m.getVelocities();
-
   const long n = m.numberOfAtoms();
-  for (long i = 0; i < n; i++) {
-    const bool fixed = m.getFixed(i) != 0;
-    const std::array<bool, 3> fixed_axes{fixed, fixed, fixed};
-    std::optional<std::array<double, 3>> vel{
-        {velocities(i, 0), velocities(i, 1), velocities(i, 2)}};
-    std::optional<std::array<double, 3>> force;
-    if (forces_ptr != nullptr) {
-      force = std::array<double, 3>{(*forces_ptr)(i, 0), (*forces_ptr)(i, 1),
-                                    (*forces_ptr)(i, 2)};
-    }
-    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), m.getPosition(i, 0),
-                     m.getPosition(i, 1), m.getPosition(i, 2), fixed_axes,
-                     static_cast<uint64_t>(m.atomIndex(i)), m.getMass(i), vel,
-                     force);
+  std::vector<uint64_t> atom_ids(static_cast<size_t>(n));
+  for (long i = 0; i < n; ++i) {
+    atom_ids[static_cast<size_t>(i)] = static_cast<uint64_t>(m.atomIndex(i));
   }
+  const std::array<std::string, 2> prebox{
+      canonical_generator_header(m.headerCon[0]), strip_nl(m.headerCon[1])};
+  const std::array<std::string, 2> postbox{strip_nl(m.headerCon[3]),
+                                           strip_nl(m.headerCon[4])};
 
-  auto frame = builder.build();
+  auto frame = frame_from_matter(m, prebox, postbox, atom_ids, nullptr,
+                                 /*with_velocities=*/true);
   std::vector<readcon::ConFrame> frames;
   frames.push_back(std::move(frame));
   return write_frames(filename, std::move(frames), 6);
