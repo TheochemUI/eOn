@@ -1,0 +1,4 @@
+neb_band_markers
+count_neb_band_7=3
+count_neb_bead=3
+has_con_spec=true

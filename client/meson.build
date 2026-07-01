@@ -1038,6 +1038,7 @@ if get_option('with_tests')
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
         ['test_saddle', 'SaddleSearchTest.cpp', 'neb_morse'],
         ['test_confileio', 'ConFileIOTest.cpp', 'neb_morse'],
+        ['test_approve_confileio', 'ApproveConFileIO.cpp', 'neb_morse'],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
