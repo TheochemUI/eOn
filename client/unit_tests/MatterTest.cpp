@@ -217,7 +217,7 @@ TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
   Matter m(pot, params);
   // Constructor turns PBC off for isolated-molecule pots.
   REQUIRE_FALSE(m.getPeriodic());
-  REQUIRE(m.con2matter(std::string("reactant.con")));
+  REQUIRE(eonc::io::io_ok(m.con2matter(std::string("reactant.con"))));
   REQUIRE_NOTHROW(m.getPotentialEnergy());
   // Re-enabling PBC must hard-fail (would tear non-centered molecules).
   m.setPeriodic(true);

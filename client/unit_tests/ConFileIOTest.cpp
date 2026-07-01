@@ -115,8 +115,8 @@ TEST_CASE_METHOD(
   second.scalars.push_back({"step_size", 0.1});
   second.scalars.push_back({"convergence", 0.5});
 
-  REQUIRE(movie->matter2con(tmpfile, false, &first));
-  REQUIRE(movie->matter2con(tmpfile, true, &second));
+  REQUIRE(eonc::io::io_ok(movie->matter2con(tmpfile, false, &first)));
+  REQUIRE(eonc::io::io_ok(movie->matter2con(tmpfile, true, &second)));
 
   std::ifstream file(tmpfile);
   std::string file_contents((std::istreambuf_iterator<char>(file)),
@@ -316,13 +316,13 @@ TEST_CASE("ConFileIO preserves metadata across append-mode movie frames",
   first.frame_index = 0;
   first.energy = -10.0;
   first.scalars.push_back({"step_size", 0.0});
-  REQUIRE(m->matter2con(tmpfile, false, &first));
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false, &first)));
 
   eonc::io::ConFrameMetadata second;
   second.frame_index = 1;
   second.energy = -9.5;
   second.scalars.push_back({"step_size", 0.25});
-  REQUIRE(m->matter2con(tmpfile, true, &second));
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, true, &second)));
 
   std::ifstream in(tmpfile);
   std::string file_contents((std::istreambuf_iterator<char>(in)),
@@ -363,7 +363,7 @@ TEST_CASE("ConFileIO append mode rejects corrupt existing files",
   std::string before((std::istreambuf_iterator<char>(before_in)),
                      std::istreambuf_iterator<char>());
 
-  REQUIRE_FALSE(m->matter2con(tmpfile, true));
+  REQUIRE_FALSE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
 
   std::ifstream after_in(tmpfile);
   std::string after((std::istreambuf_iterator<char>(after_in)),
@@ -385,7 +385,7 @@ TEST_CASE("ConFileIO appends .con based on basename extension",
   std::filesystem::create_directories(tmpdir);
   auto tmpbase = tmpdir / "movie";
 
-  REQUIRE(m->matter2con(tmpbase.string(), false));
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpbase.string(), false)));
   REQUIRE(std::filesystem::exists(tmpbase.string() + ".con"));
   REQUIRE_FALSE(std::filesystem::exists(tmpbase));
 
@@ -430,8 +430,8 @@ TEST_CASE("NEB path writer embeds structured frame metadata",
       std::filesystem::temp_directory_path() / "_test_neb_metadata.con";
   std::string tmpfile = tmppath.string();
 
-  REQUIRE(eonc::neb::writePathCon(path, tangent, eigenmode_solvers, 1, false,
-                                  tmpfile, 12));
+  REQUIRE(eonc::io::io_ok(eonc::neb::writePathCon(path, tangent, eigenmode_solvers, 1, false,
+                                  tmpfile, 12)));
 
   std::ifstream in(tmpfile);
   std::string file_contents((std::istreambuf_iterator<char>(in)),
@@ -555,7 +555,7 @@ TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
 
   auto tmppath = std::filesystem::temp_directory_path() / "_test_forces.con";
   const std::string tmpfile = tmppath.string();
-  REQUIRE(m->matter2con(tmpfile, false));
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false)));
 
   // File should declare forces + energy via readcon metadata/sections.
   const auto frames = readcon::read_all_frames(tmpfile);
@@ -566,7 +566,7 @@ TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
 
   auto m2 = std::make_shared<Matter>(pot, params);
   eonc::io::ConFrameMetadata loaded_meta;
-  REQUIRE(m2->con2matter(frames[0], &loaded_meta));
+  REQUIRE(eonc::io::io_ok(m2->con2matter(frames[0], &loaded_meta)));
   REQUIRE(loaded_meta.energy.has_value());
   REQUIRE(*loaded_meta.energy == Catch::Approx(E).epsilon(1e-8));
   REQUIRE_FALSE(m2->needsForceUpdate());
@@ -595,7 +595,7 @@ TEST_CASE("ConFileIO metadata_from_frame exposes NEB and potential fields",
 
   auto tmppath = std::filesystem::temp_directory_path() / "_test_meta_api.con";
   const std::string tmpfile = tmppath.string();
-  REQUIRE(m->matter2con(tmpfile, false, &meta));
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false, &meta)));
 
   const auto frame = readcon::read_first_frame(tmpfile);
   const auto parsed = eonc::io::metadata_from_frame(frame);

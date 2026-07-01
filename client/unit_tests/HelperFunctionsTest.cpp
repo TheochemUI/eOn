@@ -59,7 +59,7 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   params.potential_options.potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter initial(pot, params);
-  REQUIRE(initial.con2matter(std::string("reactant.con")));
+  REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
   const long nAtoms = initial.numberOfAtoms();
   REQUIRE(nAtoms > 0);
 

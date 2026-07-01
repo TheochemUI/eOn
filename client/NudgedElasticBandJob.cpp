@@ -59,12 +59,12 @@ std::vector<std::string> NudgedElasticBandJob::run() {
           "NEB initial_path_in must list at least two frames "
           "(reactant and product endpoints)");
     }
-    if (!initial->con2matter(file_paths.front().string())) {
+    if (!eonc::io::io_ok(initial->con2matter(file_paths.front().string()))) {
       EONC_LOG_CRITICAL("Failed to load NEB path reactant frame {}",
                         file_paths.front().string());
       throw std::runtime_error("failed to load NEB path reactant frame");
     }
-    if (!final_state->con2matter(file_paths.back().string())) {
+    if (!eonc::io::io_ok(final_state->con2matter(file_paths.back().string()))) {
       EONC_LOG_CRITICAL("Failed to load NEB path product frame {}",
                         file_paths.back().string());
       throw std::runtime_error("failed to load NEB path product frame");
@@ -73,11 +73,11 @@ std::vector<std::string> NudgedElasticBandJob::run() {
                    "NEB endpoints from initial path list (skipped {} / {})",
                    reactantFilename, productFilename);
   } else {
-    if (!initial->con2matter(reactantFilename)) {
+    if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
       EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
       throw std::runtime_error("failed to load reactant.con");
     }
-    if (!final_state->con2matter(productFilename)) {
+    if (!eonc::io::io_ok(final_state->con2matter(productFilename))) {
       EONC_LOG_CRITICAL("Failed to load {}", productFilename);
       throw std::runtime_error("failed to load product.con");
     }
@@ -226,9 +226,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // Save the Full NEB Path
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
-  if (!eonc::neb::writePathCon(
+  if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
-          params.debug_options.estimate_neb_eigenvalues, nebFilename)) {
+          params.debug_options.estimate_neb_eigenvalues, nebFilename))) {
     QUILL_LOG_ERROR(m_log, "Failed to write {}", nebFilename);
   }
 

@@ -144,7 +144,7 @@ AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
 bool eonc::helpers::loadOrSynthesizeDisplacement(
     Matter &target, const Matter &initial, const std::string &displacementPath,
     const std::string &modePath, double scale) {
-  if (target.con2matter(displacementPath)) {
+  if (eonc::io::io_ok(target.con2matter(displacementPath))) {
     // displacement.con may carry stale fixed-atom coordinates from a prior run.
     const AtomMatrix &initPos = initial.getPositions();
     AtomMatrix pos = target.getPositionsCopy();

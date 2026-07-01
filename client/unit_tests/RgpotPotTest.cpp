@@ -42,7 +42,7 @@ TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
   REQUIRE(pot->getType() == PotType::RGPOT);
 
   auto matter = std::make_shared<Matter>(pot, params);
-  REQUIRE(matter->con2matter("pos.con"));
+  REQUIRE(eonc::io::io_ok(matter->con2matter("pos.con")));
   REQUIRE(matter->numberOfAtoms() == 9);
 
   double energy = 0.0;

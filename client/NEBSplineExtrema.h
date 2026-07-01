@@ -44,8 +44,8 @@ void printImageData(
     long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx,
     eonc::log::Scoped log);
 
-/// Write a NEB band as a multi-frame .con file with per-image metadata.
-bool writePathCon(
+/// Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone().
+[[nodiscard]] eonc::io::IoStatus writePathCon(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
     const std::vector<std::shared_ptr<EigenmodeStrategy>> &eigenmode_solvers,

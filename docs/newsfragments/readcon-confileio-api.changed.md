@@ -1,4 +1,6 @@
-`ConFileIO` targets readcon-core **0.13** with the mutation-oriented builder API:
-seed atoms then `set_positions_from_flat` / `set_forces_from_flat` /
-`set_atom_velocity`, plus `metadata_from_frame`, `fixed_mask()`, `z_to_symbol`,
-and compression-aware writers. Subproject wrap pins `v0.13.1`.
+`ConFileIO` targets readcon-core **0.13** with a nanobind-ready `IoStatus` enum
+(replacing `bool` returns), bulk/zero-copy builder maps
+(`positions_data` / `set_*_from_flat` / `set_atom_velocity`), and
+`writeNebPath` using `ConFrameBuilder::clone()` so NEB bands write in one pass
+without re-reading the movie file per image. Matter exposes atom-index and CON
+header accessors for bindings.

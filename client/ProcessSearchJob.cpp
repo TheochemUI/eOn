@@ -52,7 +52,7 @@ std::vector<std::string> ProcessSearchJob::run() {
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
 
-  if (!initial->con2matter(reactantFilename)) {
+  if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
     EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
     exit(1);
   }

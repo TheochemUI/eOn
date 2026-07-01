@@ -1593,16 +1593,15 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
 
   // initial = pos.con (the authoritative reference)
   auto initial = std::make_shared<Matter>(pot, params);
-  REQUIRE(
-      initial->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con")));
+  REQUIRE(eonc::io::io_ok(initial->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con"))));
   REQUIRE(initial->numberOfAtoms() == 343);
   REQUIRE(initial->numberOfFixedAtoms() == 336);
 
   // saddle = displacement.con from process_search_fixed_drift -- has +0.1 A
   // offset on all fixed-atom rows vs pos.con.
   auto saddle = std::make_shared<Matter>(pot, params);
-  REQUIRE(saddle->con2matter(
-      std::string("../process_search_fixed_drift/displacement.con")));
+  REQUIRE(eonc::io::io_ok(saddle->con2matter(
+      std::string("../process_search_fixed_drift/displacement.con"))));
   REQUIRE(saddle->numberOfAtoms() == 343);
 
   // Confirm the stale fixed-atom drift is present before the fix.

@@ -11,6 +11,8 @@
 */
 #pragma once
 #include <array>
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <readcon-core.hpp>
 #include <string>
@@ -21,6 +23,40 @@ namespace eonc {
 class Matter;
 
 namespace io {
+
+/// Structured I/O result for the client surface (nanobind-friendly).
+/// Prefer comparing to IoStatus::Ok rather than treating as bool.
+enum class IoStatus : std::uint8_t {
+  Ok = 0,
+  ReadError = 1,
+  WriteError = 2,
+  AppendError = 3,
+  OpenError = 4,
+  InvalidArgument = 5,
+};
+
+[[nodiscard]] constexpr bool io_ok(IoStatus s) noexcept {
+  return s == IoStatus::Ok;
+}
+
+/// Human-readable label for logging / bindings.
+[[nodiscard]] constexpr const char *io_status_name(IoStatus s) noexcept {
+  switch (s) {
+  case IoStatus::Ok:
+    return "ok";
+  case IoStatus::ReadError:
+    return "read_error";
+  case IoStatus::WriteError:
+    return "write_error";
+  case IoStatus::AppendError:
+    return "append_error";
+  case IoStatus::OpenError:
+    return "open_error";
+  case IoStatus::InvalidArgument:
+    return "invalid_argument";
+  }
+  return "unknown";
+}
 
 struct ConMetadataValue {
   std::string key;
@@ -49,17 +85,33 @@ struct ConFrameMetadata {
 ConFrameMetadata metadata_from_frame(const readcon::ConFrame &frame);
 
 // Reading
-bool con2matter(Matter &m, std::string filename);
-bool con2matter(Matter &m, const readcon::ConFrame &frame,
-                ConFrameMetadata *out_metadata = nullptr);
-bool convel2matter(Matter &m, std::string filename);
+[[nodiscard]] IoStatus con2matter(Matter &m, std::string filename);
+[[nodiscard]] IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
+                                  ConFrameMetadata *out_metadata = nullptr);
+[[nodiscard]] IoStatus convel2matter(Matter &m, std::string filename);
 
 // Writing
-bool matter2con(Matter &m, std::string filename, bool append = false,
-                const ConFrameMetadata *metadata = nullptr);
-bool matter2convel(Matter &m, std::string filename);
-void matter2xyz(Matter &m, std::string filename, bool append = false);
-void writeTibble(Matter &m, std::string filename);
+[[nodiscard]] IoStatus matter2con(Matter &m, std::string filename,
+                                  bool append = false,
+                                  const ConFrameMetadata *metadata = nullptr);
+[[nodiscard]] IoStatus matter2convel(Matter &m, std::string filename);
+[[nodiscard]] IoStatus matter2xyz(Matter &m, std::string filename,
+                                  bool append = false);
+[[nodiscard]] IoStatus writeTibble(Matter &m, std::string filename);
+
+/**
+ * Write a full NEB path as one multi-frame .con using ConFrameBuilder::clone().
+ *
+ * Seeds identity (symbols/fixed/mass/id/cell) from path[0], then for each
+ * image clones the template and bulk-updates positions/forces + metadata.
+ * Avoids re-reading the output file per image (legacy append path).
+ *
+ * @param path length must be numImages+2 (endpoints included)
+ * @param metadata_per_image length must equal path.size()
+ */
+[[nodiscard]] IoStatus writeNebPath(
+    std::string filename, const std::vector<std::shared_ptr<Matter>> &path,
+    const std::vector<ConFrameMetadata> &metadata_per_image);
 
 // Helper
 std::pair<std::array<double, 3>, std::array<double, 3>>
