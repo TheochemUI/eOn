@@ -107,9 +107,9 @@ void apply_frame_metadata(readcon::ConFrameBuilder &builder,
   }
 }
 
-eonc::io::IoStatus
-write_frames(const fs::path &path, const std::vector<readcon::ConFrame> &frames,
-             uint8_t precision) {
+eonc::io::IoStatus write_frames(const fs::path &path,
+                                const std::vector<readcon::ConFrame> &frames,
+                                uint8_t precision) {
   try {
     const auto compression =
         readcon::ConFrameWriter::compression_from_extension(path);
@@ -124,10 +124,10 @@ write_frames(const fs::path &path, const std::vector<readcon::ConFrame> &frames,
 
 /// Seed a builder with identity fields (symbol/fixed/mass/id) and cell headers.
 /// Geometry filled via positions_data() / set_*_from_flat.
-readcon::ConFrameBuilder
-seed_builder(Matter &m, const std::array<std::string, 2> &prebox,
-             const std::array<std::string, 2> &postbox,
-             const std::vector<uint64_t> &atom_ids) {
+readcon::ConFrameBuilder seed_builder(Matter &m,
+                                      const std::array<std::string, 2> &prebox,
+                                      const std::array<std::string, 2> &postbox,
+                                      const std::vector<uint64_t> &atom_ids) {
   auto [lengths, angles_deg] = eonc::io::cell_to_lengths_angles(m);
   readcon::ConFrameBuilder builder(
       {lengths[0], lengths[1], lengths[2]},
@@ -186,8 +186,7 @@ void collect_ids_headers(Matter &m, std::vector<uint64_t> &atom_ids,
   const long n = m.numberOfAtoms();
   atom_ids.resize(static_cast<size_t>(n));
   for (long i = 0; i < n; ++i) {
-    atom_ids[static_cast<size_t>(i)] =
-        static_cast<uint64_t>(m.getAtomIndex(i));
+    atom_ids[static_cast<size_t>(i)] = static_cast<uint64_t>(m.getAtomIndex(i));
   }
   const auto &hdr = m.getHeaderCon();
   prebox = {canonical_generator_header(hdr[0]), strip_nl(hdr[1])};
@@ -267,28 +266,24 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
 
   m.applyPeriodicBoundaryIfEnabled();
 
-  readcon::ConFrame frame;
-  try {
-    frame = frame_from_matter(m, metadata, /*with_velocities=*/false);
-  } catch (const std::exception &e) {
-    EONC_LOG_ERROR("Failed to build frame for {}: {}", filename, e.what());
-    return IoStatus::InvalidArgument;
-  }
-
+  // ConFrame is move-only (no default ctor).
   std::vector<readcon::ConFrame> frames;
   if (append && fs::exists(filename)) {
     try {
-      // Stream existing frames with the iterator (move into vector) rather than
-      // only the mmap all-at-once path; still rewrites the file once at the end.
-      for (auto &&existing : readcon::ConFrameIterator(filename)) {
-        frames.push_back(std::move(existing));
+      for (auto &&fr : readcon::ConFrameIterator(filename)) {
+        frames.push_back(std::move(fr));
       }
     } catch (const std::exception &e) {
       EONC_LOG_ERROR("Failed to append to {}: {}", filename, e.what());
       return IoStatus::AppendError;
     }
   }
-  frames.push_back(std::move(frame));
+  try {
+    frames.push_back(frame_from_matter(m, metadata, /*with_velocities=*/false));
+  } catch (const std::exception &e) {
+    EONC_LOG_ERROR("Failed to build frame for {}: {}", filename, e.what());
+    return IoStatus::InvalidArgument;
+  }
   return write_frames(filename, frames, kConPrecision);
 }
 
@@ -518,9 +513,8 @@ IoStatus writeNebPath(std::string filename,
       Matter &img = *path[i];
       img.applyPeriodicBoundaryIfEnabled();
       if (img.numberOfAtoms() != template_m.numberOfAtoms()) {
-        EONC_LOG_ERROR(
-            "writeNebPath: image {} atom count {} != template {}", i,
-            img.numberOfAtoms(), template_m.numberOfAtoms());
+        EONC_LOG_ERROR("writeNebPath: image {} atom count {} != template {}", i,
+                       img.numberOfAtoms(), template_m.numberOfAtoms());
         return IoStatus::InvalidArgument;
       }
 

@@ -430,8 +430,8 @@ TEST_CASE("NEB path writer embeds structured frame metadata",
       std::filesystem::temp_directory_path() / "_test_neb_metadata.con";
   std::string tmpfile = tmppath.string();
 
-  REQUIRE(eonc::io::io_ok(eonc::neb::writePathCon(path, tangent, eigenmode_solvers, 1, false,
-                                  tmpfile, 12)));
+  REQUIRE(eonc::io::io_ok(eonc::neb::writePathCon(
+      path, tangent, eigenmode_solvers, 1, false, tmpfile, 12)));
 
   std::ifstream in(tmpfile);
   std::string file_contents((std::istreambuf_iterator<char>(in)),

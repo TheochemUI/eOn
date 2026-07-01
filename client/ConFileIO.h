@@ -109,9 +109,10 @@ ConFrameMetadata metadata_from_frame(const readcon::ConFrame &frame);
  * @param path length must be numImages+2 (endpoints included)
  * @param metadata_per_image length must equal path.size()
  */
-[[nodiscard]] IoStatus writeNebPath(
-    std::string filename, const std::vector<std::shared_ptr<Matter>> &path,
-    const std::vector<ConFrameMetadata> &metadata_per_image);
+[[nodiscard]] IoStatus
+writeNebPath(std::string filename,
+             const std::vector<std::shared_ptr<Matter>> &path,
+             const std::vector<ConFrameMetadata> &metadata_per_image);
 
 // Helper
 std::pair<std::array<double, 3>, std::array<double, 3>>

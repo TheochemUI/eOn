@@ -273,8 +273,8 @@ eonc::io::IoStatus writePathCon(
   }
 
   // Clone-based single write of the full band (no per-image file re-read).
-  std::vector<std::shared_ptr<Matter>> band(path.begin(),
-                                            path.begin() + static_cast<std::ptrdiff_t>(nframes));
+  std::vector<std::shared_ptr<Matter>> band(
+      path.begin(), path.begin() + static_cast<std::ptrdiff_t>(nframes));
   return eonc::io::writeNebPath(std::move(filename), band, metas);
 }
 

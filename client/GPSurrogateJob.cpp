@@ -89,10 +89,10 @@ std::vector<std::string> GPSurrogateJob::run() {
 
     std::string nebFilename(std::format("neb_final_gpr_{:03d}.con", n_gp));
     returnFiles.push_back(nebFilename);
-    if (!eonc::io::io_ok(eonc::neb::writePathCon(neb->path, neb->tangent,
-                                 neb->eigenmode_solvers, neb->numImages,
-                                 params.debug_options.estimate_neb_eigenvalues,
-                                 nebFilename, static_cast<size_t>(n_gp)))) {
+    if (!eonc::io::io_ok(eonc::neb::writePathCon(
+            neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
+            params.debug_options.estimate_neb_eigenvalues, nebFilename,
+            static_cast<size_t>(n_gp)))) {
       throw std::runtime_error("Failed to write file: " + nebFilename);
     }
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD &&
