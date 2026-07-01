@@ -392,18 +392,32 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
   if (out_metadata != nullptr) {
     *out_metadata = meta;
   }
-  if (meta.energy) {
+
+  // Trust cached pot state only when BOTH energy and forces are present.
+  // Energy-only frames must not mark recomputePotential=false with zero forces
+  // (review: silent wrong optimizers). Forces without energy keep pot dirty so
+  // the next getForces() re-evaluates consistently.
+  const bool has_force_section = any_force || frame.has_forces();
+  if (meta.energy && has_force_section) {
+    // Write raw force matrix (including fixed-atom rows) before marking clean.
+    // setForces() would mask fixed rows via getFree() and break force RT.
+    m.forces = forces;
     m.setComputedPotential(*meta.energy, 0.0);
+    // setComputedPotential may re-adjust net force; restore file forces after.
+    m.forces = forces;
+    m.recomputePotential = false;
+    m.recomputeMaskedForces = true;
+  } else if (has_force_section) {
+    m.forces = forces;
+    m.recomputePotential = true;
+    m.recomputeMaskedForces = true;
   } else {
     m.recomputePotential = true;
   }
-  if (any_force || frame.has_forces()) {
-    m.setForces(forces);
-    if (meta.energy) {
-      m.recomputePotential = false;
-      m.recomputeMaskedForces = true;
-    }
-  }
+
+  // Restore pre-refactor PBC wrap on read (geometry dumped from classic .con
+  // may sit outside the primary cell for non-orthogonal / MIC conventions).
+  m.applyPeriodicBoundaryIfEnabled();
 
   return IoStatus::Ok;
 }
