@@ -9,13 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#define APPROVALS_CATCH2_V3
-#include "ApprovalTests.hpp"
-
-// Masters live under workdir approval_tests/ (meson workdir = neb_morse).
-auto directoryDisposer =
-    ApprovalTests::Approvals::useApprovalsSubdirectory("approval_tests");
-
 #include "ConFileIO.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
@@ -54,6 +47,15 @@ std::string dump_geometry(const Matter &m) {
   return os.str();
 }
 
+std::string read_master(const std::string &name) {
+  // Meson workdir is neb_morse; masters live in approval_tests/ there.
+  const fs::path p = fs::path("approval_tests") / name;
+  std::ifstream in(p);
+  REQUIRE(in.good());
+  return std::string((std::istreambuf_iterator<char>(in)),
+                     std::istreambuf_iterator<char>());
+}
+
 std::shared_ptr<Matter> load_reactant() {
   Parameters params;
   params.potential_options.potential = PotType::LJ;
@@ -77,7 +79,9 @@ size_t count_substr(const std::string &hay, const std::string &needle) {
 
 TEST_CASE("VerifyClassicFixtureRead", "[approval][confileio][compat]") {
   auto m = load_reactant();
-  ApprovalTests::Approvals::verify(dump_geometry(*m));
+  REQUIRE(
+      dump_geometry(*m) ==
+      read_master("ApproveConFileIO.VerifyClassicFixtureRead.approved.txt"));
 }
 
 TEST_CASE("VerifyGeometryOnlyRoundTrip", "[approval][confileio][compat]") {
@@ -93,7 +97,9 @@ TEST_CASE("VerifyGeometryOnlyRoundTrip", "[approval][confileio][compat]") {
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m2 = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));
-  ApprovalTests::Approvals::verify(dump_geometry(*m2));
+  REQUIRE(
+      dump_geometry(*m2) ==
+      read_master("ApproveConFileIO.VerifyGeometryOnlyRoundTrip.approved.txt"));
   fs::remove(tmp);
 }
 
@@ -128,7 +134,8 @@ TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
   summary << "needs_force_update_after_reload="
           << (m2->needsForceUpdate() ? "true" : "false") << "\n";
   summary << "geometry_after_force_write:\n" << dump_geometry(*m2);
-  ApprovalTests::Approvals::verify(summary.str());
+  REQUIRE(summary.str() ==
+          read_master("ApproveConFileIO.VerifyForceBearingWrite.approved.txt"));
 }
 
 TEST_CASE("VerifyNebPathCloneWrite", "[approval][confileio][neb]") {
@@ -160,5 +167,6 @@ TEST_CASE("VerifyNebPathCloneWrite", "[approval][confileio][neb]") {
           << (body.find("con_spec_version") != std::string::npos ? "true"
                                                                  : "false")
           << "\n";
-  ApprovalTests::Approvals::verify(summary.str());
+  REQUIRE(summary.str() ==
+          read_master("ApproveConFileIO.VerifyNebPathCloneWrite.approved.txt"));
 }
