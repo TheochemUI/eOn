@@ -153,29 +153,19 @@ void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
     return;
   }
 
-  // Zero-copy RowMajor map when the builder buffer is live.
-  if (double *p = builder.positions_data()) {
-    Eigen::Map<AtomMatrix>(p, n, 3) = m.getPositions();
-  } else {
-    builder.set_positions_from_flat(flat_row_major(m.getPositions()));
-  }
+  // Prefer bulk flat setters (declared sections, no pointer-lifetime hazards
+  // under ASAN). AtomMatrix is RowMajor Nx3 matching the flat layout.
+  builder.set_positions_from_flat(flat_row_major(m.getPositions()));
 
   if (!m.needsForceUpdate()) {
-    // set_forces_from_flat declares the forces section, then map is optional.
     builder.set_forces_from_flat(flat_row_major(m.getForcesRaw()));
   }
 
   if (with_velocities) {
     const AtomMatrix vel = m.getVelocities();
-    // Prime the velocities section, then bulk-assign via map when available.
-    builder.set_atom_velocity(0, {vel(0, 0), vel(0, 1), vel(0, 2)});
-    if (double *v = builder.velocities_data()) {
-      Eigen::Map<AtomMatrix>(v, n, 3) = vel;
-    } else {
-      for (long i = 0; i < n; ++i) {
-        builder.set_atom_velocity(static_cast<size_t>(i),
-                                  {vel(i, 0), vel(i, 1), vel(i, 2)});
-      }
+    for (long i = 0; i < n; ++i) {
+      builder.set_atom_velocity(static_cast<size_t>(i),
+                                {vel(i, 0), vel(i, 1), vel(i, 2)});
     }
   }
 }
@@ -270,9 +260,9 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
   std::vector<readcon::ConFrame> frames;
   if (append && fs::exists(filename)) {
     try {
-      for (auto &&fr : readcon::ConFrameIterator(filename)) {
-        frames.push_back(std::move(fr));
-      }
+      // Prefer read_all_frames (single ownership hand-off) over the iterator
+      // path for append rewrite; simpler lifetime for ASAN/CI envs.
+      frames = readcon::read_all_frames(filename);
     } catch (const std::exception &e) {
       EONC_LOG_ERROR("Failed to append to {}: {}", filename, e.what());
       return IoStatus::AppendError;
