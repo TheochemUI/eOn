@@ -40,20 +40,22 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 /// Omits forces/energy so classic fixtures compare with pre-0.13 dumps.
 std::string dump_geometry(const Matter &m) {
   std::ostringstream os;
-  os << std::format("n_atoms={}\n", m.numberOfAtoms());
+  os << std::format("n_atoms={}
+", m.numberOfAtoms());
   const auto cell = m.getCell();
-  os << std::format("cell=\n{:.8f} {:.8f} {:.8f}\n{:.8f} {:.8f} {:.8f}\n"
-                    "{:.8f} {:.8f} {:.8f}\n",
-                    cell(0, 0), cell(0, 1), cell(0, 2), cell(1, 0), cell(1, 1),
-                    cell(1, 2), cell(2, 0), cell(2, 1), cell(2, 2));
-  os << "atoms: symbol z mass fixed atom_id x y z\n";
+  os << std::format(
+      "cell={:.8f},{:.8f},{:.8f};{:.8f},{:.8f},{:.8f};{:.8f},{:.8f},{:.8f}
+",
+      cell(0, 0), cell(0, 1), cell(0, 2), cell(1, 0), cell(1, 1), cell(1, 2),
+      cell(2, 0), cell(2, 1), cell(2, 2));
   const auto pos = m.getPositions();
   for (long i = 0; i < m.numberOfAtoms(); ++i) {
     os << std::format(
-        "{:2} {:3} {:12.8f} {:d} {:4d} {:14.8f} {:14.8f} {:14.8f}\n",
-        readcon::z_to_symbol(static_cast<uint64_t>(m.getAtomicNr(i))),
-        m.getAtomicNr(i), m.getMass(i), m.getFixed(i), m.getAtomIndex(i),
-        pos(i, 0), pos(i, 1), pos(i, 2));
+        "a {} Z={} mass={:.8f} fixed={} id={} pos={:.8f},{:.8f},{:.8f}
+        ", i,
+        m.getAtomicNr(i),
+        m.getMass(i), m.getFixed(i), m.getAtomIndex(i), pos(i, 0), pos(i, 1),
+        pos(i, 2));
   }
   return os.str();
 }
