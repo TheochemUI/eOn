@@ -518,7 +518,7 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
       usePeriodicBoundaries) {
     usePeriodicBoundaries = false;
     QUILL_LOG_WARNING(
-        log,
+        eonc::log::get(),
         "Disabled PBC for isolated-molecule potential (NWChem/ORCA-class); "
         "re-enabling PBC will throw (issue #188)");
   }
