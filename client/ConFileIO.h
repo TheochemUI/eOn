@@ -39,14 +39,19 @@ struct ConFrameMetadata {
   std::optional<double> timestep;
   std::optional<uint64_t> neb_bead;
   std::optional<uint64_t> neb_band;
+  std::optional<std::string> potential_type;
   std::vector<ConMetadataValue> scalars;
   std::vector<ConMetadataText> strings;
   std::optional<std::string> raw_json;
 };
 
+/// Extract known frame-level fields from a parsed readcon frame.
+ConFrameMetadata metadata_from_frame(const readcon::ConFrame &frame);
+
 // Reading
 bool con2matter(Matter &m, std::string filename);
-bool con2matter(Matter &m, const readcon::ConFrame &frame);
+bool con2matter(Matter &m, const readcon::ConFrame &frame,
+                ConFrameMetadata *out_metadata = nullptr);
 bool convel2matter(Matter &m, std::string filename);
 
 // Writing

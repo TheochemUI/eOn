@@ -236,8 +236,9 @@ public:
   bool con2matter(std::string filename) {
     return io::con2matter(*this, filename);
   }
-  bool con2matter(const readcon::ConFrame &frame) {
-    return io::con2matter(*this, frame);
+  bool con2matter(const readcon::ConFrame &frame,
+                  io::ConFrameMetadata *out_metadata = nullptr) {
+    return io::con2matter(*this, frame, out_metadata);
   }
   bool convel2matter(std::string filename) {
     return io::convel2matter(*this, filename);
@@ -268,7 +269,8 @@ public:
 
 private:
   // Friend declarations for eonc::io free functions that need private access
-  friend bool io::con2matter(Matter &, const readcon::ConFrame &);
+  friend bool io::con2matter(Matter &, const readcon::ConFrame &,
+                             io::ConFrameMetadata *);
   friend bool io::matter2con(Matter &, std::string, bool,
                              const io::ConFrameMetadata *);
   friend bool io::matter2convel(Matter &, std::string);

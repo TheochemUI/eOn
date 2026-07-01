@@ -543,4 +543,75 @@ TEST_CASE("ConFileIO writeTibble produces valid output",
   std::filesystem::remove(tmpfile);
 }
 
+TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
+          "[confileio][forces]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  const double E = m->getPotentialEnergy();
+  const AtomMatrix F = m->getForcesRaw();
+
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_forces.con";
+  const std::string tmpfile = tmppath.string();
+  REQUIRE(m->matter2con(tmpfile, false));
+
+  // File should declare forces + energy via readcon metadata/sections.
+  const auto frames = readcon::read_all_frames(tmpfile);
+  REQUIRE(frames.size() == 1);
+  REQUIRE(frames[0].has_forces());
+  REQUIRE(frames[0].energy_opt().has_value());
+  REQUIRE(*frames[0].energy_opt() == Catch::Approx(E).epsilon(1e-8));
+
+  auto m2 = std::make_shared<Matter>(pot, params);
+  eonc::io::ConFrameMetadata loaded_meta;
+  REQUIRE(m2->con2matter(frames[0], &loaded_meta));
+  REQUIRE(loaded_meta.energy.has_value());
+  REQUIRE(*loaded_meta.energy == Catch::Approx(E).epsilon(1e-8));
+  REQUIRE_FALSE(m2->needsForceUpdate());
+  REQUIRE(m2->getPotentialEnergy() == Catch::Approx(E).epsilon(1e-8));
+  REQUIRE(F.isApprox(m2->getForcesRaw(), 1e-6));
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO metadata_from_frame exposes NEB and potential fields",
+          "[confileio][metadata]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  m->getPotentialEnergy();
+
+  eonc::io::ConFrameMetadata meta;
+  meta.frame_index = 3;
+  meta.neb_bead = 2;
+  meta.neb_band = 1;
+  meta.potential_type = "LJ";
+  meta.time = 1.25;
+  meta.timestep = 0.001;
+
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_meta_api.con";
+  const std::string tmpfile = tmppath.string();
+  REQUIRE(m->matter2con(tmpfile, false, &meta));
+
+  const auto frame = readcon::read_first_frame(tmpfile);
+  const auto parsed = eonc::io::metadata_from_frame(frame);
+  REQUIRE(parsed.frame_index == 3);
+  REQUIRE(parsed.neb_bead == 2);
+  REQUIRE(parsed.neb_band == 1);
+  REQUIRE(parsed.time.has_value());
+  REQUIRE(*parsed.time == Catch::Approx(1.25));
+  REQUIRE(parsed.timestep.has_value());
+  REQUIRE(*parsed.timestep == Catch::Approx(0.001));
+  // potential_type is stored as string metadata when supported by the writer.
+  if (parsed.potential_type) {
+    REQUIRE(*parsed.potential_type == "LJ");
+  }
+
+  std::filesystem::remove(tmpfile);
+}
+
 } /* namespace tests */
