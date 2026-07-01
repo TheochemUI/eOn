@@ -102,8 +102,10 @@ ConFrameMetadata metadata_from_frame(const readcon::ConFrame &frame);
 /**
  * Write a full NEB path as one multi-frame .con using ConFrameBuilder::clone().
  *
- * Seeds identity (symbols/fixed/mass/id/cell) from path[0], then for each
- * image clones the template and bulk-updates positions/forces + metadata.
+ * Seeds identity (symbols/fixed/mass/id/cell headers) from path[0] only, then
+ * for each image clones that template and bulk-updates positions/forces +
+ * metadata. Images must share atom count and topology with path[0] (standard
+ * NEB band invariant); heterogeneous multi-frame movies should not use this.
  * Avoids re-reading the output file per image (legacy append path).
  *
  * @param path length must be numImages+2 (endpoints included)

@@ -349,7 +349,9 @@ void ProcessSearchJob::saveData(int status) {
 
   std::string reactantFilename("reactant.con");
   returnFiles.push_back(reactantFilename);
-  min1->matter2con(reactantFilename);
+  if (!eonc::io::io_ok(min1->matter2con(reactantFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", reactantFilename);
+  }
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
@@ -357,11 +359,15 @@ void ProcessSearchJob::saveData(int status) {
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);
-  saddle->matter2con(saddleFilename);
+  if (!eonc::io::io_ok(saddle->matter2con(saddleFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", saddleFilename);
+  }
 
   std::string productFilename("product.con");
   returnFiles.push_back(productFilename);
-  min2->matter2con(productFilename);
+  if (!eonc::io::io_ok(min2->matter2con(productFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", productFilename);
+  }
 }
 
 void ProcessSearchJob::printEndState(int status) {

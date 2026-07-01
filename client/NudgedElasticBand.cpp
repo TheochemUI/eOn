@@ -259,8 +259,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
           {"parallel_force",
            matDot(path[maxEnergyImage]->getForces(), maxTang)});
       maxImageMetadata.strings.push_back({"movie_kind", "neb_maximage"});
-      path[maxEnergyImage]->matter2con("neb_maximage.con", append,
-                                       &maxImageMetadata);
+      if (!eonc::io::io_ok(path[maxEnergyImage]->matter2con(
+              "neb_maximage.con", append, &maxImageMetadata))) {
+        EONC_LOG_WARNING("Failed to write neb_maximage.con");
+      }
       printImageData(true, iteration);
     }
 

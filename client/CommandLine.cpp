@@ -51,7 +51,9 @@ void minimize(std::unique_ptr<Matter> matter, const std::string &confileout) {
   } else {
     std::cout << "No output file specified, not saving" << std::endl;
   }
-  matter->matter2con(confileout);
+  if (!eonc::io::io_ok(matter->matter2con(confileout))) {
+    std::cerr << "Failed to write " << confileout << std::endl;
+  }
 }
 
 void printFeatures() {
@@ -357,7 +359,10 @@ void commandLine(int argc, char **argv) {
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   auto matter2 = std::make_unique<Matter>(pot, params);
-  matter->con2matter(confile);
+  if (!eonc::io::io_ok(matter->con2matter(confile))) {
+    std::cerr << "Failed to load " << confile << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
 
   if (confileout.empty() && confile.empty()) {
     // confileout was not provided as second positional arg

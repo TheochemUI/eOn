@@ -20,6 +20,7 @@
 #include <cmath>
 #include <format>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 
@@ -37,7 +38,10 @@ std::vector<std::string> ReplicaExchangeJob::run() {
   std::string posFilename =
       eonc::helpers::getRelevantFile(params.main_options.conFilename);
   pos = std::make_shared<Matter>(pot, params);
-  pos->con2matter(posFilename);
+  if (!eonc::io::io_ok(pos->con2matter(posFilename))) {
+    QUILL_LOG_CRITICAL(log, "Failed to load {}", posFilename);
+    throw std::runtime_error("failed to load " + posFilename);
+  }
 
   QUILL_LOG_DEBUG(log, "Running Replica Exchange");
 

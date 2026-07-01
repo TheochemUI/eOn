@@ -48,6 +48,8 @@ locator); see rgpot NWChemPot.
 ```{code-block} ini
 [Main]
 job = point
+
+[Potential]
 potential = RGPOT
 
 [RgpotPot]

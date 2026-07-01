@@ -13,6 +13,7 @@
 #include "Matter.h"
 #include <format>
 #include <fstream>
+#include <stdexcept>
 
 std::vector<std::string> PointJob::run() {
   std::vector<std::string> returnFiles;
@@ -21,7 +22,10 @@ std::vector<std::string> PointJob::run() {
   returnFiles.push_back(resultsFilename);
 
   auto pos = std::make_unique<Matter>(pot, params);
-  pos->con2matter(posInFilename);
+  if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
+    QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
+    throw std::runtime_error("failed to load " + posInFilename);
+  }
 
   QUILL_LOG_DEBUG(log, "Energy:         {:.12f}", pos->getPotentialEnergy());
   std::stringstream freeForcesStream;

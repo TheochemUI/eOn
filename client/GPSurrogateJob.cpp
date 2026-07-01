@@ -20,6 +20,7 @@
 
 #include "EonLogger.h"
 #include <sstream>
+#include <stdexcept>
 
 std::vector<std::string> GPSurrogateJob::run() {
   // Start working
@@ -36,9 +37,15 @@ std::vector<std::string> GPSurrogateJob::run() {
 
   // Get possible initial data source
   auto initial = std::make_shared<Matter>(pot, *true_params);
-  initial->con2matter(reactantFilename);
+  if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
+    EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
+    throw std::runtime_error("failed to load " + reactantFilename);
+  }
   auto final_state = std::make_shared<Matter>(pot, *true_params);
-  final_state->con2matter(productFilename);
+  if (!eonc::io::io_ok(final_state->con2matter(productFilename))) {
+    EONC_LOG_CRITICAL("Failed to load {}", productFilename);
+    throw std::runtime_error("failed to load " + productFilename);
+  }
   auto init_path = eonc::helpers::neb_paths::linearPath(
       *initial, *final_state, params.neb_options.image_count);
   auto init_data = eonc::helpers::surrogate::getMidSlice(init_path);

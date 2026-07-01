@@ -64,6 +64,8 @@ std::string symbol_for_z(long atomic_nr) {
 }
 
 std::vector<double> flat_row_major(const AtomMatrix &m) {
+  static_assert(AtomMatrix::IsRowMajor,
+                "flat_row_major assumes AtomMatrix RowMajor Nx3 layout");
   const auto n = static_cast<size_t>(m.rows());
   std::vector<double> flat(n * 3);
   std::memcpy(flat.data(), m.data(), flat.size() * sizeof(double));
@@ -157,6 +159,8 @@ void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
   // under ASAN). AtomMatrix is RowMajor Nx3 matching the flat layout.
   builder.set_positions_from_flat(flat_row_major(m.getPositions()));
 
+  // getForcesRaw() may trigger pot evaluation if recomputePotential is set;
+  // only enter when the pot is already clean so we serialize cached forces.
   if (!m.needsForceUpdate()) {
     builder.set_forces_from_flat(flat_row_major(m.getForcesRaw()));
   }
@@ -257,6 +261,9 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
   m.applyPeriodicBoundaryIfEnabled();
 
   // ConFrame is move-only (no default ctor).
+  // Append rewrites the full multi-frame file (read_all + write_frames) so
+  // compression-aware writers need no seek-append. Cost is O(N) frames per
+  // append (O(N^2) for long MD movies); NEB bands use writeNebPath instead.
   std::vector<readcon::ConFrame> frames;
   if (append && fs::exists(filename)) {
     try {
@@ -495,6 +502,8 @@ IoStatus writeNebPath(std::string filename,
 
   filename = ensure_extension(std::move(filename), ".con");
 
+  // NEB invariant: all images share topology/cell/ids with path[0]; only
+  // positions (and optional force sections) differ per image.
   Matter &template_m = *path.front();
   template_m.applyPeriodicBoundaryIfEnabled();
 
@@ -517,7 +526,8 @@ IoStatus writeNebPath(std::string filename,
         return IoStatus::InvalidArgument;
       }
 
-      // COW clone of the topology template; mutations do not leak to seed.
+      // COW clone of the topology template (cell/Z/fixed/mass/id from path[0]);
+      // mutations do not leak to seed.
       auto builder = seed.clone();
       apply_frame_metadata(builder, &metadata_per_image[i]);
       apply_geometry(builder, img, /*with_velocities=*/false);

@@ -10,12 +10,14 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "HessianJob.h"
+#include "EonLogger.h"
 #include "Hessian.h"
 #include "Matter.h"
 #include "Potential.h"
 
 #include <format>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 std::vector<std::string> HessianJob::run(void) {
@@ -25,7 +27,10 @@ std::vector<std::string> HessianJob::run(void) {
 
   auto matter = std::make_unique<Matter>(pot, params);
 
-  matter->con2matter(matter_in);
+  if (!eonc::io::io_ok(matter->con2matter(matter_in))) {
+    EONC_LOG_CRITICAL("Failed to load {}", matter_in);
+    throw std::runtime_error("failed to load " + matter_in);
+  }
 
   Hessian hessian(params, matter.get());
   long nAtoms = matter->numberOfAtoms();

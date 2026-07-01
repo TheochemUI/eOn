@@ -10,18 +10,23 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "FiniteDifferenceJob.h"
+#include "EonLogger.h"
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Matter.h"
 
 #include <format>
 #include <fstream>
+#include <stdexcept>
 
 using namespace eonc::helpers;
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {
   auto reactant = std::make_unique<Matter>(pot, params);
-  reactant->con2matter("pos.con");
+  if (!eonc::io::io_ok(reactant->con2matter("pos.con"))) {
+    EONC_LOG_CRITICAL("Failed to load pos.con");
+    throw std::runtime_error("failed to load pos.con");
+  }
   AtomMatrix posA = reactant->getPositions();
 
   double dRs[] = {1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1, -1};

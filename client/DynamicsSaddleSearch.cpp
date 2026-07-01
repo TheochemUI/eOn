@@ -91,7 +91,9 @@ int DynamicsSaddleSearch::run() {
                        0.5);
 
   if (params.debug_options.write_movies) {
-    saddle->matter2con("dynamics", false);
+    if (!eonc::io::io_ok(saddle->matter2con("dynamics", false))) {
+      QUILL_LOG_WARNING(log, "Failed to write dynamics movie header");
+    }
   }
 
   for (int step = 1; step <= params.dynamics_options.steps; step++) {
@@ -108,7 +110,9 @@ int DynamicsSaddleSearch::run() {
     }
 
     if (params.debug_options.write_movies) {
-      saddle->matter2con("dynamics", true);
+      if (!eonc::io::io_ok(saddle->matter2con("dynamics", true))) {
+        QUILL_LOG_WARNING(log, "Failed to append dynamics movie frame");
+      }
     }
 
     if (step % checkInterval == 0) {
@@ -142,7 +146,10 @@ int DynamicsSaddleSearch::run() {
           AtomMatrix saddleToProduct =
               saddle->pbc(product->getPositions() - saddle->getPositions());
           QUILL_LOG_DEBUG(log, "Initial band saved to neb_initial_band.con");
-          neb.path[0]->matter2con("neb_initial_band.con", false);
+          if (!eonc::io::io_ok(
+                  neb.path[0]->matter2con("neb_initial_band.con", false))) {
+            QUILL_LOG_WARNING(log, "Failed to write neb_initial_band.con");
+          }
           int mid = neb.numImages / 2 + 1;
           for (int img = 1; img <= neb.numImages; img++) {
             if (img < mid) {
@@ -157,15 +164,28 @@ int DynamicsSaddleSearch::run() {
             } else {
               neb.path[img]->setPositions(saddle->getPositions());
             }
-            neb.path[img]->matter2con("neb_initial_band.con", true);
+            if (!eonc::io::io_ok(
+                    neb.path[img]->matter2con("neb_initial_band.con", true))) {
+              QUILL_LOG_WARNING(log, "Failed to append neb_initial_band frame");
+            }
           }
-          neb.path[neb.numImages + 1]->matter2con("neb_initial_band.con", true);
+          if (!eonc::io::io_ok(neb.path[neb.numImages + 1]->matter2con(
+                  "neb_initial_band.con", true))) {
+            QUILL_LOG_WARNING(log,
+                              "Failed to append neb_initial_band endpoint");
+          }
         } else {
           QUILL_LOG_DEBUG(
               log, "Linear interpolation between minima used for initial band");
-          neb.path[0]->matter2con("neb_initial_band.con", false);
+          if (!eonc::io::io_ok(
+                  neb.path[0]->matter2con("neb_initial_band.con", false))) {
+            QUILL_LOG_WARNING(log, "Failed to write neb_initial_band.con");
+          }
           for (int j = 1; j <= neb.numImages + 1; j++) {
-            neb.path[j]->matter2con("neb_initial_band.con", true);
+            if (!eonc::io::io_ok(
+                    neb.path[j]->matter2con("neb_initial_band.con", true))) {
+              QUILL_LOG_WARNING(log, "Failed to append neb_initial_band frame");
+            }
           }
         }
 
@@ -247,7 +267,9 @@ int DynamicsSaddleSearch::run() {
 
         QUILL_LOG_DEBUG(
             log, "Initial saddle guess saved to saddle_initial_guess.con");
-        saddle->matter2con("saddle_initial_guess.con");
+        if (!eonc::io::io_ok(saddle->matter2con("saddle_initial_guess.con"))) {
+          QUILL_LOG_WARNING(log, "Failed to write saddle_initial_guess.con");
+        }
         MinModeSaddleSearch search = MinModeSaddleSearch(
             saddle, mode, reactant->getPotentialEnergy(), params, pot);
         int minModeStatus = search.run();

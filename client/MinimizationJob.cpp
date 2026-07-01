@@ -37,7 +37,10 @@ std::vector<std::string> MinimizationJob::run() {
   returnFiles.push_back(posOutFilename);
 
   auto pos = std::make_shared<Matter>(pot, params);
-  pos->con2matter(posInFilename);
+  if (!eonc::io::io_ok(pos->con2matter(posInFilename))) {
+    QUILL_LOG_CRITICAL(log, "Failed to load {}", posInFilename);
+    throw std::runtime_error("failed to load " + posInFilename);
+  }
 
   QUILL_LOG_DEBUG(log, "\nBeginning minimization of {}", posInFilename);
 
@@ -63,7 +66,9 @@ std::vector<std::string> MinimizationJob::run() {
   }
 
   QUILL_LOG_DEBUG(log, "Saving result to {}", posOutFilename);
-  pos->matter2con(posOutFilename);
+  if (!eonc::io::io_ok(pos->matter2con(posOutFilename))) {
+    QUILL_LOG_ERROR(log, "Failed to write {}", posOutFilename);
+  }
   if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
     QUILL_LOG_DEBUG(log, "Final Energy: {}", pos->getPotentialEnergy());
   }

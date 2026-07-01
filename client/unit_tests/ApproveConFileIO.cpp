@@ -16,6 +16,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 
+#include <chrono>
 #include <cmath>
 #include <filesystem>
 #include <format>
@@ -28,6 +29,14 @@ namespace {
 namespace fs = std::filesystem;
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+/// Unique temp .con path (avoids parallel/manual temp-dir name clashes).
+fs::path make_tmp_con(std::string_view tag) {
+  const auto stamp =
+      std::chrono::high_resolution_clock::now().time_since_epoch().count();
+  return fs::temp_directory_path() /
+         std::format("approve_confileio_{}_{}.con", tag, stamp);
+}
 
 std::string dump_geometry(const Matter &m) {
   std::ostringstream os;
@@ -88,8 +97,7 @@ TEST_CASE("VerifyGeometryOnlyRoundTrip", "[approval][confileio][compat]") {
   auto m = load_reactant();
   REQUIRE(m->needsForceUpdate());
 
-  const auto tmp =
-      fs::temp_directory_path() / "approve_confileio_geom_roundtrip.con";
+  const auto tmp = make_tmp_con("geom_roundtrip");
   REQUIRE(eonc::io::io_ok(m->matter2con(tmp.string(), false)));
 
   Parameters params;
@@ -108,8 +116,7 @@ TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
   const double E = m->getPotentialEnergy();
   REQUIRE_FALSE(m->needsForceUpdate());
 
-  const auto tmp =
-      fs::temp_directory_path() / "approve_confileio_forces_energy.con";
+  const auto tmp = make_tmp_con("forces_energy");
   REQUIRE(eonc::io::io_ok(m->matter2con(tmp.string(), false)));
 
   std::ifstream in(tmp);
@@ -150,7 +157,7 @@ TEST_CASE("VerifyNebPathCloneWrite", "[approval][confileio][neb]") {
     metas[i].neb_band = 7;
     metas[i].energy = -1.0 * static_cast<double>(i);
   }
-  const auto tmp = fs::temp_directory_path() / "approve_confileio_neb_band.con";
+  const auto tmp = make_tmp_con("neb_band");
   REQUIRE(eonc::io::io_ok(eonc::io::writeNebPath(tmp.string(), path, metas)));
 
   std::ifstream in(tmp);

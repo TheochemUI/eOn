@@ -42,9 +42,14 @@ int BasinHoppingSaddleSearch::run() {
   }
   // NEB reactant to minimized "saddle"
   NudgedElasticBand neb(reactant, product, params, pot);
-  neb.path[0]->matter2con("neb_initial_band.con", false);
+  if (!eonc::io::io_ok(
+          neb.path[0]->matter2con("neb_initial_band.con", false))) {
+    QUILL_LOG_WARNING(log, "Failed to write neb_initial_band.con");
+  }
   for (int j = 1; j < neb.numImages; j++) {
-    neb.path[j]->matter2con("neb_initial_band", true);
+    if (!eonc::io::io_ok(neb.path[j]->matter2con("neb_initial_band", true))) {
+      QUILL_LOG_WARNING(log, "Failed to append neb_initial_band frame");
+    }
   }
   neb.compute();
   // pick the maximum energy image along the band

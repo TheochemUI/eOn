@@ -38,7 +38,11 @@ std::vector<std::string> NudgedElasticBandJob::run() {
         eonc::helpers::getRelevantFile("ts.con");
     transitionState = std::make_shared<Matter>(pot, params);
     tsInterpolate = true;
-    transitionState->con2matter(transitionStateFilename);
+    if (!eonc::io::io_ok(
+            transitionState->con2matter(transitionStateFilename))) {
+      EONC_LOG_CRITICAL("Failed to load {}", transitionStateFilename);
+      throw std::runtime_error("failed to load " + transitionStateFilename);
+    }
   }
 
   auto initial = std::make_shared<Matter>(pot, params);
@@ -234,7 +238,10 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 
   // Save Discrete Saddle Point (Highest Energy Image)
   std::string spFilename("sp.con");
-  neb->path[neb->maxEnergyImage]->matter2con(spFilename);
+  if (!eonc::io::io_ok(
+          neb->path[neb->maxEnergyImage]->matter2con(spFilename))) {
+    QUILL_LOG_ERROR(m_log, "Failed to write {}", spFilename);
+  }
   returnFiles.push_back(spFilename);
 
   // Setup Dimer Configurations for Each Spline Peak
@@ -260,7 +267,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
         Matter peakPos = eonc::helpers::neb_paths::interpolateImage(
             *neb->path[leftIdx], *neb->path[leftIdx + 1], f);
         std::string peakPosFile = std::format("peak{:02d}_pos.con", peakCount);
-        peakPos.matter2con(peakPosFile);
+        if (!eonc::io::io_ok(peakPos.matter2con(peakPosFile))) {
+          QUILL_LOG_ERROR(m_log, "Failed to write {}", peakPosFile);
+        }
         returnFiles.push_back(peakPosFile);
 
         // 2. Write Interpolated Tangent as standard mode.dat

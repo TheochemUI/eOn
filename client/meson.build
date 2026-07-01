@@ -1171,6 +1171,8 @@ if get_option('with_tests')
             timeout: 120,
             suite: 'rgpot',
             is_parallel: false,
+            workdir: meson.project_source_root() +
+                     '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )
     endif
 

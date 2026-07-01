@@ -34,6 +34,10 @@ public:
              double *U, double *variance, const double *box) override;
 
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// NWChem molecular SCF does not support PBC; CPMD may be periodic.
+  [[nodiscard]] bool requiresIsolatedMoleculeLayout() const noexcept override {
+    return backend_ == "nwchemc";
+  }
   [[nodiscard]] const std::string &backend() const noexcept { return backend_; }
   [[nodiscard]] bool engineAvailable() const;
 
