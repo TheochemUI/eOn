@@ -908,28 +908,38 @@ endif
 
 _linkto += potentials
 
-# readcon-core: Rust-based .con file I/O (required)
-readcon_proj = subproject(
+# readcon-core: Rust-based .con file I/O (required).
+# Prefer cargo-c / pkg-config install (conda-forge host package); fall back to
+# the meson subproject when the system package is not available. Upstreaming
+# this removes the need for use_readcon_pkgconfig.patch on the feedstock.
+readcon_dep = dependency(
     'readcon-core',
-    default_options: {
-        'with_tests': false,
-        'with_examples': false,
-        'default_library': 'static',
-    },
+    method: 'pkg-config',
+    required: false,
 )
-readcon_dep = readcon_proj.get_variable('readcon_dep')
+if not readcon_dep.found()
+    readcon_proj = subproject(
+        'readcon-core',
+        default_options: {
+            'with_tests': false,
+            'with_examples': false,
+            'default_library': 'static',
+        },
+    )
+    readcon_dep = readcon_proj.get_variable('readcon_dep')
+endif
 if is_windows
-    # On Windows, readcon_dep's sources (custom_target .lib) get passed to
-    # llvm-ar which misinterprets the .lib as the archive output name.
-    # Strip sources and link_args for the static library; the full dep
-    # with link_args goes to executables via _exe_deps.
-    # Build ordering is ensured by the `depends` kwarg on the library target.
+    # On Windows with the meson subproject path, readcon_dep's sources
+    # (custom_target .lib) get passed to llvm-ar which misinterprets the .lib
+    # as the archive output name. Strip sources and link_args for the static
+    # library; the full dep with link_args goes to executables via _exe_deps.
+    # With cargo-c/pkg-config there are no custom_target sources, so partial
+    # dependency still works (includes + compile_args only).
     readcon_compile_dep = readcon_dep.partial_dependency(
         includes: true,
         compile_args: true,
     )
     _deps += [readcon_compile_dep]
-    # No need for explicit depends: cbindgen in-tree header already exists
 else
     _deps += [readcon_dep]
 endif

@@ -428,9 +428,8 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     // Never report STATUS_GOOD when the climb objective is unconverged
     // (issue #20: unfeasible systems must not look like success).
     if (status == STATUS_GOOD && !objf->isConverged()) {
-      QUILL_LOG_WARNING(
-          log,
-          "[MinModeSaddleSearch] objective not converged; refusing STATUS_GOOD");
+      QUILL_LOG_WARNING(log, "[MinModeSaddleSearch] objective not converged; "
+                             "refusing STATUS_GOOD");
       status = STATUS_BAD_MAX_ITERATIONS;
     }
 

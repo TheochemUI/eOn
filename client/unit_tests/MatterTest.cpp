@@ -189,7 +189,8 @@ TEST_CASE("setPositionsFree applies PBC like setPositions (#171)",
 namespace {
 // Minimal pot that refuses PBC (#188).
 struct IsolatedMoleculePot final : Potential {
-  IsolatedMoleculePot() : Potential(PotType::LJ) {}
+  IsolatedMoleculePot()
+      : Potential(PotType::LJ) {}
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
              const double *box) override {

@@ -256,11 +256,15 @@ bool matter2convel(Matter &m, std::string filename) {
       {strip_nl(m.headerCon[3]), strip_nl(m.headerCon[4])});
 
   for (long i = 0; i < m.numberOfAtoms(); i++) {
-    builder.add_atom_with_velocity(
-        atomicNumber2symbol(m.getAtomicNr(i)), m.getPosition(i, 0),
-        m.getPosition(i, 1), m.getPosition(i, 2), m.getFixed(i) != 0,
-        static_cast<uint64_t>(m.atomIndex(i)), m.getMass(i), m.velocities(i, 0),
-        m.velocities(i, 1), m.velocities(i, 2));
+    // readcon-core >=0.12: add_atom then set_atom_velocity
+    // (add_atom_with_velocity removed). Matches conda-forge host packages.
+    builder.add_atom(atomicNumber2symbol(m.getAtomicNr(i)), m.getPosition(i, 0),
+                     m.getPosition(i, 1), m.getPosition(i, 2),
+                     m.getFixed(i) != 0, static_cast<uint64_t>(m.atomIndex(i)),
+                     m.getMass(i));
+    builder.set_atom_velocity(
+        static_cast<size_t>(i),
+        {m.velocities(i, 0), m.velocities(i, 1), m.velocities(i, 2)});
   }
 
   auto frame = builder.build();

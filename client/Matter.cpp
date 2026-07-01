@@ -517,8 +517,10 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   if (potential && potential->requiresIsolatedMoleculeLayout() &&
       usePeriodicBoundaries) {
     usePeriodicBoundaries = false;
-    QUILL_LOG_WARNING(
-        eonc::log::get(),
+    // Use EONC_LOG_* (not bare QUILL_LOG_* with eonc::log::get() as arg): the
+    // quill macros expand logger->… and choke on a call expression as the first
+    // macro argument on some GCC versions (CI: expected primary-expression).
+    EONC_LOG_WARNING(
         "Disabled PBC for isolated-molecule potential (NWChem/ORCA-class); "
         "re-enabling PBC will throw (issue #188)");
   }
