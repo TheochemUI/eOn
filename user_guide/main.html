@@ -183,6 +183,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
@@ -273,6 +277,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.schema.MainConfig.random_seed"><code class="docutils literal notranslate">random_seed</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.MainConfig.remove_net_force"><code class="docutils literal notranslate">remove_net_force</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.MainConfig.temperature"><code class="docutils literal notranslate">temperature</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.MainConfig.write_con_forces"><code class="docutils literal notranslate">write_con_forces</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.MainConfig.write_log"><code class="docutils literal notranslate">write_log</span></code></a></li>
 </ul>
 </li>
@@ -555,20 +560,26 @@ grouped below.</p>
 </span><span data-line="68"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Write Log&quot;</span><span class="p">,</span>
 </span><span data-line="69"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
 </span><span data-line="70"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="71"><span class="w">      </span><span class="nt">&quot;max_force_calls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="72"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-</span><span data-line="73"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum number of total force calls per job. The default, 0, means unlimited force calls. If this limit is reached, an error code 1017 is thrown and shows up in the client log.&quot;</span><span class="p">,</span>
-</span><span data-line="74"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Force Calls&quot;</span><span class="p">,</span>
-</span><span data-line="75"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="71"><span class="w">      </span><span class="nt">&quot;write_con_forces&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="72"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="73"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Write &#39;Forces of Component&#39; sections into .con outputs so restarts co-load forces and energy without re-evaluating the potential. Off by default: classic con readers (e.g. ASE&#39;s eon parser) reject frames that carry force sections.&quot;</span><span class="p">,</span>
+</span><span data-line="74"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Write Con Forces&quot;</span><span class="p">,</span>
+</span><span data-line="75"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
 </span><span data-line="76"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="77"><span class="w">      </span><span class="nt">&quot;remove_net_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="78"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.&quot;</span><span class="p">,</span>
-</span><span data-line="80"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove Net Force&quot;</span><span class="p">,</span>
-</span><span data-line="81"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="82"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="83"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="84"><span class="p">}</span>
+</span><span data-line="77"><span class="w">      </span><span class="nt">&quot;max_force_calls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="78"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The maximum number of total force calls per job. The default, 0, means unlimited force calls. If this limit is reached, an error code 1017 is thrown and shows up in the client log.&quot;</span><span class="p">,</span>
+</span><span data-line="80"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max Force Calls&quot;</span><span class="p">,</span>
+</span><span data-line="81"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+</span><span data-line="82"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="83"><span class="w">      </span><span class="nt">&quot;remove_net_force&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="84"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="85"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If True, ensures that the net force on the system of atoms is zero by adjusting the force on each free atom.&quot;</span><span class="p">,</span>
+</span><span data-line="86"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Remove Net Force&quot;</span><span class="p">,</span>
+</span><span data-line="87"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="88"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="89"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="90"><span class="p">}</span>
 </span></pre></div>
 </div>
 </details></p><dl class="field-list simple">
@@ -587,6 +598,7 @@ grouped below.</p>
 <li><p><a class="reference internal" href="#eon.schema.MainConfig.random_seed" title="eon.schema.MainConfig.random_seed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_seed</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.MainConfig.remove_net_force" title="eon.schema.MainConfig.remove_net_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_net_force</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.MainConfig.temperature" title="eon.schema.MainConfig.temperature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temperature</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#eon.schema.MainConfig.write_con_forces" title="eon.schema.MainConfig.write_con_forces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_con_forces</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#eon.schema.MainConfig.write_log" title="eon.schema.MainConfig.write_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_log</span> <span class="pre">(bool)</span></code></a></p></li>
 </ul>
 </dd>
@@ -665,6 +677,12 @@ grouped below.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.MainConfig.write_con_forces">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">write_con_forces</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.MainConfig.write_con_forces" title="Link to this definition">¶</a></dt>
+<dd><p>Write ‘Forces of Component’ sections into .con outputs so restarts co-load forces and energy without re-evaluating the potential. Off by default: classic con readers (e.g. ASE’s eon parser) reject frames that carry force sections.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.MainConfig.write_log">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">write_log</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#eon.schema.MainConfig.write_log" title="Link to this definition">¶</a></dt>
 <dd><p>Enable writing log to client.log file.</p>
@@ -718,7 +736,7 @@ grouped below.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=0a636f4a"></script>
+      <script src="../_static/documentation_options.js?v=981cb1a1"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

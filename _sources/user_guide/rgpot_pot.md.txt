@@ -7,7 +7,7 @@ myst:
 
 # RgpotPot (direct in-process rgpot)
 
-```{versionadded} TBD
+```{versionadded} 2.16.0
 ```
 
 When eOn is built with **`-Dwith_rgpot=true`**, potential type **`RGPOT`** links
