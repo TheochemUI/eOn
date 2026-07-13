@@ -416,7 +416,7 @@ epsilon_r:  distance (in angstroms) that two atoms must be seperated by
 in order to be considered different</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.brute_neighbor_list" title="eon.atoms.brute_neighbor_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">brute_neighbor_list</span></code></a></p></td>
-<td></td>
+<td><p>All-pairs neighbor list within <em>cutoff</em> (periodic).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.sweep_and_prune" title="eon.atoms.sweep_and_prune"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sweep_and_prune</span></code></a></p></td>
 <td><p>Returns a list of nearest neighbors within cutoff for each atom.
@@ -592,7 +592,9 @@ in order to be considered different</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.brute_neighbor_list">
 <span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">brute_neighbor_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#brute_neighbor_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.brute_neighbor_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>All-pairs neighbor list within <em>cutoff</em> (periodic).</p>
+<p>Vectorized pairwise distances replace the historical O(N²) Python double loop.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.sweep_and_prune">

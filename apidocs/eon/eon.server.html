@@ -262,7 +262,9 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#eon.server.select_job_runner"><code class="docutils literal notranslate"><span class="pre">select_job_runner()</span></code></a></li>
 <li><a class="reference internal" href="#eon.server.server"><code class="docutils literal notranslate"><span class="pre">server()</span></code></a></li>
+<li><a class="reference internal" href="#eon.server.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -328,6 +330,11 @@ data-aria-dark="Switch to auto color mode">
   <article class="yue dark-code" role="main">
           <section id="module-eon.server">
 <span id="eon-server"></span><h1><a class="reference internal" href="#module-eon.server" title="eon.server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a><a class="headerlink" href="#module-eon.server" title="Link to this heading">¶</a></h1>
+<p>CPython AKMC / server dispatcher.</p>
+<p>Entry points:
+python -m eon.server
+python -m eon
+eon-server   (console script → eon.server:main)</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <section id="functions">
@@ -335,8 +342,14 @@ data-aria-dark="Switch to auto color mode">
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.server.server" title="eon.server.server"><code class="xref py py-obj docutils literal notranslate"><span class="pre">server</span></code></a></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.server.select_job_runner" title="eon.server.select_job_runner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_job_runner</span></code></a></p></td>
+<td><p>Return the registered server runner for <em>job</em>, or None for fallback.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.server.server" title="eon.server.server"><code class="xref py py-obj docutils literal notranslate"><span class="pre">server</span></code></a></p></td>
+<td><p>Initialize config and dispatch to the configured main job.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.server.main" title="eon.server.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a></p></td>
+<td><p>Console-script entry point for <code class="docutils literal notranslate"><span class="pre">eon-server</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -345,9 +358,24 @@ data-aria-dark="Switch to auto color mode">
 <section id="api">
 <h3>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h3>
 <dl class="py function">
+<dt class="sig sig-object py" id="eon.server.select_job_runner">
+<span class="sig-prename descclassname"><span class="pre">eon.server.</span></span><span class="sig-name descname"><span class="pre">select_job_runner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/server.html#select_job_runner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.server.select_job_runner" title="Link to this definition">¶</a></dt>
+<dd><p>Return the registered server runner for <em>job</em>, or None for fallback.</p>
+<p>Job modules are imported lazily so <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">eon.server</span></code> stays light and
+does not require the full AKMC stack until a job is actually selected.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="eon.server.server">
-<span class="sig-prename descclassname"><span class="pre">eon.server.</span></span><span class="sig-name descname"><span class="pre">server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/server.html#server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.server.server" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">eon.server.</span></span><span class="sig-name descname"><span class="pre">server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/server.html#server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.server.server" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize config and dispatch to the configured main job.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.server.main">
+<span class="sig-prename descclassname"><span class="pre">eon.server.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/eon/server.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.server.main" title="Link to this definition">¶</a></dt>
+<dd><p>Console-script entry point for <code class="docutils literal notranslate"><span class="pre">eon-server</span></code>.</p>
+</dd></dl>
 
 </section>
 </section>
