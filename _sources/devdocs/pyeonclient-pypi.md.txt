@@ -52,7 +52,7 @@ Probes::
 1. Bump `version` in `pyproject-pyeonclient.toml` and
    `client/python/bind/module.cpp` `__version__` (lockstep). Pin
    `pyeonclient[models]` → `eon-schema` floor if schema public API changed.
-2. Tag: `git tag -s pyeonclient-v0.3.2 -m "pyeonclient 0.3.2"`
+2. Tag: `git tag -s pyeonclient-v0.3.3 -m "pyeonclient 0.3.3"`
 3. Push tag → `pyeonclient-wheels.yml` builds and publishes (CI publish job).
 
 ## Cookbook / RGPOT metatomic
