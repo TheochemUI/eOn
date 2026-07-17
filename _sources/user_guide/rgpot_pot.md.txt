@@ -13,6 +13,9 @@ myst:
 When eOn is built with **`-Dwith_rgpot=true`**, potential type **`RGPOT`** links
 [rgpot](https://github.com/OmniPotentRPC/rgpot) **NWChemPot** / **CPMDPot** and
 loads `libnwchemc.so` / `libcpmdc.so` with **`dlopen` in the eOn process**.
+Backend **`metatomic`** uses the same RGPOT pot type but loads
+`libmetatomic_engine.so` (see [RGPOT Metatomic](project:rgpot_metatomic.md));
+native `potential = Metatomic` remains the default packaging path.
 
 This is **not**:
 

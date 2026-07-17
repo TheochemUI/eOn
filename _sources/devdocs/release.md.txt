@@ -112,6 +112,48 @@ Do once per GitHub repo (Settings):
 5. Never `twine upload` by hand unless CI is down; the tag workflow is the
    source of truth for stable tags.
 
+
+
+
+## Multi-package monorepo: fat tarball vs splits
+
+One monorepo, two distribution shapes (both can ship from the same tag train):
+
+| Shape | Artifact | Primary consumer |
+|-------|----------|------------------|
+| **Fat tree** | `eon-vX.Y.Z.tar.xz` (`git archive` of the full tag) | **conda-forge `eon-feedstock`**, EasyBuild, source builds |
+| **Splits** | PyPI `eon-akmc`, `pyeonclient`, `eon-schema`, … | pip/uv focused installs |
+
+Schema/package layout may be cleaned up over time. The release contract is:
+**always produce one complete fat archive for the conda-forge recipe**, and
+**also** publish splits when those packages have independent consumers.
+
+### Fat tarball (feedstock path)
+
+- Built by `release.yml`: `git archive --format=tar "$TAG" | xz -9 > eon-v….tar.xz`
+- Must be a **complete monorepo** snapshot the feedstock can build (`schema/`,
+  `eon/`, `client/`, tools, meson, and any `packages/` the tree uses).
+- Cap’n Proto **authoring:** `schema/eon_params.capnp`. After edits:
+  `python tools/params_ssot/codegen.py` then
+  `./packages/eon-schema/scripts/sync_ssot_into_package.sh` (vendors into the
+  split for PyPI). Commit generated outputs so the fat archive is self-contained.
+- Feedstock continues to use only the fat tarball URL + sha256 — **no new
+  conda package required** when adding PyPI splits.
+
+### Split PyPI packages
+
+| Project | Location | Notes |
+|---------|----------|--------|
+| `eon-akmc` | root (import `eon`) | Full-tree tag release job |
+| `pyeonclient` | `pyproject-pyeonclient.toml` | Wheel CI; optional `[models]` |
+| `eon-schema` | `packages/eon-schema/` | Independent `0.y.z`; vendored SSoT; see package `PUBLISHING.md` |
+
+Detail: [`packages/eon-schema/PUBLISHING.md`](../../../packages/eon-schema/PUBLISHING.md).
+
+Monorepo developer docs (package map, CI matrix) can expand later under
+`docs/source/devdocs/` without changing this fat/split release contract.
+
+
 **conda-forge first-time:** feedstock already exists at
 [conda-forge/eon-feedstock](https://github.com/conda-forge/eon-feedstock). New
 maintainers request access via the feedstock `recipe/recipe.yaml` maintainers

@@ -68,7 +68,14 @@ interace to the VASP and GPAW density functional theory codes.
 
 # Getting started
 
-See [the installation instructions](https://eondocs.org/install/), but in a line:
+**Python client (pip):** install `pyeonclient` and drive Matter / NEB in-process —
+see [the Python API guide](user_guide/pyeonclient.md).
+
+```{code-block} bash
+pip install pyeonclient 'rgpot>=2.4.2' 'pyeonclient[ase,metatomic]'
+```
+
+**Full eOn (conda):** server + `eonclient` binary — see [installation](install/index.md).
 
 ```{code-block} bash
 micromamba install -c conda-forge eon

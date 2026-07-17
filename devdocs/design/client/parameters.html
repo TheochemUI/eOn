@@ -98,6 +98,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/pyeonclient.html">pyeonclient (Python client API)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/ase_pot.html">ASE Interface</a></li>
@@ -131,6 +132,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/rgpot_metatomic.html">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -143,6 +145,9 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../eon-schema.html">eon-schema (shared parameter package)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../../apidocs/index.html">API Reference</a><ul>
@@ -152,12 +157,22 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
@@ -177,6 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -259,11 +275,15 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#architecture">Architecture</a></li>
-<li><a class="reference internal" href="#nsdmi-defaults">NSDMI defaults</a></li>
+<li><a class="reference internal" href="#authoring-ssot-cap-n-proto-l0">Authoring SSoT (Cap&#8217;n Proto L0)</a><ul>
+<li><a class="reference internal" href="#adding-a-covered-option">Adding a covered option</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#runtime-architecture">Runtime architecture</a></li>
 <li><a class="reference internal" href="#cross-group-dependencies">Cross-group dependencies</a></li>
 <li><a class="reference internal" href="#narrow-parameter-passing">Narrow parameter passing</a></li>
 <li><a class="reference internal" href="#json-serialization">JSON serialization</a></li>
+<li><a class="reference internal" href="#python-server-vs-client">Python server vs client</a></li>
 <li><a class="reference internal" href="#history">History</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -355,37 +375,75 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue dark-code" role="main">
           <section id="parameters-system">
 <h1>Parameters system<a class="headerlink" href="#parameters-system" title="Link to this heading">¶</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> class manages all runtime configuration for the eOn client.
-This page documents the design decisions behind its decomposition.</p>
-<section id="architecture">
-<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
-<p>The system has three layers:</p>
+<p>Runtime configuration for the eOn <strong>C++ client</strong> lives in the <code class="docutils literal notranslate"><span class="pre">Parameters</span></code>
+class. Field <strong>names, types, and defaults</strong> for the high-traffic option groups
+are authored in a Cap’n Proto schema, not hand-synced across three peer files.</p>
+<section id="authoring-ssot-cap-n-proto-l0">
+<h2>Authoring SSoT (Cap’n Proto L0)<a class="headerlink" href="#authoring-ssot-cap-n-proto-l0" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Authoring SSoT</strong></p></td>
+<td><p><code class="file docutils literal notranslate"><span class="pre">schema/eon_params.capnp</span></code></p></td>
+<td><p>Sole place to add/rename covered fields and defaults</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Codegen</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">tools/params_ssot/codegen.py</span></code></p></td>
+<td><p>Emits catalog + C++ defaults + field index</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Generated</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">schema/eon_params_catalog.json</span></code>, <code class="docutils literal notranslate"><span class="pre">eon/_params_ssot_catalog.py</span></code>, <code class="docutils literal notranslate"><span class="pre">client/generated/*</span></code></p></td>
+<td><p>Do not hand-edit</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Runtime store</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client/Parameters.h</span></code></p></td>
+<td><p>Option-group structs; covered defaults applied via <code class="docutils literal notranslate"><span class="pre">apply_ssot_defaults()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Adapters</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ParametersINI.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">ParametersJSON.cpp</span></code></p></td>
+<td><p>Load/save user <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> / JSON</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Docs / validation</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">eon/schema.py</span></code>, <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code></p></td>
+<td><p>Must stay field-parity with SSoT for covered groups (<code class="docutils literal notranslate"><span class="pre">tests/test_params_ssot.py</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Covered groups today: <strong>Main</strong>, <strong>Potential</strong>, <strong>Optimizer</strong> (with LBFGS/CG/Quickmin/SD),
+<strong>Structure Comparison</strong>, <strong>Process Search</strong>. Other groups still live primarily
+in <code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code> until folded into the schema (see <code class="docutils literal notranslate"><span class="pre">schema/README.md</span></code>).</p>
+<section id="adding-a-covered-option">
+<h3>Adding a covered option<a class="headerlink" href="#adding-a-covered-option" title="Link to this heading">¶</a></h3>
 <ol class="arabic simple">
-<li><p><strong>Option-group structs</strong> (<code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code>): 33 structs with C++20 NSDMI
-defaults. Each struct is independently constructable without parsing.</p></li>
+<li><p>Edit <code class="file docutils literal notranslate"><span class="pre">schema/eon_params.capnp</span></code> (new field, type, default, ordinal).</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">tools/params_ssot/codegen.py</span></code>.</p></li>
+<li><p>Wire any INI/JSON load path if needed; do <strong>not</strong> invent the same field only
+in <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> / <code class="docutils literal notranslate"><span class="pre">schema.py</span></code> / <code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code> without the Cap’n Proto update.</p></li>
+</ol>
+<p>Users still write ordinary <strong><code class="docutils literal notranslate"><span class="pre">config.ini</span></code></strong> (or JSON) files. Cap’n Proto is the
+<strong>field-graph author</strong>, not a requirement that end users ship binary messages.</p>
+</section>
+</section>
+<section id="runtime-architecture">
+<h2>Runtime architecture<a class="headerlink" href="#runtime-architecture" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Option-group structs</strong> (<code class="docutils literal notranslate"><span class="pre">Parameters.h</span></code>): nested C++ structs; covered
+defaults originate from the Cap’n Proto schema via
+<code class="docutils literal notranslate"><span class="pre">eonc::config::apply_ssot_defaults()</span></code> in the <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> constructor.</p></li>
 <li><p><strong>INI parser</strong> (<code class="docutils literal notranslate"><span class="pre">ParametersINI.cpp</span></code>): reads <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> via
 <a class="reference external" href="https://github.com/benhoyt/inih">inih</a> and populates option groups.</p></li>
-<li><p><strong>JSON serializer</strong> (<code class="docutils literal notranslate"><span class="pre">ParametersJSON.cpp</span></code>): provides <code class="docutils literal notranslate"><span class="pre">to_json()</span></code>/<code class="docutils literal notranslate"><span class="pre">from_json()</span></code>
-for library usage, RPC transport, and debugging.</p></li>
+<li><p><strong>JSON serializer</strong> (<code class="docutils literal notranslate"><span class="pre">ParametersJSON.cpp</span></code>): <code class="docutils literal notranslate"><span class="pre">to_json()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_json()</span></code> for
+library use, RPC text blobs, and debugging.</p></li>
 </ol>
-<p>A <code class="docutils literal notranslate"><span class="pre">validate_and_link()</span></code> function resolves cross-group dependencies (time unit
-conversions, default inheritance) after loading from any source.</p>
-</section>
-<section id="nsdmi-defaults">
-<h2>NSDMI defaults<a class="headerlink" href="#nsdmi-defaults" title="Link to this heading">¶</a></h2>
-<p>All ~290 configuration fields have default values as Non-Static Data Member
-Initializers directly on the struct members:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">struct</span><span class="w"> </span><span class="nc">main_options_t</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="2"><span class="w">  </span><span class="n">JobType</span><span class="w"> </span><span class="n">job</span><span class="p">{</span><span class="n">JobType</span><span class="o">::</span><span class="n">Process_Search</span><span class="p">};</span>
-</span><span data-line="3"><span class="w">  </span><span class="kt">long</span><span class="w"> </span><span class="n">randomSeed</span><span class="p">{</span><span class="mi">-1</span><span class="p">};</span>
-</span><span data-line="4"><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">temperature</span><span class="p">{</span><span class="mf">300.0</span><span class="p">};</span>
-</span><span data-line="5"><span class="w">  </span><span class="c1">// ...</span>
-</span><span data-line="6"><span class="p">}</span><span class="w"> </span><span class="n">main_options</span><span class="p">;</span>
-</span></pre></div>
-</div>
-<p>The constructor calls only <code class="docutils literal notranslate"><span class="pre">validate_and_link()</span></code> to resolve computed fields
-(time unit conversions). This means a default-constructed <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> object
-is immediately usable.</p>
+<p><code class="docutils literal notranslate"><span class="pre">validate_and_link()</span></code> resolves cross-group dependencies (time unit conversions,
+default inheritance) after loading from any source.</p>
 </section>
 <section id="cross-group-dependencies">
 <h2>Cross-group dependencies<a class="headerlink" href="#cross-group-dependencies" title="Link to this heading">¶</a></h2>
@@ -467,13 +525,22 @@ still pass the full <code class="docutils literal notranslate"><span class="pre"
 </span></pre></div>
 </div>
 </section>
+<section id="python-server-vs-client">
+<h2>Python server vs client<a class="headerlink" href="#python-server-vs-client" title="Link to this heading">¶</a></h2>
+<p>The <strong>Python server</strong> (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">eon</span></code> / <code class="docutils literal notranslate"><span class="pre">eon-server</span></code>) still uses
+<code class="docutils literal notranslate"><span class="pre">eon.config.ConfigClass</span></code> driven by <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> and <code class="docutils literal notranslate"><span class="pre">eon/config.yaml</span></code> for
+validation of allowed keys. For covered groups, those keys and defaults are
+parity-checked against the Cap’n Proto catalog. The client binary
+(<code class="docutils literal notranslate"><span class="pre">eonclient</span></code>) uses <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> with the same SSoT-backed defaults for those
+groups.</p>
+</section>
 <section id="history">
 <h2>History<a class="headerlink" href="#history" title="Link to this heading">¶</a></h2>
 <p>The v3c branch (2024) attempted to switch from INI to TOML and restructure
 all parameters simultaneously. It was abandoned because it changed too many
-axes at once. The current approach is incremental: extract defaults (Phase 1),
-narrow passing (Phase 2), add JSON (Phase 3). Each step is independently
-mergeable.</p>
+axes at once. Later work added NSDMI defaults, JSON I/O, and narrow passing.
+The Cap’n Proto L0 field graph unifies <strong>authoring</strong> for the core groups without
+forcing a pure-binary config format on users.</p>
 </section>
 </section>
 
@@ -506,7 +573,7 @@ mergeable.</p>
     </div>
   </div>
 </footer>
-      <script src="../../../_static/documentation_options.js?v=981cb1a1"></script>
+      <script src="../../../_static/documentation_options.js?v=e9c9fbf8"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

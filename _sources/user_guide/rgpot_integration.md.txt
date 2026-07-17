@@ -70,6 +70,7 @@ support.
 ## Docs map
 
 - Direct pot: [RgpotPot](project:rgpot_pot.md)
+- RGPOT metatomic engine (optional; keep fat Metatomic): [RGPOT Metatomic](project:rgpot_metatomic.md)
 - Serve mode: [Serve mode](project:serve_mode.md)
 - Socket NWChem (non-rgpot): [Potentials](project:potential.md)
 - External process pot pattern: [ExtPot](project:ext_pot.md)

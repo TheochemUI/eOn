@@ -12,9 +12,23 @@ does most of the computation (e.g. saddle searches, minimizations, and molecular
 dynamics) while the server creates the input for the client and processes its
 results.
 
-## Getting started
+## Python client only (`pyeonclient`)
 
-The simplest way to hit the ground running is with the `conda` package:
+For in-process minimization / NEB without the conda `eon` package or the
+`eonclient` binary:
+
+```{code-block} bash
+pip install pyeonclient 'rgpot>=2.4.2'
+pip install 'pyeonclient[ase,metatomic]'   # ASE converters + torch stack
+```
+
+Then use Matter objects as in {doc}`/user_guide/pyeonclient` (ASE-shaped API).
+Wheels and variants: {doc}`/devdocs/pyeonclient-pypi`.
+
+## Getting started (full eOn)
+
+The simplest way to hit the ground running with the full server + client is the
+`conda` package:
 
 ```{code-block} bash
 # best with pixi

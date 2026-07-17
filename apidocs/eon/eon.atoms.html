@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.atoms - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.explorer" href="eon.explorer.html" /><link rel="prev" title="eon.superbasin" href="eon.superbasin.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.atoms - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.explorer" href="eon.explorer.html" /><link rel="prev" title="eon.communicator_inprocess" href="eon.communicator_inprocess.html" />
       <link rel="canonical" href="https://eondocs.org/apidocs/eon/eon.atoms.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -98,6 +98,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient (Python client API)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE Interface</a></li>
@@ -131,6 +132,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/rgpot_metatomic.html">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -143,6 +145,9 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
@@ -152,12 +157,22 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
@@ -177,6 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -260,28 +276,10 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
-<li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#data">Data</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
 <li><a class="reference internal" href="#eon.atoms.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.Atoms"><code class="docutils literal notranslate"><span class="pre">Atoms</span></code></a><ul>
-<li><a class="reference internal" href="#eon.atoms.Atoms.copy"><code class="docutils literal notranslate">copy()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.Atoms.free_r"><code class="docutils literal notranslate">free_r()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.Atoms.append"><code class="docutils literal notranslate">append()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#eon.atoms.pbc"><code class="docutils literal notranslate"><span class="pre">pbc()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.per_atom_norm"><code class="docutils literal notranslate"><span class="pre">per_atom_norm()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.per_atom_norm_gen"><code class="docutils literal notranslate"><span class="pre">per_atom_norm_gen()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.get_process_atoms"><code class="docutils literal notranslate"><span class="pre">get_process_atoms()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.identical"><code class="docutils literal notranslate"><span class="pre">identical()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.brute_neighbor_list"><code class="docutils literal notranslate"><span class="pre">brute_neighbor_list()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.sweep_and_prune"><code class="docutils literal notranslate"><span class="pre">sweep_and_prune()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.neighbor_list"><code class="docutils literal notranslate"><span class="pre">neighbor_list()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.neighbor_list_vectors"><code class="docutils literal notranslate"><span class="pre">neighbor_list_vectors()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.coordination_numbers"><code class="docutils literal notranslate"><span class="pre">coordination_numbers()</span></code></a></li>
-<li><a class="reference internal" href="#eon.atoms.least_coordinated"><code class="docutils literal notranslate"><span class="pre">least_coordinated()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.match"><code class="docutils literal notranslate"><span class="pre">match()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.point_energy_match"><code class="docutils literal notranslate"><span class="pre">point_energy_match()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.points_energies_match"><code class="docutils literal notranslate"><span class="pre">points_energies_match()</span></code></a></li>
@@ -364,129 +362,70 @@ data-aria-dark="Switch to auto color mode">
   <article class="yue dark-code" role="main">
           <section id="module-eon.atoms">
 <span id="eon-atoms"></span><h1><a class="reference internal" href="#module-eon.atoms" title="eon.atoms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a><a class="headerlink" href="#module-eon.atoms" title="Link to this heading">¶</a></h1>
-<p>The atoms module.</p>
+<p>Atoms / structure helpers for the eOn Python server.</p>
+<p>Storage and I/O
+:class:<code class="docutils literal notranslate"><span class="pre">eon.structure.Structure</span></code> (alias :class:<code class="docutils literal notranslate"><span class="pre">Atoms</span></code>) is the in-memory
+working type. On disk, structures are <code class="docutils literal notranslate"><span class="pre">readcon.ConFrame</span></code> values
+(see :func:<code class="docutils literal notranslate"><span class="pre">eon.structure.Structure.from_conframe</span></code>).</p>
+<p>Geometry kernels
+PBC, neighbor lists (vesin), and process-atom selection live under
+:mod:<code class="docutils literal notranslate"><span class="pre">eon.geometry</span></code>. This module re-exports them for compatibility and
+keeps structure-matching / CNA helpers plus the element table.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
-<section id="classes">
-<h3>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h3>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-left">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.Atoms" title="eon.atoms.Atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Atoms</span></code></a></p></td>
-<td><p>The Atoms class.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
 <section id="functions">
 <h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.pbc" title="eon.atoms.pbc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pbc</span></code></a></p></td>
-<td><p>Applies periodic boundary conditions.
-Parameters:
-r:      the vector the boundary conditions are applied to
-box:    the box that defines the boundary conditions
-ibox:   the inverse of the box. This will be calcluated if not provided.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.per_atom_norm" title="eon.atoms.per_atom_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">per_atom_norm</span></code></a></p></td>
-<td><p>Returns a length N numpy array containing per atom distance
-v:      an Nx3 numpy array
-box:    box matrix that defines the boundary conditions
-ibox:   the inverse of the box. will be calculated if not provided</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.per_atom_norm_gen" title="eon.atoms.per_atom_norm_gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">per_atom_norm_gen</span></code></a></p></td>
-<td><p>Returns a generator which yields the distance between pairs of atoms
-v:      an Nx3 numpy array
-box:    box matrix that defines the boundary conditions
-ibox:   the inverse of the box. will be calculated if not provided</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.get_process_atoms" title="eon.atoms.get_process_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_process_atoms</span></code></a></p></td>
-<td><p>Given the reactant and product configurations of a process, return
-the atoms that move significantly and their neighbors along the trajectory.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.identical" title="eon.atoms.identical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identical</span></code></a></p></td>
-<td><p>Determines whether two structures are identical if atoms of the same
-element are considered indistinguishable.
-atoms1:  first atoms object for comparison
-atoms2:  second atoms object for comparison
-epsilon_r:  distance (in angstroms) that two atoms must be seperated by
-in order to be considered different</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.brute_neighbor_list" title="eon.atoms.brute_neighbor_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">brute_neighbor_list</span></code></a></p></td>
-<td><p>All-pairs neighbor list within <em>cutoff</em> (periodic).</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.sweep_and_prune" title="eon.atoms.sweep_and_prune"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sweep_and_prune</span></code></a></p></td>
-<td><p>Returns a list of nearest neighbors within cutoff for each atom.
-Parameters:
-p_in:   Atoms object
-cutoff: the radius within which two atoms are considered to intersect.
-strict: perform an actual distance check if True
-bc:     include neighbors across pbc’s</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.neighbor_list" title="eon.atoms.neighbor_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.match" title="eon.atoms.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.neighbor_list_vectors" title="eon.atoms.neighbor_list_vectors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">neighbor_list_vectors</span></code></a></p></td>
-<td><p>Points from center to neighbor</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.coordination_numbers" title="eon.atoms.coordination_numbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coordination_numbers</span></code></a></p></td>
-<td><p>Returns a list of coordination numbers for each atom in p</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.least_coordinated" title="eon.atoms.least_coordinated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">least_coordinated</span></code></a></p></td>
-<td><p>Returns a list of atom indices in p with the lowest coordination numbers
-for unfrozen atoms</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.match" title="eon.atoms.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.point_energy_match" title="eon.atoms.point_energy_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">point_energy_match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.point_energy_match" title="eon.atoms.point_energy_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">point_energy_match</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.points_energies_match" title="eon.atoms.points_energies_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_energies_match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.points_energies_match" title="eon.atoms.points_energies_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_energies_match</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.rot_match" title="eon.atoms.rot_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.rot_match" title="eon.atoms.rot_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_match</span></code></a></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.rotm" title="eon.atoms.rotm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotm</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.rotm" title="eon.atoms.rotm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotm</span></code></a></p></td>
 <td><p>Gives the matrix representing a rotation of theta radians about axis</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.cna" title="eon.atoms.cna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cna</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.cna" title="eon.atoms.cna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cna</span></code></a></p></td>
 <td><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.not_HCP_or_FCC" title="eon.atoms.not_HCP_or_FCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_HCP_or_FCC</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.not_HCP_or_FCC" title="eon.atoms.not_HCP_or_FCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_HCP_or_FCC</span></code></a></p></td>
 <td><p>Returns a list of indices for the atoms with cna = 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.cnat" title="eon.atoms.cnat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnat</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.cnat" title="eon.atoms.cnat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnat</span></code></a></p></td>
 <td><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.cnar" title="eon.atoms.cnar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnar</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.cnar" title="eon.atoms.cnar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnar</span></code></a></p></td>
 <td><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.not_TCP" title="eon.atoms.not_TCP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.not_TCP" title="eon.atoms.not_TCP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP</span></code></a></p></td>
 <td><p>Returns a list of indices for the atoms with cna = 0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.not_TCP_or_BCC" title="eon.atoms.not_TCP_or_BCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP_or_BCC</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.not_TCP_or_BCC" title="eon.atoms.not_TCP_or_BCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP_or_BCC</span></code></a></p></td>
 <td><p>Returns a list of indices for the atoms with cna = 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.get_mappings" title="eon.atoms.get_mappings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mappings</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.get_mappings" title="eon.atoms.get_mappings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mappings</span></code></a></p></td>
 <td><p>A recursive depth-first search for a complete set of mappings from atoms
 in configuration a to atoms in configuration b. Do not use the mappings
 argument, this is only used internally for recursion.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.get_rotation_matrix" title="eon.atoms.get_rotation_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rotation_matrix</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.get_rotation_matrix" title="eon.atoms.get_rotation_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rotation_matrix</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.rotate" title="eon.atoms.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.rotate" title="eon.atoms.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.internal_motion" title="eon.atoms.internal_motion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">internal_motion</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.internal_motion" title="eon.atoms.internal_motion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">internal_motion</span></code></a></p></td>
 <td><p>Takes two atoms objects and returns the motion from a to b that is
 entirely internal - no rotation or translation, in the form of a new atoms
 object.</p></td>
@@ -521,184 +460,74 @@ object.</p></td>
 <dd><p>‘getLogger(…)’</p>
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="eon.atoms.Atoms">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">Atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#Atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.Atoms" title="Link to this definition">¶</a></dt>
-<dd><p>The Atoms class.</p>
-<p class="rubric">Initialization</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="eon.atoms.Atoms.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#Atoms.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.Atoms.copy" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="eon.atoms.Atoms.free_r">
-<span class="sig-name descname"><span class="pre">free_r</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#Atoms.free_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.Atoms.free_r" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="eon.atoms.Atoms.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#Atoms.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.Atoms.append" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.pbc">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">pbc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ibox</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#pbc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.pbc" title="Link to this definition">¶</a></dt>
-<dd><p>Applies periodic boundary conditions.
-Parameters:
-r:      the vector the boundary conditions are applied to
-box:    the box that defines the boundary conditions
-ibox:   the inverse of the box. This will be calcluated if not provided.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.per_atom_norm">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">per_atom_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ibox</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#per_atom_norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.per_atom_norm" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a length N numpy array containing per atom distance
-v:      an Nx3 numpy array
-box:    box matrix that defines the boundary conditions
-ibox:   the inverse of the box. will be calculated if not provided</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.per_atom_norm_gen">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">per_atom_norm_gen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ibox</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#per_atom_norm_gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.per_atom_norm_gen" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a generator which yields the distance between pairs of atoms
-v:      an Nx3 numpy array
-box:    box matrix that defines the boundary conditions
-ibox:   the inverse of the box. will be calculated if not provided</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.get_process_atoms">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">get_process_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nshells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#get_process_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.get_process_atoms" title="Link to this definition">¶</a></dt>
-<dd><p>Given the reactant and product configurations of a process, return
-the atoms that move significantly and their neighbors along the trajectory.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.identical">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">identical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#identical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.identical" title="Link to this definition">¶</a></dt>
-<dd><p>Determines whether two structures are identical if atoms of the same
-element are considered indistinguishable.
-atoms1:  first atoms object for comparison
-atoms2:  second atoms object for comparison
-epsilon_r:  distance (in angstroms) that two atoms must be seperated by
-in order to be considered different</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.brute_neighbor_list">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">brute_neighbor_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#brute_neighbor_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.brute_neighbor_list" title="Link to this definition">¶</a></dt>
-<dd><p>All-pairs neighbor list within <em>cutoff</em> (periodic).</p>
-<p>Vectorized pairwise distances replace the historical O(N²) Python double loop.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.sweep_and_prune">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">sweep_and_prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#sweep_and_prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.sweep_and_prune" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a list of nearest neighbors within cutoff for each atom.
-Parameters:
-p_in:   Atoms object
-cutoff: the radius within which two atoms are considered to intersect.
-strict: perform an actual distance check if True
-bc:     include neighbors across pbc’s</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.neighbor_list">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">neighbor_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#neighbor_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.neighbor_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.neighbor_list_vectors">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">neighbor_list_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#neighbor_list_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.neighbor_list_vectors" title="Link to this definition">¶</a></dt>
-<dd><p>Points from center to neighbor</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.coordination_numbers">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">coordination_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#coordination_numbers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.coordination_numbers" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a list of coordination numbers for each atom in p</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="eon.atoms.least_coordinated">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">least_coordinated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#least_coordinated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.least_coordinated" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a list of atom indices in p with the lowest coordination numbers
-for unfrozen atoms</p>
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.match">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indistinguishable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.match" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indistinguishable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.point_energy_match">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">point_energy_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#point_energy_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.point_energy_match" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">point_energy_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.point_energy_match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.points_energies_match">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">points_energies_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energies_b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#points_energies_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.points_energies_match" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">points_energies_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energies_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_identical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.points_energies_match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.rot_match">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">rot_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#rot_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.rot_match" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">rot_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.rot_match" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.rotm">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">rotm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#rotm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.rotm" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">rotm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.rotm" title="Link to this definition">¶</a></dt>
 <dd><p>Gives the matrix representing a rotation of theta radians about axis</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.cna">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">cna</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#cna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.cna" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">cna</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.cna" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.not_HCP_or_FCC">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">not_HCP_or_FCC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#not_HCP_or_FCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.not_HCP_or_FCC" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">not_HCP_or_FCC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.not_HCP_or_FCC" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a list of indices for the atoms with cna = 0</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.cnat">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">cnat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#cnat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.cnat" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">cnat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.cnat" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.cnar">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">cnar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#cnar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.cnar" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">cnar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.cnar" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.not_TCP">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">not_TCP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#not_TCP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.not_TCP" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">not_TCP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.not_TCP" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a list of indices for the atoms with cna = 0</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.not_TCP_or_BCC">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">not_TCP_or_BCC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#not_TCP_or_BCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.not_TCP_or_BCC" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">not_TCP_or_BCC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.not_TCP_or_BCC" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a list of indices for the atoms with cna = 0</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.get_mappings">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">get_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mappings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#get_mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.get_mappings" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">get_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbor_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mappings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.get_mappings" title="Link to this definition">¶</a></dt>
 <dd><p>A recursive depth-first search for a complete set of mappings from atoms
 in configuration a to atoms in configuration b. Do not use the mappings
 argument, this is only used internally for recursion.</p>
@@ -711,17 +540,17 @@ through translation and rotation.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.get_rotation_matrix">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">get_rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#get_rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.get_rotation_matrix" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">get_rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.get_rotation_matrix" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.rotate">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#rotate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.rotate" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.rotate" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.atoms.internal_motion">
-<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">internal_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#internal_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.internal_motion" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">internal_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.atoms.internal_motion" title="Link to this definition">¶</a></dt>
 <dd><p>Takes two atoms objects and returns the motion from a to b that is
 entirely internal - no rotation or translation, in the form of a new atoms
 object.</p>
@@ -749,10 +578,10 @@ object.</p>
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="eon.superbasin.html">
+    <a href="eon.communicator_inprocess.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></div></div>
+        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></div></div>
     </a>
   </div><div class="navigation-next">
     <a href="eon.explorer.html">
@@ -786,7 +615,7 @@ object.</p>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=981cb1a1"></script>
+      <script src="../../_static/documentation_options.js?v=e9c9fbf8"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

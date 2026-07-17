@@ -8,11 +8,30 @@ myst:
 # User Guide
 
 Here we collect a brief introduction to each algorithm, with curated references
-for more information along with the  configuration settings as implemented
+for more information along with the configuration settings as implemented
 within `eOn`.
 
-Each of the sections and methods may be included in the configuration file with
-the appropriate section header.
+## Python client (pyeonclient)
+
+For **in-process** client work (minimization, NEB, Matter objects) use the pip
+package `pyeonclient` — an ASE-shaped API where the path is a
+`list[Matter]`, not a working directory:
+
+```{toctree}
+:maxdepth: 1
+:caption: Python API
+
+pyeonclient
+```
+
+See also the [API reference](../apidocs/pyeonclient.md) and the
+[atomistic-cookbook PET-MAD NEB example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
+
+## Configuration file (`config.ini`)
+
+Each of the sections and methods may still be included in a configuration file
+with the appropriate section header (used by the `eonclient` binary, the AKMC
+server, and optional workdir helpers).
 
 ## Overview
 
@@ -141,6 +160,7 @@ described in the subsequent sections.
 kdb
 rgpot_integration
 rgpot_pot
+rgpot_metatomic
 serve_mode
 ```
 

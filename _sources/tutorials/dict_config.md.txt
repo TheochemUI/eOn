@@ -13,10 +13,13 @@ from generating the configuration from Python dictionaries. The
 {func}`~rgpycrumbs.eon.helpers.write_eon_config` function in
 [rgpycrumbs](https://github.com/HaoZeke/rgpycrumbs) handles this conversion.
 
-All configuration options are documented in {mod}`eon.schema`, which is the
-single source of truth for parameter names, types, defaults, and allowed values.
-The user guide pages (e.g. {doc}`/user_guide/main`, {doc}`/user_guide/neb`)
-render these Pydantic models directly.
+User-facing option **names** for the high-traffic groups (Main, Potential,
+Optimizer, Structure Comparison, Process Search) are authored in
+{file}`schema/eon_params.capnp` and projected into {mod}`eon.schema` for docs
+and validation. The user guide pages (e.g. {doc}`/user_guide/main`,
+{doc}`/user_guide/neb`) still render the Pydantic models. You continue to write
+ordinary ``config.ini`` files (or generate them as below); Cap'n Proto is the
+field-graph author, not a required on-disk format for end users.
 
 ## Installation
 

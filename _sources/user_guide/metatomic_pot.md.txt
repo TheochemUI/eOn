@@ -18,6 +18,9 @@ Included in the `conda-forge` package. No additional build flags required.
 The Metatomic interface allows eOn to use machine learning potentials developed
 with the `metatensor` and `pytorch` libraries.
 
+For the three packaging paths (fat native, RGPOT dlopen, ASE wrap) and a PET-MAD
+benchmark plot, see [Metatomic backends](project:rgpot_metatomic.md).
+
 ## Setup and Compilation
 
 The most robust way to handle the dependencies is to use `-Dwith_metatomic=True

@@ -24,10 +24,12 @@ In order to run a nudged elastic band calculation, set **job** to
 set as per the <project:optimizer.md> document.
 
 ```{tip}
-For a step-by-step walkthrough contrasting ASE's NEB with eOn's advanced
-features (energy-weighted springs, dimer refinement), see the
-[atomistic-cookbook tutorial](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
-on oxadiazole formation with a PET-MAD metatomic potential.
+**Python API.** Prefer {doc}`pyeonclient` for in-process NEB: build a
+`list[Matter]` from ASE images, then `NudgedElasticBand(path, params, pot).compute()`
+— same shape as ASE's `NEB` + `LBFGS`, without a workdir.
+
+For a full walkthrough (ASE NEB vs eOn energy-weighted springs + OCI dimer), see
+the [atomistic-cookbook PET-MAD example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
 ```
 
 ## Variants

@@ -98,6 +98,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/pyeonclient.html">pyeonclient (Python client API)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/ase_pot.html">ASE Interface</a></li>
@@ -131,6 +132,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/rgpot_metatomic.html">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -143,6 +145,9 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="apidocs/index.html">API Reference</a><ul>
@@ -152,12 +157,22 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l4"><a class="reference internal" href="apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
@@ -177,6 +192,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -415,7 +431,12 @@ interace to the VASP and GPAW density functional theory codes.</p>
 </section>
 <section id="getting-started">
 <h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
-<p>See <a class="reference external" href="https://eondocs.org/install/">the installation instructions</a>, but in a line:</p>
+<p><strong>Python client (pip):</strong> install <code class="docutils literal notranslate"><span class="pre">pyeonclient</span></code> and drive Matter / NEB in-process —
+see <a class="reference internal" href="user_guide/pyeonclient.html"><span class="std std-doc">the Python API guide</span></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>pyeonclient<span class="w"> </span><span class="s1">&#39;rgpot&gt;=2.4.2&#39;</span><span class="w"> </span><span class="s1">&#39;pyeonclient[ase,metatomic]&#39;</span>
+</span></pre></div>
+</div>
+<p><strong>Full eOn (conda):</strong> server + <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> binary — see <a class="reference internal" href="install/index.html"><span class="std std-doc">installation</span></a>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">micromamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>eon
 </span><span data-line="2"><span class="c1"># single point calculation, Lennard-Jones</span>
 </span><span data-line="3">eonclient<span class="w"> </span>-s<span class="w"> </span>molecule.con<span class="w"> </span>-p<span class="w"> </span>lj
@@ -460,6 +481,7 @@ suite (<a class="reference external" href="https://rgpycrumbs.rgoswami.me/tools/
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/pyeonclient.html">pyeonclient (Python client API)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/ase_pot.html">ASE Interface</a></li>
@@ -493,6 +515,7 @@ suite (<a class="reference external" href="https://rgpycrumbs.rgoswami.me/tools/
 <li class="toctree-l2"><a class="reference internal" href="user_guide/kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/rgpot_metatomic.html">Metatomic backends (fat · RGPOT · ASE)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -505,6 +528,9 @@ suite (<a class="reference external" href="https://rgpycrumbs.rgoswami.me/tools/
 <li class="toctree-l2"><a class="reference internal" href="devdocs/svn-migration.html">Migrating from SVN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="devdocs/tracking-changes.html">Tracking changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="devdocs/release.html">Release workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devdocs/pyeonclient.html">pyeonclient (nanobind client bindings)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devdocs/eon-schema.html">eon-schema (shared parameter package)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devdocs/pyeonclient-pypi.html">pyeonclient on PyPI</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="apidocs/index.html">API Reference</a><ul>
@@ -579,7 +605,7 @@ suite (<a class="reference external" href="https://rgpycrumbs.rgoswami.me/tools/
     </div>
   </div>
 </footer>
-      <script src="_static/documentation_options.js?v=981cb1a1"></script>
+      <script src="_static/documentation_options.js?v=e9c9fbf8"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
