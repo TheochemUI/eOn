@@ -10,6 +10,8 @@
   pin wrap to rgpot ``v2.5.0`` (headers + ``rgpot.pc``). Prefer installed
   ``nlohmann_json`` (system/EasyBuild module) with wrap fallback, matching the
   readcon pattern.
+- RGPOT ``backend=metatomic`` dlopens ``libmetatomic_engine.so`` (same packaging
+  path as rgpot's multi-ABI engines; no fat metatomic/torch link into eOn).
 - RGPOT ``backend=xtb`` dlopens ``libxtb_engine.so`` (no ``-Dwith_xtb`` link).
   Native XTBPot remains available but prints a packaging deprecation warning;
   default stays ``with_xtb=false``.

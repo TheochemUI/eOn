@@ -238,6 +238,23 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.Get(sec, "scratch_dir", params.rgpot_options.scratch_dir);
     params.rgpot_options.input_block =
         ini.Get(sec, "input_block", params.rgpot_options.input_block);
+    // Metatomic dlopen knobs
+    params.rgpot_options.model_path =
+        ini.Get(sec, "model_path", params.rgpot_options.model_path);
+    params.rgpot_options.device =
+        ini.Get(sec, "device", params.rgpot_options.device);
+    params.rgpot_options.length_unit =
+        ini.Get(sec, "length_unit", params.rgpot_options.length_unit);
+    params.rgpot_options.extensions_directory = ini.Get(
+        sec, "extensions_directory", params.rgpot_options.extensions_directory);
+    params.rgpot_options.check_consistency = ini.GetBoolean(
+        sec, "check_consistency", params.rgpot_options.check_consistency);
+    params.rgpot_options.uncertainty_threshold = ini.GetReal(
+        sec, "uncertainty_threshold",
+        params.rgpot_options.uncertainty_threshold);
+    params.rgpot_options.torch_determinism_strict = ini.GetBoolean(
+        sec, "torch_determinism_strict",
+        params.rgpot_options.torch_determinism_strict);
     // XTB dlopen knobs (also accept [XTBPot] keys when backend=xtb)
     params.rgpot_options.xtb_paramset =
         ini.Get(sec, "paramset",

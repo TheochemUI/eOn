@@ -124,10 +124,10 @@ public:
     bool make_template_input{true};
   } socket_nwchem_options;
 
-  // [RgpotPot] — in-process rgpot (dlopen engines; no potserv). Prefer
-  // backend=xtb over native -Dwith_xtb for packaging.
+  // [RgpotPot] — in-process rgpot (dlopen engines; no potserv). Packaging:
+  // backend=xtb / metatomic over fat -Dwith_xtb / -Dwith_metatomic links.
   struct rgpot_options_t {
-    /// "nwchemc", "cpmdc", or "xtb" (also accepts nwchem / cpmd / gfn aliases)
+    /// "nwchemc", "cpmdc", "metatomic", or "xtb"
     std::string backend{"nwchemc"};
     std::string basis{"sto-3g"};
     std::string theory{"scf"};
@@ -143,6 +143,14 @@ public:
     int memory_mb{0};
     std::string scratch_dir{};
     std::string input_block{};
+    // Metatomic dlopen (backend=metatomic)
+    std::string model_path{};
+    std::string device{"cpu"};
+    std::string length_unit{"angstrom"};
+    std::string extensions_directory{};
+    bool check_consistency{false};
+    double uncertainty_threshold{-1.0};
+    bool torch_determinism_strict{false};
     // XTB dlopen (backend=xtb) — same knobs as [XTBPot]; dual-read from that
     // section when unset.
     std::string xtb_paramset{"GFN2xTB"};

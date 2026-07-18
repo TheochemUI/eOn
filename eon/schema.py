@@ -691,9 +691,10 @@ class RgpotPot(BaseModel):
     backend: str = Field(
         default="nwchemc",
         description=(
-            "rgpot backend: 'nwchemc', 'cpmdc', or 'xtb' "
-            "(also accepts nwchem / cpmd / gfn aliases). "
-            "backend=xtb dlopens libxtb_engine.so (prefer over -Dwith_xtb)."
+            "rgpot backend: 'nwchemc', 'cpmdc', 'metatomic', or 'xtb' "
+            "(also accepts nwchem / cpmd / mta / gfn aliases). "
+            "metatomic/xtb dlopen libmetatomic_engine.so / libxtb_engine.so "
+            "(prefer over fat -Dwith_metatomic / -Dwith_xtb for packaging)."
         ),
     )
     basis: str = Field(
@@ -717,8 +718,36 @@ class RgpotPot(BaseModel):
         default="",
         description=(
             "Explicit path to the engine shared library "
-            "(libnwchemc / libcpmdc / libxtb_engine)."
+            "(libnwchemc / libcpmdc / libmetatomic_engine / libxtb_engine)."
         ),
+    )
+    model_path: str = Field(
+        default="",
+        description="Metatomic model path when backend=metatomic.",
+    )
+    device: str = Field(
+        default="cpu",
+        description="Metatomic device when backend=metatomic (cpu/cuda).",
+    )
+    length_unit: str = Field(
+        default="angstrom",
+        description="Metatomic length unit when backend=metatomic.",
+    )
+    extensions_directory: str = Field(
+        default="",
+        description="Metatomic extensions directory when backend=metatomic.",
+    )
+    check_consistency: bool = Field(
+        default=False,
+        description="Metatomic consistency checks when backend=metatomic.",
+    )
+    uncertainty_threshold: float = Field(
+        default=-1.0,
+        description="Metatomic uncertainty threshold when backend=metatomic.",
+    )
+    torch_determinism_strict: bool = Field(
+        default=False,
+        description="Strict Torch determinism when backend=metatomic.",
     )
     engine_library: str = Field(
         default="",

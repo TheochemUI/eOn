@@ -71,6 +71,20 @@ functional = BLYP
 cutoff_ry = 70.0
 ```
 
+For Metatomic (dlopen engine; no fat metatomic/torch link into eOn):
+
+```{code-block} ini
+[Potential]
+potential = RGPOT
+
+[RgpotPot]
+backend = metatomic
+model_path = /path/to/model.pt
+device = cpu
+# engine_path = /path/to/libmetatomic_engine.so
+# or: export RGPOT_METATOMIC_ENGINE=...
+```
+
 For xTB (preferred packaging path; leaves `-Dwith_xtb=false`):
 
 ```{code-block} ini

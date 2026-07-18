@@ -29,6 +29,13 @@ RgpotPot::RgpotPot(const Parameters &p)
   opt.memory_mb = o.memory_mb;
   opt.scratch_dir = o.scratch_dir;
   opt.input_block = o.input_block;
+  opt.model_path = o.model_path;
+  opt.device = o.device;
+  opt.length_unit = o.length_unit;
+  opt.extensions_directory = o.extensions_directory;
+  opt.check_consistency = o.check_consistency;
+  opt.uncertainty_threshold = o.uncertainty_threshold;
+  opt.torch_determinism_strict = o.torch_determinism_strict;
   opt.xtb_paramset = o.xtb_paramset;
   opt.xtb_accuracy = o.xtb_accuracy;
   opt.xtb_electronic_temperature = o.xtb_electronic_temperature;
@@ -60,23 +67,37 @@ RgpotPot::RgpotPot(const Parameters &p)
       opt.engine_path = e;
     else if (const char *e = std::getenv("RGPOT_CPMDC_ENGINE"))
       opt.engine_path = e;
+  } else if (backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") {
+    if (const char *e = std::getenv("RGPOT_METATOMIC_ENGINE"))
+      opt.engine_path = e;
+    else if (const char *e = std::getenv("METATOMIC_ENGINE"))
+      opt.engine_path = e;
+    if (const char *e = std::getenv("RGPOT_METATOMIC_MODEL"))
+      opt.model_path = e;
   } else if (backend_lc == "xtb" || backend_lc == "xtbpot" ||
              backend_lc == "gfn" || backend_lc == "gfnxtb") {
     if (const char *e = std::getenv("RGPOT_XTB_ENGINE"))
       opt.engine_path = e;
     else if (const char *e = std::getenv("XTB_ENGINE"))
       opt.engine_path = e;
-    // Prefer dedicated [XTBPot]/xtb_options when still default-ish from RGPOT
     if (opt.xtb_paramset.empty() || opt.xtb_paramset == "GFN2xTB") {
       if (!p.xtb_options.paramset.empty())
         opt.xtb_paramset = p.xtb_options.paramset;
     }
   }
 
+  // Dual-read [Metatomic] when RGPOT backend is metatomic
+  if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
+      opt.model_path.empty())
+    opt.model_path = p.metatomic_options.model_path;
+  if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
+      opt.device == "cpu" && !p.metatomic_options.device.empty())
+    opt.device = p.metatomic_options.device;
+
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();
   std::cout << "RgpotPot: in-process rgpot backend=" << backend_
-            << " (dlopen engines: libnwchemc/libcpmdc/libxtb_engine)"
+            << " (dlopen: libnwchemc/libcpmdc/libmetatomic_engine/libxtb_engine)"
             << std::endl;
 }
 
