@@ -1,7 +1,7 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# rgpot v2.1.0 content (chore(release): prepare v2.1.0); switch to the
-# v2.1.0 tag once it is cut on the merge commit.
-revision = 0f4e5a2164cdaed03c61647503a8e0985dc70aff
+# Packaged install exports rgpot.pc (headers + nwchempot/cpmdpot/ptlrpc).
+# eOn prefers dependency('rgpot') when installed; wrap is the fallback.
+revision = v2.5.0
 depth = 1

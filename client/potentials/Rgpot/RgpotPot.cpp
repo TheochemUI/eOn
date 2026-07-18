@@ -29,6 +29,12 @@ RgpotPot::RgpotPot(const Parameters &p)
   opt.memory_mb = o.memory_mb;
   opt.scratch_dir = o.scratch_dir;
   opt.input_block = o.input_block;
+  opt.xtb_paramset = o.xtb_paramset;
+  opt.xtb_accuracy = o.xtb_accuracy;
+  opt.xtb_electronic_temperature = o.xtb_electronic_temperature;
+  opt.xtb_max_iterations = o.xtb_max_iterations;
+  opt.xtb_charge = o.xtb_charge;
+  opt.xtb_uhf = o.xtb_uhf;
 
   // Env overrides (CI / benchmarks)
   if (const char *e = std::getenv("RGPOT_BACKEND"))
@@ -54,12 +60,24 @@ RgpotPot::RgpotPot(const Parameters &p)
       opt.engine_path = e;
     else if (const char *e = std::getenv("RGPOT_CPMDC_ENGINE"))
       opt.engine_path = e;
+  } else if (backend_lc == "xtb" || backend_lc == "xtbpot" ||
+             backend_lc == "gfn" || backend_lc == "gfnxtb") {
+    if (const char *e = std::getenv("RGPOT_XTB_ENGINE"))
+      opt.engine_path = e;
+    else if (const char *e = std::getenv("XTB_ENGINE"))
+      opt.engine_path = e;
+    // Prefer dedicated [XTBPot]/xtb_options when still default-ish from RGPOT
+    if (opt.xtb_paramset.empty() || opt.xtb_paramset == "GFN2xTB") {
+      if (!p.xtb_options.paramset.empty())
+        opt.xtb_paramset = p.xtb_options.paramset;
+    }
   }
 
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();
   std::cout << "RgpotPot: in-process rgpot backend=" << backend_
-            << " (dlopen libnwchemc/libcpmdc, no potserv RPC)" << std::endl;
+            << " (dlopen engines: libnwchemc/libcpmdc/libxtb_engine)"
+            << std::endl;
 }
 
 RgpotPot::~RgpotPot() = default;

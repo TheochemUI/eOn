@@ -1,6 +1,10 @@
 rgpot_pot = library(
     'rgpot_pot',
-    sources: ['RgpotPot.cpp', 'RGPotEngine.cpp'],
+    sources: [
+        'RgpotPot.cpp',
+        'RGPotEngine.cpp',
+        'XTBEngineLoader.cpp',
+    ],
     include_directories: _incdirs,
     dependencies: _deps,
     link_with: _linkto,

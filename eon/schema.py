@@ -599,7 +599,7 @@ class PotentialConfig(BaseModel):
      - ``pyamff``: Python implementation of the AMFF potential.
      - ``python``: Custom python potential.
      - ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
-     - ``rgpot``: In-process rgpot backends (NWChem / CPMD via dlopen engines).
+     - ``rgpot``: In-process rgpot backends (NWChem / CPMD / xTB via dlopen engines).
      - ``spce``: Simple Point Charge model for water.
      - ``sw_si``: Stillinger-Weber potential, for silicon.
      - ``tersoff_si``: Tersoff pair potential with angular terms, for silicon.
@@ -690,7 +690,11 @@ class RgpotPot(BaseModel):
 
     backend: str = Field(
         default="nwchemc",
-        description="rgpot backend: 'nwchemc' or 'cpmdc' (also accepts nwchem / cpmd).",
+        description=(
+            "rgpot backend: 'nwchemc', 'cpmdc', or 'xtb' "
+            "(also accepts nwchem / cpmd / gfn aliases). "
+            "backend=xtb dlopens libxtb_engine.so (prefer over -Dwith_xtb)."
+        ),
     )
     basis: str = Field(
         default="sto-3g", description="Basis set for the NWChem backend."
@@ -711,7 +715,10 @@ class RgpotPot(BaseModel):
     multiplicity: int = Field(default=1, description="Spin multiplicity.")
     engine_path: str = Field(
         default="",
-        description="Explicit path to the engine shared library (libnwchemc / libcpmdc).",
+        description=(
+            "Explicit path to the engine shared library "
+            "(libnwchemc / libcpmdc / libxtb_engine)."
+        ),
     )
     engine_library: str = Field(
         default="",
@@ -729,6 +736,20 @@ class RgpotPot(BaseModel):
         default="",
         description="Verbatim input block appended to the generated engine input.",
     )
+    paramset: Literal["GFNFF", "GFN0xTB", "GFN1xTB", "GFN2xTB"] = Field(
+        default="GFN2xTB",
+        description="XTB parameter set when backend=xtb (same as [XTBPot] paramset).",
+    )
+    accuracy: float = Field(
+        default=1.0, description="XTB accuracy when backend=xtb."
+    )
+    electronic_temperature: float = Field(
+        default=300.0, description="XTB electronic temperature (K) when backend=xtb."
+    )
+    max_iterations: int = Field(
+        default=250, description="XTB SCF max iterations when backend=xtb."
+    )
+    uhf: int = Field(default=0, description="XTB unpaired electrons when backend=xtb.")
 
 
 class Metatomic(BaseModel):

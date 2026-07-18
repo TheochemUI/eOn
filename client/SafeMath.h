@@ -51,7 +51,10 @@ inline constexpr double eps = 1e-300;
 
 // Eigen-dependent utilities, available only when Eigen is already included.
 // Include order: Eigen headers first, then SafeMath.h.
-#ifdef EIGEN_CORE_H
+// Eigen < 5 guards Eigen/Core with EIGEN_CORE_H; Eigen >= 5 renamed the
+// guard to EIGEN_CORE_MODULE_H. Accept either, or safe_normalized silently
+// disappears and every consumer fails to compile against Eigen 5.
+#if defined(EIGEN_CORE_H) || defined(EIGEN_CORE_MODULE_H)
 namespace eonc::safemath {
 
 template <typename Derived>

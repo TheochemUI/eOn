@@ -15,6 +15,8 @@
 #include "units.hpp"
 #include "xtb.h"
 
+#include <iostream>
+
 class XTBPot final : public Potential {
 public:
   // Functions
@@ -25,6 +27,12 @@ public:
         xtb_max_iter{p.xtb_options.maxiter},
         total_charge{p.xtb_options.charge},
         uhf{p.xtb_options.uhf} {
+    // Deprecated for packaging: prefer -Dwith_rgpot=true + potential=RGPOT
+    // backend=xtb (dlopen libxtb_engine.so). Native -Dwith_xtb stays available.
+    std::cerr
+        << "WARNING: native XTBPot (-Dwith_xtb) is deprecated for packaging; "
+           "prefer potential=RGPOT with [RgpotPot] backend=xtb "
+           "(dlopen libxtb_engine.so; set RGPOT_XTB_ENGINE).\n";
     counter = 0;
     initialized = false;
     env = xtb_newEnvironment();

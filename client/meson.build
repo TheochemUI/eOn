@@ -251,13 +251,16 @@ if not inireader_dep.found()
 endif
 _deps += inireader_dep
 
-# Always use the subproject: system nlohmann_json cmake configs can export
-# -I/usr/include which breaks conda-forge sysroot isolation on rolling distros.
-nlohmann_json_proj = subproject(
+# Prefer installed nlohmann_json (EasyBuild/system pkg-config or cmake
+# module — same pattern as readcon). Wrap fallback for hermetic/pixi builds.
+# Conda rolling-distro isolation: if system CMake configs inject -I/usr/include
+# into the conda sysroot, pass --force-fallback-for=nlohmann_json.
+nlohmann_json_dep = dependency(
     'nlohmann_json',
+    fallback: ['nlohmann_json', 'nlohmann_json_dep'],
+    required: true,
     default_options: ['default_library=static'],
 )
-nlohmann_json_dep = nlohmann_json_proj.get_variable('nlohmann_json_dep')
 _deps += nlohmann_json_dep
 
 # Highway SIMD (optional, for vectorized potentials)
@@ -322,24 +325,54 @@ subdir('potentials/NewPot')
 #   with_rgpot  -> nwchempot_dep + cpmdpot_dep (direct dlopen engines in eOn)
 #   with_serve  -> ptlrpc_dep (eOn is Cap'n Proto RPC server)
 # potserv RPC *client* is not wired as an eOn Potential.
+#
+# Prefer an *installed* rgpot (pkg-config) for distro/EasyBuild packaging;
+# fall back to subprojects/rgpot.wrap for pixi/dev. Matching standalone
+# install profile (rgpot v2.5.0+ exports rgpot.pc + headers; no torch/xtb
+# at link time — engines stay runtime dlopen):
+#   with_rpc_client_only=true, pure_lib=true, with_tests=false,
+#   with_examples=false, with_xtb=false, with_metatomic=false
 _rgpot_proj = []
 ptlrpc_dep = disabler()
+nwchempot_dep = disabler()
+cpmdpot_dep = disabler()
 if get_option('with_rgpot') or get_option('with_serve')
-    rgpot_opts = {
-        'with_rpc_client_only': true,
-        'pure_lib': true,
-        'with_tests': false,
-        'with_examples': false,
-    }
-    _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+    _rgpot_pkg = dependency('rgpot', required: false)
+    if _rgpot_pkg.found()
+        message('rgpot: using pkg-config (installed), not subproject wrap')
+        nwchempot_dep = _rgpot_pkg
+        cpmdpot_dep = _rgpot_pkg
+        ptlrpc_dep = _rgpot_pkg
+    else
+        message('rgpot: pkg-config not found; falling back to subproject wrap')
+        rgpot_opts = {
+            'with_rpc_client_only': true,
+            'pure_lib': true,
+            'with_tests': false,
+            'with_examples': false,
+            'with_xtb': false,
+            'with_metatomic': false,
+        }
+        _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+        if get_option('with_serve')
+            ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+        endif
+        if get_option('with_rgpot') and not is_windows
+            nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
+            cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
+        endif
+    endif
 endif
 if get_option('with_serve')
     serve_capnp_dep = dependency('capnp-rpc', required: true)
-    ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+    if not ptlrpc_dep.found()
+        error('with_serve requires ptlrpc from rgpot (pkg-config or subproject)')
+    endif
 endif
 if get_option('with_rgpot') and not is_windows
-    nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
-    cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
+    if not nwchempot_dep.found() or not cpmdpot_dep.found()
+        error('with_rgpot requires nwchempot/cpmdpot from rgpot (pkg-config or subproject)')
+    endif
     _deps += [nwchempot_dep, cpmdpot_dep]
     _args += ['-DWITH_RGPOT']
     subdir('potentials/Rgpot')

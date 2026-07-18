@@ -2,6 +2,25 @@
 
 <!-- towncrier release notes start -->
 
+## [2.16.1](https://github.com/TheochemUI/eOn/tree/2.16.1) - 2026-07-17
+
+### Added
+
+- Prefer installed ``rgpot`` via pkg-config before the Meson subproject wrap;
+  pin wrap to rgpot ``v2.5.0`` (headers + ``rgpot.pc``). Prefer installed
+  ``nlohmann_json`` (system/EasyBuild module) with wrap fallback, matching the
+  readcon pattern.
+- RGPOT ``backend=xtb`` dlopens ``libxtb_engine.so`` (no ``-Dwith_xtb`` link).
+  Native XTBPot remains available but prints a packaging deprecation warning;
+  default stays ``with_xtb=false``.
+
+### Fixed
+
+- SafeMath Eigen helpers accept Eigen 5's ``EIGEN_CORE_MODULE_H`` include guard
+  (as well as Eigen < 5 ``EIGEN_CORE_H``), so ``safe_normalized`` no longer
+  disappears against Eigen >= 5.
+
+
 ## [2.16.0](https://github.com/TheochemUI/eOn/tree/2.16.0) - 2026-07-03
 
 ### Added

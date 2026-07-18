@@ -31,7 +31,8 @@ the FPE trap threshold.
 ## Eigen templates
 
 Available only when `Eigen/Core` is already included (guarded by
-`#ifdef EIGEN_CORE_H`). Always include Eigen headers before `SafeMath.h`.
+`#if defined(EIGEN_CORE_H) || defined(EIGEN_CORE_MODULE_H)` — Eigen 5 renamed
+the Core guard). Always include Eigen headers before `SafeMath.h`.
 
 | Function | Signature | Behavior |
 |----------|-----------|----------|

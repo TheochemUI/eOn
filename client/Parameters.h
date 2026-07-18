@@ -124,10 +124,10 @@ public:
     bool make_template_input{true};
   } socket_nwchem_options;
 
-  // [RgpotPot] — in-process rgpot NWChemPot / CPMDPot (dlopen engines; no
-  // potserv)
+  // [RgpotPot] — in-process rgpot (dlopen engines; no potserv). Prefer
+  // backend=xtb over native -Dwith_xtb for packaging.
   struct rgpot_options_t {
-    /// "nwchemc" or "cpmdc" (also accepts nwchem / cpmd / NWChem / CPMD)
+    /// "nwchemc", "cpmdc", or "xtb" (also accepts nwchem / cpmd / gfn aliases)
     std::string backend{"nwchemc"};
     std::string basis{"sto-3g"};
     std::string theory{"scf"};
@@ -143,6 +143,14 @@ public:
     int memory_mb{0};
     std::string scratch_dir{};
     std::string input_block{};
+    // XTB dlopen (backend=xtb) — same knobs as [XTBPot]; dual-read from that
+    // section when unset.
+    std::string xtb_paramset{"GFN2xTB"};
+    double xtb_accuracy{1.0};
+    double xtb_electronic_temperature{300.0};
+    int xtb_max_iterations{250};
+    double xtb_charge{0.0};
+    int xtb_uhf{0};
   } rgpot_options;
 
   // [Structure Comparison] //

@@ -11,6 +11,8 @@ option('with_cuh2', type : 'boolean', value : true)
 option('with_tests', type : 'boolean', value : true)
 option('with_gp_surrogate', type : 'boolean', value : false)
 option('with_catlearn', type : 'boolean', value : false)
+# Native linked libxtb (fat host). Prefer -Dwith_rgpot=true + RGPOT backend=xtb
+# (dlopen libxtb_engine.so) for packaging; leave this false by default.
 option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
 option('with_ase_nwchem', type : 'boolean', value : false)

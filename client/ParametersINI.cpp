@@ -238,6 +238,46 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.Get(sec, "scratch_dir", params.rgpot_options.scratch_dir);
     params.rgpot_options.input_block =
         ini.Get(sec, "input_block", params.rgpot_options.input_block);
+    // XTB dlopen knobs (also accept [XTBPot] keys when backend=xtb)
+    params.rgpot_options.xtb_paramset =
+        ini.Get(sec, "paramset",
+                ini.Get(sec, "xtb_paramset", params.rgpot_options.xtb_paramset));
+    params.rgpot_options.xtb_accuracy = ini.GetReal(
+        sec, "accuracy",
+        ini.GetReal(sec, "xtb_accuracy", params.rgpot_options.xtb_accuracy));
+    params.rgpot_options.xtb_electronic_temperature = ini.GetReal(
+        sec, "electronic_temperature",
+        ini.GetReal(sec, "xtb_electronic_temperature",
+                    params.rgpot_options.xtb_electronic_temperature));
+    params.rgpot_options.xtb_max_iterations = static_cast<int>(ini.GetInteger(
+        sec, "max_iterations",
+        ini.GetInteger(sec, "xtb_max_iterations",
+                       params.rgpot_options.xtb_max_iterations)));
+    // charge/uhf under [RgpotPot] for xtb: prefer explicit xtb_* then shared charge
+    params.rgpot_options.xtb_charge = ini.GetReal(
+        sec, "xtb_charge",
+        static_cast<double>(params.rgpot_options.charge));
+    params.rgpot_options.xtb_uhf = static_cast<int>(
+        ini.GetInteger(sec, "uhf",
+                       ini.GetInteger(sec, "xtb_uhf",
+                                      params.rgpot_options.xtb_uhf)));
+    // Dual-read [XTBPot] when backend is xtb
+    const std::string be = toLowerCase(params.rgpot_options.backend);
+    if (be == "xtb" || be == "xtbpot" || be == "gfn" || be == "gfnxtb") {
+      params.rgpot_options.xtb_paramset =
+          ini.Get("XTBPot", "paramset", params.rgpot_options.xtb_paramset);
+      params.rgpot_options.xtb_accuracy =
+          ini.GetReal("XTBPot", "accuracy", params.rgpot_options.xtb_accuracy);
+      params.rgpot_options.xtb_electronic_temperature = ini.GetReal(
+          "XTBPot", "electronic_temperature",
+          params.rgpot_options.xtb_electronic_temperature);
+      params.rgpot_options.xtb_max_iterations = static_cast<int>(ini.GetInteger(
+          "XTBPot", "max_iterations", params.rgpot_options.xtb_max_iterations));
+      params.rgpot_options.xtb_uhf = static_cast<int>(
+          ini.GetInteger("XTBPot", "uhf", params.rgpot_options.xtb_uhf));
+      params.rgpot_options.xtb_charge =
+          ini.GetReal("XTBPot", "charge", params.rgpot_options.xtb_charge);
+    }
   }
 
   // [Debug] //
