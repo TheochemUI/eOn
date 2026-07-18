@@ -72,7 +72,7 @@ interace to the VASP and GPAW density functional theory codes.
 see [the Python API guide](user_guide/pyeonclient.md).
 
 ```{code-block} bash
-pip install pyeonclient 'rgpot>=2.4.2' 'pyeonclient[ase,metatomic]'
+pip install pyeonclient 'rgpot>=2.5.2' 'pyeonclient[ase,metatomic]'
 ```
 
 **Full eOn (conda):** server + `eonclient` binary — see [installation](install/index.md).

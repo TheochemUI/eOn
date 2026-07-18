@@ -46,7 +46,7 @@ Prefer the first-class classes when you want Matter in / Matter out.
 ```{code-block} bash
 pip install pyeonclient
 pip install 'pyeonclient[ase]'
-pip install 'rgpot>=2.4.2'   # multi-ABI engines for Metatomic via RGPOT
+pip install 'rgpot>=2.5.2'   # multi-ABI engines for Metatomic via RGPOT
 ```
 
 Typed Dimer/NEB specs come from the shared **[eon-schema](project:../devdocs/eon-schema.md)**
